@@ -48,6 +48,7 @@ interface MessageBlockProps {
   setReactionMessage: (message: Message) => void
   showThreadButton?: boolean
   seenUsers: UserFields[]
+  channel: any
 }
 
 // Component chính hiển thị một tin nhắn trong cuộc trò chuyện
@@ -62,7 +63,8 @@ export const MessageItem = ({
   onAttachDocument, // Hàm đính kèm tài liệu
   setReactionMessage, // Hàm xử lý reaction
   showThreadButton = true, // Có hiển thị nút luồng không (mặc định là có)
-  seenUsers
+  seenUsers,
+  channel
 }: MessageBlockProps) => {
   const {
     owner: userID, // ID người gửi
@@ -183,11 +185,20 @@ export const MessageItem = ({
 
     const messageTime = new Date(message.creation).getTime()
     const isSeen = seenUsers.some(
-      (user: any) => user.user !== currentUser && new Date(user.last_visit).getTime() >= messageTime
+      (user: any) => user.user !== currentUser && new Date(user.seen_at).getTime() >= messageTime
     )
 
     setHasBeenSeen(isSeen)
   }, [message.creation, message.owner, currentUser, seenUsers])
+
+  const seenByOthers = useMemo(() => {
+    if (!seenUsers?.length || !message?.creation || !currentUser) return []
+
+    return seenUsers.filter(
+      (user: any) =>
+        user.user !== currentUser && new Date(user.seen_at).getTime() >= new Date(message.creation).getTime()
+    )
+  }, [seenUsers, message.creation, currentUser])
 
   // Render component MessageItem
   return (
@@ -208,6 +219,9 @@ export const MessageItem = ({
           onForward={onForward} // Xử lý chuyển tiếp tin nhắn
           onViewReaction={onViewReaction} // Xem các reaction
           onAttachToDocument={onAttachToDocument} // Đính kèm vào tài liệu
+          hasBeenSeen={hasBeenSeen}
+          seenByOthers={seenByOthers}
+          channel={channel}
         />
       ) : (
         // Sử dụng layout mặc định nếu không phải 'Left-Right'
@@ -297,9 +311,29 @@ export const MessageItem = ({
                         <TooltipContent
                           side='top'
                           align='start'
-                          className='px-2 py-1 text-sm text-white bg-neutral-600 rounded shadow-md'
+                          className='px-2 py-1 text-sm text-white bg-neutral-600 rounded shadow-md max-h-40 overflow-y-auto'
                         >
-                          {hasBeenSeen ? `Đã xem` : 'Chưa xem'}
+                          {hasBeenSeen ? (
+                            <>
+                              {channel?.type === 'channel' && seenByOthers.length > 0 ? (
+                                <div>
+                                  <div className='font-medium mb-1'>Đã xem bởi:</div>
+                                  <div className='space-y-3'>
+                                    {seenByOthers.map((user) => (
+                                      <div key={user.name} className='flex items-center gap-2'>
+                                        <UserAvatar src={user.user_image} alt={user.full_name} size='1' />
+                                        <span>{user.full_name}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              ) : (
+                                <div>Đã xem</div>
+                              )}
+                            </>
+                          ) : (
+                            'Chưa xem'
+                          )}
                           <TooltipArrow className='fill-neutral-600' />
                         </TooltipContent>
                       </Tooltip>

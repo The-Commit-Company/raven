@@ -4,80 +4,59 @@ from datetime import timedelta
 import frappe
 from frappe import _
 from frappe.query_builder import JoinType, Order
-from frappe.query_builder.functions import Coalesce, Count
-
+from frappe.query_builder.functions import Coalesce, Count, Max, Coalesce
 from raven.api.raven_channel import create_direct_message_channel, get_peer_user_id
 from raven.utils import get_channel_member, is_channel_member, track_channel_visit
 
-
-import frappe
-import traceback
-
-@frappe.whitelist()
-def get_last_messages_all_channels():
-    try:
-        all_channels = frappe.get_all(
-            "Raven Channel",
-            fields=["name"]
-        )
-
-        results = []
-
-        for channel in all_channels:
-            last_message = frappe.get_all(
-                "Raven Message",
-                filters={"channel_id": channel.name},
-                fields=[
-                    "name", "owner", "creation", "text", "content", "message_type"
-                ],
-                order_by="creation desc",
-                limit_page_length=1
-            )
-            if last_message:
-                results.append({
-                    "channel_id": channel.name,
-                    "last_message": last_message[0]
-                })
-
-        return results
-
-    except Exception as e:
-        frappe.log_error(title="get_last_messages_all_channels failed", message=traceback.format_exc())
-        frappe.throw("Internal Server Error: " + str(e))
-
-
+        
 @frappe.whitelist(methods=["POST"])
 def send_message(
-	channel_id, text, is_reply=False, linked_message=None, json_content=None, send_silently=False
+    channel_id, text, is_reply=False, linked_message=None, json_content=None, send_silently=False
 ):
-	if is_reply:
-		doc = frappe.get_doc(
-			{
-				"doctype": "Raven Message",
-				"channel_id": channel_id,
-				"text": text,
-				"message_type": "Text",
-				"is_reply": is_reply,
-				"linked_message": linked_message,
-				"json": json_content,
-			}
-		)
-	else:
-		doc = frappe.get_doc(
-			{
-				"doctype": "Raven Message",
-				"channel_id": channel_id,
-				"text": text,
-				"message_type": "Text",
-				"json": json_content,
-			}
-		)
+    if is_reply:
+        doc = frappe.get_doc(
+            {
+                "doctype": "Raven Message",
+                "channel_id": channel_id,
+                "text": text,
+                "message_type": "Text",
+                "is_reply": is_reply,
+                "linked_message": linked_message,
+                "json": json_content,
+            }
+        )
+    else:
+        doc = frappe.get_doc(
+            {
+                "doctype": "Raven Message",
+                "channel_id": channel_id,
+                "text": text,
+                "message_type": "Text",
+                "json": json_content,
+            }
+        )
 
-	if send_silently:
-		doc.flags.send_silently = True
+    if send_silently:
+        doc.flags.send_silently = True
 
-	doc.insert()
-	return doc
+    doc.insert()
+
+    members = frappe.get_all("Raven Channel Member", filters={"channel_id": channel_id}, pluck="user_id")
+
+    for member in members:
+        if member != frappe.session.user:
+            frappe.publish_realtime(
+                event="new_message",
+                message={
+                    "channel_id": channel_id,
+                    "user": frappe.session.user,
+                    "seen_at": frappe.utils.now_datetime()
+                },
+                user=member
+            )
+
+    return doc
+
 
 
 @frappe.whitelist()
@@ -288,38 +267,69 @@ def get_messages_with_dates(channel_id):
 
 @frappe.whitelist()
 def get_unread_count_for_channels():
-	"""
-	Fetch all channels where the user has unread messages > 0
-	"""
+    """
+    Trả về danh sách các channel mà user đang tham gia,
+    kèm theo số lượng tin nhắn chưa đọc và nội dung message mới nhất.
+    """
+    user = frappe.session.user
 
-	channel = frappe.qb.DocType("Raven Channel")
-	channel_member = frappe.qb.DocType("Raven Channel Member")
-	message = frappe.qb.DocType("Raven Message")
-	query = (
-		frappe.qb.from_(channel)
-		.left_join(channel_member)
-		.on(
-			(channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user)
-		)
-		.where(channel_member.user_id == frappe.session.user)
-		.where(channel.is_archived == 0)
-		.where(channel.is_thread == 0)
-		.where(message.message_type != "System")
-		.where(
-			message.creation > Coalesce(channel_member.last_visit, "2000-11-11")
-		)  # Only count messages after the last visit for performance
-		.left_join(message)
-		.on(channel.name == message.channel_id)
-	)
+    # Define DocTypes
+    channel = frappe.qb.DocType("Raven Channel")
+    channel_member = frappe.qb.DocType("Raven Channel Member")
+    message = frappe.qb.DocType("Raven Message")
 
-	channels_query = (
-		query.select(channel.name, channel.is_direct_message, Count(message.name).as_("unread_count"))
-		.groupby(channel.name, channel.is_direct_message)
-		.run(as_dict=True)
-	)
+    # --- Query 1: Lấy số lượng tin nhắn chưa đọc ---
+    unread_query = (
+        frappe.qb.from_(channel)
+        .left_join(channel_member).on(
+            (channel.name == channel_member.channel_id) & (channel_member.user_id == user)
+        )
+        .left_join(message).on(
+            (channel.name == message.channel_id)
+            & (message.message_type != "System")
+            & (message.creation > Coalesce(channel_member.last_visit, "2000-11-11"))
+        )
+        .where(channel_member.user_id == user)
+        .where(channel.is_archived == 0)
+        .where(channel.is_thread == 0)
+        .select(
+            channel.name.as_("channel"),
+            channel.is_direct_message,
+            Count(message.name).as_("unread_count")
+        )
+        .groupby(channel.name, channel.is_direct_message)
+    ).run(as_dict=True)
 
-	return channels_query
+    # --- Query 2: Lấy message mới nhất (chỉ content) cho mỗi channel ---
+    latest_messages = (
+        frappe.qb.from_(message)
+        .select(
+            message.channel_id,
+            message.content,
+            Max(message.creation).as_("latest_time")
+        )
+        .where(message.message_type != "System")
+        .groupby(message.channel_id, message.content)
+    ).run(as_dict=True)
 
+    # Convert to dict: {channel_id: content}
+    latest_content_map = {}
+    for msg in latest_messages:
+        cid = msg["channel_id"]
+        if cid not in latest_content_map or msg["latest_time"] > latest_content_map[cid]["latest_time"]:
+            latest_content_map[cid] = {
+                "content": msg["content"],
+                "latest_time": msg["latest_time"]
+            }
+
+    # Gộp kết quả
+    for row in unread_query:
+        row["name"] = row.pop("channel")
+        row["last_message_content"] = latest_content_map.get(row["name"], {}).get("content", "")
+    # Lọc chỉ lấy những channel có unread_count > 0
+    filtered_result = [row for row in unread_query if row["unread_count"] > 0]
+
+    return filtered_result
 
 @frappe.whitelist()
 def get_unread_count_for_channel(channel_id):

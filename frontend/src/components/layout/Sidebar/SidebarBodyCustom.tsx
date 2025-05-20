@@ -26,11 +26,18 @@ export const SidebarBody = () => {
     return channels.filter((channel) => channel.workspace === workspaceID)
   }, [channels, workspaceID])
 
-  const { unreadChannels, readChannels, unreadDMs, readDMs } = useGetChannelUnreadCounts({
-    channels: workspaceChannels,
-    dm_channels,
-    unread_count: unread_count?.message
-  })
+  // const { unreadChannels, readChannels, unreadDMs, readDMs } = useGetChannelUnreadCounts({
+  //   channels: workspaceChannels,
+  //   dm_channels,
+  //   unread_count: unread_count?.message
+  // })
+
+  
+const sortedChannels = [...channels, ...dm_channels].sort((a, b) => {
+  const timeA = new Date(a.last_message_timestamp || 0).getTime()
+  const timeB = new Date(b.last_message_timestamp || 0).getTime()
+  return timeB - timeA // Mới nhất lên đầu
+})
 
   return (
     <ScrollArea type='hover' scrollbars='vertical' className='h-[calc(100vh-4rem)]'>
@@ -50,11 +57,11 @@ export const SidebarBody = () => {
           />
         </Flex>
         <PinnedChannels unread_count={unread_count?.message} />
-        {(unreadChannels.length > 0 || unreadDMs.length > 0) && (
+        {/* {(unreadChannels.length > 0 || unreadDMs.length > 0) && (
           <UnreadList unreadChannels={unreadChannels} unreadDMs={unreadDMs} />
-        )}
-        <ChannelList channels={readChannels} />
-        <DirectMessageList dm_channels={readDMs} />
+        )} */}
+        {/* <ChannelList channels={readChannels} /> */}
+        <DirectMessageList dm_channels={sortedChannels} />
       </Flex>
     </ScrollArea>
   )

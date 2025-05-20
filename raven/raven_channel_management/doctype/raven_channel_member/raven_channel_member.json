@@ -12,6 +12,7 @@
   "user_id",
   "is_admin",
   "last_visit",
+  "seen_at",
   "column_break_adqk",
   "is_synced",
   "linked_doctype",
@@ -86,11 +87,17 @@
    "fieldtype": "Check",
    "label": "Is Synced",
    "read_only": 1
+  },
+  {
+   "fetch_if_empty": 1,
+   "fieldname": "seen_at",
+   "fieldtype": "Datetime",
+   "label": "Seen At"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-29 17:31:35.446387",
+ "modified": "2025-05-20 09:28:58.262632",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel Member",
@@ -122,6 +129,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

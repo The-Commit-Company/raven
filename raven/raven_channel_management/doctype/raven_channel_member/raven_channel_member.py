@@ -29,6 +29,7 @@ class RavenChannelMember(Document):
 		last_visit: DF.Datetime
 		linked_doctype: DF.Link | None
 		linked_document: DF.DynamicLink | None
+		seen_at: DF.Datetime | None
 		user_id: DF.Link
 	# end: auto-generated types
 
