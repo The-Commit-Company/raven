@@ -24,7 +24,7 @@ import { replaceCurrentUserFromDMChannelName } from '@/utils/operations'
 import { __ } from '@/utils/translations'
 import { ChannelWithUnreadCount, DMChannelWithUnreadCount } from '@/components/layout/Sidebar/useGetChannelUnreadCounts'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
-import { useFetchUnreadMessageCount } from '@/hooks/useUnreadMessageCount'
+import useUnreadMessageCount, { useFetchUnreadMessageCount } from '@/hooks/useUnreadMessageCount'
 import { mapUnreadToDMChannels } from '@/hooks/useUnreadToDMChannels'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount
@@ -94,9 +94,32 @@ const DirectMessageItemList = ({ dm_channels: enrichedDMs }: DirectMessageListPr
   )
 }
 
-const DirectMessageItem = ({ dm_channel }: { dm_channel: UnifiedChannel }) => {
-  return <DirectMessageItemElement channel={dm_channel} />
+const DirectMessageItem = ({ dm_channel }: { dm_channel: DMChannelWithUnreadCount }) => {
+  const { call } = useFrappePostCall('raven.api.raven_channel_member.mark_channel_as_unread')
+  const { updateCount } = useUnreadMessageCount()
+  const handleMarkAsUnread = () => {
+    call({ channel_id: dm_channel.name })
+      .then(() => {
+        updateCount()
+      })
+      .catch((err) => {
+        console.error('Mark as unread failed', err)
+      })
+  }
+  return (
+    <ContextMenu.Root>
+      <ContextMenu.Trigger>
+        <main>
+          <DirectMessageItemElement channel={dm_channel} />
+        </main>
+      </ContextMenu.Trigger>
+      <ContextMenu.Content>
+        <ContextMenu.Item onClick={handleMarkAsUnread}>Mark as Unread</ContextMenu.Item>
+      </ContextMenu.Content>
+    </ContextMenu.Root>
+  )
 }
+
 
 export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel }) => {
   const { currentUser } = useContext(UserContext)
@@ -121,8 +144,6 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
       : channel.name
 
   return (
-    <ContextMenu.Root>
-      <ContextMenu.Trigger>
         <SidebarItem to={channel.name} className='py-1.5 px-2.5 data-[state=open]:bg-gray-3'>
           <SidebarIcon>
             {userData ? (
@@ -150,9 +171,6 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
             {showUnread ? <SidebarBadge>{channel.unread_count}</SidebarBadge> : null}
           </Flex>
         </SidebarItem>
-      </ContextMenu.Trigger>
-      <ContextMenu.Content>{/* Tuỳ chọn mở rộng menu (block, view profile...) */}</ContextMenu.Content>
-    </ContextMenu.Root>
   )
 }
 
