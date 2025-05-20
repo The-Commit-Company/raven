@@ -2,11 +2,11 @@ import { useFrappeAuth, useFrappeEventListener, useFrappePostCall } from 'frappe
 import { useCallback, useEffect, useState } from 'react'
 import { useDebounce } from './useDebounce'
 
-// Dữ liệu cache dạng Map<channelId, { data: any[], timestamp: number }>
 const seenUsersCache = new Map<string, { data: any[]; timestamp: number }>()
+const seenTrackTimestamps = new Map<string, number>()
 
-// Thời gian cache còn hiệu lực (VD: 30 giây)
-const CACHE_TTL = 30 * 1000
+const CACHE_TTL = 30 * 1000 // 30s
+const TRACK_SEEN_COOLDOWN = 5 * 1000 // 5s
 
 export const useChannelSeenUsers = (channelId: string) => {
   const { currentUser } = useFrappeAuth()
@@ -18,15 +18,32 @@ export const useChannelSeenUsers = (channelId: string) => {
 
   const debouncedChannelId = useDebounce(channelId, 300)
 
+  // Track seen nhưng có cooldown
+  const safeTrackSeen = useCallback(
+    (id: string) => {
+      const now = Date.now()
+      const last = seenTrackTimestamps.get(id) || 0
+      if (now - last > TRACK_SEEN_COOLDOWN) {
+        trackSeen({ channel_id: id }).catch(console.error)
+        seenTrackTimestamps.set(id, now)
+      }
+    },
+    [trackSeen]
+  )
+
+  // Fetch seen users (with optional force refetch)
   const fetchSeenUsers = useCallback(
     async (force = false) => {
       if (!debouncedChannelId) return
 
-      const cached = seenUsersCache.get(debouncedChannelId)
       const now = Date.now()
 
-      // Nếu có cache hợp lệ và không force
-      if (cached && !force && now - cached.timestamp < CACHE_TTL) {
+      if (force) {
+        seenUsersCache.delete(debouncedChannelId)
+      }
+
+      const cached = seenUsersCache.get(debouncedChannelId)
+      if (cached && now - cached.timestamp < CACHE_TTL) {
         setSeenUsers(cached.data)
         return
       }
@@ -35,7 +52,7 @@ export const useChannelSeenUsers = (channelId: string) => {
       try {
         const { message = [] } = await getSeenCall({ channel_id: debouncedChannelId })
         const data = Array.isArray(message) ? message : []
-        seenUsersCache.set(debouncedChannelId, { data, timestamp: now }) // Cache lại
+        seenUsersCache.set(debouncedChannelId, { data, timestamp: now })
         setSeenUsers(data)
       } catch (err) {
         console.error('Failed to fetch seen users:', err)
@@ -47,25 +64,32 @@ export const useChannelSeenUsers = (channelId: string) => {
     [debouncedChannelId, getSeenCall]
   )
 
+  // Khi vào kênh => track seen + fetch seen users
   useEffect(() => {
     if (debouncedChannelId) {
-      trackSeen({ channel_id: debouncedChannelId }).catch((err) => console.error('Error tracking seen:', err))
+      safeTrackSeen(debouncedChannelId)
       fetchSeenUsers()
     }
-  }, [debouncedChannelId, fetchSeenUsers, trackSeen])
+  }, [debouncedChannelId, fetchSeenUsers, safeTrackSeen])
 
+  // Khi có socket realtime "channel_seen_updated"
   useFrappeEventListener('channel_seen_updated', (data: any) => {
     if (data.channel_id === debouncedChannelId && data.user !== currentUser) {
-      fetchSeenUsers(true) // Force refetch nếu có socket update
+      fetchSeenUsers(true)
     }
   })
 
-  useFrappeEventListener('new_message', (data) => {
-    if (data.channel_id === debouncedChannelId) {
-      trackSeen({ channel_id: data.channel_id })
-      fetchSeenUsers(true) // Force refetch nếu có socket update
+  // Khi có tin nhắn mới → track seen + refetch
+  useFrappeEventListener('new_message', (data: any) => {
+    if (data.channel_id === debouncedChannelId && data.user !== currentUser) {
+      safeTrackSeen(data.channel_id)
+      fetchSeenUsers(true)
     }
   })
 
-  return { seenUsers, loading, refetch: () => fetchSeenUsers(true) }
+  return {
+    seenUsers,
+    loading,
+    refetch: () => fetchSeenUsers(true)
+  }
 }
