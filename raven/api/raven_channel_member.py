@@ -96,15 +96,30 @@ def add_channel_members(channel_id: str, members: list[str]):
 
 @frappe.whitelist()
 def mark_channel_as_unread(channel_id):
-    """
-    Đánh dấu channel là chưa đọc bằng cách reset last_visit thành ngày rất cũ.
-    """
     user = frappe.session.user
 
-    try:
-        channel_member = frappe.get_doc("Raven Channel Member", {"channel": channel_id, "user": user})
-        channel_member.last_visit = "2000-01-01 00:00:00"
-        channel_member.save(ignore_permissions=True)
-        return {"status": "success", "message": f"Channel {channel_id} marked as unread."}
-    except frappe.DoesNotExistError:
-        return {"status": "fail", "message": "User is not a member of the channel."}
+    last_message = frappe.get_all(
+        "Raven Message",
+        filters={"channel_id": channel_id, "message_type": ["!=", "System"]},
+        order_by="creation desc",
+        limit=1,
+        fields=["creation"],
+    )
+
+    from datetime import timedelta
+
+    if last_message:
+        last_msg_time = last_message[0].creation
+        last_visit_time = last_msg_time - timedelta(seconds=1)
+    else:
+        last_visit_time = "2000-01-01 00:00:00"
+
+    channel_member = frappe.get_doc(
+        "Raven Channel Member",
+        {"channel_id": channel_id, "user_id": user},
+    )
+    channel_member.last_visit = last_visit_time
+    channel_member.save()
+    frappe.db.commit()
+
+    return {"message": "Channel marked as unread successfully"}
