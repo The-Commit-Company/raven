@@ -1,7 +1,7 @@
 import frappe
 from frappe import _
 
-from raven.utils import delete_channel_members_cache, get_channel_member, track_channel_visit
+from raven.utils import delete_channel_members_cache, get_channel_member, track_channel_visit ,track_channel_seen
 
 
 @frappe.whitelist()
@@ -21,16 +21,22 @@ def remove_channel_member(user_id, channel_id):
 def track_visit(channel_id):
     track_channel_visit(channel_id=channel_id, commit=True)
 
+    return True
+
+@frappe.whitelist(methods=["POST"])
+def track_seen(channel_id):
+    track_channel_seen(channel_id=channel_id, commit=True)
+
     members = frappe.get_all("Raven Channel Member", filters={"channel_id": channel_id}, pluck="user_id")
 
     for member in members:
         if member != frappe.session.user:
             frappe.publish_realtime(
-                event="channel_visit_updated",
+                event="channel_seen_updated",
                 message={
                     "channel_id": channel_id,
                     "user": frappe.session.user,
-                    "last_visit": frappe.utils.now_datetime()
+                    "seen_at": frappe.utils.now_datetime()
                 },
                 user=member
             )
@@ -44,7 +50,7 @@ def get_seen_info(channel_id: str):
     channel_members = frappe.get_all(
         "Raven Channel Member",
         filters={"channel_id": channel_id},
-        fields=["user_id", "last_visit"]
+        fields=["user_id", "seen_at"]
     )
 
     # Lấy danh sách user_id
@@ -63,7 +69,7 @@ def get_seen_info(channel_id: str):
         if user:
             result.append({
                 "user": member["user_id"],
-                "last_visit": member["last_visit"],
+                "seen_at": member["seen_at"],
                 "full_name": user["full_name"],
                 "user_image": user["user_image"]
             })

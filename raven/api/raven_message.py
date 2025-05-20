@@ -12,36 +12,52 @@ from raven.utils import get_channel_member, is_channel_member, track_channel_vis
         
 @frappe.whitelist(methods=["POST"])
 def send_message(
-	channel_id, text, is_reply=False, linked_message=None, json_content=None, send_silently=False
+    channel_id, text, is_reply=False, linked_message=None, json_content=None, send_silently=False
 ):
-	if is_reply:
-		doc = frappe.get_doc(
-			{
-				"doctype": "Raven Message",
-				"channel_id": channel_id,
-				"text": text,
-				"message_type": "Text",
-				"is_reply": is_reply,
-				"linked_message": linked_message,
-				"json": json_content,
-			}
-		)
-	else:
-		doc = frappe.get_doc(
-			{
-				"doctype": "Raven Message",
-				"channel_id": channel_id,
-				"text": text,
-				"message_type": "Text",
-				"json": json_content,
-			}
-		)
+    if is_reply:
+        doc = frappe.get_doc(
+            {
+                "doctype": "Raven Message",
+                "channel_id": channel_id,
+                "text": text,
+                "message_type": "Text",
+                "is_reply": is_reply,
+                "linked_message": linked_message,
+                "json": json_content,
+            }
+        )
+    else:
+        doc = frappe.get_doc(
+            {
+                "doctype": "Raven Message",
+                "channel_id": channel_id,
+                "text": text,
+                "message_type": "Text",
+                "json": json_content,
+            }
+        )
 
-	if send_silently:
-		doc.flags.send_silently = True
+    if send_silently:
+        doc.flags.send_silently = True
 
-	doc.insert()
-	return doc
+    doc.insert()
+
+    members = frappe.get_all("Raven Channel Member", filters={"channel_id": channel_id}, pluck="user_id")
+
+    for member in members:
+        if member != frappe.session.user:
+            frappe.publish_realtime(
+                event="new_message",
+                message={
+                    "channel_id": channel_id,
+                    "user": frappe.session.user,
+                    "seen_at": frappe.utils.now_datetime()
+                },
+                user=member
+            )
+
+    return doc
+
 
 
 @frappe.whitelist()
