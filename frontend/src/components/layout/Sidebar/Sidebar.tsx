@@ -1,5 +1,5 @@
 import { SidebarHeader } from './SidebarHeader'
-import { SidebarBody } from './SidebarBody'
+import { SidebarBody } from './SidebarBodyCustom'
 import { Box, Flex, Separator } from '@radix-ui/themes'
 import { HStack } from '../Stack'
 import WorkspacesSidebar from './WorkspacesSidebar'
