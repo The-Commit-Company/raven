@@ -57,10 +57,6 @@ const sortedChannels = [...channels, ...dm_channels].sort((a, b) => {
           />
         </Flex>
         <PinnedChannels unread_count={unread_count?.message} />
-        {/* {(unreadChannels.length > 0 || unreadDMs.length > 0) && (
-          <UnreadList unreadChannels={unreadChannels} unreadDMs={unreadDMs} />
-        )} */}
-        {/* <ChannelList channels={readChannels} /> */}
         <DirectMessageList dm_channels={sortedChannels} />
       </Flex>
     </ScrollArea>
