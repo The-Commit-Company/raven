@@ -92,13 +92,12 @@
    "fetch_if_empty": 1,
    "fieldname": "seen_at",
    "fieldtype": "Datetime",
-   "label": "Seen At",
-   "reqd": 1
+   "label": "Seen At"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-19 16:10:34.567058",
+ "modified": "2025-05-20 09:28:58.262632",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel Member",
