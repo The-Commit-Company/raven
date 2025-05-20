@@ -48,4 +48,4 @@ code_interpreter_file_types = [
 	"html",
 ]
 
-file_search_file_types = ["pdf", "csv", "doc", "docx", "json", "txt", "md", "html", "pptx"]
+file_search_file_types = ["pdf", "doc", "docx", "json", "txt", "md", "html", "pptx"]
