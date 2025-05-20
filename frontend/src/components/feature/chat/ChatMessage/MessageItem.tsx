@@ -219,6 +219,9 @@ export const MessageItem = ({
           onForward={onForward} // Xử lý chuyển tiếp tin nhắn
           onViewReaction={onViewReaction} // Xem các reaction
           onAttachToDocument={onAttachToDocument} // Đính kèm vào tài liệu
+          hasBeenSeen={hasBeenSeen}
+          seenByOthers={seenByOthers}
+          channel={channel}
         />
       ) : (
         // Sử dụng layout mặc định nếu không phải 'Left-Right'

@@ -1,28 +1,31 @@
+import { UserAvatar } from '@/components/common/UserAvatar'
+import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import { DMChannelWithUnreadCount } from '@/components/layout/Sidebar/useGetChannelUnreadCounts'
+import { useGetUser } from '@/hooks/useGetUser'
+import { useIsUserActive } from '@/hooks/useIsUserActive'
+import { useStickyState } from '@/hooks/useStickyState'
+import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
+import { replaceCurrentUserFromDMChannelName } from '@/utils/operations'
+import { __ } from '@/utils/translations'
+import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
+import { ContextMenu, Flex, Text } from '@radix-ui/themes'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { useContext, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { toast } from 'sonner'
+import { UserContext } from '../../../utils/auth/UserProvider'
+import { ChannelListContext, ChannelListContextType } from '../../../utils/channel/ChannelListProvider'
 import {
+  SidebarBadge,
+  SidebarButtonItem,
   SidebarGroup,
   SidebarGroupItem,
   SidebarGroupLabel,
   SidebarGroupList,
   SidebarIcon,
-  SidebarButtonItem
+  SidebarItem,
+  SidebarViewMoreButton
 } from '../../layout/Sidebar/SidebarComp'
-import { SidebarBadge, SidebarItem, SidebarViewMoreButton } from '../../layout/Sidebar/SidebarComp'
-import { UserContext } from '../../../utils/auth/UserProvider'
-import { useGetUser } from '@/hooks/useGetUser'
-import { useIsUserActive } from '@/hooks/useIsUserActive'
-import { ChannelListContext, ChannelListContextType } from '../../../utils/channel/ChannelListProvider'
-import { Flex, Text } from '@radix-ui/themes'
-import { UserAvatar } from '@/components/common/UserAvatar'
-import { toast } from 'sonner'
-import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
-import { useStickyState } from '@/hooks/useStickyState'
-import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
-import { replaceCurrentUserFromDMChannelName } from '@/utils/operations'
-import { __ } from '@/utils/translations'
-import { DMChannelWithUnreadCount } from '@/components/layout/Sidebar/useGetChannelUnreadCounts'
 
 interface DirectMessageListProps {
   dm_channels: DMChannelWithUnreadCount[]
@@ -80,7 +83,29 @@ const DirectMessageItemList = ({ dm_channels }: DirectMessageListProps) => {
 }
 
 const DirectMessageItem = ({ dm_channel }: { dm_channel: DMChannelWithUnreadCount }) => {
-  return <DirectMessageItemElement channel={dm_channel} />
+  const { call } = useFrappePostCall('raven.api.raven_channel_member.mark_channel_as_unread')
+  const { updateCount } = useUnreadMessageCount()
+  const handleMarkAsUnread = () => {
+    call({ channel_id: dm_channel.name })
+      .then(() => {
+        updateCount()
+      })
+      .catch((err) => {
+        console.error('Mark as unread failed', err)
+      })
+  }
+  return (
+    <ContextMenu.Root>
+      <ContextMenu.Trigger>
+        <main>
+          <DirectMessageItemElement channel={dm_channel} />
+        </main>
+      </ContextMenu.Trigger>
+      <ContextMenu.Content>
+        <ContextMenu.Item onClick={handleMarkAsUnread}>Mark as Unread</ContextMenu.Item>
+      </ContextMenu.Content>
+    </ContextMenu.Root>
+  )
 }
 
 export const DirectMessageItemElement = ({ channel }: { channel: DMChannelWithUnreadCount }) => {
