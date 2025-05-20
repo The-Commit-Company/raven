@@ -1,29 +1,36 @@
-import { UserFields } from '@/utils/users/UserListProvider'
-import { Message, MessageBlock } from '../../../../../../../types/Messaging/Message'
-import { MessageContent, MessageSenderAvatar, UserHoverCard } from '../MessageItem'
-import { Box, BoxProps, ContextMenu, Flex, Text } from '@radix-ui/themes'
-import { MessageReactions } from '../MessageReactions'
-import { DateTooltip, DateTooltipShort } from '../Renderers/DateTooltip'
-import { RiPushpinFill, RiShareForwardFill } from 'react-icons/ri'
-import { ReplyMessageBox } from '../ReplyMessageBox/ReplyMessageBox'
-import { useContext, useMemo, useState } from 'react'
-import clsx from 'clsx'
-import { DoctypeLinkRenderer } from '../Renderers/DoctypeLinkRenderer'
-import { ThreadMessage } from '../Renderers/ThreadMessage'
-import { UserContext } from '@/utils/auth/UserProvider'
+import { UserAvatar } from '@/components/common/UserAvatar'
 import { Stack } from '@/components/layout/Stack'
-import { useDoubleTap } from 'use-double-tap'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import useOutsideClick from '@/hooks/useOutsideClick'
+import { UserContext } from '@/utils/auth/UserProvider'
+import { UserFields } from '@/utils/users/UserListProvider'
+import { Tooltip, TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip'
+import { Box, BoxProps, ContextMenu, Flex, Text } from '@radix-ui/themes'
+import clsx from 'clsx'
+import { useContext, useMemo, useState } from 'react'
+import { BiCheck } from 'react-icons/bi'
+import { LuCircleCheck } from 'react-icons/lu'
+import { RiPushpinFill, RiShareForwardFill } from 'react-icons/ri'
+import { useDoubleTap } from 'use-double-tap'
+import { Message, MessageBlock } from '../../../../../../../types/Messaging/Message'
 import { MessageContextMenu } from '../MessageActions/MessageActions'
 import { QuickActions } from '../MessageActions/QuickActions/QuickActions'
+import { MessageContent, MessageSenderAvatar, UserHoverCard } from '../MessageItem'
+import { MessageReactions } from '../MessageReactions'
+import { DateTooltip } from '../Renderers/DateTooltip'
+import { DoctypeLinkRenderer } from '../Renderers/DoctypeLinkRenderer'
+import { ThreadMessage } from '../Renderers/ThreadMessage'
+import { ReplyMessageBox } from '../ReplyMessageBox/ReplyMessageBox'
 
 export interface Props {
   message: Message
   user: UserFields | undefined
   isActive: boolean
   isHighlighted?: boolean
+  channel: any
+  hasBeenSeen: boolean
+  seenByOthers: any
   onReplyMessageClick: (messageID: string) => void
   onDelete: () => void
   showThreadButton?: boolean
@@ -46,10 +53,13 @@ export const LeftRightLayout = ({
   onReply,
   onForward,
   onViewReaction,
-  onAttachToDocument
+  onAttachToDocument,
+  seenByOthers,
+  hasBeenSeen,
+  channel
 }: Props) => {
   const {
-    name,
+    // name,
     owner: userID,
     is_bot_message,
     bot,
@@ -118,20 +128,65 @@ export const LeftRightLayout = ({
     <div className={clsx('flex py-0.5', alignToRight ? 'justify-end mr-4' : 'justify-start')}>
       <Flex align={'start'} gap={'2'}>
         {!alignToRight && <MessageLeftElement message={message} user={user} isActive={isActive} className='mt-[5px]' />}
-        <ContextMenu.Root modal={false} onOpenChange={onContextMenuChange}>
-          <ContextMenu.Trigger
-            {...bind}
-            ref={ref}
-            onMouseEnter={onMouseEnter}
-            onMouseLeave={onMouseLeave}
-            className='group'
-          >
-            <Stack gap={'0'} align={'end'}>
-              {alignToRight && !is_continuation && (
-                <Box className='text-right pr-1 pb-0.5'>
-                  <DateTooltip timestamp={timestamp} />
-                </Box>
-              )}
+        <Stack gap={'0'} align={'end'}>
+          {alignToRight && !is_continuation && (
+            <Box className='text-right pr-1 pb-0.5'>
+              <DateTooltip timestamp={timestamp} />
+              <>
+                {message.owner === currentUser && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Box className='ml-1 cursor-pointer'>
+                          {hasBeenSeen ? (
+                            <LuCircleCheck className='text-green-500' />
+                          ) : (
+                            <BiCheck className='text-gray-400' />
+                          )}
+                        </Box>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side='top'
+                        align='end'
+                        className='px-2 py-1 text-sm text-white bg-neutral-600 rounded shadow-md max-h-40 overflow-y-auto'
+                      >
+                        {hasBeenSeen ? (
+                          <>
+                            {channel?.type === 'channel' && seenByOthers.length > 0 ? (
+                              <div>
+                                <div className='font-medium mb-1'>Đã xem bởi:</div>
+                                <div className='space-y-3'>
+                                  {seenByOthers.map((user: any) => (
+                                    <div key={user.name} className='flex items-center gap-2'>
+                                      <UserAvatar src={user.user_image} alt={user.full_name} size='1' />
+                                      <span>{user.full_name}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ) : (
+                              <div>Đã xem</div>
+                            )}
+                          </>
+                        ) : (
+                          'Chưa xem'
+                        )}
+                        <TooltipArrow className='fill-neutral-600' />
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </>
+            </Box>
+          )}
+          <ContextMenu.Root modal={false} onOpenChange={onContextMenuChange}>
+            <ContextMenu.Trigger
+              {...bind}
+              ref={ref}
+              onMouseEnter={onMouseEnter}
+              onMouseLeave={onMouseLeave}
+              className='group w-full'
+            >
               <Flex
                 direction={'column'}
                 className={clsx(
@@ -204,20 +259,20 @@ export const LeftRightLayout = ({
                   />
                 )}
               </Flex>
-            </Stack>
-          </ContextMenu.Trigger>
-          <MessageContextMenu
-            message={message}
-            onDelete={onDelete}
-            showThreadButton={showThreadButton}
-            onEdit={onEdit}
-            selectedText={selectedText}
-            onReply={onReply}
-            onForward={onForward}
-            onViewReaction={onViewReaction}
-            onAttachDocument={onAttachToDocument}
-          />
-        </ContextMenu.Root>
+            </ContextMenu.Trigger>
+            <MessageContextMenu
+              message={message}
+              onDelete={onDelete}
+              showThreadButton={showThreadButton}
+              onEdit={onEdit}
+              selectedText={selectedText}
+              onReply={onReply}
+              onForward={onForward}
+              onViewReaction={onViewReaction}
+              onAttachDocument={onAttachToDocument}
+            />
+          </ContextMenu.Root>
+        </Stack>
       </Flex>
     </div>
   )
