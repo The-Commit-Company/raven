@@ -237,6 +237,7 @@ export const MessageItem = ({
           hasBeenSeen={hasBeenSeen}
           seenByOthers={seenByOthers}
           channel={channel}
+          unseenByOthers={unseenByOthers}
         />
       ) : (
         // Sử dụng layout mặc định nếu không phải 'Left-Right'

@@ -7,20 +7,13 @@ import { Box } from '@radix-ui/themes'
 import { BsCheckCircle } from 'react-icons/bs'
 import { MdRadioButtonUnchecked } from 'react-icons/md'
 
-interface seenUser {
-  full_name: string
-  user_image: string
-  user: string
-  seen_at: string
-  name?: string
-}
-
 interface MessageSeenStatusProps {
   hasBeenSeen: boolean
   channelType?: string
-  seenByOthers?: seenUser[]
-  unseenByOthers?: seenUser[]
+  seenByOthers?: any[]
+  unseenByOthers?: any[]
   currentUserOwnsMessage: boolean
+  position?: 'center' | 'start' | 'end' | undefined
 }
 
 export const MessageSeenStatus = ({
@@ -28,11 +21,27 @@ export const MessageSeenStatus = ({
   channelType,
   seenByOthers = [],
   unseenByOthers = [],
-  currentUserOwnsMessage
+  currentUserOwnsMessage,
+  position = 'center'
 }: MessageSeenStatusProps) => {
   if (!currentUserOwnsMessage) return null
 
   const showPopover = channelType === 'channel' && (seenByOthers.length || unseenByOthers.length)
+
+  const getTooltipMessage = (hasBeenSeen: boolean, channelType: string | undefined, unseenByOthers: any[]) => {
+    if (channelType === 'channel' && unseenByOthers.length <= 0 && hasBeenSeen) {
+      return 'Tất cả đã xem'
+    }
+
+    switch (hasBeenSeen) {
+      case true:
+        return 'Đã xem'
+      case false:
+        return 'Chưa xem'
+      default:
+        return ''
+    }
+  }
 
   return (
     <TooltipProvider>
@@ -51,10 +60,10 @@ export const MessageSeenStatus = ({
           </TooltipTrigger>
           <TooltipContent
             side='top'
-            align='center'
+            align={position}
             className='px-2 py-1 text-sm text-white bg-neutral-600 rounded shadow-md'
           >
-            {hasBeenSeen ? 'Đã xem' : 'Chưa xem'}
+            {getTooltipMessage(hasBeenSeen, channelType, unseenByOthers)}
             <TooltipArrow className='fill-neutral-600' />
           </TooltipContent>
         </Tooltip>
@@ -64,13 +73,14 @@ export const MessageSeenStatus = ({
           <Popover.Portal>
             <Popover.Content
               side='top'
-              align='center'
-              className='z-50 bg-neutral-800 text-white p-4 rounded border border-neutral-600 shadow-md min-w-[260px] max-w-sm'
+              align={position}
+              className='z-50 bg-neutral-800 text-white p-4 rounded shadow-md min-w-[260px] max-w-sm border border-neutral-700'
               sideOffset={6}
               collisionPadding={8}
             >
-              <div className='grid grid-cols-2 gap-4 text-sm'>
-                <div>
+              <div className='flex divide-x divide-neutral-700 text-sm'>
+                {/* Cột Read */}
+                <div className='pr-4 w-1/2'>
                   <div className='font-semibold mb-1'>{seenByOthers.length} Read</div>
                   <div className='space-y-2'>
                     {seenByOthers.map((user) => (
@@ -81,7 +91,9 @@ export const MessageSeenStatus = ({
                     ))}
                   </div>
                 </div>
-                <div>
+
+                {/* Cột Unread */}
+                <div className='pl-4 w-1/2'>
                   <div className='font-semibold mb-1'>{unseenByOthers.length} Unread</div>
                   <div className='space-y-2'>
                     {unseenByOthers.map((user) => (
@@ -93,7 +105,7 @@ export const MessageSeenStatus = ({
                   </div>
                 </div>
               </div>
-              <Popover.Arrow className='fill-neutral-600' />
+              <Popover.Arrow className='fill-neutral-700' />
             </Popover.Content>
           </Popover.Portal>
         )}

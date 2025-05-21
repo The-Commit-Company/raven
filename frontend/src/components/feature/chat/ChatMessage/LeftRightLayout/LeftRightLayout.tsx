@@ -36,6 +36,7 @@ export interface Props {
   onForward: () => void
   onViewReaction: () => void
   onAttachToDocument: () => void
+  unseenByOthers: any
 }
 
 export const LeftRightLayout = ({
@@ -53,13 +54,14 @@ export const LeftRightLayout = ({
   onAttachToDocument,
   seenByOthers,
   hasBeenSeen,
-  channel
+  channel,
+  unseenByOthers
 }: Props) => {
   const {
     // name,
     owner: userID,
     is_bot_message,
-    bot,
+    // bot,
     creation: timestamp,
     message_reactions,
     is_continuation,
@@ -232,7 +234,9 @@ export const LeftRightLayout = ({
             hasBeenSeen={hasBeenSeen}
             channelType={channel?.type}
             seenByOthers={seenByOthers}
+            unseenByOthers={unseenByOthers}
             currentUserOwnsMessage={message.owner === currentUser}
+            position='end'
           />
         </div>
       </Flex>
