@@ -1,5 +1,5 @@
 import { useFrappePostCall } from 'frappe-react-sdk'
-import { useContext, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
   SidebarGroup,
@@ -20,17 +20,17 @@ import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { useStickyState } from '@/hooks/useStickyState'
 import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
-import { replaceCurrentUserFromDMChannelName } from '@/utils/operations'
+// import { replaceCurrentUserFromDMChannelName } from '@/utils/operations'
 import { __ } from '@/utils/translations'
 import { ChannelWithUnreadCount, DMChannelWithUnreadCount } from '@/components/layout/Sidebar/useGetChannelUnreadCounts'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import useUnreadMessageCount, { useFetchUnreadMessageCount } from '@/hooks/useUnreadMessageCount'
 import { mapUnreadToDMChannels } from '@/hooks/useUnreadToDMChannels'
 
-type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount
+type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
 
 interface DirectMessageListProps {
-  dm_channels: DMChannelWithUnreadCount[]
+  dm_channels: DMChannelWithUnreadCount[] | any
 }
 
 export const DirectMessageList = ({ dm_channels }: DirectMessageListProps) => {
@@ -50,14 +50,11 @@ export const DirectMessageList = ({ dm_channels }: DirectMessageListProps) => {
 
   const unread_count = useFetchUnreadMessageCount()
 
-const enrichedDMs = unread_count?.message
-  ? mapUnreadToDMChannels(dm_channels, unread_count.message)
-  : dm_channels.map((c) => ({ ...c, unread_count: 0 }))
+  const enrichedDMs = unread_count?.message
+    ? mapUnreadToDMChannels(dm_channels, unread_count.message)
+    : dm_channels.map((c: any) => ({ ...c, unread_count: 0 }))
 
-  console.log(enrichedDMs, unread_count);
-  
 
-  
   return (
     <SidebarGroup pb='4'>
       <SidebarGroupItem className={'gap-1 pl-1'}>
@@ -84,10 +81,10 @@ const enrichedDMs = unread_count?.message
   )
 }
 
-const DirectMessageItemList = ({ dm_channels: enrichedDMs }: DirectMessageListProps) => {
+const DirectMessageItemList = ({ dm_channels }: DirectMessageListProps) => {
   return (
     <>
-      {enrichedDMs.map((channel) => (
+      {dm_channels.map((channel: DMChannelWithUnreadCount) => (
         <DirectMessageItem key={channel.name} dm_channel={channel} />
       ))}
     </>
@@ -97,15 +94,15 @@ const DirectMessageItemList = ({ dm_channels: enrichedDMs }: DirectMessageListPr
 const DirectMessageItem = ({ dm_channel }: { dm_channel: DMChannelWithUnreadCount }) => {
   const { call } = useFrappePostCall('raven.api.raven_channel_member.mark_channel_as_unread')
   const { updateCount } = useUnreadMessageCount()
+
   const handleMarkAsUnread = () => {
     call({ channel_id: dm_channel.name })
-      .then(() => {
-        updateCount()
-      })
+      .then(() => updateCount())
       .catch((err) => {
         console.error('Mark as unread failed', err)
       })
   }
+
   return (
     <ContextMenu.Root>
       <ContextMenu.Trigger>
@@ -121,19 +118,28 @@ const DirectMessageItem = ({ dm_channel }: { dm_channel: DMChannelWithUnreadCoun
 }
 
 
+const isDMChannel = (c: UnifiedChannel): c is DMChannelWithUnreadCount => {
+  return 'peer_user_id' in c && typeof c.peer_user_id === 'string'
+}
+
 export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel }) => {
   const { currentUser } = useContext(UserContext)
   const { channelID } = useParams()
+  
 
   const isGroupChannel = !channel.is_direct_message && !channel.is_self_message
   const showUnread = channel.unread_count && channelID !== channel.name
 
-  // Nếu là direct message (có peer_user_id), dùng userData
-  const userData = 'peer_user_id' in channel ? useGetUser(channel.peer_user_id) : null
-  const isActive = 'peer_user_id' in channel ? useIsUserActive(channel.peer_user_id) : false
 
-  // Nếu là DM và user không hợp lệ thì bỏ qua
-  if (!isGroupChannel && (!channel.peer_user_id || !userData?.enabled)) return null
+  let userData: ReturnType<typeof useGetUser> | null = null
+  let isActive = false
+
+  if (isDMChannel(channel)) {
+    userData = useGetUser(channel.peer_user_id)
+    isActive = useIsUserActive(channel.peer_user_id)
+  }
+
+  if (!isGroupChannel && (!isDMChannel(channel) || !channel.peer_user_id || !userData?.enabled)) return null
 
   const displayName = userData
     ? channel.peer_user_id !== currentUser
@@ -144,33 +150,33 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
       : channel.name
 
   return (
-        <SidebarItem to={channel.name} className='py-1.5 px-2.5 data-[state=open]:bg-gray-3'>
-          <SidebarIcon>
-            {userData ? (
-              <UserAvatar
-                src={userData.user_image}
-                alt={userData.full_name}
-                isBot={userData.type === 'Bot'}
-                isActive={isActive}
-                size={{ initial: '2', md: '1' }}
-                availabilityStatus={userData.availability_status}
-              />
-            ) : (
-              <ChannelIcon type={channel.type} size='18' />
-            )}
-          </SidebarIcon>
-          <Flex justify='between' align='center' width='100%'>
-            <Text
-              size={{ initial: '3', md: '2' }}
-              className='text-ellipsis line-clamp-1'
-              as='span'
-              weight={showUnread ? 'bold' : 'medium'}
-            >
-              {displayName}
-            </Text>
-            {showUnread ? <SidebarBadge>{channel.unread_count}</SidebarBadge> : null}
-          </Flex>
-        </SidebarItem>
+    <SidebarItem to={channel.name} className='py-1.5 px-2.5 data-[state=open]:bg-gray-3'>
+      <SidebarIcon>
+        {userData ? (
+          <UserAvatar
+            src={userData.user_image}
+            alt={userData.full_name}
+            isBot={userData.type === 'Bot'}
+            isActive={isActive}
+            size={{ initial: '2', md: '1' }}
+            availabilityStatus={userData.availability_status}
+          />
+        ) : (
+          <ChannelIcon type={channel.type} size='18' />
+        )}
+      </SidebarIcon>
+      <Flex justify='between' align='center' width='100%'>
+        <Text
+          size={{ initial: '3', md: '2' }}
+          className='text-ellipsis line-clamp-1'
+          as='span'
+          weight={showUnread ? 'bold' : 'medium'}
+        >
+          {displayName}
+        </Text>
+        {showUnread ? <SidebarBadge>{channel.unread_count}</SidebarBadge> : null}
+      </Flex>
+    </SidebarItem>
   )
 }
 
