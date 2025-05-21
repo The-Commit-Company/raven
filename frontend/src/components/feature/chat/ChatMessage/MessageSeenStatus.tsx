@@ -7,11 +7,19 @@ import { Box } from '@radix-ui/themes'
 import { BsCheckCircle } from 'react-icons/bs'
 import { MdRadioButtonUnchecked } from 'react-icons/md'
 
+interface seenUser {
+  full_name: string
+  user_image: string
+  user: string
+  seen_at: string
+  name?: string
+}
+
 interface MessageSeenStatusProps {
   hasBeenSeen: boolean
   channelType?: string
-  seenByOthers?: any[]
-  unseenByOthers?: any[]
+  seenByOthers?: seenUser[]
+  unseenByOthers?: seenUser[]
   currentUserOwnsMessage: boolean
 }
 
@@ -46,7 +54,7 @@ export const MessageSeenStatus = ({
             align='center'
             className='px-2 py-1 text-sm text-white bg-neutral-600 rounded shadow-md'
           >
-            {channelType === 'channel' ? 'Đã xem' : hasBeenSeen ? 'Đã xem' : 'Chưa xem'}
+            {hasBeenSeen ? 'Đã xem' : 'Chưa xem'}
             <TooltipArrow className='fill-neutral-600' />
           </TooltipContent>
         </Tooltip>
