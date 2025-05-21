@@ -206,6 +206,15 @@ export const MessageItem = ({
     )
   }, [seenUsers, message.creation, currentUser])
 
+  const unseenByOthers = useMemo(() => {
+    if (!seenUsers?.length || !message?.creation || !currentUser) return []
+
+    return seenUsers.filter(
+      (user: any) =>
+        user.user !== currentUser && new Date(user.seen_at).getTime() < new Date(message.creation).getTime()
+    )
+  }, [seenUsers, message.creation, currentUser])
+
   // Render component MessageItem
   return (
     <div ref={messageRef}>
@@ -278,11 +287,16 @@ export const MessageItem = ({
               )}
             >
               {/* Nội dung chính của tin nhắn */}
-              <Flex className='gap-2.5 sm:gap-3 items-start relative'>
+              <Flex className='gap-2.5 sm:gap-3 items-start'>
                 {/* Hiển thị avatar hoặc thời gian nếu là tin nhắn tiếp nối */}
                 <MessageLeftElement message={message} user={user} isActive={isActive} />
                 {/* Nội dung chi tiết của tin nhắn */}
-                <Flex direction='column' className='gap-0.5 w-[90%]' justify='center'>
+                <Flex
+                  direction='column'
+                  justify='center'
+                  className='gap-0.5 w-fit max-w-full relative'
+                  style={{ maxWidth: 'min(100%, calc(100% - 70px))' }}
+                >
                   {/* Hiển thị thông tin người gửi và thời gian nếu không phải là tin nhắn tiếp nối */}
                   {!is_continuation ? (
                     <Flex align='center' gap='2' mt='-1'>
@@ -335,6 +349,16 @@ export const MessageItem = ({
                   )}
                   {/* Hiển thị thông tin luồng nếu đây là tin nhắn trong luồng */}
                   {message.is_thread === 1 ? <ThreadMessage thread={message} /> : null}
+
+                  <div className='absolute bottom-0 -right-5'>
+                    <MessageSeenStatus
+                      hasBeenSeen={hasBeenSeen}
+                      channelType={channel?.type}
+                      seenByOthers={seenByOthers}
+                      unseenByOthers={unseenByOthers}
+                      currentUserOwnsMessage={message.owner === currentUser}
+                    />
+                  </div>
                 </Flex>
                 {/* Hiển thị các hành động nhanh khi hover hoặc mở emoji picker */}
                 {(isHoveredDebounced || isEmojiPickerOpen) && (
@@ -350,14 +374,6 @@ export const MessageItem = ({
                     onAttachDocument={onAttachToDocument} // Xử lý đính kèm tài liệu
                   />
                 )}
-                <div className='absolute bottom-0 right-20'>
-                  <MessageSeenStatus
-                    hasBeenSeen={hasBeenSeen}
-                    channelType={channel?.type}
-                    seenByOthers={seenByOthers}
-                    currentUserOwnsMessage={message.owner === currentUser}
-                  />
-                </div>
               </Flex>
             </ContextMenu.Trigger>
 
