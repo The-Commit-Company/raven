@@ -28,19 +28,22 @@ export const MessageSeenStatus = ({
 
   const showPopover = channelType === 'channel' && (seenByOthers.length || unseenByOthers.length)
 
-  const getTooltipMessage = (hasBeenSeen: boolean, channelType: string | undefined, unseenByOthers: any[]) => {
-    if (channelType === 'channel' && unseenByOthers.length <= 0 && hasBeenSeen) {
-      return 'Tất cả đã xem'
+  const getTooltipMessage = (hasBeenSeen: boolean, channelType: string | undefined) => {
+    if (channelType !== 'channel') {
+      return hasBeenSeen ? 'Đã xem' : 'Chưa xem'
     }
 
-    switch (hasBeenSeen) {
-      case true:
-        return 'Đã xem'
-      case false:
-        return 'Chưa xem'
-      default:
-        return ''
+    if (hasBeenSeen) {
+      if (unseenByOthers.length <= 0) {
+        return 'Tất cả đã xem'
+      }
+
+      if (unseenByOthers.length > 0 && seenByOthers.length > 0) {
+        return `${seenByOthers.length} Đã xem`
+      }
     }
+
+    return hasBeenSeen ? 'Đã xem' : 'Chưa xem'
   }
 
   return (
@@ -61,9 +64,9 @@ export const MessageSeenStatus = ({
           <TooltipContent
             side='top'
             align={position}
-            className='px-2 py-1 text-sm text-white bg-neutral-600 rounded shadow-md'
+            className='px-2 py-1 text-sm text-white bg-neutral-600 rounded shadow-md z-50'
           >
-            {getTooltipMessage(hasBeenSeen, channelType, unseenByOthers)}
+            {getTooltipMessage(hasBeenSeen, channelType)}
             <TooltipArrow className='fill-neutral-600' />
           </TooltipContent>
         </Tooltip>
