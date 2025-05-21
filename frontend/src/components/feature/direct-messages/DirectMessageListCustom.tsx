@@ -50,14 +50,12 @@ export const DirectMessageList = ({ dm_channels }: DirectMessageListProps) => {
 
   const unread_count = useFetchUnreadMessageCount()
 
-const enrichedDMs = unread_count?.message
-  ? mapUnreadToDMChannels(dm_channels, unread_count.message)
-  : dm_channels.map((c) => ({ ...c, unread_count: 0 }))
+  const enrichedDMs = unread_count?.message
+    ? mapUnreadToDMChannels(dm_channels, unread_count.message)
+    : dm_channels.map((c) => ({ ...c, unread_count: 0 }))
 
-  console.log(enrichedDMs, unread_count);
-  
+  console.log(enrichedDMs, unread_count)
 
-  
   return (
     <SidebarGroup pb='4'>
       <SidebarGroupItem className={'gap-1 pl-1'}>
@@ -120,7 +118,6 @@ const DirectMessageItem = ({ dm_channel }: { dm_channel: DMChannelWithUnreadCoun
   )
 }
 
-
 export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel }) => {
   const { currentUser } = useContext(UserContext)
   const { channelID } = useParams()
@@ -144,33 +141,33 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
       : channel.name
 
   return (
-        <SidebarItem to={channel.name} className='py-1.5 px-2.5 data-[state=open]:bg-gray-3'>
-          <SidebarIcon>
-            {userData ? (
-              <UserAvatar
-                src={userData.user_image}
-                alt={userData.full_name}
-                isBot={userData.type === 'Bot'}
-                isActive={isActive}
-                size={{ initial: '2', md: '1' }}
-                availabilityStatus={userData.availability_status}
-              />
-            ) : (
-              <ChannelIcon type={channel.type} size='18' />
-            )}
-          </SidebarIcon>
-          <Flex justify='between' align='center' width='100%'>
-            <Text
-              size={{ initial: '3', md: '2' }}
-              className='text-ellipsis line-clamp-1'
-              as='span'
-              weight={showUnread ? 'bold' : 'medium'}
-            >
-              {displayName}
-            </Text>
-            {showUnread ? <SidebarBadge>{channel.unread_count}</SidebarBadge> : null}
-          </Flex>
-        </SidebarItem>
+    <SidebarItem to={channel.name} className='py-1.5 px-2.5 data-[state=open]:bg-gray-3'>
+      <SidebarIcon>
+        {userData ? (
+          <UserAvatar
+            src={userData.user_image}
+            alt={userData.full_name}
+            isBot={userData.type === 'Bot'}
+            isActive={isActive}
+            size={{ initial: '2', md: '1' }}
+            availabilityStatus={userData.availability_status}
+          />
+        ) : (
+          <ChannelIcon type={channel.type} size='18' />
+        )}
+      </SidebarIcon>
+      <Flex justify='between' align='center' width='100%'>
+        <Text
+          size={{ initial: '3', md: '2' }}
+          className='text-ellipsis line-clamp-1'
+          as='span'
+          weight={showUnread ? 'bold' : 'medium'}
+        >
+          {displayName}
+        </Text>
+        {showUnread ? <SidebarBadge>{channel.unread_count}</SidebarBadge> : null}
+      </Flex>
+    </SidebarItem>
   )
 }
 

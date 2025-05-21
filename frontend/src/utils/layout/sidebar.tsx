@@ -16,9 +16,7 @@ export const SidebarModeProvider = ({ children }: { children: React.ReactNode })
   const [title, setTitle] = useState<string>('Trò chuyện')
 
   return (
-    <SidebarModeContext.Provider value={{ mode, setMode, title, setTitle }}>
-      {children}
-    </SidebarModeContext.Provider>
+    <SidebarModeContext.Provider value={{ mode, setMode, title, setTitle }}>{children}</SidebarModeContext.Provider>
   )
 }
 

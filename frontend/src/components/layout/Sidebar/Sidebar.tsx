@@ -6,25 +6,28 @@ import WorkspacesSidebar from './WorkspacesSidebar'
 import SidebarContainer from './SidebarContainer'
 import { useSidebarMode } from '@/utils/layout/sidebar'
 
-
 export const Sidebar = () => {
-    const { mode } = useSidebarMode()
+  const { mode } = useSidebarMode()
 
   return (
-
-      <HStack gap="0" className={`h-screen ${mode}`}>
-        <WorkspacesSidebar />
-        <SidebarContainer />
-        <Flex className="border-l border-r border-gray-4 dark:border-gray-6" justify="between" direction="row" gap="2" width="100%">
-          <Flex direction="column" gap="2" width="100%">
-            <SidebarHeader />
-            <Box px="2">
-              <Separator size="4" className="bg-gray-4 dark:bg-gray-6" />
-            </Box>
-            <SidebarBody />
-          </Flex>
+    <HStack gap='0' className={`h-screen ${mode}`}>
+      <WorkspacesSidebar />
+      <SidebarContainer />
+      <Flex
+        className='border-l border-r border-gray-4 dark:border-gray-6'
+        justify='between'
+        direction='row'
+        gap='2'
+        width='100%'
+      >
+        <Flex direction='column' gap='2' width='100%'>
+          <SidebarHeader />
+          <Box px='2'>
+            <Separator size='4' className='bg-gray-4 dark:bg-gray-6' />
+          </Box>
+          <SidebarBody />
         </Flex>
-      </HStack>
-
+      </Flex>
+    </HStack>
   )
 }

@@ -32,12 +32,11 @@ export const SidebarBody = () => {
   //   unread_count: unread_count?.message
   // })
 
-  
-const sortedChannels = [...channels, ...dm_channels].sort((a, b) => {
-  const timeA = new Date(a.last_message_timestamp || 0).getTime()
-  const timeB = new Date(b.last_message_timestamp || 0).getTime()
-  return timeB - timeA // Mới nhất lên đầu
-})
+  const sortedChannels = [...channels, ...dm_channels].sort((a, b) => {
+    const timeA = new Date(a.last_message_timestamp || 0).getTime()
+    const timeB = new Date(b.last_message_timestamp || 0).getTime()
+    return timeB - timeA // Mới nhất lên đầu
+  })
 
   return (
     <ScrollArea type='hover' scrollbars='vertical' className='h-[calc(100vh-4rem)]'>

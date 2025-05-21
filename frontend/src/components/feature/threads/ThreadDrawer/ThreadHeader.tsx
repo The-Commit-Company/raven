@@ -28,10 +28,7 @@ export const ThreadHeader = () => {
   }, [user, channelMembers])
 
   return (
-    <header
-      className='dark:bg-gray-2 bg-white absolute top-0 px-3 w-100'
-      style={{ zIndex: 999 }}
-    >
+    <header className='dark:bg-gray-2 bg-white absolute top-0 px-3 w-100' style={{ zIndex: 999 }}>
       <Flex direction={'column'} gap='2' className='pt-3'>
         <Flex justify={'between'} align={'center'}>
           <Heading size='4' className='pl-1'>

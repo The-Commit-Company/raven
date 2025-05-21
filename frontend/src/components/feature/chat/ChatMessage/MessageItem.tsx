@@ -7,10 +7,11 @@ import { useGetUser } from '@/hooks/useGetUser'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import useOutsideClick from '@/hooks/useOutsideClick'
+import { UserContext } from '@/utils/auth/UserProvider'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { Avatar, Badge, Box, BoxProps, Button, ContextMenu, Flex, HoverCard, Text, Theme } from '@radix-ui/themes'
 import { clsx } from 'clsx'
-import { FrappeConfig, FrappeContext, useFrappeAuth } from 'frappe-react-sdk'
+import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { BiChat } from 'react-icons/bi'
 import { BsFillCircleFill } from 'react-icons/bs'
@@ -182,7 +183,7 @@ export const MessageItem = ({
   }
 
   const messageRef = useRef<HTMLDivElement>(null)
-  const { currentUser } = useFrappeAuth()
+  const { currentUser } = useContext(UserContext)
   const [hasBeenSeen, setHasBeenSeen] = useState(false)
 
   useEffect(() => {

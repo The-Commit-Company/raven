@@ -4,11 +4,12 @@ import useFetchChannelMembers, { Member } from '@/hooks/fetchers/useFetchChannel
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { useUserData } from '@/hooks/useUserData'
 import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
+import { UserContext } from '@/utils/auth/UserProvider'
 import { ChannelListItem, DMChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { Box, Checkbox, Flex, IconButton } from '@radix-ui/themes'
 import clsx from 'clsx'
 import { useSWRConfig } from 'frappe-react-sdk'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useContext, useMemo, useRef, useState } from 'react'
 import { BiX } from 'react-icons/bi'
 import { useParams } from 'react-router-dom'
 import { Message } from '../../../../../../types/Messaging/Message'
@@ -44,6 +45,8 @@ interface ChatBoxBodyProps {
 export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
   // Lấy thông tin user hiện tại (đặc biệt là name để xác định user trong danh sách thành viên)
   const { name: user } = useUserData()
+
+  const { currentUser } = useContext(UserContext)
 
   // Fetch danh sách thành viên của channel hiện tại, cũng như trạng thái loading
   const { channelMembers, isLoading } = useFetchChannelMembers(channelData.name)
@@ -187,7 +190,13 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
   const PreviousMessagePreview = ({ selectedMessage }: { selectedMessage: any }) => {
     if (selectedMessage) {
       return (
-        <ReplyMessageBox justify='between' align='center' className='m-2' message={selectedMessage} currentUser={user}>
+        <ReplyMessageBox
+          justify='between'
+          align='center'
+          className='m-2'
+          message={selectedMessage}
+          currentUser={currentUser}
+        >
           <IconButton color='gray' size='1' variant='soft' onClick={clearSelectedMessage}>
             <BiX size='20' />
           </IconButton>

@@ -1,17 +1,17 @@
-import { UserFields } from '@/utils/users/UserListProvider'
-import { FileMessage, Message, PollMessage } from '../../../../../../types/Messaging/Message'
-import { Box, BoxProps, Button, Flex, Text } from '@radix-ui/themes'
-import { TiptapRenderer } from '../../chat/ChatMessage/Renderers/TiptapRenderer/TiptapRenderer'
 import { useGetUser } from '@/hooks/useGetUser'
-import { MessageSenderAvatar, UserHoverCard } from '../../chat/ChatMessage/MessageItem'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
-import { useLayoutEffect, useRef, useState } from 'react'
-import clsx from 'clsx'
-import { MdOutlineBarChart } from 'react-icons/md'
-import { getFileExtension, getFileName } from '@/utils/operations'
 import { FileExtensionIcon } from '@/utils/layout/FileExtIcon'
+import { getFileExtension, getFileName } from '@/utils/operations'
+import { UserFields } from '@/utils/users/UserListProvider'
+import { Box, BoxProps, Button, Flex, Text } from '@radix-ui/themes'
+import clsx from 'clsx'
+import { useLayoutEffect, useRef, useState } from 'react'
+import { MdOutlineBarChart } from 'react-icons/md'
+import { FileMessage, Message, PollMessage } from '../../../../../../types/Messaging/Message'
+import { MessageSenderAvatar, UserHoverCard } from '../../chat/ChatMessage/MessageItem'
 import { DateTooltip } from '../../chat/ChatMessage/Renderers/DateTooltip'
 import { DoctypeLinkRenderer } from '../../chat/ChatMessage/Renderers/DoctypeLinkRenderer'
+import { TiptapRenderer } from '../../chat/ChatMessage/Renderers/TiptapRenderer/TiptapRenderer'
 
 type MessageContentProps = BoxProps & {
   user?: UserFields
@@ -53,6 +53,7 @@ export const ThreadFirstMessage = ({ message, user, ...props }: MessageContentPr
                 user={user}
                 showMiniImage
                 showLinkPreview={false}
+                currentUser={message.owner}
               />
             ) : null}
 

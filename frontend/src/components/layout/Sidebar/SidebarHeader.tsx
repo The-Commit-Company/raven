@@ -17,7 +17,7 @@ export const SidebarHeader = () => {
 
   if (isDesktop) {
     return (
-<header style={{ padding: mode === 'hide-filter' ? '20px 60px' : '20px' }}>
+      <header style={{ padding: mode === 'hide-filter' ? '20px 60px' : '20px' }}>
         {/* <Flex justify='between' px='2' align='center' pt='2'>
           <CommandMenuButton />
           <MentionsButton />

@@ -3,9 +3,10 @@ import useFetchChannelMembers from '@/hooks/fetchers/useFetchChannelMembers'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { useUserData } from '@/hooks/useUserData'
 import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
+import { UserContext } from '@/utils/auth/UserProvider'
 import { Box, Flex, IconButton } from '@radix-ui/themes'
 import { useSWRConfig } from 'frappe-react-sdk'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useContext, useMemo, useRef, useState } from 'react'
 import { BiX } from 'react-icons/bi'
 import { Message } from '../../../../../../types/Messaging/Message'
 import AIEvent from '../../ai/AIEvent'
@@ -25,6 +26,7 @@ import ThreadFirstMessage from './ThreadFirstMessage'
 export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) => {
   const threadID = threadMessage.name
   const channelID = threadMessage.channel_id
+  const { currentUser } = useContext(UserContext)
 
   const { channelMembers } = useFetchChannelMembers(channelID ?? '')
 
@@ -131,7 +133,13 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
   const PreviousMessagePreview = ({ selectedMessage }: { selectedMessage: any }) => {
     if (selectedMessage) {
       return (
-        <ReplyMessageBox justify='between' align='center' className='m-2' message={selectedMessage} currentUser={user}>
+        <ReplyMessageBox
+          justify='between'
+          align='center'
+          className='m-2'
+          message={selectedMessage}
+          currentUser={currentUser}
+        >
           <IconButton color='gray' size='1' className='z-50' variant='soft' onClick={clearSelectedMessage}>
             <BiX size='20' />
           </IconButton>

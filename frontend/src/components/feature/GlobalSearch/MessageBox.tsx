@@ -1,12 +1,13 @@
-import { useGetUserRecords } from '@/hooks/useGetUserRecords'
 import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
-import { DMChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { Box, Flex, Link, Separator, Text } from '@radix-ui/themes'
-import { MessageSenderAvatar, MessageContent, UserHoverCard } from '../chat/ChatMessage/MessageItem'
 import { useGetUser } from '@/hooks/useGetUser'
-import { Message } from '../../../../../types/Messaging/Message'
-import { useMemo } from 'react'
+import { useGetUserRecords } from '@/hooks/useGetUserRecords'
+import { UserContext } from '@/utils/auth/UserProvider'
+import { DMChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { DateMonthYear } from '@/utils/dateConversions'
+import { Box, Flex, Link, Separator, Text } from '@radix-ui/themes'
+import { useContext, useMemo } from 'react'
+import { Message } from '../../../../../types/Messaging/Message'
+import { MessageContent, MessageSenderAvatar, UserHoverCard } from '../chat/ChatMessage/MessageItem'
 
 type MessageBoxProps = {
   message: Message & { workspace?: string }
@@ -16,6 +17,7 @@ type MessageBoxProps = {
 export const MessageBox = ({ message, handleScrollToMessage }: MessageBoxProps) => {
   const { owner, creation, channel_id } = message
   const users = useGetUserRecords()
+  const { currentUser } = useContext(UserContext)
 
   const user = useGetUser(message.is_bot_message && message.bot ? message.bot : message.owner)
   const { channel } = useCurrentChannelData(channel_id)
@@ -70,7 +72,7 @@ export const MessageBox = ({ message, handleScrollToMessage }: MessageBoxProps) 
           <Box>
             <UserHoverCard user={user} userID={owner} isActive={false} />
           </Box>
-          <MessageContent message={message} user={user} />
+          <MessageContent message={message} user={user} currentUser={currentUser} />
         </Flex>
       </Flex>
     </Flex>

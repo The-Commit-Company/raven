@@ -1,5 +1,6 @@
-import { useFrappeAuth, useFrappeEventListener, useFrappePostCall } from 'frappe-react-sdk'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { UserContext } from '@/utils/auth/UserProvider'
+import { useFrappeEventListener, useFrappePostCall } from 'frappe-react-sdk'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useDebounce } from './useDebounce'
 
 // Dữ liệu cache seenUsers dạng Map<channelId, { data: any[], timestamp: number }>
@@ -18,7 +19,7 @@ const debounce = (fn: (...args: any[]) => void, delay: number) => {
 }
 
 export const useChannelSeenUsers = (channelId: string) => {
-  const { currentUser } = useFrappeAuth()
+  const { currentUser } = useContext(UserContext)
   const { call: getSeenCall } = useFrappePostCall('raven.api.raven_channel_member.get_seen_info')
   const { call: trackSeen } = useFrappePostCall('raven.api.raven_channel_member.track_seen')
 
