@@ -187,7 +187,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
   const PreviousMessagePreview = ({ selectedMessage }: { selectedMessage: any }) => {
     if (selectedMessage) {
       return (
-        <ReplyMessageBox justify='between' align='center' className='m-2' message={selectedMessage}>
+        <ReplyMessageBox justify='between' align='center' className='m-2' message={selectedMessage} currentUser={user}>
           <IconButton color='gray' size='1' variant='soft' onClick={clearSelectedMessage}>
             <BiX size='20' />
           </IconButton>

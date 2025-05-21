@@ -1,26 +1,26 @@
-import { IconButton, Flex, Box } from '@radix-ui/themes'
+import { Stack } from '@/components/layout/Stack'
+import useFetchChannelMembers from '@/hooks/fetchers/useFetchChannelMembers'
+import { useIsMobile } from '@/hooks/useMediaQuery'
+import { useUserData } from '@/hooks/useUserData'
+import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
+import { Box, Flex, IconButton } from '@radix-ui/themes'
+import { useSWRConfig } from 'frappe-react-sdk'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { BiX } from 'react-icons/bi'
+import { Message } from '../../../../../../types/Messaging/Message'
+import AIEvent from '../../ai/AIEvent'
 import useFileUpload from '../../chat/ChatInput/FileInput/useFileUpload'
 import Tiptap from '../../chat/ChatInput/Tiptap'
+import TypingIndicator from '../../chat/ChatInput/TypingIndicator/TypingIndicator'
+import { useTyping } from '../../chat/ChatInput/TypingIndicator/useTypingIndicator'
 import { useSendMessage } from '../../chat/ChatInput/useSendMessage'
 import { ReplyMessageBox } from '../../chat/ChatMessage/ReplyMessageBox/ReplyMessageBox'
+import ChatStream from '../../chat/ChatStream/ChatStream'
+import { GetMessagesResponse } from '../../chat/ChatStream/useChatStream'
+import { JoinChannelBox } from '../../chat/chat-footer/JoinChannelBox'
 import { CustomFile, FileDrop } from '../../file-upload/FileDrop'
 import { FileListItem } from '../../file-upload/FileListItem'
-import { Message } from '../../../../../../types/Messaging/Message'
-import ChatStream from '../../chat/ChatStream/ChatStream'
-import { JoinChannelBox } from '../../chat/chat-footer/JoinChannelBox'
-import { useUserData } from '@/hooks/useUserData'
-import useFetchChannelMembers from '@/hooks/fetchers/useFetchChannelMembers'
 import ThreadFirstMessage from './ThreadFirstMessage'
-import AIEvent from '../../ai/AIEvent'
-import { useTyping } from '../../chat/ChatInput/TypingIndicator/useTypingIndicator'
-import TypingIndicator from '../../chat/ChatInput/TypingIndicator/TypingIndicator'
-import { Stack } from '@/components/layout/Stack'
-import { useSWRConfig } from 'frappe-react-sdk'
-import { GetMessagesResponse } from '../../chat/ChatStream/useChatStream'
-import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
-import { useIsMobile } from '@/hooks/useMediaQuery'
 
 export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) => {
   const threadID = threadMessage.name
@@ -131,7 +131,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
   const PreviousMessagePreview = ({ selectedMessage }: { selectedMessage: any }) => {
     if (selectedMessage) {
       return (
-        <ReplyMessageBox justify='between' align='center' className='m-2' message={selectedMessage}>
+        <ReplyMessageBox justify='between' align='center' className='m-2' message={selectedMessage} currentUser={user}>
           <IconButton color='gray' size='1' className='z-50' variant='soft' onClick={clearSelectedMessage}>
             <BiX size='20' />
           </IconButton>

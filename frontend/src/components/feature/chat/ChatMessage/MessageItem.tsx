@@ -8,14 +8,12 @@ import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import useOutsideClick from '@/hooks/useOutsideClick'
 import { UserFields } from '@/utils/users/UserListProvider'
-import { Tooltip, TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip'
 import { Avatar, Badge, Box, BoxProps, Button, ContextMenu, Flex, HoverCard, Text, Theme } from '@radix-ui/themes'
 import { clsx } from 'clsx'
 import { FrappeConfig, FrappeContext, useFrappeAuth } from 'frappe-react-sdk'
 import { memo, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { BiChat, BiCheck } from 'react-icons/bi'
+import { BiChat } from 'react-icons/bi'
 import { BsFillCircleFill } from 'react-icons/bs'
-import { LuCircleCheck } from 'react-icons/lu'
 import { RiPushpinFill, RiRobot2Fill, RiShareForwardFill } from 'react-icons/ri'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -27,6 +25,7 @@ import { LeftRightLayout } from './LeftRightLayout/LeftRightLayout'
 import { MessageContextMenu } from './MessageActions/MessageActions'
 import { QuickActions } from './MessageActions/QuickActions/QuickActions'
 import { MessageReactions } from './MessageReactions'
+import { MessageSeenStatus } from './MessageSeenStatus'
 import { DateTooltip, DateTooltipShort } from './Renderers/DateTooltip'
 import { DoctypeLinkRenderer } from './Renderers/DoctypeLinkRenderer'
 import { FileMessageBlock } from './Renderers/FileMessage'
@@ -35,6 +34,12 @@ import { PollMessageBlock } from './Renderers/PollMessage'
 import { ThreadMessage } from './Renderers/ThreadMessage'
 import { TiptapRenderer } from './Renderers/TiptapRenderer/TiptapRenderer'
 import { ReplyMessageBox } from './ReplyMessageBox/ReplyMessageBox'
+
+interface SeenUser {
+  name: string
+  full_name: string
+  user_image: string
+}
 
 interface MessageBlockProps {
   message: Message
@@ -47,7 +52,7 @@ interface MessageBlockProps {
   isHighlighted?: boolean
   setReactionMessage: (message: Message) => void
   showThreadButton?: boolean
-  seenUsers: UserFields[]
+  seenUsers: SeenUser[]
   channel: any
 }
 
@@ -272,7 +277,7 @@ export const MessageItem = ({
               )}
             >
               {/* Nội dung chính của tin nhắn */}
-              <Flex className='gap-2.5 sm:gap-3 items-start'>
+              <Flex className='gap-2.5 sm:gap-3 items-start relative'>
                 {/* Hiển thị avatar hoặc thời gian nếu là tin nhắn tiếp nối */}
                 <MessageLeftElement message={message} user={user} isActive={isActive} />
                 {/* Nội dung chi tiết của tin nhắn */}
@@ -286,49 +291,6 @@ export const MessageItem = ({
                       <DateTooltip timestamp={timestamp} />
                     </Flex>
                   ) : null}
-                  {message.owner === currentUser && (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Box className='ml-1 cursor-pointer'>
-                            {hasBeenSeen ? (
-                              <LuCircleCheck className='text-green-500' />
-                            ) : (
-                              <BiCheck className='text-gray-400' />
-                            )}
-                          </Box>
-                        </TooltipTrigger>
-                        <TooltipContent
-                          side='top'
-                          align='start'
-                          className='px-2 py-1 text-sm text-white bg-neutral-600 rounded shadow-md max-h-40 overflow-y-auto'
-                        >
-                          {hasBeenSeen ? (
-                            <>
-                              {channel?.type === 'channel' && seenByOthers.length > 0 ? (
-                                <div>
-                                  <div className='font-medium mb-1'>Đã xem bởi:</div>
-                                  <div className='space-y-3'>
-                                    {seenByOthers.map((user) => (
-                                      <div key={user.name} className='flex items-center gap-2'>
-                                        <UserAvatar src={user.user_image} alt={user.full_name} size='1' />
-                                        <span>{user.full_name}</span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              ) : (
-                                <div>Đã xem</div>
-                              )}
-                            </>
-                          ) : (
-                            'Chưa xem'
-                          )}
-                          <TooltipArrow className='fill-neutral-600' />
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  )}
                   {/* Nội dung tin nhắn */}
                   {/* Hiển thị biểu tượng nếu là tin nhắn được chuyển tiếp */}
                   {message.is_forwarded === 1 && (
@@ -387,6 +349,14 @@ export const MessageItem = ({
                     onAttachDocument={onAttachToDocument} // Xử lý đính kèm tài liệu
                   />
                 )}
+                <div className='absolute bottom-0 right-20'>
+                  <MessageSeenStatus
+                    hasBeenSeen={hasBeenSeen}
+                    channelType={channel?.type}
+                    seenByOthers={seenByOthers}
+                    currentUserOwnsMessage={message.owner === currentUser}
+                  />
+                </div>
               </Flex>
             </ContextMenu.Trigger>
 
