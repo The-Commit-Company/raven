@@ -1,35 +1,35 @@
-import { EditorContent, EditorContext, mergeAttributes, ReactNodeViewRenderer, useEditor } from '@tiptap/react'
-import { TextMessage } from '../../../../../../../../types/Messaging/Message'
 import { UserFields } from '@/utils/users/UserListProvider'
-import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
 import { Box } from '@radix-ui/themes'
-import Highlight from '@tiptap/extension-highlight'
-import StarterKit from '@tiptap/starter-kit'
-import css from 'highlight.js/lib/languages/css'
-import js from 'highlight.js/lib/languages/javascript'
-import ts from 'highlight.js/lib/languages/typescript'
-import html from 'highlight.js/lib/languages/xml'
-import json from 'highlight.js/lib/languages/json'
+import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-import { common, createLowlight } from 'lowlight'
-import python from 'highlight.js/lib/languages/python'
-import { CustomBold } from './Bold'
-import { ChannelMentionRenderer, UserMentionRenderer } from './Mention'
-import { CustomLink } from './Link'
-import { CustomUnderline } from './Underline'
+import Highlight from '@tiptap/extension-highlight'
 import { Image } from '@tiptap/extension-image'
-import { clsx } from 'clsx'
 import Italic from '@tiptap/extension-italic'
-import './tiptap-renderer.styles.css'
 import Mention from '@tiptap/extension-mention'
-import { PluginKey } from '@tiptap/pm/state'
 import Table from '@tiptap/extension-table'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
+import { PluginKey } from '@tiptap/pm/state'
+import { EditorContent, EditorContext, mergeAttributes, ReactNodeViewRenderer, useEditor } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import { clsx } from 'clsx'
+import css from 'highlight.js/lib/languages/css'
+import js from 'highlight.js/lib/languages/javascript'
+import json from 'highlight.js/lib/languages/json'
+import python from 'highlight.js/lib/languages/python'
+import ts from 'highlight.js/lib/languages/typescript'
+import html from 'highlight.js/lib/languages/xml'
+import { common, createLowlight } from 'lowlight'
+import { TextMessage } from '../../../../../../../../types/Messaging/Message'
+import { CustomBold } from './Bold'
 import Details from './Details'
-import TimestampRenderer from './TimestampRenderer'
+import { CustomLink } from './Link'
 import LinkPreview from './LinkPreview'
+import { ChannelMentionRenderer, UserMentionRenderer } from './Mention'
+import TimestampRenderer from './TimestampRenderer'
+import './tiptap-renderer.styles.css'
+import { CustomUnderline } from './Underline'
 
 const lowlight = createLowlight(common)
 
@@ -42,6 +42,7 @@ lowlight.register('python', python)
 type TiptapRendererProps = BoxProps & {
   message: TextMessage
   user?: UserFields
+  currentUser: string | null | undefined
   showLinkPreview?: boolean
   isScrolling?: boolean
   showMiniImage?: boolean
@@ -50,6 +51,7 @@ type TiptapRendererProps = BoxProps & {
 export const TiptapRenderer = ({
   message,
   user,
+  currentUser,
   isScrolling = false,
   showMiniImage = false,
   showLinkPreview = true,
@@ -182,8 +184,17 @@ export const TiptapRenderer = ({
     ]
   })
 
+  const isCurrentUser = currentUser === message?.owner
+
   return (
-    <Box className={clsx('overflow-x-hidden text-ellipsis', props.className)} {...props}>
+    <Box
+      className={clsx(
+        'overflow-x-hidden text-ellipsis p-4 rounded-lg',
+        isCurrentUser ? 'bg-atom-1 dark:bg-atom-2' : 'bg-gray-3 dark:bg-gray-4',
+        props.className
+      )}
+      {...props}
+    >
       <EditorContext.Provider value={{ editor }}>
         <EditorContent contentEditable={false} editor={editor} readOnly />
         {showLinkPreview && <LinkPreview messageID={message.name} />}

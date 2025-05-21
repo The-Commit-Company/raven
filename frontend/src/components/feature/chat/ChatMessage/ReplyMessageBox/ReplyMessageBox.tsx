@@ -1,28 +1,31 @@
-import { FileMessage, Message, PollMessage, TextMessage } from '../../../../../../../types/Messaging/Message'
-import { Box, Flex, FlexProps, Separator, Text } from '@radix-ui/themes'
 import { useGetUser } from '@/hooks/useGetUser'
 import { DateMonthAtHourMinuteAmPm } from '@/utils/dateConversions'
 import { FileExtensionIcon } from '@/utils/layout/FileExtIcon'
 import { getFileExtension, getFileName } from '@/utils/operations'
+import { Box, Flex, FlexProps, Separator, Text } from '@radix-ui/themes'
 import { clsx } from 'clsx'
 import parse from 'html-react-parser'
 import { MdOutlineBarChart } from 'react-icons/md'
+import { FileMessage, Message, PollMessage, TextMessage } from '../../../../../../../types/Messaging/Message'
 
 type ReplyMessageBoxProps = FlexProps & {
   message: Partial<Message>
+  currentUser: string | null | undefined
 }
 /**
  * UI component to show the message being replied to
  * @param props
  * @returns
  */
-export const ReplyMessageBox = ({ message, children, className, ...props }: ReplyMessageBoxProps) => {
+export const ReplyMessageBox = ({ currentUser, message, children, className, ...props }: ReplyMessageBoxProps) => {
   const user = useGetUser(message.owner)
+  const isCurrentUser = currentUser === message?.owner
 
   return (
     <Flex
       className={clsx(
-        'p-2 items-start bg-white border border-gray-5 shadow-sm dark:bg-gray-3 dark:border-gray-6 rounded-md overflow-hidden',
+        'p-2 items-start border border-gray-5 shadow-sm dark:border-gray-6 rounded-md overflow-hidden',
+        !isCurrentUser ? 'bg-atom-1 dark:bg-atom-2' : 'bg-gray-3 dark:bg-gray-4',
         className
       )}
       {...props}

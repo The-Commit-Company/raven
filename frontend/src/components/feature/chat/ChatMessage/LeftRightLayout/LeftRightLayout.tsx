@@ -190,7 +190,7 @@ export const LeftRightLayout = ({
               <Flex
                 direction={'column'}
                 className={clsx(
-                  'relative w-fit sm:max-w-[32rem] max-w-[80vw] bg-gray-2 dark:bg-gray-3 p-3 gap-1 rounded-md',
+                  'relative w-fit sm:max-w-[32rem] max-w-[80vw] p-3 gap-1 rounded-md',
                   isHighlighted
                     ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20'
                     : !isDesktop && isHovered
@@ -221,10 +221,11 @@ export const LeftRightLayout = ({
                     role='button'
                     onClick={() => onReplyMessageClick(linked_message)}
                     message={replyMessageDetails}
+                    currentUser={currentUser}
                   />
                 )}
 
-                <MessageContent message={message} user={user} />
+                <MessageContent message={message} user={user} currentUser={currentUser} />
 
                 {message.link_doctype && message.link_document && (
                   <Box className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>

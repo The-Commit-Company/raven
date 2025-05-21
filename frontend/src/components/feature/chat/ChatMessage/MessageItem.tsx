@@ -251,18 +251,8 @@ export const MessageItem = ({
               className={clsx(
                 // Các class CSS áp dụng cho tin nhắn
                 `group
-                sm:hover:bg-gray-2
-                active:bg-gray-2
-                sm:hover:transition-all
-                active:hover:transition-all
-                sm:hover:delay-100
-                active:hover:delay-100
                 select-none
                 sm:select-auto
-                sm:dark:hover:bg-gray-3
-                dark:active:bg-gray-4
-                data-[state=open]:bg-accent-2
-                dark:data-[state=open]:bg-gray-4
                 data-[state=open]:shadow-sm
                 transition-colors
                 px-1
@@ -359,10 +349,11 @@ export const MessageItem = ({
                       role='button'
                       onClick={() => onReplyMessageClick(linked_message)} // Xử lý khi nhấn vào tin nhắn được trả lời
                       message={replyMessageDetails} // Chi tiết tin nhắn được trả lời
+                      currentUser={currentUser}
                     />
                   )}
                   {/* Hiển thị nội dung tin nhắn tùy theo loại */}
-                  <MessageContent message={message} user={user} />
+                  <MessageContent message={message} user={user} currentUser={currentUser} />
                   {/* Hiển thị liên kết tài liệu nếu có */}
                   {message.link_doctype && message.link_document && (
                     <Box className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
@@ -698,6 +689,7 @@ const StartDMButton = ({ userID }: { userID: string }) => {
  */
 type MessageContentProps = BoxProps & {
   user?: UserFields // Thông tin người gửi (tùy chọn)
+  currentUser: string | null | undefined // Thống tin người dùng hien tại (tùy chọn)
   message: Message // Đối tượng tin nhắn
   forceHideLinkPreview?: boolean // Có ẩn xem trước liên kết không (tùy chọn, mặc định là false)
 }
@@ -707,7 +699,13 @@ type MessageContentProps = BoxProps & {
  * - Xử lý hiển thị các loại tin nhắn khác nhau: văn bản, hình ảnh, file, khảo sát
  * - Hỗ trợ xem trước liên kết (link preview)
  */
-export const MessageContent = ({ message, user, forceHideLinkPreview = false, ...props }: MessageContentProps) => {
+export const MessageContent = ({
+  message,
+  user,
+  currentUser,
+  forceHideLinkPreview = false,
+  ...props
+}: MessageContentProps) => {
   return (
     <Box {...props}>
       {/* Hiển thị nội dung văn bản nếu có */}
@@ -718,6 +716,7 @@ export const MessageContent = ({ message, user, forceHideLinkPreview = false, ..
             message_type: 'Text' // Đảm bảo loại tin nhắn là Text
           }}
           user={user} // Thông tin người gửi
+          currentUser={currentUser} // Thống tin người dùng hien tại
           // Quyết định có hiển thị xem trước liên kết không
           // Nếu forceHideLinkPreview = true hoặc message.hide_link_preview = true thì ẩn, ngược lại hiển thị
           showLinkPreview={forceHideLinkPreview ? false : message.hide_link_preview ? false : true}

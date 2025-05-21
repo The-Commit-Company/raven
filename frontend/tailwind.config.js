@@ -5,7 +5,7 @@ export default {
     extend: {
       width: {
         40: '10rem',
-        100: '100%',
+        100: '100%'
       },
       colors: {
         background: 'var(--color-background)',
@@ -132,6 +132,13 @@ export default {
           10: 'var(--green-10)',
           11: 'var(--green-11)',
           12: 'var(--green-12)'
+        },
+        atom: {
+          1: '#D6E4FF', // light bg for non-reacted
+          2: '#102A55', // dark bg for non-reacted
+          3: '#A0C4FF', // hover light
+          4: '#334E88', // hover dark
+          5: '#3B82F6' // border primary
         }
       },
       borderRadius: {
