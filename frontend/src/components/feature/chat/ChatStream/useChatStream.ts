@@ -8,7 +8,7 @@ import {
   useFrappePostCall
 } from 'frappe-react-sdk'
 import { MutableRefObject, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { Message } from '../../../../../../types/Messaging/Message'
 
 export interface GetMessagesResponse {
@@ -35,8 +35,7 @@ const useChatStream = (
   scrollRef: MutableRefObject<HTMLDivElement | null>,
   pinnedMessagesString?: string
 ) => {
-  const location = useLocation()
-  const navigate = useNavigate()
+  const [hasNewMessages, setHasNewMessages] = useState(false)
 
   const isMobile = useIsMobile()
 
@@ -232,57 +231,50 @@ const useChatStream = (
 
   // If there are new messages in the channel, update the messages
   useFrappeEventListener('message_created', (event) => {
-    if (event.channel_id === channelID) {
-      mutate(
-        (d) => {
-          if (d && d.message.has_new_messages === false) {
-            // Update the array of messages - append the new message in it and then sort it by date
-            const existingMessages = d.message.messages ?? []
+    if (event.channel_id !== channelID) return
 
-            const newMessages = [...existingMessages]
-            if (event.message_details) {
-              // Check if the message is already present in the messages array
-              const messageIndex = existingMessages.findIndex((message) => message.name === event.message_details.name)
+    mutate(
+      (d) => {
+        if (!d || d.message.has_new_messages !== false) return d
 
-              if (messageIndex !== -1) {
-                // If the message is already present, update the message
-                newMessages[messageIndex] = event.message_details
-              } else {
-                // If the message is not present, add the message to the array
-                newMessages.push(event.message_details)
-              }
-            }
+        const existingMessages = d.message.messages ?? []
+        const newMessages = [...existingMessages]
 
-            newMessages.sort((a, b) => {
-              return new Date(b.creation).getTime() - new Date(a.creation).getTime()
-            })
-            return {
-              message: {
-                messages: newMessages,
-                has_old_messages: d.message.has_old_messages ?? false,
-                has_new_messages: d.message.has_new_messages ?? false
-              }
-            }
+        if (event.message_details) {
+          const messageIndex = existingMessages.findIndex((msg) => msg.name === event.message_details.name)
+
+          if (messageIndex !== -1) {
+            newMessages[messageIndex] = event.message_details
           } else {
-            return d
+            newMessages.push(event.message_details)
           }
-        },
-        {
-          revalidate: false
         }
-      ).then(() => {
-        if (data?.message.has_new_messages === false) {
-          if (scrollRef.current) {
-            const isNearBottom =
-              scrollRef.current.scrollTop + scrollRef.current.clientHeight >= scrollRef.current.scrollHeight - 100
 
-            if (isNearBottom || event.message_details.owner === currentUser) {
-              scrollToBottom('smooth') // Smooth scroll for better UX when user is watching
-            }
+        newMessages.sort((a, b) => new Date(b.creation).getTime() - new Date(a.creation).getTime())
+
+        return {
+          message: {
+            messages: newMessages,
+            has_old_messages: d.message.has_old_messages ?? false,
+            has_new_messages: false // Tạm thời, sẽ xử lý sau
           }
         }
-      })
-    }
+      },
+      { revalidate: false }
+    ).then(() => {
+      const isFromOtherUser = event.message_details?.owner !== currentUser
+
+      const isUserNearBottom =
+        scrollRef.current &&
+        scrollRef.current.scrollTop + scrollRef.current.clientHeight >= scrollRef.current.scrollHeight - 100
+
+      if (isFromOtherUser && !isUserNearBottom) {
+        setHasNewMessages(true) // 🔥 Đây là nơi quan trọng
+      } else {
+        // Nếu user đã ở dưới cùng hoặc chính họ gửi, thì scroll luôn
+        scrollToBottom('smooth')
+      }
+    })
   })
 
   // If a message is edited, update the specific message
@@ -624,12 +616,14 @@ const useChatStream = (
 
   const goToLatestMessages = () => {
     setSearchParams({})
+    setHasNewMessages(false)
+    scrollToBottom('smooth')
   }
 
   return {
     messages,
     hasOlderMessages: data?.message.has_old_messages ?? false,
-    hasNewMessages: data?.message.has_new_messages ?? false,
+    hasNewMessages: hasNewMessages,
     loadingOlderMessages,
     isLoading,
     error,
