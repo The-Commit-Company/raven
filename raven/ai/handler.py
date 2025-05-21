@@ -8,13 +8,16 @@ from typing_extensions import override
 
 from raven.ai.functions import (
 	attach_file_to_document,
+	cancel_document,
 	create_document,
 	create_documents,
 	delete_document,
 	delete_documents,
+	get_amended_document,
 	get_document,
 	get_documents,
 	get_list,
+	submit_document,
 	update_document,
 	update_documents,
 )
@@ -44,20 +47,63 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 
 		@override
 		def on_text_done(self, text: Text):
-
 			link_doctype = None
 			link_document = None
 			if len(docs_updated) == 1:
 				link_doctype = docs_updated[0]["doctype"]
 				link_document = docs_updated[0]["document_id"]
 
-			bot.send_message(
-				channel_id=channel_id,
-				text=text.value,
-				link_doctype=link_doctype,
-				link_document=link_document,
-				markdown=True,
-			)
+			file_urls = []
+
+			# Check if there are any annotations with files
+			annotations = text.annotations
+			for annotation in annotations:
+				if annotation.type == "file_path":
+					file_path = annotation.file_path
+					file_id = file_path.file_id
+					file_name = annotation.text.split("/")[-1]
+					file_content = client.files.content(file_id)
+
+					file_doc = frappe.get_doc(
+						{
+							"doctype": "File",
+							"file_name": file_name,
+							"content": file_content.read(),
+							"is_private": True,
+						}
+					)
+					file_doc.insert()
+					file_urls.append(
+						{
+							"url": file_doc.file_url,
+							"text": annotation.text,
+						}
+					)
+
+			if file_urls:
+				# If there are amy file URLs, replace the content with the URL and send the file as a separate message
+				for file_url in file_urls:
+					text.value = text.value.replace(file_url["text"], file_url["url"])
+
+				bot.send_message(
+					channel_id=channel_id,
+					text=text.value,
+					link_doctype=link_doctype,
+					link_document=link_document,
+					markdown=True,
+				)
+
+				for file_url in file_urls:
+					bot.send_message(channel_id=channel_id, file=file_url["url"])
+
+			else:
+				bot.send_message(
+					channel_id=channel_id,
+					text=text.value,
+					link_doctype=link_doctype,
+					link_document=link_document,
+					markdown=True,
+				)
 
 			frappe.publish_realtime(
 				"ai_event_clear",
@@ -71,10 +117,28 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 
 		@override
 		def on_event(self, event):
-			# Retrieve events that are denoted with 'requires_action'
-			# since these will have our tool_calls
-			if event.event == "thread.run.requires_action":
-				run_id = event.data.id  # Retrieve the run ID from the event data
+			# Handle image and file outputs
+			if event.event == "thread.message.delta":
+				if hasattr(event.data, "delta") and hasattr(event.data.delta, "content"):
+					for content in event.data.delta.content:
+						if content.type == "image_file":
+							# Handle image file
+							file_id = content.image_file.file_id
+							file = client.files.retrieve(file_id)
+							file_content = client.files.content(file_id)
+
+							# Save the file content
+							file_doc = frappe.new_doc("File")
+							file_doc.file_name = file.filename + ".png"
+							file_doc.content = file_content.read()
+							file_doc.is_private = True
+							file_doc.insert()
+
+							bot.send_message(channel_id=channel_id, file=file_doc.file_url)
+
+			# Handle tool calls
+			elif event.event == "thread.run.requires_action":
+				run_id = event.data.id
 				self.handle_requires_action(event.data, run_id)
 
 		def publish_event(self, text):
@@ -139,6 +203,20 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 					if function.type == "Get Multiple Documents":
 						self.publish_event(f"Fetching multiple {function.reference_doctype}s...")
 						function_output = get_documents(function.reference_doctype, **args)
+
+					if function.type == "Submit Document":
+						self.publish_event(f"Submitting {function.reference_doctype} {args.get('document_id')}...")
+						function_output = submit_document(function.reference_doctype, **args)
+
+					if function.type == "Cancel Document":
+						self.publish_event(f"Cancelling {function.reference_doctype} {args.get('document_id')}...")
+						function_output = cancel_document(function.reference_doctype, **args)
+
+					if function.type == "Get Amended Document":
+						self.publish_event(
+							f"Fetching amended document for {function.reference_doctype} {args.get('document_id')}..."
+						)
+						function_output = get_amended_document(function.reference_doctype, **args)
 
 					if function.type == "Delete Document":
 						self.publish_event(
@@ -257,6 +335,7 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 		try:
 			stream.until_done()
 		except Exception as e:
+			frappe.log_error("Raven AI Error", frappe.get_traceback())
 			bot.send_message(
 				channel_id=channel_id,
 				text=f"There was an error in the AI thread. Please try again.<br/>Error: {str(e)}",

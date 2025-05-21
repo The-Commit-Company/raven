@@ -27,6 +27,14 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
         localStorage.removeItem('ravenLastChannel')
         localStorage.removeItem('ravenLastWorkspace')
         localStorage.removeItem('app-cache')
+
+        // Disable push notifications
+        try {
+            // @ts-expect-error
+            await window.frappePushNotification.disableNotification()
+        } catch (error) {
+            console.error('Failed to disable push notifications', error)
+        }
         return logout()
             .then(() => {
                 //Clear cache on logout

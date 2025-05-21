@@ -2609,10 +2609,10 @@
   resolved "https://registry.yarnpkg.com/@jsamr/react-native-li/-/react-native-li-2.3.1.tgz#12a5b5f6e3971cec77b96bee58104eed0ae9314a"
   integrity sha512-Qbo4NEj48SQ4k8FZJHFE2fgZDKTWaUGmVxcIQh3msg5JezLdTMMHuRRDYctfdHI6L0FZGObmEv3haWbIvmol8w==
 
-"@legendapp/list@^1.0.7":
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/@legendapp/list/-/list-1.0.10.tgz#5e4c132389c8ce912cf04183652b23e7d6f140ea"
-  integrity sha512-WZFrW99BG8py0oolbNd9rbv1H3xQPTRtEuaoaQR7oI5dTV/I417ek2aDi/eBgfO0ZpV/EdrPrwN1UQbAd5WqZA==
+"@legendapp/list@^1.0.13":
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/@legendapp/list/-/list-1.0.13.tgz#bfca62d4243b448b43120c1d25807534dae846a7"
+  integrity sha512-qTFbWEvdNM0wA7voVL+l+NLC8NfFmyqh/QvFratMiA5XImW2BPqN79Qq1x56SIVWnxxakHPjaW8J2wE0p+qMDQ==
   dependencies:
     use-sync-external-store "^1.5.0"
 
