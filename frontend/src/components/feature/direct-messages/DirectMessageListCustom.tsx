@@ -1,36 +1,38 @@
+import { UserAvatar } from '@/components/common/UserAvatar'
+import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import { useGetUser } from '@/hooks/useGetUser'
+import { useIsUserActive } from '@/hooks/useIsUserActive'
+import { useStickyState } from '@/hooks/useStickyState'
+import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
+import { ContextMenu, Flex, Text } from '@radix-ui/themes'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { useContext, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { toast } from 'sonner'
+import { UserContext } from '../../../utils/auth/UserProvider'
+import { ChannelListContext, ChannelListContextType } from '../../../utils/channel/ChannelListProvider'
 import {
+  SidebarBadge,
+  SidebarButtonItem,
   SidebarGroup,
   SidebarGroupItem,
   SidebarGroupLabel,
   SidebarGroupList,
   SidebarIcon,
-  SidebarButtonItem
+  SidebarItem,
+  SidebarViewMoreButton
 } from '../../layout/Sidebar/SidebarComp'
-import { SidebarBadge, SidebarItem, SidebarViewMoreButton } from '../../layout/Sidebar/SidebarComp'
-import { UserContext } from '../../../utils/auth/UserProvider'
-import { useGetUser } from '@/hooks/useGetUser'
-import { useIsUserActive } from '@/hooks/useIsUserActive'
-import { ChannelListContext, ChannelListContextType } from '../../../utils/channel/ChannelListProvider'
-import { ContextMenu, Flex, Text } from '@radix-ui/themes'
-import { UserAvatar } from '@/components/common/UserAvatar'
-import { toast } from 'sonner'
-import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
-import { useStickyState } from '@/hooks/useStickyState'
-import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
-import { replaceCurrentUserFromDMChannelName } from '@/utils/operations'
-import { __ } from '@/utils/translations'
+// import { replaceCurrentUserFromDMChannelName } from '@/utils/operations'
 import { ChannelWithUnreadCount, DMChannelWithUnreadCount } from '@/components/layout/Sidebar/useGetChannelUnreadCounts'
-import { ChannelIcon } from '@/utils/layout/channelIcon'
 import useUnreadMessageCount, { useFetchUnreadMessageCount } from '@/hooks/useUnreadMessageCount'
 import { mapUnreadToDMChannels } from '@/hooks/useUnreadToDMChannels'
+import { ChannelIcon } from '@/utils/layout/channelIcon'
+import { __ } from '@/utils/translations'
 
-type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount
+type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
 
 interface DirectMessageListProps {
-  dm_channels: DMChannelWithUnreadCount[]
+  dm_channels: DMChannelWithUnreadCount[] | any
 }
 
 export const DirectMessageList = ({ dm_channels }: DirectMessageListProps) => {
@@ -52,9 +54,7 @@ export const DirectMessageList = ({ dm_channels }: DirectMessageListProps) => {
 
   const enrichedDMs = unread_count?.message
     ? mapUnreadToDMChannels(dm_channels, unread_count.message)
-    : dm_channels.map((c) => ({ ...c, unread_count: 0 }))
-
-  console.log(enrichedDMs, unread_count)
+    : dm_channels.map((c: any) => ({ ...c, unread_count: 0 }))
 
   return (
     <SidebarGroup pb='4'>
@@ -82,10 +82,10 @@ export const DirectMessageList = ({ dm_channels }: DirectMessageListProps) => {
   )
 }
 
-const DirectMessageItemList = ({ dm_channels: enrichedDMs }: DirectMessageListProps) => {
+const DirectMessageItemList = ({ dm_channels }: DirectMessageListProps) => {
   return (
     <>
-      {enrichedDMs.map((channel) => (
+      {dm_channels.map((channel: DMChannelWithUnreadCount) => (
         <DirectMessageItem key={channel.name} dm_channel={channel} />
       ))}
     </>
@@ -95,15 +95,15 @@ const DirectMessageItemList = ({ dm_channels: enrichedDMs }: DirectMessageListPr
 const DirectMessageItem = ({ dm_channel }: { dm_channel: DMChannelWithUnreadCount }) => {
   const { call } = useFrappePostCall('raven.api.raven_channel_member.mark_channel_as_unread')
   const { updateCount } = useUnreadMessageCount()
+
   const handleMarkAsUnread = () => {
     call({ channel_id: dm_channel.name })
-      .then(() => {
-        updateCount()
-      })
+      .then(() => updateCount())
       .catch((err) => {
         console.error('Mark as unread failed', err)
       })
   }
+
   return (
     <ContextMenu.Root>
       <ContextMenu.Trigger>
@@ -118,6 +118,10 @@ const DirectMessageItem = ({ dm_channel }: { dm_channel: DMChannelWithUnreadCoun
   )
 }
 
+const isDMChannel = (c: UnifiedChannel): c is DMChannelWithUnreadCount => {
+  return 'peer_user_id' in c && typeof c.peer_user_id === 'string'
+}
+
 export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel }) => {
   const { currentUser } = useContext(UserContext)
   const { channelID } = useParams()
@@ -125,12 +129,17 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   const isGroupChannel = !channel.is_direct_message && !channel.is_self_message
   const showUnread = channel.unread_count && channelID !== channel.name
 
-  // Nếu là direct message (có peer_user_id), dùng userData
-  const userData = 'peer_user_id' in channel ? useGetUser(channel.peer_user_id) : null
-  const isActive = 'peer_user_id' in channel ? useIsUserActive(channel.peer_user_id) : false
+  let userData: ReturnType<typeof useGetUser> | null = null
+  let isActive = false
 
-  // Nếu là DM và user không hợp lệ thì bỏ qua
-  if (!isGroupChannel && (!channel.peer_user_id || !userData?.enabled)) return null
+  if (isDMChannel(channel)) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    userData = useGetUser(channel.peer_user_id)
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    isActive = useIsUserActive(channel.peer_user_id)
+  }
+
+  if (!isGroupChannel && (!isDMChannel(channel) || !channel.peer_user_id || !userData?.enabled)) return null
 
   const displayName = userData
     ? channel.peer_user_id !== currentUser

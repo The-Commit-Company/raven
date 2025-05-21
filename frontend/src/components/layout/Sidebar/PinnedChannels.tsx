@@ -51,6 +51,7 @@ const PinnedChannels = ({ unread_count }: { unread_count?: UnreadCountData }) =>
             {pinnedChannels.map((channel) => (
               <ChannelItemElement channel={channel} key={channel.name} />
             ))}
+            <>hello</>
           </SidebarGroupList>
         </SidebarGroup>
       </SidebarGroup>

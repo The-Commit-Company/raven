@@ -21,9 +21,7 @@ export function mapUnreadToDMChannels(
   const unreadMap: Record<string, number> = {}
 
   unread.forEach((item) => {
-    if (item.is_direct_message) {
-      unreadMap[item.name] = item.unread_count || 0
-    }
+    unreadMap[item.name] = item.unread_count || 0
   })
 
   return dm_channels.map((channel) => ({
