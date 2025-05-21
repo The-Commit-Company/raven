@@ -1,18 +1,15 @@
-import { ChannelList } from '../../feature/channels/ChannelList'
-import { DirectMessageList } from '../../feature/direct-messages/DirectMessageListCustom'
-import { SidebarBadge, SidebarItem } from './SidebarComp'
-import { AccessibleIcon, Box, Flex, ScrollArea, Text } from '@radix-ui/themes'
 import { useFetchUnreadMessageCount } from '@/hooks/useUnreadMessageCount'
-import PinnedChannels from './PinnedChannels'
+import useUnreadThreadsCount from '@/hooks/useUnreadThreadsCount'
+import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
+import { __ } from '@/utils/translations'
+import { AccessibleIcon, Box, Flex, ScrollArea, Text } from '@radix-ui/themes'
+import { atomWithStorage } from 'jotai/utils'
 import React, { useContext, useMemo } from 'react'
 import { BiBookmark, BiMessageAltDetail } from 'react-icons/bi'
-import { __ } from '@/utils/translations'
-import { UnreadList } from '@/components/feature/channel-groups/UnreadList'
-import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
-import { useGetChannelUnreadCounts } from './useGetChannelUnreadCounts'
 import { useParams } from 'react-router-dom'
-import { atomWithStorage } from 'jotai/utils'
-import useUnreadThreadsCount from '@/hooks/useUnreadThreadsCount'
+import { DirectMessageList } from '../../feature/direct-messages/DirectMessageListCustom'
+import PinnedChannels from './PinnedChannels'
+import { SidebarBadge, SidebarItem } from './SidebarComp'
 
 export const showOnlyMyChannelsAtom = atomWithStorage('showOnlyMyChannels', false)
 
@@ -37,9 +34,6 @@ export const SidebarBody = () => {
     const timeB = new Date(b.last_message_timestamp || 0).getTime()
     return timeB - timeA // Mới nhất lên đầu
   })
-
-console.log(unread_count?.message);
-
 
   return (
     <ScrollArea type='hover' scrollbars='vertical' className='h-[calc(100vh-4rem)]'>

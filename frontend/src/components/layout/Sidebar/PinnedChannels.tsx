@@ -1,11 +1,11 @@
-import { ChannelListContext, ChannelListContextType, UnreadCountData } from '@/utils/channel/ChannelListProvider'
-import { useContext, useMemo } from 'react'
-import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList } from './SidebarComp'
-import { Box } from '@radix-ui/themes'
 import { ChannelItemElement } from '@/components/feature/channels/ChannelList'
 import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
+import { ChannelListContext, ChannelListContextType, UnreadCountData } from '@/utils/channel/ChannelListProvider'
 import { __ } from '@/utils/translations'
+import { Box } from '@radix-ui/themes'
+import { useContext, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
+import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList } from './SidebarComp'
 
 const PinnedChannels = ({ unread_count }: { unread_count?: UnreadCountData }) => {
   const { channels } = useContext(ChannelListContext) as ChannelListContextType
@@ -51,7 +51,6 @@ const PinnedChannels = ({ unread_count }: { unread_count?: UnreadCountData }) =>
             {pinnedChannels.map((channel) => (
               <ChannelItemElement channel={channel} key={channel.name} />
             ))}
-            <>hello</>
           </SidebarGroupList>
         </SidebarGroup>
       </SidebarGroup>
