@@ -1,6 +1,9 @@
 export {}
 
 declare global {
+  interface Window {
+    app_name?: string
+  }
   interface FrappeBoot {
     user?: {
       defaults?: {
