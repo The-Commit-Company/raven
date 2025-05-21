@@ -202,15 +202,10 @@
 // }
 
 import { UserContext } from '@/utils/auth/UserProvider'
-import {
-  DMChannelListItem,
-  UnreadCountData,
-  useChannelList,
-  useUpdateLastMessageInChannelList
-} from '@/utils/channel/ChannelListProvider'
-import { useFrappeGetCall, FrappeContext, FrappeConfig, useFrappeEventListener } from 'frappe-react-sdk'
+import { UnreadCountData, useChannelList, useUpdateLastMessageInChannelList } from '@/utils/channel/ChannelListProvider'
+import { FrappeConfig, FrappeContext, useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { useContext, useEffect, useMemo, useState } from 'react'
-import { useParams, useLocation } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import { useGetUser } from './useGetUser'
 
 const useUnreadMessageCount = () => {
@@ -242,7 +237,7 @@ export const useFetchUnreadMessageCount = () => {
   const { call } = useContext(FrappeContext) as FrappeConfig
 
   const fetchUnreadCountForChannel = async (channelID: string) => {
-    let channelData =
+    const channelData =
       channels.find((c) => c.name === channelID && c.member_id) ||
       dm_channels.find((c) => c.name === channelID && c.member_id)
 
@@ -326,74 +321,70 @@ export const useFetchUnreadMessageCount = () => {
 
   const userInfo = useGetUser(dmChannel?.peer_user_id)
 
+  useEffect(() => {
+    const app_name = window.app_name || 'Raven'
+    let blinkInterval: NodeJS.Timeout
+    let blinkState = false
+    let activeTitle = app_name
 
+    const groupWithUnread = unread_count?.message.find((c) => c.unread_count > 0 && c.is_direct_message === 0)
+    const totalUnread = (dmWithUnread?.unread_count || 0) + (groupWithUnread?.unread_count || 0)
 
-useEffect(() => {
-  const app_name = window.app_name || 'Raven'
-  let blinkInterval: NodeJS.Timeout
-  let blinkState = false
-  let activeTitle = app_name
-
-  const groupWithUnread = unread_count?.message.find((c) => c.unread_count > 0 && c.is_direct_message === 0)
-  const totalUnread = (dmWithUnread?.unread_count || 0) + (groupWithUnread?.unread_count || 0)
-
-  if (!unread_count || unread_count.message.length === 0 || totalUnread === 0) {
-    document.title = app_name
-    return
-  }
-
-  // Xác định base title dựa trên latestUnreadData
-  if (latestUnreadData) {
-    if (latestUnreadData.is_direct_message === 0) {
-      activeTitle = `(${totalUnread}) ${latestUnreadData.last_message_sender_name} đã nhắn trong nhóm ${latestUnreadData.channel_name || latestUnreadData.name}`
-    } else {
-      activeTitle = `(${totalUnread}) ${latestUnreadData.last_message_sender_name} đã nhắn cho bạn`
+    if (!unread_count || unread_count.message.length === 0 || totalUnread === 0) {
+      document.title = app_name
+      return
     }
-  } else {
-    activeTitle = `(${totalUnread}) Bạn có tin nhắn mới`
-  }
 
-  // Hàm để start nhấp nháy
-  const startBlink = () => {
-    clearInterval(blinkInterval)
-    blinkInterval = setInterval(() => {
-      document.title = blinkState ? '💬 Tin nhắn mới!' : activeTitle
-      blinkState = !blinkState
-    }, 1000)
-  }
+    // Xác định base title dựa trên latestUnreadData
+    if (latestUnreadData) {
+      if (latestUnreadData.is_direct_message === 0) {
+        activeTitle = `(${totalUnread}) ${latestUnreadData.last_message_sender_name} đã nhắn trong nhóm ${latestUnreadData.channel_name || latestUnreadData.name}`
+      } else {
+        activeTitle = `(${totalUnread}) ${latestUnreadData.last_message_sender_name} đã nhắn cho bạn`
+      }
+    } else {
+      activeTitle = `(${totalUnread}) Bạn có tin nhắn mới`
+    }
 
-  // Hàm để stop nhấp nháy và show tiêu đề bình thường
-  const stopBlink = () => {
-    clearInterval(blinkInterval)
-    document.title = `(${totalUnread}) ${app_name}`
-  }
+    // Hàm để start nhấp nháy
+    const startBlink = () => {
+      clearInterval(blinkInterval)
+      blinkInterval = setInterval(() => {
+        document.title = blinkState ? '💬 Tin nhắn mới!' : activeTitle
+        blinkState = !blinkState
+      }, 1000)
+    }
 
-  // Xử lý visibility
-  const handleVisibilityChange = () => {
+    // Hàm để stop nhấp nháy và show tiêu đề bình thường
+    const stopBlink = () => {
+      clearInterval(blinkInterval)
+      document.title = `(${totalUnread}) ${app_name}`
+    }
+
+    // Xử lý visibility
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        startBlink()
+      } else {
+        stopBlink()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    // Init lần đầu
     if (document.hidden) {
       startBlink()
     } else {
       stopBlink()
     }
-  }
 
-  document.addEventListener('visibilitychange', handleVisibilityChange)
-
-  // Init lần đầu
-  if (document.hidden) {
-    startBlink()
-  } else {
-    stopBlink()
-  }
-
-  return () => {
-    document.removeEventListener('visibilitychange', handleVisibilityChange)
-    clearInterval(blinkInterval)
-    document.title = app_name
-  }
-}, [unread_count, channels, dmWithUnread, userInfo, latestUnreadData])
-
-
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      clearInterval(blinkInterval)
+      document.title = app_name
+    }
+  }, [unread_count, channels, dmWithUnread, userInfo, latestUnreadData])
 
   return unread_count
 }

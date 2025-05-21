@@ -37,6 +37,8 @@ const useChatStream = (
 ) => {
   const [hasNewMessages, setHasNewMessages] = useState(false)
 
+  const [newMessageCount, setNewMessageCount] = useState(0)
+
   const isMobile = useIsMobile()
 
   const { currentUser } = useContext(UserContext)
@@ -251,6 +253,16 @@ const useChatStream = (
         }
 
         newMessages.sort((a, b) => new Date(b.creation).getTime() - new Date(a.creation).getTime())
+
+        // Tính xem có bao nhiêu tin mới chưa được xem
+        if (scrollRef.current) {
+          const isNearBottom =
+            scrollRef.current.scrollTop + scrollRef.current.clientHeight >= scrollRef.current.scrollHeight - 100
+
+          if (!isNearBottom && event.message_details.owner !== currentUser) {
+            setNewMessageCount((count) => count + 1)
+          }
+        }
 
         return {
           message: {
@@ -614,16 +626,45 @@ const useChatStream = (
     }
   }
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!scrollRef.current) return
+
+      const { scrollTop, clientHeight, scrollHeight } = scrollRef.current
+
+      const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100
+
+      if (isNearBottom) {
+        setNewMessageCount(0)
+        setSearchParams({})
+        setHasNewMessages(false)
+      }
+    }
+
+    const scrollEl = scrollRef.current
+    if (scrollEl) {
+      scrollEl.addEventListener('scroll', handleScroll)
+    }
+
+    return () => {
+      if (scrollEl) {
+        scrollEl.removeEventListener('scroll', handleScroll)
+      }
+    }
+  }, [scrollRef])
+
   const goToLatestMessages = () => {
     setSearchParams({})
     setHasNewMessages(false)
     scrollToBottom('smooth')
+    setNewMessageCount(0)
   }
 
   return {
     messages,
     hasOlderMessages: data?.message.has_old_messages ?? false,
-    hasNewMessages: hasNewMessages,
+    hasNewMessages: data?.message.has_new_messages ? data?.message.has_new_messages : hasNewMessages,
+    newMessageCount,
     loadingOlderMessages,
     isLoading,
     error,

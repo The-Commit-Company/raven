@@ -77,7 +77,7 @@ export const MessageSeenStatus = ({
             <Popover.Content
               side='top'
               align={position}
-              className='z-50 bg-neutral-800 text-white p-4 rounded shadow-md min-w-[260px] max-w-sm border border-neutral-700'
+              className='z-50 bg-neutral-800 text-white p-4 rounded shadow-md min-w-[250px] max-w-sm border border-neutral-700 focus:outline-none focus:ring-0'
               sideOffset={6}
               collisionPadding={8}
             >

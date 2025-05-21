@@ -48,7 +48,8 @@ const ChatStream = forwardRef(
       loadNewerMessages,
       isLoading,
       highlightedMessage,
-      scrollToMessage
+      scrollToMessage,
+      newMessageCount
     } = useChatStream(channelID, scrollRef, pinnedMessagesString)
     // Hook quản lý việc xóa tin nhắn, truyền thêm onModalClose để đóng dialog khi xong
     const { setDeleteMessage, ...deleteProps } = useDeleteMessage(onModalClose)
@@ -213,7 +214,7 @@ const ChatStream = forwardRef(
         {hasNewMessages && (
           <div className='fixed bottom-36 z-50 right-5'>
             <Button className='shadow-lg' onClick={goToLatestMessages}>
-              Scroll to new messages
+              {`${newMessageCount} tin nhắn mới`}
               <FiArrowDown size={18} />
             </Button>
           </div>
