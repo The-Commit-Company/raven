@@ -193,7 +193,9 @@ function App() {
       socketPort={import.meta.env.VITE_SOCKET_PORT ? import.meta.env.VITE_SOCKET_PORT : undefined}
       //@ts-ignore
       swrConfig={{
-        errorRetryCount: 2,
+        revalidateOnFocus: false,
+        dedupingInterval: 10000,
+        refreshInterval: 60000,
         provider: localStorageProvider
       }}
       siteName={getSiteName()}
