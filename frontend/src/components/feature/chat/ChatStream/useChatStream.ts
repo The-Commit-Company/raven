@@ -36,7 +36,11 @@ const useChatStream = (
   scrollRef: MutableRefObject<HTMLDivElement | null>,
   pinnedMessagesString?: string
 ) => {
+  const messageRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
+
   const [hasNewMessages, setHasNewMessages] = useState(false)
+
+  const [unreadMessageIds, setUnreadMessageIds] = useState<Set<string>>(new Set())
 
   const [newMessageCount, setNewMessageCount] = useState(0)
 
@@ -262,6 +266,12 @@ const useChatStream = (
 
           if (!isNearBottom && event.message_details.owner !== currentUser) {
             setNewMessageCount((count) => count + 1)
+            setUnreadMessageIds((prev) => {
+              const newSet = new Set(prev)
+              newSet.add(event.message_details.name)
+              setNewMessageCount(newSet.size)
+              return newSet
+            })
           }
         }
 
@@ -637,6 +647,8 @@ const useChatStream = (
 
       if (isNearBottom) {
         setNewMessageCount(0)
+        setSearchParams({})
+        setHasNewMessages(false)
       }
     }, 300)
 
@@ -647,9 +659,44 @@ const useChatStream = (
     }
   }, [scrollRef])
 
+  useEffect(() => {
+    if (!scrollRef.current) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const messageId = entry.target.id.replace('message-', '')
+
+          if (entry.isIntersecting && unreadMessageIds.has(messageId)) {
+            setUnreadMessageIds((prev) => {
+              const newSet = new Set(prev)
+              newSet.delete(messageId)
+              setNewMessageCount(newSet.size)
+              observer.unobserve(entry.target)
+              return newSet
+            })
+          }
+        })
+      },
+      { root: scrollRef.current, threshold: 0.5 }
+    )
+
+    // Chỉ observe các message chưa đọc
+    Object.entries(messageRefs.current).forEach(([id, el]) => {
+      if (el && unreadMessageIds.has(id)) {
+        observer.observe(el)
+      }
+    })
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [unreadMessageIds, messages])
+
   const goToLatestMessages = () => {
     setSearchParams({})
     setHasNewMessages(false)
+    setUnreadMessageIds(new Set())
     scrollToBottom('smooth')
     setNewMessageCount(0)
   }
@@ -666,7 +713,8 @@ const useChatStream = (
     loadOlderMessages,
     scrollToMessage,
     highlightedMessage,
-    goToLatestMessages
+    goToLatestMessages,
+    messageRefs
   }
 }
 

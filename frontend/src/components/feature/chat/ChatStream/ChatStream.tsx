@@ -49,7 +49,8 @@ const ChatStream = forwardRef(
       isLoading,
       highlightedMessage,
       scrollToMessage,
-      newMessageCount
+      newMessageCount,
+      messageRefs
     } = useChatStream(channelID, scrollRef, pinnedMessagesString)
     // Hook quản lý việc xóa tin nhắn, truyền thêm onModalClose để đóng dialog khi xong
     const { setDeleteMessage, ...deleteProps } = useDeleteMessage(onModalClose)
@@ -179,7 +180,13 @@ const ChatStream = forwardRef(
             // Hiển thị tin nhắn thông thường
             else {
               return (
-                <div key={`${message.name}_${message.modified}`} id={`message-${message.name}`}>
+                <div
+                  key={`${message.name}_${message.modified}`}
+                  id={`message-${message.name}`}
+                  ref={(el) => {
+                    messageRefs.current[message.name] = el
+                  }}
+                >
                   <div className='w-full overflow-x-clip overflow-y-visible text-ellipsis'>
                     <MessageItem
                       message={message}
