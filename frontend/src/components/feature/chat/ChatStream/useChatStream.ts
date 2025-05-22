@@ -647,6 +647,7 @@ const useChatStream = (
       const { scrollTop, clientHeight, scrollHeight } = el
       const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100
 
+      // Batch updates để giảm re-renders
       if (isNearBottom) {
         setNewMessageCount(0)
         setSearchParams({})
@@ -655,48 +656,60 @@ const useChatStream = (
       } else {
         setShowScrollToBottomButton(true)
       }
-    }, 300)
+    }, 1000)
 
-    el.addEventListener('scroll', handleScroll)
+    el.addEventListener('scroll', handleScroll, { passive: true })
 
     return () => {
       el.removeEventListener('scroll', handleScroll)
+      handleScroll.cancel?.()
     }
-  }, [scrollRef])
+  }, [])
 
   useEffect(() => {
-    if (!scrollRef.current) return
+    const el = scrollRef.current
+    if (!el) return
 
-    const observer = new IntersectionObserver(
+    const observer: any = new IntersectionObserver(
       (entries) => {
+        const idsToRemove = new Set()
         entries.forEach((entry) => {
-          const messageId = entry.target.id.replace('message-', '')
-
-          if (entry.isIntersecting && unreadMessageIds.has(messageId)) {
-            setUnreadMessageIds((prev) => {
-              const newSet = new Set(prev)
-              newSet.delete(messageId)
-              setNewMessageCount(newSet.size)
+          if (entry.isIntersecting) {
+            const messageId = entry.target.id.replace('message-', '')
+            if (unreadMessageIds.has(messageId)) {
+              idsToRemove.add(messageId)
               observer.unobserve(entry.target)
-              return newSet
-            })
+            }
           }
         })
+
+        if (idsToRemove.size > 0) {
+          setUnreadMessageIds((prev) => {
+            const newSet = new Set(prev)
+            idsToRemove.forEach((id: any) => newSet.delete(id))
+            setNewMessageCount(newSet.size) // Gộp cập nhật
+            return newSet
+          })
+        }
       },
-      { root: scrollRef.current, threshold: 0.5 }
+      {
+        root: el,
+        threshold: 0.5,
+        rootMargin: '0px'
+      }
     )
 
-    // Chỉ observe các message chưa đọc
-    Object.entries(messageRefs.current).forEach(([id, el]) => {
-      if (el && unreadMessageIds.has(id)) {
-        observer.observe(el)
+    // Chỉ quan sát các tin nhắn chưa đọc mới
+    const unreadIds = Array.from(unreadMessageIds)
+    unreadIds.forEach((id) => {
+      const element = messageRefs.current[id]
+      if (element && !observer.observedElements?.has(element)) {
+        observer.observe(element)
       }
     })
 
-    return () => {
-      observer.disconnect()
-    }
-  }, [unreadMessageIds, messages])
+    return () => observer.disconnect()
+  }, [unreadMessageIds])
 
   const goToLatestMessages = () => {
     setSearchParams({})

@@ -2,10 +2,10 @@ export default function throttle<T extends (...args: any[]) => void>(func: T, de
   let lastCall = 0
   let timeout: NodeJS.Timeout | null = null
 
-  return function (...args: Parameters<T>) {
+  function throttled(...args: Parameters<T>) {
     const now = Date.now()
-
     const remaining = delay - (now - lastCall)
+
     if (remaining <= 0) {
       if (timeout) {
         clearTimeout(timeout)
@@ -21,4 +21,14 @@ export default function throttle<T extends (...args: any[]) => void>(func: T, de
       }, remaining)
     }
   }
+
+  // Add cancel method
+  throttled.cancel = () => {
+    if (timeout) {
+      clearTimeout(timeout)
+      timeout = null
+    }
+  }
+
+  return throttled
 }
