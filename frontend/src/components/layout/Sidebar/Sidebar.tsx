@@ -20,7 +20,7 @@ export const Sidebar = () => {
         gap='2'
         width='100%'
       >
-        <Flex direction='column' gap='2' width='100%'>
+       <Flex direction="column" gap="2" width="100%" style={{ minWidth: '288px' }}>
           <SidebarHeader />
           <Box px='2'>
             <Separator size='4' className='bg-gray-4 dark:bg-gray-6' />

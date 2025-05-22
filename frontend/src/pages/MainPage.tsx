@@ -16,6 +16,7 @@ import { useFrappeEventListener, useSWRConfig } from 'frappe-react-sdk'
 import { useUnreadThreadsCountEventListener } from '@/hooks/useUnreadThreadsCount'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { SidebarModeProvider } from '@/utils/layout/sidebar'
+import { CircleUserListProvider } from '@/utils/users/CircleUserListProvider'
 
 const AddRavenUsersPage = lazy(() => import('@/pages/AddRavenUsersPage'))
 
@@ -103,7 +104,8 @@ const MainPageContent = () => {
     <UserListProvider>
       <ChannelListProvider>
         <SidebarModeProvider>
-          <Flex>
+          <CircleUserListProvider>
+            <Flex>
             {!isMobile && (
               <Box className={`w-90 bg-gray-2 border-r-gray-3 dark:bg-gray-1`}>
                 <Sidebar />
@@ -113,6 +115,7 @@ const MainPageContent = () => {
               <Outlet />
             </Box>
           </Flex>
+          </CircleUserListProvider>
         </SidebarModeProvider>
         <CommandMenu />
         <MessageActionController />
