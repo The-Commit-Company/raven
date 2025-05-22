@@ -109,8 +109,7 @@ def mark_channel_as_unread(channel_id):
     from datetime import timedelta
 
     if last_message:
-        last_msg_time = last_message[0].creation
-        last_visit_time = last_msg_time - timedelta(seconds=1)
+        last_visit_time = last_message[0].creation  # Không lùi 1 giây
     else:
         last_visit_time = "2000-01-01 00:00:00"
 
@@ -123,3 +122,25 @@ def mark_channel_as_unread(channel_id):
     frappe.db.commit()
 
     return {"message": "Channel marked as unread successfully"}
+
+# @frappe.whitelist()
+# def mark_channel_as_read(channel_id):
+#     """
+#     Đánh dấu channel là đã đọc bằng cách cập nhật last_visit = now()
+#     cho Raven Channel Member của người dùng hiện tại.
+#     """
+#     user = frappe.session.user
+
+#     # Kiểm tra người dùng có phải là thành viên của kênh không
+#     channel_member = frappe.get_doc(
+#         "Raven Channel Member",
+#         {"channel_id": channel_id, "user_id": user},
+#     )
+
+#     # Cập nhật thời điểm xem gần nhất là thời điểm hiện tại
+#     channel_member.last_visit = frappe.utils.now_datetime()
+#     channel_member.save()
+#     frappe.db.commit()
+
+#     return {"message": "Channel marked as read successfully"}
+

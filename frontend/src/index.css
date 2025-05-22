@@ -66,6 +66,14 @@ html header button {
   -webkit-app-region: no-drag;
 }
 
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE/Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
 /*
   Adds Utility to hide scrollbar to tailwind
     https://github.com/tailwindlabs/tailwindcss/discussions/2394
