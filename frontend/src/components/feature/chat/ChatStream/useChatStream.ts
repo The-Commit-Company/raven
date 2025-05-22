@@ -44,6 +44,8 @@ const useChatStream = (
 
   const [newMessageCount, setNewMessageCount] = useState(0)
 
+  const [showScrollToBottomButton, setShowScrollToBottomButton] = useState(false)
+
   const isMobile = useIsMobile()
 
   const { currentUser } = useContext(UserContext)
@@ -649,6 +651,9 @@ const useChatStream = (
         setNewMessageCount(0)
         setSearchParams({})
         setHasNewMessages(false)
+        setShowScrollToBottomButton(false)
+      } else {
+        setShowScrollToBottomButton(true)
       }
     }, 300)
 
@@ -699,6 +704,7 @@ const useChatStream = (
     setUnreadMessageIds(new Set())
     scrollToBottom('smooth')
     setNewMessageCount(0)
+    setShowScrollToBottomButton(false)
   }
 
   return {
@@ -714,7 +720,8 @@ const useChatStream = (
     scrollToMessage,
     highlightedMessage,
     goToLatestMessages,
-    messageRefs
+    messageRefs,
+    showScrollToBottomButton
   }
 }
 

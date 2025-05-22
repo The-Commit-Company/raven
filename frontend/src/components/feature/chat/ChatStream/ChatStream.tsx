@@ -50,7 +50,8 @@ const ChatStream = forwardRef(
       highlightedMessage,
       scrollToMessage,
       newMessageCount,
-      messageRefs
+      messageRefs,
+      showScrollToBottomButton
     } = useChatStream(channelID, scrollRef, pinnedMessagesString)
     // Hook quản lý việc xóa tin nhắn, truyền thêm onModalClose để đóng dialog khi xong
     const { setDeleteMessage, ...deleteProps } = useDeleteMessage(onModalClose)
@@ -218,10 +219,17 @@ const ChatStream = forwardRef(
         )}
 
         {/* Hiển thị nút scroll đến tin nhắn mới */}
-        {hasNewMessages && (
-          <div className='fixed bottom-36 z-50 right-5'>
+        {hasNewMessages && newMessageCount > 0 && (
+          <div className='fixed bottom-40 z-50 right-10 cursor-pointer'>
             <Button className='shadow-lg' onClick={goToLatestMessages}>
               {`${newMessageCount} tin nhắn mới`}
+              <FiArrowDown size={18} />
+            </Button>
+          </div>
+        )}
+        {!hasNewMessages && showScrollToBottomButton && (
+          <div className='fixed bottom-40 z-50 right-10 cursor-pointer'>
+            <Button className='shadow-lg' onClick={goToLatestMessages}>
               <FiArrowDown size={18} />
             </Button>
           </div>
