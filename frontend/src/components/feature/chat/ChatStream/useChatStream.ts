@@ -1,4 +1,5 @@
 import { useIsMobile } from '@/hooks/useMediaQuery'
+import throttle from '@/hooks/useThrottle'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { getDateObject } from '@/utils/dateConversions/utils'
 import {
@@ -627,29 +628,22 @@ const useChatStream = (
   }
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (!scrollRef.current) return
+    const el = scrollRef.current
+    if (!el) return
 
-      const { scrollTop, clientHeight, scrollHeight } = scrollRef.current
-
+    const handleScroll = throttle(() => {
+      const { scrollTop, clientHeight, scrollHeight } = el
       const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100
 
       if (isNearBottom) {
         setNewMessageCount(0)
-        setSearchParams({})
-        setHasNewMessages(false)
       }
-    }
+    }, 300)
 
-    const scrollEl = scrollRef.current
-    if (scrollEl) {
-      scrollEl.addEventListener('scroll', handleScroll)
-    }
+    el.addEventListener('scroll', handleScroll)
 
     return () => {
-      if (scrollEl) {
-        scrollEl.removeEventListener('scroll', handleScroll)
-      }
+      el.removeEventListener('scroll', handleScroll)
     }
   }, [scrollRef])
 
