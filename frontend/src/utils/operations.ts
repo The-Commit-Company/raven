@@ -81,25 +81,33 @@ export const getUsers = (usersList: string[], count: number, currentUser: string
 
             if (currentUserInList) {
                 const otherUsers = usersList.filter((user, index) => index !== currentUserIndex)
-
-                // Show all users upto 50
-                const userString = otherUsers.slice(0, 50).map((user) => userArray.find((u) => u.name == user)?.full_name).join(', ')
-
                 const remainingUsers = otherUsers.length - 50
                 if (remainingUsers > 0) {
+                    // Show all users upto 50
+                    const userString = otherUsers.slice(0, 50).map((user) => userArray.find((u) => u.name == user)?.full_name).join(', ')
                     return `You, ${userString} and ${remainingUsers} others`
                 } else {
-                    return `You and ${userString}`
+                    // The user string will need to have an ", and" just before the last user
+                    // For example, You, John, Jane, and Henry
+                    const numberOfUsers = otherUsers.length
+                    const userString = otherUsers.slice(0, numberOfUsers - 1).map((user) => userArray.find((u) => u.name == user)?.full_name).join(', ')
+                    const lastUser = userArray.find((u) => u.name == otherUsers[numberOfUsers - 1])?.full_name
+                    return `You, ${userString}, and ${lastUser}`
                 }
             }
             else {
-                const userString = usersList.slice(0, 50).map((user) => userArray.find((u) => u.name == user)?.full_name).join(', ')
-                const remainingUsers = usersList.length - 50
+                const numberOfUsers = usersList.length
 
-                if (remainingUsers > 0) {
+                if (numberOfUsers > 50) {
+                    const userString = usersList.slice(0, 50).map((user) => userArray.find((u) => u.name == user)?.full_name).join(', ')
+                    const remainingUsers = usersList.length - 50
                     return `${userString} and ${remainingUsers} others`
                 } else {
-                    return userString
+                    // The user string will need to have an ", and" just before the last user
+                    // For example, John, Jane, and Henry
+                    const userString = usersList.slice(0, numberOfUsers - 1).map((user) => userArray.find((u) => u.name == user)?.full_name).join(', ')
+                    const lastUser = userArray.find((u) => u.name == usersList[numberOfUsers - 1])?.full_name
+                    return `${userString} and ${lastUser}`
                 }
             }
         }

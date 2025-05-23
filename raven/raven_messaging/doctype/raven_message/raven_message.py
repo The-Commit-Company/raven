@@ -17,7 +17,7 @@ from raven.notification import (
 	send_notification_to_topic,
 	send_notification_to_user,
 )
-from raven.utils import refresh_thread_reply_count, track_channel_visit
+from raven.utils import get_raven_room, refresh_thread_reply_count, track_channel_visit
 
 
 class RavenMessage(Document):
@@ -339,7 +339,7 @@ class RavenMessage(Document):
 					"number_of_replies": reply_count,
 				},
 				after_commit=True,
-				room="all",
+				room=get_raven_room(),
 			)
 		else:
 			# This event needs to be published to all users on Raven (desk + website)
@@ -354,7 +354,7 @@ class RavenMessage(Document):
 					"last_message_timestamp": self.creation,
 				},
 				after_commit=True,
-				room="all",
+				room=get_raven_room(),
 			)
 
 	def send_push_notification(self):

@@ -1,6 +1,16 @@
 import frappe
 
 
+def get_raven_room():
+	"""
+	Room which any user with the role "Raven User" is subscribed to.
+	"""
+	# When they open the app, the will be subscribed to the users list.
+	# We are just using the doctype room to send events to them
+	# If we use "all" instead, then the events are only sent to System Users and not users who do not have Desk access.
+	return "doctype:Raven User"
+
+
 def track_channel_visit(channel_id, user=None, commit=False, publish_event_for_user=False):
 	"""
 	Track the last visit of the user to the channel.
@@ -137,7 +147,7 @@ def delete_channel_members_cache(channel_id: str):
 	frappe.publish_realtime(
 		"channel_members_updated",
 		{"channel_id": channel_id},
-		room="all",
+		room=get_raven_room(),
 		after_commit=True,
 	)
 
