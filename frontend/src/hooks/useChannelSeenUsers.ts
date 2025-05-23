@@ -47,12 +47,33 @@ export const useChannelSeenUsers = (channelId: string) => {
     }
   })
 
+  const isTabActive = () => !document.hidden && document.visibilityState === 'visible'
+
   useFrappeEventListener('new_message', (data: any) => {
     if (data.channel_id === channelId && data.user !== currentUser) {
-      sendTrackSeen()
+      if (isTabActive()) {
+        sendTrackSeen()
+      }
       fetchSeenUsers()
     }
   })
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (isTabActive()) {
+        sendTrackSeen()
+        fetchSeenUsers()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('focus', handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', handleVisibilityChange)
+    }
+  }, [channelId, sendTrackSeen, fetchSeenUsers])
 
   return {
     seenUsers,
