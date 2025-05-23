@@ -1,5 +1,6 @@
 import { Loader } from "@/components/common/Loader"
 import DocumentNotificationForm from "@/components/feature/document-notifications/DocumentNotificationForm"
+import CommonSettingsMenu from "@/components/feature/settings/common/CommonSettingsMenu"
 import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import { FullPageLoader } from "@/components/layout/Loaders/FullPageLoader"
 import PageContainer from "@/components/layout/Settings/PageContainer"
@@ -77,6 +78,7 @@ const ViewDocumentNotificationContent = ({ data, mutate }: { data: RavenDocument
                     title={data.name}
                     headerBadges={isDirty ? [{ label: "Not Saved", color: "red" }] : undefined}
                     actions={<HStack>
+                        <CommonSettingsMenu doctype="Raven Document Notification" docname={data.name} label={"Document Notification"} />
                         <Button type='submit' disabled={loading}>
                             {loading && <Loader className="text-white" />}
                             {loading ? "Saving" : "Save"}
