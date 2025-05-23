@@ -157,7 +157,7 @@ doc_events = {
 scheduler_events = {
 	"cron": {
 		# Run every 15 minutes
-		"*/15 * * * *": ["raven.api.reminder.send_reminders"]
+		"*/15 * * * *": ["raven.raven_messaging.doctype.raven_reminder.raven_reminder.send_reminders"]
 	}
 }
 

@@ -3,6 +3,7 @@
 
 import frappe
 from frappe.model.document import Document
+from frappe.utils.data import now_datetime
 
 
 class RavenReminder(Document):
@@ -29,3 +30,22 @@ class RavenReminder(Document):
 
 		table = frappe.qb.DocType("Raven Reminder")
 		frappe.db.delete(table, filters=(table.remind_at < (Now() - Interval(days=days))))
+
+
+def send_reminders():
+	"""
+	TODO: CRON Job to send new reminders to users every 15 minutes
+	"""
+	reminders = frappe.get_all(
+		"Raven Reminder",
+		filters=[
+			("user_id", "=", frappe.session.user),
+			("remind_at", "<=", now_datetime()),
+			("is_complete", "=", 0),
+		],
+	)
+
+	if len(reminders) == 0:
+		return
+
+	frappe.publish_realtime("due_reminders", {"message": reminders}, room="all", after_commit=True)

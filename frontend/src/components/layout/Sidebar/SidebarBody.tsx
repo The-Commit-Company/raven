@@ -79,9 +79,13 @@ const ThreadsButton = () => {
 
 const SavedMessagesButton = () => {
 
-    const { data: reminders, mutate } = useFrappeGetCall('raven.api.reminder.get_overdue_reminders', undefined, 'reminders_count')
+    const { data: reminders, mutate } = useFrappeGetCall('raven.api.reminder.get_overdue_reminders', undefined, 'reminders_count', {
+        keepPreviousData: true,
+        focusThrottleInterval: 1000 * 60, // 1 minute
+        refreshInterval: 1000 * 60 * 5 // 5 minutes
+    })
 
-    useFrappeEventListener('due_reminders', () => {
+    useFrappeEventListener('due_reminders', (event) => {
         mutate()
     })
 
@@ -89,7 +93,7 @@ const SavedMessagesButton = () => {
         <SidebarItemForPage
             to={'saved-messages'}
             label='Saved'
-            unreadCount={reminders?.message?.length}
+            unreadCount={reminders?.message}
             icon={<BiBookmark className='text-gray-12 dark:text-gray-300 mt-1 sm:text-sm text-base' />}
             iconLabel='Saved' />
     )

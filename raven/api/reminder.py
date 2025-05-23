@@ -46,22 +46,6 @@ def update_reminder(reminder_id: str, remind_at: str, description: str | None = 
 	return "Reminder updated"
 
 
-def send_reminders():
-	reminders = frappe.get_all(
-		"Raven Reminder",
-		filters=[
-			("user_id", "=", frappe.session.user),
-			("remind_at", "<=", now_datetime()),
-			("is_complete", "=", 0),
-		],
-	)
-
-	if len(reminders) == 0:
-		return
-
-	frappe.publish_realtime("due_reminders", {"message": reminders}, room="all", after_commit=True)
-
-
 @frappe.whitelist(methods=["GET"])
 def get_reminders(is_complete: bool):
 	user = frappe.session.user
@@ -104,12 +88,13 @@ def get_reminders(is_complete: bool):
 
 @frappe.whitelist(methods=["GET"])
 def get_overdue_reminders():
+
+	# No perm check needed here since it's scoped to the user
 	user = frappe.session.user
 
-	reminders = frappe.get_all(
+	reminders = frappe.db.count(
 		"Raven Reminder",
 		filters=[("user_id", "=", user), ("remind_at", "<=", now_datetime()), ("is_complete", "=", 0)],
-		fields=["name"],
 	)
 	return reminders
 
