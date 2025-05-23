@@ -31,6 +31,12 @@ import { mapUnreadToDMChannels } from '@/hooks/useUnreadToDMChannels'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { __ } from '@/utils/translations'
 import { useUnreadMessages } from '@/utils/layout/sidebar'
+import { useChannelActions } from '@/hooks/useChannelActions'
+import { useAtomValue } from 'jotai'
+import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
+
+import { formatDistanceToNow } from 'date-fns'
+import { vi } from 'date-fns/locale/vi'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
 
@@ -38,23 +44,26 @@ interface DirectMessageListProps {
   dm_channels: DMChannelWithUnreadCount[] | any
 }
 
-export const mergeUnreadCountToSelectedChannels = (
+export const useMergedUnreadCount = (
   selectedChannels: ChannelInfo[],
   unreadMessageList: { name: string; unread_count: number }[]
 ): ChannelInfo[] => {
+  const manuallyMarked = useAtomValue(manuallyMarkedAtom)
+
   return selectedChannels.map((channel) => {
     const found = unreadMessageList.find((m) => m.name === channel.name)
+    const count = found?.unread_count ?? 0
+    const isManually = manuallyMarked.has(channel.name)
+
     return {
       ...channel,
-      unread_count: found ? found.unread_count : 0
+      unread_count: isManually ? Math.max(count, 1) : count
     }
   })
 }
 
 export const DirectMessageList = ({ dm_channels }: DirectMessageListProps) => {
   const [showData, setShowData] = useStickyState(true, 'expandDirectMessageList')
-
-  const { selectedChannels } = useCircleUserList()
 
   const toggle = () => setShowData((d) => !d)
 
@@ -70,17 +79,7 @@ export const DirectMessageList = ({ dm_channels }: DirectMessageListProps) => {
 
   const unread_count = useUnreadMessages()
 
-  const enrichedDMs = unread_count?.message
-    ? mapUnreadToDMChannels(
-        dm_channels,
-        unread_count.message.map((item) => ({
-          ...item,
-          is_direct_message: item.is_direct_message ?? 0
-        }))
-      )
-    : dm_channels.map((c: any) => ({ ...c, unread_count: 0 }))
-
-  // console.log(enrichedDMs)
+  const enrichedDMs = useMergedUnreadCount(dm_channels, unread_count?.message ?? [])
 
   return (
     <SidebarGroup pb='4'>
@@ -119,68 +118,7 @@ const DirectMessageItemList = ({ dm_channels }: DirectMessageListProps) => {
 }
 
 const DirectMessageItem = ({ dm_channel }: { dm_channel: DMChannelWithUnreadCount }) => {
-  const { selectedChannels, pushChannel, removeChannel } = useCircleUserList()
-  const { call } = useFrappePostCall('raven.api.raven_channel_member.mark_channel_as_unread')
-  const { updateCount } = useUnreadMessageCount()
-
-  // const handleMarkAsUnread = () => {
-  //   call({ channel_id: dm_channel.name })
-  //     .then(() => {
-  //       updateCount()
-  //         // fetchUnreadCountForChannel(dm_channel.name)
-  //     } )
-  //     .catch((err) => {
-  //       console.error('Mark as unread failed', err)
-  //     })
-  // }
-
-  const manuallyMarked = useRef<Set<string>>(new Set())
-
-  const handleMarkAsUnread = () => {
-    call({ channel_id: dm_channel.name }).then(() => {
-      manuallyMarked.current.add(dm_channel.name)
-
-      console.log(dm_channel)
-
-      updateCount(
-        (prev) => {
-          if (!prev) return prev
-
-          const exists = prev.message.some((item) => item.name === dm_channel.name)
-
-          const updatedList = exists
-            ? prev.message.map((item) => {
-                if (item.name === dm_channel.name) {
-                  return { ...item, unread_count: 1 }
-                }
-                return item
-              })
-            : [
-                ...prev.message,
-                {
-                  name: dm_channel.name,
-                  unread_count: 1,
-                  is_direct_message: dm_channel.is_direct_message,
-                  last_message_content: '' // hoặc dm_channel.last_message_details.content nếu có
-                }
-              ]
-
-          return { message: updatedList }
-        },
-        { revalidate: false }
-      )
-    })
-  }
-
-  const isPinned = selectedChannels.some((c) => c.name === dm_channel.name)
-
-  const handleTogglePin = () => {
-    if (isPinned) {
-      removeChannel(dm_channel.name)
-    } else {
-      pushChannel(dm_channel as ChannelInfo)
-    }
-  }
+  const { isPinned, togglePin, markAsUnread, isManuallyMarked } = useChannelActions()
 
   return (
     <ContextMenu.Root>
@@ -189,10 +127,12 @@ const DirectMessageItem = ({ dm_channel }: { dm_channel: DMChannelWithUnreadCoun
           <DirectMessageItemElement channel={dm_channel} />
         </main>
       </ContextMenu.Trigger>
-      <ContextMenu.Content>
-        <ContextMenu.Item onClick={handleMarkAsUnread}>Mark as Unread</ContextMenu.Item>
-        <ContextMenu.Item onClick={handleTogglePin}>
-          {isPinned ? 'Unpin message' : 'Pin message to the top'}
+      <ContextMenu.Content className='z-50 bg-white border shadow rounded p-1'>
+        <ContextMenu.Item onClick={() => markAsUnread(dm_channel)}>
+          {dm_channel.unread_count > 0 || isManuallyMarked(dm_channel.name) ? 'Đánh dấu đã đọc' : 'Đánh dấu chưa đọc'}
+        </ContextMenu.Item>
+        <ContextMenu.Item className='cursor-pointer rounded' onClick={() => togglePin(dm_channel)}>
+          {isPinned(dm_channel.name) ? 'Unpin message' : 'Pin message to top'}
         </ContextMenu.Item>
       </ContextMenu.Content>
     </ContextMenu.Root>
@@ -230,6 +170,27 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
       ? channel.channel_name
       : channel.name
 
+  // Parse last message
+  let lastMessageText = ''
+  let lastMessageOwner = ''
+  try {
+    const msg =
+      typeof channel.last_message_details === 'string'
+        ? JSON.parse(channel.last_message_details)
+        : channel.last_message_details
+
+    if (msg?.content) {
+      lastMessageText = msg.content
+      lastMessageOwner = msg.owner === currentUser ? 'Bạn' : msg.owner
+    }
+  } catch (err) {
+    // fallback
+  }
+
+  const timeAgo = channel.last_message_timestamp
+    ? formatDistanceToNow(new Date(channel.last_message_timestamp), { addSuffix: true, locale: vi })
+    : ''
+
   return (
     <SidebarItem to={channel.name} className='py-1.5 px-2.5 data-[state=open]:bg-gray-3'>
       <SidebarIcon>
@@ -246,17 +207,27 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
           <ChannelIcon type={channel.type} size='18' />
         )}
       </SidebarIcon>
-      <Flex justify='between' align='center' width='100%'>
-        <Text
-          size={{ initial: '3', md: '2' }}
-          className='text-ellipsis line-clamp-1'
-          as='span'
-          weight={showUnread ? 'bold' : 'medium'}
-        >
-          {displayName}
+      <Flex direction='column' justify='center' className='w-full'>
+        <Flex justify='between' align='center'>
+          <Text
+            size={{ initial: '3', md: '2' }}
+            className='text-ellipsis line-clamp-1'
+            as='span'
+            weight={showUnread ? 'bold' : 'medium'}
+          >
+            {displayName}
+          </Text>
+          {timeAgo && (
+            <Text size='1' color='gray'>
+              {timeAgo}
+            </Text>
+          )}
+        </Flex>
+        <Text size='1' color='gray' className='truncate'>
+          {lastMessageOwner && <>{lastMessageOwner}:</>} {lastMessageText}
         </Text>
-        {showUnread ? <SidebarBadge>{channel.unread_count}</SidebarBadge> : null}
       </Flex>
+      {channel.unread_count > 0 && channelID !== channel.name && <SidebarBadge>{channel.unread_count}</SidebarBadge>}
     </SidebarItem>
   )
 }
