@@ -14,12 +14,12 @@ class RavenReminder(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		remind_at: DF.Datetime
-		description: DF.Text
-		message_id: DF.Link | None
-		user_id: DF.Link
-		is_complete: DF.Check
 		completed_at: DF.Datetime | None
+		description: DF.Data | None
+		is_complete: DF.Check
+		message_id: DF.Link | None
+		remind_at: DF.Datetime
+		user_id: DF.Link
 	# end: auto-generated types
 
 	@staticmethod
