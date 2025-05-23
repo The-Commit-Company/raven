@@ -14,6 +14,9 @@
     "copy-html-entry": "cp ../raven/public/raven/index.html ../raven/www/raven.html"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/modifiers": "^9.0.0",
+    "@dnd-kit/sortable": "^10.0.0",
     "@emoji-mart/react": "^1.1.1",
     "@radix-ui/themes": "^3.2.0",
     "@tiptap/extension-code-block-lowlight": "^2.11.7",
@@ -40,6 +43,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.0",
     "cmdk": "^1.0.4",
+    "date-fns": "^4.1.0",
     "dayjs": "^1.11.11",
     "downshift": "^8.3.1",
     "emoji-mart": "^5.6.0",
