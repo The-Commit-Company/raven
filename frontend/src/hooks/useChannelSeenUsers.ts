@@ -1,22 +1,6 @@
 import { UserContext } from '@/utils/auth/UserProvider'
 import { useFrappeEventListener, useFrappePostCall } from 'frappe-react-sdk'
-import { useCallback, useContext, useEffect, useRef, useState } from 'react'
-import { useDebounce } from './useDebounce'
-
-// Dữ liệu cache seenUsers dạng Map<channelId, { data: any[], timestamp: number }>
-const seenUsersCache = new Map<string, { data: any[]; timestamp: number }>()
-
-// TTL cho cache (30 giây)
-const CACHE_TTL = 30 * 1000
-
-// Debounce tracking seen để tránh spam
-const debounce = (fn: (...args: any[]) => void, delay: number) => {
-  let timeout: ReturnType<typeof setTimeout>
-  return (...args: any[]) => {
-    clearTimeout(timeout)
-    timeout = setTimeout(() => fn(...args), delay)
-  }
-}
+import { useCallback, useContext, useEffect, useState } from 'react'
 
 export const useChannelSeenUsers = (channelId: string) => {
   const { currentUser } = useContext(UserContext)
@@ -26,76 +10,91 @@ export const useChannelSeenUsers = (channelId: string) => {
   const [seenUsers, setSeenUsers] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
 
-  const debouncedChannelId = useDebounce(channelId, 300)
-  const lastTrackedAt = useRef(0)
+  // New states
+  const [isTabActive, setIsTabActive] = useState(true)
+  const [hasUserInteracted, setHasUserInteracted] = useState(false)
 
-  // Gọi API get_seen_info và cache kết quả
-  const fetchSeenUsers = useCallback(
-    async (force = false) => {
-      if (!debouncedChannelId) return
+  const fetchSeenUsers = useCallback(async () => {
+    if (!channelId) return
+    setLoading(true)
+    try {
+      const { message = [] } = await getSeenCall({ channel_id: channelId })
+      const data = Array.isArray(message) ? message : []
+      setSeenUsers(data)
+    } catch (err) {
+      console.error('Failed to fetch seen users:', err)
+      setSeenUsers([])
+    } finally {
+      setLoading(false)
+    }
+  }, [channelId, getSeenCall])
 
-      const cached = seenUsersCache.get(debouncedChannelId)
-      const now = Date.now()
+  const sendTrackSeen = useCallback(async () => {
+    if (!channelId) return
+    try {
+      await trackSeen({ channel_id: channelId })
+    } catch (err) {
+      console.error('Track seen failed:', err)
+    }
+  }, [channelId, trackSeen])
 
-      if (cached && !force && now - cached.timestamp < CACHE_TTL) {
-        setSeenUsers(cached.data)
-        return
-      }
-
-      setLoading(true)
-      try {
-        const { message = [] } = await getSeenCall({ channel_id: debouncedChannelId })
-        const data = Array.isArray(message) ? message : []
-        seenUsersCache.set(debouncedChannelId, { data, timestamp: now })
-        setSeenUsers(data)
-      } catch (err) {
-        console.error('Failed to fetch seen users:', err)
-        setSeenUsers([])
-      } finally {
-        setLoading(false)
-      }
-    },
-    [debouncedChannelId, getSeenCall]
-  )
-
-  // Hàm track seen có debounce 5s và không gọi nếu vừa gọi gần đây
-  const safeTrackSeen = useCallback(
-    debounce((channel_id: string) => {
-      const now = Date.now()
-      if (now - lastTrackedAt.current > 5000) {
-        trackSeen({ channel_id }).catch((err) => console.error('Track seen failed:', err))
-        lastTrackedAt.current = now
-      }
-    }, 500),
-    [trackSeen]
-  )
-
-  // Khi channelId thay đổi → track seen và fetch seen info
+  // Detect tab visibility & focus
   useEffect(() => {
-    if (debouncedChannelId) {
-      safeTrackSeen(debouncedChannelId)
+    const handleVisibilityChange = () => {
+      setIsTabActive(!document.hidden)
+    }
+    const handleFocus = () => setIsTabActive(true)
+    const handleBlur = () => setIsTabActive(false)
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('focus', handleFocus)
+    window.addEventListener('blur', handleBlur)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', handleFocus)
+      window.removeEventListener('blur', handleBlur)
+    }
+  }, [])
+
+  // Detect user interaction (scroll or keyboard)
+  useEffect(() => {
+    const onUserInteract = () => setHasUserInteracted(true)
+    window.addEventListener('scroll', onUserInteract, { once: true })
+    window.addEventListener('keydown', onUserInteract, { once: true })
+
+    return () => {
+      window.removeEventListener('scroll', onUserInteract)
+      window.removeEventListener('keydown', onUserInteract)
+    }
+  }, [])
+
+  // Initial fetch and track when channelId changes
+  useEffect(() => {
+    if (channelId) {
+      sendTrackSeen()
       fetchSeenUsers()
     }
-  }, [debouncedChannelId, fetchSeenUsers, safeTrackSeen])
+  }, [channelId, sendTrackSeen, fetchSeenUsers])
 
-  // Lắng nghe khi có người khác cập nhật seen
+  // Listen to 'channel_seen_updated' event as before
   useFrappeEventListener('channel_seen_updated', (data: any) => {
-    if (data.channel_id === debouncedChannelId && data.user !== currentUser) {
-      fetchSeenUsers(true) // Force refetch khi có socket update
+    if (data.channel_id === channelId && data.user !== currentUser) {
+      fetchSeenUsers()
     }
   })
 
-  // Lắng nghe khi có tin nhắn mới trong kênh
+  // Listen to 'new_message' event, but only track seen if tab active + user interacted
   useFrappeEventListener('new_message', (data: any) => {
-    if (data.channel_id === debouncedChannelId && data.user !== currentUser) {
-      safeTrackSeen(data.channel_id) // Đánh dấu đã seen
-      fetchSeenUsers(true) // Cập nhật danh sách seen realtime
+    if (data.channel_id === channelId && data.user !== currentUser && isTabActive && hasUserInteracted) {
+      sendTrackSeen()
+      fetchSeenUsers()
     }
   })
 
   return {
     seenUsers,
     loading,
-    refetch: () => fetchSeenUsers(true)
+    refetch: fetchSeenUsers
   }
 }
