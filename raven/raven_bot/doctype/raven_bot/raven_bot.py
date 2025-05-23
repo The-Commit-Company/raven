@@ -47,6 +47,8 @@ class RavenBot(Document):
 		openai_vector_store_id: DF.Data | None
 		raven_user: DF.Link | None
 		reasoning_effort: DF.Literal["low", "medium", "high"]
+		temperature: DF.Float
+		top_p: DF.Float
 	# end: auto-generated types
 
 	def validate(self):
@@ -133,6 +135,8 @@ class RavenBot(Document):
 				tools=self.get_tools_for_assistant(),
 				tool_resources=self.get_tool_resources_for_assistant(),
 				reasoning_effort=reasoning_effort if model.startswith("o") else None,
+				temperature=self.temperature or 1,
+				top_p=self.top_p or 1,
 			)
 			# Update the tools which were activated for the bot
 			self.db_set("openai_assistant_id", assistant.id)
@@ -176,6 +180,8 @@ class RavenBot(Document):
 				tool_resources=self.get_tool_resources_for_assistant(),
 				model=model,
 				reasoning_effort=reasoning_effort if model.startswith("o") else None,
+				temperature=self.temperature or 1,
+				top_p=self.top_p or 1,
 			)
 			self.check_and_update_enabled_tools(assistant)
 		except Exception as e:
