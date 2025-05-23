@@ -10,10 +10,6 @@ export const useChannelSeenUsers = (channelId: string) => {
   const [seenUsers, setSeenUsers] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
 
-  // New states
-  const [isTabActive, setIsTabActive] = useState(true)
-  const [hasUserInteracted, setHasUserInteracted] = useState(false)
-
   const fetchSeenUsers = useCallback(async () => {
     if (!channelId) return
     setLoading(true)
@@ -38,38 +34,6 @@ export const useChannelSeenUsers = (channelId: string) => {
     }
   }, [channelId, trackSeen])
 
-  // Detect tab visibility & focus
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      setIsTabActive(!document.hidden)
-    }
-    const handleFocus = () => setIsTabActive(true)
-    const handleBlur = () => setIsTabActive(false)
-
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-    window.addEventListener('focus', handleFocus)
-    window.addEventListener('blur', handleBlur)
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
-      window.removeEventListener('focus', handleFocus)
-      window.removeEventListener('blur', handleBlur)
-    }
-  }, [])
-
-  // Detect user interaction (scroll or keyboard)
-  useEffect(() => {
-    const onUserInteract = () => setHasUserInteracted(true)
-    window.addEventListener('scroll', onUserInteract, { once: true })
-    window.addEventListener('keydown', onUserInteract, { once: true })
-
-    return () => {
-      window.removeEventListener('scroll', onUserInteract)
-      window.removeEventListener('keydown', onUserInteract)
-    }
-  }, [])
-
-  // Initial fetch and track when channelId changes
   useEffect(() => {
     if (channelId) {
       sendTrackSeen()
@@ -77,16 +41,14 @@ export const useChannelSeenUsers = (channelId: string) => {
     }
   }, [channelId, sendTrackSeen, fetchSeenUsers])
 
-  // Listen to 'channel_seen_updated' event as before
   useFrappeEventListener('channel_seen_updated', (data: any) => {
     if (data.channel_id === channelId && data.user !== currentUser) {
       fetchSeenUsers()
     }
   })
 
-  // Listen to 'new_message' event, but only track seen if tab active + user interacted
   useFrappeEventListener('new_message', (data: any) => {
-    if (data.channel_id === channelId && data.user !== currentUser && isTabActive && hasUserInteracted) {
+    if (data.channel_id === channelId && data.user !== currentUser) {
       sendTrackSeen()
       fetchSeenUsers()
     }
