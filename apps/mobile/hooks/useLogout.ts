@@ -7,11 +7,14 @@ import { toast } from 'sonner-native';
 import { useSetAtom } from 'jotai';
 import { selectedWorkspaceFamily } from './useGetCurrentWorkspace';
 import useSiteContext from './useSiteContext';
+import { getMessaging } from '@react-native-firebase/messaging';
+
+const messaging = getMessaging()
 
 
 export const useLogout = () => {
     const siteInformation = useSiteContext()
-    const { tokenParams } = useContext(FrappeContext) as FrappeConfig
+    const { tokenParams, call } = useContext(FrappeContext) as FrappeConfig
 
     const setSelectedWorkspace = useSetAtom(selectedWorkspaceFamily(siteInformation?.sitename || ''))
 
@@ -19,6 +22,17 @@ export const useLogout = () => {
         // Remove the current site from AsyncStorage
         // Revoke the token
         // Redirect to the landing page
+        try {
+            messaging.getToken().then((token) => {
+                if (token) {
+                    call.post('raven.api.notification.unsubscribe', {
+                        fcm_token: token
+                    })
+                }
+            })
+        } catch (error) {
+            console.error(error)
+        }
         setSelectedWorkspace('')
         clearDefaultSite()
             .then(() => {
