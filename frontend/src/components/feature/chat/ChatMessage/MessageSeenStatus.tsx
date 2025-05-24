@@ -2,7 +2,7 @@ import { UserAvatar } from '@/components/common/UserAvatar'
 import * as Popover from '@radix-ui/react-popover'
 import { Tooltip, TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip'
 import { Box } from '@radix-ui/themes'
-import { BsCheckCircle } from 'react-icons/bs'
+import { FaRegCheckCircle } from 'react-icons/fa'
 import { MdRadioButtonUnchecked } from 'react-icons/md'
 
 // Định nghĩa type cho User
@@ -56,7 +56,7 @@ export const MessageSeenStatus = ({
             <Popover.Trigger asChild>
               <Box className='ml-1 cursor-pointer'>
                 {hasBeenSeen ? (
-                  <BsCheckCircle className='text-green-500' />
+                  <FaRegCheckCircle className='text-green-500' />
                 ) : (
                   <MdRadioButtonUnchecked className='text-gray-400' />
                 )}
