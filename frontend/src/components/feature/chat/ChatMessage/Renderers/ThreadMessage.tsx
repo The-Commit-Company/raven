@@ -22,7 +22,7 @@ export const ThreadMessage = ({ thread }: { thread: Message }) => {
           variant={'ghost'}
           className={'not-cal w-fit hover:bg-transparent hover:underline cursor-pointer'}
         >
-          <Link to={`/${workspaceID}/${thread.channel_id}/thread/${thread.name}`}>View Thread</Link>
+          <Link to={`/${workspaceID}/threads/${thread.name}`}>View Thread</Link>
         </Button>
       </Flex>
     </div>

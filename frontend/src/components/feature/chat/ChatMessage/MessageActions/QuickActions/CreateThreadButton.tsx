@@ -15,7 +15,7 @@ const useCreateThread = (messageID: string) => {
     call({ message_id: messageID })
       .then((res) => {
         toast.success('Thread created')
-        navigate(`/${workspaceID}/${res.message.channel_id}/thread/${res.message.thread_id}`)
+        navigate(`/${workspaceID}/threads/${res.message.thread_id}`)
       })
       .catch(() => {
         toast.error('Failed to create thread')
