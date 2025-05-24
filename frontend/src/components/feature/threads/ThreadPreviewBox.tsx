@@ -1,17 +1,18 @@
-import { Badge, Box, Flex, Text } from '@radix-ui/themes'
-import { getTimePassed, DateMonthYear } from '@/utils/dateConversions'
-import { MessageContent, MessageSenderAvatar, UserHoverCard } from '../chat/ChatMessage/MessageItem'
-import { useGetUser } from '@/hooks/useGetUser'
 import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
-import { ChannelIcon } from '@/utils/layout/channelIcon'
-import { NavLink, useParams } from 'react-router-dom'
-import { ThreadMessage } from './Threads'
-import { Message } from '../../../../../types/Messaging/Message'
-import { ViewThreadParticipants } from './ThreadParticipants'
-import { useMemo } from 'react'
-import { DMChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { useGetUser } from '@/hooks/useGetUser'
 import { useGetUserRecords } from '@/hooks/useGetUserRecords'
+import { UserContext } from '@/utils/auth/UserProvider'
+import { DMChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { DateMonthYear } from '@/utils/dateConversions'
+import { ChannelIcon } from '@/utils/layout/channelIcon'
+import { Badge, Box, Flex, Text } from '@radix-ui/themes'
 import clsx from 'clsx'
+import { useContext, useMemo } from 'react'
+import { NavLink, useParams } from 'react-router-dom'
+import { Message } from '../../../../../types/Messaging/Message'
+import { MessageContent, MessageSenderAvatar, UserHoverCard } from '../chat/ChatMessage/MessageItem'
+import { ViewThreadParticipants } from './ThreadParticipants'
+import { ThreadMessage } from './Threads'
 // import { UserAvatar } from '@/components/common/UserAvatar'
 // import parse from 'html-react-parser';
 // import { HStack } from '@/components/layout/Stack'
@@ -92,6 +93,7 @@ import clsx from 'clsx'
 // }
 
 export const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessage; unreadCount: number }) => {
+  const { currentUser } = useContext(UserContext)
   const user = useGetUser(thread.owner)
   const users = useGetUserRecords()
   const { channel } = useCurrentChannelData(thread.channel_id)
@@ -158,7 +160,12 @@ export const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessag
                 <Box>
                   <UserHoverCard user={user} userID={thread.owner} isActive={false} />
                 </Box>
-                <MessageContent message={thread as unknown as Message} user={user} forceHideLinkPreview />
+                <MessageContent
+                  message={thread as unknown as Message}
+                  user={user}
+                  currentUser={currentUser}
+                  forceHideLinkPreview
+                />
               </Flex>
             </Flex>
             <Flex align={'center'} gap='2' className='pl-11'>

@@ -32,7 +32,7 @@ export const MessageSeenStatus = ({
   if (!currentUserOwnsMessage) return null
 
   // Đảm bảo showPopover là boolean
-  const showPopover = channelType === 'channel' && (seenByOthers.length > 0 || unseenByOthers.length > 0)
+  const showPopover = channelType !== 'dm' && (seenByOthers.length > 0 || unseenByOthers.length > 0)
 
   // Hàm getTooltipMessage được đơn giản hóa
   const getTooltipMessage = (hasBeenSeen: boolean, channelType?: string): string => {
