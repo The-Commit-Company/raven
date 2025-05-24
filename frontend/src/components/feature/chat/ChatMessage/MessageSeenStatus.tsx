@@ -1,5 +1,3 @@
-'use client'
-
 import { UserAvatar } from '@/components/common/UserAvatar'
 import * as Popover from '@radix-ui/react-popover'
 import { Tooltip, TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip'
@@ -7,13 +5,20 @@ import { Box } from '@radix-ui/themes'
 import { BsCheckCircle } from 'react-icons/bs'
 import { MdRadioButtonUnchecked } from 'react-icons/md'
 
+// Định nghĩa type cho User
+interface User {
+  name: string // Có thể thay bằng id nếu có trường unique hơn
+  user_image: string
+  full_name: string
+}
+
 interface MessageSeenStatusProps {
   hasBeenSeen: boolean
   channelType?: string
-  seenByOthers?: any[]
-  unseenByOthers?: any[]
+  seenByOthers?: User[]
+  unseenByOthers?: User[]
   currentUserOwnsMessage: boolean
-  position?: 'center' | 'start' | 'end' | undefined
+  position?: 'center' | 'start' | 'end'
 }
 
 export const MessageSeenStatus = ({
@@ -26,24 +31,27 @@ export const MessageSeenStatus = ({
 }: MessageSeenStatusProps) => {
   if (!currentUserOwnsMessage) return null
 
-  const showPopover = channelType === 'channel' && (seenByOthers.length || unseenByOthers.length)
+  // Đảm bảo showPopover là boolean
+  const showPopover = channelType === 'channel' && (seenByOthers.length > 0 || unseenByOthers.length > 0)
 
-  const getTooltipMessage = (hasBeenSeen: boolean, channelType: string | undefined) => {
+  // Debug logs
+  console.log('showPopover:', showPopover)
+  console.log('channelType:', channelType)
+  console.log('seenByOthers.length:', seenByOthers.length)
+  console.log('unseenByOthers.length:', unseenByOthers.length)
+
+  // Hàm getTooltipMessage được đơn giản hóa
+  const getTooltipMessage = (hasBeenSeen: boolean, channelType?: string): string => {
     if (channelType !== 'channel') {
       return hasBeenSeen ? 'Đã xem' : 'Chưa xem'
     }
-
-    if (hasBeenSeen) {
-      if (unseenByOthers.length <= 0) {
-        return 'Tất cả đã xem'
-      }
-
-      if (unseenByOthers.length > 0 && seenByOthers.length > 0) {
-        return `${seenByOthers.length} Đã xem`
-      }
+    if (!hasBeenSeen) {
+      return 'Chưa xem'
     }
-
-    return hasBeenSeen ? 'Đã xem' : 'Chưa xem'
+    if (unseenByOthers.length === 0) {
+      return 'Tất cả đã xem'
+    }
+    return `${seenByOthers.length} Đã xem`
   }
 
   return (
@@ -71,7 +79,6 @@ export const MessageSeenStatus = ({
           </TooltipContent>
         </Tooltip>
 
-        {/* Popover content hiển thị khi click */}
         {showPopover && (
           <Popover.Portal>
             <Popover.Content
