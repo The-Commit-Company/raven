@@ -34,12 +34,6 @@ export const MessageSeenStatus = ({
   // Đảm bảo showPopover là boolean
   const showPopover = channelType === 'channel' && (seenByOthers.length > 0 || unseenByOthers.length > 0)
 
-  // Debug logs
-  console.log('showPopover:', showPopover)
-  console.log('channelType:', channelType)
-  console.log('seenByOthers.length:', seenByOthers.length)
-  console.log('unseenByOthers.length:', unseenByOthers.length)
-
   // Hàm getTooltipMessage được đơn giản hóa
   const getTooltipMessage = (hasBeenSeen: boolean, channelType?: string): string => {
     if (channelType !== 'channel') {
@@ -93,8 +87,8 @@ export const MessageSeenStatus = ({
                 <div className='pr-4 w-1/2'>
                   <div className='font-semibold mb-1'>{seenByOthers.length} Read</div>
                   <div className='space-y-2'>
-                    {seenByOthers.map((user) => (
-                      <div key={user.name} className='flex items-center gap-2'>
+                    {seenByOthers.map((user, index) => (
+                      <div key={index} className='flex items-center gap-2'>
                         <UserAvatar src={user.user_image} alt={user.full_name} size='1' />
                         <span>{user.full_name}</span>
                       </div>
@@ -106,8 +100,8 @@ export const MessageSeenStatus = ({
                 <div className='pl-4 w-1/2'>
                   <div className='font-semibold mb-1'>{unseenByOthers.length} Unread</div>
                   <div className='space-y-2'>
-                    {unseenByOthers.map((user) => (
-                      <div key={user.name} className='flex items-center gap-2'>
+                    {unseenByOthers.map((user, index) => (
+                      <div key={index} className='flex items-center gap-2'>
                         <UserAvatar src={user.user_image} alt={user.full_name} size='1' />
                         <span>{user.full_name}</span>
                       </div>
