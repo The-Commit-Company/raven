@@ -28,6 +28,7 @@ export const useChannelSeenUsers = (channelId: string) => {
 
   const seenUsersRef = useRef<any[]>([])
   const pendingSeenUpdate = useRef(false)
+  const hasUnreadWhileHidden = useRef(false)
 
   const fetchSeenUsers = useCallback(async () => {
     if (!channelId || pendingSeenUpdate.current) return
@@ -80,14 +81,16 @@ export const useChannelSeenUsers = (channelId: string) => {
     if (data.channel_id === channelId && data.user !== currentUser) {
       if (isTabActive()) {
         trackSeen()
+      } else {
+        hasUnreadWhileHidden.current = true
       }
-      // Không fetch lại ngay nếu tab không active
     }
   })
 
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (isTabActive()) {
+      if (isTabActive() && hasUnreadWhileHidden.current) {
+        hasUnreadWhileHidden.current = false
         trackSeen()
         fetchSeenUsers()
       }
