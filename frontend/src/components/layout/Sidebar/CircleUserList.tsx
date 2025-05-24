@@ -75,7 +75,7 @@ const CircleUserItem = ({ channel, isActive, onActivate }: Props) => {
         className={clsx(
           'flex flex-col items-center space-y-1 cursor-pointer text-center',
           'p-1 rounded-md w-full',
-          isActive ? 'bg-gray-300' : 'hover:bg-gray-200'
+          isActive ? 'bg-gray-300 dark:bg-gray-700' : 'hover:bg-gray-200 dark:hover:bg-gray-600'
         )}
       >
         <div className='flex flex-col items-center space-y-1'>
@@ -160,7 +160,8 @@ const CircleUserList = () => {
         modifiers={[restrictToParentElement]}
       >
         <SortableContext items={items} strategy={rectSortingStrategy}>
-          <div className='grid [grid-template-columns:repeat(auto-fit,minmax(60px,1fr))] gap-3 p-2 w-full max-w-[288px] overflow-hidden'>
+          <div className="grid grid-cols-4 gap-3 p-2 w-full max-w-[288px] overflow-hidden">
+
             {items.map((channelName) => {
               const channel = enrichedSelectedChannels.find((c) => c.name === channelName)
               if (!channel) return null
@@ -172,9 +173,9 @@ const CircleUserList = () => {
                     onActivate={() => {}}
                   />
                   <ContextMenu.Portal>
-                    <ContextMenu.Content className='z-50 bg-white rounded shadow-md p-1'>
+                    <ContextMenu.Content className='z-50 bg-white dark:bg-gray-800 text-black dark:text-white rounded shadow-md p-1'>
                       <ContextMenu.Item
-                        className='px-3 py-1 text-sm hover:bg-gray-100 rounded cursor-pointer'
+                        className='px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer'
                         onClick={() => markAsUnread(channel)}
                       >
                         {channel.unread_count > 0 || isManuallyMarked(channel.name)
@@ -182,7 +183,7 @@ const CircleUserList = () => {
                           : 'Đánh dấu chưa đọc'}
                       </ContextMenu.Item>
                       <ContextMenu.Item
-                        className='px-3 py-1 text-sm hover:bg-gray-100 rounded cursor-pointer'
+                        className='px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer'
                         onClick={() => togglePin(channel)}
                       >
                         {isPinned(channel.name) ? 'Bỏ ghim khỏi danh sách' : 'Ghim lên đầu'}
