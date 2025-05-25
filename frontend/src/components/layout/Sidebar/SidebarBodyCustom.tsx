@@ -7,9 +7,7 @@ import { atomWithStorage } from 'jotai/utils'
 import React, { useContext, useMemo } from 'react'
 import { BiBookmark, BiMessageAltDetail } from 'react-icons/bi'
 import { useParams } from 'react-router-dom'
-import {
-  DirectMessageList,
-} from '../../feature/direct-messages/DirectMessageListCustom'
+import { DirectMessageList } from '../../feature/direct-messages/DirectMessageListCustom'
 import PinnedChannels from './PinnedChannels'
 import { SidebarBadge, SidebarItem } from './SidebarComp'
 import CircleUserList from './CircleUserList'
@@ -55,7 +53,7 @@ export const SidebarBody = () => {
             iconLabel='Saved Message'
           />
         </Flex>
-       <CircleUserList/>
+        <CircleUserList />
         {/* <PinnedChannels unread_count={unread_count?.message} /> */}
         <DirectMessageList dm_channels={sortedChannels} />
       </Flex>

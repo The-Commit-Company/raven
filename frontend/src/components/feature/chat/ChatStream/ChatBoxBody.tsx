@@ -24,7 +24,7 @@ import { useTyping } from '../ChatInput/TypingIndicator/useTypingIndicator'
 import { useSendMessage } from '../ChatInput/useSendMessage'
 import { ReplyMessageBox } from '../ChatMessage/ReplyMessageBox/ReplyMessageBox'
 import ChatStream from './ChatStream'
-import { GetMessagesResponse } from './useChatStream'
+import { GetMessagesResponse } from './useMessageAPI'
 
 const COOL_PLACEHOLDERS = [
   'Delivering messages atop dragons 🐉 is available on a chargeable basis.',

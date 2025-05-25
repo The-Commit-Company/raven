@@ -1,10 +1,10 @@
-import { lazy, Suspense } from 'react'
-import { Box, Flex, IconButton, IconButtonProps, Popover, Portal, Tooltip } from '@radix-ui/themes'
-import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { Loader } from '@/components/common/Loader'
-import { QUICK_ACTION_BUTTON_CLASS } from './QuickActionButton'
-import { LuSmilePlus } from 'react-icons/lu'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
+import { Box, Flex, IconButtonProps, Popover, Portal, Tooltip } from '@radix-ui/themes'
 import clsx from 'clsx'
+import { lazy, Suspense } from 'react'
+import { LuSmilePlus } from 'react-icons/lu'
+import { QUICK_ACTION_BUTTON_CLASS } from './QuickActionButton'
 
 const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
 
