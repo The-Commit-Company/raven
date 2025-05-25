@@ -15,6 +15,7 @@ export interface ChannelInfo {
 
 interface CircleUserListContextType {
   selectedChannels: ChannelInfo[]
+  setSelectedChannels: React.Dispatch<React.SetStateAction<ChannelInfo[]>>
   pushChannel: (channel: ChannelInfo) => void
   removeChannel: (channel_id: string) => void
 }
@@ -58,7 +59,7 @@ export const CircleUserListProvider = ({ children }: { children: ReactNode }) =>
   }
 
   return (
-    <CircleUserListContext.Provider value={{ selectedChannels, pushChannel, removeChannel }}>
+    <CircleUserListContext.Provider value={{ selectedChannels, setSelectedChannels, pushChannel, removeChannel }}>
       {children}
     </CircleUserListContext.Provider>
   )
