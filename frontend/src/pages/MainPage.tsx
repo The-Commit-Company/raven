@@ -17,12 +17,13 @@ import { useUnreadThreadsCountEventListener } from '@/hooks/useUnreadThreadsCoun
 import { UserContext } from '@/utils/auth/UserProvider'
 import { SidebarModeProvider } from '@/utils/layout/sidebar'
 import { CircleUserListProvider } from '@/utils/users/CircleUserListProvider'
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
+import { HStack } from '@/components/layout/Stack'
 
 const AddRavenUsersPage = lazy(() => import('@/pages/AddRavenUsersPage'))
 
 export const MainPage = () => {
   const isRavenUser = hasRavenUserRole()
-
   if (isRavenUser) {
     return <MainPageContent />
   } else {
@@ -105,16 +106,27 @@ const MainPageContent = () => {
       <ChannelListProvider>
         <SidebarModeProvider>
           <CircleUserListProvider>
-            <Flex>
+           <HStack>
+             <PanelGroup direction='horizontal' className='flex-1 flex'>
+              {/* Panel trái - Sidebar */}
               {!isMobile && (
-                <Box className={`w-90 bg-gray-2 border-r-gray-3 dark:bg-gray-1`}>
-                  <Sidebar />
-                </Box>
+                <Panel minSize={20} defaultSize={30}>
+                  <div className='h-screen w-full bg-gray-2 border-r border-gray-3 dark:bg-gray-1'>
+                    <Sidebar />
+                  </div>
+                </Panel>
               )}
-              <Box className='w-[calc(100vw-var(--sidebar-width)-0rem)] dark:bg-gray-2'>
-                <Outlet />
-              </Box>
-            </Flex>
+
+              {!isMobile && <PanelResizeHandle className='cursor-col-resize' />}
+
+              {/* Panel phải - Nội dung chính */}
+              <Panel minSize={40} defaultSize={70}>
+                <div className='h-screen w-full dark:bg-gray-2'>
+                  <Outlet />
+                </div>
+              </Panel>
+            </PanelGroup>
+           </HStack>
           </CircleUserListProvider>
         </SidebarModeProvider>
         <CommandMenu />
