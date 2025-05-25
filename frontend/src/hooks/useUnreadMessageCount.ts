@@ -312,10 +312,8 @@ export const useFetchUnreadMessageCount = () => {
   }
 
   const dmWithUnread = useMemo(() => {
-  return unread_count?.message.filter(
-    (c) => c.unread_count > 0 && c.is_direct_message === 1
-  ) || []
-}, [unread_count])
+    return unread_count?.message.filter((c) => c.unread_count > 0 && c.is_direct_message === 1) || []
+  }, [unread_count])
 
   const dmChannel = useMemo(() => {
     return dm_channels.find((c) => c.name === dmWithUnread?.name)
@@ -331,7 +329,6 @@ export const useFetchUnreadMessageCount = () => {
 
     const groupWithUnread = unread_count?.message.find((c) => c.unread_count > 0 && c.is_direct_message === 0)
     const totalUnread = unread_count?.message.reduce((sum, item) => sum + item.unread_count, 0)
-    
 
     if (!unread_count || unread_count.message.length === 0 || totalUnread === 0) {
       document.title = app_name

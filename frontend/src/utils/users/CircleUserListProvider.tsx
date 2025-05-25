@@ -20,7 +20,6 @@ interface CircleUserListContextType {
   removeChannel: (channel_id: string) => void
 }
 
-
 const LOCAL_STORAGE_KEY = 'raven_selected_channels'
 
 const CircleUserListContext = createContext<CircleUserListContextType | undefined>(undefined)
@@ -52,12 +51,12 @@ export const CircleUserListProvider = ({ children }: { children: ReactNode }) =>
   }
 
   const removeChannel = (channel_id: string) => {
-  setSelectedChannels((prev) => {
-    const updated = prev.filter((c) => c.name !== channel_id)
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated))
-    return updated
-  })
-}
+    setSelectedChannels((prev) => {
+      const updated = prev.filter((c) => c.name !== channel_id)
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated))
+      return updated
+    })
+  }
 
   return (
     <CircleUserListContext.Provider value={{ selectedChannels, setSelectedChannels, pushChannel, removeChannel }}>

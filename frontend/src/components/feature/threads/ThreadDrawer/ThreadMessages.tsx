@@ -17,11 +17,11 @@ import { useTyping } from '../../chat/ChatInput/TypingIndicator/useTypingIndicat
 import { useSendMessage } from '../../chat/ChatInput/useSendMessage'
 import { ReplyMessageBox } from '../../chat/ChatMessage/ReplyMessageBox/ReplyMessageBox'
 import ChatStream from '../../chat/ChatStream/ChatStream'
-import { GetMessagesResponse } from '../../chat/ChatStream/useChatStream'
 import { JoinChannelBox } from '../../chat/chat-footer/JoinChannelBox'
 import { CustomFile, FileDrop } from '../../file-upload/FileDrop'
 import { FileListItem } from '../../file-upload/FileListItem'
 import ThreadFirstMessage from './ThreadFirstMessage'
+import { GetMessagesResponse } from '../../chat/ChatStream/useMessageAPI'
 
 export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) => {
   const threadID = threadMessage.name
