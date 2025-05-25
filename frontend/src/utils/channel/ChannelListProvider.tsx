@@ -7,13 +7,7 @@ import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { RavenChannel } from '@/types/RavenChannelManagement/RavenChannel'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 
-export type UnreadChannelCountItem = {
-  name: string
-  user_id?: string
-  unread_count: number
-  is_direct_message: 0 | 1
-  last_message_timestamp: string
-}
+export type UnreadChannelCountItem = { name: string; user_id?: string; unread_count: number; is_direct_message: 0 | 1; last_message_timestamp: string }
 
 export type UnreadCountData = UnreadChannelCountItem[]
 
@@ -212,45 +206,34 @@ export const useUpdateLastMessageInChannelList = () => {
 }
 
 export const useUpdateLastMessageDetails = () => {
-  const { mutate } = useChannelList()
+  const { mutate } = useSWRConfig()
 
-  const updateLastMessageForChannel = (channelID: string, message: any) => {
+  const updateLastMessageForChannel = (
+    channelID: string,
+    message: any
+  ) => {
     mutate(
-      (prev) => {
+      `channel_list`,
+      (prev?: { message: ChannelList }) => {
         if (!prev) return prev
 
-        const newChannels = prev.message.channels.map((channel) => {
-          if (channel.name === channelID) {
-            return {
-              ...channel,
-              last_message_details: message,
-              last_message_timestamp: new Date().toISOString(),
-              unread_count: 0
-            }
-          }
-          return channel
-        })
-
-        const newDMChannels = prev.message.dm_channels.map((channel) => {
-          if (channel.name === channelID) {
-            return {
-              ...channel,
-              last_message_details: message,
-              last_message_timestamp: new Date().toISOString(),
-              unread_count: 0
-            }
-          }
-          return channel
-        })
+        const updateChannel = (channel: any) =>
+          channel.name === channelID
+            ? {
+                ...channel,
+                last_message_details: message,
+                last_message_timestamp: new Date().toISOString(),
+              }
+            : channel
 
         return {
           message: {
-            channels: newChannels,
-            dm_channels: newDMChannels
+            channels: prev.message.channels.map(updateChannel),
+            dm_channels: prev.message.dm_channels.map(updateChannel),
           }
         }
       },
-      { revalidate: false }
+      false // 👈 Không revalidate
     )
   }
 

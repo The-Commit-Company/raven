@@ -45,7 +45,7 @@ import { useContext } from 'react'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { useUpdateLastMessageDetails } from '@/utils/channel/ChannelListProvider'
 
-export const useMessage = (
+export const useSendMessage = (
   channelID: string,
   uploadFiles: (selectedMessage?: Message | null) => Promise<RavenMessage[]>,
   onMessageSent: (messages: RavenMessage[]) => void,
