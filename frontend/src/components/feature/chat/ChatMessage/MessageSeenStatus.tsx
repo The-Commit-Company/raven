@@ -1,19 +1,24 @@
-'use client'
-
 import { UserAvatar } from '@/components/common/UserAvatar'
 import * as Popover from '@radix-ui/react-popover'
 import { Tooltip, TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip'
 import { Box } from '@radix-ui/themes'
-import { BsCheckCircle } from 'react-icons/bs'
+import { FaRegCheckCircle } from 'react-icons/fa'
 import { MdRadioButtonUnchecked } from 'react-icons/md'
+
+// Định nghĩa type cho User
+interface User {
+  name: string // Có thể thay bằng id nếu có trường unique hơn
+  user_image: string
+  full_name: string
+}
 
 interface MessageSeenStatusProps {
   hasBeenSeen: boolean
   channelType?: string
-  seenByOthers?: any[]
-  unseenByOthers?: any[]
+  seenByOthers?: User[]
+  unseenByOthers?: User[]
   currentUserOwnsMessage: boolean
-  position?: 'center' | 'start' | 'end' | undefined
+  position?: 'center' | 'start' | 'end'
 }
 
 export const MessageSeenStatus = ({
@@ -26,24 +31,21 @@ export const MessageSeenStatus = ({
 }: MessageSeenStatusProps) => {
   if (!currentUserOwnsMessage) return null
 
-  const showPopover = channelType === 'channel' && (seenByOthers.length || unseenByOthers.length)
+  // Đảm bảo showPopover là boolean
+  const showPopover = channelType !== 'dm' && (seenByOthers.length > 0 || unseenByOthers.length > 0)
 
-  const getTooltipMessage = (hasBeenSeen: boolean, channelType: string | undefined) => {
+  // Hàm getTooltipMessage được đơn giản hóa
+  const getTooltipMessage = (hasBeenSeen: boolean, channelType?: string): string => {
     if (channelType !== 'channel') {
       return hasBeenSeen ? 'Đã xem' : 'Chưa xem'
     }
-
-    if (hasBeenSeen) {
-      if (unseenByOthers.length <= 0) {
-        return 'Tất cả đã xem'
-      }
-
-      if (unseenByOthers.length > 0 && seenByOthers.length > 0) {
-        return `${seenByOthers.length} Đã xem`
-      }
+    if (!hasBeenSeen) {
+      return 'Chưa xem'
     }
-
-    return hasBeenSeen ? 'Đã xem' : 'Chưa xem'
+    if (unseenByOthers.length === 0) {
+      return 'Tất cả đã xem'
+    }
+    return `${seenByOthers.length} Đã xem`
   }
 
   return (
@@ -54,7 +56,7 @@ export const MessageSeenStatus = ({
             <Popover.Trigger asChild>
               <Box className='ml-1 cursor-pointer'>
                 {hasBeenSeen ? (
-                  <BsCheckCircle className='text-green-500' />
+                  <FaRegCheckCircle className='text-green-500' />
                 ) : (
                   <MdRadioButtonUnchecked className='text-gray-400' />
                 )}
@@ -71,7 +73,6 @@ export const MessageSeenStatus = ({
           </TooltipContent>
         </Tooltip>
 
-        {/* Popover content hiển thị khi click */}
         {showPopover && (
           <Popover.Portal>
             <Popover.Content
@@ -86,8 +87,8 @@ export const MessageSeenStatus = ({
                 <div className='pr-4 w-1/2'>
                   <div className='font-semibold mb-1'>{seenByOthers.length} Read</div>
                   <div className='space-y-2'>
-                    {seenByOthers.map((user) => (
-                      <div key={user.name} className='flex items-center gap-2'>
+                    {seenByOthers.map((user, index) => (
+                      <div key={index} className='flex items-center gap-2'>
                         <UserAvatar src={user.user_image} alt={user.full_name} size='1' />
                         <span>{user.full_name}</span>
                       </div>
@@ -99,8 +100,8 @@ export const MessageSeenStatus = ({
                 <div className='pl-4 w-1/2'>
                   <div className='font-semibold mb-1'>{unseenByOthers.length} Unread</div>
                   <div className='space-y-2'>
-                    {unseenByOthers.map((user) => (
-                      <div key={user.name} className='flex items-center gap-2'>
+                    {unseenByOthers.map((user, index) => (
+                      <div key={index} className='flex items-center gap-2'>
                         <UserAvatar src={user.user_image} alt={user.full_name} size='1' />
                         <span>{user.full_name}</span>
                       </div>

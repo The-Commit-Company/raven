@@ -106,15 +106,15 @@ const MainPageContent = () => {
         <SidebarModeProvider>
           <CircleUserListProvider>
             <Flex>
-            {!isMobile && (
-              <Box className={`w-90 bg-gray-2 border-r-gray-3 dark:bg-gray-1`}>
-                <Sidebar />
+              {!isMobile && (
+                <Box className={`w-90 bg-gray-2 border-r-gray-3 dark:bg-gray-1`}>
+                  <Sidebar />
+                </Box>
+              )}
+              <Box className='w-[calc(100vw-var(--sidebar-width)-0rem)] dark:bg-gray-2'>
+                <Outlet />
               </Box>
-            )}
-            <Box className='w-[calc(100vw-var(--sidebar-width)-0rem)] dark:bg-gray-2'>
-              <Outlet />
-            </Box>
-          </Flex>
+            </Flex>
           </CircleUserListProvider>
         </SidebarModeProvider>
         <CommandMenu />

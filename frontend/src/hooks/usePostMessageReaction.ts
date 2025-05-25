@@ -1,9 +1,9 @@
 import { FrappeConfig, FrappeContext, useSWRConfig } from 'frappe-react-sdk'
 import { useCallback, useContext } from 'react'
 import { Message } from '../../../types/Messaging/Message'
-import { GetMessagesResponse } from '@/components/feature/chat/ChatStream/useChatStream'
 import { ReactionObject } from '@/components/feature/chat/ChatMessage/MessageReactions'
 import { useUserData } from './useUserData'
+import { GetMessagesResponse } from '@/components/feature/chat/ChatStream/useMessageAPI'
 
 /**
  * This hook is used to post a reaction to a message optimistically
