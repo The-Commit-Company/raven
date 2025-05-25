@@ -7,12 +7,13 @@ import { forwardRef, MutableRefObject, useImperativeHandle } from 'react'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { ChatDialogs } from './ChatDialogs'
 import ChatStreamLoader from './ChatStreamLoader'
+import { ChatStreamLoading } from './ChatStreamLoading'
 import { MessageListRenderer } from './MessageListRenderer'
 import { ScrollToBottomButtons } from './ScrollToBottomButtons'
 import useChatStream from './useChatStream'
 import { useChatStreamActions } from './useChatStreamActions'
+import { useMessagePositionStorage } from './useMessagePositionStorage'
 import { useScrollToBottomEffect } from './useScrollToBottomEffect'
-import { ChatStreamLoading } from './ChatStreamLoading'
 
 type Props = {
   channelID: string
@@ -49,6 +50,14 @@ const ChatStream = forwardRef<any, Props>(
     // Sử dụng scroll effect
     useScrollToBottomEffect(scrollRef)
 
+    const { clearSavedPosition, getSavedPosition, saveSpecificPosition, restoreScrollPosition } =
+      useMessagePositionStorage({
+        channelID,
+        scrollRef,
+        messageRefs,
+        messages
+      })
+
     // Lấy dữ liệu cần thiết
     const { name: userID } = useUserData()
     const { seenUsers } = useChannelSeenUsers(channelID)
@@ -57,6 +66,18 @@ const ChatStream = forwardRef<any, Props>(
     // Handle reply message click
     const onReplyMessageClick = (messageID: string) => {
       scrollToMessage(messageID)
+      saveSpecificPosition(messageID)
+    }
+
+    const enhancedScrollToMessage = (messageID: string) => {
+      scrollToMessage(messageID)
+      saveSpecificPosition(messageID)
+    }
+
+    // Enhanced go to latest messages
+    const enhancedGoToLatestMessages = () => {
+      goToLatestMessages()
+      clearSavedPosition()
     }
 
     // Imperative handle cho up arrow
@@ -68,7 +89,17 @@ const ChatStream = forwardRef<any, Props>(
             editActions.setEditMessage(lastMessage)
           }
         }
-      }
+      },
+
+      clearSavedPosition,
+      getSavedPosition,
+      saveCurrentPosition: () => {
+        if (messages && messages.length > 0) {
+          const lastVisibleMessage = messages[messages.length - 1]
+          saveSpecificPosition(lastVisibleMessage.name)
+        }
+      },
+      restorePosition: restoreScrollPosition
     }))
 
     return (
@@ -107,6 +138,8 @@ const ChatStream = forwardRef<any, Props>(
           setReactionMessage={reactionActions.setReactionMessage}
           seenUsers={seenUsers}
           channel={channel}
+          onMessageVisible={(messageName: string) => saveSpecificPosition(messageName)}
+          scrollToMessage={enhancedScrollToMessage}
         />
 
         {/* Scroll to bottom buttons */}
@@ -114,7 +147,7 @@ const ChatStream = forwardRef<any, Props>(
           hasNewMessages={hasNewMessages}
           newMessageCount={newMessageCount}
           showScrollToBottomButton={showScrollToBottomButton}
-          onGoToLatestMessages={goToLatestMessages}
+          onGoToLatestMessages={enhancedGoToLatestMessages}
         />
 
         {/* Dialogs */}
