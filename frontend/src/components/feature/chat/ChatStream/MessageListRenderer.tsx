@@ -1,7 +1,6 @@
-// 3. MessageListRenderer.tsx - Component render danh sách tin nhắn
 import { DateSeparator } from '@/components/layout/Divider/DateSeparator'
 import clsx from 'clsx'
-import { MutableRefObject } from 'react'
+import { MutableRefObject, useCallback, useEffect, useRef } from 'react'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { MessageItem } from '../ChatMessage/MessageItem'
 import SystemMessageBlock from '../ChatMessage/SystemMessageBlock'
@@ -21,6 +20,8 @@ interface MessageListRendererProps {
   setReactionMessage: (message: Message) => void
   seenUsers: any
   channel: any
+  onMessageVisible?: (messageName: string) => void
+  scrollToMessage?: (messageID: string) => void
 }
 
 export const MessageListRenderer = ({
@@ -37,8 +38,77 @@ export const MessageListRenderer = ({
   setDeleteMessage,
   setReactionMessage,
   seenUsers,
-  channel
+  channel,
+  onMessageVisible
 }: MessageListRendererProps) => {
+  const intersectionObserver = useRef<IntersectionObserver | null>(null)
+  const visibleMessages = useRef<Set<string>>(new Set())
+
+  // Tạo Intersection Observer để theo dõi message nào đang hiển thị
+  useEffect(() => {
+    if (!onMessageVisible) return
+
+    intersectionObserver.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const messageName = entry.target.getAttribute('data-message-name')
+          if (messageName) {
+            if (entry.isIntersecting) {
+              visibleMessages.current.add(messageName)
+            } else {
+              visibleMessages.current.delete(messageName)
+            }
+          }
+        })
+
+        // Tìm message ở giữa màn hình để lưu vị trí
+        const centerMessage = findCenterMessage()
+        if (centerMessage) {
+          onMessageVisible(centerMessage)
+        }
+      },
+      {
+        root: null,
+        rootMargin: '-20% 0px -20% 0px', // Chỉ tính message ở 60% giữa màn hình
+        threshold: 0.1
+      }
+    )
+
+    return () => {
+      if (intersectionObserver.current) {
+        intersectionObserver.current.disconnect()
+      }
+    }
+  }, [onMessageVisible])
+
+  // Tìm message ở giữa màn hình
+  const findCenterMessage = useCallback(() => {
+    const visibleArray = Array.from(visibleMessages.current)
+    if (visibleArray.length === 0) return null
+
+    // Trả về message gần giữa nhất
+    const middleIndex = Math.floor(visibleArray.length / 2)
+    return visibleArray[middleIndex]
+  }, [])
+
+  // Effect để observe các message elements
+  useEffect(() => {
+    if (!intersectionObserver.current) return
+
+    const currentObserver = intersectionObserver.current
+
+    // Observe tất cả message elements
+    Object.values(messageRefs.current).forEach((element) => {
+      if (element && element.getAttribute('data-message-name')) {
+        currentObserver.observe(element)
+      }
+    })
+
+    return () => {
+      currentObserver.disconnect()
+    }
+  }, [messages, messageRefs])
+
   return (
     <div
       className={clsx(
@@ -69,8 +139,12 @@ export const MessageListRenderer = ({
             <div
               key={`${message.name}_${message.modified}`}
               id={`message-${message.name}`}
+              data-message-name={message.name}
               ref={(el) => {
                 messageRefs.current[message.name] = el
+                if (el) {
+                  el.setAttribute('data-message-name', message.name)
+                }
               }}
             >
               <div className='w-full overflow-x-clip overflow-y-visible text-ellipsis'>
