@@ -7,13 +7,7 @@ import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { RavenChannel } from '@/types/RavenChannelManagement/RavenChannel'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 
-export type UnreadChannelCountItem = {
-  name: string
-  user_id?: string
-  unread_count: number
-  is_direct_message: 0 | 1
-  last_message_timestamp: string
-}
+export type UnreadChannelCountItem = { name: string; user_id?: string; unread_count: number; is_direct_message: 0 | 1; last_message_timestamp: string }
 
 export type UnreadCountData = UnreadChannelCountItem[]
 
@@ -209,4 +203,39 @@ export const useUpdateLastMessageInChannelList = () => {
   }
 
   return { updateLastMessageInChannelList }
+}
+
+export const useUpdateLastMessageDetails = () => {
+  const { mutate } = useSWRConfig()
+
+  const updateLastMessageForChannel = (
+    channelID: string,
+    message: any
+  ) => {
+    mutate(
+      `channel_list`,
+      (prev?: { message: ChannelList }) => {
+        if (!prev) return prev
+
+        const updateChannel = (channel: any) =>
+          channel.name === channelID
+            ? {
+                ...channel,
+                last_message_details: message,
+                last_message_timestamp: new Date().toISOString(),
+              }
+            : channel
+
+        return {
+          message: {
+            channels: prev.message.channels.map(updateChannel),
+            dm_channels: prev.message.dm_channels.map(updateChannel),
+          }
+        }
+      },
+      false // 👈 Không revalidate
+    )
+  }
+
+  return { updateLastMessageForChannel }
 }

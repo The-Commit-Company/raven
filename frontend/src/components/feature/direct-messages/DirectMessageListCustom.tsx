@@ -179,8 +179,20 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
         ? JSON.parse(channel.last_message_details)
         : channel.last_message_details
 
-    if (msg?.content) {
-      lastMessageText = msg.content
+    if (msg?.json_content) {
+      try {
+        const json = typeof msg.json_content === 'string' ? JSON.parse(msg.json_content) : msg.json_content
+        // Giả sử bạn dùng tiptap editor: lấy text đầu tiên trong đoạn
+        const paragraph = json?.content?.[0]?.content?.[0]
+        if (paragraph?.text) {
+          lastMessageText = paragraph.text
+        }
+      } catch (e) {
+        lastMessageText = ''
+      }
+    } else if (msg?.content) {
+      // fallback nếu không có json_content
+      lastMessageText = msg.content.replace(/<[^>]+>/g, '')
       lastMessageOwner = msg.owner === currentUser ? 'Bạn' : msg.owner
     }
   } catch (err) {

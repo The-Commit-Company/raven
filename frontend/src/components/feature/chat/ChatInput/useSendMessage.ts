@@ -1,6 +1,49 @@
+// import { useFrappePostCall } from 'frappe-react-sdk'
+// import { Message } from '../../../../../../types/Messaging/Message'
+// import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
+
+// export const useSendMessage = (
+//   channelID: string,
+//   uploadFiles: (selectedMessage?: Message | null) => Promise<RavenMessage[]>,
+//   onMessageSent: (messages: RavenMessage[]) => void,
+//   selectedMessage?: Message | null
+// ) => {
+//   const { call, loading } = useFrappePostCall<{ message: RavenMessage }>('raven.api.raven_message.send_message')
+
+//   const sendMessage = async (content: string, json?: any, sendSilently: boolean = false): Promise<void> => {
+//     if (content) {
+//       return call({
+//         channel_id: channelID,
+//         text: content,
+//         json_content: json,
+//         is_reply: selectedMessage ? 1 : 0,
+//         linked_message: selectedMessage ? selectedMessage.name : null,
+//         send_silently: sendSilently ? true : false
+//       })
+//         .then((res) => onMessageSent([res.message]))
+//         .then(() => uploadFiles())
+//         .then((res) => {
+//           onMessageSent(res)
+//         })
+//     } else {
+//       return uploadFiles(selectedMessage).then((res) => {
+//         onMessageSent(res)
+//       })
+//     }
+//   }
+
+//   return {
+//     sendMessage,
+//     loading
+//   }
+// }
+
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
+import { useContext } from 'react'
+import { UserContext } from '@/utils/auth/UserProvider'
+import { useUpdateLastMessageDetails } from '@/utils/channel/ChannelListProvider'
 
 export const useSendMessage = (
   channelID: string,
@@ -9,24 +52,74 @@ export const useSendMessage = (
   selectedMessage?: Message | null
 ) => {
   const { call, loading } = useFrappePostCall<{ message: RavenMessage }>('raven.api.raven_message.send_message')
+  const { updateLastMessageForChannel } = useUpdateLastMessageDetails()
+  const { currentUser } = useContext(UserContext)
 
-  const sendMessage = async (content: string, json?: any, sendSilently: boolean = false): Promise<void> => {
-    if (content) {
+  const sendMessage = async (
+    content: string,
+    json?: any,
+    sendSilently: boolean = false
+  ): Promise<void> => {
+    if (content.trim()) {
       return call({
         channel_id: channelID,
         text: content,
         json_content: json,
         is_reply: selectedMessage ? 1 : 0,
         linked_message: selectedMessage ? selectedMessage.name : null,
-        send_silently: sendSilently ? true : false
+        send_silently: sendSilently
       })
-        .then((res) => onMessageSent([res.message]))
-        .then(() => uploadFiles())
         .then((res) => {
+          // ✅ Cập nhật sidebar ngay với tin nhắn text
+          updateLastMessageForChannel(channelID, {
+            message_id: res.message.name,
+            content,
+            owner: currentUser,
+            message_type: res.message.message_type,
+            is_bot_message: res.message.is_bot_message,
+            bot: res.message.bot || null
+          })
+
+          onMessageSent([res.message])
+        })
+        .then(() => uploadFiles())
+        .then((res: RavenMessage[]) => {
+          if (res.length > 0) {
+            const last = res[res.length - 1]
+            const isImage =
+              last.message_type === 'Image' ||
+              (last?.attachment?.file_url || '').match(/\.(jpe?g|png|gif|webp|bmp|svg)$/i)
+
+            updateLastMessageForChannel(channelID, {
+              message_id: last.name,
+              content: isImage ? 'Đã gửi ảnh' : 'Đã gửi file',
+              owner: currentUser,
+              message_type: last.message_type,
+              is_bot_message: 0,
+              bot: null
+            })
+          }
+
           onMessageSent(res)
         })
     } else {
-      return uploadFiles(selectedMessage).then((res) => {
+      return uploadFiles(selectedMessage).then((res: RavenMessage[]) => {
+        if (res.length > 0) {
+          const last = res[res.length - 1]
+          const isImage =
+            last.message_type === 'Image' ||
+            (last?.attachment?.file_url || '').match(/\.(jpe?g|png|gif|webp|bmp|svg)$/i)
+
+          updateLastMessageForChannel(channelID, {
+            message_id: last.name,
+            content: isImage ? 'Đã gửi ảnh' : 'Đã gửi file',
+            owner: currentUser,
+            message_type: last.message_type,
+            is_bot_message: 0,
+            bot: null
+          })
+        }
+
         onMessageSent(res)
       })
     }
@@ -37,3 +130,4 @@ export const useSendMessage = (
     loading
   }
 }
+
