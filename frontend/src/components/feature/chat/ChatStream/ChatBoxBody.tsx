@@ -116,14 +116,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         }
       },
       { revalidate: false }
-    ).then(() => {
-      // Nếu người dùng đang xem trang, thì chúng ta cũng cần phải
-      if (virtuosoRef.current) {
-        virtuosoRef.current.scrollToIndex({
-          index: messages.length - 1
-        })
-      }
-    })
+    )
 
     // Dừng indicator typing
     stopTyping()

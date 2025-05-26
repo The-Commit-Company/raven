@@ -8,6 +8,7 @@ import { Box, Flex, IconButton } from '@radix-ui/themes'
 import { useSWRConfig } from 'frappe-react-sdk'
 import { useCallback, useContext, useMemo, useRef, useState } from 'react'
 import { BiX } from 'react-icons/bi'
+import { VirtuosoHandle } from 'react-virtuoso'
 import { Message } from '../../../../../../types/Messaging/Message'
 import AIEvent from '../../ai/AIEvent'
 import useFileUpload from '../../chat/ChatInput/FileInput/useFileUpload'
@@ -22,7 +23,6 @@ import { JoinChannelBox } from '../../chat/chat-footer/JoinChannelBox'
 import { CustomFile, FileDrop } from '../../file-upload/FileDrop'
 import { FileListItem } from '../../file-upload/FileListItem'
 import ThreadFirstMessage from './ThreadFirstMessage'
-import { VirtuosoHandle } from 'react-virtuoso'
 
 export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) => {
   const threadID = threadMessage.name
@@ -95,15 +95,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
         }
       },
       { revalidate: false }
-    ).then(() => {
-      // If the user is focused on the page, then we also need to
-      // If the user is the sender of the message, scroll to the bottom
-      if (document.hasFocus()) {
-        virtuosoRef.current?.scrollToIndex({
-          index: messages.length - 1
-        })
-      }
-    })
+    )
     // Stop the typing indicator
     stopTyping()
     // Clear the selected message
