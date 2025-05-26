@@ -182,8 +182,8 @@ export const SidebarBadge = ({ children, className, ...props }: BadgeProps) => {
     <Theme accentColor='gray'>
       <div
         className={clsx(
-          `flex items-center justify-center min-w-2 text-accent-a11 dark:text-accent-a11 dark:bg-accent-a3 bg-accent-a4 text-xs py-0.5 px-2 rounded-radius2
-            whitespace-nowrap font-medium
+          `flex items-center justify-center min-w-2 bg-red-500 text-xs py-0.5 px-2 rounded-radius2
+            whitespace-nowrap font-medium text-[10px] text-white
             `,
           className
         )}
