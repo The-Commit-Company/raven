@@ -1,47 +1,70 @@
 import throttle from '@/hooks/useThrottle'
 import { MutableRefObject, useEffect } from 'react'
+import { VirtuosoHandle } from 'react-virtuoso'
 
 export const useScrollHandling = (
-  scrollRef: MutableRefObject<HTMLDivElement | null>,
+  virtuosoRef: MutableRefObject<VirtuosoHandle | null>,
   setNewMessageCount: (count: number) => void,
   setSearchParams: any,
   setHasNewMessages: (hasNew: boolean) => void,
   setShowScrollToBottomButton: (show: boolean) => void,
   unreadMessageIds: Set<string>,
   setUnreadMessageIds: (ids: Set<string> | ((prev: Set<string>) => Set<string>)) => void,
-  messageRefs: MutableRefObject<{ [key: string]: HTMLDivElement | null }>
+  messageRefs: MutableRefObject<{ [key: string]: HTMLDivElement | null }>,
+  isInitialLoadComplete: boolean = true // Thêm param để track initial load
 ) => {
-  // Scroll event handling
+  // Scroll event handling for Virtuoso
   useEffect(() => {
-    const el = scrollRef.current
-    if (!el) return
+    const virtuoso = virtuosoRef.current
+    if (!virtuoso) return
 
     const handleScroll = throttle(() => {
-      const { scrollTop, clientHeight, scrollHeight } = el
-      const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100
+      // Không xử lý scroll events khi chưa hoàn thành initial load
+      if (!isInitialLoadComplete) return
 
-      if (isNearBottom) {
-        setNewMessageCount(0)
-        setSearchParams({})
-        setHasNewMessages(false)
-        setShowScrollToBottomButton(false)
-      } else {
-        setShowScrollToBottomButton(true)
-      }
+      // Use a small timeout to ensure the Virtuoso instance is ready
+      setTimeout(() => {
+        try {
+          const scroller = document.querySelector('.virtuoso-scroller') as HTMLElement | null
+          if (!scroller) return
+
+          const { scrollTop, clientHeight, scrollHeight } = scroller
+          const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100
+
+          if (isNearBottom) {
+            setNewMessageCount(0)
+            setSearchParams({})
+            setHasNewMessages(false)
+            setShowScrollToBottomButton(false)
+          } else {
+            setShowScrollToBottomButton(true)
+          }
+        } catch (e) {
+          console.error('Error handling scroll:', e)
+        }
+      }, 100)
     }, 1000)
 
-    el.addEventListener('scroll', handleScroll, { passive: true })
+    // Listen to scroll events on the Virtuoso scroller
+    const scroller = document.querySelector('.virtuoso-scroller') as HTMLElement | null
+    if (!scroller) return
+
+    scroller.addEventListener('scroll', handleScroll, { passive: true })
 
     return () => {
-      el.removeEventListener('scroll', handleScroll)
+      scroller.removeEventListener('scroll', handleScroll)
       handleScroll.cancel?.()
     }
-  }, [])
+  }, [isInitialLoadComplete]) // Thêm dependency
 
   // Intersection observer for unread messages
   useEffect(() => {
-    const el = scrollRef.current
-    if (!el) return
+    // Không observe unread messages khi chưa hoàn thành initial load
+    if (!isInitialLoadComplete) return
+
+    // Find the Virtuoso scroller element
+    const scroller = document.querySelector('.virtuoso-scroller') as HTMLElement | null
+    if (!scroller) return
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -65,7 +88,7 @@ export const useScrollHandling = (
           })
         }
       },
-      { root: el, threshold: 0.5, rootMargin: '0px' }
+      { root: scroller, threshold: 0.5, rootMargin: '0px' }
     )
 
     const unreadIds = Array.from(unreadMessageIds)
@@ -77,5 +100,5 @@ export const useScrollHandling = (
     })
 
     return () => observer.disconnect()
-  }, [unreadMessageIds])
+  }, [unreadMessageIds, isInitialLoadComplete]) // Thêm dependency
 }

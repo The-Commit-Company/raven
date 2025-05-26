@@ -70,8 +70,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
   // Hook để mutate SWR cache
   const { mutate } = useSWRConfig()
 
-  // Ref để scroll đến cuối khi có message mới
-  const scrollRef = useRef<HTMLDivElement>(null)
+  // Using Virtuoso's ref for scrolling
 
   // Hàm xử lý khi message được gửi thành công
   const onMessageSendCompleted = (messages: RavenMessage[]) => {
@@ -124,11 +123,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         }
       },
       { revalidate: false }
-    ).then(() => {
-      // Nếu người dùng đang xem trang, thì chúng ta cũng cần phải
-      // Nếu người dùng là người gửi tin nhắn, thì scroll đến cuối
-      scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
-    })
+    )
 
     // Dừng indicator typing
     stopTyping()
@@ -144,14 +139,14 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
     return null
   }, [user, channelMembers])
 
-  const chatStreamRef = useRef<any>(null)
+  const chatStreamRef = useRef<{ onUpArrow: () => void } | null>(null)
 
   const onUpArrowPressed = useCallback(() => {
     // Hàm gọi khi người dùng nhấn phím ↑ (dùng để mở lại tin nhắn trước)
     chatStreamRef.current?.onUpArrow()
   }, [])
 
-  const tiptapRef = useRef<any>(null)
+  const tiptapRef = useRef<{ focusEditor: () => void } | null>(null)
 
   const isMobile = useIsMobile()
 
@@ -254,10 +249,8 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         maxFiles={10}
         maxFileSize={10000000}
       >
-        <ChatStream // Component hiển thị danh sách các tin nhắn.
+        <ChatStream
           channelID={channelData.name}
-          scrollRef={scrollRef}
-          ref={chatStreamRef}
           onModalClose={onModalClose}
           pinnedMessagesString={channelData.pinned_messages_string}
           replyToMessage={handleReplyAction}

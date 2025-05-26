@@ -1,28 +1,41 @@
 import { MutableRefObject, useEffect } from 'react'
+import { VirtuosoHandle } from 'react-virtuoso'
 
-export const useScrollToBottomEffect = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
+export const useScrollToBottomEffect = (virtuosoRef: MutableRefObject<VirtuosoHandle | null>) => {
   useEffect(() => {
-    if (!scrollRef.current) return
+    if (!virtuosoRef.current) return
 
-    const observer = new ResizeObserver(() => {
-      const scrollContainer = scrollRef.current
-      if (!scrollContainer) return
+    const handleResize = () => {
+      const scroller = document.querySelector('.virtuoso-scroller') as HTMLElement | null
+      if (!scroller) return
 
-      // Kiểm tra xem có đang ở gần cuối không trước khi điều chỉnh cuộn
-      if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 100) {
+      // Check if we're near the bottom before auto-scrolling
+      const isNearBottom = scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 100
+
+      if (isNearBottom && virtuosoRef.current) {
         requestAnimationFrame(() => {
-          scrollContainer.scrollTo({
-            top: scrollContainer.scrollHeight,
-            behavior: 'instant'
-          })
+          try {
+            virtuosoRef.current?.scrollTo({
+              top: scroller.scrollHeight,
+              behavior: 'auto'
+            })
+          } catch (e) {
+            console.error('Error scrolling to bottom:', e)
+          }
         })
       }
-    })
+    }
 
-    observer.observe(scrollRef.current)
+    // Use ResizeObserver to detect content size changes
+    const resizeObserver = new ResizeObserver(handleResize)
+    const scroller = document.querySelector('.virtuoso-scroller')
+
+    if (scroller) {
+      resizeObserver.observe(scroller)
+    }
 
     return () => {
-      observer.disconnect()
+      resizeObserver.disconnect()
     }
-  }, [scrollRef])
+  }, [virtuosoRef])
 }
