@@ -58,7 +58,6 @@ export const useMessageLoading = (
   }
 
   const loadNewerMessages = () => {
-    // Thêm điều kiện kiểm tra initial load complete
     if (loadingNewerMessages || !data?.message.has_new_messages || highlightedMessage || !isInitialLoadComplete) {
       return Promise.resolve()
     }
