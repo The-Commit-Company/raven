@@ -176,7 +176,7 @@ const CircleUserList = ({ size }: SidebarBodyProps) => {
     modifiers={[restrictToParentElement]}
   >
     <SortableContext items={items} strategy={rectSortingStrategy}>
-      <div className={`grid grid-cols-${gridCols} gap-3 p-2 overflow-hidden`}>
+      <div className={`grid grid-cols-${gridCols} gap-3 p-2 overflow-hidden max-w-4xl mx-auto`}>
         {items.map((channelName) => {
           const channel = enrichedSelectedChannels.find((c) => c.name === channelName)
           if (!channel) return null
