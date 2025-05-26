@@ -152,7 +152,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       if (hasNewMessages) {
         return (
           <div className='flex w-full min-h-8 pb-4 justify-center items-center'>
-            <div>Loading newer messages...</div>
+            <Loader />
           </div>
         )
       }
@@ -195,20 +195,18 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       [hasNewMessages, loadNewerMessages, messages, isInitialLoadComplete]
     )
 
-    if (error) {
-      return <ErrorBanner error={error} />
-    }
-
-    if (isLoading && !messages?.length) {
-      return <ChatStreamLoader />
-    }
-
-    if (!isLoading && !hasOlderMessages && !messages?.length) {
-      return <ChannelHistoryFirstMessage channelID={channelID ?? ''} />
-    }
-
     return (
       <div className='relative h-full flex flex-col overflow-hidden pb-16 sm:pb-0'>
+        {/* Empty state */}
+        {!isLoading && !hasOlderMessages && <ChannelHistoryFirstMessage channelID={channelID ?? ''} />}
+
+        {/* Loading state */}
+        {isLoading && <ChatStreamLoader />}
+
+        {/* Error state */}
+        {error && <ErrorBanner error={error} />}
+
+        {/* Messages */}
         <Virtuoso
           ref={virtuosoRef}
           data={messages || []}

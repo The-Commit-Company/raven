@@ -17,11 +17,12 @@ import { useTyping } from '../../chat/ChatInput/TypingIndicator/useTypingIndicat
 import { useSendMessage } from '../../chat/ChatInput/useSendMessage'
 import { ReplyMessageBox } from '../../chat/ChatMessage/ReplyMessageBox/ReplyMessageBox'
 import ChatStream from '../../chat/ChatStream/ChatStream'
+import { GetMessagesResponse } from '../../chat/ChatStream/useMessageAPI'
 import { JoinChannelBox } from '../../chat/chat-footer/JoinChannelBox'
 import { CustomFile, FileDrop } from '../../file-upload/FileDrop'
 import { FileListItem } from '../../file-upload/FileListItem'
 import ThreadFirstMessage from './ThreadFirstMessage'
-import { GetMessagesResponse } from '../../chat/ChatStream/useMessageAPI'
+import { VirtuosoHandle } from 'react-virtuoso'
 
 export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) => {
   const threadID = threadMessage.name
@@ -42,7 +43,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
     setSelectedMessage(null)
   }
 
-  const scrollRef = useRef<HTMLDivElement>(null)
+  const virtuosoRef = useRef<VirtuosoHandle>(null)
 
   const { mutate } = useSWRConfig()
 
@@ -97,7 +98,11 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
     ).then(() => {
       // If the user is focused on the page, then we also need to
       // If the user is the sender of the message, scroll to the bottom
-      scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
+      if (document.hasFocus()) {
+        virtuosoRef.current?.scrollToIndex({
+          index: messages.length - 1
+        })
+      }
     })
     // Stop the typing indicator
     stopTyping()
@@ -174,7 +179,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
         <ThreadFirstMessage message={threadMessage} />
         <ChatStream
           channelID={threadID ?? ''}
-          scrollRef={scrollRef}
+          virtuosoRef={virtuosoRef}
           ref={chatStreamRef}
           replyToMessage={handleReplyAction}
           showThreadButton={false}
