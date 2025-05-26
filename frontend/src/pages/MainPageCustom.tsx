@@ -116,6 +116,9 @@ const MainPageContent = () => {
   const { handleSidebarResize, handleSidebarPointerUp } = useSidebarResizeLogic(sidebarRef)
   const { mode } = useSidebarMode()
 
+  const [panelSize, setPanelSize] = useState(30); // defaultSize
+
+
   return (
     <UserListProvider>
       <CircleUserListProvider>
@@ -140,13 +143,13 @@ const MainPageContent = () => {
             />
 
             {/* Danh sách tin nhắn */}
-            <Panel defaultSize={30} minSize={20} maxSize={55}>
+            <Panel onResize={(size) => setPanelSize(size)} defaultSize={30} minSize={20} maxSize={55}>
               <div className='flex flex-col gap-2 w-full h-full'>
                 <SidebarHeader />
                 <div className='px-2'>
                   <div className='h-px bg-gray-400 dark:bg-gray-600' />
                 </div>
-                <SidebarBody />
+                <SidebarBody size={panelSize} />
               </div>
             </Panel>
 

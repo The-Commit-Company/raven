@@ -49,8 +49,6 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
       sidebarRef?.current.resize(sidebarMinWidth)
     } else if (mode === 'default') {
       sidebarRef?.current.resize(sidebarDefaultExpandedWidth)
-    } else if (mode === 'hide-filter') {
-      sidebarRef?.current.resize(sidebarMinWidth)
     }
   }, [mode, sidebarRef])
 

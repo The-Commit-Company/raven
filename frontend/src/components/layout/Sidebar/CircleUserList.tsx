@@ -13,6 +13,7 @@ import { SortableContext, useSortable, rectSortingStrategy, arrayMove } from '@d
 import { CSS } from '@dnd-kit/utilities'
 import { restrictToParentElement } from '@dnd-kit/modifiers'
 import { Tooltip } from '@radix-ui/themes'
+import { SidebarBodyProps } from './SidebarBodyCustom'
 
 interface Props {
   channel: ChannelInfo
@@ -112,12 +113,17 @@ const CircleUserItem = ({ channel, isActive, onActivate }: Props) => {
   )
 }
 
-const CircleUserList = () => {
+const CircleUserList = ({ size }: SidebarBodyProps) => {
   const { selectedChannels, setSelectedChannels } = useCircleUserList()
   const unread_count = useUnreadMessages()
   const { isPinned, togglePin, markAsUnread, isManuallyMarked } = useChannelActions()
   const channelID = useParams().channelID || ''
-  const enrichedSelectedChannels = useMergedUnreadCount(selectedChannels, unread_count?.message ?? [])
+  const safeSelectedChannels = selectedChannels.map((c) => ({
+    ...c,
+    last_message_timestamp: c.last_message_timestamp ?? undefined // chuyển null -> undefined
+  }))
+
+  const enrichedSelectedChannels = useMergedUnreadCount(safeSelectedChannels, unread_count?.message ?? [])
   const [items, setItems] = useState(enrichedSelectedChannels.map((c) => c.name))
 
   useEffect(() => {
@@ -127,6 +133,16 @@ const CircleUserList = () => {
       setItems(newItems)
     }
   }, [enrichedSelectedChannels])
+
+  const getGridCols = (size: number): number => {
+    if (size <= 10) return 2
+    if (size <= 20) return 4
+    if (size <= 30) return 5
+    if (size <= 40) return 6
+    return 6
+  }
+
+  const gridCols = getGridCols(size)
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
 
@@ -154,48 +170,50 @@ const CircleUserList = () => {
   return enrichedSelectedChannels?.length > 0 ? (
     <div className='w-full'>
       <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-        modifiers={[restrictToParentElement]}
-      >
-        <SortableContext items={items} strategy={rectSortingStrategy}>
-          <div className="grid grid-cols-4 gap-3 p-2 w-full max-w-[288px] overflow-hidden">
+    sensors={sensors}
+    collisionDetection={closestCenter}
+    onDragEnd={handleDragEnd}
+    modifiers={[restrictToParentElement]}
+  >
+    <SortableContext items={items} strategy={rectSortingStrategy}>
+      <div className={`grid grid-cols-${gridCols} gap-3 p-2 overflow-hidden`}>
+        {items.map((channelName) => {
+          const channel = enrichedSelectedChannels.find((c) => c.name === channelName)
+          if (!channel) return null
 
-            {items.map((channelName) => {
-              const channel = enrichedSelectedChannels.find((c) => c.name === channelName)
-              if (!channel) return null
-              return (
-                <ContextMenu.Root key={channel.name}>
-                  <SortableCircleUserItem
-                    channel={channel}
-                    isActive={channel.name === channelID}
-                    onActivate={() => {}}
-                  />
-                  <ContextMenu.Portal>
-                    <ContextMenu.Content className='z-50 bg-white dark:bg-gray-800 text-black dark:text-white rounded shadow-md p-1'>
-                      <ContextMenu.Item
-                        className='px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer'
-                        onClick={() => markAsUnread(channel)}
-                      >
-                        {channel.unread_count > 0 || isManuallyMarked(channel.name)
-                          ? 'Đánh dấu đã đọc'
-                          : 'Đánh dấu chưa đọc'}
-                      </ContextMenu.Item>
-                      <ContextMenu.Item
-                        className='px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer'
-                        onClick={() => togglePin(channel)}
-                      >
-                        {isPinned(channel.name) ? 'Bỏ ghim khỏi danh sách' : 'Ghim lên đầu'}
-                      </ContextMenu.Item>
-                    </ContextMenu.Content>
-                  </ContextMenu.Portal>
-                </ContextMenu.Root>
-              )
-            })}
-          </div>
-        </SortableContext>
-      </DndContext>
+          return (
+            <div key={channel.name} className="flex flex-col items-center justify-center w-fit">
+              <ContextMenu.Root>
+                <SortableCircleUserItem
+                  channel={channel}
+                  isActive={channel.name === channelID}
+                  onActivate={() => {}}
+                />
+                <ContextMenu.Portal>
+                  <ContextMenu.Content className="z-50 bg-white dark:bg-gray-800 text-black dark:text-white rounded shadow-md p-1">
+                    <ContextMenu.Item
+                      className="px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer"
+                      onClick={() => markAsUnread(channel)}
+                    >
+                      {channel.unread_count > 0 || isManuallyMarked(channel.name)
+                        ? 'Đánh dấu đã đọc'
+                        : 'Đánh dấu chưa đọc'}
+                    </ContextMenu.Item>
+                    <ContextMenu.Item
+                      className="px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer"
+                      onClick={() => togglePin(channel)}
+                    >
+                      {isPinned(channel.name) ? 'Bỏ ghim khỏi danh sách' : 'Ghim lên đầu'}
+                    </ContextMenu.Item>
+                  </ContextMenu.Content>
+                </ContextMenu.Portal>
+              </ContextMenu.Root>
+            </div>
+          )
+        })}
+      </div>
+    </SortableContext>
+  </DndContext>
     </div>
   ) : null
 }
