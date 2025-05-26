@@ -170,50 +170,52 @@ const CircleUserList = ({ size }: SidebarBodyProps) => {
   return enrichedSelectedChannels?.length > 0 ? (
     <div className='w-full'>
       <DndContext
-    sensors={sensors}
-    collisionDetection={closestCenter}
-    onDragEnd={handleDragEnd}
-    modifiers={[restrictToParentElement]}
-  >
-    <SortableContext items={items} strategy={rectSortingStrategy}>
-      <div className={`grid grid-cols-${gridCols} gap-3 p-2 overflow-hidden max-w-4xl mx-auto`}>
-        {items.map((channelName) => {
-          const channel = enrichedSelectedChannels.find((c) => c.name === channelName)
-          if (!channel) return null
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+        modifiers={[restrictToParentElement]}
+      >
+        <SortableContext items={items} strategy={rectSortingStrategy}>
+          <div
+            className={`grid grid-cols-${gridCols} gap-3 p-2 overflow-hidden ${gridCols >= 5 ? 'mx-auto max-w-4xl' : ''}`}
+          >
+            {items.map((channelName) => {
+              const channel = enrichedSelectedChannels.find((c) => c.name === channelName)
+              if (!channel) return null
 
-          return (
-            <div key={channel.name} className="flex flex-col items-center justify-center w-fit">
-              <ContextMenu.Root>
-                <SortableCircleUserItem
-                  channel={channel}
-                  isActive={channel.name === channelID}
-                  onActivate={() => {}}
-                />
-                <ContextMenu.Portal>
-                  <ContextMenu.Content className="z-50 bg-white dark:bg-gray-800 text-black dark:text-white rounded shadow-md p-1">
-                    <ContextMenu.Item
-                      className="px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer"
-                      onClick={() => markAsUnread(channel)}
-                    >
-                      {channel.unread_count > 0 || isManuallyMarked(channel.name)
-                        ? 'Đánh dấu đã đọc'
-                        : 'Đánh dấu chưa đọc'}
-                    </ContextMenu.Item>
-                    <ContextMenu.Item
-                      className="px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer"
-                      onClick={() => togglePin(channel)}
-                    >
-                      {isPinned(channel.name) ? 'Bỏ ghim khỏi danh sách' : 'Ghim lên đầu'}
-                    </ContextMenu.Item>
-                  </ContextMenu.Content>
-                </ContextMenu.Portal>
-              </ContextMenu.Root>
-            </div>
-          )
-        })}
-      </div>
-    </SortableContext>
-  </DndContext>
+              return (
+                <div key={channel.name} className='flex flex-col items-center justify-center w-fit'>
+                  <ContextMenu.Root>
+                    <SortableCircleUserItem
+                      channel={channel}
+                      isActive={channel.name === channelID}
+                      onActivate={() => {}}
+                    />
+                    <ContextMenu.Portal>
+                      <ContextMenu.Content className='z-50 bg-white dark:bg-gray-800 text-black dark:text-white rounded shadow-md p-1'>
+                        <ContextMenu.Item
+                          className='px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer'
+                          onClick={() => markAsUnread(channel)}
+                        >
+                          {channel.unread_count > 0 || isManuallyMarked(channel.name)
+                            ? 'Đánh dấu đã đọc'
+                            : 'Đánh dấu chưa đọc'}
+                        </ContextMenu.Item>
+                        <ContextMenu.Item
+                          className='px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer'
+                          onClick={() => togglePin(channel)}
+                        >
+                          {isPinned(channel.name) ? 'Bỏ ghim khỏi danh sách' : 'Ghim lên đầu'}
+                        </ContextMenu.Item>
+                      </ContextMenu.Content>
+                    </ContextMenu.Portal>
+                  </ContextMenu.Root>
+                </div>
+              )
+            })}
+          </div>
+        </SortableContext>
+      </DndContext>
     </div>
   ) : null
 }
