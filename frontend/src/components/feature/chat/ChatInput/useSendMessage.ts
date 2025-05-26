@@ -37,7 +37,6 @@
 //     loading
 //   }
 // }
-
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
@@ -55,6 +54,22 @@ export const useSendMessage = (
   const { updateLastMessageForChannel } = useUpdateLastMessageDetails()
   const { currentUser } = useContext(UserContext)
 
+  const updateSidebarMessage = (msg: RavenMessage, fallbackText?: string) => {
+    const isImage =
+      msg.message_type === 'Image' ||
+      (msg?.attachment?.file_url || '').match(/\.(jpe?g|png|gif|webp|bmp|svg)$/i)
+
+    updateLastMessageForChannel(channelID, {
+      message_id: msg.name,
+      content: fallbackText || msg.content || '',
+      owner: currentUser,
+      message_type: msg.message_type,
+      is_bot_message: msg.is_bot_message,
+      bot: msg.bot || null,
+      timestamp: new Date().toISOString()
+    })
+  }
+
   const sendMessage = async (
     content: string,
     json?: any,
@@ -70,56 +85,25 @@ export const useSendMessage = (
         send_silently: sendSilently
       })
         .then((res) => {
-          // ✅ Cập nhật sidebar ngay với tin nhắn text
-          updateLastMessageForChannel(channelID, {
-            message_id: res.message.name,
-            content,
-            owner: currentUser,
-            message_type: res.message.message_type,
-            is_bot_message: res.message.is_bot_message,
-            bot: res.message.bot || null
-          })
-
+          updateSidebarMessage(res.message)
           onMessageSent([res.message])
         })
         .then(() => uploadFiles())
         .then((res: RavenMessage[]) => {
           if (res.length > 0) {
             const last = res[res.length - 1]
-            const isImage =
-              last.message_type === 'Image' ||
-              (last?.attachment?.file_url || '').match(/\.(jpe?g|png|gif|webp|bmp|svg)$/i)
-
-            updateLastMessageForChannel(channelID, {
-              message_id: last.name,
-              content: isImage ? 'Đã gửi ảnh' : 'Đã gửi file',
-              owner: currentUser,
-              message_type: last.message_type,
-              is_bot_message: 0,
-              bot: null
-            })
+            const text = last.message_type === 'Image' ? 'Đã gửi ảnh' : 'Đã gửi file'
+            updateSidebarMessage(last, text)
           }
-
           onMessageSent(res)
         })
     } else {
       return uploadFiles(selectedMessage).then((res: RavenMessage[]) => {
         if (res.length > 0) {
           const last = res[res.length - 1]
-          const isImage =
-            last.message_type === 'Image' ||
-            (last?.attachment?.file_url || '').match(/\.(jpe?g|png|gif|webp|bmp|svg)$/i)
-
-          updateLastMessageForChannel(channelID, {
-            message_id: last.name,
-            content: isImage ? 'Đã gửi ảnh' : 'Đã gửi file',
-            owner: currentUser,
-            message_type: last.message_type,
-            is_bot_message: 0,
-            bot: null
-          })
+          const text = last.message_type === 'Image' ? 'Đã gửi ảnh' : 'Đã gửi file'
+          updateSidebarMessage(last, text)
         }
-
         onMessageSent(res)
       })
     }
@@ -130,4 +114,3 @@ export const useSendMessage = (
     loading
   }
 }
-

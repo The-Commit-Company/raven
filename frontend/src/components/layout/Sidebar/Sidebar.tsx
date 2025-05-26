@@ -14,13 +14,13 @@ export const Sidebar = () => {
   return (
     <HStack gap='0' className={`h-screen ${mode}`}>
       <WorkspacesSidebar />
-      <PanelGroup direction='horizontal' className='flex-1 flex'>
-        <Panel maxSize={24} defaultSize={24} className='flex'>
+      <PanelGroup direction='horizontal'>
+        <Panel defaultSize={35} minSize={15} className='flex'>
           <SidebarContainer />
         </Panel>
         <PanelResizeHandle className='cursor-col-resize' />
-        <Panel minSize={35} className='border-l border-r border-gray-400 dark:border-gray-600'>
-          <div className='flex flex-col gap-2 w-full min-w-[288px]'>
+        <Panel defaultSize={70} minSize={50} className='border-l border-r border-gray-400 dark:border-gray-600'>
+          <div className='flex flex-col gap-2 w-full'>
             <SidebarHeader />
             <div className='px-2'>
               <div className='h-px bg-gray-400 dark:bg-gray-600' />

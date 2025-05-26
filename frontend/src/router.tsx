@@ -1,10 +1,10 @@
 import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import WorkspaceSwitcherGrid from './components/layout/WorkspaceSwitcherGrid'
 import ErrorPage from './pages/ErrorPage'
-import { MainPage } from './pages/MainPage'
 import MobileTabsPage from './pages/MobileTabsPage'
 import WorkspaceSwitcher from './pages/WorkspaceSwitcher'
 import { ProtectedRoute } from './utils/auth/ProtectedRoute'
+import { MainPageCustom } from './pages/MainPageCustom'
 
 const isDesktop = window.innerWidth > 768
 const lastWorkspace = localStorage.getItem('ravenLastWorkspace') ?? ''
@@ -104,7 +104,7 @@ const router = createBrowserRouter(
             <Route path='push-notifications' lazy={() => import('./pages/settings/PushNotifications')} />
             <Route path='help' lazy={() => import('./pages/settings/HelpAndSupport')} />
           </Route>
-          <Route path=':workspaceID' element={<MainPage />}>
+          <Route path=':workspaceID' element={<MainPageCustom />}>
             <Route index element={<MobileTabsPage />} />
             <Route path='threads' lazy={() => import('./components/feature/threads/Threads')}>
               <Route path=':threadID' lazy={() => import('./components/feature/threads/ThreadManager/ViewThread')} />
