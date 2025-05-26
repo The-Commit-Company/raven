@@ -54,11 +54,20 @@ export const useMessageLoading = (
         return d
       },
       { revalidate: false }
-    )
+    ).then(() => {
+      const scrollContainer = virtuosoRef.current
+      requestAnimationFrame(() => {
+        if (scrollContainer) {
+          scrollContainer.scrollToIndex({
+            index: 0,
+            behavior: 'smooth'
+          })
+        }
+      })
+    })
   }
 
   const loadNewerMessages = () => {
-    // Thêm điều kiện kiểm tra initial load complete
     if (loadingNewerMessages || !data?.message.has_new_messages || highlightedMessage || !isInitialLoadComplete) {
       return Promise.resolve()
     }
