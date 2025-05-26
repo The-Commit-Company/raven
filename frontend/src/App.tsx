@@ -7,7 +7,7 @@ import { Toaster } from 'sonner'
 import WorkspaceSwitcherGrid from './components/layout/WorkspaceSwitcherGrid'
 import { useStickyState } from './hooks/useStickyState'
 import ErrorPage from './pages/ErrorPage'
-import { MainPage } from './pages/MainPage'
+import { MainPageCustom } from './pages/MainPageCustom'
 import MobileTabsPage from './pages/MobileTabsPage'
 import WorkspaceSwitcher from './pages/WorkspaceSwitcher'
 import { ThemeProvider } from './ThemeProvider'
@@ -147,7 +147,7 @@ const router = createBrowserRouter(
             <Route path='push-notifications' lazy={() => import('./pages/settings/PushNotifications')} />
             <Route path='help' lazy={() => import('./pages/settings/HelpAndSupport')} />
           </Route>
-          <Route path=':workspaceID' element={<MainPage />}>
+          <Route path=':workspaceID' element={<MainPageCustom />}>
             <Route index element={<MobileTabsPage />} />
             <Route path='threads' lazy={() => import('./components/feature/threads/Threads')}>
               <Route path=':threadID' lazy={() => import('./components/feature/threads/ThreadManager/ViewThread')} />

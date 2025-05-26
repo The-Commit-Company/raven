@@ -1,6 +1,6 @@
 import { Flex, Box } from '@radix-ui/themes'
 import { Outlet, useParams } from 'react-router-dom'
-import { lazy, Suspense, useContext, useEffect } from 'react'
+import { lazy, Suspense, useContext, useEffect, useRef, useState } from 'react'
 import { Sidebar } from '../components/layout/Sidebar/Sidebar'
 import { ChannelListProvider } from '../utils/channel/ChannelListProvider'
 import { UserListProvider } from '@/utils/users/UserListProvider'
@@ -15,15 +15,28 @@ import { useActiveSocketConnection } from '@/hooks/useActiveSocketConnection'
 import { useFrappeEventListener, useSWRConfig } from 'frappe-react-sdk'
 import { useUnreadThreadsCountEventListener } from '@/hooks/useUnreadThreadsCount'
 import { UserContext } from '@/utils/auth/UserProvider'
-import { SidebarModeProvider } from '@/utils/layout/sidebar'
+import { SidebarModeProvider, useSidebarMode } from '@/utils/layout/sidebar'
 import { CircleUserListProvider } from '@/utils/users/CircleUserListProvider'
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
+import { HStack } from '@/components/layout/Stack'
+import { SidebarHeader } from '@/components/layout/Sidebar/SidebarHeader'
+import { SidebarBody } from '@/components/layout/Sidebar/SidebarBodyCustom'
+import WorkspacesSidebar from '@/components/layout/Sidebar/WorkspacesSidebar'
+import SidebarContainer from '@/components/layout/Sidebar/SidebarContainer'
+import { useSidebarResizeLogic } from '@/components/layout/Sidebar/useSidebarResizeLogic'
 
 const AddRavenUsersPage = lazy(() => import('@/pages/AddRavenUsersPage'))
 
-export const MainPage = () => {
+export const MainPageCustom = () => {
   const isRavenUser = hasRavenUserRole()
   if (isRavenUser) {
-    return <MainPageContent />
+    return (
+      <ChannelListProvider>
+        <SidebarModeProvider>
+          <MainPageContent />
+        </SidebarModeProvider>
+      </ChannelListProvider>
+    )
   } else {
     // If the user does not have the Raven User role, then show an error message if the user cannot add more people.
     // Else, show the page to add people to Raven
@@ -99,26 +112,60 @@ const MainPageContent = () => {
     onThreadReplyEvent(event.channel_id)
   })
 
+  const sidebarRef = useRef<any>(null)
+  const { handleSidebarResize, handleSidebarPointerUp } = useSidebarResizeLogic(sidebarRef)
+  const { mode } = useSidebarMode()
+
   return (
     <UserListProvider>
-      <ChannelListProvider>
-        <SidebarModeProvider>
-          <CircleUserListProvider>
-            <Flex>
-              {!isMobile && (
-                <Box className={`w-90 bg-gray-2 border-r-gray-3 dark:bg-gray-1`}>
-                  <Sidebar />
-                </Box>
-              )}
-              <Box className='w-[calc(100vw-var(--sidebar-width)-0rem)] dark:bg-gray-2'>
+      <CircleUserListProvider>
+        <HStack gap='0' className={`flex h-screen ${mode}`}>
+          {!isMobile && <WorkspacesSidebar />}
+
+          <PanelGroup direction='horizontal' className='flex-1'>
+            {/* Sidebar trái */}
+            <Panel
+              ref={sidebarRef}
+              defaultSize={15}
+              minSize={3}
+              maxSize={15}
+              onResize={handleSidebarResize}
+            >
+              <SidebarContainer sidebarRef={sidebarRef}/>
+            </Panel>
+
+            <PanelResizeHandle
+              className='cursor-col-resize bg-gray-300 dark:bg-gray-600 w-px panel-1'
+              onPointerUp={handleSidebarPointerUp}
+            />
+
+            {/* Danh sách tin nhắn */}
+            <Panel defaultSize={30} minSize={20} maxSize={55}>
+              <div className='flex flex-col gap-2 w-full h-full'>
+                <SidebarHeader />
+                <div className='px-2'>
+                  <div className='h-px bg-gray-400 dark:bg-gray-600' />
+                </div>
+                <SidebarBody />
+              </div>
+            </Panel>
+
+            <PanelResizeHandle
+              className='cursor-col-resize bg-gray-300 dark:bg-gray-600 w-px handle-2'
+              onPointerUp={handleSidebarPointerUp}
+            />
+
+            {/* Nội dung chính */}
+            <Panel defaultSize={55} minSize={30}>
+              <div className='h-full w-full dark:bg-gray-2 overflow-hidden'>
                 <Outlet />
-              </Box>
-            </Flex>
-          </CircleUserListProvider>
-        </SidebarModeProvider>
-        <CommandMenu />
-        <MessageActionController />
-      </ChannelListProvider>
+              </div>
+            </Panel>
+          </PanelGroup>
+        </HStack>
+      </CircleUserListProvider>
+      <CommandMenu />
+      <MessageActionController />
     </UserListProvider>
   )
 }

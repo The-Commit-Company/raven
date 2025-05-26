@@ -2,15 +2,14 @@ import { UserAvatar } from '@/components/common/UserAvatar'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { useGetUser } from '@/hooks/useGetUser'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
-import { useStickyState } from '@/hooks/useStickyState'
 import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
 import { ContextMenu, Flex, Text } from '@radix-ui/themes'
 import { useFrappePostCall } from 'frappe-react-sdk'
-import { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { UserContext } from '../../../utils/auth/UserProvider'
-import { ChannelInfo, useCircleUserList } from '@/utils/users/CircleUserListProvider'
+// import { ChannelInfo } from '@/utils/users/CircleUserListProvider'
 
 import { ChannelListContext, ChannelListContextType } from '../../../utils/channel/ChannelListProvider'
 import {
@@ -19,15 +18,10 @@ import {
   SidebarGroup,
   SidebarGroupItem,
   SidebarGroupLabel,
-  SidebarGroupList,
   SidebarIcon,
-  SidebarItem,
-  SidebarViewMoreButton
+  SidebarItem
 } from '../../layout/Sidebar/SidebarComp'
-// import { replaceCurrentUserFromDMChannelName } from '@/utils/operations'
 import { ChannelWithUnreadCount, DMChannelWithUnreadCount } from '@/components/layout/Sidebar/useGetChannelUnreadCounts'
-import useUnreadMessageCount, { useFetchUnreadMessageCount } from '@/hooks/useUnreadMessageCount'
-import { mapUnreadToDMChannels } from '@/hooks/useUnreadToDMChannels'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { __ } from '@/utils/translations'
 import { useUnreadMessages } from '@/utils/layout/sidebar'
@@ -35,19 +29,37 @@ import { useChannelActions } from '@/hooks/useChannelActions'
 import { useAtomValue } from 'jotai'
 import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
 
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow, isValid } from 'date-fns'
 import { vi } from 'date-fns/locale/vi'
+// import { useChannelListRealtimeSync } from '@/utils/channel/useChannelListRealtimeSync'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
 
 interface DirectMessageListProps {
   dm_channels: DMChannelWithUnreadCount[] | any
+  isLoading?: boolean
 }
 
+const MAX_PREVIEW_LENGTH = 20 // hoặc bất kỳ độ dài bạn muốn
+
+const truncateText = (text: string, maxLength: number = MAX_PREVIEW_LENGTH): string =>
+  text.length > maxLength ? text.slice(0, maxLength) + '...' : text
+
 export const useMergedUnreadCount = (
-  selectedChannels: ChannelInfo[],
-  unreadMessageList: { name: string; unread_count: number }[]
-): ChannelInfo[] => {
+  selectedChannels: {
+    name: string
+    unread_count?: number
+    last_message_details?: any
+    last_message_timestamp?: string
+    [key: string]: any
+  }[],
+  unreadMessageList: {
+    name: string
+    unread_count: number
+    last_message_details?: any
+    last_message_timestamp?: string
+  }[]
+) => {
   const manuallyMarked = useAtomValue(manuallyMarkedAtom)
 
   return selectedChannels.map((channel) => {
@@ -55,53 +67,48 @@ export const useMergedUnreadCount = (
     const count = found?.unread_count ?? 0
     const isManually = manuallyMarked.has(channel.name)
 
+    // Ưu tiên last_message_details từ unread list, fallback về channel
+    let mergedLastMessageDetails = found?.last_message_details || channel.last_message_details
+
+    // Nếu là chuỗi thuần, rút gọn
+    if (mergedLastMessageDetails?.content && typeof mergedLastMessageDetails.content === 'string') {
+      mergedLastMessageDetails = {
+        ...mergedLastMessageDetails,
+        content: truncateText(mergedLastMessageDetails.content, MAX_PREVIEW_LENGTH)
+      }
+    }
+
     return {
       ...channel,
-      unread_count: isManually ? Math.max(count, 1) : count
+      unread_count: isManually ? Math.max(count, 1) : count,
+      last_message_details: mergedLastMessageDetails,
+      last_message_timestamp: found?.last_message_timestamp ?? channel.last_message_timestamp
     }
   })
 }
-
-export const DirectMessageList = ({ dm_channels }: DirectMessageListProps) => {
-  const [showData, setShowData] = useStickyState(true, 'expandDirectMessageList')
-
-  const toggle = () => setShowData((d) => !d)
-
-  const ref = useRef<HTMLDivElement>(null)
-
-  const [height, setHeight] = useState(
-    (ref?.current?.clientHeight ?? showData) ? (dm_channels.length + (dm_channels.length < 5 ? 5 : 0)) * 34.79 : 0
-  )
-
-  useLayoutEffect(() => {
-    setHeight(ref.current?.clientHeight ?? 0)
-  }, [dm_channels])
-
-  const unread_count = useUnreadMessages()
-
-  const enrichedDMs = useMergedUnreadCount(dm_channels, unread_count?.message ?? [])
+export const DirectMessageList = ({ dm_channels, isLoading = false }: DirectMessageListProps) => {
+  // useChannelListRealtimeSync()
+  const newUnreadCount = useUnreadMessages()
+  const enrichedDMs = useMergedUnreadCount(dm_channels, newUnreadCount?.message ?? [])
 
   return (
     <SidebarGroup pb='4'>
-      <SidebarGroupItem className={'gap-1 pl-1'}>
+      <SidebarGroupItem className='gap-1 pl-1'>
         <Flex width='100%' justify='between' align='center' gap='2' pr='2' className='group'>
-          <Flex align='center' gap='2' width='100%' onClick={toggle} className='cursor-default select-none'>
-            <SidebarGroupLabel className='pt-0.5'>{__('Members')}</SidebarGroupLabel>
-          </Flex>
-          <SidebarViewMoreButton onClick={toggle} expanded={showData} />
+          <SidebarGroupLabel className='pt-0.5'>{__('Members')}</SidebarGroupLabel>
         </Flex>
       </SidebarGroupItem>
       <SidebarGroup>
-        <SidebarGroupList
-          style={{
-            height: showData ? height : 0
-          }}
-        >
-          <div ref={ref} className='flex gap-1 flex-col fade-in'>
-            <DirectMessageItemList dm_channels={enrichedDMs} />
-            {dm_channels.length < 5 ? <ExtraUsersItemList /> : null}
-          </div>
-        </SidebarGroupList>
+        <div className='flex gap-1 flex-col fade-in'>
+          {isLoading ? (
+            <div className='p-3 text-sm text-gray-500 italic'>Đang tải danh sách...</div>
+          ) : (
+            <>
+              <DirectMessageItemList dm_channels={enrichedDMs} />
+              {dm_channels.length < 5 && <ExtraUsersItemList />}
+            </>
+          )}
+        </div>
       </SidebarGroup>
     </SidebarGroup>
   )
@@ -127,11 +134,17 @@ const DirectMessageItem = ({ dm_channel }: { dm_channel: DMChannelWithUnreadCoun
           <DirectMessageItemElement channel={dm_channel} />
         </main>
       </ContextMenu.Trigger>
-      <ContextMenu.Content className='z-50 bg-white border shadow rounded p-1'>
-        <ContextMenu.Item onClick={() => markAsUnread(dm_channel)}>
+      <ContextMenu.Content className='z-50 bg-white dark:bg-gray-800 border dark:border-gray-600 shadow rounded p-1 text-black dark:text-white'>
+        <ContextMenu.Item
+          onClick={() => markAsUnread(dm_channel)}
+          className='hover:bg-gray-100 dark:hover:bg-gray-700 px-2 py-1 rounded'
+        >
           {dm_channel.unread_count > 0 || isManuallyMarked(dm_channel.name) ? 'Đánh dấu đã đọc' : 'Đánh dấu chưa đọc'}
         </ContextMenu.Item>
-        <ContextMenu.Item className='cursor-pointer rounded' onClick={() => togglePin(dm_channel)}>
+        <ContextMenu.Item
+          onClick={() => togglePin(dm_channel)}
+          className='cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-2 py-1 rounded'
+        >
           {isPinned(dm_channel.name) ? 'Unpin message' : 'Pin message to top'}
         </ContextMenu.Item>
       </ContextMenu.Content>
@@ -154,9 +167,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   let isActive = false
 
   if (isDMChannel(channel)) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     userData = useGetUser(channel.peer_user_id)
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     isActive = useIsUserActive(channel.peer_user_id)
   }
 
@@ -170,38 +181,41 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
       ? channel.channel_name
       : channel.name
 
-  // Parse last message
+  // 🔧 Parse last message
   let lastMessageText = ''
   let lastMessageOwner = ''
+
   try {
-    const msg =
+    const raw =
       typeof channel.last_message_details === 'string'
         ? JSON.parse(channel.last_message_details)
         : channel.last_message_details
 
-    if (msg?.json_content) {
-      try {
-        const json = typeof msg.json_content === 'string' ? JSON.parse(msg.json_content) : msg.json_content
-        // Giả sử bạn dùng tiptap editor: lấy text đầu tiên trong đoạn
-        const paragraph = json?.content?.[0]?.content?.[0]
-        if (paragraph?.text) {
-          lastMessageText = paragraph.text
-        }
-      } catch (e) {
-        lastMessageText = ''
-      }
-    } else if (msg?.content) {
-      // fallback nếu không có json_content
-      lastMessageText = msg.content.replace(/<[^>]+>/g, '')
-      lastMessageOwner = msg.owner === currentUser ? 'Bạn' : msg.owner
+    if (raw?.message_type === 'Image') {
+      lastMessageText = 'Đã gửi ảnh'
+      lastMessageOwner = raw.owner === currentUser ? 'Bạn' : raw.owner
+    } else if (raw?.message_type === 'File' && (raw.file || raw.attachment?.file_url)) {
+      const fileName = raw.content || 'tệp tin'
+      lastMessageText = `Đã gửi file ${fileName}`
+      lastMessageOwner = raw.owner === currentUser ? 'Bạn' : raw.owner
+    } else if (raw?.json_content) {
+      const json = typeof raw.json_content === 'string' ? JSON.parse(raw.json_content) : raw.json_content
+      const paragraph = json?.content?.[0]?.content?.[0]
+      lastMessageText = paragraph?.text || ''
+      lastMessageOwner = raw.owner === currentUser ? 'Bạn' : raw.owner
+    } else if (raw?.content && typeof raw.content === 'string') {
+      lastMessageText = raw.content.replace(/<[^>]+>/g, '') // Remove HTML if có
+      lastMessageOwner = raw.owner === currentUser ? 'Bạn' : raw.owner
     }
   } catch (err) {
-    // fallback
+    lastMessageText = ''
+    lastMessageOwner = ''
   }
 
-  const timeAgo = channel.last_message_timestamp
-    ? formatDistanceToNow(new Date(channel.last_message_timestamp), { addSuffix: true, locale: vi })
-    : ''
+  const timeAgo =
+    channel.last_message_timestamp && isValid(new Date(channel.last_message_timestamp))
+      ? formatDistanceToNow(new Date(channel.last_message_timestamp), { addSuffix: true, locale: vi })
+      : ''
 
   return (
     <SidebarItem to={channel.name} className='py-1.5 px-2.5 data-[state=open]:bg-gray-3'>
@@ -219,6 +233,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
           <ChannelIcon type={channel.type} size='18' />
         )}
       </SidebarIcon>
+
       <Flex direction='column' justify='center' className='w-full'>
         <Flex justify='between' align='center'>
           <Text
@@ -236,9 +251,11 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
           )}
         </Flex>
         <Text size='1' color='gray' className='truncate'>
-          {lastMessageOwner && <>{lastMessageOwner}:</>} {lastMessageText}
+          {lastMessageOwner && <>{lastMessageOwner}: </>}
+          {truncateText(lastMessageText)}
         </Text>
       </Flex>
+
       {channel.unread_count > 0 && channelID !== channel.name && <SidebarBadge>{channel.unread_count}</SidebarBadge>}
     </SidebarItem>
   )

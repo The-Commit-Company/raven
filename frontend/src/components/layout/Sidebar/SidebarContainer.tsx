@@ -26,38 +26,39 @@ export const filterItems = [
   { label: 'Nhãn', icon: HiOutlineTag },
   { label: 'Cuộc trò chuyện riêng tư', icon: HiOutlineUser },
   { label: 'Trò chuyện nhóm', icon: HiOutlineUsers },
-  { label: 'Docs', icon: HiOutlineDocumentText },
+  // { label: 'Docs', icon: HiOutlineDocumentText },
   { label: 'Chủ đề', icon: HiOutlineHashtag },
   { label: 'Xong', icon: HiOutlineCheckCircle }
 ]
 
-export default function SidebarContainer() {
+export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.RefObject<any> }) {
   const [isHoverMenuOpen, setIsHoverMenuOpen] = useState(false)
   const [isHiding, setIsHiding] = useState(false)
-  const { mode, setMode, setTitle } = useSidebarMode()
+  const { mode, setMode, tempMode } = useSidebarMode()
 
-  const isCollapsed = mode === 'hide-filter'
-  const isIconOnly = mode === 'show-only-icons'
+  const isCollapsed = false
+  const isIconOnly = tempMode === 'show-only-icons'
+  const sidebarMinWidth = 3
+  const sidebarDefaultExpandedWidth = 15
 
   const timerRef = useRef<number>()
 
   const clearTimer = () => clearTimeout(timerRef.current)
 
-  const [isMounted, setIsMounted] = useState(false)
-
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
-
-  const getSidebarWidthClass = () => {
-    if (!isMounted) return ''
-    if (mode === 'default') return ''
-    if (mode === 'show-only-icons') return 'w-20'
-    return 'w-0'
-  }
+  // const toggleCollapse = () => {
+  //   if (isCollapsed || isIconOnly) {
+  //     setMode('default')
+  //     setIsHoverMenuOpen(false)
+  //     setIsHiding(false)
+  //     clearTimer()
+  //   } else {
+  //     setMode('hide-filter')
+  //     timerRef.current = window.setTimeout(() => setIsHoverMenuOpen(true), 800)
+  //   }
+  // }
 
   const toggleCollapse = () => {
-    if (isCollapsed || isIconOnly) {
+    if (mode === 'hide-filter' || mode === 'show-only-icons') {
       setMode('default')
       setIsHoverMenuOpen(false)
       setIsHiding(false)
@@ -67,6 +68,18 @@ export default function SidebarContainer() {
       timerRef.current = window.setTimeout(() => setIsHoverMenuOpen(true), 800)
     }
   }
+
+  useEffect(() => {
+    if (!sidebarRef.current) return
+
+    if (mode === 'show-only-icons') {
+      sidebarRef.current.resize(sidebarMinWidth)
+    } else if (mode === 'default') {
+      sidebarRef.current.resize(sidebarDefaultExpandedWidth)
+    } else if (mode === 'hide-filter') {
+      sidebarRef.current.resize(sidebarMinWidth)
+    }
+  }, [mode, sidebarRef])
 
   const handleToggleIconMode = () => {
     setMode(isIconOnly ? 'default' : 'show-only-icons')
@@ -107,7 +120,7 @@ export default function SidebarContainer() {
   return (
     <div
       className={`relative transition-all duration-300 ease-in-out 
-        dark:bg-gray-1 ${getSidebarWidthClass()}`}
+        dark:bg-gray-1`}
     >
       <div className={`flex items-center ${isIconOnly ? 'justify-center' : 'justify-between'}`}>
         <div className='flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300'>
@@ -131,7 +144,7 @@ export default function SidebarContainer() {
                   rounded-md shadow-md'
               >
                 <ul className='py-1'>
-                  {!isIconOnly && (
+                  {/* {!isIconOnly && (
                     <li
                       onClick={() => setMode('hide-filter')}
                       className='flex items-center gap-2 px-3 py-1 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer'
@@ -139,7 +152,7 @@ export default function SidebarContainer() {
                       <HiOutlineEyeOff className='w-4 h-4' />
                       Ẩn bộ lọc
                     </li>
-                  )}
+                  )} */}
                   <li
                     onClick={handleToggleIconMode}
                     className='flex items-center gap-2 px-3 py-1 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer'
@@ -154,43 +167,40 @@ export default function SidebarContainer() {
           {!isCollapsed && !isIconOnly && <span>Bộ lọc</span>}
         </div>
 
-        {mode === 'default' && (
+        {tempMode === 'default' && (
           <HiOutlineCog className='w-5 h-5 pr-3 cursor-pointer hover:text-gray-900 dark:hover:text-white' />
         )}
       </div>
 
-      {mode === 'default' && <FilterList />}
-      {isIconOnly && <FilterList showTooltipOnly />}
+      {tempMode === 'default' && <FilterList />}
+      {isIconOnly && <FilterList />}
     </div>
   )
 }
 
-export function FilterList({ showTooltipOnly = false }: { showTooltipOnly?: boolean }) {
-  const { title, setTitle } = useSidebarMode()
+export function FilterList() {
+  const { title, setTitle, tempMode } = useSidebarMode()
+  const isIconOnly = tempMode === 'show-only-icons'
 
   return (
-    <ul className='space-y-1 text-sm text-gray-12 px-3 py-2'>
+    <ul className={`space-y-1 text-sm text-gray-12 px-3 ${isIconOnly ? '' : 'py-2'}`}>
       {filterItems.map((item, idx) => {
         const isActive = item.label === title
         return (
           <li
             key={idx}
             onClick={() => setTitle(item.label)}
-            className={`${showTooltipOnly ? 'block' : 'flex'} items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer 
+            className={`flex justify-center items-center gap-2 py-1.5 rounded-md cursor-pointer
               hover:bg-gray-3 ${isActive ? 'bg-gray-4 font-semibold' : ''}`}
           >
-            {showTooltipOnly ? (
-              <Tooltip content={item.label} side='right'>
-                <div className='inline-block'>
-                  <item.icon className='w-5 h-5' />
-                </div>
-              </Tooltip>
-            ) : (
-              <>
+            <Tooltip content={item.label} side='right' delayDuration={300}>
+              <div className='w-6 h-6 flex items-center justify-center shrink-0'>
                 <item.icon className='w-5 h-5' />
-                <span className='truncate'>{item.label}</span>
-              </>
-            )}
+              </div>
+            </Tooltip>
+
+            {/* Chỉ hiện text nếu không phải icon-only */}
+            {!isIconOnly && <span className='truncate flex-1 min-w-0'>{item.label}</span>}
           </li>
         )
       })}

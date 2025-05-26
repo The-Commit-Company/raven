@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, ReactNode, useState } from 'react'
+import React, { createContext, useContext, useMemo, ReactNode, useState, useEffect } from 'react'
 import { useFetchUnreadMessageCount } from '@/hooks/useUnreadMessageCount'
 
 export interface UnreadItem {
@@ -40,32 +40,50 @@ export const useUnreadContext = (): UnreadContextValue => {
   return context
 }
 
-// Sidebar mode types và context
-type SidebarMode = 'default' | 'hide-filter' | 'show-only-icons'
+export type SidebarMode = 'default' | 'hide-filter' | 'show-only-icons'
 
 interface SidebarModeContextValue {
+  // trạng thái chính thức
   mode: SidebarMode
   setMode: (mode: SidebarMode) => void
+
+  // trạng thái UI tạm thời (trong khi kéo)
+  tempMode: SidebarMode
+  setTempMode: (mode: SidebarMode) => void
+
+  // tiêu đề bộ lọc được chọn
   title: string
   setTitle: (title: string) => void
 }
 
-export const SidebarModeContext = createContext<SidebarModeContextValue | undefined>(undefined)
+const SidebarModeContext = createContext<SidebarModeContextValue | undefined>(undefined)
 
-export const SidebarModeProvider = ({ children }: { children: React.ReactNode }) => {
+export const SidebarModeProvider = ({ children }: { children: ReactNode }) => {
   const [mode, setMode] = useState<SidebarMode>('default')
-  const [title, setTitle] = useState<string>('Trò chuyện')
+  const [tempMode, setTempMode] = useState<SidebarMode>('default')
+  const [title, setTitle] = useState('Trò chuyện')
+
+  // Đồng bộ tempMode mỗi khi mode chính thức thay đổi
+  useEffect(() => {
+    setTempMode(mode)
+  }, [mode])
+
+  const contextValue = useMemo(
+    () => ({ mode, setMode, tempMode, setTempMode, title, setTitle }),
+    [mode, tempMode, title]
+  )
 
   return (
-    <SidebarModeContext.Provider value={{ mode, setMode, title, setTitle }}>
+    <SidebarModeContext.Provider value={contextValue}>
       <UnreadCountProvider>{children}</UnreadCountProvider>
     </SidebarModeContext.Provider>
   )
 }
 
-// Hook truy xuất thông tin sidebar mode
 export const useSidebarMode = (): SidebarModeContextValue => {
-  const ctx = useContext(SidebarModeContext)
-  if (!ctx) throw new Error('useSidebarMode must be used within SidebarModeProvider')
-  return ctx
+  const context = useContext(SidebarModeContext)
+  if (!context) {
+    throw new Error('useSidebarMode must be used within SidebarModeProvider')
+  }
+  return context
 }
