@@ -1,4 +1,5 @@
 import { MutableRefObject } from 'react'
+import { VirtuosoHandle } from 'react-virtuoso'
 import { Message } from '../../../../../../types/Messaging/Message'
 
 export const useMessageLoading = (
@@ -9,21 +10,19 @@ export const useMessageLoading = (
   loadingOlderMessages: boolean,
   loadingNewerMessages: boolean,
   channelID: string,
-  scrollRef: MutableRefObject<HTMLDivElement | null>,
+  virtuosoRef: MutableRefObject<VirtuosoHandle | null>,
   highlightedMessage: string | null,
-  scrollToBottom: (behavior?: ScrollBehavior) => void,
-  latestMessagesLoadedRef: MutableRefObject<boolean>
+  scrollToBottom: (behavior?: 'auto' | 'smooth') => void,
+  latestMessagesLoadedRef: MutableRefObject<boolean>,
+  isInitialLoadComplete: boolean = true // Thêm param để kiểm tra initial load
 ) => {
   const loadOlderMessages = () => {
-    if (loadingOlderMessages || !data?.message.has_old_messages) {
+    // Thêm điều kiện kiểm tra initial load complete
+    if (loadingOlderMessages || !data?.message.has_old_messages || !isInitialLoadComplete) {
       return Promise.resolve()
     }
 
-    const scrollContainer = scrollRef.current
-    if (!scrollContainer) return Promise.resolve()
-
-    const previousScrollHeight = scrollContainer.scrollHeight
-    const previousScrollTop = scrollContainer.scrollTop
+    if (!virtuosoRef.current) return Promise.resolve()
 
     return mutate(
       (d: any) => {
@@ -55,19 +54,12 @@ export const useMessageLoading = (
         return d
       },
       { revalidate: false }
-    ).then(() => {
-      requestAnimationFrame(() => {
-        if (scrollContainer) {
-          const newScrollHeight = scrollContainer.scrollHeight
-          const heightDifference = newScrollHeight - previousScrollHeight
-          scrollContainer.scrollTop = previousScrollTop + heightDifference
-        }
-      })
-    })
+    )
   }
 
   const loadNewerMessages = () => {
-    if (loadingNewerMessages || !data?.message.has_new_messages || highlightedMessage) {
+    // Thêm điều kiện kiểm tra initial load complete
+    if (loadingNewerMessages || !data?.message.has_new_messages || highlightedMessage || !isInitialLoadComplete) {
       return Promise.resolve()
     }
 
@@ -103,7 +95,7 @@ export const useMessageLoading = (
       },
       { revalidate: false }
     ).then((res: any) => {
-      if (res?.message.has_new_messages === false) {
+      if (res?.message.has_new_messages === false && isInitialLoadComplete) {
         latestMessagesLoadedRef.current = true
         scrollToBottom('smooth')
       }

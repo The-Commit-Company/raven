@@ -8,6 +8,7 @@ import { Box, Flex, IconButton } from '@radix-ui/themes'
 import { useSWRConfig } from 'frappe-react-sdk'
 import { useCallback, useContext, useMemo, useRef, useState } from 'react'
 import { BiX } from 'react-icons/bi'
+import { VirtuosoHandle } from 'react-virtuoso'
 import { Message } from '../../../../../../types/Messaging/Message'
 import AIEvent from '../../ai/AIEvent'
 import useFileUpload from '../../chat/ChatInput/FileInput/useFileUpload'
@@ -17,11 +18,11 @@ import { useTyping } from '../../chat/ChatInput/TypingIndicator/useTypingIndicat
 import { useSendMessage } from '../../chat/ChatInput/useSendMessage'
 import { ReplyMessageBox } from '../../chat/ChatMessage/ReplyMessageBox/ReplyMessageBox'
 import ChatStream from '../../chat/ChatStream/ChatStream'
+import { GetMessagesResponse } from '../../chat/ChatStream/useMessageAPI'
 import { JoinChannelBox } from '../../chat/chat-footer/JoinChannelBox'
 import { CustomFile, FileDrop } from '../../file-upload/FileDrop'
 import { FileListItem } from '../../file-upload/FileListItem'
 import ThreadFirstMessage from './ThreadFirstMessage'
-import { GetMessagesResponse } from '../../chat/ChatStream/useMessageAPI'
 
 export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) => {
   const threadID = threadMessage.name
@@ -42,7 +43,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
     setSelectedMessage(null)
   }
 
-  const scrollRef = useRef<HTMLDivElement>(null)
+  const virtuosoRef = useRef<VirtuosoHandle>(null)
 
   const { mutate } = useSWRConfig()
 
@@ -94,11 +95,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
         }
       },
       { revalidate: false }
-    ).then(() => {
-      // If the user is focused on the page, then we also need to
-      // If the user is the sender of the message, scroll to the bottom
-      scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
-    })
+    )
     // Stop the typing indicator
     stopTyping()
     // Clear the selected message
@@ -174,7 +171,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
         <ThreadFirstMessage message={threadMessage} />
         <ChatStream
           channelID={threadID ?? ''}
-          scrollRef={scrollRef}
+          virtuosoRef={virtuosoRef}
           ref={chatStreamRef}
           replyToMessage={handleReplyAction}
           showThreadButton={false}

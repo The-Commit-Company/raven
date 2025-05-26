@@ -1,23 +1,20 @@
-import { useState, useRef, useEffect } from 'react'
+import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
+import { useSidebarMode } from '@/utils/layout/sidebar'
+import { Tooltip } from '@radix-ui/themes'
+import { useEffect, useRef } from 'react'
 import {
   HiChatAlt2,
-  HiOutlineInbox,
-  HiOutlineFlag,
+  HiMenuAlt2,
   HiOutlineAtSymbol,
+  HiOutlineCheckCircle,
+  HiOutlineCog,
+  HiOutlineFlag,
+  HiOutlineHashtag,
+  HiOutlineInbox,
   HiOutlineTag,
   HiOutlineUser,
-  HiOutlineUsers,
-  HiOutlineDocumentText,
-  HiOutlineHashtag,
-  HiOutlineCheckCircle,
-  HiMenuAlt2,
-  HiOutlineEyeOff,
-  HiOutlineViewGrid,
-  HiOutlineCog
+  HiOutlineUsers
 } from 'react-icons/hi'
-import { Tooltip } from '@radix-ui/themes'
-import { useSidebarMode } from '@/utils/layout/sidebar'
-import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
 
 export const filterItems = [
   { label: 'Trò chuyện', icon: HiChatAlt2 },
@@ -49,11 +46,11 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
     if (!sidebarRef?.current) return
 
     if (mode === 'show-only-icons') {
-      sidebarRef.current.resize(sidebarMinWidth)
+      sidebarRef?.current.resize(sidebarMinWidth)
     } else if (mode === 'default') {
-      sidebarRef.current.resize(sidebarDefaultExpandedWidth)
+      sidebarRef?.current.resize(sidebarDefaultExpandedWidth)
     } else if (mode === 'hide-filter') {
-      sidebarRef.current.resize(sidebarMinWidth)
+      sidebarRef?.current.resize(sidebarMinWidth)
     }
   }, [mode, sidebarRef])
 
@@ -65,7 +62,7 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
 
   return (
     <div
-      className={`relative transition-all duration-300 ease-in-out 
+      className={`relative transition-all duration-300 ease-in-out
         dark:bg-gray-1`}
     >
       <div className={`flex items-center ${isIconOnly ? 'justify-center' : 'justify-between'}`}>
@@ -139,7 +136,9 @@ export function FilterList({ totalUnreadCount }: { totalUnreadCount: number }) {
             </div>
 
             {/* Hiện số chưa đọc */}
-            {!isIconOnly && unreadCount > 0 && <span className='text-xs dark:text-gray-300 font-medium'>{unreadCount}</span>}
+            {!isIconOnly && unreadCount > 0 && (
+              <span className='text-xs dark:text-gray-300 font-medium'>{unreadCount}</span>
+            )}
           </li>
         )
       })}
