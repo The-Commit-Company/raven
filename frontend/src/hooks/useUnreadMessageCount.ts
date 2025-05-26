@@ -204,11 +204,15 @@
 import { UserContext } from '@/utils/auth/UserProvider'
 import { UnreadCountData, useChannelList, useUpdateLastMessageInChannelList } from '@/utils/channel/ChannelListProvider'
 import { FrappeConfig, FrappeContext, useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import { useGetUser } from './useGetUser'
+import { useAtomValue } from 'jotai'
+import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
 
 const useUnreadMessageCount = () => {
+  const manuallyMarked = useAtomValue(manuallyMarkedAtom)
+
   const { data: unread_count, mutate: updateCount } = useFrappeGetCall<{ message: UnreadCountData }>(
     'raven.api.raven_message.get_unread_count_for_channels',
     undefined,
@@ -221,9 +225,20 @@ const useUnreadMessageCount = () => {
     }
   )
 
+  const totalUnreadCount = useMemo(() => {
+    const idsFromServer = new Set(unread_count?.message.map((c) => c.name))
+    const manualOnly = Array.from(manuallyMarked).filter((id) => !idsFromServer.has(id))
+
+    const manualCount = manualOnly.length
+    const serverCount = unread_count?.message.reduce((sum, c) => sum + c.unread_count, 0) || 0
+
+    return serverCount + manualCount
+  }, [unread_count?.message, manuallyMarked])
+
   return {
     unread_count,
-    updateCount
+    updateCount,
+    totalUnreadCount
   }
 }
 
@@ -235,6 +250,7 @@ export const useFetchUnreadMessageCount = () => {
   const { channels, dm_channels } = useChannelList()
   const { unread_count, updateCount } = useUnreadMessageCount()
   const { call } = useContext(FrappeContext) as FrappeConfig
+  const manuallyMarked = useAtomValue(manuallyMarkedAtom)
 
   const fetchUnreadCountForChannel = async (channelID: string) => {
     const channelData =
@@ -318,8 +334,7 @@ export const useFetchUnreadMessageCount = () => {
   const dmChannel = useMemo(() => {
     return dm_channels.find((c) => c.name === dmWithUnread?.name)
   }, [dmWithUnread, dm_channels])
-
-  const userInfo = useGetUser(dmChannel?.peer_user_id)
+  const lastPlayedMessageIdRef = useRef<string | null>(null)
 
   useEffect(() => {
     const app_name = window.app_name || 'Raven'
@@ -327,26 +342,50 @@ export const useFetchUnreadMessageCount = () => {
     let blinkState = false
     let activeTitle = app_name
 
-    const groupWithUnread = unread_count?.message.find((c) => c.unread_count > 0 && c.is_direct_message === 0)
-    const totalUnread = unread_count?.message.reduce((sum, item) => sum + item.unread_count, 0)
+    const audio = new Audio('/notification.mp3')
+    audio.volume = 0.7
 
-    if (!unread_count || unread_count.message.length === 0 || totalUnread === 0) {
+
+    const allChannelMap = new Map((unread_count?.message || []).map((c) => [c.name, c]))
+    const manualOnly = Array.from(manuallyMarked).filter((id) => !allChannelMap.has(id))
+    const manualCount = manualOnly.length
+    const serverUnreadCount = unread_count?.message.reduce((sum, c) => sum + c.unread_count, 0) || 0
+    const totalUnread = serverUnreadCount + manualCount
+
+    if (totalUnread === 0) {
       document.title = app_name
       return
     }
 
-    // Xác định base title dựa trên latestUnreadData
+    const isManualOnly = totalUnread > 0 && serverUnreadCount === 0
+    let hasRealNewMessage = false
+
     if (latestUnreadData) {
-      if (latestUnreadData.is_direct_message === 0) {
-        activeTitle = `(${totalUnread}) ${latestUnreadData.last_message_sender_name} đã nhắn trong nhóm ${latestUnreadData.channel_name || latestUnreadData.name}`
+      const { name, unread_count, last_message_sender_name, is_direct_message, channel_name, last_message_timestamp } =
+        latestUnreadData
+      const isManuallyMarked = manuallyMarked.has(name)
+      const currentUnread = allChannelMap.get(name)?.unread_count || 0
+
+      if (!isManuallyMarked || (isManuallyMarked && currentUnread > 1)) {
+        hasRealNewMessage = true
+
+        if (is_direct_message === 0) {
+          activeTitle = `(${totalUnread}) ${last_message_sender_name} đã nhắn trong nhóm ${channel_name || name}`
+        } else {
+          activeTitle = `(${totalUnread}) ${last_message_sender_name} đã nhắn cho bạn`
+        }
+
+        if (document.hidden && last_message_timestamp && last_message_timestamp !== lastPlayedMessageIdRef.current) {
+          audio.play().catch(() => {})
+          lastPlayedMessageIdRef.current = last_message_timestamp
+        }
       } else {
-        activeTitle = `(${totalUnread}) ${latestUnreadData.last_message_sender_name} đã nhắn cho bạn`
+        activeTitle = `(${totalUnread}) Bạn có tin nhắn chưa đọc`
       }
     } else {
       activeTitle = `(${totalUnread}) Bạn có tin nhắn mới`
     }
 
-    // Hàm để start nhấp nháy
     const startBlink = () => {
       clearInterval(blinkInterval)
       blinkInterval = setInterval(() => {
@@ -355,15 +394,13 @@ export const useFetchUnreadMessageCount = () => {
       }, 1000)
     }
 
-    // Hàm để stop nhấp nháy và show tiêu đề bình thường
     const stopBlink = () => {
       clearInterval(blinkInterval)
       document.title = `(${totalUnread}) ${app_name}`
     }
 
-    // Xử lý visibility
     const handleVisibilityChange = () => {
-      if (document.hidden) {
+      if (document.hidden && hasRealNewMessage) {
         startBlink()
       } else {
         stopBlink()
@@ -372,8 +409,7 @@ export const useFetchUnreadMessageCount = () => {
 
     document.addEventListener('visibilitychange', handleVisibilityChange)
 
-    // Init lần đầu
-    if (document.hidden) {
+    if (document.hidden && hasRealNewMessage) {
       startBlink()
     } else {
       stopBlink()
@@ -384,7 +420,7 @@ export const useFetchUnreadMessageCount = () => {
       clearInterval(blinkInterval)
       document.title = app_name
     }
-  }, [unread_count, channels, dmWithUnread, userInfo, latestUnreadData])
+  }, [unread_count, channels, latestUnreadData, manuallyMarked])
 
   return unread_count
 }
