@@ -47,7 +47,6 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       highlightedMessage,
       scrollToMessage,
       newMessageCount,
-      showScrollToBottomButton,
       setHasNewMessages,
       setNewMessageCount
     } = useChatStream(channelID, virtuosoRef, pinnedMessagesString)
@@ -232,7 +231,6 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
         <ScrollToBottomButtons
           hasNewMessages={hasNewMessages}
           newMessageCount={newMessageCount}
-          showScrollToBottomButton={showScrollToBottomButton}
           onGoToLatestMessages={goToLatestMessages}
         />
 

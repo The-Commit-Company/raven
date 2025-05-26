@@ -8,7 +8,6 @@ export const useMessageState = () => {
   const [hasNewMessages, setHasNewMessages] = useState(false)
   const [unreadMessageIds, setUnreadMessageIds] = useState<Set<string>>(new Set())
   const [newMessageCount, setNewMessageCount] = useState(0)
-  const [showScrollToBottomButton, setShowScrollToBottomButton] = useState(false)
   const [highlightedMessage, setHighlightedMessage] = useState<string | null>(
     selected_message ? selected_message : null
   )
@@ -23,8 +22,6 @@ export const useMessageState = () => {
     setUnreadMessageIds,
     newMessageCount,
     setNewMessageCount,
-    showScrollToBottomButton,
-    setShowScrollToBottomButton,
     highlightedMessage,
     setHighlightedMessage,
     messageRefs,

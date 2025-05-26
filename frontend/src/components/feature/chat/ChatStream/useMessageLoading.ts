@@ -24,20 +24,6 @@ export const useMessageLoading = (
 
     if (!virtuosoRef.current) return Promise.resolve()
 
-    let previousScrollTop = 0
-
-    // Try to get current scroll state from Virtuoso using its public API
-    try {
-      // Use the scrollTo method to get the current scroll position
-      // This is a workaround since getState() requires a callback
-      const scrollContainer = document.querySelector('.virtuoso-scroller') as HTMLElement | null
-      if (scrollContainer) {
-        previousScrollTop = scrollContainer.scrollTop || 0
-      }
-    } catch (e) {
-      console.error('Error getting scroll position:', e)
-    }
-
     return mutate(
       (d: any) => {
         let oldestMessage: Message | null = null
@@ -68,32 +54,7 @@ export const useMessageLoading = (
         return d
       },
       { revalidate: false }
-    ).then(() => {
-      // After messages are loaded, scroll to maintain position
-      if (virtuosoRef.current && isInitialLoadComplete) {
-        // Use scrollTo with the previous scroll position
-        // Virtuoso will handle the rest with its internal state
-        const targetPosition = Math.max(0, previousScrollTop)
-
-        // Use a small timeout to ensure the DOM has updated
-        setTimeout(() => {
-          if (virtuosoRef.current) {
-            try {
-              virtuosoRef.current.scrollTo({
-                top: targetPosition,
-                behavior: 'auto'
-              })
-            } catch (e) {
-              console.error('Error scrolling Virtuoso:', e)
-              // Fallback to scroll to bottom chỉ khi cần thiết
-              if (!isInitialLoadComplete) {
-                scrollToBottom('auto')
-              }
-            }
-          }
-        }, 50)
-      }
-    })
+    )
   }
 
   const loadNewerMessages = () => {

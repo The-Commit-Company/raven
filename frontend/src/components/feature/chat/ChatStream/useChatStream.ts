@@ -7,7 +7,6 @@ import { useMessageLoading } from './useMessageLoading'
 import { useMessageProcessing } from './useMessageProcessing'
 import { useMessageState } from './useMessageState'
 import { useScrollBehavior } from './useScrollBehavior'
-import { useScrollHandling } from './useScrollHandling'
 import { useWebSocketEvents } from './useWebSocketEvents'
 
 const useChatStream = (
@@ -65,19 +64,6 @@ const useChatStream = (
     messageState.setUnreadMessageIds
   )
 
-  // Scroll handling with Virtuoso - pass isInitialLoadComplete
-  useScrollHandling(
-    virtuosoRef,
-    messageState.setNewMessageCount,
-    messageState.setSearchParams,
-    messageState.setHasNewMessages,
-    messageState.setShowScrollToBottomButton,
-    messageState.unreadMessageIds,
-    messageState.setUnreadMessageIds,
-    messageState.messageRefs,
-    isInitialLoadComplete // Pass state xuống
-  )
-
   // Message loading functionality for Virtuoso
   const { loadOlderMessages, loadNewerMessages } = useMessageLoading(
     api.data,
@@ -126,9 +112,8 @@ const useChatStream = (
     messageState.setSearchParams({})
     messageState.setHasNewMessages(false)
     messageState.setUnreadMessageIds(new Set())
-    scrollToBottom('smooth')
     messageState.setNewMessageCount(0)
-    messageState.setShowScrollToBottomButton(false)
+    scrollToBottom('smooth')
   }
 
   return {
@@ -146,7 +131,6 @@ const useChatStream = (
     scrollToMessage,
     highlightedMessage: messageState.highlightedMessage,
     goToLatestMessages,
-    showScrollToBottomButton: messageState.showScrollToBottomButton,
     setHasNewMessages: messageState.setHasNewMessages,
     setNewMessageCount: messageState.setNewMessageCount,
     isInitialLoadComplete // Export state này để ChatStream sử dụng
