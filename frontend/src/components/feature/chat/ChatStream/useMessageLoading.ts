@@ -54,7 +54,17 @@ export const useMessageLoading = (
         return d
       },
       { revalidate: false }
-    )
+    ).then(() => {
+      const scrollContainer = virtuosoRef.current
+      requestAnimationFrame(() => {
+        if (scrollContainer) {
+          scrollContainer.scrollToIndex({
+            index: 0,
+            behavior: 'smooth'
+          })
+        }
+      })
+    })
   }
 
   const loadNewerMessages = () => {
