@@ -70,14 +70,14 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
   }
 
   useEffect(() => {
-    if (!sidebarRef.current) return
+    if (!sidebarRef?.current) return
 
     if (mode === 'show-only-icons') {
-      sidebarRef.current.resize(sidebarMinWidth)
+      sidebarRef?.current.resize(sidebarMinWidth)
     } else if (mode === 'default') {
-      sidebarRef.current.resize(sidebarDefaultExpandedWidth)
+      sidebarRef?.current.resize(sidebarDefaultExpandedWidth)
     } else if (mode === 'hide-filter') {
-      sidebarRef.current.resize(sidebarMinWidth)
+      sidebarRef?.current.resize(sidebarMinWidth)
     }
   }, [mode, sidebarRef])
 
@@ -108,8 +108,8 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
     return (
       <div
         style={{ top: '50px' }}
-        className={`absolute left-0 w-60 z-50 bg-white dark:bg-gray-1 border border-l-0 
-        border-gray-200 dark:border-gray-700 rounded-md shadow-md 
+        className={`absolute left-0 w-60 z-50 bg-white dark:bg-gray-1 border border-l-0
+        border-gray-200 dark:border-gray-700 rounded-md shadow-md
         ${isHiding ? 'animate-slide-out-left' : 'animate-slide-in-left'}`}
       >
         <FilterList />
@@ -119,7 +119,7 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
 
   return (
     <div
-      className={`relative transition-all duration-300 ease-in-out 
+      className={`relative transition-all duration-300 ease-in-out
         dark:bg-gray-1`}
     >
       <div className={`flex items-center ${isIconOnly ? 'justify-center' : 'justify-between'}`}>

@@ -24,7 +24,7 @@ export const useSidebarResizeLogic = (sidebarRef: React.RefObject<any>) => {
   }
 
   const handleSidebarPointerUp = () => {
-    const size = latestSizeRef.current ?? sidebarRef.current?.getSize?.() ?? null
+    const size = latestSizeRef.current ?? sidebarRef?.current?.getSize?.() ?? null
     if (size == null) return
 
     const isCompact = isSidebarCompactRef.current
@@ -37,7 +37,7 @@ export const useSidebarResizeLogic = (sidebarRef: React.RefObject<any>) => {
 
     if (size <= sidebarCompactMaxWidth) {
       if (shouldResize(size, sidebarMinWidth)) {
-        sidebarRef.current?.resize(sidebarMinWidth)
+        sidebarRef?.current?.resize(sidebarMinWidth)
       }
       setMode('show-only-icons')
       isSidebarCompactRef.current = true
@@ -46,7 +46,7 @@ export const useSidebarResizeLogic = (sidebarRef: React.RefObject<any>) => {
 
     if (isCompact && size > sidebarCompactMaxWidth) {
       if (shouldResize(size, sidebarDefaultMinWidth)) {
-        sidebarRef.current?.resize(sidebarDefaultMinWidth)
+        sidebarRef?.current?.resize(sidebarDefaultMinWidth)
       }
       setMode('default')
       isSidebarCompactRef.current = false
@@ -55,7 +55,7 @@ export const useSidebarResizeLogic = (sidebarRef: React.RefObject<any>) => {
 
     if (!isCompact && size > sidebarCompactMaxWidth && size < sidebarDefaultMinWidth) {
       if (shouldResize(size, sidebarDefaultMinWidth)) {
-        sidebarRef.current?.resize(sidebarDefaultMinWidth)
+        sidebarRef?.current?.resize(sidebarDefaultMinWidth)
       }
       setMode('default')
       isSidebarCompactRef.current = false
@@ -63,14 +63,14 @@ export const useSidebarResizeLogic = (sidebarRef: React.RefObject<any>) => {
   }
 
   useEffect(() => {
-    if (!sidebarRef.current) return
+    if (!sidebarRef?.current) return
 
     if (mode === 'show-only-icons') {
-      sidebarRef.current?.resize(sidebarMinWidth)
+      sidebarRef?.current?.resize(sidebarMinWidth)
     } else if (mode === 'default') {
-      sidebarRef.current?.resize(sidebarDefaultExpandedWidth)
+      sidebarRef?.current?.resize(sidebarDefaultExpandedWidth)
     } else if (mode === 'hide-filter') {
-      sidebarRef.current?.resize(sidebarMinWidth) // hoặc một giá trị nhỏ tuỳ thiết kế ẩn hoàn toàn
+      sidebarRef?.current?.resize(sidebarMinWidth) // hoặc một giá trị nhỏ tuỳ thiết kế ẩn hoàn toàn
     }
   }, [mode])
 
