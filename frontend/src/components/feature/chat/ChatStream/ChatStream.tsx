@@ -5,7 +5,7 @@ import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState/Empty
 import { useChannelSeenUsers } from '@/hooks/useChannelSeenUsers'
 import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
 import { useUserData } from '@/hooks/useUserData'
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { forwardRef, MutableRefObject, useCallback, useEffect, useImperativeHandle, useState } from 'react'
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { ChatDialogs } from './ChatDialogs'
@@ -21,12 +21,11 @@ type Props = {
   showThreadButton?: boolean
   pinnedMessagesString?: string
   onModalClose?: () => void
+  virtuosoRef: MutableRefObject<VirtuosoHandle | null>
 }
 
 const ChatStream = forwardRef<VirtuosoHandle, Props>(
-  ({ channelID, replyToMessage, showThreadButton = true, pinnedMessagesString, onModalClose }, ref) => {
-    const virtuosoRef = useRef<VirtuosoHandle>(null)
-
+  ({ channelID, replyToMessage, showThreadButton = true, pinnedMessagesString, onModalClose, virtuosoRef }, ref) => {
     // State để track việc initial load đã hoàn thành chưa
     const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false)
 

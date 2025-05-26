@@ -12,6 +12,7 @@ import { useSWRConfig } from 'frappe-react-sdk'
 import { useCallback, useContext, useMemo, useRef, useState } from 'react'
 import { BiX } from 'react-icons/bi'
 import { useParams } from 'react-router-dom'
+import { VirtuosoHandle } from 'react-virtuoso'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { CustomFile, FileDrop } from '../../file-upload/FileDrop'
 import { FileListItem } from '../../file-upload/FileListItem'
@@ -47,6 +48,8 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
   const { name: user } = useUserData()
 
   const { currentUser } = useContext(UserContext)
+
+  const virtuosoRef = useRef<VirtuosoHandle>(null)
 
   // Fetch danh sách thành viên của channel hiện tại, cũng như trạng thái loading
   const { channelMembers, isLoading } = useFetchChannelMembers(channelData.name)
@@ -123,7 +126,14 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         }
       },
       { revalidate: false }
-    )
+    ).then(() => {
+      // Nếu người dùng đang xem trang, thì chúng ta cũng cần phải
+      if (virtuosoRef.current) {
+        virtuosoRef.current.scrollToIndex({
+          index: messages.length - 1
+        })
+      }
+    })
 
     // Dừng indicator typing
     stopTyping()
@@ -254,6 +264,8 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
           onModalClose={onModalClose}
           pinnedMessagesString={channelData.pinned_messages_string}
           replyToMessage={handleReplyAction}
+          virtuosoRef={virtuosoRef}
+          ref={chatStreamRef as any}
         />
         {/* Chỉ hiển thị khu vực nhập liệu nếu người dùng có quyền gửi tin nhắn. */}
         {canUserSendMessage && (
