@@ -60,8 +60,7 @@ const useChatStream = (
     virtuosoRef,
     scrollToBottom,
     messageState.setHasNewMessages,
-    messageState.setNewMessageCount,
-    messageState.setUnreadMessageIds
+    messageState.setNewMessageCount
   )
 
   // Message loading functionality for Virtuoso
@@ -111,7 +110,6 @@ const useChatStream = (
   const goToLatestMessages = () => {
     messageState.setSearchParams({})
     messageState.setHasNewMessages(false)
-    messageState.setUnreadMessageIds(new Set())
     messageState.setNewMessageCount(0)
     scrollToBottom('smooth')
   }

@@ -10,8 +10,7 @@ export const useWebSocketEvents = (
   virtuosoRef: MutableRefObject<VirtuosoHandle | null>,
   scrollToBottom: (behavior?: 'smooth' | 'auto') => void,
   setHasNewMessages: (hasNew: boolean) => void,
-  setNewMessageCount: (count: number | ((prev: number) => number)) => void,
-  setUnreadMessageIds: (ids: Set<string> | ((prev: Set<string>) => Set<string>)) => void
+  setNewMessageCount: (count: number | ((prev: number) => number)) => void
 ) => {
   const { currentUser } = useContext(UserContext)
 
@@ -53,12 +52,6 @@ export const useWebSocketEvents = (
 
         if (isFromOtherUser && !isNearBottom) {
           setNewMessageCount((count) => count + 1)
-          setUnreadMessageIds((prev) => {
-            const newSet = new Set(prev)
-            newSet.add(event.message_details.name)
-            setNewMessageCount(newSet.size)
-            return newSet
-          })
           setHasNewMessages(true)
         }
 

@@ -6,7 +6,6 @@ export const useMessageState = () => {
   const selected_message = searchParams.get('message_id')
 
   const [hasNewMessages, setHasNewMessages] = useState(false)
-  const [unreadMessageIds, setUnreadMessageIds] = useState<Set<string>>(new Set())
   const [newMessageCount, setNewMessageCount] = useState(0)
   const [highlightedMessage, setHighlightedMessage] = useState<string | null>(
     selected_message ? selected_message : null
@@ -18,8 +17,6 @@ export const useMessageState = () => {
   return {
     hasNewMessages,
     setHasNewMessages,
-    unreadMessageIds,
-    setUnreadMessageIds,
     newMessageCount,
     setNewMessageCount,
     highlightedMessage,
