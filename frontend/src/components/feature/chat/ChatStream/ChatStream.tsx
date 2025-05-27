@@ -241,7 +241,6 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
             Footer
           }}
           followOutput='smooth'
-          alignToBottom
           atTopStateChange={handleAtTopStateChange}
           atBottomStateChange={handleAtBottomStateChange}
           rangeChanged={handleRangeChanged}
