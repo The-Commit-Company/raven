@@ -31,6 +31,7 @@ import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
 
 import { formatDistanceToNow, isValid } from 'date-fns'
 import { vi } from 'date-fns/locale/vi'
+import { formatLastMessage } from '@/utils/channel/useFormatLastMessage'
 // import { useChannelListRealtimeSync } from '@/utils/channel/useChannelListRealtimeSync'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
@@ -89,7 +90,7 @@ export const useMergedUnreadCount = (
 export const DirectMessageList = ({ dm_channels, isLoading = false }: DirectMessageListProps) => {
   // useChannelListRealtimeSync()
   const newUnreadCount = useUnreadMessages()
-  const enrichedDMs = useMergedUnreadCount(dm_channels, newUnreadCount?.message ?? [])
+  const enrichedDMs = useMergedUnreadCount(dm_channels, newUnreadCount?.message ?? [])  
 
   return (
     <SidebarGroup pb='4'>
@@ -135,15 +136,12 @@ const DirectMessageItem = ({ dm_channel }: { dm_channel: DMChannelWithUnreadCoun
         </main>
       </ContextMenu.Trigger>
       <ContextMenu.Content className='z-50 bg-white dark:bg-gray-800 border dark:border-gray-600 shadow rounded p-1 text-black dark:text-white'>
-        <ContextMenu.Item
-          onClick={() => markAsUnread(dm_channel)}
-          className='hover:bg-gray-100 dark:hover:bg-gray-700 px-2 py-1 rounded'
-        >
+        <ContextMenu.Item onClick={() => markAsUnread(dm_channel)} className='dark:hover:bg-gray-700 px-2 py-1 rounded'>
           {dm_channel.unread_count > 0 || isManuallyMarked(dm_channel.name) ? 'Đánh dấu đã đọc' : 'Đánh dấu chưa đọc'}
         </ContextMenu.Item>
         <ContextMenu.Item
           onClick={() => togglePin(dm_channel)}
-          className='cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-2 py-1 rounded'
+          className='cursor-pointer dark:hover:bg-gray-700 px-2 py-1 rounded'
         >
           {isPinned(dm_channel.name) ? 'Unpin message' : 'Pin message to top'}
         </ContextMenu.Item>
@@ -156,78 +154,69 @@ const isDMChannel = (c: UnifiedChannel): c is DMChannelWithUnreadCount => {
   return 'peer_user_id' in c && typeof c.peer_user_id === 'string'
 }
 
+
 export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel }) => {
   const { currentUser } = useContext(UserContext)
   const { channelID } = useParams()
 
+  const manuallyMarked = useAtomValue(manuallyMarkedAtom)
+  const isManuallyMarked = manuallyMarked.has(channel.name)
+
   const isGroupChannel = !channel.is_direct_message && !channel.is_self_message
-  const showUnread = channel.unread_count && channelID !== channel.name
+  const isDM = isDMChannel(channel)
 
-  let userData: ReturnType<typeof useGetUser> | null = null
-  let isActive = false
+  const peerUserId = isDM ? channel.peer_user_id : null
+  const peerUser = useGetUser(peerUserId || '')
+  const isActive = peerUserId ? useIsUserActive(peerUserId) : false
 
-  if (isDMChannel(channel)) {
-    userData = useGetUser(channel.peer_user_id)
-    isActive = useIsUserActive(channel.peer_user_id)
-  }
+  // Nếu không phải group và userDM invalid thì bỏ qua
+  if (!isGroupChannel && (!isDM || !peerUserId || !peerUser?.enabled)) return null
 
-  if (!isGroupChannel && (!isDMChannel(channel) || !channel.peer_user_id || !userData?.enabled)) return null
-
-  const displayName = userData
-    ? channel.peer_user_id !== currentUser
-      ? userData.full_name
-      : `${userData.full_name} (You)`
+  const displayName = peerUser
+    ? peerUserId !== currentUser
+      ? peerUser.full_name
+      : `${peerUser.full_name} (You)`
     : 'channel_name' in channel
       ? channel.channel_name
       : channel.name
 
-  // 🔧 Parse last message
-  let lastMessageText = ''
-  let lastMessageOwner = ''
-
+  // Lấy người gửi cuối cùng từ last_message_details
+  let lastSenderId = ''
   try {
     const raw =
       typeof channel.last_message_details === 'string'
         ? JSON.parse(channel.last_message_details)
         : channel.last_message_details
-
-    if (raw?.message_type === 'Image') {
-      lastMessageText = 'Đã gửi ảnh'
-      lastMessageOwner = raw.owner === currentUser ? 'Bạn' : raw.owner
-    } else if (raw?.message_type === 'File' && (raw.file || raw.attachment?.file_url)) {
-      const fileName = raw.content || 'tệp tin'
-      lastMessageText = `Đã gửi file ${fileName}`
-      lastMessageOwner = raw.owner === currentUser ? 'Bạn' : raw.owner
-    } else if (raw?.json_content) {
-      const json = typeof raw.json_content === 'string' ? JSON.parse(raw.json_content) : raw.json_content
-      const paragraph = json?.content?.[0]?.content?.[0]
-      lastMessageText = paragraph?.text || ''
-      lastMessageOwner = raw.owner === currentUser ? 'Bạn' : raw.owner
-    } else if (raw?.content && typeof raw.content === 'string') {
-      lastMessageText = raw.content.replace(/<[^>]+>/g, '') // Remove HTML if có
-      lastMessageOwner = raw.owner === currentUser ? 'Bạn' : raw.owner
-    }
-  } catch (err) {
-    lastMessageText = ''
-    lastMessageOwner = ''
+    lastSenderId = raw?.owner || ''
+  } catch {
+    lastSenderId = ''
   }
+
+  const lastSender = useGetUser(lastSenderId)
+
+  const formattedLastMessage = useMemo(() => {
+    return formatLastMessage(channel, currentUser, lastSender?.full_name)
+  }, [channel, currentUser, lastSender?.full_name])
 
   const timeAgo =
     channel.last_message_timestamp && isValid(new Date(channel.last_message_timestamp))
       ? formatDistanceToNow(new Date(channel.last_message_timestamp), { addSuffix: true, locale: vi })
       : ''
 
+  // Badge logic: vẫn hiển thị nếu mark thủ công, không phụ thuộc channelID === channel.name
+  const shouldShowBadge = channel.unread_count > 0 || isManuallyMarked
+
   return (
     <SidebarItem to={channel.name} className='py-1.5 px-2.5 data-[state=open]:bg-gray-3'>
       <SidebarIcon>
-        {userData ? (
+        {peerUser ? (
           <UserAvatar
-            src={userData.user_image}
-            alt={userData.full_name}
-            isBot={userData.type === 'Bot'}
+            src={peerUser.user_image}
+            alt={peerUser.full_name}
+            isBot={peerUser.type === 'Bot'}
             isActive={isActive}
             size={{ initial: '2', md: '1' }}
-            availabilityStatus={userData.availability_status}
+            availabilityStatus={peerUser.availability_status}
           />
         ) : (
           <ChannelIcon type={channel.type} size='18' />
@@ -240,7 +229,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
             size={{ initial: '3', md: '2' }}
             className='text-ellipsis line-clamp-1'
             as='span'
-            weight={showUnread ? 'bold' : 'medium'}
+            weight={shouldShowBadge ? 'bold' : 'medium'}
           >
             {displayName}
           </Text>
@@ -251,15 +240,15 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
           )}
         </Flex>
         <Text size='1' color='gray' className='truncate'>
-          {lastMessageOwner && <>{lastMessageOwner}: </>}
-          {truncateText(lastMessageText)}
+          {formattedLastMessage}
         </Text>
       </Flex>
 
-      {channel.unread_count > 0 && channelID !== channel.name && <SidebarBadge>{channel.unread_count}</SidebarBadge>}
+      {shouldShowBadge && <SidebarBadge>{channel.unread_count || 1}</SidebarBadge>}
     </SidebarItem>
   )
 }
+
 
 const ExtraUsersItemList = () => {
   const { dm_channels, mutate } = useContext(ChannelListContext) as ChannelListContextType

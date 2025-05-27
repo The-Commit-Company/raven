@@ -49,8 +49,6 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
       sidebarRef?.current.resize(sidebarMinWidth)
     } else if (mode === 'default') {
       sidebarRef?.current.resize(sidebarDefaultExpandedWidth)
-    } else if (mode === 'hide-filter') {
-      sidebarRef?.current.resize(sidebarMinWidth)
     }
   }, [mode, sidebarRef])
 
@@ -122,7 +120,7 @@ export function FilterList({ totalUnreadCount }: { totalUnreadCount: number }) {
           <li
             key={idx}
             onClick={() => setTitle(item.label)}
-            className={`flex justify-between items-center gap-2 py-1.5 rounded-md cursor-pointer
+            className={`flex  ${isIconOnly ? 'justify-center' : 'justify-between'} relative items-center gap-2 py-1.5 rounded-md cursor-pointer
               hover:bg-gray-3 ${isActive ? 'bg-gray-4 font-semibold' : ''}`}
           >
             {/* Icon + Label */}
@@ -136,8 +134,21 @@ export function FilterList({ totalUnreadCount }: { totalUnreadCount: number }) {
             </div>
 
             {/* Hiện số chưa đọc */}
-            {!isIconOnly && unreadCount > 0 && (
-              <span className='text-xs dark:text-gray-300 font-medium'>{unreadCount}</span>
+            {unreadCount > 0 && (
+              <span
+                style={{
+                  position: isIconOnly ? 'absolute' : 'static',
+                  right: isIconOnly ? '3%' : undefined,
+                  top: isIconOnly ? 'auto' : undefined,
+                  transform: isIconOnly ? 'translateY(-50%)' : undefined,
+                  fontSize: '0.7rem',
+                  lineHeight: '1rem',
+                  fontWeight: 500,
+                  marginRight: isIconOnly ? '0px' : '1rem'
+                }}
+              >
+                {unreadCount}
+              </span>
             )}
           </li>
         )
