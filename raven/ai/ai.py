@@ -222,15 +222,6 @@ def handle_ai_thread_message_with_agents(message, channel, bot):
 		)
 		return
 	
-	frappe.log_error(
-		f"Processing thread message:\n"
-		f"Message: {message.content[:100] if message.content else 'No content'}\n"
-		f"Channel: {channel.name}\n"
-		f"Bot: {bot.name}\n"
-		f"Is AI Thread: {channel.is_ai_thread}",
-		"Thread Message Debug"
-	)
-	
 	# Send thinking message
 	frappe.publish_realtime(
 		"ai_event",

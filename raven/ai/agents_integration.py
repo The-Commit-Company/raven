@@ -68,12 +68,6 @@ class RavenAgentManager:
                 max_tokens=5
             )
             if not test_response or not test_response.choices:
-                frappe.log_error(
-                    f"API test failed: No response\n"
-                    f"Model: {self.bot_doc.model}\n"
-                    f"Provider: {self.bot_doc.model_provider}",
-                    "API Connection Test Failed"
-                )
                 return False
             return True
         except Exception as e:
@@ -250,7 +244,6 @@ class RavenAgentManager:
             # Check if bot has openai_vector_store_id field
             if hasattr(self.bot_doc, 'openai_vector_store_id') and self.bot_doc.openai_vector_store_id:
                 vector_store_ids = [self.bot_doc.openai_vector_store_id]
-                frappe.log_error(f"Found vector store ID on bot: {self.bot_doc.openai_vector_store_id}", "File Search Tool Debug")
             
             # If not found on bot, check the assistant
             elif hasattr(self.bot_doc, 'openai_assistant_id') and self.bot_doc.openai_assistant_id:
@@ -290,7 +283,6 @@ class RavenAgentManager:
             return file_search_tool
             
         except ImportError:
-            frappe.log_error("FileSearchTool not found in agents module", "File Search Tool Error")
             return None
         except Exception as e:
             frappe.log_error(f"Error creating FileSearchTool: {str(e)}", "File Search Tool Error")
@@ -446,89 +438,35 @@ async def handle_ai_request_async(bot, message: str, channel_id: str, conversati
             "conversation_history": conversation_history or []
         }
         
-        # Execute with Agents SDK
-        frappe.log_error(
-            f"Agent Debug Info:\n"
-            f"Model: {agent.model}\n"
-            f"Tools count: {len(agent.tools) if agent.tools else 0}\n"
-            f"Model Provider: {bot.model_provider}\n"
-            f"Local LLM: {bot.model_provider == 'Local LLM'}\n"
-            f"API URL: {manager.settings.local_llm_api_url if bot.model_provider == 'Local LLM' else 'OpenAI'}\n"
-            f"Has files: {has_files_in_conversation}\n"
-            f"Full input being sent:\n{full_input}",
-            "Agent Execution Debug"
-        )
-        
         try:
-            # First validate the model is available
-            if bot.model_provider == "Local LLM":
-                # For local LLMs, ensure the model exists
-                frappe.log_error(
-                    f"Using Local LLM model: {agent.model}\n"
-                    f"API URL: {manager.settings.local_llm_api_url}",
-                    "Local LLM Model Info"
-                )
-            
-            # Debug: Check agent state before running
-            frappe.log_error(
-                f"Agent state before run:\n"
-                f"Name: {agent.name}\n"
-                f"Model: {agent.model}\n"
-                f"Has tools attr: {hasattr(agent, 'tools')}\n"
-                f"Tools value: {agent.tools}\n"
-                f"Tools type: {type(agent.tools)}\n"
-                f"Instructions length: {len(agent.instructions) if agent.instructions else 0}",
-                "Agent State Debug"
-            )
-            
             # Use Runner.run as a static method (not an instance)
             # Set max_turns to prevent infinite loops
             result = await Runner.run(agent, full_input, max_turns=5)
             
         except TypeError as te:
             if "NoneType" in str(te) and "not iterable" in str(te):
-                frappe.log_error(
-                    f"NoneType iteration error:\n"
-                    f"Error: {str(te)}\n"
-                    f"This often happens when:\n"
-                    f"1. The API response is None (check API connectivity)\n"
-                    f"2. Local LLM is not responding properly\n"
-                    f"3. Model name is incorrect\n"
-                    f"Current model: {agent.model}\n"
-                    f"Provider: {bot.model_provider}",
-                    "Agents SDK NoneType Error"
-                )
                 
                 # Try direct API call as fallback
                 try:
-                    frappe.log_error("Falling back to direct API call...", "Agent Fallback")
-                    
-                    # Log the exact request we're making
-                    frappe.log_error(
-                        f"Direct API Request:\n"
-                        f"Model: {bot.model}\n"
-                        f"API URL: {manager.settings.local_llm_api_url if bot.model_provider == 'Local LLM' else 'OpenAI'}\n"
-                        f"Temperature: {agent.model_settings.temperature}\n"
-                        f"Top P: {agent.model_settings.top_p}",
-                        "Direct API Request Details"
-                    )
-                    
                     # For direct API calls, we need to manually add tool definitions
                     # if the bot has tools configured
                     tools_param = None
                     if manager.tools:
                         tools_param = []
                         for tool in manager.tools:
-                            # Convert FunctionTool to OpenAI function format
-                            tool_def = {
-                                "type": "function",
-                                "function": {
-                                    "name": tool.name,
-                                    "description": tool.description,
-                                    "parameters": tool.params_json_schema
+                            # Skip non-FunctionTool tools (like CodeInterpreterTool)
+                            # as they can't be converted to OpenAI function format
+                            if hasattr(tool, 'description') and hasattr(tool, 'params_json_schema'):
+                                # Convert FunctionTool to OpenAI function format
+                                tool_def = {
+                                    "type": "function",
+                                    "function": {
+                                        "name": tool.name,
+                                        "description": tool.description,
+                                        "parameters": tool.params_json_schema
+                                    }
                                 }
-                            }
-                            tools_param.append(tool_def)
+                                tools_param.append(tool_def)
                     
                     # Add instruction to encourage immediate tool use
                     enhanced_instructions = agent.instructions + "\n\nIMPORTANT: When asked to perform an action, use your tools immediately. Do not overthink. Keep responses brief and action-oriented. When asked to improve something, propose a specific solution immediately. If asked about file content, invoices, or documents, ALWAYS use the analyze_conversation_file tool - never say you cannot analyze files."
@@ -563,24 +501,11 @@ async def handle_ai_request_async(bot, message: str, channel_id: str, conversati
                     
                     response = await manager.client.chat.completions.create(**api_params)
                     
-                    frappe.log_error(
-                        f"Direct API Response received:\n"
-                        f"Type: {type(response)}\n"
-                        f"Has choices: {hasattr(response, 'choices')}\n"
-                        f"Choices length: {len(response.choices) if hasattr(response, 'choices') else 0}",
-                        "Direct API Response Info"
-                    )
-                    
                     if response and response.choices:
                         choice = response.choices[0]
                         
                         # Check if the response contains tool calls
                         if hasattr(choice.message, 'tool_calls') and choice.message.tool_calls:
-                            frappe.log_error(
-                                f"Response contains {len(choice.message.tool_calls)} tool calls",
-                                "Direct API Tool Calls"
-                            )
-                            
                             # Execute tool calls
                             tool_results = []
                             for tool_call in choice.message.tool_calls:
@@ -589,11 +514,7 @@ async def handle_ai_request_async(bot, message: str, channel_id: str, conversati
                                 
                                 # Truncate args for title to avoid length error
                                 args_preview = tool_args[:50] + "..." if len(tool_args) > 50 else tool_args
-                                frappe.log_error(
-                                    f"Tool: {tool_name}\nArgs: {tool_args}",
-                                    f"Executing {tool_name}"
-                                )
-                                
+
                                 # Find the tool in manager.tools
                                 tool_result = None
                                 for tool in manager.tools:
@@ -651,10 +572,6 @@ async def handle_ai_request_async(bot, message: str, channel_id: str, conversati
                         result = type('Result', (), {
                             'final_output': formatted_response
                         })()
-                        frappe.log_error(
-                            f"Fallback successful! Response: {formatted_response[:100]}...",
-                            "API Fallback Success"
-                        )
                     else:
                         raise Exception("No response from API")
                         
