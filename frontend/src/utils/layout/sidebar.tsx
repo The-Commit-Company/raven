@@ -59,14 +59,26 @@ interface SidebarModeContextValue {
 const SidebarModeContext = createContext<SidebarModeContextValue | undefined>(undefined)
 
 export const SidebarModeProvider = ({ children }: { children: ReactNode }) => {
-  const [mode, setMode] = useState<SidebarMode>('default')
+  const LOCAL_STORAGE_SIDEBAR_MODE = 'sidebar-mode'
+
+  const [mode, setModeRaw] = useState<SidebarMode>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(LOCAL_STORAGE_SIDEBAR_MODE) as SidebarMode
+      return saved || 'default'
+    }
+    return 'default'
+  })
   const [tempMode, setTempMode] = useState<SidebarMode>('default')
   const [title, setTitle] = useState('Trò chuyện')
 
-  // Đồng bộ tempMode mỗi khi mode chính thức thay đổi
   useEffect(() => {
     setTempMode(mode)
   }, [mode])
+
+  const setMode = (newMode: SidebarMode) => {
+    localStorage.setItem(LOCAL_STORAGE_SIDEBAR_MODE, newMode)
+    setModeRaw(newMode)
+  }
 
   const contextValue = useMemo(
     () => ({ mode, setMode, tempMode, setTempMode, title, setTitle }),
@@ -79,6 +91,7 @@ export const SidebarModeProvider = ({ children }: { children: ReactNode }) => {
     </SidebarModeContext.Provider>
   )
 }
+
 
 export const useSidebarMode = (): SidebarModeContextValue => {
   const context = useContext(SidebarModeContext)

@@ -139,10 +139,12 @@ const CircleUserList = ({ size }: SidebarBodyProps) => {
     if (size <= 20) return 4
     if (size <= 30) return 5
     if (size <= 40) return 6
-    return 6
+    return Math.ceil(Math.sqrt(size))
   }
 
   const gridCols = getGridCols(size)
+  const itemMinWidth = 70
+  const itemMaxWidth = 100
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
 
@@ -177,14 +179,19 @@ const CircleUserList = ({ size }: SidebarBodyProps) => {
       >
         <SortableContext items={items} strategy={rectSortingStrategy}>
           <div
-            className={`grid grid-cols-${gridCols} gap-3 p-2 overflow-hidden ${gridCols >= 5 ? 'mx-auto max-w-4xl' : ''}`}
+            className={`grid gap-3 p-2 overflow-hidden ${gridCols >= 5 ? '' : 'mx-auto'}`}
+            style={{
+              gridTemplateColumns: `repeat(${gridCols}, minmax(${itemMinWidth}px, ${itemMaxWidth}px))`
+            }}
           >
+            {/* items here */}
+
             {items.map((channelName) => {
               const channel = enrichedSelectedChannels.find((c) => c.name === channelName)
               if (!channel) return null
 
               return (
-                <div key={channel.name} className='flex flex-col items-center justify-center w-fit'>
+                <div key={channel.name} className='flex flex-col items-center justify-center w-full h-full'>
                   <ContextMenu.Root>
                     <SortableCircleUserItem
                       channel={channel}
