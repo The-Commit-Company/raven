@@ -12,7 +12,8 @@ import { useWebSocketEvents } from './useWebSocketEvents'
 const useChatStream = (
   channelID: string,
   virtuosoRef: MutableRefObject<VirtuosoHandle | null>,
-  pinnedMessagesString?: string
+  pinnedMessagesString?: string,
+  isAtBottom?: boolean
 ) => {
   // State để track việc initial load
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false)
@@ -69,7 +70,8 @@ const useChatStream = (
     scrollToBottom,
     messageState.setHasNewMessages,
     messageState.setNewMessageCount,
-    handleNewMessageAdded // Truyền callback
+    handleNewMessageAdded, // Truyền callback
+    isAtBottom
   )
 
   // Message loading functionality for Virtuoso
@@ -149,7 +151,8 @@ const useChatStream = (
     // Export các function mới để quản lý tin nhắn mới
     newMessageIds: messageState.newMessageIds,
     markMessageAsSeen: messageState.markMessageAsSeen,
-    clearAllNewMessages: messageState.clearAllNewMessages
+    clearAllNewMessages: messageState.clearAllNewMessages,
+    scrollToBottom
   }
 }
 

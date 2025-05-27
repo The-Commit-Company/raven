@@ -1,4 +1,3 @@
-
 import { Loader } from '@/components/common/Loader'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState/EmptyState'
@@ -28,6 +27,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
   ({ channelID, replyToMessage, showThreadButton = true, pinnedMessagesString, onModalClose, virtuosoRef }, ref) => {
     // State để track việc initial load đã hoàn thành chưa
     const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false)
+    const [isAtBottom, setIsAtBottom] = useState(false)
 
     // Reset initial load state khi chuyển channel
     useEffect(() => {
@@ -49,8 +49,9 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       newMessageCount,
       newMessageIds,
       markMessageAsSeen,
-      clearAllNewMessages
-    } = useChatStream(channelID, virtuosoRef, pinnedMessagesString)
+      clearAllNewMessages,
+      scrollToBottom
+    } = useChatStream(channelID, virtuosoRef, pinnedMessagesString, isAtBottom)
 
     // Đánh dấu initial load complete khi messages được load lần đầu
     useEffect(() => {
@@ -175,6 +176,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
 
     const handleAtBottomStateChange = useCallback(
       (atBottom: boolean) => {
+        setIsAtBottom(atBottom)
         if (atBottom) {
           // Reset tất cả tin nhắn mới khi scroll đến bottom
           clearAllNewMessages()
@@ -255,6 +257,8 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
           hasNewMessages={hasNewMessages}
           newMessageCount={newMessageCount}
           onGoToLatestMessages={handleGoToLatestMessages}
+          onScrollToBottom={() => scrollToBottom('smooth')}
+          isAtBottom={isAtBottom}
         />
 
         {/* Dialogs */}

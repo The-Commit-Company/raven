@@ -12,7 +12,8 @@ export const useWebSocketEvents = (
   setHasNewMessages: (hasNew: boolean) => void,
   setNewMessageCount: (count: number | ((prev: number) => number)) => void,
   // Thêm callback để track tin nhắn mới
-  onNewMessageAdded?: (messageId: string) => void
+  onNewMessageAdded?: (messageId: string) => void,
+  isAtBottom?: boolean
 ) => {
   const { currentUser } = useContext(UserContext)
 
@@ -45,19 +46,11 @@ export const useWebSocketEvents = (
 
         newMessages.sort((a: any, b: any) => new Date(b.creation).getTime() - new Date(a.creation).getTime())
 
-        // Handle unread messages for Virtuoso
         const isFromOtherUser = event.message_details?.owner !== currentUser
-        let isNearBottom = false
 
-        // Check if user is near bottom using Virtuoso's state
-        if (virtuosoRef.current) {
-          isNearBottom = false
-        }
-
-        if (isFromOtherUser && !isNearBottom) {
+        if (isFromOtherUser && !isAtBottom) {
           setNewMessageCount((count) => count + 1)
           setHasNewMessages(true)
-          // Gọi callback để track tin nhắn mới
           onNewMessageAdded?.(event.message_details.name)
         }
 
