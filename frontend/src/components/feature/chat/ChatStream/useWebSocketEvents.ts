@@ -1,4 +1,4 @@
-// useWebSocketEvents.ts - WebSocket events handler for Virtuoso
+// useWebSocketEvents.ts - WebSocket events handler for Virtuoso with new message tracking
 import { UserContext } from '@/utils/auth/UserProvider'
 import { useFrappeDocumentEventListener, useFrappeEventListener } from 'frappe-react-sdk'
 import { MutableRefObject, useContext } from 'react'
@@ -11,11 +11,17 @@ export const useWebSocketEvents = (
   scrollToBottom: (behavior?: 'smooth' | 'auto') => void,
   setHasNewMessages: (hasNew: boolean) => void,
   setNewMessageCount: (count: number | ((prev: number) => number)) => void,
-  setUnreadMessageIds: (ids: Set<string> | ((prev: Set<string>) => Set<string>)) => void
+  // Thêm callback để track tin nhắn mới
+  onNewMessageAdded?: (messageId: string) => void,
+  isAtBottom?: boolean
 ) => {
   const { currentUser } = useContext(UserContext)
 
-  useFrappeDocumentEventListener('Raven Channel', channelID ?? '', () => {})
+  // Placeholder cho Raven Channel listener (có thể mở rộng sau)
+  useFrappeDocumentEventListener('Raven Channel', channelID ?? '', () => {
+    console.debug(`Raven Channel event received for channel: ${channelID}`)
+    // TODO: Thêm logic cập nhật metadata kênh nếu cần
+  })
 
   // Message created event
   useFrappeEventListener('message_created', (event) => {
@@ -40,26 +46,12 @@ export const useWebSocketEvents = (
 
         newMessages.sort((a: any, b: any) => new Date(b.creation).getTime() - new Date(a.creation).getTime())
 
-        // Handle unread messages for Virtuoso
         const isFromOtherUser = event.message_details?.owner !== currentUser
-        let isNearBottom = false
 
-        // Check if user is near bottom using Virtuoso's state
-        if (virtuosoRef.current) {
-          // We'll assume if we can't determine scroll position, user is not at bottom
-          // This is a safe assumption for new message handling
-          isNearBottom = false // You might need to track this via Virtuoso callbacks
-        }
-
-        if (isFromOtherUser && !isNearBottom) {
+        if (isFromOtherUser && !isAtBottom) {
           setNewMessageCount((count) => count + 1)
-          setUnreadMessageIds((prev) => {
-            const newSet = new Set(prev)
-            newSet.add(event.message_details.name)
-            setNewMessageCount(newSet.size)
-            return newSet
-          })
           setHasNewMessages(true)
+          onNewMessageAdded?.(event.message_details.name)
         }
 
         return {

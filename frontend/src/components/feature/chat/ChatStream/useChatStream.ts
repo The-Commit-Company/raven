@@ -1,5 +1,5 @@
-// useChatStream.ts - Updated for better initial load handling
-import { MutableRefObject, useEffect, useState } from 'react'
+// useChatStream.ts - Updated for better initial load handling with new message tracking
+import { MutableRefObject, useCallback, useEffect, useState } from 'react'
 import { VirtuosoHandle } from 'react-virtuoso'
 import { useMessageAPI } from './useMessageAPI'
 import { useMessageHighlight } from './useMessageHighlight'
@@ -12,7 +12,8 @@ import { useWebSocketEvents } from './useWebSocketEvents'
 const useChatStream = (
   channelID: string,
   virtuosoRef: MutableRefObject<VirtuosoHandle | null>,
-  pinnedMessagesString?: string
+  pinnedMessagesString?: string,
+  isAtBottom?: boolean
 ) => {
   // State để track việc initial load
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false)
@@ -28,6 +29,14 @@ const useChatStream = (
 
   // Handle message highlighting
   useMessageHighlight(messageState.highlightedMessage, messageState.setHighlightedMessage)
+
+  // Callback để handle tin nhắn mới được thêm
+  const handleNewMessageAdded = useCallback(
+    (messageId: string) => {
+      messageState.addNewMessage(messageId)
+    },
+    [messageState.addNewMessage]
+  )
 
   // API calls and data fetching
   const api = useMessageAPI(
@@ -53,7 +62,7 @@ const useChatStream = (
     }
   }, [messages, isInitialLoadComplete])
 
-  // WebSocket event handling
+  // WebSocket event handling với callback cho tin nhắn mới
   useWebSocketEvents(
     channelID,
     api.mutate,
@@ -61,7 +70,8 @@ const useChatStream = (
     scrollToBottom,
     messageState.setHasNewMessages,
     messageState.setNewMessageCount,
-    messageState.setUnreadMessageIds
+    handleNewMessageAdded, // Truyền callback
+    isAtBottom
   )
 
   // Message loading functionality for Virtuoso
@@ -87,6 +97,11 @@ const useChatStream = (
     }
   }, [channelID, scrollToBottom, isInitialLoadComplete])
 
+  // Reset tin nhắn mới khi chuyển channel
+  useEffect(() => {
+    messageState.clearAllNewMessages()
+  }, [channelID])
+
   // Track visit on unmount
   useEffect(() => {
     return () => {
@@ -111,7 +126,6 @@ const useChatStream = (
   const goToLatestMessages = () => {
     messageState.setSearchParams({})
     messageState.setHasNewMessages(false)
-    messageState.setUnreadMessageIds(new Set())
     messageState.setNewMessageCount(0)
     scrollToBottom('smooth')
   }
@@ -133,7 +147,12 @@ const useChatStream = (
     goToLatestMessages,
     setHasNewMessages: messageState.setHasNewMessages,
     setNewMessageCount: messageState.setNewMessageCount,
-    isInitialLoadComplete // Export state này để ChatStream sử dụng
+    isInitialLoadComplete, // Export state này để ChatStream sử dụng
+    // Export các function mới để quản lý tin nhắn mới
+    newMessageIds: messageState.newMessageIds,
+    markMessageAsSeen: messageState.markMessageAsSeen,
+    clearAllNewMessages: messageState.clearAllNewMessages,
+    scrollToBottom
   }
 }
 

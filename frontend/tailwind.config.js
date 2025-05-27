@@ -139,7 +139,11 @@ export default {
           3: '#A0C4FF', // hover light
           4: '#334E88', // hover dark
           5: '#3B82F6' // border primary
-        }
+        },
+        telegramDark: '#1e2633',
+        telegramDarkBorder: '#2c3748',
+        telegramBlue: '#3390ec',
+        telegramGray: '#b0b8c4'
       },
       borderRadius: {
         radius1: 'var(--radius-1)',
