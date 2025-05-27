@@ -66,7 +66,6 @@ const useChatStream = (
   useWebSocketEvents(
     channelID,
     api.mutate,
-    virtuosoRef,
     scrollToBottom,
     messageState.setHasNewMessages,
     messageState.setNewMessageCount,

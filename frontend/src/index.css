@@ -193,7 +193,7 @@ html header button {
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #111;
 }
 
 ::-webkit-scrollbar-thumb {
