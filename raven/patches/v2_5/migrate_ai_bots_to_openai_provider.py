@@ -14,7 +14,7 @@ def execute():
 			# Enable OpenAI services if AI integration is enabled
 			# Check if the field exists first
 			if frappe.db.has_column("Raven Settings", "enable_openai_services"):
-				frappe.db.set_value("Raven Settings", None, "enable_openai_services", 1)
+				frappe.db.set_single_value("Raven Settings", "enable_openai_services", 1)
 				print("✓ Enabled OpenAI services in Raven Settings")
 
 		# Check if model_provider field exists in Raven Bot
