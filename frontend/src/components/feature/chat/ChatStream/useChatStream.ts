@@ -116,7 +116,7 @@ const useChatStream = (
     messageState.setSearchParams({})
     messageState.setHasNewMessages(false)
     messageState.setNewMessageCount(0)
-    scrollToBottom('smooth')
+    scrollToBottom('auto')
   }
 
   return {

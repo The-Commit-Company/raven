@@ -58,7 +58,7 @@ export const useMessageLoading = (
         if (scrollContainer) {
           scrollContainer.scrollToIndex({
             index: 0,
-            behavior: 'smooth'
+            behavior: 'auto'
           })
         }
       })
@@ -105,7 +105,7 @@ export const useMessageLoading = (
       if (res?.message.has_new_messages === false) {
         latestMessagesLoadedRef.current = true
         requestAnimationFrame(() => {
-          scrollToBottom('smooth')
+          scrollToBottom('auto')
         })
       }
     })

@@ -66,7 +66,7 @@ export const useWebSocketEvents = (
 
       // For messages from current user, always scroll to bottom
       if (!isFromOtherUser) {
-        scrollToBottom('smooth')
+        scrollToBottom('auto')
       }
     })
   })
