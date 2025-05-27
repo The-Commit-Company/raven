@@ -1,4 +1,4 @@
-// ChatStream.tsx - Fixed auto-scroll and load older messages issue
+
 import { Loader } from '@/components/common/Loader'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState/EmptyState'
@@ -47,8 +47,9 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       highlightedMessage,
       scrollToMessage,
       newMessageCount,
-      setHasNewMessages,
-      setNewMessageCount
+      newMessageIds,
+      markMessageAsSeen,
+      clearAllNewMessages
     } = useChatStream(channelID, virtuosoRef, pinnedMessagesString)
 
     // Đánh dấu initial load complete khi messages được load lần đầu
@@ -175,24 +176,46 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
     const handleAtBottomStateChange = useCallback(
       (atBottom: boolean) => {
         if (atBottom) {
-          setHasNewMessages(false)
-          setNewMessageCount(0)
+          // Reset tất cả tin nhắn mới khi scroll đến bottom
+          clearAllNewMessages()
         }
       },
-      [setHasNewMessages, setNewMessageCount]
+      [clearAllNewMessages]
     )
 
-    // Handle range changed for loading newer messages
+    // Handle range changed for loading newer messages and tracking visible messages
     const handleRangeChanged = useCallback(
       (range: any) => {
         // If user scrolled to see newer messages that are loaded
         if (!messages || !isInitialLoadComplete) return
+
         if (range && hasNewMessages && range.endIndex >= messages.length - 5) {
           loadNewerMessages()
         }
+
+        // Track tin nhắn đã được xem trong viewport
+        if (range && newMessageIds.size > 0) {
+          const visibleMessages = messages.slice(range.startIndex, range.endIndex + 1)
+
+          visibleMessages.forEach((message: any) => {
+            // Nếu tin nhắn này là tin nhắn mới và đang visible
+            if (message.name && newMessageIds.has(message.name)) {
+              // Delay một chút để đảm bảo user thực sự nhìn thấy tin nhắn
+              setTimeout(() => {
+                markMessageAsSeen(message.name)
+              }, 1000) // 1 giây delay
+            }
+          })
+        }
       },
-      [hasNewMessages, loadNewerMessages, messages, isInitialLoadComplete]
+      [hasNewMessages, loadNewerMessages, messages, isInitialLoadComplete, newMessageIds, markMessageAsSeen]
     )
+
+    // Custom go to latest messages function
+    const handleGoToLatestMessages = useCallback(() => {
+      clearAllNewMessages()
+      goToLatestMessages()
+    }, [clearAllNewMessages, goToLatestMessages])
 
     return (
       <div className='relative h-full flex flex-col overflow-hidden pb-16 sm:pb-0'>
@@ -231,7 +254,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
         <ScrollToBottomButtons
           hasNewMessages={hasNewMessages}
           newMessageCount={newMessageCount}
-          onGoToLatestMessages={goToLatestMessages}
+          onGoToLatestMessages={handleGoToLatestMessages}
         />
 
         {/* Dialogs */}

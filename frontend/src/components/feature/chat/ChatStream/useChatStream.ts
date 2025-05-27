@@ -1,5 +1,5 @@
-// useChatStream.ts - Updated for better initial load handling
-import { MutableRefObject, useEffect, useState } from 'react'
+// useChatStream.ts - Updated for better initial load handling with new message tracking
+import { MutableRefObject, useCallback, useEffect, useState } from 'react'
 import { VirtuosoHandle } from 'react-virtuoso'
 import { useMessageAPI } from './useMessageAPI'
 import { useMessageHighlight } from './useMessageHighlight'
@@ -29,6 +29,14 @@ const useChatStream = (
   // Handle message highlighting
   useMessageHighlight(messageState.highlightedMessage, messageState.setHighlightedMessage)
 
+  // Callback để handle tin nhắn mới được thêm
+  const handleNewMessageAdded = useCallback(
+    (messageId: string) => {
+      messageState.addNewMessage(messageId)
+    },
+    [messageState.addNewMessage]
+  )
+
   // API calls and data fetching
   const api = useMessageAPI(
     channelID,
@@ -53,14 +61,15 @@ const useChatStream = (
     }
   }, [messages, isInitialLoadComplete])
 
-  // WebSocket event handling
+  // WebSocket event handling với callback cho tin nhắn mới
   useWebSocketEvents(
     channelID,
     api.mutate,
     virtuosoRef,
     scrollToBottom,
     messageState.setHasNewMessages,
-    messageState.setNewMessageCount
+    messageState.setNewMessageCount,
+    handleNewMessageAdded // Truyền callback
   )
 
   // Message loading functionality for Virtuoso
@@ -85,6 +94,11 @@ const useChatStream = (
       scrollToBottom()
     }
   }, [channelID, scrollToBottom, isInitialLoadComplete])
+
+  // Reset tin nhắn mới khi chuyển channel
+  useEffect(() => {
+    messageState.clearAllNewMessages()
+  }, [channelID])
 
   // Track visit on unmount
   useEffect(() => {
@@ -131,7 +145,11 @@ const useChatStream = (
     goToLatestMessages,
     setHasNewMessages: messageState.setHasNewMessages,
     setNewMessageCount: messageState.setNewMessageCount,
-    isInitialLoadComplete // Export state này để ChatStream sử dụng
+    isInitialLoadComplete, // Export state này để ChatStream sử dụng
+    // Export các function mới để quản lý tin nhắn mới
+    newMessageIds: messageState.newMessageIds,
+    markMessageAsSeen: messageState.markMessageAsSeen,
+    clearAllNewMessages: messageState.clearAllNewMessages
   }
 }
 

@@ -1,4 +1,4 @@
-// useWebSocketEvents.ts - WebSocket events handler for Virtuoso
+// useWebSocketEvents.ts - WebSocket events handler for Virtuoso with new message tracking
 import { UserContext } from '@/utils/auth/UserProvider'
 import { useFrappeDocumentEventListener, useFrappeEventListener } from 'frappe-react-sdk'
 import { MutableRefObject, useContext } from 'react'
@@ -10,11 +10,17 @@ export const useWebSocketEvents = (
   virtuosoRef: MutableRefObject<VirtuosoHandle | null>,
   scrollToBottom: (behavior?: 'smooth' | 'auto') => void,
   setHasNewMessages: (hasNew: boolean) => void,
-  setNewMessageCount: (count: number | ((prev: number) => number)) => void
+  setNewMessageCount: (count: number | ((prev: number) => number)) => void,
+  // Thêm callback để track tin nhắn mới
+  onNewMessageAdded?: (messageId: string) => void
 ) => {
   const { currentUser } = useContext(UserContext)
 
-  useFrappeDocumentEventListener('Raven Channel', channelID ?? '', () => {})
+  // Placeholder cho Raven Channel listener (có thể mở rộng sau)
+  useFrappeDocumentEventListener('Raven Channel', channelID ?? '', () => {
+    console.debug(`Raven Channel event received for channel: ${channelID}`)
+    // TODO: Thêm logic cập nhật metadata kênh nếu cần
+  })
 
   // Message created event
   useFrappeEventListener('message_created', (event) => {
@@ -45,14 +51,14 @@ export const useWebSocketEvents = (
 
         // Check if user is near bottom using Virtuoso's state
         if (virtuosoRef.current) {
-          // We'll assume if we can't determine scroll position, user is not at bottom
-          // This is a safe assumption for new message handling
-          isNearBottom = false // You might need to track this via Virtuoso callbacks
+          isNearBottom = false
         }
 
         if (isFromOtherUser && !isNearBottom) {
           setNewMessageCount((count) => count + 1)
           setHasNewMessages(true)
+          // Gọi callback để track tin nhắn mới
+          onNewMessageAdded?.(event.message_details.name)
         }
 
         return {
