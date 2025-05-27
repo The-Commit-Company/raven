@@ -14,7 +14,11 @@ import CircleUserList from './CircleUserList'
 
 export const showOnlyMyChannelsAtom = atomWithStorage('showOnlyMyChannels', false)
 
-export const SidebarBody = () => {
+export type SidebarBodyProps = {
+  size: number;
+};
+
+export const SidebarBody = ({ size }: SidebarBodyProps) => {
   // const unread_count = useFetchUnreadMessageCount()
   const { channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
 
@@ -53,7 +57,7 @@ export const SidebarBody = () => {
             iconLabel='Saved Message'
           />
         </Flex>
-        <CircleUserList />
+        <CircleUserList size={size}/>
         {/* <PinnedChannels unread_count={unread_count?.message} /> */}
         <DirectMessageList dm_channels={sortedChannels} />
       </Flex>
