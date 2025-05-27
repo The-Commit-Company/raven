@@ -36,7 +36,9 @@ export const useMessageAPI = (
       onSuccess: (data) => {
         if (!highlightedMessage) {
           if (!data.message.has_new_messages) {
-            scrollToBottom()
+            requestAnimationFrame(() => {
+              scrollToBottom()
+            })
             latestMessagesLoadedRef.current = true
           }
         } else {

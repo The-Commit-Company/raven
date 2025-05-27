@@ -1,13 +1,11 @@
 // useWebSocketEvents.ts - WebSocket events handler for Virtuoso with new message tracking
 import { UserContext } from '@/utils/auth/UserProvider'
 import { useFrappeDocumentEventListener, useFrappeEventListener } from 'frappe-react-sdk'
-import { MutableRefObject, useContext } from 'react'
-import { VirtuosoHandle } from 'react-virtuoso'
+import { useContext } from 'react'
 
 export const useWebSocketEvents = (
   channelID: string,
   mutate: any,
-  virtuosoRef: MutableRefObject<VirtuosoHandle | null>,
   scrollToBottom: (behavior?: 'smooth' | 'auto') => void,
   setHasNewMessages: (hasNew: boolean) => void,
   setNewMessageCount: (count: number | ((prev: number) => number)) => void,
@@ -68,7 +66,7 @@ export const useWebSocketEvents = (
 
       // For messages from current user, always scroll to bottom
       if (!isFromOtherUser) {
-        scrollToBottom('smooth')
+        scrollToBottom('auto')
       }
     })
   })

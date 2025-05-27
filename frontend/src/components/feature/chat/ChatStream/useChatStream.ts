@@ -1,5 +1,5 @@
 // useChatStream.ts - Updated for better initial load handling with new message tracking
-import { MutableRefObject, useCallback, useEffect, useState } from 'react'
+import { MutableRefObject, useCallback, useEffect } from 'react'
 import { VirtuosoHandle } from 'react-virtuoso'
 import { useMessageAPI } from './useMessageAPI'
 import { useMessageHighlight } from './useMessageHighlight'
@@ -15,14 +15,6 @@ const useChatStream = (
   pinnedMessagesString?: string,
   isAtBottom?: boolean
 ) => {
-  // State để track việc initial load
-  const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false)
-
-  // Reset khi chuyển channel
-  useEffect(() => {
-    setIsInitialLoadComplete(false)
-  }, [channelID])
-
   // Initialize all state and refs
   const messageState = useMessageState()
   const { scrollToBottom, scrollToMessage: scrollToMessageElement } = useScrollBehavior(virtuosoRef)
@@ -51,22 +43,10 @@ const useChatStream = (
   // Process and format messages
   const messages = useMessageProcessing(api.data, pinnedMessagesString)
 
-  // Đánh dấu initial load complete khi có messages
-  useEffect(() => {
-    if (messages && messages.length > 0 && !isInitialLoadComplete) {
-      // Delay để đảm bảo Virtuoso render xong
-      const timer = setTimeout(() => {
-        setIsInitialLoadComplete(true)
-      }, 200)
-      return () => clearTimeout(timer)
-    }
-  }, [messages, isInitialLoadComplete])
-
   // WebSocket event handling với callback cho tin nhắn mới
   useWebSocketEvents(
     channelID,
     api.mutate,
-    virtuosoRef,
     scrollToBottom,
     messageState.setHasNewMessages,
     messageState.setNewMessageCount,
@@ -86,16 +66,25 @@ const useChatStream = (
     virtuosoRef,
     messageState.highlightedMessage,
     scrollToBottom,
-    messageState.latestMessagesLoaded,
-    isInitialLoadComplete // Pass state xuống
+    messageState.latestMessagesLoaded
   )
 
-  // Channel switch effect - chỉ scroll khi initial load complete
+  // Channel switch effect - scroll to bottom when channel changes
   useEffect(() => {
-    if (!messageState.searchParams.get('message_id') && isInitialLoadComplete) {
-      scrollToBottom()
+    if (!messageState.searchParams.get('message_id')) {
+      // Use a small delay to ensure Virtuoso is ready
+      const timer = setTimeout(() => {
+        if (virtuosoRef.current) {
+          virtuosoRef.current.scrollToIndex({
+            index: 'LAST',
+            behavior: 'auto',
+            align: 'end'
+          })
+        }
+      }, 50)
+      return () => clearTimeout(timer)
     }
-  }, [channelID, scrollToBottom, isInitialLoadComplete])
+  }, [channelID])
 
   // Reset tin nhắn mới khi chuyển channel
   useEffect(() => {
@@ -127,7 +116,7 @@ const useChatStream = (
     messageState.setSearchParams({})
     messageState.setHasNewMessages(false)
     messageState.setNewMessageCount(0)
-    scrollToBottom('smooth')
+    scrollToBottom('auto')
   }
 
   return {
@@ -147,7 +136,6 @@ const useChatStream = (
     goToLatestMessages,
     setHasNewMessages: messageState.setHasNewMessages,
     setNewMessageCount: messageState.setNewMessageCount,
-    isInitialLoadComplete, // Export state này để ChatStream sử dụng
     // Export các function mới để quản lý tin nhắn mới
     newMessageIds: messageState.newMessageIds,
     markMessageAsSeen: messageState.markMessageAsSeen,
