@@ -559,19 +559,7 @@ async def handle_ai_request_async(bot, message: str, channel_id: str, conversati
                     # Add tools if available
                     if tools_param:
                         api_params["tools"] = tools_param
-                        # Check if user is asking about files
-                        user_message_lower = full_input.lower()
-                        file_keywords = ['facture', 'invoice', 'montant', 'amount', 'pdf', 'document', 'fichier', 'file']
-                        asks_about_files = any(keyword in user_message_lower for keyword in file_keywords)
-                        
-                        # If asking about files and we have the analyze tool, suggest it
-                        if asks_about_files and any(tool.get('function', {}).get('name') == 'analyze_conversation_file' for tool in tools_param):
-                            api_params["tool_choice"] = {
-                                "type": "function",
-                                "function": {"name": "analyze_conversation_file"}
-                            }
-                        else:
-                            api_params["tool_choice"] = "auto"
+                        api_params["tool_choice"] = "auto"
                     
                     response = await manager.client.chat.completions.create(**api_params)
                     

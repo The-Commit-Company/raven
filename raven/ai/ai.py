@@ -362,10 +362,6 @@ def process_message_with_agent(message, bot, channel_id: str, is_new_conversatio
 				recent_file_message = recent_file
 				# Add this file to the file handler
 				file_handler.add_conversation_file(recent_file)
-				frappe.log_error(
-					f"Combining recent file upload {recent_file.file} with current text message",
-					"AI Message Combination"
-				)
 	
 	# Prepare the message content
 	if message.message_type in ["File", "Image"]:
@@ -375,10 +371,6 @@ def process_message_with_agent(message, bot, channel_id: str, is_new_conversatio
 		# If it's just a file upload without any text, don't process it yet
 		# Wait for the user to ask a question about it
 		if not message.text and not message.content:
-			frappe.log_error(
-				f"File upload without text, skipping AI processing: {message.file}",
-				"AI File Upload Skip"
-			)
 			return {"success": True, "response": None}
 		
 		# For now, we'll include file information in the text

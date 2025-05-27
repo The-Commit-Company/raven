@@ -19,23 +19,15 @@ def create_raven_tools(bot) -> List[FunctionTool]:
     """
     tools = []
     
-    # Add logging to debug bot functions
-    frappe.log_error("SDK Functions Debug", f"Bot: {bot.name}, has bot_functions: {hasattr(bot, 'bot_functions')}")
-    
     # Get the bot functions - use bot_functions instead of functions
     if hasattr(bot, "bot_functions") and bot.bot_functions:
-        frappe.log_error("SDK Functions Debug", f"Found {len(bot.bot_functions)} functions in bot {bot.name}")
         
         for func in bot.bot_functions:
             # Log function details
-            frappe.log_error("SDK Functions Debug", f"Processing function reference: {func.function}")
             
             try:
                 # Get function details from Raven AI Function (not Raven Bot Functions)
                 function_doc = frappe.get_doc("Raven AI Function", func.function)
-                
-                # Log function document details
-                frappe.log_error("SDK Functions Debug", f"Function document found: {function_doc.name}, type: {function_doc.type}")
                 
                 # Check if function has a valid path for execution
                 function_path = None
@@ -43,29 +35,22 @@ def create_raven_tools(bot) -> List[FunctionTool]:
                 # For Custom Function, use the function_path directly
                 if function_doc.type == "Custom Function":
                     if not hasattr(function_doc, "function_path") or not function_doc.function_path:
-                        frappe.log_error("SDK Functions Debug", f"Custom Function {function_doc.name} has no function_path")
                         continue
                     function_path = function_doc.function_path
                 else:
                     # For standard types like "Get List", generate a function path for built-in handlers
                     if function_doc.type == "Get List":
                         function_path = "raven.ai.sdk_tools.handle_get_list"
-                        frappe.log_error("SDK Functions Debug", f"Using built-in handler {function_path} for {function_doc.name}")
                     elif function_doc.type == "Get Document":
                         function_path = "raven.ai.sdk_tools.handle_get_document"
-                        frappe.log_error("SDK Functions Debug", f"Using built-in handler {function_path} for {function_doc.name}")
                     elif function_doc.type == "Update Document":
                         function_path = "raven.ai.sdk_tools.handle_update_document"
-                        frappe.log_error("SDK Functions Debug", f"Using built-in handler {function_path} for {function_doc.name}")
                     elif function_doc.type == "Create Document":
                         function_path = "raven.ai.sdk_tools.handle_create_document"
-                        frappe.log_error("SDK Functions Debug", f"Using built-in handler {function_path} for {function_doc.name}")
                     elif function_doc.type == "Delete Document":
                         function_path = "raven.ai.sdk_tools.handle_delete_document"
-                        frappe.log_error("SDK Functions Debug", f"Using built-in handler {function_path} for {function_doc.name}")
                     # Add other standard types as needed
                     else:
-                        frappe.log_error("SDK Functions Debug", f"No handler available for function type {function_doc.type}")
                         continue
                 
                 # Create a function tool for this function
@@ -84,9 +69,6 @@ def create_raven_tools(bot) -> List[FunctionTool]:
                     if 'additionalProperties' in params:
                         del params['additionalProperties']
                     
-                    # Log params
-                    frappe.log_error("SDK Functions Debug", f"Function {function_doc.name} params: {params}")
-                    
                     # Check if this is a standard type that needs reference_doctype
                     extra_args = {}
                     if function_doc.type in [
@@ -96,7 +78,6 @@ def create_raven_tools(bot) -> List[FunctionTool]:
                         "Delete Document", "Delete Multiple Documents"
                     ] and hasattr(function_doc, "reference_doctype") and function_doc.reference_doctype:
                         extra_args["reference_doctype"] = function_doc.reference_doctype
-                        frappe.log_error("SDK Functions Debug", f"Setting reference_doctype for {function_doc.name}: {function_doc.reference_doctype}")
                     
                     tool = create_function_tool(
                         function_doc.function_name,
@@ -108,14 +89,10 @@ def create_raven_tools(bot) -> List[FunctionTool]:
                     
                     if tool:
                         tools.append(tool)
-                        frappe.log_error("SDK Functions Debug", f"Added tool for function {function_doc.name}")
-                    else:
-                        frappe.log_error("SDK Functions Debug", f"Failed to create tool for function {function_doc.name}")
+
             except Exception as e:
                 frappe.log_error("SDK Functions Debug", f"Error processing function {func.function}: {str(e)}")
-    else:
-        frappe.log_error("SDK Functions Debug", f"No bot_functions found for bot {bot.name}")
-    
+
     return tools
 
 
@@ -139,23 +116,14 @@ def create_function_tool(
     Returns:
         FunctionTool: Function tool
     """
-    # Log function tool creation attempt
-    frappe.log_error("SDK Functions Debug", f"Creating function tool: {name}, function: {function_name}")
     
     # Get the actual function to call
     function = get_function_from_name(function_name)
     
     if not function:
-        frappe.log_error("SDK Functions Debug", f"Function {function_name} not found or could not be imported")
         return None
-    
-    # Log function details
-    frappe.log_error("SDK Functions Debug", f"Function found: {function.__name__} in module {function.__module__}")
-    
-    try:
-        # Create FunctionTool
-        frappe.log_error("SDK Functions Debug", f"Creating FunctionTool with params schema: {parameters}")
         
+    try:        
         # Based on the OpenAI Agents SDK documentation, we need to create an async invoke handler
         # Store extra_args in a closure
         _extra_args = extra_args or {}
@@ -170,9 +138,7 @@ def create_function_tool(
         _cache_ttl = 5  # seconds - short TTL to prevent duplicates in same conversation
         
         # Create an async handler that will invoke our function
-        async def on_invoke_tool(ctx, args_json: str) -> str:
-            frappe.log_error("SDK Functions Debug", f"on_invoke_tool called with args: {args_json}")
-            
+        async def on_invoke_tool(ctx, args_json: str) -> str:            
             try:
                 # Create a unique hash for this request to detect duplicates
                 request_hash = hashlib.md5(args_json.encode()).hexdigest()
@@ -183,7 +149,6 @@ def create_function_tool(
                     last_time, cached_result = _request_cache[request_hash]
                     # If the request was made very recently, return cached result
                     if now - last_time < timedelta(seconds=_cache_ttl):
-                        frappe.log_error("SDK Functions Debug", f"Duplicate request detected, returning cached result for hash: {request_hash}")
                         return cached_result
                 
                 # Parse arguments from JSON
@@ -199,7 +164,6 @@ def create_function_tool(
                     frappe.flags.current_function_doctype = _extra_args["reference_doctype"]
                 
                 # Call the function
-                frappe.log_error("SDK Functions Debug", f"Calling function {_function.__name__} with args: {args_dict}")
                 result = _function(**args_dict)
                 
                 # Convert result to string (JSON)
@@ -232,7 +196,6 @@ def create_function_tool(
             strict_json_schema=False  # Disable strict mode to allow more flexible schemas
         )
         
-        frappe.log_error("SDK Functions Debug", f"FunctionTool created successfully for {name}")
         return tool
     except Exception as e:
         frappe.log_error("SDK Functions Debug", f"Error creating FunctionTool for {name}: {str(e)}")
@@ -249,22 +212,18 @@ def get_function_from_name(function_name: str) -> Callable:
     Returns:
         Callable: Function
     """
-    frappe.log_error("SDK Functions Debug", f"Trying to import function: {function_name}")
     
     try:
         # Split module and function
         try:
             module_name, func_name = function_name.rsplit(".", 1)
-            frappe.log_error("SDK Functions Debug", f"Parsed module: {module_name}, function: {func_name}")
         except ValueError as ve:
             frappe.log_error("SDK Functions Debug", f"Invalid function name format: {function_name}. Should be 'module.function'")
             return None
         
         # Import module
         try:
-            frappe.log_error("SDK Functions Debug", f"Importing module: {module_name}")
             module = __import__(module_name, fromlist=[func_name])
-            frappe.log_error("SDK Functions Debug", f"Module imported: {module}")
         except ImportError as ie:
             frappe.log_error("SDK Functions Debug", f"Module import error: {str(ie)}")
             return None
@@ -272,22 +231,18 @@ def get_function_from_name(function_name: str) -> Callable:
         # Check for available attributes in the module
         try:
             available_attrs = dir(module)
-            frappe.log_error("SDK Functions Debug", f"Available attributes in module: {available_attrs[:10]}...")
         except Exception as e:
             frappe.log_error("SDK Functions Debug", f"Error getting module attributes: {str(e)}")
         
         # Get function
         try:
-            frappe.log_error("SDK Functions Debug", f"Trying to get function {func_name} from module {module_name}")
             function = getattr(module, func_name)
-            frappe.log_error("SDK Functions Debug", f"Function found: {function}")
         except AttributeError as ae:
             frappe.log_error("SDK Functions Debug", f"Function not found in module: {str(ae)}")
             return None
         
         # Verify the object is callable
         if not callable(function):
-            frappe.log_error("SDK Functions Debug", f"Object {func_name} is not callable")
             return None
             
         return function
@@ -527,17 +482,14 @@ def handle_get_list(filters=None, fields=None, limit=20, order_by="modified desc
     Returns:
         list: List of documents
     """
-    frappe.log_error("SDK Functions Debug", f"handle_get_list called for {reference_doctype}")
     
     try:
         # Get the reference doctype from function configuration
         if not reference_doctype:
             # Try to get from context
             reference_doctype = frappe.flags.get("current_function_doctype")
-            frappe.log_error("SDK Functions Debug", f"Got reference_doctype from context: {reference_doctype}")
             
         if not reference_doctype:
-            frappe.log_error("SDK Functions Debug", "No reference_doctype provided for handle_get_list")
             return {
                 "success": False,
                 "error": "No reference doctype provided. Please specify a valid DocType."
@@ -545,7 +497,6 @@ def handle_get_list(filters=None, fields=None, limit=20, order_by="modified desc
             
         # Validate the doctype exists
         if not frappe.db.exists("DocType", reference_doctype):
-            frappe.log_error("SDK Functions Debug", f"DocType {reference_doctype} does not exist")
             return {
                 "success": False,
                 "error": f"DocType '{reference_doctype}' does not exist."
@@ -556,9 +507,7 @@ def handle_get_list(filters=None, fields=None, limit=20, order_by="modified desc
         valid_fields = ["name", "creation", "modified", "modified_by", "owner", "docstatus"]
         for df in meta.fields:
             valid_fields.append(df.fieldname)
-            
-        frappe.log_error("SDK Functions Debug", f"Valid fields for {reference_doctype}: {valid_fields[:10]}...")
-        
+                    
         # Set default fields if not provided
         if not fields:
             fields = ["name", "modified"]
@@ -573,14 +522,12 @@ def handle_get_list(filters=None, fields=None, limit=20, order_by="modified desc
                 invalid_fields.append(field)
                 
         if invalid_fields:
-            frappe.log_error("SDK Functions Debug", f"Invalid fields found: {invalid_fields}")
             # Add a warning but continue with valid fields
             warning = f"Fields {', '.join(invalid_fields)} do not exist in DocType '{reference_doctype}' and were ignored."
             
             # If all fields are invalid, use name and modified
             if not filtered_fields:
                 filtered_fields = ["name", "modified"]
-                frappe.log_error("SDK Functions Debug", f"No valid fields provided, using default fields: {filtered_fields}")
         else:
             warning = None
             
@@ -599,15 +546,12 @@ def handle_get_list(filters=None, fields=None, limit=20, order_by="modified desc
                     invalid_filter_fields.append(base_field)
             
             if invalid_filter_fields:
-                frappe.log_error("SDK Functions Debug", f"Invalid filter fields found: {invalid_filter_fields}")
                 filters = cleaned_filters
                 
                 # Add to warning message
                 filter_warning = f"Filter fields {', '.join(invalid_filter_fields)} do not exist in DocType '{reference_doctype}' and were ignored."
                 warning = f"{warning}\n{filter_warning}" if warning else filter_warning
-        
-        frappe.log_error("SDK Functions Debug", f"Getting list for {reference_doctype} with filters {filters} and fields {filtered_fields}")
-        
+                
         # Get list of documents with validated fields
         result = frappe.get_all(
             reference_doctype,
@@ -616,9 +560,7 @@ def handle_get_list(filters=None, fields=None, limit=20, order_by="modified desc
             limit_page_length=limit,
             order_by=order_by
         )
-        
-        frappe.log_error("SDK Functions Debug", f"Found {len(result)} {reference_doctype} documents")
-        
+                
         # Ensure all datetime objects are converted to strings
         import datetime
         for item in result:
@@ -661,8 +603,6 @@ def handle_update_document(document_id=None, data=None, reference_doctype=None, 
     Returns:
         dict: Updated document data
     """
-    frappe.log_error("SDK Functions Debug", f"handle_update_document called for {reference_doctype}")
-    frappe.log_error("SDK Functions Debug", f"Received kwargs: {kwargs}")
     
     # Handle different parameter formats
     # If data is not provided, build it from kwargs
@@ -680,9 +620,7 @@ def handle_update_document(document_id=None, data=None, reference_doctype=None, 
             document_id = kwargs['item_code']
         elif 'item_name' in kwargs:
             document_id = kwargs['item_name']
-    
-    frappe.log_error("SDK Functions Debug", f"Resolved document_id: {document_id}, data to update: {data}")
-    
+        
     try:
         # Get the reference doctype from function configuration
         if not reference_doctype:
@@ -690,7 +628,6 @@ def handle_update_document(document_id=None, data=None, reference_doctype=None, 
             reference_doctype = frappe.flags.get("current_function_doctype")
             
         if not reference_doctype:
-            frappe.log_error("SDK Functions Debug", "No reference_doctype provided for handle_update_document")
             return {
                 "success": False,
                 "error": "No reference doctype provided. Please specify a valid DocType."
@@ -698,7 +635,6 @@ def handle_update_document(document_id=None, data=None, reference_doctype=None, 
         
         # Validate the doctype exists
         if not frappe.db.exists("DocType", reference_doctype):
-            frappe.log_error("SDK Functions Debug", f"DocType {reference_doctype} does not exist")
             return {
                 "success": False,
                 "error": f"DocType '{reference_doctype}' does not exist."
@@ -706,25 +642,19 @@ def handle_update_document(document_id=None, data=None, reference_doctype=None, 
             
         # Validate document exists
         if not frappe.db.exists(reference_doctype, document_id):
-            frappe.log_error("SDK Functions Debug", f"Document {document_id} not found in {reference_doctype}")
             return {
                 "success": False,
                 "error": f"Document '{document_id}' not found in DocType '{reference_doctype}'."
             }
-            
-        frappe.log_error("SDK Functions Debug", f"Updating document {document_id} in {reference_doctype} with data: {data}")
-        
+                    
         try:
             # Get document
             doc = frappe.get_doc(reference_doctype, document_id)
-            frappe.log_error("SDK Functions Debug", f"Document found: {doc.name}, current description: {doc.get('description', 'N/A')}")
             
             # Update fields
             for field, value in data.items():
                 if hasattr(doc, field):
                     setattr(doc, field, value)
-                else:
-                    frappe.log_error("SDK Functions Debug", f"Field {field} does not exist in {reference_doctype}")
             
             # Save document
             doc.save()
@@ -766,7 +696,6 @@ def handle_get_document(document_id, reference_doctype=None):
     Returns:
         dict: Document data
     """
-    frappe.log_error("SDK Functions Debug", f"handle_get_document called for {reference_doctype}")
     
     try:
         # Get the reference doctype from function configuration
@@ -775,7 +704,6 @@ def handle_get_document(document_id, reference_doctype=None):
             reference_doctype = frappe.flags.get("current_function_doctype")
             
         if not reference_doctype:
-            frappe.log_error("SDK Functions Debug", "No reference_doctype provided for handle_get_document")
             return {
                 "success": False,
                 "error": "No reference doctype provided. Please specify a valid DocType."
@@ -783,7 +711,6 @@ def handle_get_document(document_id, reference_doctype=None):
         
         # Validate the doctype exists
         if not frappe.db.exists("DocType", reference_doctype):
-            frappe.log_error("SDK Functions Debug", f"DocType {reference_doctype} does not exist")
             return {
                 "success": False,
                 "error": f"DocType '{reference_doctype}' does not exist."
@@ -791,13 +718,11 @@ def handle_get_document(document_id, reference_doctype=None):
             
         # Validate document exists
         if not frappe.db.exists(reference_doctype, document_id):
-            frappe.log_error("SDK Functions Debug", f"Document {document_id} not found in {reference_doctype}")
             return {
                 "success": False,
                 "error": f"Document '{document_id}' not found in DocType '{reference_doctype}'."
             }
             
-        frappe.log_error("SDK Functions Debug", f"Getting document {document_id} from {reference_doctype}")
         
         try:
             # Get document
