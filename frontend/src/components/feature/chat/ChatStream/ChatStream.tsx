@@ -231,26 +231,26 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
         {error && <ErrorBanner error={error} />}
 
         {/* Messages */}
-        <Virtuoso
-          ref={virtuosoRef}
-          data={messages || []}
-          totalCount={messages?.length || 0}
-          itemContent={itemRenderer}
-          components={{
-            Header,
-            Footer
-          }}
-          followOutput='smooth'
-          alignToBottom
-          atTopStateChange={handleAtTopStateChange}
-          atBottomStateChange={handleAtBottomStateChange}
-          rangeChanged={handleRangeChanged}
-          style={{ height: '100%' }}
-          className='pb-4'
-          // Thêm props để tối ưu performance
-          overscan={200}
-          initialTopMostItemIndex={messages?.length ? messages.length - 1 : 0}
-        />
+        {messages && messages.length > 0 && (
+          <Virtuoso
+            ref={virtuosoRef}
+            data={messages}
+            totalCount={messages.length}
+            itemContent={itemRenderer}
+            followOutput={isAtBottom ? 'smooth' : false}
+            initialTopMostItemIndex={messages.length - 1}
+            atTopStateChange={handleAtTopStateChange}
+            atBottomStateChange={handleAtBottomStateChange}
+            rangeChanged={handleRangeChanged}
+            components={{
+              Header: isInitialLoadComplete && hasOlderMessages ? Header : undefined,
+              Footer: hasNewMessages ? Footer : undefined
+            }}
+            style={{ height: '100%' }}
+            className='pb-4'
+            overscan={200}
+          />
+        )}
 
         {/* Scroll to bottom buttons */}
         <ScrollToBottomButtons
