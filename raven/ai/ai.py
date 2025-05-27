@@ -63,7 +63,8 @@ def handle_bot_dm_with_agents(message, bot):
 	message.is_thread = 1
 	message.save()
 	# We need to commit here since the response will be processed asynchronously
-	frappe.db.commit()
+	# Manual commit required: AI processing happens in background job that needs the message to exist in DB
+	frappe.db.commit()  # nosemgrep
 
 	# Send initial thinking message
 	frappe.publish_realtime(
