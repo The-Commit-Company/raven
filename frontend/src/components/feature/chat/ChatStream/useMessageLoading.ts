@@ -13,12 +13,10 @@ export const useMessageLoading = (
   virtuosoRef: MutableRefObject<VirtuosoHandle | null>,
   highlightedMessage: string | null,
   scrollToBottom: (behavior?: 'auto' | 'smooth') => void,
-  latestMessagesLoadedRef: MutableRefObject<boolean>,
-  isInitialLoadComplete: boolean = true // Thêm param để kiểm tra initial load
+  latestMessagesLoadedRef: MutableRefObject<boolean>
 ) => {
   const loadOlderMessages = () => {
-    // Thêm điều kiện kiểm tra initial load complete
-    if (loadingOlderMessages || !data?.message.has_old_messages || !isInitialLoadComplete) {
+    if (loadingOlderMessages || !data?.message.has_old_messages) {
       return Promise.resolve()
     }
 
@@ -68,7 +66,7 @@ export const useMessageLoading = (
   }
 
   const loadNewerMessages = () => {
-    if (loadingNewerMessages || !data?.message.has_new_messages || highlightedMessage || !isInitialLoadComplete) {
+    if (loadingNewerMessages || !data?.message.has_new_messages || highlightedMessage) {
       return Promise.resolve()
     }
 
@@ -104,9 +102,11 @@ export const useMessageLoading = (
       },
       { revalidate: false }
     ).then((res: any) => {
-      if (res?.message.has_new_messages === false && isInitialLoadComplete) {
+      if (res?.message.has_new_messages === false) {
         latestMessagesLoadedRef.current = true
-        scrollToBottom('smooth')
+        requestAnimationFrame(() => {
+          scrollToBottom('smooth')
+        })
       }
     })
   }
