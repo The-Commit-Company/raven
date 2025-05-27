@@ -248,31 +248,32 @@ class RavenAgentManager:
             # If not found on bot, check the assistant
             elif hasattr(self.bot_doc, 'openai_assistant_id') and self.bot_doc.openai_assistant_id:
                 try:
-                    assistant = self.client.beta.assistants.retrieve(self.bot_doc.openai_assistant_id)
+                    # Create a synchronous client for assistant operations
+                    from openai import OpenAI
+                    api_key = self.settings.get_password("openai_api_key")
+                    sync_client = OpenAI(
+                        api_key=api_key,
+                        organization=self.settings.openai_organisation_id,
+                        project=self.settings.openai_project_id if self.settings.openai_project_id else None
+                    )
                     
-                    # Check if assistant has vector store IDs
+                    assistant = sync_client.beta.assistants.retrieve(self.bot_doc.openai_assistant_id)
+                    
+                    # Check if assistant has vector store IDs in tool_resources
                     if hasattr(assistant, 'tool_resources') and assistant.tool_resources:
-                        if hasattr(assistant.tool_resources, 'file_search') and assistant.tool_resources.file_search:
-                            vs_ids = assistant.tool_resources.file_search.get('vector_store_ids', [])
+                        # Access the vector store IDs
+                        file_search = getattr(assistant.tool_resources, 'file_search', None)
+                        if file_search and hasattr(file_search, 'vector_store_ids'):
+                            vs_ids = file_search.vector_store_ids
                             if vs_ids:
                                 vector_store_ids = vs_ids
                 
                 except Exception as e:
-                    frappe.log_error(f"Error retrieving assistant: {str(e)}", "File Search Tool Error")
+                    frappe.log_error(f"Error retrieving assistant: {str(e)}\n{traceback.format_exc()}", "File Search Tool Error")
             
-            # If still no vector store, check if bot has files that need to be added to a vector store
+            # If still no vector store, log and return None
             if not vector_store_ids:
-                # Check if bot has file sources
-                bot_files = frappe.get_all(
-                    "Raven AI Bot Files",
-                    filters={"parent": self.bot_doc.name, "parenttype": "Raven Bot"},
-                    fields=["file"],
-                    pluck="file"
-                )
-                
-                
                 return None
-            
             
             file_search_tool = FileSearchTool(
                 vector_store_ids=vector_store_ids,
