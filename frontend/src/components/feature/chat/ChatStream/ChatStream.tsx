@@ -4,7 +4,7 @@ import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState/Empty
 import { useChannelSeenUsers } from '@/hooks/useChannelSeenUsers'
 import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
 import { useUserData } from '@/hooks/useUserData'
-import { forwardRef, MutableRefObject, useCallback, useEffect, useImperativeHandle, useState } from 'react'
+import { forwardRef, MutableRefObject, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react'
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { ChatDialogs } from './ChatDialogs'
@@ -219,6 +219,14 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       goToLatestMessages()
     }, [clearAllNewMessages, goToLatestMessages])
 
+    const virtuosoComponents = useMemo(
+      () => ({
+        Header: isInitialLoadComplete && hasOlderMessages ? Header : undefined,
+        Footer: hasNewMessages ? Footer : undefined
+      }),
+      [isInitialLoadComplete, hasOlderMessages, hasNewMessages]
+    )
+
     return (
       <div className='relative h-full flex flex-col overflow-hidden pb-16 sm:pb-0'>
         {/* Empty state */}
@@ -242,13 +250,11 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
             atTopStateChange={handleAtTopStateChange}
             atBottomStateChange={handleAtBottomStateChange}
             rangeChanged={handleRangeChanged}
-            components={{
-              Header: isInitialLoadComplete && hasOlderMessages ? Header : undefined,
-              Footer: hasNewMessages ? Footer : undefined
-            }}
+            components={virtuosoComponents}
             style={{ height: '100%' }}
             className='pb-4'
             overscan={200}
+            initialItemCount={20}
           />
         )}
 
