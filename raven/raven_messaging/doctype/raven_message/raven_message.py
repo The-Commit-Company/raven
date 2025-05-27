@@ -213,7 +213,7 @@ class RavenMessage(Document):
 
 		is_ai_thread = channel_doc.is_ai_thread
 
-		if is_ai_thread and channel_doc.openai_thread_id:
+		if is_ai_thread:
 			frappe.enqueue(
 				method=handle_ai_thread_message,
 				message=self,

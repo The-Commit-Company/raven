@@ -18,6 +18,7 @@
   "module",
   "ai_tab",
   "is_ai_bot",
+  "model_provider",
   "model",
   "temperature",
   "column_break_ebil",
@@ -97,6 +98,14 @@
    "label": "Is AI Bot?"
   },
   {
+   "default": "OpenAI",
+   "depends_on": "eval:doc.is_ai_bot",
+   "fieldname": "model_provider",
+   "fieldtype": "Select",
+   "label": "Model Provider",
+   "options": "OpenAI\nLocal LLM"
+  },
+  {
    "depends_on": "eval: doc.is_ai_bot",
    "documentation_url": "https://platform.openai.com/docs/assistants/overview",
    "fieldname": "openai_assistant_id",
@@ -169,6 +178,8 @@
   },
   {
    "default": "gpt-4o",
+   "depends_on": "eval:doc.is_ai_bot",
+   "description": "For OpenAI: gpt-4o, gpt-4, etc. For Local LLM: use model name from /v1/models endpoint",
    "fieldname": "model",
    "fieldtype": "Data",
    "label": "Model"
