@@ -101,7 +101,7 @@ export const DirectMessageList = ({ dm_channels, isLoading = false }: DirectMess
         </Flex>
       </SidebarGroupItem>
       <SidebarGroup>
-        <div className='flex gap-1 flex-col fade-in'>
+        <div className='flex gap-3 flex-col fade-in'>
           {isLoading ? (
             <div className='p-3 text-sm text-gray-500 italic'>Đang tải danh sách...</div>
           ) : (
@@ -156,8 +156,9 @@ const isDMChannel = (c: UnifiedChannel): c is DMChannelWithUnreadCount => {
 }
 
 export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel }) => {
-  const { currentUser } = useContext(UserContext)
+    const { currentUser } = useContext(UserContext)
   const { channelID } = useParams()
+  const navigate = useNavigate()
 
   const manuallyMarked = useAtomValue(manuallyMarkedAtom)
   const isManuallyMarked = manuallyMarked.has(channel.name)
@@ -203,8 +204,15 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
 
   const shouldShowBadge = channel.unread_count > 0 || isManuallyMarked
 
+  const handleNavigate = () => {
+    navigate(`/channel/${channel.name}`)
+  }
+
   return (
-    <SidebarItem to={channel.name} className='py-1.5 px-2.5 data-[state=open]:bg-gray-3 group relative'>
+    <div
+      onClick={handleNavigate}
+      className='py-1.5 px-2.5 data-[state=open]:bg-gray-3 group relative cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2'
+    >
       <SidebarIcon>
         {peerUser ? (
           <UserAvatar
@@ -244,18 +252,21 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
 
       {shouldShowBadge && <SidebarBadge>{channel.unread_count || 1}</SidebarBadge>}
 
-      {/* Hover check button */}
       {formattedLastMessage && (
         <Tooltip content='Đã xong' side='bottom'>
           <button
+            onClick={(e) => {
+              e.stopPropagation()
+              // xử lý "đã xong" tại đây nếu cần
+            }}
             className='cursor-pointer absolute top-1/2 right-0 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-200 hover:bg-gray-300 p-1 rounded-full flex items-center justify-center'
             title='Đã xong'
           >
-            <HiCheck className='h-4 w-4 text-gray-800' />
+            <HiCheck className='h-5 w-5 text-gray-800' />
           </button>
         </Tooltip>
       )}
-    </SidebarItem>
+    </div>
   )
 }
 

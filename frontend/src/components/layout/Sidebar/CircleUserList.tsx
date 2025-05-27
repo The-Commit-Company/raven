@@ -1,55 +1,37 @@
 import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useUnreadMessages } from '@/utils/layout/sidebar'
 import { ChannelInfo, useCircleUserList } from '@/utils/users/CircleUserListProvider'
 import { useMergedUnreadCount } from '@/components/feature/direct-messages/DirectMessageListCustom'
-import { useNavigate, useParams } from 'react-router-dom'
 import { useGetUser } from '@/hooks/useGetUser'
+import { useChannelActions } from '@/hooks/useChannelActions'
+import { SidebarBodyProps } from './SidebarBodyCustom'
+
+import { Tooltip } from '@radix-ui/themes'
 import * as ContextMenu from '@radix-ui/react-context-menu'
 import clsx from 'clsx'
 import { FaUsers } from 'react-icons/fa6'
-import { useChannelActions } from '@/hooks/useChannelActions'
-import { DndContext, PointerSensor, useSensor, useSensors, closestCenter } from '@dnd-kit/core'
-import { SortableContext, useSortable, rectSortingStrategy, arrayMove } from '@dnd-kit/sortable'
+
+import {
+  DndContext,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  closestCenter
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  useSortable,
+  rectSortingStrategy,
+  arrayMove
+} from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { restrictToParentElement } from '@dnd-kit/modifiers'
-import { Tooltip } from '@radix-ui/themes'
-import { SidebarBodyProps } from './SidebarBodyCustom'
-
-interface Props {
-  channel: ChannelInfo
-  isActive?: boolean
-  onActivate?: () => void
-}
 
 const LOCAL_STORAGE_KEY = 'raven_selected_channels'
 let saveTimeout: ReturnType<typeof setTimeout> | null = null
 
-const SortableCircleUserItem = ({ channel, isActive, onActivate }: Props) => {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: channel.name })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition
-  }
-
-  return (
-    <div ref={setNodeRef} style={style} {...attributes}>
-      <ContextMenu.Trigger asChild>
-        <div
-          onPointerDown={(e) => {
-            if (e.button === 0) {
-              listeners?.onPointerDown?.(e)
-            }
-          }}
-        >
-          <CircleUserItem channel={channel} isActive={isActive} onActivate={onActivate} />
-        </div>
-      </ContextMenu.Trigger>
-    </div>
-  )
-}
-
-const CircleUserItem = ({ channel, isActive, onActivate }: Props) => {
+const CircleUserItem = ({ channel, isActive, onActivate }: { channel: ChannelInfo; isActive?: boolean; onActivate?: () => void }) => {
   const navigate = useNavigate()
   const isDM = channel.is_direct_message === 1
   const userInfo = useGetUser(channel?.peer_user_id ?? undefined)
@@ -64,9 +46,7 @@ const CircleUserItem = ({ channel, isActive, onActivate }: Props) => {
   }
 
   useEffect(() => {
-    if (channelID === channel.name) {
-      clearManualMark(channel.name)
-    }
+    if (channelID === channel.name) clearManualMark(channel.name)
   }, [channelID])
 
   return (
@@ -113,14 +93,41 @@ const CircleUserItem = ({ channel, isActive, onActivate }: Props) => {
   )
 }
 
+const SortableCircleUserItem = ({ channel, isActive, onActivate }: { channel: ChannelInfo; isActive?: boolean; onActivate?: () => void }) => {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: channel.name })
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    touchAction: 'none',
+    userSelect: 'none',
+    cursor: 'grab'
+  }
+
+  return (
+    <ContextMenu.Trigger asChild>
+      <div
+        ref={setNodeRef}
+        {...attributes}
+        {...listeners}
+        style={style}
+        className='w-full h-full'
+      >
+        <CircleUserItem channel={channel} isActive={isActive} onActivate={onActivate} />
+      </div>
+    </ContextMenu.Trigger>
+  )
+}
+
 const CircleUserList = ({ size }: SidebarBodyProps) => {
   const { selectedChannels, setSelectedChannels } = useCircleUserList()
   const unread_count = useUnreadMessages()
   const { isPinned, togglePin, markAsUnread, isManuallyMarked } = useChannelActions()
   const channelID = useParams().channelID || ''
+
   const safeSelectedChannels = selectedChannels.map((c) => ({
     ...c,
-    last_message_timestamp: c.last_message_timestamp ?? undefined // chuyển null -> undefined
+    last_message_timestamp: c.last_message_timestamp ?? undefined
   }))
 
   const enrichedSelectedChannels = useMergedUnreadCount(safeSelectedChannels, unread_count?.message ?? [])
@@ -129,22 +136,8 @@ const CircleUserList = ({ size }: SidebarBodyProps) => {
   useEffect(() => {
     const newItems = enrichedSelectedChannels.map((c) => c.name)
     const isEqual = newItems.length === items.length && newItems.every((v, i) => v === items[i])
-    if (!isEqual) {
-      setItems(newItems)
-    }
+    if (!isEqual) setItems(newItems)
   }, [enrichedSelectedChannels])
-
-  const getGridCols = (size: number): number => {
-    if (size <= 10) return 2
-    if (size <= 20) return 4
-    if (size <= 30) return 5
-    if (size <= 40) return 6
-    return Math.ceil(Math.sqrt(size))
-  }
-
-  const gridCols = getGridCols(size)
-  const itemMinWidth = 70
-  const itemMaxWidth = 100
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
 
@@ -169,7 +162,17 @@ const CircleUserList = ({ size }: SidebarBodyProps) => {
     }, 1000)
   }
 
-  return enrichedSelectedChannels?.length > 0 ? (
+  const getGridCols = (size: number) => {
+    if (size <= 10) return 2
+    if (size <= 20) return 3
+    if (size <= 30) return 4
+    if (size <= 40) return 5
+    return Math.ceil(Math.sqrt(size))
+  }
+
+  const gridCols = getGridCols(size)
+
+  return enrichedSelectedChannels.length > 0 ? (
     <div className='w-full'>
       <DndContext
         sensors={sensors}
@@ -181,11 +184,9 @@ const CircleUserList = ({ size }: SidebarBodyProps) => {
           <div
             className={`grid gap-3 p-2 overflow-hidden ${gridCols >= 5 ? '' : 'mx-auto'}`}
             style={{
-              gridTemplateColumns: `repeat(${gridCols}, minmax(${itemMinWidth}px, ${itemMaxWidth}px))`
+              gridTemplateColumns: `repeat(${gridCols}, minmax(70px, 100px))`
             }}
           >
-            {/* items here */}
-
             {items.map((channelName) => {
               const channel = enrichedSelectedChannels.find((c) => c.name === channelName)
               if (!channel) return null
