@@ -1,37 +1,49 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
 import { useUnreadMessages } from '@/utils/layout/sidebar'
 import { ChannelInfo, useCircleUserList } from '@/utils/users/CircleUserListProvider'
 import { useMergedUnreadCount } from '@/components/feature/direct-messages/DirectMessageListCustom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useGetUser } from '@/hooks/useGetUser'
-import { useChannelActions } from '@/hooks/useChannelActions'
-import { SidebarBodyProps } from './SidebarBodyCustom'
-
-import { Tooltip } from '@radix-ui/themes'
 import * as ContextMenu from '@radix-ui/react-context-menu'
 import clsx from 'clsx'
 import { FaUsers } from 'react-icons/fa6'
-
-import {
-  DndContext,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  closestCenter
-} from '@dnd-kit/core'
-import {
-  SortableContext,
-  useSortable,
-  rectSortingStrategy,
-  arrayMove
-} from '@dnd-kit/sortable'
+import { useChannelActions } from '@/hooks/useChannelActions'
+import { DndContext, PointerSensor, useSensor, useSensors, closestCenter } from '@dnd-kit/core'
+import { SortableContext, useSortable, rectSortingStrategy, arrayMove } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { restrictToParentElement } from '@dnd-kit/modifiers'
+import { Tooltip } from '@radix-ui/themes'
+
+interface Props {
+  channel: ChannelInfo
+  isActive?: boolean
+  onActivate?: () => void
+}
 
 const LOCAL_STORAGE_KEY = 'raven_selected_channels'
 let saveTimeout: ReturnType<typeof setTimeout> | null = null
 
-const CircleUserItem = ({ channel, isActive, onActivate }: { channel: ChannelInfo; isActive?: boolean; onActivate?: () => void }) => {
+const SortableCircleUserItem = ({ channel, isActive, onActivate }: Props) => {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: channel.name })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    minWidth: 70,
+    minHeight: 80
+  }
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className='w-full h-full'>
+      <ContextMenu.Trigger asChild>
+        <div className='w-full h-full'>
+          <CircleUserItem channel={channel} isActive={isActive} onActivate={onActivate} />
+        </div>
+      </ContextMenu.Trigger>
+    </div>
+  )
+}
+
+const CircleUserItem = ({ channel, isActive, onActivate }: Props) => {
   const navigate = useNavigate()
   const isDM = channel.is_direct_message === 1
   const userInfo = useGetUser(channel?.peer_user_id ?? undefined)
@@ -46,7 +58,9 @@ const CircleUserItem = ({ channel, isActive, onActivate }: { channel: ChannelInf
   }
 
   useEffect(() => {
-    if (channelID === channel.name) clearManualMark(channel.name)
+    if (channelID === channel.name) {
+      clearManualMark(channel.name)
+    }
   }, [channelID])
 
   return (
@@ -54,8 +68,7 @@ const CircleUserItem = ({ channel, isActive, onActivate }: { channel: ChannelInf
       <div
         onClick={handleClick}
         className={clsx(
-          'flex flex-col items-center space-y-1 cursor-pointer text-center',
-          'p-1 rounded-md w-full',
+          'flex flex-col items-center space-y-1 cursor-pointer text-center p-1 rounded-md w-full',
           isActive ? 'bg-gray-300 dark:bg-gray-700' : 'hover:bg-gray-200 dark:hover:bg-gray-600'
         )}
       >
@@ -66,8 +79,7 @@ const CircleUserItem = ({ channel, isActive, onActivate }: { channel: ChannelInf
                 'w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold leading-none',
                 isDM
                   ? 'bg-gradient-to-r from-purple-400 to-pink-500 text-white'
-                  : 'border-2 border-teal-400 text-teal-600',
-                isActive
+                  : 'border-2 border-teal-400 text-teal-600'
               )}
             >
               {isDM ? (
@@ -76,14 +88,12 @@ const CircleUserItem = ({ channel, isActive, onActivate }: { channel: ChannelInf
                 <FaUsers className='text-teal-500 w-5 h-5' />
               )}
             </div>
-
             {channel.unread_count > 0 && (
               <div className='absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border border-white'>
                 {channel.unread_count > 9 ? '9+' : channel.unread_count}
               </div>
             )}
           </div>
-
           <div className='text-xs truncate max-w-full h-[16px] leading-[16px] text-center'>
             {displayName?.split(' ').slice(0, 2).join(' ')}
           </div>
@@ -93,53 +103,23 @@ const CircleUserItem = ({ channel, isActive, onActivate }: { channel: ChannelInf
   )
 }
 
-const SortableCircleUserItem = ({ channel, isActive, onActivate }: { channel: ChannelInfo; isActive?: boolean; onActivate?: () => void }) => {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: channel.name })
-
-  const style: React.CSSProperties = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    touchAction: 'none',
-    userSelect: 'none',
-    cursor: 'grab'
-  }
-
-  return (
-    <ContextMenu.Trigger asChild>
-      <div
-        ref={setNodeRef}
-        {...attributes}
-        {...listeners}
-        style={style}
-        className='w-full h-full'
-      >
-        <CircleUserItem channel={channel} isActive={isActive} onActivate={onActivate} />
-      </div>
-    </ContextMenu.Trigger>
-  )
-}
-
-const CircleUserList = ({ size }: SidebarBodyProps) => {
+const CircleUserList = () => {
   const { selectedChannels, setSelectedChannels } = useCircleUserList()
   const unread_count = useUnreadMessages()
   const { isPinned, togglePin, markAsUnread, isManuallyMarked } = useChannelActions()
   const channelID = useParams().channelID || ''
-
-  const safeSelectedChannels = selectedChannels.map((c) => ({
-    ...c,
-    last_message_timestamp: c.last_message_timestamp ?? undefined
-  }))
-
-  const enrichedSelectedChannels = useMergedUnreadCount(safeSelectedChannels, unread_count?.message ?? [])
+  const enrichedSelectedChannels = useMergedUnreadCount(selectedChannels, unread_count?.message ?? [])
   const [items, setItems] = useState(enrichedSelectedChannels.map((c) => c.name))
 
   useEffect(() => {
     const newItems = enrichedSelectedChannels.map((c) => c.name)
     const isEqual = newItems.length === items.length && newItems.every((v, i) => v === items[i])
-    if (!isEqual) setItems(newItems)
+    if (!isEqual) {
+      setItems(newItems)
+    }
   }, [enrichedSelectedChannels])
 
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
+  const sensors = useSensors(useSensor(PointerSensor))
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event
@@ -162,63 +142,42 @@ const CircleUserList = ({ size }: SidebarBodyProps) => {
     }, 1000)
   }
 
-  const getGridCols = (size: number) => {
-    if (size <= 10) return 2
-    if (size <= 20) return 3
-    if (size <= 30) return 4
-    if (size <= 40) return 5
-    return Math.ceil(Math.sqrt(size))
-  }
-
-  const gridCols = getGridCols(size)
-
   return enrichedSelectedChannels.length > 0 ? (
     <div className='w-full'>
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-        modifiers={[restrictToParentElement]}
-      >
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={items} strategy={rectSortingStrategy}>
-          <div
-            className={`grid gap-3 p-2 overflow-hidden ${gridCols >= 5 ? '' : 'mx-auto'}`}
-            style={{
-              gridTemplateColumns: `repeat(${gridCols}, minmax(70px, 100px))`
-            }}
-          >
+          <div className='flex flex-wrap gap-3 p-2 w-full overflow-hidden'>
             {items.map((channelName) => {
               const channel = enrichedSelectedChannels.find((c) => c.name === channelName)
               if (!channel) return null
-
               return (
-                <div key={channel.name} className='flex flex-col items-center justify-center w-full h-full'>
-                  <ContextMenu.Root>
+                <ContextMenu.Root key={channel.name}>
+                  <div className='w-[70px] h-[80px]'>
                     <SortableCircleUserItem
                       channel={channel}
                       isActive={channel.name === channelID}
                       onActivate={() => {}}
                     />
-                    <ContextMenu.Portal>
-                      <ContextMenu.Content className='z-50 bg-white dark:bg-gray-800 text-black dark:text-white rounded shadow-md p-1'>
-                        <ContextMenu.Item
-                          className='px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer'
-                          onClick={() => markAsUnread(channel)}
-                        >
-                          {channel.unread_count > 0 || isManuallyMarked(channel.name)
-                            ? 'Đánh dấu đã đọc'
-                            : 'Đánh dấu chưa đọc'}
-                        </ContextMenu.Item>
-                        <ContextMenu.Item
-                          className='px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer'
-                          onClick={() => togglePin(channel)}
-                        >
-                          {isPinned(channel.name) ? 'Bỏ ghim khỏi danh sách' : 'Ghim lên đầu'}
-                        </ContextMenu.Item>
-                      </ContextMenu.Content>
-                    </ContextMenu.Portal>
-                  </ContextMenu.Root>
-                </div>
+                  </div>
+                  <ContextMenu.Portal>
+                    <ContextMenu.Content className='z-50 bg-white dark:bg-gray-800 text-black dark:text-white rounded shadow-md p-1'>
+                      <ContextMenu.Item
+                        className='px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer'
+                        onClick={() => markAsUnread(channel)}
+                      >
+                        {channel.unread_count > 0 || isManuallyMarked(channel.name)
+                          ? 'Đánh dấu đã đọc'
+                          : 'Đánh dấu chưa đọc'}
+                      </ContextMenu.Item>
+                      <ContextMenu.Item
+                        className='px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer'
+                        onClick={() => togglePin(channel)}
+                      >
+                        {isPinned(channel.name) ? 'Bỏ ghim khỏi danh sách' : 'Ghim lên đầu'}
+                      </ContextMenu.Item>
+                    </ContextMenu.Content>
+                  </ContextMenu.Portal>
+                </ContextMenu.Root>
               )
             })}
           </div>
