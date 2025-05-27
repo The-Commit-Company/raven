@@ -97,7 +97,7 @@ class RavenBot(Document):
 
 		if self.is_ai_bot:
 			# Only create OpenAI assistant if using OpenAI provider (not for Agents SDK)
-			if not hasattr(self, 'model_provider') or self.model_provider == "OpenAI":
+			if not hasattr(self, "model_provider") or self.model_provider == "OpenAI":
 				# Skip assistant creation if we're using Agents SDK even with OpenAI
 				# TODO: In future, we should completely phase out assistant creation
 				if not self.openai_assistant_id:
@@ -109,12 +109,14 @@ class RavenBot(Document):
 				if self.openai_assistant_id:
 					# Clear assistant ID if switching from OpenAI to Local LLM
 					self.db_set("openai_assistant_id", None)
-					frappe.msgprint(_("OpenAI Assistant cleared as this bot now uses {0}").format(self.model_provider))
+					frappe.msgprint(
+						_("OpenAI Assistant cleared as this bot now uses {0}").format(self.model_provider)
+					)
 
 	def before_insert(self):
 		if self.is_ai_bot and not self.openai_assistant_id:
 			# Only create OpenAI assistant if using OpenAI provider (not for Agents SDK)
-			if not hasattr(self, 'model_provider') or self.model_provider == "OpenAI":
+			if not hasattr(self, "model_provider") or self.model_provider == "OpenAI":
 				# Skip assistant creation for Local LLM
 				self.create_openai_assistant()
 			elif self.model_provider == "Local LLM":
@@ -133,9 +135,9 @@ class RavenBot(Document):
 	def create_openai_assistant(self):
 		# Create an OpenAI Assistant for the bot (legacy - being phased out for Agents SDK)
 		# Check again to ensure we're not creating for Local LLM
-		if hasattr(self, 'model_provider') and self.model_provider == "Local LLM":
+		if hasattr(self, "model_provider") and self.model_provider == "Local LLM":
 			return
-		
+
 		client = get_open_ai_client()
 
 		# Sometimes users face an issue with the OpenAI API returning an error for "model_not_found"
@@ -184,9 +186,9 @@ class RavenBot(Document):
 		# Additional check because it is being used in Raven AI Function
 		if not self.is_ai_bot:
 			return
-		
+
 		# Don't update assistant for Local LLM bots
-		if hasattr(self, 'model_provider') and self.model_provider == "Local LLM":
+		if hasattr(self, "model_provider") and self.model_provider == "Local LLM":
 			return
 
 		client = get_open_ai_client()

@@ -1,31 +1,31 @@
-import frappe
 import asyncio
 import json
 from typing import Dict, Optional
-# Import agents integration - no fallback needed
-from raven.ai.agents_integration import (
-    RavenAgentManager, 
-    handle_ai_request_sync
-)
+
+import frappe
 from agents import Runner
+
+# Import agents integration - no fallback needed
+from raven.ai.agents_integration import RavenAgentManager, handle_ai_request_sync
+
+# Keep old handler import for fallback
+from raven.ai.handler import stream_response
 from raven.ai.openai_client import (
 	code_interpreter_file_types,
 	file_search_file_types,
 	get_open_ai_client,
 )
-# Keep old handler import for fallback
-from raven.ai.handler import stream_response
 
 
 def handle_bot_dm(message, bot):
 	"""
 	Function to handle direct messages to the bot.
-	
+
 	Routes to Agents SDK for bots with model_provider, falls back to Assistants API for legacy bots.
 	"""
-	
+
 	# Check if bot uses new Agents SDK
-	if hasattr(bot, 'model_provider') and bot.model_provider in ["OpenAI", "Local LLM"]:
+	if hasattr(bot, "model_provider") and bot.model_provider in ["OpenAI", "Local LLM"]:
 		return handle_bot_dm_with_agents(message, bot)
 	else:
 		# Use old Assistants API for legacy bots
@@ -36,7 +36,7 @@ def handle_bot_dm_with_agents(message, bot):
 	"""
 	Handle direct messages using Agents SDK.
 	"""
-	
+
 	# If the message is a poll, send a message to the user that we don't support polls for AI yet
 	if message.message_type == "Poll":
 		bot.send_message(
@@ -44,7 +44,7 @@ def handle_bot_dm_with_agents(message, bot):
 			text="Sorry, I don't support polls yet. Please send a text message or file.",
 		)
 		return
-	
+
 	# Create thread channel for the conversation
 	thread_channel = frappe.get_doc(
 		{
@@ -58,13 +58,13 @@ def handle_bot_dm_with_agents(message, bot):
 			# No more openai_thread_id for Agents SDK
 		}
 	).insert()
-	
+
 	# Update the message to mark it as a thread
 	message.is_thread = 1
 	message.save()
 	# We need to commit here since the response will be processed asynchronously
 	frappe.db.commit()
-	
+
 	# Send initial thinking message
 	frappe.publish_realtime(
 		"ai_event",
@@ -77,16 +77,13 @@ def handle_bot_dm_with_agents(message, bot):
 		docname=thread_channel.name,
 		after_commit=True,
 	)
-	
+
 	# Send event to automatically open the thread
 	publish_ai_thread_created_event(message, message.channel_id)
-	
+
 	# Process message with Agents SDK
 	process_message_with_agent(
-		message=message,
-		bot=bot,
-		channel_id=thread_channel.name,
-		is_new_conversation=True
+		message=message, bot=bot, channel_id=thread_channel.name, is_new_conversation=True
 	)
 
 
@@ -94,9 +91,9 @@ def handle_bot_dm_with_assistants(message, bot):
 	"""
 	Legacy function to handle direct messages using OpenAI Assistants API.
 	"""
-	
+
 	client = get_open_ai_client()
-	
+
 	# If the message is a poll, send a message to the user that we don't support polls for AI yet
 	if message.message_type == "Poll":
 		bot.send_message(
@@ -185,7 +182,7 @@ def handle_bot_dm_with_assistants(message, bot):
 		docname=thread_channel.name,
 		after_commit=True,
 	)
-	
+
 	# Send event to automatically open the thread
 	publish_ai_thread_created_event(message, message.channel_id)
 
@@ -195,14 +192,14 @@ def handle_bot_dm_with_assistants(message, bot):
 def handle_ai_thread_message(message, channel):
 	"""
 	Function to handle messages in an AI thread.
-	
+
 	Routes to Agents SDK for bots with model_provider, falls back to Assistants API for legacy bots.
 	"""
-	
+
 	bot = frappe.get_doc("Raven Bot", channel.thread_bot)
-	
+
 	# Check if bot uses new Agents SDK
-	if hasattr(bot, 'model_provider') and bot.model_provider in ["OpenAI", "Local LLM"]:
+	if hasattr(bot, "model_provider") and bot.model_provider in ["OpenAI", "Local LLM"]:
 		return handle_ai_thread_message_with_agents(message, channel, bot)
 	else:
 		# Use old Assistants API for legacy bots
@@ -213,15 +210,14 @@ def handle_ai_thread_message_with_agents(message, channel, bot):
 	"""
 	Handle thread messages using Agents SDK.
 	"""
-	
+
 	# Skip file/image messages without text - they'll be handled when the user sends a follow-up
 	if message.message_type in ["File", "Image"] and not message.text and not message.content:
 		frappe.log_error(
-			f"Skipping file-only message in AI thread: {message.file}",
-			"AI Thread File Skip"
+			f"Skipping file-only message in AI thread: {message.file}", "AI Thread File Skip"
 		)
 		return
-	
+
 	# Send thinking message
 	frappe.publish_realtime(
 		"ai_event",
@@ -233,14 +229,10 @@ def handle_ai_thread_message_with_agents(message, channel, bot):
 		doctype="Raven Channel",
 		docname=channel.name,
 	)
-	
+
 	# Process message with Agents SDK
 	process_message_with_agent(
-		message=message,
-		bot=bot,
-		channel_id=channel.name,
-		is_new_conversation=False,
-		channel=channel
+		message=message, bot=bot, channel_id=channel.name, is_new_conversation=False, channel=channel
 	)
 
 
@@ -248,7 +240,7 @@ def handle_ai_thread_message_with_assistants(message, channel, bot):
 	"""
 	Legacy function to handle thread messages using OpenAI Assistants API.
 	"""
-	
+
 	client = get_open_ai_client()
 
 	if message.message_type in ["File", "Image"]:
@@ -313,25 +305,29 @@ def handle_ai_thread_message_with_assistants(message, channel, bot):
 	stream_response(ai_thread_id=channel.openai_thread_id, bot=bot, channel_id=channel.name)
 
 
-def process_message_with_agent(message, bot, channel_id: str, is_new_conversation: bool, channel=None):
+def process_message_with_agent(
+	message, bot, channel_id: str, is_new_conversation: bool, channel=None
+):
 	"""
 	Process a message using the Agents SDK.
-	
+
 	This function handles both new conversations and existing threads.
 	"""
-	
+
 	# Track files in conversation
 	from raven.ai.conversation_file_handler import ConversationFileHandler
+
 	file_handler = ConversationFileHandler(channel_id)
-	
+
 	# Check if this is a text message following a recent file upload
 	# to combine them into a single AI request
 	recent_file_message = None
 	if message.message_type == "Text" and channel:
 		# Look for a file message from the same user in the last 30 seconds
 		from datetime import datetime, timedelta
+
 		cutoff_time = datetime.now() - timedelta(seconds=30)
-		
+
 		recent_messages = frappe.get_all(
 			"Raven Message",
 			filters={
@@ -339,13 +335,13 @@ def process_message_with_agent(message, bot, channel_id: str, is_new_conversatio
 				"owner": message.owner,
 				"message_type": ["in", ["File", "Image"]],
 				"creation": [">", cutoff_time],
-				"is_bot_message": 0
+				"is_bot_message": 0,
 			},
 			fields=["name", "file", "message_type", "text", "content"],
 			order_by="creation desc",
-			limit=1
+			limit=1,
 		)
-		
+
 		if recent_messages:
 			recent_file = recent_messages[0]
 			# Check if the file message had no text
@@ -353,24 +349,24 @@ def process_message_with_agent(message, bot, channel_id: str, is_new_conversatio
 				recent_file_message = recent_file
 				# Add this file to the file handler
 				file_handler.add_conversation_file(recent_file)
-	
+
 	# Prepare the message content
 	if message.message_type in ["File", "Image"]:
 		# Add file to conversation context
 		file_handler.add_conversation_file(message)
-		
+
 		# If it's just a file upload without any text, don't process it yet
 		# Wait for the user to ask a question about it
 		if not message.text and not message.content:
 			return {"success": True, "response": None}
-		
+
 		# For now, we'll include file information in the text
 		# In the future, we can enhance this to use multimodal capabilities
 		if "fid" in message.file:
 			file_url = message.file.split("?fid=")[0]
 		else:
 			file_url = message.file
-			
+
 		if message.message_type == "File":
 			content = f"[User uploaded a file: {file_url}]"
 			if message.text or message.content:
@@ -381,7 +377,7 @@ def process_message_with_agent(message, bot, channel_id: str, is_new_conversatio
 				content += f"\n{message.text or message.content}"
 	else:
 		content = message.text or message.content or ""
-		
+
 		# If we found a recent file upload, prepend it to the content
 		if recent_file_message:
 			file_url = recent_file_message.file
@@ -389,7 +385,7 @@ def process_message_with_agent(message, bot, channel_id: str, is_new_conversatio
 				file_url = file_url.split("?fid=")[0]
 			file_prefix = f"[User uploaded a {'file' if recent_file_message.message_type == 'File' else 'image'}: {file_url}]\n"
 			content = file_prefix + content
-	
+
 	# Get conversation history if this is an existing thread
 	conversation_history = []
 	if not is_new_conversation and channel:
@@ -397,39 +393,41 @@ def process_message_with_agent(message, bot, channel_id: str, is_new_conversatio
 		messages = frappe.get_all(
 			"Raven Message",
 			filters={"channel_id": channel.name},
-			fields=["text", "content", "owner", "creation", "bot", "message_type", "file", "is_bot_message"],
+			fields=[
+				"text",
+				"content",
+				"owner",
+				"creation",
+				"bot",
+				"message_type",
+				"file",
+				"is_bot_message",
+			],
 			order_by="creation asc",
-			limit=20  # Limit to last 20 messages for context
+			limit=20,  # Limit to last 20 messages for context
 		)
-		
+
 		for msg in messages[:-1]:  # Exclude the current message
 			# Use text field which contains the actual message content
 			msg_text = msg.text or msg.content or ""
-			
+
 			if msg.bot or msg.is_bot_message:
-				conversation_history.append({
-					"role": "assistant",
-					"content": msg_text
-				})
+				conversation_history.append({"role": "assistant", "content": msg_text})
 			else:
 				if msg.message_type in ["File", "Image"]:
 					# DON'T add historical files - only the current message file should be analyzed
 					# Just add a reference to the file in conversation history
-					
+
 					file_url = msg.file.split("?fid=")[0] if "fid" in msg.file else msg.file
-					msg_content = f"[User uploaded a {'file' if msg.message_type == 'File' else 'image'}: {file_url}]"
+					msg_content = (
+						f"[User uploaded a {'file' if msg.message_type == 'File' else 'image'}: {file_url}]"
+					)
 					if msg_text:
 						msg_content += f"\n{msg_text}"
-					conversation_history.append({
-						"role": "user",
-						"content": msg_content
-					})
+					conversation_history.append({"role": "user", "content": msg_content})
 				else:
-					conversation_history.append({
-						"role": "user",
-						"content": msg_text
-					})
-	
+					conversation_history.append({"role": "user", "content": msg_text})
+
 	# Use the improved sync handler
 	try:
 		# Use Agents SDK for both OpenAI and Local LLM
@@ -438,28 +436,22 @@ def process_message_with_agent(message, bot, channel_id: str, is_new_conversatio
 			message=content,
 			channel_id=channel_id,
 			conversation_history=conversation_history,
-			file_handler=file_handler
+			file_handler=file_handler,
 		)
-		
+
 		if response["success"]:
 			# Only send a response if there is one
 			if response["response"] is not None:
-				bot.send_message(
-					channel_id=channel_id,
-					text=response["response"]
-				)
+				bot.send_message(channel_id=channel_id, text=response["response"])
 			# If response is None (e.g., file-only upload), don't send anything
 		else:
 			# Send error message
 			error_text = "Sorry, I encountered an error while processing your request."
 			if bot.debug_mode and response.get("error"):
 				error_text += f"\n\nError: {response['error']}"
-			
-			bot.send_message(
-				channel_id=channel_id,
-				text=error_text
-			)
-		
+
+			bot.send_message(channel_id=channel_id, text=error_text)
+
 		# Clear the "thinking" message after sending the response
 		frappe.publish_realtime(
 			"ai_event_clear",
@@ -472,20 +464,18 @@ def process_message_with_agent(message, bot, channel_id: str, is_new_conversatio
 		)
 	except Exception as e:
 		import traceback
+
 		frappe.log_error(
 			f"Error calling handle_ai_request_sync: {str(e)}\n\nTraceback:\n{traceback.format_exc()}",
-			"Raven AI"
+			"Raven AI",
 		)
 		# Send error message
 		error_text = "I encountered an error while processing your request."
 		if bot.debug_mode:
 			error_text += f"\n\nError: {str(e)}"
-		
-		bot.send_message(
-			channel_id=channel_id,
-			text=error_text
-		)
-		
+
+		bot.send_message(channel_id=channel_id, text=error_text)
+
 		# Clear the "thinking" message even on error
 		frappe.publish_realtime(
 			"ai_event_clear",
@@ -577,11 +567,7 @@ def publish_ai_thread_created_event(message, channel_id):
 	"""
 	frappe.publish_realtime(
 		"ai_thread_created",
-		{
-			"thread_id": message.name,
-			"channel_id": channel_id,
-			"is_ai_thread": True
-		},
+		{"thread_id": message.name, "channel_id": channel_id, "is_ai_thread": True},
 		user=message.owner,
 		after_commit=False,
 	)
