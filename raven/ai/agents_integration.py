@@ -21,6 +21,7 @@ from agents import (
 	function_tool,
 	set_default_openai_client,
 )
+from frappe import _
 from openai import AsyncOpenAI
 
 from .functions import (
@@ -55,7 +56,7 @@ class RavenAgentManager:
 		if self.bot_doc.model_provider == "Local LLM" and self.settings.enable_local_llm:
 			# Client for local LLM
 			if not self.settings.local_llm_api_url:
-				frappe.throw("Local LLM API URL is not configured in Raven Settings")
+				frappe.throw(_("Local LLM API URL is not configured in Raven Settings"))
 
 			client = AsyncOpenAI(
 				api_key="not-needed",  # LM Studio doesn't require API key
@@ -65,7 +66,7 @@ class RavenAgentManager:
 			# Standard OpenAI client
 			api_key = self.settings.get_password("openai_api_key")
 			if not api_key:
-				frappe.throw("OpenAI API key is not configured in Raven Settings")
+				frappe.throw(_("OpenAI API key is not configured in Raven Settings"))
 
 			client = AsyncOpenAI(
 				api_key=api_key,
@@ -327,7 +328,7 @@ class RavenAgentManager:
 
 		# Validate model configuration
 		if not self.bot_doc.model:
-			frappe.throw("Bot model is not configured")
+			frappe.throw(_("Bot model is not configured"))
 
 		# Dynamic instructions if needed
 		instructions = self.bot_doc.instruction
