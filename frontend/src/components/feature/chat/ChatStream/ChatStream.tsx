@@ -33,7 +33,6 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
     const searchParams = new URLSearchParams(location.search)
     const isSavedMessage = searchParams.has('message_id')
     const messageId = searchParams.get('message_id')
-
     // Reset initial load state khi chuyển channel
     useEffect(() => {
       setIsInitialLoadComplete(false)
@@ -213,8 +212,16 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
             }
           })
         }
+
+        // Save last read message to localStorage
+        if (range && messages) {
+          const lastVisibleMessage: any = messages[range.endIndex]
+          if (lastVisibleMessage?.sequence) {
+            localStorage.setItem(`lastReadMessage_${channelID}`, lastVisibleMessage.sequence)
+          }
+        }
       },
-      [hasNewMessages, loadNewerMessages, messages, isInitialLoadComplete, newMessageIds, markMessageAsSeen]
+      [hasNewMessages, loadNewerMessages, messages, isInitialLoadComplete, newMessageIds, markMessageAsSeen, channelID]
     )
 
     // Custom go to latest messages function

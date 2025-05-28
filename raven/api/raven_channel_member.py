@@ -18,8 +18,15 @@ def remove_channel_member(user_id, channel_id):
 
 
 @frappe.whitelist(methods=["POST"])
-def track_visit(channel_id):
-    track_channel_visit(channel_id=channel_id, commit=True)
+def track_visit(channel_id, last_seen_sequence=None):
+    if last_seen_sequence is not None:
+        last_seen_sequence = int(last_seen_sequence)
+
+    track_channel_visit(
+        channel_id=channel_id,
+        commit=True,
+        last_seen_sequence=last_seen_sequence
+    )
 
     return True
 
@@ -46,34 +53,24 @@ def track_seen(channel_id):
 
 @frappe.whitelist()
 def get_seen_info(channel_id: str):
-	# Lấy tất cả member của kênh
-    channel_members = frappe.get_all(
-        "Raven Channel Member",
-        filters={"channel_id": channel_id},
-        fields=["user_id", "seen_at"]
-    )
+    # Query SQL để lấy thông tin member và user liên quan
+    data = frappe.db.sql("""
+        SELECT
+            m.user_id,
+            m.seen_at,
+            m.last_seen_sequence,
+            u.full_name,
+            u.user_image
+        FROM
+            `tabRaven Channel Member` m
+        LEFT JOIN
+            `tabRaven User` u ON u.name = m.user_id
+        WHERE
+            m.channel_id = %s
+    """, (channel_id,), as_dict=True)
 
-    # Lấy danh sách user_id
-    user_ids = [m["user_id"] for m in channel_members]
-    users = frappe.get_all(
-        "Raven User",
-        filters={"name": ["in", user_ids]},
-        fields=["name", "full_name", "user_image"]
-    )
-    user_info_map = {u["name"]: u for u in users}
+    return data
 
-    # Gộp thông tin
-    result = []
-    for member in channel_members:
-        user = user_info_map.get(member["user_id"])
-        if user:
-            result.append({
-                "user": member["user_id"],
-                "seen_at": member["seen_at"],
-                "full_name": user["full_name"],
-                "user_image": user["user_image"]
-            })
-    return result
 
 
 @frappe.whitelist(methods=["POST"])

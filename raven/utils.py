@@ -3,45 +3,46 @@ import frappe
 from raven.notification import clear_push_tokens_for_channel_cache
 
 
-def track_channel_visit(channel_id, user=None, commit=False, publish_event_for_user=False):
+def track_channel_visit(channel_id, user=None, commit=False, publish_event_for_user=False, last_seen_sequence=None):
 	"""
-	Track the last visit of the user to the channel.
-	If the user is not a member of the channel, create a new member record
+	Track the last visit and optionally last seen sequence of the user to the channel.
 	"""
 
 	if not user:
 		user = frappe.session.user
 
-	# Get the channel member record
 	channel_member = get_channel_member(channel_id, user)
-
 	now = frappe.utils.now()
+	update_fields = {"last_visit": now}
+
+	if last_seen_sequence is not None:
+		update_fields["last_seen_sequence"] = last_seen_sequence
 
 	if channel_member:
-		# Update the last visit
-		frappe.db.set_value("Raven Channel Member", channel_member["name"], "last_visit", now)
+		frappe.db.set_value("Raven Channel Member", channel_member["name"], update_fields)
 
-	# Else if the user is not a member of the channel and the channel is open, create a new member record
 	elif frappe.get_cached_value("Raven Channel", channel_id, "type") == "Open":
-		frappe.get_doc(
-			{
-				"doctype": "Raven Channel Member",
-				"channel_id": channel_id,
-				"user_id": frappe.session.user,
-				"last_visit": now,
-			}
-		).insert()
+		doc = {
+			"doctype": "Raven Channel Member",
+			"channel_id": channel_id,
+			"user_id": user,
+			"last_visit": now
+		}
+		if last_seen_sequence is not None:
+			doc["last_seen_sequence"] = last_seen_sequence
 
-	# Need to commit the changes to the database if the request is a GET request
+		frappe.get_doc(doc).insert()
+
 	if commit:
-		frappe.db.commit()  # nosempgrep
+		frappe.db.commit()
 
 	if publish_event_for_user:
 		frappe.publish_realtime(
 			"raven:unread_channel_count_updated",
-			{"channel_id": channel_id, "sent_by": frappe.session.user, "last_message_timestamp": now},
+			{"channel_id": channel_id, "sent_by": user, "last_message_timestamp": now},
 			user=user,
 		)
+
 
 def track_channel_seen(channel_id, user=None, commit=False, publish_event_for_user=False):
 	"""
