@@ -138,6 +138,7 @@ const MainPageContent = () => {
   if (!initialLayoutLoaded) return null
 
   const isSmallScreen = window.innerWidth < 1366
+  
 
   return (
     <UserListProvider>

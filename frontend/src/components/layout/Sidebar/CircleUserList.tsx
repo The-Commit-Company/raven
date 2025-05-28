@@ -34,11 +34,7 @@ const SortableCircleUserItem = ({ channel, isActive, onActivate }: Props) => {
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners} className='w-full h-full'>
-      <ContextMenu.Trigger asChild>
-        <div className='w-full h-full'>
-          <CircleUserItem channel={channel} isActive={isActive} onActivate={onActivate} />
-        </div>
-      </ContextMenu.Trigger>
+      <CircleUserItem channel={channel} isActive={isActive} onActivate={onActivate} />
     </div>
   )
 }
@@ -50,27 +46,25 @@ const CircleUserItem = ({ channel, isActive, onActivate }: Props) => {
   const displayName = isDM ? userInfo?.full_name : channel.channel_name
   const { clearManualMark } = useChannelActions()
   const { channelID } = useParams()
+  const [dragging, setDragging] = useState(false)
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
+    if (e.button !== 0 || dragging) return // Chỉ điều hướng nếu là chuột trái và không đang kéo
     clearManualMark(channel.name)
     onActivate?.()
     navigate(`/channel/${channel.name}`)
   }
 
-  useEffect(() => {
-    if (channelID === channel.name) {
-      clearManualMark(channel.name)
-    }
-  }, [channelID])
-
   return (
     <Tooltip content={displayName} side='bottom'>
       <div
-        onClick={handleClick}
         className={clsx(
           'flex flex-col items-center space-y-1 cursor-pointer text-center p-1 rounded-md w-full',
           isActive ? 'bg-gray-300 dark:bg-gray-700' : 'hover:bg-gray-200 dark:hover:bg-gray-600'
         )}
+        onMouseDown={() => setDragging(false)}
+        onMouseMove={() => setDragging(true)}
+        onMouseUp={handleClick}
       >
         <div className='flex flex-col items-center space-y-1'>
           <div className='relative w-10 h-10'>
@@ -152,13 +146,15 @@ const CircleUserList = () => {
               if (!channel) return null
               return (
                 <ContextMenu.Root key={channel.name}>
-                  <div className='w-[70px] h-[80px]'>
-                    <SortableCircleUserItem
-                      channel={channel}
-                      isActive={channel.name === channelID}
-                      onActivate={() => {}}
-                    />
-                  </div>
+                  <ContextMenu.Trigger asChild>
+                    <div className='w-[70px] h-[80px]'>
+                      <SortableCircleUserItem
+                        channel={channel}
+                        isActive={channel.name === channelID}
+                        onActivate={() => {}}
+                      />
+                    </div>
+                  </ContextMenu.Trigger>
                   <ContextMenu.Portal>
                     <ContextMenu.Content className='z-50 bg-white dark:bg-gray-800 text-black dark:text-white rounded shadow-md p-1'>
                       <ContextMenu.Item

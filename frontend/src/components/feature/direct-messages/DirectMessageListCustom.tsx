@@ -204,7 +204,10 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
 
   const shouldShowBadge = channel.unread_count > 0 || isManuallyMarked
 
+    const { clearManualMark } = useChannelActions()
+
   const handleNavigate = () => {
+    clearManualMark(channel.name)
     navigate(`/channel/${channel.name}`)
   }
 
