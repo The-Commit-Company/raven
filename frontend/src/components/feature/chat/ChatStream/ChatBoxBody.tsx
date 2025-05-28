@@ -251,7 +251,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
           ref={chatStreamRef as any}
         />
         {/* Chỉ hiển thị khu vực nhập liệu nếu người dùng có quyền gửi tin nhắn. */}
-        {/* {canUserSendMessage && (
+        {canUserSendMessage && (
           <Stack>
             <TypingIndicator channel={channelData.name} />
             <Tiptap
@@ -294,7 +294,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
               }
             />
           </Stack>
-        )} */}
+        )}
         {/* Hiển thị hộp "Tham gia kênh" nếu cần. */}
         {shouldShowJoinBox ? <JoinChannelBox channelData={channelData} user={user} /> : null}
         {/* Hiển thị hộp thông báo kênh đã được lưu trữ nếu cần. */}

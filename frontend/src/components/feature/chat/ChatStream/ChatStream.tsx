@@ -255,6 +255,29 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       return messages.findIndex((msg) => msg.name === messageId)
     }, [messageId, messages])
 
+    // 1. Tính index của message đã xem
+    // const lastSeenMessageIndex = useMemo(() => {
+    //   if (!messages || !seenUsers?.length) return -1
+
+    //   const seenUser = seenUsers.find((u) => u.user_id === userID)
+    //   if (!seenUser) return -1
+
+    //   return messages.findIndex((msg: any) => msg.sequence === seenUser.last_seen_sequence)
+    // }, [messages, seenUsers, userID])
+
+    // // 2. Scroll sau khi Virtuoso mount
+    // useEffect(() => {
+    //   if (lastSeenMessageIndex !== -1 && virtuosoRef.current) {
+    //     setTimeout(() => {
+    //       virtuosoRef.current.scrollToIndex({
+    //         index: lastSeenMessageIndex,
+    //         align: 'start',
+    //         behavior: 'smooth'
+    //       })
+    //     }, 500) // đảm bảo Virtuoso đã render
+    //   }
+    // }, [lastSeenMessageIndex])
+
     return (
       <div className='relative h-full flex flex-col overflow-hidden pb-16 sm:pb-0'>
         {/* Empty state */}
