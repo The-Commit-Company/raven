@@ -40,8 +40,12 @@ export const SidebarBody = ({ size }: SidebarBodyProps) => {
     return timeB - timeA // Mới nhất lên đầu
   })
 
+
+  console.log(sortedChannels);
+  
+
   return (
-    <ScrollArea type='hover' scrollbars='vertical' className='h-[calc(100vh-4rem)]'>
+    <ScrollArea type='hover' scrollbars='vertical' className='h-[calc(100vh-4rem)] sidebar-scroll'>
       <Flex direction='column' gap='2' className='overflow-x-hidden pb-12 sm:pb-0' px='2'>
         <Flex direction='column' gap='1' className='pb-0.5'>
           <ThreadsButton />

@@ -57,8 +57,6 @@ const MainPageContent = () => {
   const [initialLayoutLoaded, setInitialLayoutLoaded] = useState(false)
   const [initialLayout, setInitialLayout] = useState<string | null>(null)
 
-  
-
   useFetchActiveUsersRealtime()
   useActiveSocketConnection()
 
@@ -71,11 +69,7 @@ const MainPageContent = () => {
 
   useFrappeEventListener('thread_reply', (event) => {
     if (event.channel_id) {
-      mutate(
-        ['thread_reply_count', event.channel_id],
-        { message: event.number_of_replies },
-        { revalidate: false }
-      )
+      mutate(['thread_reply_count', event.channel_id], { message: event.number_of_replies }, { revalidate: false })
 
       window.dispatchEvent(
         new CustomEvent('thread_updated', {
@@ -108,51 +102,51 @@ const MainPageContent = () => {
     setInitialLayoutLoaded(true)
   }, [])
 
-  
-useEffect(() => {
-  const savedMode = localStorage.getItem('sidebar-mode') as SidebarMode | null
-  if (savedMode && savedMode !== mode) {
-    setMode(savedMode)
-  }
-}, [])
-
-  const localStorageWrapper = useMemo(() => ({
-    getItem(name: string) {
-      try {
-        const raw = localStorage.getItem('layout')
-        const parsed = raw ? JSON.parse(raw) : {}
-        return parsed[name] || ''
-      } catch (error) {
-        console.error('[localStorage getItem error]', error)
-        return ''
-      }
-    },
-    setItem(name: string, value: string) {
-      try {
-        const raw = localStorage.getItem('layout')
-        const parsed = raw ? JSON.parse(raw) : {}
-        parsed[name] = value
-        localStorage.setItem('layout', JSON.stringify(parsed))
-      } catch (error) {
-        console.error('[localStorage setItem error]', error)
-      }
+  useEffect(() => {
+    const savedMode = localStorage.getItem('sidebar-mode') as SidebarMode | null
+    if (savedMode && savedMode !== mode) {
+      setMode(savedMode)
     }
-  }), [])
+  }, [])
+
+  const localStorageWrapper = useMemo(
+    () => ({
+      getItem(name: string) {
+        try {
+          const raw = localStorage.getItem('layout')
+          const parsed = raw ? JSON.parse(raw) : {}
+          return parsed[name] || ''
+        } catch (error) {
+          console.error('[localStorage getItem error]', error)
+          return ''
+        }
+      },
+      setItem(name: string, value: string) {
+        try {
+          const raw = localStorage.getItem('layout')
+          const parsed = raw ? JSON.parse(raw) : {}
+          parsed[name] = value
+          localStorage.setItem('layout', JSON.stringify(parsed))
+        } catch (error) {
+          console.error('[localStorage setItem error]', error)
+        }
+      }
+    }),
+    []
+  )
 
   if (!initialLayoutLoaded) return null
+
+  const isSmallScreen = window.innerWidth < 1366
+  
 
   return (
     <UserListProvider>
       <CircleUserListProvider>
-        <HStack gap="0" className={`flex h-screen ${mode}`}>
+        <HStack gap='0' className={`flex h-screen ${mode}`}>
           {!isMobile && <WorkspacesSidebar />}
 
-          <PanelGroup
-            direction="horizontal"
-            className="flex-1"
-            autoSaveId="main-layout"
-            storage={localStorageWrapper}
-          >
+          <PanelGroup direction='horizontal' className='flex-1' autoSaveId='main-layout' storage={localStorageWrapper}>
             <Panel
               ref={sidebarRef}
               minSize={3}
@@ -164,32 +158,35 @@ useEffect(() => {
             </Panel>
 
             <PanelResizeHandle
-              className="cursor-col-resize bg-gray-300 dark:bg-gray-600 w-px panel-1"
+              className='cursor-col-resize bg-gray-300 dark:bg-gray-600 w-px panel-1'
               onPointerUp={handleSidebarPointerUp}
             />
-
             <Panel
               onResize={(size) => setPanelSize(size)}
-              minSize={20}
-              maxSize={55}
-              {...(!initialLayout ? { defaultSize: 30 } : {})}
+              minSize={isSmallScreen ? 20 : 20}
+              maxSize={isSmallScreen ? 40 : 60}
+              {...(!initialLayout ? { defaultSize: isSmallScreen ? 30 : 40 } : {})}
             >
-              <div className="flex flex-col gap-2 w-full h-full">
+              <div className='flex flex-col gap-2 w-full h-full'>
                 <SidebarHeader />
-                <div className="px-2">
-                  <div className="h-px bg-gray-400 dark:bg-gray-600" />
+                <div className='px-2'>
+                  <div className='h-px bg-gray-400 dark:bg-gray-600' />
                 </div>
                 <SidebarBody size={panelSize} />
               </div>
             </Panel>
 
             <PanelResizeHandle
-              className="cursor-col-resize bg-gray-300 dark:bg-gray-600 w-px handle-2"
+              className='cursor-col-resize bg-gray-300 dark:bg-gray-600 w-px handle-2'
               onPointerUp={handleSidebarPointerUp}
             />
 
-            <Panel minSize={30} {...(!initialLayout ? { defaultSize: 55 } : {})}>
-              <div className="h-full w-full dark:bg-gray-2 overflow-hidden">
+            <Panel
+              minSize={isSmallScreen ? 20 : 30}
+              maxSize={isSmallScreen ? 80 : 90}
+              {...(!initialLayout ? { defaultSize: isSmallScreen ? 70 : 60 } : {})}
+            >
+              <div className='h-full w-full dark:bg-gray-2 overflow-hidden'>
                 <Outlet />
               </div>
             </Panel>

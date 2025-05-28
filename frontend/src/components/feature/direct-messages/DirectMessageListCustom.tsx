@@ -3,7 +3,7 @@ import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { useGetUser } from '@/hooks/useGetUser'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
-import { ContextMenu, Flex, Text } from '@radix-ui/themes'
+import { ContextMenu, Flex, Text, Tooltip } from '@radix-ui/themes'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { useContext, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -32,6 +32,7 @@ import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
 import { formatDistanceToNow, isValid } from 'date-fns'
 import { vi } from 'date-fns/locale/vi'
 import { formatLastMessage } from '@/utils/channel/useFormatLastMessage'
+import { HiCheck } from 'react-icons/hi'
 // import { useChannelListRealtimeSync } from '@/utils/channel/useChannelListRealtimeSync'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
@@ -90,7 +91,7 @@ export const useMergedUnreadCount = (
 export const DirectMessageList = ({ dm_channels, isLoading = false }: DirectMessageListProps) => {
   // useChannelListRealtimeSync()
   const newUnreadCount = useUnreadMessages()
-  const enrichedDMs = useMergedUnreadCount(dm_channels, newUnreadCount?.message ?? [])  
+  const enrichedDMs = useMergedUnreadCount(dm_channels, newUnreadCount?.message ?? [])
 
   return (
     <SidebarGroup pb='4'>
@@ -100,7 +101,7 @@ export const DirectMessageList = ({ dm_channels, isLoading = false }: DirectMess
         </Flex>
       </SidebarGroupItem>
       <SidebarGroup>
-        <div className='flex gap-1 flex-col fade-in'>
+        <div className='flex gap-3 flex-col fade-in'>
           {isLoading ? (
             <div className='p-3 text-sm text-gray-500 italic'>Đang tải danh sách...</div>
           ) : (
@@ -154,10 +155,10 @@ const isDMChannel = (c: UnifiedChannel): c is DMChannelWithUnreadCount => {
   return 'peer_user_id' in c && typeof c.peer_user_id === 'string'
 }
 
-
 export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel }) => {
-  const { currentUser } = useContext(UserContext)
+    const { currentUser } = useContext(UserContext)
   const { channelID } = useParams()
+  const navigate = useNavigate()
 
   const manuallyMarked = useAtomValue(manuallyMarkedAtom)
   const isManuallyMarked = manuallyMarked.has(channel.name)
@@ -169,7 +170,6 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   const peerUser = useGetUser(peerUserId || '')
   const isActive = peerUserId ? useIsUserActive(peerUserId) : false
 
-  // Nếu không phải group và userDM invalid thì bỏ qua
   if (!isGroupChannel && (!isDM || !peerUserId || !peerUser?.enabled)) return null
 
   const displayName = peerUser
@@ -180,7 +180,6 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
       ? channel.channel_name
       : channel.name
 
-  // Lấy người gửi cuối cùng từ last_message_details
   let lastSenderId = ''
   try {
     const raw =
@@ -203,11 +202,20 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
       ? formatDistanceToNow(new Date(channel.last_message_timestamp), { addSuffix: true, locale: vi })
       : ''
 
-  // Badge logic: vẫn hiển thị nếu mark thủ công, không phụ thuộc channelID === channel.name
   const shouldShowBadge = channel.unread_count > 0 || isManuallyMarked
 
+    const { clearManualMark } = useChannelActions()
+
+  const handleNavigate = () => {
+    clearManualMark(channel.name)
+    navigate(`/channel/${channel.name}`)
+  }
+
   return (
-    <SidebarItem to={channel.name} className='py-1.5 px-2.5 data-[state=open]:bg-gray-3'>
+    <div
+      onClick={handleNavigate}
+      className='py-1.5 px-2.5 data-[state=open]:bg-gray-3 group relative cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2'
+    >
       <SidebarIcon>
         {peerUser ? (
           <UserAvatar
@@ -234,21 +242,36 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
             {displayName}
           </Text>
           {timeAgo && (
-            <Text size='1' color='gray'>
+            <Text size='1' color='gray' className='group-hover:hidden'>
               {timeAgo}
             </Text>
           )}
         </Flex>
+
         <Text size='1' color='gray' className='truncate'>
           {formattedLastMessage}
         </Text>
       </Flex>
 
       {shouldShowBadge && <SidebarBadge>{channel.unread_count || 1}</SidebarBadge>}
-    </SidebarItem>
+
+      {formattedLastMessage && (
+        <Tooltip content='Đã xong' side='bottom'>
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              // xử lý "đã xong" tại đây nếu cần
+            }}
+            className='cursor-pointer absolute top-1/2 right-0 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-200 hover:bg-gray-300 p-1 rounded-full flex items-center justify-center'
+            title='Đã xong'
+          >
+            <HiCheck className='h-5 w-5 text-gray-800' />
+          </button>
+        </Tooltip>
+      )}
+    </div>
   )
 }
-
 
 const ExtraUsersItemList = () => {
   const { dm_channels, mutate } = useContext(ChannelListContext) as ChannelListContextType

@@ -13,6 +13,7 @@ import { MessageItemRenderer } from './MessageListRenderer'
 import { ScrollToBottomButtons } from './ScrollToBottomButtons'
 import useChatStream from './useChatStream'
 import { useChatStreamActions } from './useChatStreamActions'
+import { useLocation } from 'react-router-dom'
 
 type Props = {
   channelID: string
@@ -238,6 +239,16 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       }
     }, [messages, virtuosoRef])
 
+    const location = useLocation()
+    const searchParams = new URLSearchParams(location.search)
+    const isSavedMessage = searchParams.has('message_id')
+    const messageId = searchParams.get('message_id')
+    const targetIndex = useMemo(() => {
+      if (!messageId || !messages) return undefined
+      return messages.findIndex((msg) => msg.name === messageId)
+    }, [messageId, messages])
+
+
     return (
       <div className='relative h-full flex flex-col overflow-hidden pb-16 sm:pb-0'>
         {/* Empty state */}
@@ -257,7 +268,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
             totalCount={messages.length}
             itemContent={itemRenderer}
             followOutput={isAtBottom ? 'auto' : false}
-            initialTopMostItemIndex={messages.length - 1}
+            initialTopMostItemIndex={!isSavedMessage ? messages.length - 1 : targetIndex}
             atTopStateChange={handleAtTopStateChange}
             atBottomStateChange={handleAtBottomStateChange}
             rangeChanged={handleRangeChanged}

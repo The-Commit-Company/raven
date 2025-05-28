@@ -74,6 +74,12 @@ html header button {
   scrollbar-width: none; /* Firefox */
 }
 
+.sidebar-scroll .rt-ScrollAreaViewport > div {
+  min-width: 0 !important;
+  display: block !important;
+  width:100%;
+}
+
 /*
   Adds Utility to hide scrollbar to tailwind
     https://github.com/tailwindlabs/tailwindcss/discussions/2394

@@ -262,3 +262,49 @@ def mark_all_messages_as_read(channel_ids: list):
 		track_channel_visit(channel_id, user=user)
 
 	return "Ok"
+
+@frappe.whitelist()
+def get_unread_channels():
+    """
+    Trả về danh sách các channel mà user hiện tại có tin nhắn chưa đọc
+    """
+    from frappe.utils import get_datetime
+
+    user = frappe.session.user
+    channel = frappe.qb.DocType("Raven Channel")
+    channel_member = frappe.qb.DocType("Raven Channel Member")
+
+    query = (
+        frappe.qb.from_(channel)
+        .join(channel_member)
+        .on(
+            (channel.name == channel_member.channel_id)
+            & (channel_member.user_id == user)
+        )
+        .select(
+            channel.name,
+            channel.channel_name,
+            channel.is_direct_message,
+            channel.is_self_message,
+            channel.last_message_timestamp,
+            channel_member.last_visit
+        )
+        .where(
+            (channel.last_message_timestamp.isnotnull())
+            & (
+                (channel_member.last_visit.isnull())
+                | (channel.last_message_timestamp > channel_member.last_visit)
+            )
+        )
+        .orderby(channel.last_message_timestamp, order=Order.desc)
+    )
+
+    unread_channels = query.run(as_dict=True)
+
+    # thêm peer_user_id nếu là direct message
+    for ch in unread_channels:
+        ch["peer_user_id"] = get_peer_user_id(
+            ch["name"], ch["is_direct_message"], ch["is_self_message"]
+        )
+
+    return unread_channels
