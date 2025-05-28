@@ -228,13 +228,12 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
 
     const scrollActionToBottom = useCallback(() => {
       if (virtuosoRef.current && messages && messages.length > 0) {
-        requestAnimationFrame(() => {
-          virtuosoRef.current.scrollToIndex({
-            index: messages.length - 1,
-            behavior: 'smooth',
-            align: 'end'
-          })
+        virtuosoRef.current.scrollToIndex({
+          index: messages.length - 1,
+          align: 'end',
+          behavior: 'auto'
         })
+        return false
       }
     }, [messages, virtuosoRef])
 
@@ -254,7 +253,6 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
           <Virtuoso
             ref={virtuosoRef}
             data={messages}
-            totalCount={messages.length}
             itemContent={itemRenderer}
             followOutput={isAtBottom ? 'auto' : false}
             initialTopMostItemIndex={messages.length - 1}
@@ -266,7 +264,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
             className='pb-4'
             overscan={200}
             initialItemCount={20}
-            defaultItemHeight={50}
+            defaultItemHeight={64}
           />
         )}
 
