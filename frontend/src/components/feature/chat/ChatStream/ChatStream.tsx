@@ -20,7 +20,7 @@ type Props = {
   showThreadButton?: boolean
   pinnedMessagesString?: string
   onModalClose?: () => void
-  virtuosoRef: MutableRefObject<VirtuosoHandle>
+  virtuosoRef: MutableRefObject<VirtuosoHandle | null>
 }
 
 const ChatStream = forwardRef<VirtuosoHandle, Props>(
