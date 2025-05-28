@@ -244,3 +244,14 @@ def clear_thread_reply_count_cache(thread_id: str):
 	Clear the thread reply count cache
 	"""
 	frappe.cache().hdel("raven:thread_reply_count", thread_id)
+
+def get_next_sequence(channel_id):
+    last_message = frappe.get_all(
+        "Raven Message",
+        filters={"channel_id": channel_id},
+        fields=["sequence"],
+        order_by="sequence desc",
+        limit=1
+    )
+    last_seq = last_message[0].sequence if last_message else 0
+    return last_seq + 1

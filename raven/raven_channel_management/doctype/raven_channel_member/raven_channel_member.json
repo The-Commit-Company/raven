@@ -17,7 +17,6 @@
   "is_synced",
   "linked_doctype",
   "linked_document",
-  "last_seen_sequence",
   "notification_settings_section",
   "allow_notifications"
  ],
@@ -94,14 +93,6 @@
    "fieldname": "seen_at",
    "fieldtype": "Datetime",
    "label": "Seen At"
-  },
-  {
-   "default": "1",
-   "fieldname": "last_seen_sequence",
-   "fieldtype": "Int",
-   "label": "Last Seen Sequence",
-   "read_only": 1,
-   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
