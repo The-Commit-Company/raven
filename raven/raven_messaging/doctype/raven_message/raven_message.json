@@ -35,7 +35,8 @@
   "is_bot_message",
   "bot",
   "hide_link_preview",
-  "notification"
+  "notification",
+  "sequence"
  ],
  "fields": [
   {
@@ -202,11 +203,19 @@
    "fieldname": "blurhash",
    "fieldtype": "Small Text",
    "label": "Blurhash"
+  },
+  {
+   "default": "0",
+   "fieldname": "sequence",
+   "fieldtype": "Int",
+   "label": "Sequence",
+   "reqd": 1,
+   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-01 21:10:41.094172",
+ "modified": "2025-05-28 16:58:13.879356",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",

@@ -96,17 +96,17 @@
    "label": "Seen At"
   },
   {
-   "default": "1",
+   "default": "0",
    "fieldname": "last_seen_sequence",
    "fieldtype": "Int",
+   "in_list_view": 1,
    "label": "Last Seen Sequence",
-   "read_only": 1,
    "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-23 08:58:09.823248",
+ "modified": "2025-05-28 20:38:02.473672",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel Member",

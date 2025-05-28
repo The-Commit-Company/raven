@@ -5,6 +5,7 @@ import { useChannelSeenUsers } from '@/hooks/useChannelSeenUsers'
 import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
 import { useUserData } from '@/hooks/useUserData'
 import { forwardRef, MutableRefObject, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { ChatDialogs } from './ChatDialogs'
@@ -13,7 +14,6 @@ import { MessageItemRenderer } from './MessageListRenderer'
 import { ScrollToBottomButtons } from './ScrollToBottomButtons'
 import useChatStream from './useChatStream'
 import { useChatStreamActions } from './useChatStreamActions'
-import { useLocation } from 'react-router-dom'
 
 type Props = {
   channelID: string
@@ -29,7 +29,10 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
     // State để track việc initial load đã hoàn thành chưa
     const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false)
     const [isAtBottom, setIsAtBottom] = useState(false)
-
+    const location = useLocation()
+    const searchParams = new URLSearchParams(location.search)
+    const isSavedMessage = searchParams.has('message_id')
+    const messageId = searchParams.get('message_id')
     // Reset initial load state khi chuyển channel
     useEffect(() => {
       setIsInitialLoadComplete(false)
@@ -209,8 +212,16 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
             }
           })
         }
+
+        // Save last read message to localStorage
+        if (range && messages) {
+          const lastVisibleMessage: any = messages[range.endIndex]
+          if (lastVisibleMessage?.sequence) {
+            localStorage.setItem(`lastReadMessage_${channelID}`, lastVisibleMessage.sequence)
+          }
+        }
       },
-      [hasNewMessages, loadNewerMessages, messages, isInitialLoadComplete, newMessageIds, markMessageAsSeen]
+      [hasNewMessages, loadNewerMessages, messages, isInitialLoadComplete, newMessageIds, markMessageAsSeen, channelID]
     )
 
     // Custom go to latest messages function
@@ -239,15 +250,33 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       }
     }, [messages, virtuosoRef])
 
-    const location = useLocation()
-    const searchParams = new URLSearchParams(location.search)
-    const isSavedMessage = searchParams.has('message_id')
-    const messageId = searchParams.get('message_id')
     const targetIndex = useMemo(() => {
       if (!messageId || !messages) return undefined
       return messages.findIndex((msg) => msg.name === messageId)
     }, [messageId, messages])
 
+    // 1. Tính index của message đã xem
+    // const lastSeenMessageIndex = useMemo(() => {
+    //   if (!messages || !seenUsers?.length) return -1
+
+    //   const seenUser = seenUsers.find((u) => u.user_id === userID)
+    //   if (!seenUser) return -1
+
+    //   return messages.findIndex((msg: any) => msg.sequence === seenUser.last_seen_sequence)
+    // }, [messages, seenUsers, userID])
+
+    // // 2. Scroll sau khi Virtuoso mount
+    // useEffect(() => {
+    //   if (lastSeenMessageIndex !== -1 && virtuosoRef.current) {
+    //     setTimeout(() => {
+    //       virtuosoRef.current.scrollToIndex({
+    //         index: lastSeenMessageIndex,
+    //         align: 'start',
+    //         behavior: 'smooth'
+    //       })
+    //     }, 500) // đảm bảo Virtuoso đã render
+    //   }
+    // }, [lastSeenMessageIndex])
 
     return (
       <div className='relative h-full flex flex-col overflow-hidden pb-16 sm:pb-0'>

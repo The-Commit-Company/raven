@@ -22,15 +22,12 @@ from raven.utils import refresh_thread_reply_count, track_channel_visit
 
 class RavenMessage(Document):
 	# begin: auto-generated types
-	# ruff: noqa
-
 	# This code is auto-generated. Do not modify anything in this block.
 
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
-
 		from raven.raven_messaging.doctype.raven_mention.raven_mention import RavenMention
 
 		blurhash: DF.SmallText | None
@@ -57,10 +54,10 @@ class RavenMessage(Document):
 		notification: DF.Data | None
 		poll_id: DF.Link | None
 		replied_message_details: DF.JSON | None
+		sequence: DF.Int
 		text: DF.LongText | None
 		thumbnail_height: DF.Data | None
 		thumbnail_width: DF.Data | None
-	# ruff: noqa
 	# end: auto-generated types
 
 	def before_validate(self):

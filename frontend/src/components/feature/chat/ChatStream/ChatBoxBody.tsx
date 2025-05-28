@@ -247,7 +247,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
           onModalClose={onModalClose}
           pinnedMessagesString={channelData.pinned_messages_string}
           replyToMessage={handleReplyAction}
-          virtuosoRef={virtuosoRef}
+          virtuosoRef={virtuosoRef as any}
           ref={chatStreamRef as any}
         />
         {/* Chỉ hiển thị khu vực nhập liệu nếu người dùng có quyền gửi tin nhắn. */}

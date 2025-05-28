@@ -95,7 +95,8 @@ const useChatStream = (
   useEffect(() => {
     return () => {
       if (messageState.latestMessagesLoaded.current) {
-        api.trackVisit({ channel_id: channelID })
+        const lastReadMessage = localStorage.getItem(`lastReadMessage_${channelID}`)
+        api.trackVisit({ channel_id: channelID, last_seen_sequence: Number(lastReadMessage) })
       }
     }
   }, [channelID])
