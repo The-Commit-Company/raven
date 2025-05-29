@@ -1,29 +1,29 @@
 // import { Flex, Box } from '@radix-ui/themes'
+import { lazy, Suspense, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Outlet, useParams } from 'react-router-dom'
-import { lazy, Suspense, useContext, useEffect, useRef, useState, useMemo } from 'react'
 // import { Sidebar } from '../components/layout/Sidebar/Sidebar'
-import { ChannelListProvider } from '../utils/channel/ChannelListProvider'
-import { UserListProvider } from '@/utils/users/UserListProvider'
-import { hasRavenUserRole } from '@/utils/roles'
-import { FullPageLoader } from '@/components/layout/Loaders/FullPageLoader'
 import CommandMenu from '@/components/feature/CommandMenu/CommandMenu'
-import { useFetchActiveUsersRealtime } from '@/hooks/fetchers/useFetchActiveUsers'
-import { useIsMobile } from '@/hooks/useMediaQuery'
-import { showNotification } from '@/utils/pushNotifications'
 import MessageActionController from '@/components/feature/message-actions/MessageActionController'
+import { FullPageLoader } from '@/components/layout/Loaders/FullPageLoader'
+import { SidebarBody } from '@/components/layout/Sidebar/SidebarBodyCustom'
+import SidebarContainer from '@/components/layout/Sidebar/SidebarContainer'
+import { SidebarHeader } from '@/components/layout/Sidebar/SidebarHeader'
+import { useSidebarResizeLogic } from '@/components/layout/Sidebar/useSidebarResizeLogic'
+import WorkspacesSidebar from '@/components/layout/Sidebar/WorkspacesSidebar'
+import { HStack } from '@/components/layout/Stack'
+import { useFetchActiveUsersRealtime } from '@/hooks/fetchers/useFetchActiveUsers'
 import { useActiveSocketConnection } from '@/hooks/useActiveSocketConnection'
-import { useFrappeEventListener, useSWRConfig } from 'frappe-react-sdk'
+import { useIsMobile } from '@/hooks/useMediaQuery'
 import { useUnreadThreadsCountEventListener } from '@/hooks/useUnreadThreadsCount'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { SidebarMode, SidebarModeProvider, useSidebarMode } from '@/utils/layout/sidebar'
+import { showNotification } from '@/utils/pushNotifications'
+import { hasRavenUserRole } from '@/utils/roles'
 import { CircleUserListProvider } from '@/utils/users/CircleUserListProvider'
+import { UserListProvider } from '@/utils/users/UserListProvider'
+import { useFrappeEventListener, useSWRConfig } from 'frappe-react-sdk'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import { HStack } from '@/components/layout/Stack'
-import { SidebarHeader } from '@/components/layout/Sidebar/SidebarHeader'
-import { SidebarBody } from '@/components/layout/Sidebar/SidebarBodyCustom'
-import WorkspacesSidebar from '@/components/layout/Sidebar/WorkspacesSidebar'
-import SidebarContainer from '@/components/layout/Sidebar/SidebarContainer'
-import { useSidebarResizeLogic } from '@/components/layout/Sidebar/useSidebarResizeLogic'
+import { ChannelListProvider } from '../utils/channel/ChannelListProvider'
 
 const AddRavenUsersPage = lazy(() => import('@/pages/AddRavenUsersPage'))
 
@@ -138,7 +138,6 @@ const MainPageContent = () => {
   if (!initialLayoutLoaded) return null
 
   const isSmallScreen = window.innerWidth < 1366
-  
 
   return (
     <UserListProvider>
