@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { useGetUser } from '@/hooks/useGetUser'
@@ -6,11 +7,18 @@ import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
 import { ContextMenu, Flex, Text } from '@radix-ui/themes'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { useContext, useMemo, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { UserContext } from '../../../utils/auth/UserProvider'
 // import { ChannelInfo } from '@/utils/users/CircleUserListProvider'
 
+import { ChannelWithUnreadCount, DMChannelWithUnreadCount } from '@/components/layout/Sidebar/useGetChannelUnreadCounts'
+import { useChannelActions } from '@/hooks/useChannelActions'
+import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
+import { ChannelIcon } from '@/utils/layout/channelIcon'
+import { useSidebarMode, useUnreadMessages } from '@/utils/layout/sidebar'
+import { __ } from '@/utils/translations'
+import { useAtomValue } from 'jotai'
 import { ChannelListContext, ChannelListContextType } from '../../../utils/channel/ChannelListProvider'
 import {
   SidebarBadge,
@@ -21,17 +29,10 @@ import {
   SidebarIcon,
   SidebarItem
 } from '../../layout/Sidebar/SidebarComp'
-import { ChannelWithUnreadCount, DMChannelWithUnreadCount } from '@/components/layout/Sidebar/useGetChannelUnreadCounts'
-import { ChannelIcon } from '@/utils/layout/channelIcon'
-import { __ } from '@/utils/translations'
-import { useUnreadMessages } from '@/utils/layout/sidebar'
-import { useChannelActions } from '@/hooks/useChannelActions'
-import { useAtomValue } from 'jotai'
-import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
 
+import { formatLastMessage } from '@/utils/channel/useFormatLastMessage'
 import { formatDistanceToNow, isValid } from 'date-fns'
 import { vi } from 'date-fns/locale/vi'
-import { formatLastMessage } from '@/utils/channel/useFormatLastMessage'
 // import { useChannelListRealtimeSync } from '@/utils/channel/useChannelListRealtimeSync'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
@@ -90,7 +91,7 @@ export const useMergedUnreadCount = (
 export const DirectMessageList = ({ dm_channels, isLoading = false }: DirectMessageListProps) => {
   // useChannelListRealtimeSync()
   const newUnreadCount = useUnreadMessages()
-  const enrichedDMs = useMergedUnreadCount(dm_channels, newUnreadCount?.message ?? [])  
+  const enrichedDMs = useMergedUnreadCount(dm_channels, newUnreadCount?.message ?? [])
 
   return (
     <SidebarGroup pb='4'>
@@ -106,7 +107,7 @@ export const DirectMessageList = ({ dm_channels, isLoading = false }: DirectMess
           ) : (
             <>
               <DirectMessageItemList dm_channels={enrichedDMs} />
-              {dm_channels.length < 5 && <ExtraUsersItemList />}
+              {dm_channels.length < 1 && <ExtraUsersItemList />}
             </>
           )}
         </div>
@@ -116,9 +117,19 @@ export const DirectMessageList = ({ dm_channels, isLoading = false }: DirectMess
 }
 
 const DirectMessageItemList = ({ dm_channels }: DirectMessageListProps) => {
+  const { title } = useSidebarMode()
+  const filteredChannels = useMemo(() => {
+    if (title === 'Trò chuyện nhóm') {
+      return dm_channels.filter((channel: DMChannelWithUnreadCount) => channel.group_type === 'channel')
+    }
+    if (title === 'Cuộc trò chuyện riêng tư') {
+      return dm_channels.filter((channel: DMChannelWithUnreadCount) => channel.group_type === 'dm')
+    }
+    return dm_channels
+  }, [dm_channels, title])
   return (
     <>
-      {dm_channels.map((channel: DMChannelWithUnreadCount) => (
+      {filteredChannels.map((channel: DMChannelWithUnreadCount) => (
         <DirectMessageItem key={channel.name} dm_channel={channel} />
       ))}
     </>
@@ -154,10 +165,8 @@ const isDMChannel = (c: UnifiedChannel): c is DMChannelWithUnreadCount => {
   return 'peer_user_id' in c && typeof c.peer_user_id === 'string'
 }
 
-
 export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel }) => {
   const { currentUser } = useContext(UserContext)
-  const { channelID } = useParams()
 
   const manuallyMarked = useAtomValue(manuallyMarkedAtom)
   const isManuallyMarked = manuallyMarked.has(channel.name)
@@ -248,7 +257,6 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
     </SidebarItem>
   )
 }
-
 
 const ExtraUsersItemList = () => {
   const { dm_channels, mutate } = useContext(ChannelListContext) as ChannelListContextType

@@ -1,29 +1,29 @@
 // import { Flex, Box } from '@radix-ui/themes'
+import { lazy, Suspense, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Outlet, useParams } from 'react-router-dom'
-import { lazy, Suspense, useContext, useEffect, useRef, useState, useMemo } from 'react'
 // import { Sidebar } from '../components/layout/Sidebar/Sidebar'
-import { ChannelListProvider } from '../utils/channel/ChannelListProvider'
-import { UserListProvider } from '@/utils/users/UserListProvider'
-import { hasRavenUserRole } from '@/utils/roles'
-import { FullPageLoader } from '@/components/layout/Loaders/FullPageLoader'
 import CommandMenu from '@/components/feature/CommandMenu/CommandMenu'
-import { useFetchActiveUsersRealtime } from '@/hooks/fetchers/useFetchActiveUsers'
-import { useIsMobile } from '@/hooks/useMediaQuery'
-import { showNotification } from '@/utils/pushNotifications'
 import MessageActionController from '@/components/feature/message-actions/MessageActionController'
+import { FullPageLoader } from '@/components/layout/Loaders/FullPageLoader'
+import { SidebarBody } from '@/components/layout/Sidebar/SidebarBodyCustom'
+import SidebarContainer from '@/components/layout/Sidebar/SidebarContainer'
+import { SidebarHeader } from '@/components/layout/Sidebar/SidebarHeader'
+import { useSidebarResizeLogic } from '@/components/layout/Sidebar/useSidebarResizeLogic'
+import WorkspacesSidebar from '@/components/layout/Sidebar/WorkspacesSidebar'
+import { HStack } from '@/components/layout/Stack'
+import { useFetchActiveUsersRealtime } from '@/hooks/fetchers/useFetchActiveUsers'
 import { useActiveSocketConnection } from '@/hooks/useActiveSocketConnection'
-import { useFrappeEventListener, useSWRConfig } from 'frappe-react-sdk'
+import { useIsMobile } from '@/hooks/useMediaQuery'
 import { useUnreadThreadsCountEventListener } from '@/hooks/useUnreadThreadsCount'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { SidebarMode, SidebarModeProvider, useSidebarMode } from '@/utils/layout/sidebar'
+import { showNotification } from '@/utils/pushNotifications'
+import { hasRavenUserRole } from '@/utils/roles'
 import { CircleUserListProvider } from '@/utils/users/CircleUserListProvider'
+import { UserListProvider } from '@/utils/users/UserListProvider'
+import { useFrappeEventListener, useSWRConfig } from 'frappe-react-sdk'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import { HStack } from '@/components/layout/Stack'
-import { SidebarHeader } from '@/components/layout/Sidebar/SidebarHeader'
-import { SidebarBody } from '@/components/layout/Sidebar/SidebarBodyCustom'
-import WorkspacesSidebar from '@/components/layout/Sidebar/WorkspacesSidebar'
-import SidebarContainer from '@/components/layout/Sidebar/SidebarContainer'
-import { useSidebarResizeLogic } from '@/components/layout/Sidebar/useSidebarResizeLogic'
+import { ChannelListProvider } from '../utils/channel/ChannelListProvider'
 
 const AddRavenUsersPage = lazy(() => import('@/pages/AddRavenUsersPage'))
 
@@ -57,8 +57,6 @@ const MainPageContent = () => {
   const [initialLayoutLoaded, setInitialLayoutLoaded] = useState(false)
   const [initialLayout, setInitialLayout] = useState<string | null>(null)
 
-  
-
   useFetchActiveUsersRealtime()
   useActiveSocketConnection()
 
@@ -71,11 +69,7 @@ const MainPageContent = () => {
 
   useFrappeEventListener('thread_reply', (event) => {
     if (event.channel_id) {
-      mutate(
-        ['thread_reply_count', event.channel_id],
-        { message: event.number_of_replies },
-        { revalidate: false }
-      )
+      mutate(['thread_reply_count', event.channel_id], { message: event.number_of_replies }, { revalidate: false })
 
       window.dispatchEvent(
         new CustomEvent('thread_updated', {
@@ -108,51 +102,48 @@ const MainPageContent = () => {
     setInitialLayoutLoaded(true)
   }, [])
 
-  
-useEffect(() => {
-  const savedMode = localStorage.getItem('sidebar-mode') as SidebarMode | null
-  if (savedMode && savedMode !== mode) {
-    setMode(savedMode)
-  }
-}, [])
-
-  const localStorageWrapper = useMemo(() => ({
-    getItem(name: string) {
-      try {
-        const raw = localStorage.getItem('layout')
-        const parsed = raw ? JSON.parse(raw) : {}
-        return parsed[name] || ''
-      } catch (error) {
-        console.error('[localStorage getItem error]', error)
-        return ''
-      }
-    },
-    setItem(name: string, value: string) {
-      try {
-        const raw = localStorage.getItem('layout')
-        const parsed = raw ? JSON.parse(raw) : {}
-        parsed[name] = value
-        localStorage.setItem('layout', JSON.stringify(parsed))
-      } catch (error) {
-        console.error('[localStorage setItem error]', error)
-      }
+  useEffect(() => {
+    const savedMode = localStorage.getItem('sidebar-mode') as SidebarMode | null
+    if (savedMode && savedMode !== mode) {
+      setMode(savedMode)
     }
-  }), [])
+  }, [])
+
+  const localStorageWrapper = useMemo(
+    () => ({
+      getItem(name: string) {
+        try {
+          const raw = localStorage.getItem('layout')
+          const parsed = raw ? JSON.parse(raw) : {}
+          return parsed[name] || ''
+        } catch (error) {
+          console.error('[localStorage getItem error]', error)
+          return ''
+        }
+      },
+      setItem(name: string, value: string) {
+        try {
+          const raw = localStorage.getItem('layout')
+          const parsed = raw ? JSON.parse(raw) : {}
+          parsed[name] = value
+          localStorage.setItem('layout', JSON.stringify(parsed))
+        } catch (error) {
+          console.error('[localStorage setItem error]', error)
+        }
+      }
+    }),
+    []
+  )
 
   if (!initialLayoutLoaded) return null
 
   return (
     <UserListProvider>
       <CircleUserListProvider>
-        <HStack gap="0" className={`flex h-screen ${mode}`}>
+        <HStack gap='0' className={`flex h-screen ${mode}`}>
           {!isMobile && <WorkspacesSidebar />}
 
-          <PanelGroup
-            direction="horizontal"
-            className="flex-1"
-            autoSaveId="main-layout"
-            storage={localStorageWrapper}
-          >
+          <PanelGroup direction='horizontal' className='flex-1' autoSaveId='main-layout' storage={localStorageWrapper}>
             <Panel
               ref={sidebarRef}
               minSize={3}
@@ -164,7 +155,7 @@ useEffect(() => {
             </Panel>
 
             <PanelResizeHandle
-              className="cursor-col-resize bg-gray-300 dark:bg-gray-600 w-px panel-1"
+              className='cursor-col-resize bg-gray-300 dark:bg-gray-600 w-px panel-1'
               onPointerUp={handleSidebarPointerUp}
             />
 
@@ -174,22 +165,22 @@ useEffect(() => {
               maxSize={55}
               {...(!initialLayout ? { defaultSize: 30 } : {})}
             >
-              <div className="flex flex-col gap-2 w-full h-full">
+              <div className='flex flex-col gap-2 w-full h-full'>
                 <SidebarHeader />
-                <div className="px-2">
-                  <div className="h-px bg-gray-400 dark:bg-gray-600" />
+                <div className='px-2'>
+                  <div className='h-px bg-gray-400 dark:bg-gray-600' />
                 </div>
                 <SidebarBody size={panelSize} />
               </div>
             </Panel>
 
             <PanelResizeHandle
-              className="cursor-col-resize bg-gray-300 dark:bg-gray-600 w-px handle-2"
+              className='cursor-col-resize bg-gray-300 dark:bg-gray-600 w-px handle-2'
               onPointerUp={handleSidebarPointerUp}
             />
 
             <Panel minSize={30} {...(!initialLayout ? { defaultSize: 55 } : {})}>
-              <div className="h-full w-full dark:bg-gray-2 overflow-hidden">
+              <div className='h-full w-full dark:bg-gray-2 overflow-hidden'>
                 <Outlet />
               </div>
             </Panel>
