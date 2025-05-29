@@ -274,6 +274,7 @@ def get_saved_messages():
 			raven_message.thumbnail_height,
 			raven_message.is_bot_message,
 			raven_message.bot,
+			raven_message.content,
 		)
 		.where(raven_message._liked_by.like("%" + frappe.session.user + "%"))
 		.where(

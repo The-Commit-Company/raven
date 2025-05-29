@@ -1,7 +1,5 @@
 import { useSidebarMode } from '@/utils/layout/sidebar'
 import { HStack } from '../Stack'
-import { SidebarBody } from './SidebarBodyCustom'
-import SidebarContainer from './SidebarContainer'
 import { SidebarHeader } from './SidebarHeader'
 import WorkspacesSidebar from './WorkspacesSidebar'
 

@@ -50,9 +50,9 @@ type TiptapRendererProps = BoxProps & {
 
 export const TiptapRenderer = ({
   message,
-  user,
+  // user,
   currentUser,
-  isScrolling = false,
+  // isScrolling = false,
   showMiniImage = false,
   showLinkPreview = true,
   ...props

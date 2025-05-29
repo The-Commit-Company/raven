@@ -1,18 +1,18 @@
-import { ChannelList } from '../../feature/channels/ChannelList'
-import { DirectMessageList } from '../../feature/direct-messages/DirectMessageListCustom'
-import { SidebarBadge, SidebarItem } from './SidebarComp'
-import { AccessibleIcon, Box, Flex, ScrollArea, Text } from '@radix-ui/themes'
+import { UnreadList } from '@/components/feature/channel-groups/UnreadList'
 import { useFetchUnreadMessageCount } from '@/hooks/useUnreadMessageCount'
-import PinnedChannels from './PinnedChannels'
+import useUnreadThreadsCount from '@/hooks/useUnreadThreadsCount'
+import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
+import { __ } from '@/utils/translations'
+import { AccessibleIcon, Box, Flex, ScrollArea, Text } from '@radix-ui/themes'
+import { atomWithStorage } from 'jotai/utils'
 import React, { useContext, useMemo } from 'react'
 import { BiBookmark, BiMessageAltDetail } from 'react-icons/bi'
-import { __ } from '@/utils/translations'
-import { UnreadList } from '@/components/feature/channel-groups/UnreadList'
-import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
-import { useGetChannelUnreadCounts } from './useGetChannelUnreadCounts'
 import { useParams } from 'react-router-dom'
-import { atomWithStorage } from 'jotai/utils'
-import useUnreadThreadsCount from '@/hooks/useUnreadThreadsCount'
+import { ChannelList } from '../../feature/channels/ChannelList'
+import { DirectMessageList } from '../../feature/direct-messages/DirectMessageListCustom'
+import PinnedChannels from './PinnedChannels'
+import { SidebarBadge, SidebarItem } from './SidebarComp'
+import { useGetChannelUnreadCounts } from './useGetChannelUnreadCounts'
 
 export const showOnlyMyChannelsAtom = atomWithStorage('showOnlyMyChannels', false)
 
@@ -37,11 +37,6 @@ export const SidebarBody = () => {
       <Flex direction='column' gap='2' className='overflow-x-hidden pb-12 sm:pb-0' px='2'>
         <Flex direction='column' gap='1' className='pb-0.5'>
           <ThreadsButton />
-          {/* <SidebarItemForPage
-                        to={'threads'}
-                        label='Threads'
-                        icon={<BiMessageAltDetail className='text-gray-12 dark:text-gray-300 mt-1 sm:text-sm text-base' />}
-                        iconLabel='Threads' /> */}
           <SidebarItemForPage
             to={'saved-messages'}
             label='Saved'

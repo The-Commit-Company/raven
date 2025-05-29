@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useMergedUnreadCount } from '@/components/feature/direct-messages/DirectMessageListCustom'
+import { useChannelActions } from '@/hooks/useChannelActions'
+import { useGetUser } from '@/hooks/useGetUser'
 import { useUnreadMessages } from '@/utils/layout/sidebar'
 import { ChannelInfo, useCircleUserList } from '@/utils/users/CircleUserListProvider'
-import { useMergedUnreadCount } from '@/components/feature/direct-messages/DirectMessageListCustom'
-import { useNavigate, useParams } from 'react-router-dom'
-import { useGetUser } from '@/hooks/useGetUser'
-import * as ContextMenu from '@radix-ui/react-context-menu'
-import clsx from 'clsx'
-import { FaUsers } from 'react-icons/fa6'
-import { useChannelActions } from '@/hooks/useChannelActions'
-import { DndContext, PointerSensor, useSensor, useSensors, closestCenter } from '@dnd-kit/core'
-import { SortableContext, useSortable, rectSortingStrategy, arrayMove } from '@dnd-kit/sortable'
+import { closestCenter, DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { arrayMove, rectSortingStrategy, SortableContext, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import * as ContextMenu from '@radix-ui/react-context-menu'
 import { Tooltip } from '@radix-ui/themes'
+import clsx from 'clsx'
+import { useEffect, useState } from 'react'
+import { FaUsers } from 'react-icons/fa6'
+import { useNavigate, useParams } from 'react-router-dom'
 
 interface Props {
   channel: ChannelInfo
@@ -97,12 +97,12 @@ const CircleUserItem = ({ channel, isActive, onActivate }: Props) => {
   )
 }
 
-const CircleUserList = () => {
+const CircleUserList = ({ size }: { size?: number }) => {
   const { selectedChannels, setSelectedChannels } = useCircleUserList()
   const unread_count = useUnreadMessages()
   const { isPinned, togglePin, markAsUnread, isManuallyMarked } = useChannelActions()
   const channelID = useParams().channelID || ''
-  const enrichedSelectedChannels = useMergedUnreadCount(selectedChannels, unread_count?.message ?? [])
+  const enrichedSelectedChannels = useMergedUnreadCount(selectedChannels as any, unread_count?.message ?? [])
   const [items, setItems] = useState(enrichedSelectedChannels.map((c) => c.name))
 
   useEffect(() => {
@@ -149,7 +149,7 @@ const CircleUserList = () => {
                   <ContextMenu.Trigger asChild>
                     <div className='w-[70px] h-[80px]'>
                       <SortableCircleUserItem
-                        channel={channel}
+                        channel={channel as ChannelInfo}
                         isActive={channel.name === channelID}
                         onActivate={() => {}}
                       />

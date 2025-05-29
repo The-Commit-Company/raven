@@ -33,6 +33,7 @@ import { formatLastMessage } from '@/utils/channel/useFormatLastMessage'
 import { formatDistanceToNow, isValid } from 'date-fns'
 import { vi } from 'date-fns/locale/vi'
 import { HiCheck } from 'react-icons/hi'
+import { MessageSaved } from './DirectMessageSaved'
 // import { useChannelListRealtimeSync } from '@/utils/channel/useChannelListRealtimeSync'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
@@ -118,15 +119,22 @@ export const DirectMessageList = ({ dm_channels, isLoading = false }: DirectMess
 
 const DirectMessageItemList = ({ dm_channels }: DirectMessageListProps) => {
   const { title } = useSidebarMode()
+
   const filteredChannels = useMemo(() => {
-    if (title === 'Trò chuyện nhóm') {
-      return dm_channels.filter((channel: DMChannelWithUnreadCount) => channel.group_type === 'channel')
+    switch (title) {
+      case 'Trò chuyện nhóm':
+        return dm_channels.filter((channel: DMChannelWithUnreadCount) => channel.group_type === 'channel')
+      case 'Cuộc trò chuyện riêng tư':
+        return dm_channels.filter((channel: DMChannelWithUnreadCount) => channel.group_type === 'dm')
+      default:
+        return dm_channels
     }
-    if (title === 'Cuộc trò chuyện riêng tư') {
-      return dm_channels.filter((channel: DMChannelWithUnreadCount) => channel.group_type === 'dm')
-    }
-    return dm_channels
   }, [dm_channels, title])
+
+  if (title === 'Đã gắn cờ') {
+    return <MessageSaved />
+  }
+
   return (
     <>
       {filteredChannels.map((channel: DMChannelWithUnreadCount) => (

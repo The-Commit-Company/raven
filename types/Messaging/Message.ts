@@ -25,6 +25,7 @@ export interface BaseMessage {
     is_thread: 1 | 0,
     is_pinned: 1 | 0,
     sequence: number
+    content?: string
 }
 
 export interface FileMessage extends BaseMessage {
