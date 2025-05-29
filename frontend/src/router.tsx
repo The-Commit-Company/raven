@@ -1,10 +1,10 @@
 import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import WorkspaceSwitcherGrid from './components/layout/WorkspaceSwitcherGrid'
 import ErrorPage from './pages/ErrorPage'
+import { MainPageCustom } from './pages/MainPageCustom'
 import MobileTabsPage from './pages/MobileTabsPage'
 import WorkspaceSwitcher from './pages/WorkspaceSwitcher'
 import { ProtectedRoute } from './utils/auth/ProtectedRoute'
-import { MainPageCustom } from './pages/MainPageCustom'
 
 const isDesktop = window.innerWidth > 768
 const lastWorkspace = localStorage.getItem('ravenLastWorkspace') ?? ''
@@ -109,7 +109,6 @@ const router = createBrowserRouter(
             <Route path='threads' lazy={() => import('./components/feature/threads/Threads')}>
               <Route path=':threadID' lazy={() => import('./components/feature/threads/ThreadManager/ViewThread')} />
             </Route>
-            <Route path='saved-messages' lazy={() => import('./components/feature/saved-messages/SavedMessages')} />
             <Route path=':channelID' lazy={() => import('@/pages/ChatSpace')}>
               <Route
                 path='thread/:threadID'
