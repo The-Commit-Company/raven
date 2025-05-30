@@ -54,7 +54,7 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 		if not users:
 			return
 
-		mentioned_users = [user.get("user") for user in message.mentions]
+		mentions = [user.get("user") for user in message.mentions]
 
 		replied_to = None
 
@@ -78,7 +78,7 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 		for user in users:
 			if user == replied_to:
 				replied_users.append(user)
-			elif user in mentioned_users:
+			elif user in mentions:
 				mentioned_users.append(user)
 			else:
 				final_users.append(user)
