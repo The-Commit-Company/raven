@@ -42,6 +42,15 @@ def register_site_on_raven_cloud() -> None:
 		frappe.throw(_("Push notification service is not set to Raven Cloud."))
 
 
+@frappe.whitelist()
+def sync_user_tokens_to_raven_cloud():
+	"""
+	Sync all the tokens available on this site to Raven Cloud
+	"""
+	frappe.only_for("Raven Admin")
+	frappe.enqueue("raven.raven_cloud_notifications.sync_users_tokens_to_raven_cloud")
+
+
 @frappe.whitelist(methods=["POST"])
 def toggle_push_notification_for_channel(member: str, allow_notifications: 0 | 1) -> None:
 	if are_push_notifications_enabled():

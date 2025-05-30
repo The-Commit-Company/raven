@@ -243,7 +243,7 @@ const ChannelContext = ({ mention }: { mention: MentionObject }) => {
 const MessageContent = ({ content }: { content: string }) => {
     return (
         <Text as='p' className="text-sm line-clamp-2 text-ellipsis sm:w-[320px] w-[200px]">
-            <div className="[&_.mention]:text-accent-11">
+            <div className="[&_.mention]:text-accent-11 [&_p]:my-0">
                 {typeof content === 'string' ? parse(content) : content}
             </div>
         </Text>
