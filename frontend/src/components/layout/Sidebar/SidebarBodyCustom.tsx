@@ -38,11 +38,7 @@ export const SidebarBody = ({ size }: SidebarBodyProps) => {
     const timeA = new Date(a.last_message_timestamp || 0).getTime()
     const timeB = new Date(b.last_message_timestamp || 0).getTime()
     return timeB - timeA // Mới nhất lên đầu
-  })
-
-
-  console.log(sortedChannels);
-  
+  })  
 
   return (
     <ScrollArea type='hover' scrollbars='vertical' className='h-[calc(100vh-4rem)] sidebar-scroll'>

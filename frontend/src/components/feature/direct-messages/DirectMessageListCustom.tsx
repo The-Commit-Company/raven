@@ -42,7 +42,7 @@ interface DirectMessageListProps {
   isLoading?: boolean
 }
 
-const MAX_PREVIEW_LENGTH = 20 // hoặc bất kỳ độ dài bạn muốn
+const MAX_PREVIEW_LENGTH = 30 // hoặc bất kỳ độ dài bạn muốn
 
 const truncateText = (text: string, maxLength: number = MAX_PREVIEW_LENGTH): string =>
   text.length > maxLength ? text.slice(0, maxLength) + '...' : text
@@ -197,10 +197,10 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
     return formatLastMessage(channel, currentUser, lastSender?.full_name)
   }, [channel, currentUser, lastSender?.full_name])
 
-  const timeAgo =
-    channel.last_message_timestamp && isValid(new Date(channel.last_message_timestamp))
-      ? formatDistanceToNow(new Date(channel.last_message_timestamp), { addSuffix: true, locale: vi })
-      : ''
+  // const timeAgo =
+  //   channel.last_message_timestamp && isValid(new Date(channel.last_message_timestamp))
+  //     ? formatDistanceToNow(new Date(channel.last_message_timestamp), { addSuffix: true, locale: vi })
+  //     : ''
 
   const shouldShowBadge = channel.unread_count > 0 || isManuallyMarked
 
@@ -241,11 +241,11 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
           >
             {displayName}
           </Text>
-          {timeAgo && (
+          {/* {timeAgo && (
             <Text size='1' color='gray' className='group-hover:hidden'>
               {timeAgo}
             </Text>
-          )}
+          )} */}
         </Flex>
 
         <Text size='1' color='gray' className='truncate'>
