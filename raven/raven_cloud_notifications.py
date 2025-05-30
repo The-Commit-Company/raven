@@ -79,6 +79,6 @@ def sync_users_tokens_to_raven_cloud():
 			"raven_cloud.api.notification.import_user_tokens",
 			params={
 				"site_name": get_site_name(),
-				"tokens": chunk,
+				"tokens": json.dumps(chunk),
 			},
 		)
