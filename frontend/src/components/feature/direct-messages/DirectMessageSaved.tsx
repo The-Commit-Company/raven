@@ -5,20 +5,18 @@ import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
 import { useGetUser } from '@/hooks/useGetUser'
 import { useGetUserRecords } from '@/hooks/useGetUserRecords'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
-import { UserContext } from '@/utils/auth/UserProvider'
 import { DMChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { getEmbedUrlFromYoutubeUrl, isValidUrl, isValidYoutubeUrl } from '@/utils/helpers'
 import { Flex, Text } from '@radix-ui/themes'
-import { useContext, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Message } from '../../../../../types/Messaging/Message'
 import { FileMessageBlock } from '../chat/ChatMessage/Renderers/FileMessage'
 import { ImageMessageBlock } from '../chat/ChatMessage/Renderers/ImageMessage'
 import { PollMessageBlock } from '../chat/ChatMessage/Renderers/PollMessage'
-import { TiptapRenderer } from '../chat/ChatMessage/Renderers/TiptapRenderer/TiptapRenderer'
 
 type MessageBoxProps = {
   message: Message & { workspace?: string }
-  forceHideLinkPreview?: boolean
 }
 
 export const MessageSaved = () => {
@@ -33,18 +31,15 @@ export const MessageSaved = () => {
   )
 }
 
-const DirectMessageSaved = ({ message, forceHideLinkPreview = false }: MessageBoxProps) => {
+const DirectMessageSaved = ({ message }: MessageBoxProps) => {
   const navigate = useNavigate()
   const { channel_id } = message
-
-  const { currentUser } = useContext(UserContext)
 
   const users = useGetUserRecords()
 
   const user = useGetUser(message.is_bot_message && message.bot ? message.bot : message.owner)
 
   const { channel } = useCurrentChannelData(channel_id)
-
   const isActive = useIsUserActive(user?.name)
 
   const { workspaceID } = useParams()
@@ -57,7 +52,7 @@ const DirectMessageSaved = ({ message, forceHideLinkPreview = false }: MessageBo
         const peer_user_name =
           users[(channelData as DMChannelListItem).peer_user_id]?.full_name ??
           (channelData as DMChannelListItem).peer_user_id
-        return `DM with ${peer_user_name}`
+        return `From chat with ${peer_user_name}`
       } else {
         return channelData.channel_name
       }
@@ -77,11 +72,14 @@ const DirectMessageSaved = ({ message, forceHideLinkPreview = false }: MessageBo
       search: `message_id=${baseMessage}`
     })
   }
+  const isYoutube = isValidYoutubeUrl(message.content)
+
+  const embedUrl = getEmbedUrlFromYoutubeUrl(message.content)
 
   return (
     <div
       onClick={() => handleNavigateToChannel(channel_id, message.workspace, message.name)}
-      className='py-1.5 px-2.5 data-[state=open]:bg-gray-3 group relative cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 flex items-start space-x-2'
+      className='py-1.5 px-2.5 data-[state=open]:bg-gray-3 group relative cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2'
     >
       <SidebarIcon>
         <UserAvatar
@@ -101,17 +99,35 @@ const DirectMessageSaved = ({ message, forceHideLinkPreview = false }: MessageBo
       >
         <Flex justify='between' align='center'>
           <Text className='text-gray-12' weight='medium' size='2'>
-            {message.message_type === 'Text' && (
-              <TiptapRenderer
-                message={{
-                  ...message,
-                  message_type: 'Text'
-                }}
-                user={user}
-                currentUser={currentUser}
-                showLinkPreview={forceHideLinkPreview ? false : message.hide_link_preview ? false : true}
-              />
+            <span>
+              {user?.full_name} :{' '}
+              {isValidUrl(message.content) ? (
+                <a
+                  href={message.content}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='text-link-1 hover:text-link-2 hover:underline'
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {message.content}
+                </a>
+              ) : (
+                message.content
+              )}
+            </span>
+            {isYoutube && embedUrl && (
+              <div className='relative overflow-hidden w-full pt-[56.25%] mt-2 rounded-md'>
+                <iframe
+                  src={embedUrl}
+                  title='YouTube video player'
+                  className='absolute w-full h-full inset-0'
+                  allow='accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; modestbranding=1'
+                  referrerPolicy='strict-origin-when-cross-origin'
+                  allowFullScreen
+                ></iframe>
+              </div>
             )}
+
             {/* Hiển thị hình ảnh nếu loại tin nhắn là Image */}
             {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} />}
 

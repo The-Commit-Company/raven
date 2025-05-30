@@ -1,4 +1,5 @@
 import { Stack } from '@/components/layout/Stack'
+import { getEmbedUrlFromYoutubeUrl, isValidYoutubeUrl } from '@/utils/helpers'
 import { Box, Card, IconButton, Text, Tooltip } from '@radix-ui/themes'
 import { useCurrentEditor } from '@tiptap/react'
 import { useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
@@ -191,53 +192,18 @@ const SkeletonWebLinkPreview = () => {
   )
 }
 
-const YOUTUBE_REGEX =
-  /^((?:https?:)?\/\/)?((?:www|m|music)\.)?((?:youtube\.com|youtu.be|youtube-nocookie\.com))(\/(?:[\w-]+\?v=|embed\/|v\/)?)([\w-]+)(\S+)?$/
-const isValidYoutubeUrl = (url: string) => {
-  return url.match(YOUTUBE_REGEX)
-}
-
-export const getYoutubeEmbedUrl = (nocookie?: boolean) => {
-  return nocookie ? 'https://www.youtube-nocookie.com/embed/' : 'https://www.youtube.com/embed/'
-}
-
-const getEmbedUrlFromYoutubeUrl = (url: string) => {
-  // If it's already an embed url, return it
-  if (url.includes('/embed/')) {
-    return url
-  }
-
-  // if is a youtu.be url, get the id after the /
-  if (url.includes('youtu.be')) {
-    const id = url.split('/').pop()
-
-    if (!id) {
-      return null
-    }
-    return `${getYoutubeEmbedUrl()}${id}`
-  }
-
-  const videoIdRegex = /(?:v=|shorts\/)([-\w]+)/gm
-  const matches = videoIdRegex.exec(url)
-
-  if (!matches || !matches[1]) {
-    return null
-  }
-
-  return `${getYoutubeEmbedUrl()}${matches[1]}`
-}
-
 const YoutubePreview = ({ href, messageID }: { href: string; messageID: string }) => {
   const embedUrl = getEmbedUrlFromYoutubeUrl(href)
 
   if (!embedUrl) return null
 
   return (
-    <div data-youtube-video className='w-full aspect-video'>
+    <div data-youtube-video className='pt-2'>
       <iframe
         src={embedUrl}
+        width='480'
+        height='270'
         title='YouTube video player'
-        className='w-full h-full rounded-lg'
         frameBorder='0'
         allow='accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; modestbranding=1'
         referrerPolicy='strict-origin-when-cross-origin'

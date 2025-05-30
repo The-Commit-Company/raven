@@ -1,7 +1,7 @@
-import { useMemo } from 'react'
-import { useAtomValue } from 'jotai'
-import { showOnlyMyChannelsAtom } from './SidebarBody'
+import { showOnlyMyChannelsAtom } from '@/components/layout/Sidebar/SidebarBody'
 import type { ChannelListItem, DMChannelListItem, UnreadCountData } from '@/utils/channel/ChannelListProvider'
+import { useAtomValue } from 'jotai'
+import { useMemo } from 'react'
 
 export type UnifiedChannel = (ChannelListItem | DMChannelListItem) & {
   unread_count: number

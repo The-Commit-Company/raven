@@ -140,6 +140,10 @@ export default {
           4: '#334E88', // hover dark
           5: '#3B82F6' // border primary
         },
+        link:{
+          1:'#4c88ff',
+          2:"#3370eb"
+        },
         telegramDark: '#1e2633',
         telegramDarkBorder: '#2c3748',
         telegramBlue: '#3390ec',
