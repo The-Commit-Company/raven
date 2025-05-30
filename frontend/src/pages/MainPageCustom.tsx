@@ -172,6 +172,7 @@ const MainPageContent = () => {
                   <div className='h-px bg-gray-400 dark:bg-gray-600' />
                 </div>
                 <SidebarBody size={panelSize} />
+                {/* <SidebarBody  /> */}
               </div>
             </Panel>
 

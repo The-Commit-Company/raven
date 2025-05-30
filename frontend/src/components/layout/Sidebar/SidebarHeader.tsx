@@ -3,11 +3,13 @@ import { commandMenuOpenAtom } from '@/components/feature/CommandMenu/CommandMen
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { useSidebarMode } from '@/utils/layout/sidebar'
 import { __ } from '@/utils/translations'
-import { Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
+import { Button, Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
 import { useSetAtom } from 'jotai'
 import { BiMoon, BiSun } from 'react-icons/bi'
 import { TbSearch } from 'react-icons/tb'
 import MentionsButton from './MentionsButton'
+import { HStack } from '../Stack'
+import { getKeyboardMetaKeyString } from '@/utils/layout/keyboardKey'
 
 export const SidebarHeader = () => {
   const isDesktop = useIsDesktop()
@@ -16,10 +18,10 @@ export const SidebarHeader = () => {
   if (isDesktop) {
     return (
       <header style={{ padding: mode === 'hide-filter' ? '20px 60px' : '20px' }}>
-        {/* <Flex justify='between' px='2' align='center' pt='2'>
-          <CommandMenuButton />
-          <MentionsButton />
-        </Flex> */}
+        <Flex justify='between' px='2' align='center' pt='2'>
+          {/* <CommandMenuButton /> */}
+          {/* <MentionsButton /> */}
+        </Flex>
         <>{title}</>
       </header>
     )
@@ -41,27 +43,27 @@ export const SidebarHeader = () => {
   )
 }
 
-// const CommandMenuButton = () => {
-//   const setOpen = useSetAtom(commandMenuOpenAtom)
+const CommandMenuButton = () => {
+  const setOpen = useSetAtom(commandMenuOpenAtom)
 
-//   return (
-//     <Button
-//       onClick={() => setOpen(true)}
-//       aria-label='Open command menu'
-//       title={__('Open command menu')}
-//       className='bg-gray-3 hover:bg-gray-4 p-2 rounded-md flex justify-between items-center min-w-48 text-gray-11 sm:hover:text-gray-12'
-//       color='gray'
-//     >
-//       <HStack>
-//         <TbSearch className='text-lg sm:text-base' />
-//         <Text as='span' className='not-cal -mt-0.5' weight='regular'>
-//           Search
-//         </Text>
-//       </HStack>
-//       <Kbd className='dark:font-bold'>{getKeyboardMetaKeyString()}+K</Kbd>
-//     </Button>
-//   )
-// }
+  return (
+    <Button
+      onClick={() => setOpen(true)}
+      aria-label='Open command menu'
+      title={__('Open command menu')}
+      className='bg-gray-3 hover:bg-gray-4 p-2 rounded-md flex justify-between items-center min-w-48 text-gray-11 sm:hover:text-gray-12'
+      color='gray'
+    >
+      <HStack>
+        <TbSearch className='text-lg sm:text-base' />
+        <Text as='span' className='not-cal -mt-0.5' weight='regular'>
+          Search
+        </Text>
+      </HStack>
+      <div className='dark:font-bold'>{getKeyboardMetaKeyString()}+K</div>
+    </Button>
+  )
+}
 /** Only used on mobile */
 const SearchButton = () => {
   const setOpen = useSetAtom(commandMenuOpenAtom)

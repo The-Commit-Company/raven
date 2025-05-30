@@ -6,6 +6,7 @@ import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
 import { useUserData } from '@/hooks/useUserData'
 import {
   forwardRef,
+  memo,
   MutableRefObject,
   useCallback,
   useContext,
@@ -25,6 +26,7 @@ import useChatStream from './useChatStream'
 import { useChatStreamActions } from './useChatStreamActions'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useMessageHighlight } from './useMessageHighlight'
 
 type Props = {
   channelID: string
@@ -132,6 +134,9 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       return handle
     })
 
+    const [scrolledHighlightedMessage, setScrolledHighlightedMessage] = useState<string | null>(null)
+    useMessageHighlight(scrolledHighlightedMessage, setScrolledHighlightedMessage)
+
     // Item renderer cho Virtuoso
     const itemRenderer = useCallback(
       (index: number) => {
@@ -140,7 +145,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
         return (
           <MessageItemRenderer
             message={message}
-            isHighlighted={highlightedMessage === message?.name}
+            isHighlighted={highlightedMessage === message?.name || scrolledHighlightedMessage === message?.name}
             onReplyMessageClick={onReplyMessageClick}
             setEditMessage={editActions.setEditMessage}
             replyToMessage={replyToMessage}
@@ -219,28 +224,26 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       [clearAllNewMessages]
     )
 
-    
-    
     // Handle range changed for loading newer messages and tracking visible messages
     const handleRangeChanged = useCallback(
       (range: any) => {
         if (!messages || !isInitialLoadComplete) return
-        
-        console.log(messages.map(m => m.sequence));
+
+        console.log(messages.map((m: any) => m.sequence))
         const isNearBottom = range && range.endIndex >= messages.length - 5
 
         if (range && hasNewMessages && isNearBottom) {
           loadNewerMessages()
         }
 
-        console.log(">>>>>>>range:", messages[range.endIndex])
+        console.log('>>>>>>>range:', messages[range.endIndex])
 
         if (range) {
           const lastVisibleMessage = messages[range.endIndex]
           // console.log('sequence = ', lastVisibleMessage?.sequence)
 
           if (lastVisibleMessage) {
-            const { name, sequence } = lastVisibleMessage
+            const { name, sequence } : any = lastVisibleMessage
             console.log('lastVisibleMessage.sequence', sequence)
 
             markMessageAsSeen(name, sequence)
@@ -356,6 +359,22 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
     //   }
     // }, [lastSeenMessageIndex])
 
+    useEffect(() => {
+      if (shouldRenderVirtuoso && targetIndex !== undefined && virtuosoRef.current && messageId) {
+        setTimeout(() => {
+          virtuosoRef.current?.scrollToIndex({
+            index: targetIndex,
+            align: 'center',
+            behavior: 'smooth'
+          })
+          const targetMessage = messages[targetIndex]
+          if (targetMessage?.name) {
+            setScrolledHighlightedMessage(targetMessage.name)
+          }
+        }, 100)
+      }
+    }, [shouldRenderVirtuoso, targetIndex, messageId])
+
     return (
       <div className='relative h-full flex flex-col overflow-hidden pb-16 sm:pb-0'>
         {/* Empty state */}
@@ -410,4 +429,4 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
   }
 )
 
-export default ChatStream
+export default memo(ChatStream)

@@ -34,6 +34,7 @@ import { formatDistanceToNow, isValid } from 'date-fns'
 import { vi } from 'date-fns/locale/vi'
 import { HiCheck } from 'react-icons/hi'
 import { MessageSaved } from './DirectMessageSaved'
+import MentionList from '../chat/ChatInput/MentionListCustom'
 // import { useChannelListRealtimeSync } from '@/utils/channel/useChannelListRealtimeSync'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
@@ -96,11 +97,7 @@ export const DirectMessageList = ({ dm_channels, isLoading = false }: DirectMess
 
   return (
     <SidebarGroup pb='4'>
-      <SidebarGroupItem className='gap-1 pl-1'>
-        <Flex width='100%' justify='between' align='center' gap='2' pr='2' className='group'>
-          <SidebarGroupLabel className='pt-0.5'>{__('Members')}</SidebarGroupLabel>
-        </Flex>
-      </SidebarGroupItem>
+      <SidebarGroupItem className='gap-1 pl-1'></SidebarGroupItem>
       <SidebarGroup>
         <div className='flex gap-3 flex-col fade-in'>
           {isLoading ? (
@@ -126,22 +123,45 @@ const DirectMessageItemList = ({ dm_channels }: DirectMessageListProps) => {
         return dm_channels.filter((channel: DMChannelWithUnreadCount) => channel.group_type === 'channel')
       case 'Cuộc trò chuyện riêng tư':
         return dm_channels.filter((channel: DMChannelWithUnreadCount) => channel.group_type === 'dm')
+      case 'Chưa đọc':
+        return dm_channels.filter((channel: DMChannelWithUnreadCount) => channel.unread_count > 0)
       default:
         return dm_channels
     }
   }, [dm_channels, title])
 
-  if (title === 'Đã gắn cờ') {
-    return <MessageSaved />
+  const emptyMessage = useMemo(() => {
+    switch (title) {
+      case 'Trò chuyện nhóm':
+        return 'Không có nhóm trò chuyện nhóm nào'
+      case 'Cuộc trò chuyện riêng tư':
+        return 'Không có cuộc trò chuyện riêng tư nào'
+      case 'Chưa đọc':
+        return 'Không có tin nhắn chưa đọc'
+      case 'Đã gắn cờ':
+        return '' // không dùng
+      default:
+        return 'Chưa có tin nhắn nào'
+    }
+  }, [title])
+
+  const renderContent = () => {
+    switch (title) {
+      case 'Đã gắn cờ':
+        return <MessageSaved />
+      case 'Nhắc đến':
+        return <MentionList />
+      default:
+        if (filteredChannels.length === 0) {
+          return <div className='text-gray-500 text-sm italic p-4 text-center'>{emptyMessage}</div>
+        }
+        return filteredChannels.map((channel: DMChannelWithUnreadCount) => (
+          <DirectMessageItem key={channel.name} dm_channel={channel} />
+        ))
+    }
   }
 
-  return (
-    <>
-      {filteredChannels.map((channel: DMChannelWithUnreadCount) => (
-        <DirectMessageItem key={channel.name} dm_channel={channel} />
-      ))}
-    </>
-  )
+  return <>{renderContent()}</>
 }
 
 const DirectMessageItem = ({ dm_channel }: { dm_channel: DMChannelWithUnreadCount }) => {
