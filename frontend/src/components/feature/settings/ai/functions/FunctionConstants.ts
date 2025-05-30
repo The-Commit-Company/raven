@@ -18,6 +18,12 @@ export const FUNCTION_TYPES = [
         type: "Standard"
     },
     {
+        value: "Get Value",
+        description: "Get a single value or multiple values from a document in the system using filters.",
+        requires_write_permissions: false,
+        type: "Standard"
+    },
+    {
         value: "Create Document",
         description: "Create any document in the system.",
         requires_write_permissions: true,

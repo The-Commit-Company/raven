@@ -209,3 +209,25 @@ def get_list(doctype: str, filters: dict = None, fields: list = None, limit: int
 
 	# Use the frappe.get_list method to get the list of documents
 	return frappe.get_list(doctype, filters=filters, fields=filtered_fields, limit=limit)
+
+def get_value(doctype: str, filters: dict = None, fieldname: str | list = "name"):
+	"""
+	Returns a value from a document
+
+		:param doctype: DocType to be queried
+		:param fieldname: Field to be returned (default `name`) - can be a list of fields(str) or a single field(str)
+		:param filters: dict or string for identifying the record
+	"""
+	meta = frappe.get_meta(doctype)
+	
+	if isinstance(fieldname, list):
+		for field in fieldname:
+			if not meta.has_field(field):
+				return {"message": f"Field {field} does not exist in {doctype}"}
+		
+		return frappe.db.get_value(doctype, filters, fieldname)
+	else:
+		if not meta.has_field(fieldname):
+			return {"message": f"Field {fieldname} does not exist in {doctype}"}
+		
+		return frappe.db.get_value(doctype, filters, fieldname)

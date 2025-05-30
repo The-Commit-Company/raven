@@ -134,7 +134,8 @@ class RavenBot(Document):
 				description=self.description or "",
 				tools=self.get_tools_for_assistant(),
 				tool_resources=self.get_tool_resources_for_assistant(),
-				reasoning_effort=reasoning_effort if model.startswith("o") else None,
+				# TODO: configure the parameters being sent depending on the model - temperature, top_p, reasoning_effort
+				# reasoning_effort=reasoning_effort if model.startswith("o") else None,
 				temperature=self.temperature or 1,
 				top_p=self.top_p or 1,
 			)
@@ -179,7 +180,8 @@ class RavenBot(Document):
 				tools=self.get_tools_for_assistant(),
 				tool_resources=self.get_tool_resources_for_assistant(),
 				model=model,
-				reasoning_effort=reasoning_effort if model.startswith("o") else None,
+				# TODO: configure the parameters being sent depending on the model - temperature, top_p, reasoning_effort
+				# reasoning_effort=reasoning_effort if model.startswith("o") else None,
 				temperature=self.temperature or 1,
 				top_p=self.top_p or 1,
 			)
