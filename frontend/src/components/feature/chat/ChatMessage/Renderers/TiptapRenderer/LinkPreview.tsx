@@ -233,12 +233,11 @@ const YoutubePreview = ({ href, messageID }: { href: string; messageID: string }
   if (!embedUrl) return null
 
   return (
-    <div data-youtube-video className='pt-2'>
+    <div data-youtube-video className='w-full aspect-video'>
       <iframe
-        width='480'
-        height='270'
         src={embedUrl}
         title='YouTube video player'
+        className='w-full h-full rounded-lg'
         frameBorder='0'
         allow='accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; modestbranding=1'
         referrerPolicy='strict-origin-when-cross-origin'
