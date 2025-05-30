@@ -12,9 +12,9 @@ import useRavenSettings from '@/hooks/fetchers/useRavenSettings'
 import { RavenSettings } from '@/types/Raven/RavenSettings'
 import { isSystemManager } from '@/utils/roles'
 import { __ } from '@/utils/translations'
-import { Badge, Box, Button, Link, Select, Separator, Strong, Text, TextField } from '@radix-ui/themes'
-import { useFrappePostCall, useFrappeUpdateDoc } from 'frappe-react-sdk'
-import { useEffect } from 'react'
+import { Box, Button, Link, Select, Strong, Text, TextField } from '@radix-ui/themes'
+import { FrappeConfig, FrappeContext, useFrappePostCall, useFrappeUpdateDoc } from 'frappe-react-sdk'
+import { useContext, useEffect } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { FiAlertTriangle, FiExternalLink } from 'react-icons/fi'
 import { toast } from 'sonner'
@@ -24,6 +24,8 @@ const PushNotifications = () => {
     const isRavenAdmin = isSystemManager()
 
     const { ravenSettings, mutate, error } = useRavenSettings()
+
+    const { call } = useContext(FrappeContext) as FrappeConfig
 
     const methods = useForm<RavenSettings>({
         disabled: !isRavenAdmin
@@ -211,6 +213,16 @@ const PushNotifications = () => {
                         <div className='flex gap-2'>
                             {isRavenCloud && ravenSettings?.push_notification_service === "Raven" && ravenSettings?.push_notification_server_url &&
                                 <RegisterSiteButton mutate={mutate} ravenSettings={ravenSettings} />}
+
+                            {isRavenCloud && ravenSettings?.push_notification_service === "Raven"
+                                && ravenSettings?.push_notification_server_url && ravenSettings?.vapid_public_key && <Button
+                                    onClick={() => call.post('raven.api.notification.sync_user_tokens_to_raven_cloud').then(() => {
+                                        toast.success('Data syncing to Raven Cloud...')
+                                    })}
+                                    type='button'
+                                    className='not-cal'>
+                                    Sync Data to Raven Cloud
+                                </Button>}
 
                             {!isRavenCloud && <Button
                                 asChild
