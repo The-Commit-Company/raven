@@ -46,10 +46,11 @@ interface MessageBlockProps {
     onAttachDocument: (message: Message) => void,
     isHighlighted?: boolean,
     setReactionMessage: (message: Message) => void,
-    showThreadButton?: boolean
+    showThreadButton?: boolean,
+    setRemindMeMessage: (message: Message) => void
 }
 
-export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyMessageClick, setEditMessage, replyToMessage, forwardMessage, onAttachDocument, setReactionMessage, showThreadButton = true }: MessageBlockProps) => {
+export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyMessageClick, setEditMessage, replyToMessage, forwardMessage, onAttachDocument, setReactionMessage, showThreadButton = true, setRemindMeMessage }: MessageBlockProps) => {
 
     const { name, owner: userID, is_bot_message, bot, creation: timestamp, message_reactions, is_continuation, linked_message, replied_message_details } = message
 
@@ -77,6 +78,10 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
 
     const onViewReaction = () => {
         setReactionMessage(message)
+    }
+
+    const onRemindMe = () => {
+        setRemindMeMessage(message)
     }
 
     const isDesktop = useIsDesktop()
@@ -241,6 +246,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                                         onForward={onForward}
                                         showThreadButton={showThreadButton}
                                         onAttachDocument={onAttachToDocument}
+                                        onRemindMe={onRemindMe}
                                     />
                                 }
                             </Flex>
@@ -257,6 +263,7 @@ export const MessageItem = ({ message, setDeleteMessage, isHighlighted, onReplyM
                             onViewReaction={onViewReaction}
                             selectedText={selectedText}
                             onAttachDocument={onAttachToDocument}
+                            onRemindMe={onRemindMe}
                         />
                     </ContextMenu.Root>
                 </Box>}
