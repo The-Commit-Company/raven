@@ -220,7 +220,7 @@ def get_content_attachment_for_file(message_type: str, file_id: str, file_url: s
 	attachments = None
 
 	if message_type == "File":
-		content = f"Uploaded a file. URL of the file is '{file_url}'."
+		content = f"Uploaded a file. URL of the file is '{file_url}'. Use this URL to attach the file to any document if requested."
 
 		file_extension = file_url.split(".")[-1].lower()
 
@@ -249,7 +249,10 @@ def get_content_attachment_for_file(message_type: str, file_id: str, file_url: s
 
 	else:
 		content = [
-			{"type": "text", "text": f"Uploaded an image. URL of the image is '{file_url}'"},
+			{
+				"type": "text",
+				"text": f"Uploaded an image. URL of the image is '{file_url}'. Use this URL to attach the image to any document if requested.",
+			},
 			{"type": "image_file", "image_file": {"file_id": file_id}},
 		]
 
