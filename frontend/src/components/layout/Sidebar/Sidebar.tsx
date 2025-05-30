@@ -1,12 +1,9 @@
-import { SidebarHeader } from './SidebarHeader'
-import { SidebarBody } from './SidebarBodyCustom'
-import { Box, Flex, Separator } from '@radix-ui/themes'
-import { HStack } from '../Stack'
-import WorkspacesSidebar from './WorkspacesSidebar'
-import SidebarContainer from './SidebarContainer'
 import { useSidebarMode } from '@/utils/layout/sidebar'
+import { HStack } from '../Stack'
+import { SidebarHeader } from './SidebarHeader'
+import WorkspacesSidebar from './WorkspacesSidebar'
 
-import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels'
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 
 export const Sidebar = () => {
   const { mode } = useSidebarMode()
@@ -16,7 +13,7 @@ export const Sidebar = () => {
       <WorkspacesSidebar />
       <PanelGroup direction='horizontal'>
         <Panel defaultSize={35} minSize={15} className='flex'>
-          <SidebarContainer />
+          {/* <SidebarContainer /> */}
         </Panel>
         <PanelResizeHandle className='cursor-col-resize' />
         <Panel defaultSize={70} minSize={50} className='border-l border-r border-gray-400 dark:border-gray-600'>
@@ -25,7 +22,7 @@ export const Sidebar = () => {
             <div className='px-2'>
               <div className='h-px bg-gray-400 dark:bg-gray-600' />
             </div>
-            <SidebarBody />
+            {/* <SidebarBody /> */}
           </div>
         </Panel>
       </PanelGroup>

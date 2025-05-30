@@ -1,5 +1,3 @@
-import { useGetUser } from "@/hooks/useGetUser"
-
 const MAX_PREVIEW_LENGTH = 20
 
 const truncateText = (text: string, maxLength: number = MAX_PREVIEW_LENGTH): string =>
@@ -9,7 +7,6 @@ interface Channel {
   is_direct_message: boolean
   last_message_details: any
 }
-
 
 export function formatLastMessage(
   channel: Channel,
@@ -47,10 +44,10 @@ export function formatLastMessage(
       const plainText = raw.content.replace(/<[^>]+>/g, '')
       lastMessageText = truncateText(plainText)
     }
-  } catch (err) {
+  } catch (err: any) {
+    console.error('Failed to format last message', err)
     return ''
   }
 
   return senderPrefix ? `${senderPrefix}: ${lastMessageText}` : lastMessageText
 }
-

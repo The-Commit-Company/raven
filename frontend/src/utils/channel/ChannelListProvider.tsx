@@ -1,11 +1,10 @@
-import { FrappeError, useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
-import { PropsWithChildren, createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { KeyedMutator } from 'swr'
-import { useSWRConfig } from 'frappe-react-sdk'
-import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
-import { RavenChannel } from '@/types/RavenChannelManagement/RavenChannel'
 import { useIsMobile } from '@/hooks/useMediaQuery'
+import { RavenChannel } from '@/types/RavenChannelManagement/RavenChannel'
+import { FrappeError, useFrappeEventListener, useFrappeGetCall, useSWRConfig } from 'frappe-react-sdk'
+import { PropsWithChildren, createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { toast } from 'sonner'
+import { KeyedMutator } from 'swr'
 
 export type UnreadChannelCountItem = {
   name: string
@@ -32,6 +31,7 @@ export type ChannelListItem = Pick<
   | 'last_message_timestamp'
   | 'workspace'
   | 'pinned_messages_string'
+  | 'group_type'
 > & { member_id: string }
 
 export interface DMChannelListItem extends ChannelListItem {

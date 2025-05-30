@@ -49,4 +49,5 @@ export interface RavenChannel {
   openai_thread_id?: string
   /**	Thread Bot : Link - Raven Bot	*/
   thread_bot?: string
+  group_type: 'channel' | 'dm'
 }
