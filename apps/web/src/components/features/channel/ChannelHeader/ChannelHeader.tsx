@@ -8,7 +8,7 @@ import ChannelMenu from "./ChannelMenu"
 
 const ChannelHeader = () => {
     return (
-        <div className="sticky top-0 flex items-center justify-between border-b bg-background py-1.5 px-2">
+        <div className="sticky top-(--app-header-height) flex items-center justify-between border-b bg-background py-1.5 px-2">
             {/* Left side */}
             <div className="flex items-center gap-2">
 

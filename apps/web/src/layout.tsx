@@ -4,9 +4,9 @@ import {
     SidebarProvider,
 } from "@components/ui/sidebar"
 import AppHeader from "@components/features/header/AppHeader"
-import ChannelHeader from "@components/features/header/ChannelHeader/ChannelHeader"
+import { Outlet } from "react-router-dom"
 
-export default function Page() {
+export default function MainPage() {
     return (
         <div className="flex flex-col h-screen">
             <AppHeader />
@@ -19,15 +19,7 @@ export default function Page() {
                 }>
                 <AppSidebar />
                 <SidebarInset>
-                    <ChannelHeader />
-                    <div className="flex flex-1 flex-col gap-4 p-4">
-                        {Array.from({ length: 24 }).map((_, index) => (
-                            <div
-                                key={index}
-                                className="aspect-video h-12 w-full rounded-lg bg-muted/50"
-                            />
-                        ))}
-                    </div>
+                    <Outlet />
                 </SidebarInset>
             </SidebarProvider>
         </div>

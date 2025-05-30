@@ -36,8 +36,8 @@ const Recents = () => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Clock className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm">
+                    <Clock className="h-3 w-3" />
                     <span className="sr-only">Recents</span>
                 </Button>
             </DropdownMenuTrigger>

@@ -6,8 +6,8 @@ const UserHelpMenu = () => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer">
-                    <HelpCircle className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm cursor-pointer">
+                    <HelpCircle className="h-3 w-3" />
                     <span className="sr-only">Help</span>
                 </Button>
             </DropdownMenuTrigger>

@@ -8,12 +8,12 @@ const NavUserMenu = ({ user }: { user: { name: string, email: string, avatar: st
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Button variant="ghost" size="icon" className="h-6.5 w-6.5">
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Avatar className="h-8 w-8 rounded-lg">
+                            <Avatar className="h-6.5 w-6.5 rounded-sm">
                                 <AvatarImage src={user.avatar} alt={user.name} />
-                                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                                <AvatarFallback className="rounded-sm">CN</AvatarFallback>
                             </Avatar>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -23,15 +23,15 @@ const NavUserMenu = ({ user }: { user: { name: string, email: string, avatar: st
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-md"
                 side={"bottom"}
                 align="end"
                 sideOffset={4}>
                 <DropdownMenuLabel className="p-0 font-normal">
                     <div className="flex items-center gap-2 p-1.5 text-left text-sm">
-                        <Avatar className="h-10 w-10 rounded-lg">
+                        <Avatar className="h-10 w-10 rounded-md">
                             <AvatarImage src={user.avatar} alt={user.name} />
-                            <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                            <AvatarFallback className="rounded-md">CN</AvatarFallback>
                         </Avatar>
                         <div className="grid flex-1 text-left text-sm leading-tight">
                             <span className="truncate font-semibold">{user.name}</span>
