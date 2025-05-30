@@ -220,6 +220,7 @@ const PushNotifications = () => {
                                         toast.success('Data syncing to Raven Cloud...')
                                     })}
                                     type='button'
+                                    variant='soft'
                                     className='not-cal'>
                                     Sync Data to Raven Cloud
                                 </Button>}
@@ -263,6 +264,7 @@ const RegisterSiteButton = ({ mutate, ravenSettings }: { mutate: VoidFunction, r
     return <Button
         onClick={registerSite}
         disabled={loading}
+        variant='soft'
         type='button'
         className='not-cal'>{ravenSettings.vapid_public_key ? "Re-Register Site on Raven Cloud" : "Register Site on Raven Cloud"}</Button>
 
