@@ -64,3 +64,46 @@ def get_openai_available_models():
 				compatible_models.append(model.id)
 
 	return compatible_models
+
+
+@frappe.whitelist()
+def test_llm_configuration(provider: str = "OpenAI", api_url: str = None):
+	"""
+	Test LLM configuration (OpenAI or Local LLM)
+	"""
+	frappe.has_permission(doctype="Raven Settings", ptype="write", throw=True)
+
+	try:
+		if provider == "Local LLM" and api_url:
+			# Test local LLM endpoint
+			import requests
+
+			response = requests.get(f"{api_url}/models", timeout=5)
+			if response.status_code == 200:
+				models = response.json()
+				return {
+					"success": True,
+					"message": f"Successfully connected to {api_url}",
+					"models": models.get("data", []),
+				}
+			else:
+				return {
+					"success": False,
+					"message": f"Failed to connect to {api_url}. Status: {response.status_code}",
+				}
+
+		elif provider == "OpenAI":
+			# Test OpenAI configuration
+			from raven.ai.openai_client import get_open_ai_client
+
+			client = get_open_ai_client()
+			# Try to list models
+			models = client.models.list()
+			return {
+				"success": True,
+				"message": "Successfully connected to OpenAI",
+				"models": [{"id": m.id} for m in models.data[:5]],  # Return first 5 models
+			}
+
+	except Exception as e:
+		return {"success": False, "message": f"Connection failed: {str(e)}"}
