@@ -199,7 +199,33 @@ def save_message(message_id, add=False):
 		user=frappe.session.user,
 	)
 
-	return "message saved"
+	message = frappe.db.get_value(
+		"Raven Message",
+		message_id,
+		[
+			"name",
+			"owner",
+			"creation",
+			"text",
+			"channel_id",
+			"file",
+			"message_type",
+			"message_reactions",
+			"_liked_by",
+			"thumbnail_width",
+			"thumbnail_height",
+			"is_bot_message",
+			"bot",
+			"content",
+		],
+		as_dict=True,
+	)
+
+	if message and message.get("channel_id"):
+		workspace = frappe.db.get_value("Raven Channel", message["channel_id"], "workspace")
+		message["workspace"] = workspace
+
+	return message
 
 
 @frappe.whitelist()

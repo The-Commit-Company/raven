@@ -201,14 +201,13 @@
 //   return unread_count
 // }
 
+import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { UnreadCountData, useChannelList, useUpdateLastMessageInChannelList } from '@/utils/channel/ChannelListProvider'
 import { FrappeConfig, FrappeContext, useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
+import { useAtomValue } from 'jotai'
 import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
-import { useGetUser } from './useGetUser'
-import { useAtomValue } from 'jotai'
-import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
 
 const useUnreadMessageCount = () => {
   const manuallyMarked = useAtomValue(manuallyMarkedAtom)
@@ -327,13 +326,13 @@ export const useFetchUnreadMessageCount = () => {
     )
   }
 
-  const dmWithUnread = useMemo(() => {
-    return unread_count?.message.filter((c) => c.unread_count > 0 && c.is_direct_message === 1) || []
-  }, [unread_count])
+  // const dmWithUnread = useMemo(() => {
+  //   return unread_count?.message.filter((c) => c.unread_count > 0 && c.is_direct_message === 1) || []
+  // }, [unread_count])
 
-  const dmChannel = useMemo(() => {
-    return dm_channels.find((c) => c.name === dmWithUnread?.name)
-  }, [dmWithUnread, dm_channels])
+  // const dmChannel = useMemo(() => {
+  //   return dm_channels.find((c) => c.name === dmWithUnread?.name)
+  // }, [dmWithUnread, dm_channels])
   const lastPlayedMessageIdRef = useRef<string | null>(null)
 
   useEffect(() => {
@@ -344,7 +343,6 @@ export const useFetchUnreadMessageCount = () => {
 
     const audio = new Audio('/notification.mp3')
     audio.volume = 0.7
-
 
     const allChannelMap = new Map((unread_count?.message || []).map((c) => [c.name, c]))
     const manualOnly = Array.from(manuallyMarked).filter((id) => !allChannelMap.has(id))
@@ -357,11 +355,11 @@ export const useFetchUnreadMessageCount = () => {
       return
     }
 
-    const isManualOnly = totalUnread > 0 && serverUnreadCount === 0
+    // const isManualOnly = totalUnread > 0 && serverUnreadCount === 0
     let hasRealNewMessage = false
 
     if (latestUnreadData) {
-      const { name, unread_count, last_message_sender_name, is_direct_message, channel_name, last_message_timestamp } =
+      const { name, last_message_sender_name, is_direct_message, channel_name, last_message_timestamp } =
         latestUnreadData
       const isManuallyMarked = manuallyMarked.has(name)
       const currentUnread = allChannelMap.get(name)?.unread_count || 0

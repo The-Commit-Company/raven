@@ -6,13 +6,14 @@ import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
 import { useGetUser } from '@/hooks/useGetUser'
 import { useGetUserRecords } from '@/hooks/useGetUserRecords'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
+import { savedMessageStore, useSavedMessageStore } from '@/hooks/useSavedMessageStore'
 import { DMChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { getEmbedUrlFromYoutubeUrl, isValidUrl, isValidYoutubeUrl } from '@/utils/helpers'
 import * as Popover from '@radix-ui/react-popover'
 import { Tooltip, TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip'
 import { Box, Text } from '@radix-ui/themes'
 import { useFrappePostCall } from 'frappe-react-sdk'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { HiFlag } from 'react-icons/hi'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -237,8 +238,15 @@ const DirectMessageSaved = ({ message, handleUnflagMessage }: MessageBoxProps) =
 }
 
 export const MessageSaved = () => {
-  const { messages } = useSavedMessages()
+  const { messages: savedMessages, isLoading } = useSavedMessages()
+  const { messages, setMessages } = useSavedMessageStore()
   const { call } = useFrappePostCall('raven.api.raven_message.save_message')
+
+  useEffect(() => {
+    if (savedMessages) {
+      setMessages(() => savedMessages)
+    }
+  }, [savedMessages])
 
   const handleUnflagMessage = useCallback(
     (message_id: string) => {
@@ -247,6 +255,7 @@ export const MessageSaved = () => {
         add: 'No'
       })
         .then(() => {
+          savedMessageStore.removeMessage(message_id)
           toast('Message unsaved')
         })
         .catch((error) => {
@@ -258,7 +267,7 @@ export const MessageSaved = () => {
     [call]
   )
 
-  if (!messages?.length) {
+  if (!messages?.length || isLoading) {
     return <div className='text-center py-8 text-gray-500 dark:text-gray-400'>No saved messages</div>
   }
 

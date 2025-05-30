@@ -1,20 +1,21 @@
-import { ContextMenu, Flex } from '@radix-ui/themes'
-import { FileMessage, Message } from '../../../../../../../types/Messaging/Message'
-import { useContext } from 'react'
-import { UserContext } from '@/utils/auth/UserProvider'
-import { BiBookmarkMinus, BiBookmarkPlus, BiCopy, BiDownload, BiLink, BiPaperclip, BiTrash } from 'react-icons/bi'
-import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
-import { useMessageCopy } from './useMessageCopy'
-import { RetractVote } from './RetractVote'
-import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import { savedMessageStore } from '@/hooks/useSavedMessageStore'
+import { UserContext } from '@/utils/auth/UserProvider'
+import { ContextMenu, Flex } from '@radix-ui/themes'
+import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
+import { useContext } from 'react'
 import { AiOutlineEdit } from 'react-icons/ai'
-import { LuForward, LuLink, LuReply } from 'react-icons/lu'
+import { BiBookmarkMinus, BiBookmarkPlus, BiCopy, BiDownload, BiLink, BiPaperclip, BiTrash } from 'react-icons/bi'
+import { LuForward, LuReply } from 'react-icons/lu'
 import { MdOutlineEmojiEmotions } from 'react-icons/md'
-import { CreateThreadContextItem } from './QuickActions/CreateThreadButton'
 import { RiPushpinLine, RiUnpinLine } from 'react-icons/ri'
-import MessageActionSubMenu from './MessageActionSubMenu'
 import { useParams } from 'react-router-dom'
+import { toast } from 'sonner'
+import { FileMessage, Message } from '../../../../../../../types/Messaging/Message'
+import MessageActionSubMenu from './MessageActionSubMenu'
+import { CreateThreadContextItem } from './QuickActions/CreateThreadButton'
+import { RetractVote } from './RetractVote'
+import { useMessageCopy } from './useMessageCopy'
 
 export interface MessageContextMenuProps {
   message?: Message | null
@@ -182,7 +183,6 @@ const CopyMessageLink = ({ message }: { message: Message }) => {
 const SaveMessageAction = ({ message }: { message: Message }) => {
   const { currentUser } = useContext(UserContext)
   const isSaved = JSON.parse(message._liked_by ? message._liked_by : '[]').includes(currentUser)
-
   const { call } = useContext(FrappeContext) as FrappeConfig
 
   const handleLike = () => {
@@ -192,10 +192,12 @@ const SaveMessageAction = ({ message }: { message: Message }) => {
         message_id: message.name,
         add: isSaved ? 'No' : 'Yes'
       })
-      .then(() => {
+      .then((response) => {
         if (isSaved) {
           toast('Message unsaved')
+          savedMessageStore.removeMessage(message.name)
         } else {
+          savedMessageStore.pushMessage(response.message)
           toast.success('Message saved')
         }
       })
