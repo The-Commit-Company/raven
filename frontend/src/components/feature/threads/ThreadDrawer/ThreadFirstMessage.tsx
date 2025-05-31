@@ -12,12 +12,15 @@ import { MessageSenderAvatar, UserHoverCard } from '../../chat/ChatMessage/Messa
 import { DateTooltip } from '../../chat/ChatMessage/Renderers/DateTooltip'
 import { DoctypeLinkRenderer } from '../../chat/ChatMessage/Renderers/DoctypeLinkRenderer'
 import { TiptapRenderer } from '../../chat/ChatMessage/Renderers/TiptapRenderer/TiptapRenderer'
+import { useNavigate } from 'react-router-dom'
 
 type MessageContentProps = BoxProps & {
   user?: UserFields
   message: Message
 }
 export const ThreadFirstMessage = ({ message, user, ...props }: MessageContentProps) => {
+  console.log(message)
+
   const threadOwner = useGetUser(message.owner)
 
   const isActive = useIsUserActive(message.owner)
@@ -34,8 +37,11 @@ export const ThreadFirstMessage = ({ message, user, ...props }: MessageContentPr
 
   const showButton = ((contentHeight && contentHeight >= 40) || showMore) && message.message_type === 'Text'
 
+  const navigate = useNavigate()
+  const lastWorkspace = localStorage.getItem('ravenLastWorkspace') ?? ''
+
   return (
-    <Flex gap='3' pb='2' pt='7' className='bg-white dark:bg-gray-2 border-gray-4 sm:dark:border-gray-6 border-b'>
+    <Flex gap='3' pb='2' pt='2' className='bg-white dark:bg-gray-2 border-gray-4 sm:dark:border-gray-6 border-b'>
       <MessageSenderAvatar userID={message.owner} user={threadOwner} isActive={isActive} />
       <Flex direction='column' gap='0.5' justify='center' width='100%'>
         <Flex align='center' gap='2' mt='-1'>
@@ -87,17 +93,28 @@ export const ThreadFirstMessage = ({ message, user, ...props }: MessageContentPr
               <DoctypeLinkRenderer doctype={message.link_doctype} docname={message.link_document} />
             )}
           </Box>
-          {showButton && (
+          <Flex align='center' gap='3' mt='3'>
+            {showButton && (
+              <Button
+                size='1'
+                color='gray'
+                variant='ghost'
+                className='hover:bg-transparent hover:underline cursor-pointer'
+                onClick={() => setShowMore(!showMore)}
+              >
+                Xem {showMore ? 'Ngắn' : 'Thêm'}
+              </Button>
+            )}
             <Button
               size='1'
               color='gray'
               variant='ghost'
-              className='hover:bg-transparent hover:underline cursor-pointer mt-0.5'
-              onClick={() => setShowMore(!showMore)}
+              className='hover:bg-transparent hover:underline cursor-pointer'
+              onClick={() => navigate(`/${lastWorkspace}/${message.channel_id}?message_id=${message.name}`)}
             >
-              Show {showMore ? 'Less' : 'More'}
+              Quay lại cuộc trò chuyện
             </Button>
-          )}
+          </Flex>
         </Box>
       </Flex>
     </Flex>

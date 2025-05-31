@@ -26,11 +26,11 @@ import { __ } from '@/utils/translations'
 import { useAtomValue } from 'jotai'
 import { ChannelListContext, ChannelListContextType } from '../../../utils/channel/ChannelListProvider'
 import { SidebarBadge, SidebarButtonItem, SidebarGroup, SidebarIcon } from '../../layout/Sidebar/SidebarComp'
-
 import { formatLastMessage } from '@/utils/channel/useFormatLastMessage'
 import { HiCheck } from 'react-icons/hi'
 import { DoneChannelList } from '../channels/DoneChannelList'
 import MentionList from '../chat/ChatInput/MentionListCustom'
+import ThreadsList from '../threads/ThreadManager/ThreadsList'
 import { MessageSaved } from './DirectMessageSaved'
 // import { useChannelListRealtimeSync } from '@/utils/channel/useChannelListRealtimeSync'
 
@@ -147,8 +147,9 @@ export const DirectMessageItemList = () => {
   if (title === 'Đã gắn cờ') return <MessageSaved />
   if (title === 'Nhắc đến') return <MentionList />
   if (title === 'Xong') return <DoneChannelList />
+  if (title === 'Chủ đề') return <ThreadsList />
 
-  if (filteredChannels.length === 0) {
+  if (filteredChannels.length === 0 && title !== 'Trò chuyện') {
     return <div className='text-gray-500 text-sm italic p-4 text-center'>Không có kết quả</div>
   }
 

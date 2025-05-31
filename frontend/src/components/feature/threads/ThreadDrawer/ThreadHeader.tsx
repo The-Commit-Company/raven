@@ -1,15 +1,15 @@
-import { useNavigate, useParams } from 'react-router-dom'
-import { DropdownMenu, Flex, Heading, IconButton } from '@radix-ui/themes'
-import { BiBell, BiBellOff, BiDotsVerticalRounded, BiExit, BiTrash } from 'react-icons/bi'
-import { useFrappeDeleteDoc, useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
-import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
-import { AiOutlineClose } from 'react-icons/ai'
-import { useUserData } from '@/hooks/useUserData'
 import useFetchChannelMembers, { Member } from '@/hooks/fetchers/useFetchChannelMembers'
-import { useContext, useMemo } from 'react'
 import useIsPushNotificationEnabled from '@/hooks/fetchers/useIsPushNotificationEnabled'
+import { useUserData } from '@/hooks/useUserData'
 import { UserContext } from '@/utils/auth/UserProvider'
+import { DropdownMenu, Flex, Heading, IconButton } from '@radix-ui/themes'
+import { useFrappeDeleteDoc, useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
+import { useContext, useMemo } from 'react'
+import { AiOutlineClose } from 'react-icons/ai'
+import { BiBell, BiBellOff, BiDotsVerticalRounded, BiExit, BiTrash } from 'react-icons/bi'
+import { useNavigate, useParams } from 'react-router-dom'
+import { toast } from 'sonner'
 
 export const ThreadHeader = () => {
   const navigate = useNavigate()
@@ -28,8 +28,8 @@ export const ThreadHeader = () => {
   }, [user, channelMembers])
 
   return (
-    <header className='dark:bg-gray-2 bg-white absolute top-0 px-3 w-100' style={{ zIndex: 999 }}>
-      <Flex direction={'column'} gap='2' className='pt-3'>
+    <header className='dark:bg-gray-2 bg-white px-3 w-full border-b border-gray-4 pb-3' style={{ zIndex: 999 }}>
+      <Flex direction={'column'} gap='2' className='pt-4'>
         <Flex justify={'between'} align={'center'}>
           <Heading size='4' className='pl-1'>
             Thread
