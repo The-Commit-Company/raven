@@ -1,5 +1,4 @@
 // channel_realtime_sync.ts
-import { useEffect } from 'react'
 import { useFrappeEventListener } from 'frappe-react-sdk'
 import { useUpdateLastMessageDetails } from './ChannelListProvider'
 interface UpdatedMessage {
@@ -29,8 +28,7 @@ export const useChannelRealtimeSync = () => {
   useFrappeEventListener('message_updated', (data) => {
     const msg = data?.message_details || data
 
-    console.log(data);
-    
+    console.log(data)
 
     // Chuẩn hoá lại dữ liệu truyền vào
     const normalizedMessage = {

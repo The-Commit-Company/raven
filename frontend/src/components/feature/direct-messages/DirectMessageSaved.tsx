@@ -268,7 +268,7 @@ export const MessageSaved = () => {
   )
 
   if (!messages?.length || isLoading) {
-    return <div className='text-center py-8 text-gray-500 dark:text-gray-400'>No saved messages</div>
+    return <div className='text-gray-500 text-sm italic p-4 text-center'>Không có kết quả</div>
   }
 
   return (

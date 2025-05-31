@@ -231,9 +231,10 @@ export const useUnreadMessageCount = () => {
     const manualOnly = Array.from(manuallyMarked).filter((id) => !idsFromServer.has(id) && !doneList.includes(id))
     const manualCount = manualOnly.length
 
-    const serverCount = unread_count?.message.reduce((sum, c) => {
-      return doneList.includes(c.name) ? sum : sum + c.unread_count
-    }, 0) || 0
+    const serverCount =
+      unread_count?.message.reduce((sum, c) => {
+        return doneList.includes(c.name) ? sum : sum + c.unread_count
+      }, 0) || 0
 
     return serverCount + manualCount
   }, [unread_count?.message, manuallyMarked])

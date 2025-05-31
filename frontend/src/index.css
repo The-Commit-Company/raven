@@ -77,7 +77,7 @@ html header button {
 .sidebar-scroll .rt-ScrollAreaViewport > div {
   min-width: 0 !important;
   display: block !important;
-  width:100%;
+  width: 100%;
 }
 
 /*

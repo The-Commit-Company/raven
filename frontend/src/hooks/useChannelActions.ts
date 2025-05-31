@@ -14,8 +14,7 @@ export const useChannelActions = () => {
   const addManuallyMarked = useSetAtom(addToMarked)
   const removeManuallyMarked = useSetAtom(removeFromMarked)
 
-  const isPinned = (channelId: string) =>
-    selectedChannels.some((c) => c.name === channelId)
+  const isPinned = (channelId: string) => selectedChannels.some((c) => c.name === channelId)
 
   const togglePin = (channel: any) => {
     if (isPinned(channel.name)) {
@@ -33,9 +32,7 @@ export const useChannelActions = () => {
         if (!prev) return prev
         const exists = prev.message.some((item) => item.name === channel.name)
         const updatedList = exists
-          ? prev.message.map((item) =>
-              item.name === channel.name ? { ...item, unread_count: 1 } : item
-            )
+          ? prev.message.map((item) => (item.name === channel.name ? { ...item, unread_count: 1 } : item))
           : [
               ...prev.message,
               {

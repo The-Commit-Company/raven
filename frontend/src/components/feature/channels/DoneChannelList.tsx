@@ -15,37 +15,22 @@ export const DoneChannelList = () => {
     const doneList: string[] = stored ? JSON.parse(stored) : []
 
     if (!synced && doneList.length > 0) {
-      setChannels((prev) =>
-        prev.map((c) =>
-          doneList.includes(c.name) ? { ...c, is_done: 1 } : c
-        )
-      )
+      setChannels((prev) => prev.map((c) => (doneList.includes(c.name) ? { ...c, is_done: 1 } : c)))
       setSynced(true)
     }
   }, [synced, setChannels])
 
   const doneChannels = useMemo(
-    () =>
-      localChannels.filter(
-        (c: DMChannelWithUnreadCount & { is_done?: number }) => c.is_done === 1
-      ),
+    () => localChannels.filter((c: DMChannelWithUnreadCount & { is_done?: number }) => c.is_done === 1),
     [localChannels]
   )
 
   const handleMarkAsUnread = (channelName: string) => {
     // Cập nhật lại localChannels
-    setChannels((prev) =>
-      prev.map((c) =>
-        c.name === channelName ? { ...c, is_done: 0 } : c
-      )
-    )
+    setChannels((prev) => prev.map((c) => (c.name === channelName ? { ...c, is_done: 0 } : c)))
 
     // Cập nhật lại selectedChannels dùng trong CircleUserList
-    setSelectedChannels((prev) =>
-      prev.map((c) =>
-        c.name === channelName ? { ...c, is_done: 0 } : c
-      )
-    )
+    setSelectedChannels((prev) => prev.map((c) => (c.name === channelName ? { ...c, is_done: 0 } : c)))
   }
 
   if (doneChannels.length === 0) {

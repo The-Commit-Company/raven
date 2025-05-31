@@ -1,10 +1,6 @@
 import { useEffect, useState } from 'react'
 
-export const useResponsiveGridCols = (
-  itemMinWidth: number,
-  itemMaxWidth: number,
-  itemCount: number
-): number => {
+export const useResponsiveGridCols = (itemMinWidth: number, itemMaxWidth: number, itemCount: number): number => {
   const calculateCols = () => {
     const screenWidth = window.innerWidth
 
@@ -24,10 +20,7 @@ export const useResponsiveGridCols = (
     }
 
     const idealCols = Math.ceil(Math.sqrt(itemCount))
-    return Math.max(
-      Math.ceil(screenWidth / itemMaxWidth / 1.5),
-      Math.min(idealCols, responsiveMaxCols)
-    )
+    return Math.max(Math.ceil(screenWidth / itemMaxWidth / 1.5), Math.min(idealCols, responsiveMaxCols))
   }
 
   const [gridCols, setGridCols] = useState(calculateCols)

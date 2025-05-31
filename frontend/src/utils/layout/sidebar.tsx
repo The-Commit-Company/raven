@@ -93,7 +93,6 @@ export const SidebarModeProvider = ({ children }: { children: ReactNode }) => {
   )
 }
 
-
 export const useSidebarMode = (): SidebarModeContextValue => {
   const context = useContext(SidebarModeContext)
   if (!context) {
@@ -101,7 +100,6 @@ export const useSidebarMode = (): SidebarModeContextValue => {
   }
   return context
 }
-
 
 interface LocalChannelListContextValue {
   localChannels: DMChannelWithUnreadCount[]
@@ -121,11 +119,7 @@ export const LocalChannelListProvider = ({
 
   const value = useMemo(() => ({ localChannels, setChannels }), [localChannels])
 
-  return (
-    <LocalChannelListContext.Provider value={value}>
-      {children}
-    </LocalChannelListContext.Provider>
-  )
+  return <LocalChannelListContext.Provider value={value}>{children}</LocalChannelListContext.Provider>
 }
 
 export const useLocalChannelList = (): LocalChannelListContextValue => {

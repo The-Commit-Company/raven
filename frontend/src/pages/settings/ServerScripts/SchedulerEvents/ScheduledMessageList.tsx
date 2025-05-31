@@ -6,7 +6,7 @@ import { Flex, Badge, IconButton, AlertDialog, Text } from '@radix-ui/themes'
 import { useState } from 'react'
 import { BiTrash } from 'react-icons/bi'
 import { AiOutlineEdit } from 'react-icons/ai'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 export const List = ({ data }: { data: RavenSchedulerEvent[] }) => {
   return (

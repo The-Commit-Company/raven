@@ -56,8 +56,7 @@ export const useSendMessage = (
 
   const updateSidebarMessage = (msg: RavenMessage, fallbackText?: string) => {
     const isImage =
-      msg.message_type === 'Image' ||
-      (msg?.attachment?.file_url || '').match(/\.(jpe?g|png|gif|webp|bmp|svg)$/i)
+      msg.message_type === 'Image' || (msg?.attachment?.file_url || '').match(/\.(jpe?g|png|gif|webp|bmp|svg)$/i)
 
     updateLastMessageForChannel(channelID, {
       message_id: msg.name,
@@ -70,11 +69,7 @@ export const useSendMessage = (
     })
   }
 
-  const sendMessage = async (
-    content: string,
-    json?: any,
-    sendSilently: boolean = false
-  ): Promise<void> => {
+  const sendMessage = async (content: string, json?: any, sendSilently: boolean = false): Promise<void> => {
     if (content.trim()) {
       return call({
         channel_id: channelID,
