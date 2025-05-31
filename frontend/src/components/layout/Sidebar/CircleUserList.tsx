@@ -147,7 +147,7 @@ const CircleUserList = ({ size }: { size?: number }) => {
               return (
                 <ContextMenu.Root key={channel.name}>
                   <ContextMenu.Trigger asChild>
-                    <div className='w-[70px] h-[80px]'>
+                    <div className='w-[70px] h-[70px]'>
                       <SortableCircleUserItem
                         channel={channel as ChannelInfo}
                         isActive={channel.name === channelID}
@@ -159,7 +159,10 @@ const CircleUserList = ({ size }: { size?: number }) => {
                     <ContextMenu.Content className='z-50 bg-white dark:bg-gray-800 text-black dark:text-white rounded shadow-md p-1'>
                       <ContextMenu.Item
                         className='px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer'
-                        onClick={() => markAsUnread(channel)}
+                        onClick={() => {
+                          markAsUnread(channel)
+                          setSelectedChannels((prev) => [...prev]) // Force update để re-trigger useMergedUnreadCount
+                        }}
                       >
                         {channel.unread_count > 0 || isManuallyMarked(channel.name)
                           ? 'Đánh dấu đã đọc'

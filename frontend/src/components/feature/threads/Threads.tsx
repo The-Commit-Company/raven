@@ -47,27 +47,8 @@ const Threads = () => {
           <Heading size='5'>Threads</Heading>
         </Flex>
       </PageHeader>
-      <div className='flex gap-0'>
-        <Box className={clsx('w-full sm:w-[50%] pt-12 border-r border-gray-4', threadID ? 'hidden sm:block' : 'block')}>
-          {/* Show only regular threads now since this needs pagination */}
-          <Tabs.Root defaultValue='Participating'>
-            <Tabs.List className='px-4'>
-              <Tabs.Trigger value='Participating'>Participating</Tabs.Trigger>
-              <Tabs.Trigger value='Other'>Other</Tabs.Trigger>
-              <Tabs.Trigger value='AI Threads'>AI Agents</Tabs.Trigger>
-            </Tabs.List>
-            <Tabs.Content value='Participating'>
-              <ParticipatingThreads />
-            </Tabs.Content>
-            <Tabs.Content value='Other' className='h-[calc(100vh-6rem)] overflow-y-auto'>
-              <OtherThreads />
-            </Tabs.Content>
-            <Tabs.Content value='AI Threads' className='h-[calc(100vh-6rem)] overflow-y-auto'>
-              <AIThreads />
-            </Tabs.Content>
-          </Tabs.Root>
-        </Box>
-        <div className={clsx('h-screen w-full sm:w-[50%]', threadID ? 'block' : 'hidden')}>
+      <div className='flex w-full'>
+        <div className={clsx('h-screen w-full', threadID ? 'block' : 'hidden')}>
           <Outlet />
         </div>
       </div>
