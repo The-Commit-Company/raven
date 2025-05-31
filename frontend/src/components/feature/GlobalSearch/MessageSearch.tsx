@@ -1,19 +1,19 @@
-import { BiSearch } from 'react-icons/bi'
-import { useFrappeGetCall } from 'frappe-react-sdk'
-import { useContext, useState, useMemo } from 'react'
-import { useDebounce } from '../../../hooks/useDebounce'
-import { ErrorBanner } from '../../layout/AlertBanner/ErrorBanner'
-import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
-import { useNavigate } from 'react-router-dom'
-import { MessageBox } from './MessageBox'
+import { Loader } from '@/components/common/Loader'
+import { UserAvatar } from '@/components/common/UserAvatar'
 import { useGetUserRecords } from '@/hooks/useGetUserRecords'
 import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
-import { Box, Checkbox, Flex, Select, TextField, Text, Grid, ScrollArea } from '@radix-ui/themes'
-import { UserAvatar } from '@/components/common/UserAvatar'
-import { dateOption } from './GlobalSearch'
-import { Loader } from '@/components/common/Loader'
+import { Box, Checkbox, Flex, Grid, ScrollArea, Select, Text, TextField } from '@radix-ui/themes'
+import { useFrappeGetCall } from 'frappe-react-sdk'
+import { useContext, useMemo, useState } from 'react'
+import { BiSearch } from 'react-icons/bi'
+import { useNavigate, useParams } from 'react-router-dom'
 import { Message } from '../../../../../types/Messaging/Message'
+import { useDebounce } from '../../../hooks/useDebounce'
+import { ErrorBanner } from '../../layout/AlertBanner/ErrorBanner'
+import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
+import { dateOption } from './GlobalSearch'
+import { MessageBox } from './MessageBox'
 
 interface Props {
   onToggleMyChannels: () => void
@@ -41,6 +41,8 @@ export const MessageSearch = ({
   const [searchText, setSearchText] = useState(input)
   const debouncedText = useDebounce(searchText)
 
+  const { workspaceID } = useParams()
+
   const { channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
 
   const [userFilter, setUserFilter] = useState<string | undefined>(fromFilter)
@@ -56,7 +58,7 @@ export const MessageSearch = ({
 
   const handleNavigateToChannel = (channelID: string, baseMessage?: string, workspace?: string) => {
     onClose()
-    let path = `/channel/${channelID}`
+    let path = `/${workspaceID}/${channelID}`
     if (workspace) {
       path = `/${workspace}/${channelID}`
     }

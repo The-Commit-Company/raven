@@ -256,7 +256,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
         {/* Vùng nhập liệu */}
         {canUserSendMessage && (
-          <div className='shrink-0 p-2 border-t bg-background'>
+          <div className='shrink-0 p-2'>
             <TypingIndicator channel={channelData.name} />
             <Tiptap
               key={channelData.name}

@@ -6,6 +6,7 @@ interface ScrollToBottomButtonsProps {
   onGoToLatestMessages: () => void
   onScrollToBottom: () => void
   isAtBottom?: boolean
+  messages?: any
 }
 
 export const ScrollToBottomButtons = ({
@@ -13,7 +14,8 @@ export const ScrollToBottomButtons = ({
   newMessageCount,
   onGoToLatestMessages,
   onScrollToBottom,
-  isAtBottom
+  isAtBottom,
+  messages
 }: ScrollToBottomButtonsProps) => {
   return (
     <>
@@ -48,7 +50,7 @@ export const ScrollToBottomButtons = ({
         </div>
       )}
 
-      {!hasNewMessages && !isAtBottom && newMessageCount <= 0 && (
+      {!hasNewMessages && !isAtBottom && newMessageCount <= 0 && messages?.length > 0 && (
         <div className='fixed bottom-40 z-50 right-4 sm:right-10'>
           <div
             className='

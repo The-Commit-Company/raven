@@ -413,6 +413,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
           onGoToLatestMessages={handleGoToLatestMessages}
           onScrollToBottom={scrollActionToBottom}
           isAtBottom={isAtBottom}
+          messages={messages}
         />
 
         {/* Dialogs */}

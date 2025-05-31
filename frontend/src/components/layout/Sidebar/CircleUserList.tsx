@@ -45,14 +45,15 @@ const CircleUserItem = ({ channel, isActive, onActivate }: Props) => {
   const userInfo = useGetUser(channel?.peer_user_id ?? undefined)
   const displayName = isDM ? userInfo?.full_name : channel.channel_name
   const { clearManualMark } = useChannelActions()
-  const { channelID } = useParams()
+  const { workspaceID } = useParams()
+
   const [dragging, setDragging] = useState(false)
 
   const handleClick = (e: React.MouseEvent) => {
     if (e.button !== 0 || dragging) return // Chỉ điều hướng nếu là chuột trái và không đang kéo
     clearManualMark(channel.name)
     onActivate?.()
-    navigate(`/channel/${channel.name}`)
+    navigate(`/${workspaceID}/${channel.name}`)
   }
 
   return (
