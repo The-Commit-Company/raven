@@ -3,7 +3,9 @@ import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState/EmptyState'
 import { useChannelSeenUsers } from '@/hooks/useChannelSeenUsers'
 import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
+import { useDebounce } from '@/hooks/useDebounce'
 import { useUserData } from '@/hooks/useUserData'
+import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import {
   forwardRef,
   memo,
@@ -24,8 +26,6 @@ import { MessageItemRenderer } from './MessageListRenderer'
 import { ScrollToBottomButtons } from './ScrollToBottomButtons'
 import useChatStream from './useChatStream'
 import { useChatStreamActions } from './useChatStreamActions'
-import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
-import { useDebounce } from '@/hooks/useDebounce'
 import { useMessageHighlight } from './useMessageHighlight'
 
 type Props = {
@@ -84,7 +84,6 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       highlightedMessage,
       scrollToMessage,
       newMessageCount,
-      newMessageIds,
       markMessageAsSeen,
       clearAllNewMessages
     } = useChatStream(channelID, virtuosoRef, pinnedMessagesString, isAtBottom)
@@ -243,10 +242,10 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
           // console.log('sequence = ', lastVisibleMessage?.sequence)
 
           if (lastVisibleMessage) {
-            const { name, sequence } : any = lastVisibleMessage
+            const { name, sequence }: any = lastVisibleMessage
             // console.log('lastVisibleMessage.sequence', sequence)
 
-            markMessageAsSeen(name, sequence)
+            markMessageAsSeen(name)
             localStorage.setItem(`lastReadMessage_${channelID}`, `${sequence}`)
             setPendingSeenSequence(sequence)
 
@@ -302,7 +301,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
 
     const lastSeenIndexBySequence = useMemo(() => {
       if (!messages || !savedLastSeenSequence) return undefined
-      return messages.findIndex((msg) => msg.sequence === savedLastSeenSequence)
+      return messages.findIndex((msg: any) => msg.sequence === savedLastSeenSequence)
     }, [messages, savedLastSeenSequence])
 
     const targetIndex = useMemo(() => {
@@ -360,7 +359,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
     // }, [lastSeenMessageIndex])
 
     useEffect(() => {
-      if (shouldRenderVirtuoso && targetIndex !== undefined && virtuosoRef.current && messageId) {
+      if (messages && shouldRenderVirtuoso && targetIndex !== undefined && virtuosoRef.current && messageId) {
         setTimeout(() => {
           virtuosoRef.current?.scrollToIndex({
             index: targetIndex,
