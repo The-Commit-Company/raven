@@ -5,9 +5,9 @@ import { useGetUser } from '@/hooks/useGetUser'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
 import { ContextMenu, Flex, Text, Tooltip } from '@radix-ui/themes'
-import { FrappeConfig, FrappeContext, useFrappePostCall } from 'frappe-react-sdk'
+import { useFrappePostCall } from 'frappe-react-sdk'
 import { useContext, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { UserContext } from '../../../utils/auth/UserProvider'
 // import { ChannelInfo } from '@/utils/users/CircleUserListProvider'
@@ -25,22 +25,13 @@ import {
 import { __ } from '@/utils/translations'
 import { useAtomValue } from 'jotai'
 import { ChannelListContext, ChannelListContextType } from '../../../utils/channel/ChannelListProvider'
-import {
-  SidebarBadge,
-  SidebarButtonItem,
-  SidebarGroup,
-  SidebarGroupItem,
-  SidebarGroupLabel,
-  SidebarIcon
-} from '../../layout/Sidebar/SidebarComp'
+import { SidebarBadge, SidebarButtonItem, SidebarGroup, SidebarIcon } from '../../layout/Sidebar/SidebarComp'
 
 import { formatLastMessage } from '@/utils/channel/useFormatLastMessage'
-import { formatDistanceToNow, isValid } from 'date-fns'
-import { vi } from 'date-fns/locale/vi'
 import { HiCheck } from 'react-icons/hi'
-import { MessageSaved } from './DirectMessageSaved'
-import MentionList from '../chat/ChatInput/MentionListCustom'
 import { DoneChannelList } from '../channels/DoneChannelList'
+import MentionList from '../chat/ChatInput/MentionListCustom'
+import { MessageSaved } from './DirectMessageSaved'
 // import { useChannelListRealtimeSync } from '@/utils/channel/useChannelListRealtimeSync'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
@@ -92,8 +83,6 @@ export const useMergedUnreadCount = (
   })
 }
 
-
-
 export const DirectMessageList = ({ dm_channels, isLoading = false }: DirectMessageListProps) => {
   const newUnreadCount = useUnreadMessages()
   const enrichedDMs = useMergedUnreadCount(dm_channels, newUnreadCount?.message ?? [])
@@ -136,19 +125,14 @@ const SyncLocalChannels = ({ enrichedDMs }: { enrichedDMs: any[] }) => {
   return null
 }
 
-
 export const DirectMessageItemList = () => {
   const { localChannels } = useLocalChannelList()
   const { title } = useSidebarMode()
 
-
-  console.log(localChannels);
-  
-
   const getFilteredChannels = (): DMChannelWithUnreadCount[] => {
     switch (title) {
       case 'Trò chuyện nhóm':
-        return localChannels.filter((c) => c.group_type === 'channel'&& c.is_done === 0 )
+        return localChannels.filter((c) => c.group_type === 'channel' && c.is_done === 0)
       case 'Cuộc trò chuyện riêng tư':
         return localChannels.filter((c) => c.group_type === 'dm' && c.is_done === 0)
       case 'Chưa đọc':
@@ -207,9 +191,9 @@ const isDMChannel = (c: UnifiedChannel): c is DMChannelWithUnreadCount => {
 
 export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel }) => {
   const { currentUser } = useContext(UserContext)
-  const { call } = useContext(FrappeContext) as FrappeConfig
   const navigate = useNavigate()
   const { setChannels } = useLocalChannelList()
+  const { workspaceID } = useParams()
 
   const manuallyMarked = useAtomValue(manuallyMarkedAtom)
   const isManuallyMarked = manuallyMarked.has(channel.name)
@@ -254,44 +238,44 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
 
   const handleNavigate = () => {
     clearManualMark(channel.name)
-    navigate(`/channel/${channel.name}`)
+    navigate(`/${workspaceID}/${channel.name}`)
   }
 
-const markAsDone = () => {
-  try {
-    const stored = localStorage.getItem('done_channels')
-    const doneList: string[] = stored ? JSON.parse(stored) : []
+  const markAsDone = () => {
+    try {
+      const stored = localStorage.getItem('done_channels')
+      const doneList: string[] = stored ? JSON.parse(stored) : []
 
-    if (!doneList.includes(channel.name)) {
-      doneList.push(channel.name)
-      localStorage.setItem('done_channels', JSON.stringify(doneList))
+      if (!doneList.includes(channel.name)) {
+        doneList.push(channel.name)
+        localStorage.setItem('done_channels', JSON.stringify(doneList))
+      }
+
+      toast.success('Đánh dấu đã xong')
+      setTimeout(() => {
+        setChannels((prev) => prev.map((c) => (c.name === channel.name ? { ...c, is_done: 1 } : c)))
+      }, 300)
+    } catch (err) {
+      console.error('Lỗi khi đánh dấu đã xong', err)
+      toast.error('Lỗi khi đánh dấu đã xong')
     }
-
-    toast.success('Đánh dấu đã xong')
-    setTimeout(() => {
-      setChannels((prev) => prev.map((c) => (c.name === channel.name ? { ...c, is_done: 1 } : c)))
-    }, 300)
-  } catch (err) {
-    console.error('Lỗi khi đánh dấu đã xong', err)
-    toast.error('Lỗi khi đánh dấu đã xong')
   }
-}
 
-const markAsNotDone = () => {
-  try {
-    const stored = localStorage.getItem('done_channels')
-    const doneList: string[] = stored ? JSON.parse(stored) : []
+  const markAsNotDone = () => {
+    try {
+      const stored = localStorage.getItem('done_channels')
+      const doneList: string[] = stored ? JSON.parse(stored) : []
 
-    const updated = doneList.filter((name) => name !== channel.name)
-    localStorage.setItem('done_channels', JSON.stringify(updated))
+      const updated = doneList.filter((name) => name !== channel.name)
+      localStorage.setItem('done_channels', JSON.stringify(updated))
 
-    toast.success('↩️ Đánh dấu chưa xong')
-    setChannels((prev) => prev.map((c) => (c.name === channel.name ? { ...c, is_done: 0 } : c)))
-  } catch (err) {
-    console.error('❌ Lỗi khi đánh dấu chưa xong', err)
-    toast.error('❌ Lỗi khi đánh dấu chưa xong')
+      toast.success('↩️ Đánh dấu chưa xong')
+      setChannels((prev) => prev.map((c) => (c.name === channel.name ? { ...c, is_done: 0 } : c)))
+    } catch (err) {
+      console.error('❌ Lỗi khi đánh dấu chưa xong', err)
+      toast.error('❌ Lỗi khi đánh dấu chưa xong')
+    }
   }
-}
 
   return (
     <div
@@ -337,6 +321,7 @@ const markAsNotDone = () => {
           <button
             onClick={(e) => {
               e.stopPropagation()
+              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
               channel.is_done ? markAsNotDone() : markAsDone()
             }}
             className='cursor-pointer absolute top-1/2 right-0 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-200 hover:bg-gray-300 p-1 rounded-full flex items-center justify-center'

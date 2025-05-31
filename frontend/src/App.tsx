@@ -6,10 +6,6 @@ import { Suspense } from 'react'
 import { RouterProvider } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import { useStickyState } from './hooks/useStickyState'
-import ErrorPage from './pages/ErrorPage'
-import { MainPageCustom } from './pages/MainPageCustom'
-import MobileTabsPage from './pages/MobileTabsPage'
-import WorkspaceSwitcher from './pages/WorkspaceSwitcher'
 import router from './router'
 import { ThemeProvider } from './ThemeProvider'
 import AppUpdateProvider from './utils/AppUpdateProvider'
@@ -62,7 +58,6 @@ function App() {
       //@ts-ignore
       swrConfig={{
         revalidateOnFocus: false,
-        dedupingInterval: 10000,
         provider: localStorageProvider
       }}
       siteName={getSiteName()}
