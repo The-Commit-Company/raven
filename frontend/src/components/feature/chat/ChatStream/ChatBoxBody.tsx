@@ -233,26 +233,30 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
   const { threadID } = useParams()
 
   return (
-    <ChatBoxBodyContainer>
-      <FileDrop // Component cho phép kéo thả file.
-        files={files}
-        ref={fileInputRef}
-        onFileChange={setFiles}
-        width={threadID ? 'w-[calc((100vw-var(--sidebar-width)-var(--space-8))/2)]' : undefined}
-        maxFiles={10}
-        maxFileSize={10000000}
-      >
-        <ChatStream
-          channelID={channelData.name}
-          onModalClose={onModalClose}
-          pinnedMessagesString={channelData.pinned_messages_string}
-          replyToMessage={handleReplyAction}
-          virtuosoRef={virtuosoRef as any}
-          ref={chatStreamRef as any}
-        />
-        {/* Chỉ hiển thị khu vực nhập liệu nếu người dùng có quyền gửi tin nhắn. */}
+    <FileDrop
+      files={files}
+      ref={fileInputRef}
+      onFileChange={setFiles}
+      width={threadID ? 'w-[calc((100vw-var(--sidebar-width)-var(--space-8))/2)]' : undefined}
+      maxFiles={10}
+      maxFileSize={10000000}
+    >
+      <ChatBoxBodyContainer>
+        {/* Chat stream chiếm toàn bộ chiều cao còn lại */}
+        <div className='flex-1 overflow-hidden relative'>
+          <ChatStream
+            channelID={channelData.name}
+            onModalClose={onModalClose}
+            pinnedMessagesString={channelData.pinned_messages_string}
+            replyToMessage={handleReplyAction}
+            virtuosoRef={virtuosoRef as any}
+            ref={chatStreamRef as any}
+          />
+        </div>
+
+        {/* Vùng nhập liệu */}
         {canUserSendMessage && (
-          <Stack>
+          <div className='shrink-0 p-2 border-t bg-background'>
             <TypingIndicator channel={channelData.name} />
             <Tiptap
               key={channelData.name}
@@ -266,7 +270,6 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
               clearReplyMessage={clearSelectedMessage}
               channelMembers={channelMembers}
               onUserType={onUserType}
-              // placeholder={randomPlaceholder}
               replyMessage={selectedMessage}
               sessionStorageKey={`tiptap-${channelData.name}`}
               onMessageSend={sendMessage}
@@ -274,7 +277,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
               slotBefore={
                 <Flex direction='column' justify='center' hidden={!selectedMessage && !files.length}>
                   {selectedMessage && <PreviousMessagePreview selectedMessage={selectedMessage} />}
-                  {files && files.length > 0 && (
+                  {files.length > 0 && (
                     <Flex gap='2' width='100%' align='stretch' px='2' p='2' wrap='wrap'>
                       {files.map((f: CustomFile) => (
                         <Box className='grow-0' key={f.fileID}>
@@ -293,18 +296,18 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                 </Flex>
               }
             />
-          </Stack>
+          </div>
         )}
-        {/* Hiển thị hộp "Tham gia kênh" nếu cần. */}
+
         {shouldShowJoinBox ? <JoinChannelBox channelData={channelData} user={user} /> : null}
-        {/* Hiển thị hộp thông báo kênh đã được lưu trữ nếu cần. */}
+
         <ArchivedChannelBox
           channelID={channelData.name}
           isArchived={channelData.is_archived}
           isMemberAdmin={channelMemberProfile?.is_admin}
         />
-      </FileDrop>
-    </ChatBoxBodyContainer>
+      </ChatBoxBodyContainer>
+    </FileDrop>
   )
 }
 

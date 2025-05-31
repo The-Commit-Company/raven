@@ -15,6 +15,7 @@ export interface ChannelWithUnreadCount extends ChannelListItem {
 
 export interface DMChannelWithUnreadCount extends DMChannelListItem {
   unread_count: number
+  is_done?: number
 }
 
 export const useGetChannelUnreadCounts = ({ channels, dm_channels, unread_count }: UseGetChannelUnreadCountProps) => {

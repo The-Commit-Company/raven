@@ -4,7 +4,17 @@ import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState/Empty
 import { useChannelSeenUsers } from '@/hooks/useChannelSeenUsers'
 import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
 import { useUserData } from '@/hooks/useUserData'
-import { forwardRef, MutableRefObject, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react'
+import {
+  forwardRef,
+  memo,
+  MutableRefObject,
+  useCallback,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState
+} from 'react'
 import { useLocation } from 'react-router-dom'
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 import { Message } from '../../../../../../types/Messaging/Message'
@@ -14,6 +24,9 @@ import { MessageItemRenderer } from './MessageListRenderer'
 import { ScrollToBottomButtons } from './ScrollToBottomButtons'
 import useChatStream from './useChatStream'
 import { useChatStreamActions } from './useChatStreamActions'
+import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
+import { useDebounce } from '@/hooks/useDebounce'
+import { useMessageHighlight } from './useMessageHighlight'
 
 type Props = {
   channelID: string
@@ -33,6 +46,26 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
     const searchParams = new URLSearchParams(location.search)
     const isSavedMessage = searchParams.has('message_id')
     const messageId = searchParams.get('message_id')
+
+    const [lastTrackedSequence, setLastTrackedSequence] = useState<number>(0)
+    const { call } = useContext(FrappeContext) as FrappeConfig
+
+    const [pendingSeenSequence, setPendingSeenSequence] = useState<number | null>(null)
+    const debouncedSeenSequence = useDebounce(pendingSeenSequence, 1500)
+
+    useEffect(() => {
+      if (debouncedSeenSequence && debouncedSeenSequence > lastTrackedSequence) {
+        setLastTrackedSequence(debouncedSeenSequence)
+        call
+          .post('raven.api.raven_channel_member.track_visit', {
+            channel_id: channelID,
+            last_seen_sequence: debouncedSeenSequence
+          })
+          .catch((err) => {
+            console.error('Gửi last_seen_sequence thất bại:', err)
+          })
+      }
+    }, [debouncedSeenSequence])
     // Reset initial load state khi chuyển channel
     useEffect(() => {
       setIsInitialLoadComplete(false)
@@ -101,6 +134,9 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       return handle
     })
 
+    const [scrolledHighlightedMessage, setScrolledHighlightedMessage] = useState<string | null>(null)
+    useMessageHighlight(scrolledHighlightedMessage, setScrolledHighlightedMessage)
+
     // Item renderer cho Virtuoso
     const itemRenderer = useCallback(
       (index: number) => {
@@ -109,7 +145,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
         return (
           <MessageItemRenderer
             message={message}
-            isHighlighted={highlightedMessage === message?.name}
+            isHighlighted={highlightedMessage === message?.name || scrolledHighlightedMessage === message?.name}
             onReplyMessageClick={onReplyMessageClick}
             setEditMessage={editActions.setEditMessage}
             replyToMessage={replyToMessage}
@@ -191,37 +227,43 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
     // Handle range changed for loading newer messages and tracking visible messages
     const handleRangeChanged = useCallback(
       (range: any) => {
-        // If user scrolled to see newer messages that are loaded
         if (!messages || !isInitialLoadComplete) return
 
-        if (range && hasNewMessages && range.endIndex >= messages.length - 5) {
+        // console.log(messages.map((m: any) => m.sequence))
+        const isNearBottom = range && range.endIndex >= messages.length - 5
+
+        if (range && hasNewMessages && isNearBottom) {
           loadNewerMessages()
         }
 
-        // Track tin nhắn đã được xem trong viewport
-        if (range && newMessageIds.size > 0) {
-          const visibleMessages = messages.slice(range.startIndex, range.endIndex + 1)
+        // console.log('>>>>>>>range:', messages[range.endIndex])
 
-          visibleMessages.forEach((message: any) => {
-            // Nếu tin nhắn này là tin nhắn mới và đang visible
-            if (message.name && newMessageIds.has(message.name)) {
-              // Delay một chút để đảm bảo user thực sự nhìn thấy tin nhắn
-              setTimeout(() => {
-                markMessageAsSeen(message.name)
-              }, 1000) // 1 giây delay
-            }
-          })
-        }
+        if (range) {
+          const lastVisibleMessage = messages[range.endIndex]
+          // console.log('sequence = ', lastVisibleMessage?.sequence)
 
-        // Save last read message to localStorage
-        if (range && messages) {
-          const lastVisibleMessage: any = messages[range.endIndex]
-          if (lastVisibleMessage?.sequence) {
-            localStorage.setItem(`lastReadMessage_${channelID}`, lastVisibleMessage.sequence)
+          if (lastVisibleMessage) {
+            const { name, sequence } : any = lastVisibleMessage
+            // console.log('lastVisibleMessage.sequence', sequence)
+
+            markMessageAsSeen(name, sequence)
+            localStorage.setItem(`lastReadMessage_${channelID}`, `${sequence}`)
+            setPendingSeenSequence(sequence)
+
+            // Optional: sync with server
+            // syncLastSeenSequence(channelID, sequence)
           }
         }
       },
-      [hasNewMessages, loadNewerMessages, messages, isInitialLoadComplete, newMessageIds, markMessageAsSeen, channelID]
+      [
+        hasNewMessages,
+        loadNewerMessages,
+        messages,
+        isInitialLoadComplete,
+        markMessageAsSeen,
+        channelID,
+        setPendingSeenSequence
+      ]
     )
 
     // Custom go to latest messages function
@@ -250,10 +292,49 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       }
     }, [messages, virtuosoRef])
 
+    const [shouldRenderVirtuoso, setShouldRenderVirtuoso] = useState(false)
+
+    const savedLastSeenSequence = useMemo(() => {
+      if (isSavedMessage) return null
+      const raw = localStorage.getItem(`lastReadMessage_${channelID}`)
+      return raw ? parseInt(raw, 10) : null
+    }, [channelID, isSavedMessage])
+
+    const lastSeenIndexBySequence = useMemo(() => {
+      if (!messages || !savedLastSeenSequence) return undefined
+      return messages.findIndex((msg) => msg.sequence === savedLastSeenSequence)
+    }, [messages, savedLastSeenSequence])
+
     const targetIndex = useMemo(() => {
-      if (!messageId || !messages) return undefined
-      return messages.findIndex((msg) => msg.name === messageId)
-    }, [messageId, messages])
+      if (isSavedMessage && messageId && messages) {
+        return messages.findIndex((msg) => msg.name === messageId)
+      }
+
+      if (!isSavedMessage && lastSeenIndexBySequence !== undefined && lastSeenIndexBySequence >= 0) {
+        return lastSeenIndexBySequence
+      }
+
+      return undefined
+    }, [isSavedMessage, messageId, messages, lastSeenIndexBySequence])
+
+    useEffect(() => {
+      if (!messages || messages.length === 0) return
+
+      // Chờ đến khi targetIndex được tính ra (hoặc quyết định mặc định scroll cuối)
+      if (targetIndex !== undefined || (!isSavedMessage && messages.length > 0)) {
+        setShouldRenderVirtuoso(true)
+      }
+    }, [targetIndex, messages, isSavedMessage])
+
+    const shouldFollowOutput = useMemo(() => {
+      // Nếu vào với message_id hoặc localStorage thì không nên scroll theo output
+      if (isSavedMessage || targetIndex !== undefined) return false
+      return isAtBottom
+    }, [isSavedMessage, targetIndex, isAtBottom])
+    // const targetIndex = useMemo(() => {
+    //   if (!messageId || !messages) return undefined
+    //   return messages.findIndex((msg) => msg.name === messageId)
+    // }, [messageId, messages])
 
     // 1. Tính index của message đã xem
     // const lastSeenMessageIndex = useMemo(() => {
@@ -278,6 +359,22 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
     //   }
     // }, [lastSeenMessageIndex])
 
+    useEffect(() => {
+      if (shouldRenderVirtuoso && targetIndex !== undefined && virtuosoRef.current && messageId) {
+        setTimeout(() => {
+          virtuosoRef.current?.scrollToIndex({
+            index: targetIndex,
+            align: 'center',
+            behavior: 'smooth'
+          })
+          const targetMessage = messages[targetIndex]
+          if (targetMessage?.name) {
+            setScrolledHighlightedMessage(targetMessage.name)
+          }
+        }, 100)
+      }
+    }, [shouldRenderVirtuoso, targetIndex, messageId])
+
     return (
       <div className='relative h-full flex flex-col overflow-hidden pb-16 sm:pb-0'>
         {/* Empty state */}
@@ -290,14 +387,14 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
         {error && <ErrorBanner error={error} />}
 
         {/* Messages */}
-        {messages && messages.length > 0 && (
+        {shouldRenderVirtuoso && messages && messages.length > 0 && (
           <Virtuoso
             ref={virtuosoRef}
             data={messages}
             totalCount={messages.length}
             itemContent={itemRenderer}
-            followOutput={isAtBottom ? 'auto' : false}
-            initialTopMostItemIndex={!isSavedMessage ? messages.length - 1 : targetIndex}
+            followOutput={shouldFollowOutput ? 'auto' : false}
+            initialTopMostItemIndex={!targetIndex ? messages.length - 1 : targetIndex}
             atTopStateChange={handleAtTopStateChange}
             atBottomStateChange={handleAtBottomStateChange}
             rangeChanged={handleRangeChanged}
@@ -332,4 +429,4 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
   }
 )
 
-export default ChatStream
+export default memo(ChatStream)

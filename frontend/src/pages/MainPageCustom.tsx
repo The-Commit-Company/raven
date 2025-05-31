@@ -69,7 +69,7 @@ const MainPageContent = () => {
 
   useFrappeEventListener('thread_reply', (event) => {
     if (event.channel_id) {
-      mutate(['thread_reply_count', event.channel_id], { message: event.number_of_replies }, { revalidate: false })
+      mutate(['thread_reply_count', event.channel_id], { message: event.number_of_replies }, { revalidate: true })
 
       window.dispatchEvent(
         new CustomEvent('thread_updated', {
@@ -172,6 +172,7 @@ const MainPageContent = () => {
                   <div className='h-px bg-gray-400 dark:bg-gray-600' />
                 </div>
                 <SidebarBody size={panelSize} />
+                {/* <SidebarBody  /> */}
               </div>
             </Panel>
 

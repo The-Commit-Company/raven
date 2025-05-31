@@ -209,7 +209,7 @@ import { useAtomValue } from 'jotai'
 import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
-const useUnreadMessageCount = () => {
+export const useUnreadMessageCount = () => {
   const manuallyMarked = useAtomValue(manuallyMarkedAtom)
 
   const { data: unread_count, mutate: updateCount } = useFrappeGetCall<{ message: UnreadCountData }>(
@@ -225,11 +225,15 @@ const useUnreadMessageCount = () => {
   )
 
   const totalUnreadCount = useMemo(() => {
-    const idsFromServer = new Set(unread_count?.message.map((c) => c.name))
-    const manualOnly = Array.from(manuallyMarked).filter((id) => !idsFromServer.has(id))
+    const doneList = JSON.parse(localStorage.getItem('done_channels') || '[]')
 
+    const idsFromServer = new Set(unread_count?.message.map((c) => c.name))
+    const manualOnly = Array.from(manuallyMarked).filter((id) => !idsFromServer.has(id) && !doneList.includes(id))
     const manualCount = manualOnly.length
-    const serverCount = unread_count?.message.reduce((sum, c) => sum + c.unread_count, 0) || 0
+
+    const serverCount = unread_count?.message.reduce((sum, c) => {
+      return doneList.includes(c.name) ? sum : sum + c.unread_count
+    }, 0) || 0
 
     return serverCount + manualCount
   }, [unread_count?.message, manuallyMarked])
@@ -271,9 +275,12 @@ export const useFetchUnreadMessageCount = () => {
               const newChannels = [...d.message]
               const index = newChannels.findIndex((c) => c.name === channelID)
 
+              const doneList = JSON.parse(localStorage.getItem('done_channels') || '[]')
+              const isDone = doneList.includes(info.name)
+
               const updatedChannel: any = {
                 name: info.name,
-                unread_count: info.unread_count,
+                unread_count: isDone ? 0 : info.unread_count,
                 channel_name: info.channel_name,
                 is_direct_message: info.is_direct_message,
                 peer_user_id: info.peer_user_id
@@ -373,7 +380,7 @@ export const useFetchUnreadMessageCount = () => {
           activeTitle = `(${totalUnread}) ${last_message_sender_name} đã nhắn cho bạn`
         }
 
-        if (document.hidden && last_message_timestamp && last_message_timestamp !== lastPlayedMessageIdRef.current) {
+        if (last_message_timestamp && last_message_timestamp !== lastPlayedMessageIdRef.current) {
           audio.play().catch(() => {})
           lastPlayedMessageIdRef.current = last_message_timestamp
         }
