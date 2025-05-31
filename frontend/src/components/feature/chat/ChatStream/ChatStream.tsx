@@ -229,14 +229,14 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       (range: any) => {
         if (!messages || !isInitialLoadComplete) return
 
-        console.log(messages.map((m: any) => m.sequence))
+        // console.log(messages.map((m: any) => m.sequence))
         const isNearBottom = range && range.endIndex >= messages.length - 5
 
         if (range && hasNewMessages && isNearBottom) {
           loadNewerMessages()
         }
 
-        console.log('>>>>>>>range:', messages[range.endIndex])
+        // console.log('>>>>>>>range:', messages[range.endIndex])
 
         if (range) {
           const lastVisibleMessage = messages[range.endIndex]
@@ -244,7 +244,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
 
           if (lastVisibleMessage) {
             const { name, sequence } : any = lastVisibleMessage
-            console.log('lastVisibleMessage.sequence', sequence)
+            // console.log('lastVisibleMessage.sequence', sequence)
 
             markMessageAsSeen(name, sequence)
             localStorage.setItem(`lastReadMessage_${channelID}`, `${sequence}`)

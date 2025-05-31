@@ -16,6 +16,30 @@ import {
   HiOutlineUsers
 } from 'react-icons/hi'
 
+import { useFrappeGetCall, useFrappeEventListener } from 'frappe-react-sdk'
+
+const useMentionUnreadCount = () => {
+  const { data: mentionsCount, mutate } = useFrappeGetCall<{ message: number }>(
+    'raven.api.mentions.get_unread_mention_count',
+    undefined,
+    undefined,
+    {
+      revalidateOnFocus: true,
+      focusThrottleInterval: 1000 * 60 * 5
+    }
+  )
+
+  useFrappeEventListener('raven_mention', () => {
+    mutate()
+  })
+
+  const resetMentions = () => {
+    mutate({ message: 0 }, { revalidate: false })
+  }
+
+  return { mentionUnreadCount: mentionsCount?.message || 0, resetMentions }
+}
+
 export const filterItems = [
   { label: 'Trò chuyện', icon: HiChatAlt2 },
   { label: 'Chưa đọc', icon: HiOutlineInbox },
@@ -99,31 +123,40 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
         )}
       </div>
 
-      {tempMode === 'default' && <FilterList totalUnreadCount={totalUnreadCount} />}
-      {isIconOnly && <FilterList totalUnreadCount={totalUnreadCount} />}
+      {tempMode === 'default' && <FilterList />}
+      {isIconOnly && <FilterList />}
     </div>
   )
 }
 
-export function FilterList({ totalUnreadCount }: { totalUnreadCount: number }) {
+export function FilterList() {
   const { title, setTitle, tempMode } = useSidebarMode()
   const isIconOnly = tempMode === 'show-only-icons'
+
+  const { totalUnreadCount } = useUnreadMessageCount()
+  const { mentionUnreadCount, resetMentions } = useMentionUnreadCount()
+
+  const handleClick = (label: string) => {
+    setTitle(label)
+    if (label === 'Nhắc đến') resetMentions()
+  }
+
   return (
     <ul className={`space-y-1 text-sm text-gray-12 px-3 ${isIconOnly ? '' : 'py-2'}`}>
       {filterItems.map((item, idx) => {
         const isActive = item.label === title
+        let badgeCount = 0
 
-        // Gắn unreadCount nếu là 'Trò chuyện' hoặc 'Chưa đọc'
-        const unreadCount = ['Trò chuyện', 'Chưa đọc'].includes(item.label) ? totalUnreadCount : 0
+        if (['Trò chuyện', 'Chưa đọc'].includes(item.label)) badgeCount = totalUnreadCount
+        if (item.label === 'Nhắc đến') badgeCount = mentionUnreadCount
 
         return (
           <li
             key={idx}
-            onClick={() => setTitle(item.label)}
-            className={`flex  ${isIconOnly ? 'justify-center' : 'justify-between'} relative items-center gap-2 py-1.5 rounded-md cursor-pointer
+            onClick={() => handleClick(item.label)}
+            className={`flex ${isIconOnly ? 'justify-center' : 'justify-between'} relative items-center gap-2 py-1.5 rounded-md cursor-pointer
               hover:bg-gray-3 ${isActive ? 'bg-gray-4 font-semibold' : ''}`}
           >
-            {/* Icon + Label */}
             <div className='flex items-center gap-2'>
               <Tooltip content={item.label} side='right' delayDuration={300}>
                 <div className='w-6 h-6 flex items-center justify-center shrink-0'>
@@ -133,8 +166,7 @@ export function FilterList({ totalUnreadCount }: { totalUnreadCount: number }) {
               {!isIconOnly && <span className='truncate flex-1 min-w-0'>{item.label}</span>}
             </div>
 
-            {/* Hiện số chưa đọc */}
-            {unreadCount > 0 && (
+            {badgeCount > 0 && (
               <span
                 style={{
                   position: isIconOnly ? 'absolute' : 'static',
@@ -147,7 +179,7 @@ export function FilterList({ totalUnreadCount }: { totalUnreadCount: number }) {
                   marginRight: isIconOnly ? '0px' : '1rem'
                 }}
               >
-                {unreadCount}
+                {badgeCount}
               </span>
             )}
           </li>
@@ -156,3 +188,4 @@ export function FilterList({ totalUnreadCount }: { totalUnreadCount: number }) {
     </ul>
   )
 }
+

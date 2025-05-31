@@ -5,6 +5,9 @@ from frappe.query_builder import Order
 from raven.api.raven_users import get_current_raven_user
 from raven.utils import get_channel_members, is_channel_member, track_channel_visit
 
+from frappe.query_builder import DocType
+
+
 
 @frappe.whitelist()
 def get_all_channels(hide_archived=True):
@@ -52,6 +55,7 @@ def get_channel_list(hide_archived=False):
 		frappe.qb.from_(channel)
 		.select(
 			channel.name,
+            channel.is_done,   
 			channel.channel_name,
 			channel.type,
 			channel.channel_description,
@@ -91,6 +95,67 @@ def get_channel_list(hide_archived=False):
 	query = query.orderby(channel.last_message_timestamp, order=Order.desc)
 
 	return query.run(as_dict=True)
+
+@frappe.whitelist()
+def get_list_channel_ok():
+    """
+    Trả về danh sách các channel đã đánh dấu 'is_done = 1'
+    và user hiện tại là thành viên
+    """
+    Channel = DocType("Raven Channel")
+    Member = DocType("Raven Channel Member")
+
+    query = (
+        frappe.qb.from_(Channel)
+        .join(Member)
+        .on(Channel.name == Member.channel_id)
+        .select(
+            Channel.name,
+            Channel.channel_name,
+            Channel.is_done,
+            Channel.last_message_timestamp,
+            Channel.is_direct_message,
+            Channel.type
+        )
+        .where(
+            (Channel.is_done == 1) &
+            (Member.user_id == frappe.session.user)
+        )
+        .orderby(Channel.last_message_timestamp, order=Order.desc)
+    )
+
+    results = query.run(as_dict=True)
+    return results
+
+@frappe.whitelist(methods=["POST"])
+def set_done_ok(channelID: str):
+    """
+    Đánh dấu channel là đã hoàn thành (is_done = 1)
+    """
+    if not frappe.has_permission("Raven Channel", channelID, "write"):
+        frappe.throw("Bạn không có quyền chỉnh sửa channel này.")
+
+    frappe.db.set_value("Raven Channel", channelID, "is_done", 1)
+    frappe.db.commit()
+
+    return {"status": "success", "channel": channelID, "is_done": 1}
+
+
+@frappe.whitelist(methods=["POST"])
+def set_done_not_ok(channelID: str):
+    """
+    Đánh dấu channel là chưa hoàn thành (is_done = 0)
+    """
+    if not channelID:
+        frappe.throw("Thiếu channelID")
+
+    if not frappe.has_permission("Raven Channel", channelID, "write"):
+        frappe.throw("Bạn không có quyền chỉnh sửa channel này.")
+
+    frappe.db.set_value("Raven Channel", channelID, "is_done", 0)
+    frappe.db.commit()
+
+    return {"status": "success", "channel": channelID, "is_done": 0}
 
 
 @frappe.whitelist()

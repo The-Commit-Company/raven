@@ -35,41 +35,23 @@ const MentionsList: React.FC = () => {
   const { call } = useContext(FrappeContext) as FrappeConfig
   const { workspaceID } = useParams<{ workspaceID: string }>()
 
-  // reset unread count khi mount hoặc data thay đổi
-  useEffect(() => {
-    call
-      .post('raven.api.mentions.mark_all_as_read')
-      .catch(console.error)
-  }, [call])
-
-  const getKey = useCallback(
-    (pageIndex: number, prev: { message: MentionObject[] } | null) => {
-      if (prev && !prev.message.length) return null
-      return [
-        'raven.api.mentions.get_mentions',
-        { limit: PAGE_SIZE, start: pageIndex * PAGE_SIZE },
-      ] as const
-    },
-    []
-  )
+  const getKey = useCallback((pageIndex: number, prev: { message: MentionObject[] } | null) => {
+    if (prev && !prev.message.length) return null
+    return ['raven.api.mentions.get_mentions', { limit: PAGE_SIZE, start: pageIndex * PAGE_SIZE }] as const
+  }, [])
 
   const fetcher = useCallback(
-    ([endpoint, params]: readonly [string, { limit: number; start: number }]) =>
-      call.post(endpoint, params),
+    (args: any) => {
+      const [endpoint, params] = args
+      return call.post(endpoint, params)
+    },
     [call]
   )
 
-  const { data, size, isLoading, setSize } = useSWRInfinite(
-    getKey,
-    fetcher,
-    { revalidateOnFocus: false }
-  )
+  const { data, size, isLoading, setSize } = useSWRInfinite(getKey, fetcher, { revalidateOnFocus: false })
 
   const pages = data ?? []
-  const mentions = useMemo(
-    () => pages.flatMap(page => page.message),
-    [pages]
-  )
+  const mentions = useMemo(() => pages.flatMap((page) => page.message), [pages])
 
   const isEmpty = pages[0]?.message.length === 0
   const isLoadingMore = isLoading || (size > 0 && !pages[size - 1])
@@ -82,7 +64,7 @@ const MentionsList: React.FC = () => {
 
   useEffect(() => {
     const obs = new IntersectionObserver(
-      entries => {
+      (entries) => {
         if (entries[0].isIntersecting) loadMore()
       },
       { threshold: 0.1 }
@@ -95,15 +77,19 @@ const MentionsList: React.FC = () => {
     return (
       <Flex direction='column' align='center' justify='center' className='h-[320px] px-6 text-center'>
         <LuAtSign size={48} className='text-gray-8 mb-4' />
-        <Text size='5' weight='medium' className='mb-2'>No mentions yet</Text>
-        <Text size='2' color='gray'>When someone mentions you in a message, you'll see it here.</Text>
+        <Text size='5' weight='medium' className='mb-2'>
+          No mentions yet
+        </Text>
+        <Text size='2' color='gray'>
+          When someone mentions you in a message, you'll see it here.
+        </Text>
       </Flex>
     )
   }
 
   return (
     <ul role='list' className='list-none h-[380px] overflow-y-auto'>
-      {mentions.map(mention => (
+      {mentions.map((mention) => (
         <li key={mention.name} className='border-b border-gray-4 last:border-0'>
           <MentionItem mention={mention} workspaceID={workspaceID} />
         </li>
@@ -112,10 +98,14 @@ const MentionsList: React.FC = () => {
       <div ref={observerRef} className='h-4'>
         {isReachingEnd ? (
           <div className='p-4 text-center'>
-            <Text size='2' color='gray'>You've reached the end of your mentions.</Text>
+            <Text size='2' color='gray'>
+              You've reached the end of your mentions.
+            </Text>
           </div>
         ) : isLoadingMore ? (
-          <div className='p-4'><BeatLoader text='Loading more mentions...' /></div>
+          <div className='p-4'>
+            <BeatLoader text='Loading more mentions...' />
+          </div>
         ) : null}
       </div>
     </ul>
@@ -149,15 +139,23 @@ const ChannelContext: React.FC<{ mention: MentionObject }> = ({ mention }) => {
       <UserAvatar src={user?.user_image} alt={senderName} size='2' className='mt-0.5' />
       <Box className='w-full'>
         <HStack className='w-full justify-between'>
-            <Text size='2' weight='medium'>{senderName}</Text>
-            {mention.is_thread ? (
-              <HStack className='ml-auto' gap='1' align='center'><BiMessageAltDetail size={14} /></HStack>
-            ) : mention.is_direct_message ? null : (
-              <HStack className='ml-auto' gap='0.5' align='center'><ChannelIcon type={mention.channel_type} size={14} /> {mention.channel_name}</HStack>
-            )}
+          <Text size='2' weight='medium'>
+            {senderName}
+          </Text>
+          {mention.is_thread ? (
+            <HStack className='ml-auto' gap='1' align='center'>
+              <BiMessageAltDetail size={14} />
+            </HStack>
+          ) : mention.is_direct_message ? null : (
+            <HStack className='ml-auto' gap='0.5' align='center'>
+              <ChannelIcon type={mention.channel_type} size={14} /> {mention.channel_name}
+            </HStack>
+          )}
         </HStack>
-        <Box className='mt-0.5'><MessageContent content={mention.text} /></Box>
-          <TimeStamp creation={mention.creation} />
+        <Box className='mt-0.5'>
+          <MessageContent content={mention.text} />
+        </Box>
+        <TimeStamp creation={mention.creation} />
       </Box>
     </HStack>
   )
@@ -165,10 +163,12 @@ const ChannelContext: React.FC<{ mention: MentionObject }> = ({ mention }) => {
 
 const MessageContent: React.FC<{ content: string }> = ({ content }) => (
   <Text as='p' className='text-sm line-clamp-2 text-ellipsis'>
-    <div className='[&_.mention]:text-accent-11'>{parse(content)}</div>
+    <span className='[&_.mention]:text-accent-11'>{parse(content)}</span>
   </Text>
 )
 
 const TimeStamp: React.FC<{ creation: string }> = ({ creation }) => (
-  <Text size='1' className='text-gray-11 shrink-0'>{getTimePassed(creation)}</Text>
+  <Text size='1' className='text-gray-11 shrink-0'>
+    {getTimePassed(creation)}
+  </Text>
 )

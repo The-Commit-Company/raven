@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useMemo, ReactNode, useState, useEffect } from 'react'
 import { useFetchUnreadMessageCount } from '@/hooks/useUnreadMessageCount'
+import { DMChannelWithUnreadCount } from '@/components/layout/Sidebar/useGetChannelUnreadCounts'
 
 export interface UnreadItem {
   name: string
@@ -97,6 +98,40 @@ export const useSidebarMode = (): SidebarModeContextValue => {
   const context = useContext(SidebarModeContext)
   if (!context) {
     throw new Error('useSidebarMode must be used within SidebarModeProvider')
+  }
+  return context
+}
+
+
+interface LocalChannelListContextValue {
+  localChannels: DMChannelWithUnreadCount[]
+  setChannels: React.Dispatch<React.SetStateAction<DMChannelWithUnreadCount[]>>
+}
+
+const LocalChannelListContext = createContext<LocalChannelListContextValue | undefined>(undefined)
+
+export const LocalChannelListProvider = ({
+  children,
+  initialChannels
+}: {
+  children: ReactNode
+  initialChannels: DMChannelWithUnreadCount[]
+}) => {
+  const [localChannels, setChannels] = useState(initialChannels)
+
+  const value = useMemo(() => ({ localChannels, setChannels }), [localChannels])
+
+  return (
+    <LocalChannelListContext.Provider value={value}>
+      {children}
+    </LocalChannelListContext.Provider>
+  )
+}
+
+export const useLocalChannelList = (): LocalChannelListContextValue => {
+  const context = useContext(LocalChannelListContext)
+  if (!context) {
+    throw new Error('useLocalChannelList must be used within LocalChannelListProvider')
   }
   return context
 }
