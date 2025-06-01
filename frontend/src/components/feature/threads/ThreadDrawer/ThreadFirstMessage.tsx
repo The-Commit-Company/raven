@@ -7,20 +7,18 @@ import { Box, BoxProps, Button, Flex, Text } from '@radix-ui/themes'
 import clsx from 'clsx'
 import { useLayoutEffect, useRef, useState } from 'react'
 import { MdOutlineBarChart } from 'react-icons/md'
+import { useNavigate } from 'react-router-dom'
 import { FileMessage, Message, PollMessage } from '../../../../../../types/Messaging/Message'
 import { MessageSenderAvatar, UserHoverCard } from '../../chat/ChatMessage/MessageItem'
 import { DateTooltip } from '../../chat/ChatMessage/Renderers/DateTooltip'
 import { DoctypeLinkRenderer } from '../../chat/ChatMessage/Renderers/DoctypeLinkRenderer'
 import { TiptapRenderer } from '../../chat/ChatMessage/Renderers/TiptapRenderer/TiptapRenderer'
-import { useNavigate } from 'react-router-dom'
 
 type MessageContentProps = BoxProps & {
   user?: UserFields
   message: Message
 }
 export const ThreadFirstMessage = ({ message, user, ...props }: MessageContentProps) => {
-  console.log(message)
-
   const threadOwner = useGetUser(message.owner)
 
   const isActive = useIsUserActive(message.owner)

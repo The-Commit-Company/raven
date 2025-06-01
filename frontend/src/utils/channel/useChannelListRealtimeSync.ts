@@ -28,8 +28,6 @@ export const useChannelRealtimeSync = () => {
   useFrappeEventListener('message_updated', (data) => {
     const msg = data?.message_details || data
 
-    console.log(data)
-
     // Chuẩn hoá lại dữ liệu truyền vào
     const normalizedMessage = {
       message_id: data.message_id,
