@@ -22,6 +22,38 @@ interface MessageSeenStatusProps {
   position?: 'center' | 'start' | 'end'
 }
 
+const ProgressCircleIcon: React.FC<{ percentage: number; size?: number }> = ({ percentage, size = 16 }) => {
+  const angle = (percentage / 100) * 360
+  const radians = (angle - 90) * (Math.PI / 180)
+
+  const centerX = 14
+  const centerY = 14
+  const radius = 7
+  const endX = centerX + radius * Math.cos(radians)
+  const endY = centerY + radius * Math.sin(radians)
+
+  const largeArcFlag = angle > 180 ? 1 : 0
+  const pathData = `M 14 7 A 7 7 0 ${largeArcFlag} 1 ${endX} ${endY} L 14 14 Z`
+
+  return (
+    <svg width={size} height={size} viewBox='0 0 28 28' className='text-current'>
+      <g fill='none' fillRule='evenodd'>
+        <g fillRule='nonzero'>
+          <path
+            className='text-green-500'
+            stroke='currentColor'
+            strokeWidth='3'
+            fill='none'
+            d='M14 25.5c6.351 0 11.5-5.149 11.5-11.5S20.351 2.5 14 2.5 2.5 7.649 2.5 14 7.649 25.5 14 25.5z'
+          />
+          {/* Core - hiển thị theo phần trăm */}
+          {percentage > 0 && <path className='text-green-500' fill='currentColor' d={pathData} />}
+        </g>
+      </g>
+    </svg>
+  )
+}
+
 export const MessageSeenStatus = React.memo(
   ({
     hasBeenSeen,
@@ -36,7 +68,26 @@ export const MessageSeenStatus = React.memo(
     // Đảm bảo showPopover là boolean
     const showPopover = channelType !== 'dm' && (seenByOthers.length > 0 || unseenByOthers.length > 0)
 
-    // Hàm getTooltipMessage được đơn giản hóa
+    // Tính toán tỉ lệ đã đọc
+    const totalUsers = seenByOthers.length + unseenByOthers.length
+    const readPercentage = totalUsers > 0 ? (seenByOthers.length / totalUsers) * 100 : 0
+
+    // Xác định loại icon cần hiển thị
+    const getIcon = () => {
+      if (!hasBeenSeen) {
+        return <MdRadioButtonUnchecked className='text-gray-400' />
+      }
+
+      // Nếu là DM hoặc tất cả đã đọc
+      if (channelType === 'dm' || unseenByOthers.length === 0) {
+        return <FaRegCheckCircle className='text-green-500' />
+      }
+
+      // Nếu còn unread thì hiển thị progress circle
+      return <ProgressCircleIcon percentage={readPercentage} />
+    }
+
+    // Hàm getTooltipMessage với logic hiển thị tên thành viên
     const getTooltipMessage = (hasBeenSeen: boolean, channelType?: string): string => {
       if (channelType !== 'channel') {
         return hasBeenSeen ? 'Đã xem' : 'Chưa xem'
@@ -47,7 +98,19 @@ export const MessageSeenStatus = React.memo(
       if (unseenByOthers.length === 0) {
         return 'Tất cả đã xem'
       }
-      return `${seenByOthers.length} Đã xem`
+
+      const firstTwoSeen = seenByOthers.slice(0, 2)
+      const names = firstTwoSeen.map((user) => user.full_name).join(', ')
+
+      if (seenByOthers.length > 2) {
+        return `${names} và ${seenByOthers.length - 2} người khác đã xem`
+      }
+
+      if (seenByOthers.length > 0) {
+        return `${names} đã xem`
+      }
+
+      return `${seenByOthers.length}/${totalUsers} đã xem`
     }
 
     return (
@@ -56,13 +119,7 @@ export const MessageSeenStatus = React.memo(
           <Tooltip>
             <TooltipTrigger asChild>
               <Popover.Trigger asChild>
-                <Box className='ml-1 cursor-pointer'>
-                  {hasBeenSeen ? (
-                    <FaRegCheckCircle className='text-green-500' />
-                  ) : (
-                    <MdRadioButtonUnchecked className='text-gray-400' />
-                  )}
-                </Box>
+                <Box className='ml-1 cursor-pointer'>{getIcon()}</Box>
               </Popover.Trigger>
             </TooltipTrigger>
             <TooltipContent
