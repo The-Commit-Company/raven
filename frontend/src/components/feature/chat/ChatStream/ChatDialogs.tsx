@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import AttachFileToDocumentDialog from '../ChatMessage/MessageActions/AttachFileToDocument'
 import { DeleteMessageDialog } from '../ChatMessage/MessageActions/DeleteMessage'
 import { EditMessageDialog } from '../ChatMessage/MessageActions/EditMessage'
@@ -12,13 +13,7 @@ interface ChatDialogsProps {
   reactionProps: any
 }
 
-export const ChatDialogs = ({
-  deleteProps,
-  editProps,
-  forwardProps,
-  attachDocProps,
-  reactionProps
-}: ChatDialogsProps) => {
+const ChatDialogs = ({ deleteProps, editProps, forwardProps, attachDocProps, reactionProps }: ChatDialogsProps) => {
   return (
     <>
       <DeleteMessageDialog {...deleteProps} />
@@ -29,3 +24,5 @@ export const ChatDialogs = ({
     </>
   )
 }
+
+export default memo(ChatDialogs)

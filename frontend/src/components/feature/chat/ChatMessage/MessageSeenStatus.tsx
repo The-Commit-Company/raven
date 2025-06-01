@@ -87,12 +87,14 @@ export const MessageSeenStatus = React.memo(
                 <div className='flex divide-x divide-neutral-700 text-sm'>
                   {/* Cột Read */}
                   <div className='pr-4 w-1/2'>
-                    <div className='font-semibold mb-1'>{seenByOthers.length} Read</div>
+                    <div className='font-semibold mb-1'>{seenByOthers.length} Đã xem</div>
                     <div className='space-y-2'>
                       {seenByOthers.map((user, index) => (
                         <div key={index} className='flex items-center gap-2'>
                           <UserAvatar src={user.user_image} alt={user.full_name} size='1' />
-                          <span>{user.full_name}</span>
+                          <span className='text-xs max-w-[120px] truncate block' title={user.full_name}>
+                            {user.full_name}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -100,12 +102,14 @@ export const MessageSeenStatus = React.memo(
 
                   {/* Cột Unread */}
                   <div className='pl-4 w-1/2'>
-                    <div className='font-semibold mb-1'>{unseenByOthers.length} Unread</div>
+                    <div className='font-semibold mb-1'>{unseenByOthers.length} Chưa xem</div>
                     <div className='space-y-2'>
                       {unseenByOthers.map((user, index) => (
                         <div key={index} className='flex items-center gap-2'>
                           <UserAvatar src={user.user_image} alt={user.full_name} size='1' />
-                          <span>{user.full_name}</span>
+                          <span className='text-xs max-w-[120px] truncate block' title={user.full_name}>
+                            {user.full_name}
+                          </span>
                         </div>
                       ))}
                     </div>

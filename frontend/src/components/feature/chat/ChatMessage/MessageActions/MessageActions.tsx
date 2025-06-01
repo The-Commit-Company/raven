@@ -55,25 +55,28 @@ export const MessageContextMenu = ({
           <ContextMenu.Item>
             <Flex gap='2' width='100%' onClick={onReply}>
               <LuReply size='18' />
-              Reply
+              Trả lời
             </Flex>
           </ContextMenu.Item>
 
           <ContextMenu.Item>
             <Flex gap='2' width='100%' onClick={onForward}>
               <LuForward size='18' />
-              Forward
+              Chuyển tiếp
             </Flex>
           </ContextMenu.Item>
+
           {message && !message.is_thread && showThreadButton && <CreateThreadContextItem messageID={message.name} />}
+
           <CopyMessageLink message={message} />
+
           <ContextMenu.Separator />
           <ContextMenu.Group>
             {(message.text || selectedText) && (
               <ContextMenu.Item>
                 <Flex gap='2' width='100%' onClick={copy}>
                   <BiCopy size='18' />
-                  Copy {selectedText ? 'Selected Text' : ''}
+                  Sao chép {selectedText ? 'đoạn văn bản đã chọn' : ''}
                 </Flex>
               </ContextMenu.Item>
             )}
@@ -83,7 +86,7 @@ export const MessageContextMenu = ({
                 <ContextMenu.Item>
                   <Flex gap='2' width='100%' onClick={copy}>
                     <BiLink size='18' />
-                    Copy link
+                    Sao chép liên kết
                   </Flex>
                 </ContextMenu.Item>
 
@@ -91,7 +94,7 @@ export const MessageContextMenu = ({
                   <a download href={(message as FileMessage).file}>
                     <Flex gap='2'>
                       <BiDownload size='18' />
-                      Download
+                      Tải xuống
                     </Flex>
                   </a>
                 </ContextMenu.Item>
@@ -99,7 +102,7 @@ export const MessageContextMenu = ({
                 <ContextMenu.Item>
                   <Flex gap='2' width='100%' onClick={onAttachDocument}>
                     <BiPaperclip size='18' />
-                    Attach File to Document
+                    Đính kèm vào tài liệu
                   </Flex>
                 </ContextMenu.Item>
               </ContextMenu.Group>
@@ -115,7 +118,7 @@ export const MessageContextMenu = ({
               <ContextMenu.Item>
                 <Flex gap='2' width='100%' onClick={onViewReaction}>
                   <MdOutlineEmojiEmotions size='18' />
-                  View Reactions
+                  Xem cảm xúc
                 </Flex>
               </ContextMenu.Item>
             </ContextMenu.Group>
@@ -130,14 +133,14 @@ export const MessageContextMenu = ({
                 <ContextMenu.Item>
                   <Flex gap='2' width='100%' onClick={onEdit}>
                     <AiOutlineEdit size='18' />
-                    Edit
+                    Chỉnh sửa
                   </Flex>
                 </ContextMenu.Item>
               )}
               <ContextMenu.Item color='red'>
                 <Flex gap='2' width='100%' onClick={onDelete}>
                   <BiTrash size='18' />
-                  Delete
+                  Thu hồi
                 </Flex>
               </ContextMenu.Item>
             </ContextMenu.Group>
@@ -174,7 +177,7 @@ const CopyMessageLink = ({ message }: { message: Message }) => {
     <ContextMenu.Item>
       <Flex gap='2' width='100%' onClick={onClick}>
         <BiLink size='18' />
-        Copy Message Link
+        Sao chép liên kết
       </Flex>
     </ContextMenu.Item>
   )
@@ -213,7 +216,7 @@ const SaveMessageAction = ({ message }: { message: Message }) => {
       <Flex gap='2' width='100%' onClick={handleLike}>
         {!isSaved && <BiBookmarkPlus size='18' />}
         {isSaved && <BiBookmarkMinus size='18' />}
-        {!isSaved ? 'Save' : 'Unsave'} Message
+        {!isSaved ? 'Gắn cờ' : 'Bỏ gắn cờ'} tin nhắn
       </Flex>
     </ContextMenu.Item>
   )
@@ -243,7 +246,7 @@ const PinMessageAction = ({ message }: { message: Message }) => {
     <ContextMenu.Item>
       <Flex gap='2' width='100%' onClick={handlePin}>
         {!isPinned ? <RiPushpinLine size='18' /> : <RiUnpinLine size='18' />}
-        {!isPinned ? 'Pin' : 'Unpin'}
+        {!isPinned ? 'Ghim' : 'Bỏ ghim'}
       </Flex>
     </ContextMenu.Item>
   )

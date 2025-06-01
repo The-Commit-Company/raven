@@ -1,5 +1,6 @@
 // 1. ChatStreamLoading.tsx - Component quản lý các loader
 import { Loader } from '@/components/common/Loader'
+import { memo } from 'react'
 import { useInView } from 'react-intersection-observer'
 
 interface ChatStreamLoadingProps {
@@ -10,7 +11,7 @@ interface ChatStreamLoadingProps {
   onLoadNewerMessages: () => void
 }
 
-export const ChatStreamLoading = ({
+const ChatStreamLoading = ({
   hasOlderMessages,
   hasNewMessages,
   isLoading,
@@ -61,3 +62,5 @@ export const ChatStreamLoading = ({
     </>
   )
 }
+
+export default memo(ChatStreamLoading)

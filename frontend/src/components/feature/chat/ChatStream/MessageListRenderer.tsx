@@ -1,7 +1,7 @@
 // 3. MessageListRenderer.tsx - Component render danh sách tin nhắn
 import { DateSeparator } from '@/components/layout/Divider/DateSeparator'
 import clsx from 'clsx'
-import { MutableRefObject } from 'react'
+import { memo, MutableRefObject } from 'react'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { MessageItem } from '../ChatMessage/MessageItem'
 import SystemMessageBlock from '../ChatMessage/SystemMessageBlock'
@@ -23,7 +23,7 @@ interface MessageListRendererProps {
   channel: any
 }
 
-export const MessageListRenderer = ({
+const MessageListRenderer = ({
   messages,
   isLoading,
   highlightedMessage,
@@ -96,3 +96,5 @@ export const MessageListRenderer = ({
     </div>
   )
 }
+
+export default memo(MessageListRenderer)

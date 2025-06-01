@@ -166,7 +166,7 @@ const MainPageContent = () => {
               maxSize={isSmallScreen ? 40 : 60}
               {...(!initialLayout ? { defaultSize: isSmallScreen ? 30 : 40 } : {})}
             >
-              <div className='flex flex-col gap-2 w-full h-full'>
+              <div className='flex flex-col gap-1 w-full h-full'>
                 <SidebarHeader />
                 <div className='px-2'>
                   <div className='h-px bg-gray-400 dark:bg-gray-600' />

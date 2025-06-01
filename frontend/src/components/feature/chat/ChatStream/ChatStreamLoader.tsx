@@ -1,4 +1,5 @@
 import { Separator, Skeleton } from '@radix-ui/themes'
+import { memo } from 'react'
 
 const ChatStreamLoader = () => {
   return (
@@ -63,4 +64,4 @@ const MessageLeftElementLoader = () => {
   return <Skeleton className='w-8 h-8 rounded-md' />
 }
 
-export default ChatStreamLoader
+export default memo(ChatStreamLoader)

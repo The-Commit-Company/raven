@@ -1,4 +1,5 @@
 // 2. ScrollToBottomButtons.tsx - Component quản lý các nút scroll
+import { memo } from 'react'
 import { FiArrowDown, FiMessageCircle } from 'react-icons/fi'
 
 interface ScrollToBottomButtonsProps {
@@ -8,7 +9,7 @@ interface ScrollToBottomButtonsProps {
   onGoToLatestMessages: () => void
 }
 
-export const ScrollToBottomButtons = ({
+const ScrollToBottomButtons = ({
   hasNewMessages,
   newMessageCount,
   showScrollToBottomButton,
@@ -65,3 +66,5 @@ export const ScrollToBottomButtons = ({
     </>
   )
 }
+
+export default memo(ScrollToBottomButtons)

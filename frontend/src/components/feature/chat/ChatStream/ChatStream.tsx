@@ -3,13 +3,13 @@ import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState/Empty
 import { useChannelSeenUsers } from '@/hooks/useChannelSeenUsers'
 import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
 import { useUserData } from '@/hooks/useUserData'
-import { forwardRef, MutableRefObject, useImperativeHandle } from 'react'
+import { forwardRef, memo, MutableRefObject, useImperativeHandle } from 'react'
 import { Message } from '../../../../../../types/Messaging/Message'
-import { ChatDialogs } from './ChatDialogs'
+import ChatDialogs from './ChatDialogs'
 import ChatStreamLoader from './ChatStreamLoader'
-import { ChatStreamLoading } from './ChatStreamLoading'
-import { MessageListRenderer } from './MessageListRenderer'
-import { ScrollToBottomButtons } from './ScrollToBottomButtons'
+import ChatStreamLoading from './ChatStreamLoading'
+import MessageListRenderer from './MessageListRenderer'
+import ScrollToBottomButtons from './ScrollToBottomButtons'
 import useChatStream from './useChatStream'
 import { useChatStreamActions } from './useChatStreamActions'
 import { useScrollToBottomEffect } from './useScrollToBottomEffect'
@@ -130,4 +130,4 @@ const ChatStream = forwardRef<any, Props>(
   }
 )
 
-export default ChatStream
+export default memo(ChatStream)

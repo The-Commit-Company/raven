@@ -16,7 +16,7 @@ import {
   HiOutlineUsers
 } from 'react-icons/hi'
 
-import { useFrappeGetCall, useFrappeEventListener } from 'frappe-react-sdk'
+import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 
 const useMentionUnreadCount = () => {
   const { data: mentionsCount, mutate } = useFrappeGetCall<{ message: number }>(
@@ -89,7 +89,7 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
     >
       <div className={`flex items-center ${isIconOnly ? 'justify-center' : 'justify-between'}`}>
         <div className='flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300'>
-          <span className='relative inline-block cursor-pointer py-4 group' style={{ zIndex: 999 }}>
+          <span className='relative inline-block cursor-pointer py-3 group' style={{ zIndex: 999 }}>
             <HiMenuAlt2
               // onClick={toggleCollapse}
               onClick={handleToggleIconMode}
@@ -115,7 +115,7 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
               </div>
             )} */}
           </span>
-          {!isCollapsed && !isIconOnly && <span>Bộ lọc</span>}
+          {!isCollapsed && !isIconOnly && <span className='text-base'>Bộ lọc</span>}
         </div>
 
         {tempMode === 'default' && (
