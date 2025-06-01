@@ -3,88 +3,45 @@ import frappe
 from raven.notification import clear_push_tokens_for_channel_cache
 
 
-# def track_channel_visit(channel_id, user=None, commit=False, publish_event_for_user=False, last_seen_sequence=None):
-# 	"""
-# 	Track the last visit and optionally last seen sequence of the user to the channel.
-# 	"""
-
-# 	if not user:
-# 		user = frappe.session.user
-
-# 	channel_member = get_channel_member(channel_id, user)
-# 	now = frappe.utils.now()
-# 	update_fields = {"last_visit": now}
-
-# 	if last_seen_sequence is not None:
-# 		update_fields["last_seen_sequence"] = last_seen_sequence
-
-# 	if channel_member:
-# 		frappe.db.set_value("Raven Channel Member", channel_member["name"], update_fields)
-
-# 	elif frappe.get_cached_value("Raven Channel", channel_id, "type") == "Open":
-# 		doc = {
-# 			"doctype": "Raven Channel Member",
-# 			"channel_id": channel_id,
-# 			"user_id": user,
-# 			"last_visit": now
-# 		}
-# 		if last_seen_sequence is not None:
-# 			doc["last_seen_sequence"] = last_seen_sequence
-
-# 		frappe.get_doc(doc).insert()
-
-# 	if commit:
-# 		frappe.db.commit()
-
-# 	if publish_event_for_user:
-# 		frappe.publish_realtime(
-# 			"raven:unread_channel_count_updated",
-# 			{"channel_id": channel_id, "sent_by": user, "last_message_timestamp": now},
-# 			user=user,
-# 		)
-
-def track_channel_visit(channel_id, user=None, commit=False, publish_event_for_user=False, last_seen_sequence=None):
+def track_channel_visit(channel_id, user=None, commit=False, publish_event_for_user=False):
 	"""
-	Track the last visit and optionally last seen sequence of the user to the channel.
+	Track the last visit of the user to the channel.
+	If the user is not a member of the channel, create a new member record
 	"""
 
 	if not user:
 		user = frappe.session.user
 
+	# Get the channel member record
 	channel_member = get_channel_member(channel_id, user)
+
 	now = frappe.utils.now()
-	update_fields = {"last_visit": now}
 
 	if channel_member:
-		if last_seen_sequence is not None:
-			current_seen = channel_member.get("last_seen_sequence") or 0
-			if last_seen_sequence > current_seen:
-				update_fields["last_seen_sequence"] = last_seen_sequence
+		# Update the last visit
+		frappe.db.set_value("Raven Channel Member", channel_member["name"], "last_visit", now)
 
-		frappe.db.set_value("Raven Channel Member", channel_member["name"], update_fields)
-
+	# Else if the user is not a member of the channel and the channel is open, create a new member record
 	elif frappe.get_cached_value("Raven Channel", channel_id, "type") == "Open":
-		doc = {
-			"doctype": "Raven Channel Member",
-			"channel_id": channel_id,
-			"user_id": user,
-			"last_visit": now,
-		}
-		if last_seen_sequence is not None:
-			doc["last_seen_sequence"] = last_seen_sequence
+		frappe.get_doc(
+			{
+				"doctype": "Raven Channel Member",
+				"channel_id": channel_id,
+				"user_id": frappe.session.user,
+				"last_visit": now,
+			}
+		).insert()
 
-		frappe.get_doc(doc).insert()
-
+	# Need to commit the changes to the database if the request is a GET request
 	if commit:
-		frappe.db.commit()
+		frappe.db.commit()  # nosempgrep
 
 	if publish_event_for_user:
 		frappe.publish_realtime(
 			"raven:unread_channel_count_updated",
-			{"channel_id": channel_id, "sent_by": user, "last_message_timestamp": now},
+			{"channel_id": channel_id, "sent_by": frappe.session.user, "last_message_timestamp": now},
 			user=user,
 		)
-
 
 def track_channel_seen(channel_id, user=None, commit=False, publish_event_for_user=False):
 	"""
@@ -287,14 +244,3 @@ def clear_thread_reply_count_cache(thread_id: str):
 	Clear the thread reply count cache
 	"""
 	frappe.cache().hdel("raven:thread_reply_count", thread_id)
-
-def get_next_sequence(channel_id):
-    last_message = frappe.get_all(
-        "Raven Message",
-        filters={"channel_id": channel_id},
-        fields=["sequence"],
-        order_by="sequence desc",
-        limit=1
-    )
-    last_seq = last_message[0].sequence if last_message else 0
-    return last_seq + 1

@@ -8,7 +8,6 @@ import { Box, Flex, IconButton } from '@radix-ui/themes'
 import { useSWRConfig } from 'frappe-react-sdk'
 import { useCallback, useContext, useMemo, useRef, useState } from 'react'
 import { BiX } from 'react-icons/bi'
-import { VirtuosoHandle } from 'react-virtuoso'
 import { Message } from '../../../../../../types/Messaging/Message'
 import AIEvent from '../../ai/AIEvent'
 import useFileUpload from '../../chat/ChatInput/FileInput/useFileUpload'
@@ -43,7 +42,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
     setSelectedMessage(null)
   }
 
-  const virtuosoRef = useRef<VirtuosoHandle>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   const { mutate } = useSWRConfig()
 
@@ -171,7 +170,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
         <ThreadFirstMessage message={threadMessage} />
         <ChatStream
           channelID={threadID ?? ''}
-          virtuosoRef={virtuosoRef}
+          scrollRef={scrollRef}
           ref={chatStreamRef}
           replyToMessage={handleReplyAction}
           showThreadButton={false}

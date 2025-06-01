@@ -8,94 +8,26 @@ from raven.utils import track_channel_visit
 
 
 @frappe.whitelist()
-# def get_messages(channel_id: str, limit: int = 20, base_message: str | None = None):
-# 	"""
-# 	API to get list of messages for a channel, ordered by creation date (newest first)
-
-# 	"""
-
-# 	# Check permission for channel access
-# 	if not frappe.has_permission(doctype="Raven Channel", doc=channel_id, ptype="read"):
-# 		frappe.throw(_("You do not have permission to access this channel"), frappe.PermissionError)
-
-# 	# Fetch messages for the channel
-# 	if base_message:
-# 		return get_messages_around_base(channel_id, base_message)
-
-# 	# Cannot use `get_all` as it does not apply the `order_by` clause to multiple fields
-# 	message = frappe.qb.DocType("Raven Message")
-
-# 	messages = (
-# 		frappe.qb.from_(message)
-# 		.select(
-# 			message.name,
-# 			message.owner,
-# 			message.creation,
-# 			message.modified,
-# 			message.text,
-# 			message.file,
-# 			message.message_type,
-# 			message.message_reactions,
-# 			message.is_reply,
-# 			message.linked_message,
-# 			message._liked_by,
-# 			message.channel_id,
-# 			message.thumbnail_width,
-# 			message.thumbnail_height,
-# 			message.file_thumbnail,
-# 			message.link_doctype,
-# 			message.link_document,
-# 			message.replied_message_details,
-# 			message.content,
-# 			message.is_edited,
-# 			message.is_forwarded,
-# 			message.poll_id,
-# 			message.is_bot_message,
-# 			message.bot,
-# 			message.hide_link_preview,
-# 			message.is_thread,
-# 			message.blurhash,
-# 		)
-# 		.where(message.channel_id == channel_id)
-# 		.orderby(message.creation, order=Order.desc)
-# 		.orderby(message.name, order=Order.desc)
-# 		.limit(limit)
-# 		.run(as_dict=True)
-# 	)
-
-# 	has_old_messages = False
-
-# 	# Check if older messages are available
-# 	if len(messages) == limit:
-# 		# Check if there are more messages available
-# 		older_message = frappe.db.get_all(
-# 			"Raven Message",
-# 			pluck="name",
-# 			filters={"channel_id": channel_id, "creation": ("<", messages[-1].creation)},
-# 			order_by="creation desc, name desc",
-# 			limit=1,
-# 		)
-
-# 		if len(older_message) > 0:
-# 			has_old_messages = True
-
-# 	track_channel_visit(channel_id=channel_id, commit=True)
-# 	return {
-# 		"messages": messages,
-# 		"has_old_messages": has_old_messages,
-# 		"has_new_messages": False,
-# 	}
-
-
-@frappe.whitelist()
 def get_messages(channel_id: str, limit: int = 20, base_message: str | None = None):
+	"""
+	API to get list of messages for a channel, ordered by creation date (newest first)
+
+	"""
+
+	# Check permission for channel access
 	if not frappe.has_permission(doctype="Raven Channel", doc=channel_id, ptype="read"):
 		frappe.throw(_("You do not have permission to access this channel"), frappe.PermissionError)
 
+	# Fetch messages for the channel
+	if base_message:
+		return get_messages_around_base(channel_id, base_message)
+
+	# Cannot use `get_all` as it does not apply the `order_by` clause to multiple fields
 	message = frappe.qb.DocType("Raven Message")
 
-	def select_message_fields(qb):
-		return qb.select(
+	messages = (
+		frappe.qb.from_(message)
+		.select(
 			message.name,
 			message.owner,
 			message.creation,
@@ -123,77 +55,36 @@ def get_messages(channel_id: str, limit: int = 20, base_message: str | None = No
 			message.hide_link_preview,
 			message.is_thread,
 			message.blurhash,
-			message.sequence,
 		)
-
-	if base_message:
-		return get_messages_around_base(channel_id, base_message)
-
-	channel_member = frappe.db.get_value(
-		"Raven Channel Member",
-		{"channel_id": channel_id, "user_id": frappe.session.user},
-		["last_seen_sequence"],
-		as_dict=True,
+		.where(message.channel_id == channel_id)
+		.orderby(message.creation, order=Order.desc)
+		.orderby(message.name, order=Order.desc)
+		.limit(limit)
+		.run(as_dict=True)
 	)
-	last_seen_sequence = channel_member.last_seen_sequence if channel_member else 0
-
-	current_sequence = frappe.db.sql(
-		"SELECT MAX(sequence) FROM `tabRaven Message` WHERE channel_id = %s",
-		(channel_id,),
-	)[0][0] or 0
-
-	has_new_messages = last_seen_sequence < current_sequence
-	messages = []
-
-	if has_new_messages:
-		new_messages = (
-			select_message_fields(frappe.qb.from_(message))
-			.where((message.channel_id == channel_id) & (message.sequence > last_seen_sequence))
-			.orderby(message.sequence, order=Order.asc)
-			.limit(limit)
-			.run(as_dict=True)
-		)
-
-		if len(new_messages) < limit:
-			extra_needed = limit - len(new_messages)
-			old_messages = (
-				select_message_fields(frappe.qb.from_(message))
-				.where((message.channel_id == channel_id) & (message.sequence <= last_seen_sequence))
-				.orderby(message.sequence, order=Order.desc)
-				.limit(extra_needed)
-				.run(as_dict=True)
-			)
-			messages = list(reversed(old_messages)) + new_messages
-		else:
-			messages = new_messages
-	else:
-		messages = (
-			select_message_fields(frappe.qb.from_(message))
-			.where(message.channel_id == channel_id)
-			.orderby(message.sequence, order=Order.desc)
-			.limit(limit)
-			.run(as_dict=True)
-		)
 
 	has_old_messages = False
+
+	# Check if older messages are available
 	if len(messages) == limit:
-		last_sequence = messages[-1]["sequence"]
-		older_exists = frappe.db.exists(
+		# Check if there are more messages available
+		older_message = frappe.db.get_all(
 			"Raven Message",
-			{"channel_id": channel_id, "sequence": ("<", last_sequence)},
+			pluck="name",
+			filters={"channel_id": channel_id, "creation": ("<", messages[-1].creation)},
+			order_by="creation desc, name desc",
+			limit=1,
 		)
-		has_old_messages = bool(older_exists)
+
+		if len(older_message) > 0:
+			has_old_messages = True
 
 	track_channel_visit(channel_id=channel_id, commit=True)
-
 	return {
 		"messages": messages,
 		"has_old_messages": has_old_messages,
-		"has_new_messages": has_new_messages,
-		"last_seen_sequence": last_seen_sequence,
-		"current_sequence": current_sequence,
+		"has_new_messages": False,
 	}
-
 
 
 def get_messages_around_base(channel_id: str, base_message: str):
@@ -272,7 +163,6 @@ def fetch_older_messages(
 			message.hide_link_preview,
 			message.is_thread,
 			message.blurhash,
-			message.sequence,
 		)
 		.where(message.channel_id == channel_id)
 		.where(
@@ -342,12 +232,14 @@ def fetch_newer_messages(
 	limit: int = 20,
 	include_from_message: bool = False,
 ):
+
 	message = frappe.qb.DocType("Raven Message")
 
 	if include_from_message:
 		condition = (message.creation > from_timestamp) | (
 			(message.creation == from_timestamp) & (message.name >= from_message)
 		)
+
 	else:
 		condition = (message.creation > from_timestamp) | (
 			(message.creation == from_timestamp) & (message.name > from_message)
@@ -383,7 +275,6 @@ def fetch_newer_messages(
 			message.hide_link_preview,
 			message.is_thread,
 			message.blurhash,
-			message.sequence  # 👈 Thêm trường sequence vào đây
 		)
 		.where(message.channel_id == channel_id)
 		.where(condition)
@@ -395,7 +286,9 @@ def fetch_newer_messages(
 
 	has_new_messages = False
 
+	# Check if newer messages are available
 	if len(messages) == limit:
+		# Check if there are more messages available
 		newer_message = frappe.db.get_all(
 			"Raven Message",
 			pluck="name",
@@ -407,8 +300,10 @@ def fetch_newer_messages(
 			order_by="creation asc, name asc",
 			limit=1,
 		)
+
 		if len(newer_message) > 0:
 			has_new_messages = True
 
+	# The messages are in ascending order, so reverse them
 	messages.reverse()
 	return {"messages": messages, "has_new_messages": has_new_messages}

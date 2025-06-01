@@ -54,7 +54,6 @@ class RavenMessage(Document):
 		notification: DF.Data | None
 		poll_id: DF.Link | None
 		replied_message_details: DF.JSON | None
-		sequence: DF.Int
 		text: DF.LongText | None
 		thumbnail_height: DF.Data | None
 		thumbnail_width: DF.Data | None

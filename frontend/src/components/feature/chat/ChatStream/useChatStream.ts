@@ -1,34 +1,24 @@
-// useChatStream.ts - Updated for better initial load handling with new message tracking
-import { MutableRefObject, useCallback, useEffect } from 'react'
-import { VirtuosoHandle } from 'react-virtuoso'
+import { MutableRefObject, useEffect } from 'react'
 import { useMessageAPI } from './useMessageAPI'
 import { useMessageHighlight } from './useMessageHighlight'
 import { useMessageLoading } from './useMessageLoading'
 import { useMessageProcessing } from './useMessageProcessing'
 import { useMessageState } from './useMessageState'
 import { useScrollBehavior } from './useScrollBehavior'
+import { useScrollHandling } from './useScrollHandling'
 import { useWebSocketEvents } from './useWebSocketEvents'
 
 const useChatStream = (
   channelID: string,
-  virtuosoRef: MutableRefObject<VirtuosoHandle | null>,
-  pinnedMessagesString?: string,
-  isAtBottom?: boolean
+  scrollRef: MutableRefObject<HTMLDivElement | null>,
+  pinnedMessagesString?: string
 ) => {
   // Initialize all state and refs
   const messageState = useMessageState()
-  const { scrollToBottom, scrollToMessage: scrollToMessageElement } = useScrollBehavior(virtuosoRef)
+  const { scrollToBottom, scrollToMessage: scrollToMessageElement } = useScrollBehavior(scrollRef)
 
   // Handle message highlighting
   useMessageHighlight(messageState.highlightedMessage, messageState.setHighlightedMessage)
-
-  // Callback để handle tin nhắn mới được thêm
-  const handleNewMessageAdded = useCallback(
-    (messageId: string) => {
-      messageState.addNewMessage(messageId)
-    },
-    [messageState.addNewMessage]
-  )
 
   // API calls and data fetching
   const api = useMessageAPI(
@@ -36,25 +26,22 @@ const useChatStream = (
     messageState.selected_message,
     messageState.highlightedMessage,
     scrollToBottom,
-    (messageID: string) => scrollToMessageElement(messageID, []), // Will be updated with actual messages
+    scrollToMessageElement,
     messageState.latestMessagesLoaded
   )
 
-  // Process and format messages
-  const messages = useMessageProcessing(api.data, pinnedMessagesString)
-
-  // WebSocket event handling với callback cho tin nhắn mới
+  // WebSocket event handling
   useWebSocketEvents(
     channelID,
     api.mutate,
+    scrollRef,
     scrollToBottom,
     messageState.setHasNewMessages,
     messageState.setNewMessageCount,
-    handleNewMessageAdded, // Truyền callback
-    isAtBottom
+    messageState.setUnreadMessageIds
   )
 
-  // Message loading functionality for Virtuoso
+  // Message loading functionality
   const { loadOlderMessages, loadNewerMessages } = useMessageLoading(
     api.data,
     api.mutate,
@@ -63,48 +50,52 @@ const useChatStream = (
     api.loadingOlderMessages,
     api.loadingNewerMessages,
     channelID,
-    virtuosoRef,
+    scrollRef,
     messageState.highlightedMessage,
     scrollToBottom,
     messageState.latestMessagesLoaded
   )
 
-  // Channel switch effect - scroll to bottom when channel changes
+  // Process and format messages
+  const messages = useMessageProcessing(api.data, pinnedMessagesString)
+
+  // Scroll handling
+  useScrollHandling(
+    scrollRef,
+    messageState.setNewMessageCount,
+    messageState.setSearchParams,
+    messageState.setHasNewMessages,
+    messageState.setShowScrollToBottomButton,
+    messageState.unreadMessageIds,
+    messageState.setUnreadMessageIds,
+    messageState.messageRefs
+  )
+
+  // Channel switch effect
   useEffect(() => {
     if (!messageState.searchParams.get('message_id')) {
-      // Use a small delay to ensure Virtuoso is ready
-      const timer = setTimeout(() => {
-        if (virtuosoRef.current) {
-          virtuosoRef.current.scrollToIndex({
-            index: 'LAST',
-            behavior: 'auto',
-            align: 'end'
-          })
-        }
-      }, 50)
-      return () => clearTimeout(timer)
+      scrollToBottom()
     }
-  }, [channelID])
-
-  // Reset tin nhắn mới khi chuyển channel
-  useEffect(() => {
-    messageState.clearAllNewMessages()
-  }, [channelID])
+  }, [channelID, scrollToBottom])
 
   // Track visit on unmount
   useEffect(() => {
     return () => {
       if (messageState.latestMessagesLoaded.current) {
-        const lastReadMessage = localStorage.getItem(`lastReadMessage_${channelID}`)
-        api.trackVisit({ channel_id: channelID, last_seen_sequence: Number(lastReadMessage) })
+        api.trackVisit({ channel_id: channelID })
       }
     }
   }, [channelID])
 
   // Scroll to message function
   const scrollToMessage = (messageID: string) => {
-    if (messages) {
-      scrollToMessageElement(messageID, messages)
+    const messageIndex = messages?.findIndex((message) => message.name === messageID)
+
+    if (messageIndex !== undefined && messageIndex !== -1) {
+      document.getElementById(`message-${messageID}`)?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      })
       messageState.setHighlightedMessage(messageID)
     } else {
       messageState.setSearchParams({ message_id: messageID })
@@ -116,8 +107,10 @@ const useChatStream = (
   const goToLatestMessages = () => {
     messageState.setSearchParams({})
     messageState.setHasNewMessages(false)
+    messageState.setUnreadMessageIds(new Set())
+    scrollToBottom('smooth')
     messageState.setNewMessageCount(0)
-    scrollToBottom('auto')
+    messageState.setShowScrollToBottomButton(false)
   }
 
   return {
@@ -135,13 +128,8 @@ const useChatStream = (
     scrollToMessage,
     highlightedMessage: messageState.highlightedMessage,
     goToLatestMessages,
-    setHasNewMessages: messageState.setHasNewMessages,
-    setNewMessageCount: messageState.setNewMessageCount,
-    // Export các function mới để quản lý tin nhắn mới
-    newMessageIds: messageState.newMessageIds,
-    markMessageAsSeen: messageState.markMessageAsSeen,
-    clearAllNewMessages: messageState.clearAllNewMessages,
-    scrollToBottom
+    messageRefs: messageState.messageRefs,
+    showScrollToBottomButton: messageState.showScrollToBottomButton
   }
 }
 

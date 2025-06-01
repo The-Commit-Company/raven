@@ -1,21 +1,18 @@
+// 2. ScrollToBottomButtons.tsx - Component quản lý các nút scroll
 import { FiArrowDown, FiMessageCircle } from 'react-icons/fi'
 
 interface ScrollToBottomButtonsProps {
   hasNewMessages: boolean
   newMessageCount: number
+  showScrollToBottomButton: boolean
   onGoToLatestMessages: () => void
-  onScrollToBottom: () => void
-  isAtBottom?: boolean
-  messages?: any
 }
 
 export const ScrollToBottomButtons = ({
   hasNewMessages,
   newMessageCount,
-  onGoToLatestMessages,
-  onScrollToBottom,
-  isAtBottom,
-  messages
+  showScrollToBottomButton,
+  onGoToLatestMessages
 }: ScrollToBottomButtonsProps) => {
   return (
     <>
@@ -50,7 +47,8 @@ export const ScrollToBottomButtons = ({
         </div>
       )}
 
-      {!hasNewMessages && !isAtBottom && newMessageCount <= 0 && messages?.length > 0 && (
+      {/* Nút scroll đến cuối */}
+      {!hasNewMessages && showScrollToBottomButton && (
         <div className='fixed bottom-40 z-50 right-4 sm:right-10'>
           <div
             className='
@@ -58,7 +56,7 @@ export const ScrollToBottomButtons = ({
               bg-white border-gray-200 text-gray-600
               dark:bg-[#2a2f3a] dark:border-[#39424f] dark:text-[#b0b8c4] dark:group-hover:text-white
             '
-            onClick={onScrollToBottom}
+            onClick={onGoToLatestMessages}
           >
             <FiArrowDown size={20} />
           </div>

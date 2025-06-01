@@ -1,25 +1,19 @@
-// useWebSocketEvents.ts - WebSocket events handler for Virtuoso with new message tracking
 import { UserContext } from '@/utils/auth/UserProvider'
 import { useFrappeDocumentEventListener, useFrappeEventListener } from 'frappe-react-sdk'
-import { useContext } from 'react'
+import { MutableRefObject, useContext } from 'react'
 
 export const useWebSocketEvents = (
   channelID: string,
   mutate: any,
-  scrollToBottom: (behavior?: 'smooth' | 'auto') => void,
+  scrollRef: MutableRefObject<HTMLDivElement | null>,
+  scrollToBottom: (behavior?: ScrollBehavior) => void,
   setHasNewMessages: (hasNew: boolean) => void,
   setNewMessageCount: (count: number | ((prev: number) => number)) => void,
-  // Thêm callback để track tin nhắn mới
-  onNewMessageAdded?: (messageId: string) => void,
-  isAtBottom?: boolean
+  setUnreadMessageIds: (ids: Set<string> | ((prev: Set<string>) => Set<string>)) => void
 ) => {
   const { currentUser } = useContext(UserContext)
 
-  // Placeholder cho Raven Channel listener (có thể mở rộng sau)
-  useFrappeDocumentEventListener('Raven Channel', channelID ?? '', () => {
-    console.debug(`Raven Channel event received for channel: ${channelID}`)
-    // TODO: Thêm logic cập nhật metadata kênh nếu cần
-  })
+  useFrappeDocumentEventListener('Raven Channel', channelID ?? '', () => {})
 
   // Message created event
   useFrappeEventListener('message_created', (event) => {
@@ -44,12 +38,20 @@ export const useWebSocketEvents = (
 
         newMessages.sort((a: any, b: any) => new Date(b.creation).getTime() - new Date(a.creation).getTime())
 
-        const isFromOtherUser = event.message_details?.owner !== currentUser
+        // Handle unread messages
+        if (scrollRef.current) {
+          const isNearBottom =
+            scrollRef.current.scrollTop + scrollRef.current.clientHeight >= scrollRef.current.scrollHeight - 100
 
-        if (isFromOtherUser && !isAtBottom) {
-          setNewMessageCount((count) => count + 1)
-          setHasNewMessages(true)
-          onNewMessageAdded?.(event.message_details.name)
+          if (!isNearBottom && event.message_details.owner !== currentUser) {
+            setNewMessageCount((count) => count + 1)
+            setUnreadMessageIds((prev) => {
+              const newSet = new Set(prev)
+              newSet.add(event.message_details.name)
+              setNewMessageCount(newSet.size)
+              return newSet
+            })
+          }
         }
 
         return {
@@ -63,10 +65,14 @@ export const useWebSocketEvents = (
       { revalidate: false }
     ).then(() => {
       const isFromOtherUser = event.message_details?.owner !== currentUser
+      const isUserNearBottom =
+        scrollRef.current &&
+        scrollRef.current.scrollTop + scrollRef.current.clientHeight >= scrollRef.current.scrollHeight - 100
 
-      // For messages from current user, always scroll to bottom
-      if (!isFromOtherUser) {
-        scrollToBottom('auto')
+      if (isFromOtherUser && !isUserNearBottom) {
+        setHasNewMessages(true)
+      } else {
+        scrollToBottom('smooth')
       }
     })
   })

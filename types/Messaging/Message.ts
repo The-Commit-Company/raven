@@ -24,7 +24,6 @@ export interface BaseMessage {
     hide_link_preview?: 1 | 0,
     is_thread: 1 | 0,
     is_pinned: 1 | 0,
-    sequence: number
     content?: string
 }
 
