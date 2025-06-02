@@ -1,4 +1,5 @@
 import { MutableRefObject } from 'react'
+import { VirtuosoHandle } from 'react-virtuoso'
 import { Message } from '../../../../../../types/Messaging/Message'
 
 export const useMessageLoading = (
@@ -9,9 +10,9 @@ export const useMessageLoading = (
   loadingOlderMessages: boolean,
   loadingNewerMessages: boolean,
   channelID: string,
-  scrollRef: MutableRefObject<HTMLDivElement | null>,
+  virtuosoRef: MutableRefObject<VirtuosoHandle | null>,
   highlightedMessage: string | null,
-  scrollToBottom: (behavior?: ScrollBehavior) => void,
+  scrollToBottom: (behavior?: 'auto' | 'smooth') => void,
   latestMessagesLoadedRef: MutableRefObject<boolean>
 ) => {
   const loadOlderMessages = () => {
@@ -19,11 +20,7 @@ export const useMessageLoading = (
       return Promise.resolve()
     }
 
-    const scrollContainer = scrollRef.current
-    if (!scrollContainer) return Promise.resolve()
-
-    const previousScrollHeight = scrollContainer.scrollHeight
-    const previousScrollTop = scrollContainer.scrollTop
+    if (!virtuosoRef.current) return Promise.resolve()
 
     return mutate(
       (d: any) => {
@@ -56,11 +53,13 @@ export const useMessageLoading = (
       },
       { revalidate: false }
     ).then(() => {
+      const scrollContainer = virtuosoRef.current
       requestAnimationFrame(() => {
         if (scrollContainer) {
-          const newScrollHeight = scrollContainer.scrollHeight
-          const heightDifference = newScrollHeight - previousScrollHeight
-          scrollContainer.scrollTop = previousScrollTop + heightDifference
+          scrollContainer.scrollToIndex({
+            index: 0,
+            behavior: 'auto'
+          })
         }
       })
     })

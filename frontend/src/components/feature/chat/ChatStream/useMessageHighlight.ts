@@ -9,7 +9,7 @@ export const useMessageHighlight = (
     if (highlightedMessage) {
       timer = setTimeout(() => {
         setHighlightedMessage(null)
-      }, 3000)
+      }, 4000)
     }
 
     return () => {
