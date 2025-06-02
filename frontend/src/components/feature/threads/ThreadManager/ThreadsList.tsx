@@ -1,13 +1,13 @@
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
+import BeatLoader from '@/components/layout/Loaders/BeatLoader'
+import useUnreadThreadsCount from '@/hooks/useUnreadThreadsCount'
+import { Flex, Text } from '@radix-ui/themes'
+import { FrappeConfig, FrappeContext, FrappeError, useSWRInfinite } from 'frappe-react-sdk'
+import { useCallback, useContext, useEffect, useMemo, useRef } from 'react'
+import { LuListTree } from 'react-icons/lu'
+import { useParams } from 'react-router-dom'
 import { ThreadPreviewBox } from '../ThreadPreviewBox'
 import { ThreadMessage } from '../Threads'
-import { FrappeConfig, FrappeContext, FrappeError, useSWRInfinite } from 'frappe-react-sdk'
-import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
-import { useParams } from 'react-router-dom'
-import useUnreadThreadsCount from '@/hooks/useUnreadThreadsCount'
-import { useContext, useMemo, useCallback, useRef, useEffect } from 'react'
-import BeatLoader from '@/components/layout/Loaders/BeatLoader'
-import { Flex, Text } from '@radix-ui/themes'
-import { LuListTree } from 'react-icons/lu'
 
 type Props = {
   /** Whether to fetch AI threads */
@@ -143,11 +143,17 @@ const ThreadsList = ({
       )
     }
 
-    // Need to cast to any due to TypeScript's DOM event types
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const handleThreadCreated = (event: CustomEvent) => {
+      mutate()
+    }
+
     window.addEventListener('thread_updated', handleThreadUpdate as any)
+    window.addEventListener('thread_created', handleThreadCreated as any)
 
     return () => {
       window.removeEventListener('thread_updated', handleThreadUpdate as any)
+      window.removeEventListener('thread_created', handleThreadCreated as any)
     }
   }, [mutate])
 
