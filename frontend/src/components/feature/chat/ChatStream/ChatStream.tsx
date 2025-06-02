@@ -35,14 +35,22 @@ type Props = {
 
 const ChatStream = forwardRef<VirtuosoHandle, Props>(
   ({ channelID, replyToMessage, showThreadButton = true, pinnedMessagesString, onModalClose, virtuosoRef }, ref) => {
+    // Get URL params first
+    const location = useLocation()
+    const searchParams = new URLSearchParams(location.search)
+    const isSavedMessage = searchParams.has('message_id')
+    const messageId = searchParams.get('message_id')
+
     // State để track việc initial load đã hoàn thành chưa
     const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false)
     const [isAtBottom, setIsAtBottom] = useState(false)
+    const [hasScrolledToTarget, setHasScrolledToTarget] = useState(false)
 
-    // Reset initial load state khi chuyển channel
+    // Reset initial load state khi chuyển channel HOẶC khi message_id thay đổi
     useEffect(() => {
       setIsInitialLoadComplete(false)
-    }, [channelID])
+      setHasScrolledToTarget(false)
+    }, [channelID, messageId])
 
     // Sử dụng hook chính với Virtuoso ref
     const {
@@ -86,6 +94,59 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       scrollToMessage(messageID)
     }
 
+    const targetIndex = useMemo(() => {
+      if (!messageId || !messages) return undefined
+      return messages.findIndex((msg) => msg.name === messageId)
+    }, [messageId, messages])
+
+    // Handle scrolling to target message when messages are loaded hoặc khi messageId thay đổi
+    useEffect(() => {
+      if (
+        isInitialLoadComplete &&
+        messageId &&
+        messages &&
+        targetIndex !== undefined &&
+        targetIndex >= 0 &&
+        !hasScrolledToTarget &&
+        virtuosoRef.current
+      ) {
+        // Scroll to target message với delay để đảm bảo DOM đã render
+        setTimeout(() => {
+          if (virtuosoRef.current) {
+            virtuosoRef.current.scrollToIndex({
+              index: targetIndex,
+              behavior: 'auto',
+              align: 'center'
+            })
+            setHasScrolledToTarget(true)
+          }
+        }, 200)
+      }
+    }, [isInitialLoadComplete, messageId, messages, targetIndex, hasScrolledToTarget, virtuosoRef])
+
+    // Effect riêng để handle khi messageId thay đổi trong client-side navigation
+    useEffect(() => {
+      if (messageId && messages && isInitialLoadComplete) {
+        const newTargetIndex = messages.findIndex((msg) => msg.name === messageId)
+        if (newTargetIndex >= 0 && virtuosoRef.current) {
+          // Reset hasScrolledToTarget để trigger scroll lại
+          setHasScrolledToTarget(false)
+
+          // Scroll immediately khi messageId thay đổi
+          setTimeout(() => {
+            if (virtuosoRef.current) {
+              virtuosoRef.current.scrollToIndex({
+                index: newTargetIndex,
+                behavior: 'auto',
+                align: 'center'
+              })
+              setHasScrolledToTarget(true)
+            }
+          }, 100)
+        }
+      }
+    }, [messageId, messages, isInitialLoadComplete, virtuosoRef])
+
     // Imperative handle cho up arrow
     useImperativeHandle(ref, () => {
       if (!virtuosoRef.current) {
@@ -105,7 +166,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       }
 
       return handle
-    })
+    }, [messages, userID, editActions.setEditMessage])
 
     // Item renderer cho Virtuoso
     const itemRenderer = useCallback(
@@ -176,11 +237,12 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
         // 1. Initial load đã hoàn thành
         // 2. User đang ở top
         // 3. Còn tin nhắn cũ để load
-        if (atTop && hasOlderMessages && isInitialLoadComplete) {
+        // 4. Không phải đang scroll đến target message
+        if (atTop && hasOlderMessages && isInitialLoadComplete && (!isSavedMessage || hasScrolledToTarget)) {
           loadOlderMessages()
         }
       },
-      [hasOlderMessages, loadOlderMessages, isInitialLoadComplete]
+      [hasOlderMessages, loadOlderMessages, isInitialLoadComplete, isSavedMessage, hasScrolledToTarget]
     )
 
     const handleAtBottomStateChange = useCallback(
@@ -233,7 +295,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
         Header: isInitialLoadComplete && hasOlderMessages ? Header : undefined,
         Footer: hasNewMessages ? Footer : undefined
       }),
-      [isInitialLoadComplete, hasOlderMessages, hasNewMessages]
+      [isInitialLoadComplete, hasOlderMessages, hasNewMessages, Header, Footer]
     )
 
     const scrollActionToBottom = useCallback(() => {
@@ -247,15 +309,6 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
         })
       }
     }, [messages, virtuosoRef])
-
-    const location = useLocation()
-    const searchParams = new URLSearchParams(location.search)
-    const isSavedMessage = searchParams.has('message_id')
-    const messageId = searchParams.get('message_id')
-    const targetIndex = useMemo(() => {
-      if (!messageId || !messages) return undefined
-      return messages.findIndex((msg) => msg.name === messageId)
-    }, [messageId, messages])
 
     return (
       <div className='relative h-full flex flex-col overflow-hidden pb-16 sm:pb-0'>

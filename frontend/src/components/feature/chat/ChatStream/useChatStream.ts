@@ -69,9 +69,10 @@ const useChatStream = (
     messageState.latestMessagesLoaded
   )
 
-  // Channel switch effect - scroll to bottom when channel changes
+  // Channel switch effect - chỉ scroll to bottom khi KHÔNG có message_id
   useEffect(() => {
-    if (!messageState.searchParams.get('message_id')) {
+    const messageId = messageState.searchParams.get('message_id')
+    if (!messageId) {
       // Use a small delay to ensure Virtuoso is ready
       const timer = setTimeout(() => {
         if (virtuosoRef.current) {
@@ -84,12 +85,21 @@ const useChatStream = (
       }, 50)
       return () => clearTimeout(timer)
     }
-  }, [channelID])
+  }, [channelID, messageState.searchParams])
+
+  // Effect để handle khi có message_id trong URL - trigger highlight
+  useEffect(() => {
+    const messageId = messageState.searchParams.get('message_id')
+    if (messageId && messages) {
+      // Set highlighted message khi có message_id trong URL
+      messageState.setHighlightedMessage(messageId)
+    }
+  }, [messageState.searchParams, messages, messageState.setHighlightedMessage])
 
   // Reset tin nhắn mới khi chuyển channel
   useEffect(() => {
     messageState.clearAllNewMessages()
-  }, [channelID])
+  }, [channelID, messageState.clearAllNewMessages])
 
   // Track visit on unmount
   useEffect(() => {
@@ -98,7 +108,7 @@ const useChatStream = (
         api.trackVisit({ channel_id: channelID })
       }
     }
-  }, [channelID])
+  }, [channelID, api.trackVisit, messageState.latestMessagesLoaded])
 
   // Scroll to message function
   const scrollToMessage = (messageID: string) => {
