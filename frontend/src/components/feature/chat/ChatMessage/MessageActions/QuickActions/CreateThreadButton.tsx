@@ -1,3 +1,4 @@
+import eventBus from '@/utils/event-emitter'
 import { useSidebarMode } from '@/utils/layout/sidebar'
 import { ContextMenu, Flex } from '@radix-ui/themes'
 import { useFrappePostCall } from 'frappe-react-sdk'
@@ -21,13 +22,10 @@ const useCreateThread = (messageID: string) => {
         toast.success('Thread created')
 
         if (title === 'Chủ đề') {
-          const event = new CustomEvent('thread_created', {
-            detail: {
-              threadId: res.message.thread_id,
-              messageId: messageID
-            }
+          eventBus.emit('thread:created', {
+            threadId: res.message.thread_id,
+            messageId: messageID
           })
-          window.dispatchEvent(event)
         }
 
         navigate(`/${workspaceID}/threads/${res.message.thread_id}`)
