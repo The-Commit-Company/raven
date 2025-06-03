@@ -61,20 +61,40 @@ export default function FilterTabs() {
             const isActive = tab.label === title
             const badgeCount = getBadgeCount(tab.label)
 
+            const isSingleTab = tabsToRender.length === 1
+
             return (
-              <button
+              <div
                 key={tab.label}
-                onClick={() => handleClick(tab.label)}
-                className={clsx(
-                  'relative truncate px-2 py-0.5 rounded-full text-xs font-medium text-center',
-                  tabsToRender.length === 1 ? 'w-1/3' : 'flex-1',
-                  isActive ? 'bg-white dark:bg-gray-500 dark:text-gray-200 text-black' : 'bg-transparent text-zinc-400',
-                  tabsToRender.length === 1 && isActive && 'border border-gray-300 dark:border-gray-600'
-                )}
+                className={clsx('relative flex items-center justify-center', isSingleTab ? 'w-1/3' : 'flex-1')}
               >
-                <span>{tab.label}</span>
-                {badgeCount > 0 && <span className='text-[10px] px-1 rounded-full leading-none'>{badgeCount}</span>}
-              </button>
+                <button
+                  onClick={() => handleClick(tab.label)}
+                  className={clsx(
+                    'relative truncate px-2 py-0.5 rounded-full text-xs font-medium text-center w-full pr-5',
+                    isActive
+                      ? 'bg-white dark:bg-gray-500 dark:text-gray-200 text-black'
+                      : 'bg-transparent text-zinc-400',
+                    isSingleTab && isActive && 'border border-gray-300 dark:border-gray-600'
+                  )}
+                >
+                  <span>{tab.label}</span>
+                  {badgeCount > 0 && <span className='text-[10px] px-1 rounded-full leading-none'>{badgeCount}</span>}
+
+                  {/* ❌ Nút X nằm bên trong button */}
+                  {isSingleTab && (
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleClick('Trò chuyện')
+                      }}
+                      className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-[10px] cursor-pointer'
+                    >
+                      ✕
+                    </span>
+                  )}
+                </button>
+              </div>
             )
           })}
         </div>
