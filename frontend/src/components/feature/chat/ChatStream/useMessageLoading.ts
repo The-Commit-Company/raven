@@ -57,7 +57,6 @@ export const useMessageLoading = (
       },
       { revalidate: false }
     ).then(() => {
-      console.log('loadOlderMessages')
       if (!highlightedMessage && virtuosoRef.current) {
         requestAnimationFrame(() => {
           if (virtuosoRef.current) {
