@@ -70,47 +70,6 @@ export const TextFormattingMenu = memo(() => {
       </Flex>
       <Separator orientation='vertical' />
       <Flex gap='3' align='center'>
-        <Tooltip content={getKeyboardMetaKeyString() + ' + E'} aria-label={getKeyboardMetaKeyString() + ' + E'}>
-          <IconButton
-            onClick={() => editor.chain().focus().toggleCode().run()}
-            aria-label='code'
-            variant='ghost'
-            size='1'
-            title='Code'
-            className={editor.isActive('code') ? highlightBgColor : DEFAULT_BUTTON_STYLE}
-            disabled={!editor.can().chain().focus().toggleCode().run()}
-          >
-            <BiCodeAlt {...ICON_PROPS} />
-          </IconButton>
-        </Tooltip>
-        <Tooltip
-          content={getKeyboardMetaKeyString() + '+ Shift + E'}
-          aria-label={getKeyboardMetaKeyString() + '+ Shift + E'}
-        >
-          <IconButton
-            onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-            aria-label='code block'
-            variant='ghost'
-            size='1'
-            title='Code Block'
-            className={editor.isActive('codeBlock') ? highlightBgColor : DEFAULT_BUTTON_STYLE}
-            disabled={!editor.can().chain().focus().toggleCodeBlock().run()}
-          >
-            <BiCodeBlock {...ICON_PROPS} />
-          </IconButton>
-        </Tooltip>
-        {/* <Tooltip content={getKeyboardMetaKeyString() + ' + Shift + X'} aria-label={getKeyboardMetaKeyString() + ' + Shift + X'}> */}
-        <IconButton
-          onClick={() => editor.chain().focus().toggleStrike().run()}
-          aria-label='strike'
-          variant='ghost'
-          size='1'
-          title='Strike'
-          className={editor.isActive('strike') ? highlightBgColor : DEFAULT_BUTTON_STYLE}
-          disabled={!editor.can().chain().focus().toggleStrike().run()}
-        >
-          <BiStrikethrough {...ICON_PROPS} />
-        </IconButton>
         {/* </Tooltip> */}
         {/* <Tooltip content={getKeyboardMetaKeyString() + ' + Shift + B'} aria-label={getKeyboardMetaKeyString() + ' + Shift + B'}> */}
         <IconButton
@@ -126,7 +85,6 @@ export const TextFormattingMenu = memo(() => {
         </IconButton>
         {/* </Tooltip> */}
       </Flex>
-      <Separator orientation='vertical' />
       <Flex gap='3' align='center'>
         <Tooltip
           content={getKeyboardMetaKeyString() + ' + Shift + 7'}

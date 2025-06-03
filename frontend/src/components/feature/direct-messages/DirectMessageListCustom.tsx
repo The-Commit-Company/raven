@@ -7,7 +7,7 @@ import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
 import { ContextMenu, Flex, Text, Tooltip } from '@radix-ui/themes'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { useContext, useEffect, useMemo, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { UserContext } from '../../../utils/auth/UserProvider'
 // import { ChannelInfo } from '@/utils/users/CircleUserListProvider'
@@ -32,6 +32,7 @@ import { DoneChannelList } from '../channels/DoneChannelList'
 import MentionList from '../chat/ChatInput/MentionListCustom'
 import ThreadsList from '../threads/ThreadManager/ThreadsList'
 import { MessageSaved } from './DirectMessageSaved'
+import clsx from 'clsx'
 // import { useChannelListRealtimeSync } from '@/utils/channel/useChannelListRealtimeSync'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
@@ -56,6 +57,8 @@ export const useMergedUnreadCount = (
   }[]
 ) => {
   const manuallyMarked = useAtomValue(manuallyMarkedAtom)
+  const { channelID } = useParams()
+  const { state } = useLocation()
 
   return selectedChannels.map((channel) => {
     const found = unreadMessageList.find((m) => m.name === channel.name)
@@ -71,8 +74,22 @@ export const useMergedUnreadCount = (
       }
     }
 
-    // ✅ Nếu channel đã xong thì bỏ unread_count
-    const finalUnreadCount = channel.is_done === 1 ? 0 : isManually ? Math.max(count, 1) : count
+    let finalUnreadCount = count
+
+    const isCurrentChannel = channelID === channel.name
+    const fromBaseMessage = !!state?.baseMessage
+    const isTabVisible = !document.hidden
+
+    if (channel.is_done === 1) {
+      finalUnreadCount = 0
+    } else if (isManually) {
+      finalUnreadCount = Math.max(count, 1)
+    }
+
+    // ✅ Nếu đang ở đúng channel, tab đang mở, và không mở từ baseMessage → bỏ count
+    if (isCurrentChannel && isTabVisible && !fromBaseMessage) {
+      finalUnreadCount = 0
+    }
 
     return {
       ...channel,
@@ -301,10 +318,12 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
       <Flex direction='column' justify='center' className='w-full'>
         <Flex justify='between' align='center'>
           <Text
-            size={{ initial: '3', md: '2' }}
-            className='text-ellipsis line-clamp-1'
             as='span'
-            weight={shouldShowBadge ? 'bold' : 'medium'}
+            className={clsx(
+              'line-clamp-1 text-ellipsis',
+              'text-base md:text-sm xs:text-xs',
+              shouldShowBadge ? 'font-bold' : 'font-medium'
+            )}
           >
             {displayName}
           </Text>

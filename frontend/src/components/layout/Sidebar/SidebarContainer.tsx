@@ -18,7 +18,7 @@ import {
 
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 
-const useMentionUnreadCount = () => {
+export const useMentionUnreadCount = () => {
   const { data: mentionsCount, mutate } = useFrappeGetCall<{ message: number }>(
     'raven.api.mentions.get_unread_mention_count',
     undefined,
@@ -95,25 +95,6 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
               onClick={handleToggleIconMode}
               className={`w-5 h-5 ${!isIconOnly && 'ml-3 mr-2'} p-1 rounded group-hover:bg-gray-200 dark:group-hover:bg-gray-700`}
             />
-
-            {/* {isCollapsed && renderCollapsedPopup()} */}
-
-            {/* {!isCollapsed && (
-              <div
-                className='absolute left-0 w-44 z-50 hidden group-hover:block
-                  bg-white dark:bg-gray-1 border border-gray-200 dark:border-gray-700
-                  rounded-md shadow-md'
-              >
-                <ul className='py-1'>
-                  <li
-                    className='flex items-center gap-2 px-3 py-1 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer'
-                  >
-                    <HiOutlineViewGrid className='w-4 h-4' />
-                    {isIconOnly ? 'Hiển thị bộ lọc' : 'Chỉ hiển thị biểu tượng'}
-                  </li>
-                </ul>
-              </div>
-            )} */}
           </span>
           {!isCollapsed && !isIconOnly && <span className='text-base'>Bộ lọc</span>}
         </div>

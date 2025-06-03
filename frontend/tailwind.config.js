@@ -5,6 +5,7 @@ export default {
     extend: {
       width: {
         40: '10rem',
+        50: '12rem',
         100: '100%'
       },
       colors: {
