@@ -354,7 +354,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
             atTopStateChange={handleAtTopStateChange}
             atBottomStateChange={handleAtBottomStateChange}
             rangeChanged={handleRangeChanged}
-            computeItemKey={(index, item) => item?.name}
+            computeItemKey={(index, item) => item?.name ?? `fallback-${index}`}
             components={virtuosoComponents}
             style={{ height: '100%', willChange: 'transform' }}
             increaseViewportBy={300}
