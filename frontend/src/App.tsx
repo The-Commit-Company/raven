@@ -111,7 +111,8 @@ const router = createBrowserRouter(
               <Route path=":ID" lazy={() => import('./pages/settings/AI/ViewSavedPrompt')} />
             </Route>
 
-            <Route path="openai-settings" lazy={() => import('./pages/settings/AI/OpenAISettings')} />
+            <Route path="ai-settings" lazy={() => import('./pages/settings/AI/AISettings')} />
+            <Route path="openai-settings" lazy={() => import('./pages/settings/AI/AISettings')} /> {/* Redirect for backwards compatibility */}
 
             <Route path="webhooks">
               <Route index lazy={() => import('./pages/settings/Webhooks/WebhookList')} />
