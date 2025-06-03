@@ -4,16 +4,20 @@ import { atomWithStorage } from 'jotai/utils'
 import { useContext, useMemo } from 'react'
 import { DirectMessageList } from '../../feature/direct-messages/DirectMessageListCustom'
 import CircleUserList from './CircleUserList'
+import { useIsTablet } from '@/hooks/useMediaQuery'
+import IsTabletSidebarNav from './IsTabletSidebarNav'
 
 export const showOnlyMyChannelsAtom = atomWithStorage('showOnlyMyChannels', false)
 
 export type SidebarBodyProps = {
-  size: number
+  size: number 
 }
 
 export const SidebarBody = ({ size }: SidebarBodyProps) => {
   // const unread_count = useFetchUnreadMessageCount()
   const { channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
+
+  const isTablet = useIsTablet()
 
   // const { workspaceID } = useParams()
 
@@ -43,6 +47,7 @@ export const SidebarBody = ({ size }: SidebarBodyProps) => {
       <Flex direction='column' gap='2' className='overflow-x-hidden pb-12 sm:pb-0' px='2'>
         <Flex direction='column' gap='1' className='pb-0.5'></Flex>
         <CircleUserList size={size} />
+        {isTablet && <IsTabletSidebarNav/>}
         {/* <PinnedChannels unread_count={unread_count?.message} /> */}
         <DirectMessageList dm_channels={sortedChannels} />
       </Flex>
