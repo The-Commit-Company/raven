@@ -1,4 +1,3 @@
-// useWebSocketEvents.ts - WebSocket events handler for Virtuoso with new message tracking
 import { UserContext } from '@/utils/auth/UserProvider'
 import { useFrappeDocumentEventListener, useFrappeEventListener } from 'frappe-react-sdk'
 import { useContext } from 'react'
@@ -15,19 +14,16 @@ export const useWebSocketEvents = (
 ) => {
   const { currentUser } = useContext(UserContext)
 
-  // Placeholder cho Raven Channel listener (có thể mở rộng sau)
   useFrappeDocumentEventListener('Raven Channel', channelID ?? '', () => {
     console.debug(`Raven Channel event received for channel: ${channelID}`)
-    // TODO: Thêm logic cập nhật metadata kênh nếu cần
   })
 
-  // Message created event
   useFrappeEventListener('message_created', (event) => {
     if (event.channel_id !== channelID) return
 
     mutate(
       (d: any) => {
-        if (!d || d.message.has_new_messages !== false) return d
+        if (!d) return d
 
         const existingMessages = d.message.messages ?? []
         const newMessages = [...existingMessages]
@@ -44,19 +40,11 @@ export const useWebSocketEvents = (
 
         newMessages.sort((a: any, b: any) => new Date(b.creation).getTime() - new Date(a.creation).getTime())
 
-        const isFromOtherUser = event.message_details?.owner !== currentUser
-
-        if (isFromOtherUser && !isAtBottom) {
-          setNewMessageCount((count) => count + 1)
-          setHasNewMessages(true)
-          onNewMessageAdded?.(event.message_details.name)
-        }
-
         return {
           message: {
             messages: newMessages,
             has_old_messages: d.message.has_old_messages ?? false,
-            has_new_messages: false
+            has_new_messages: d.message.has_new_messages ?? false
           }
         }
       },
@@ -64,9 +52,14 @@ export const useWebSocketEvents = (
     ).then(() => {
       const isFromOtherUser = event.message_details?.owner !== currentUser
 
-      // For messages from current user, always scroll to bottom
       if (!isFromOtherUser) {
         scrollToBottom('auto')
+      }
+
+      if (isFromOtherUser && !isAtBottom) {
+        setNewMessageCount((count) => count + 1)
+        setHasNewMessages(true)
+        onNewMessageAdded?.(event.message_details.name)
       }
     })
   })

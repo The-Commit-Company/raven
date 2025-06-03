@@ -57,11 +57,12 @@ export const useMessageLoading = (
       },
       { revalidate: false }
     ).then(() => {
+      console.log('loadOlderMessages')
       if (!highlightedMessage && virtuosoRef.current) {
         requestAnimationFrame(() => {
           if (virtuosoRef.current) {
             virtuosoRef.current.scrollToIndex({
-              index: 1,
+              index: 5,
               behavior: 'auto'
             })
           }

@@ -1,3 +1,4 @@
+// ChatStream.tsx - Fixed version
 import { Loader } from '@/components/common/Loader'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState/EmptyState'
@@ -43,20 +44,32 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
     const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false)
     const [isAtBottom, setIsAtBottom] = useState(false)
     const [hasScrolledToTarget, setHasScrolledToTarget] = useState(false)
-    const [hasPinnedMessageInView, setHasPinnedMessageInView] = useState(false)
     const [isLoadingMessages, setIsLoadingMessages] = useState(false)
     const userHasScrolledRef = useRef(false)
     const lastScrollTopRef = useRef(0)
+    const hasInitialLoadedWithMessageId = useRef(false)
 
     //reset state khi channelID hoặc messageId thay đổi
     useEffect(() => {
       setIsInitialLoadComplete(false)
       setHasScrolledToTarget(false)
-      setHasPinnedMessageInView(false)
       setIsLoadingMessages(false)
       userHasScrolledRef.current = false
       lastScrollTopRef.current = 0
+      // Reset flag khi thay đổi channel hoặc message_id
+      hasInitialLoadedWithMessageId.current = false
     }, [channelID, messageId])
+
+    // FIX: Đánh dấu đã initial load với message_id để tránh auto-load ngay lập tức
+    useEffect(() => {
+      if (messageId && isInitialLoadComplete && !hasInitialLoadedWithMessageId.current) {
+        hasInitialLoadedWithMessageId.current = true
+        // Cho một khoảng thời gian ngắn để tránh auto-load ngay sau khi mount
+        setTimeout(() => {
+          hasInitialLoadedWithMessageId.current = false
+        }, 2000) // 2 giây đủ để tránh auto-load không mong muốn
+      }
+    }, [messageId, isInitialLoadComplete])
 
     const {
       messages,
@@ -101,16 +114,6 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       return messages.findIndex((msg) => msg.name === messageId)
     }, [messageId, messages])
 
-    //Kiểm tra xem tin nhắn cần tìm có thực sự nằm trong messages hiện tại hay không.
-    //đánh dấu là có pinned message trong view hay không
-    useEffect(() => {
-      if (messageId && messages && targetIndex !== undefined && targetIndex >= 0) {
-        setHasPinnedMessageInView(true)
-      } else if (messageId && messages && targetIndex === -1) {
-        setHasPinnedMessageInView(false)
-      }
-    }, [messageId, messages, targetIndex])
-
     //Tự động scroll đến tin nhắn cần tìm khi đã load xong tin nhắn ban đầu, chưa scroll thủ công và chưa scroll đến trước đó.
     useEffect(() => {
       if (
@@ -121,11 +124,10 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
         targetIndex >= 0 &&
         !hasScrolledToTarget &&
         !isLoadingMessages &&
-        !userHasScrolledRef.current &&
         virtuosoRef.current
       ) {
         setTimeout(() => {
-          if (virtuosoRef.current && !userHasScrolledRef.current) {
+          if (virtuosoRef.current) {
             virtuosoRef.current.scrollToIndex({
               index: targetIndex,
               behavior: 'auto',
@@ -139,13 +141,13 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
 
     //Nếu thay đổi messageId, tự động scroll lại để đảm bảo đúng vị trí.
     useEffect(() => {
-      if (messageId && messages && isInitialLoadComplete && !isLoadingMessages && !userHasScrolledRef.current) {
+      if (messageId && messages && isInitialLoadComplete && !isLoadingMessages) {
         const newTargetIndex = messages.findIndex((msg) => msg.name === messageId)
         if (newTargetIndex >= 0 && virtuosoRef.current) {
           setHasScrolledToTarget(false)
 
           setTimeout(() => {
-            if (virtuosoRef.current && !userHasScrolledRef.current) {
+            if (virtuosoRef.current) {
               virtuosoRef.current.scrollToIndex({
                 index: newTargetIndex,
                 behavior: 'auto',
@@ -276,7 +278,13 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       (range: any) => {
         if (!messages || !isInitialLoadComplete) return
 
-        const shouldLoadNewer = hasNewMessages && range && range.endIndex >= messages.length - 5 && !isLoadingMessages
+        // FIX: Chỉ tránh auto-load trong khoảng thời gian ngắn sau khi initial load với message_id
+        const shouldLoadNewer =
+          hasNewMessages &&
+          range &&
+          range.endIndex >= messages.length - 5 &&
+          !isLoadingMessages &&
+          !hasInitialLoadedWithMessageId.current // Chỉ tránh auto-load trong thời gian ngắn sau initial load
 
         if (shouldLoadNewer) {
           setIsLoadingMessages(true)
@@ -285,7 +293,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
           })
         }
 
-        // Track tin nhắn đã được xem trong viewport
+        // Track tin nhắn đã được xem trong viewport - KHÔNG phụ thuộc vào message_id
         if (range && newMessageIds.size > 0) {
           const visibleMessages = messages.slice(range.startIndex, range.endIndex + 1)
 
@@ -305,9 +313,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
         isInitialLoadComplete,
         newMessageIds,
         markMessageAsSeen,
-        isSavedMessage,
-        hasScrolledToTarget,
-        hasPinnedMessageInView
+        isLoadingMessages
       ]
     )
 
@@ -384,6 +390,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
           onGoToLatestMessages={handleGoToLatestMessages}
           onScrollToBottom={scrollActionToBottom}
           isAtBottom={isAtBottom}
+          hasMessageId={!!messageId}
         />
 
         {/* Dialogs */}

@@ -7,18 +7,27 @@ interface ScrollToBottomButtonsProps {
   onGoToLatestMessages: () => void
   onScrollToBottom: () => void
   isAtBottom?: boolean
+  hasMessageId?: boolean
 }
 
 const ScrollToBottomButtons = ({
-  hasNewMessages,
   newMessageCount,
   onGoToLatestMessages,
   onScrollToBottom,
-  isAtBottom
+  isAtBottom,
+  hasMessageId = false
 }: ScrollToBottomButtonsProps) => {
+  // FIX: Ưu tiên hiển thị button tin nhắn mới khi có count > 0 (từ WebSocket)
+  // thay vì chỉ dựa vào hasNewMessages (có thể từ API)
+  const shouldShowNewMessageButton = newMessageCount > 0
+
+  // Logic hiển thị nút scroll to bottom thông thường
+  const shouldShowScrollToBottom = !shouldShowNewMessageButton && !isAtBottom
+
   return (
     <>
-      {hasNewMessages && newMessageCount > 0 && (
+      {/* Button cho tin nhắn mới - hiển thị khi có tin nhắn mới (ưu tiên cao nhất) */}
+      {shouldShowNewMessageButton && (
         <div className='fixed bottom-40 z-50 right-4 sm:right-10'>
           <div
             className='
@@ -49,7 +58,8 @@ const ScrollToBottomButtons = ({
         </div>
       )}
 
-      {!hasNewMessages && !isAtBottom && newMessageCount <= 0 && (
+      {/* Button scroll to bottom - hiển thị khi không có tin nhắn mới và không ở đáy */}
+      {shouldShowScrollToBottom && (
         <div className='fixed bottom-40 z-50 right-4 sm:right-10'>
           <div
             className='
@@ -57,7 +67,7 @@ const ScrollToBottomButtons = ({
               bg-white border-gray-200 text-gray-600
               dark:bg-[#2a2f3a] dark:border-[#39424f] dark:text-[#b0b8c4] dark:group-hover:text-white
             '
-            onClick={onScrollToBottom}
+            onClick={hasMessageId ? onGoToLatestMessages : onScrollToBottom}
           >
             <FiArrowDown size={20} />
           </div>
