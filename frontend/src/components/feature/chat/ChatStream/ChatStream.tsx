@@ -368,7 +368,9 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
             atBottomStateChange={handleAtBottomStateChange}
             rangeChanged={handleRangeChanged}
             components={virtuosoComponents}
-            style={{ height: '100%' }}
+            style={{ height: '100%', willChange: 'transform' }}
+            increaseViewPortby={300}
+            useWindowScroll={false}
             className='pb-4'
             overscan={200}
             initialItemCount={20}
@@ -380,6 +382,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
                 })
               }
             }}
+
           />
         )}
 

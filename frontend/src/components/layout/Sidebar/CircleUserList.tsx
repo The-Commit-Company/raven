@@ -183,24 +183,24 @@ const CircleUserList = ({ size }: { size?: number }) => {
                 if (rowIndex > 0 && !showExtraList) return null
 
                 return (
-                  <div key={rowIndex} className='flex gap-3 w-full flex-wrap items-start'>
+                  <div key={rowIndex} className='flex gap-3 w-full items-start'>
                     {row.map((channelName) => {
                       if (channelName === '__TOGGLE__') {
                         return (
-                          <div key='__TOGGLE__' className='flex flex-col items-center space-y-1 bg-transparent'>
+                          <div key='__TOGGLE__' className='flex flex-col items-center space-y-1 bg-transparent ml-auto'>
                             <button
                               onClick={() => setShowExtraList((prev) => !prev)}
                               className='flex flex-col items-center bg-transparent'
                             >
                               <div className='w-8 h-8 border-2 rounded-full flex items-center justify-center'>
                                 <IoTriangle
-                                  className={`w-3.5 h-3.5 transition-transform duration-200 dark:text-gray-200 ${
+                                  className={`w-3 h-3 transition-transform duration-200 dark:text-gray-200 ${
                                     showExtraList ? '' : '-rotate-180'
                                   }`}
                                 />
                               </div>
                               <span className='text-xs dark:text-gray-200 mt-1'>
-                                {showExtraList ? 'Ẩn bớt' : 'Hiển t..'}
+                                {showExtraList ? 'Ẩn' : 'Hiển t..'}
                               </span>
                             </button>
                           </div>

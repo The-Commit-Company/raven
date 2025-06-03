@@ -110,7 +110,12 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
   )
 }
 
-export function FilterList() {
+
+interface FilterListProps {
+  onClose?: () => void
+}
+
+export function FilterList({ onClose }: FilterListProps) {
   const { title, setTitle, tempMode } = useSidebarMode()
   const isIconOnly = tempMode === 'show-only-icons'
 
@@ -120,6 +125,7 @@ export function FilterList() {
   const handleClick = (label: string) => {
     setTitle(label)
     if (label === 'Nhắc đến') resetMentions()
+    if (onClose) onClose()
   }
 
   return (
