@@ -1,9 +1,11 @@
+import eventBus from '@/utils/event-emitter'
+import { useSidebarMode } from '@/utils/layout/sidebar'
+import { ContextMenu, Flex } from '@radix-ui/themes'
 import { useFrappePostCall } from 'frappe-react-sdk'
-import { toast } from 'sonner'
-import { QuickActionButton } from './QuickActionButton'
 import { BiMessageDetail } from 'react-icons/bi'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ContextMenu, Flex } from '@radix-ui/themes'
+import { toast } from 'sonner'
+import { QuickActionButton } from './QuickActionButton'
 
 const useCreateThread = (messageID: string) => {
   const navigate = useNavigate()
@@ -11,10 +13,21 @@ const useCreateThread = (messageID: string) => {
   const { workspaceID } = useParams()
 
   const { call } = useFrappePostCall('raven.api.threads.create_thread')
+
+  const { title } = useSidebarMode()
+
   const handleCreateThread = () => {
     call({ message_id: messageID })
       .then((res) => {
         toast.success('Thread created')
+
+        if (title === 'Chủ đề') {
+          eventBus.emit('thread:created', {
+            threadId: res.message.thread_id,
+            messageId: messageID
+          })
+        }
+
         navigate(`/${workspaceID}/threads/${res.message.thread_id}`)
       })
       .catch(() => {
@@ -42,7 +55,7 @@ export const CreateThreadContextItem = ({ messageID }: { messageID: string }) =>
     <ContextMenu.Item>
       <Flex gap='2' align='center' width='100%' onClick={handleCreateThread}>
         <BiMessageDetail size='18' />
-        Create Thread
+        Tạo chủ đề
       </Flex>
     </ContextMenu.Item>
   )

@@ -1,9 +1,8 @@
+import { Loader } from '@/components/common/Loader'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { useFrappeCreateDoc, useSWRConfig } from 'frappe-react-sdk'
-import { Box, Flex, Text, Button } from '@radix-ui/themes'
-import { Loader } from '@/components/common/Loader'
-import { ChannelMembers } from '@/hooks/fetchers/useFetchChannelMembers'
+import { Box, Button, Flex, Text } from '@radix-ui/themes'
+import { useFrappeCreateDoc, useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
 import { useParams } from 'react-router-dom'
 interface JoinChannelBoxProps {
   channelData?: ChannelListItem
@@ -13,16 +12,21 @@ interface JoinChannelBoxProps {
 export const JoinChannelBox = ({ channelData, user }: JoinChannelBoxProps) => {
   const { mutate } = useSWRConfig()
   const { threadID } = useParams()
-
+  const { call: trackingCall } = useFrappePostCall('raven.api.raven_channel_member.track_seen')
   const { createDoc, error, loading } = useFrappeCreateDoc()
 
   const joinChannel = async () => {
-    return createDoc('Raven Channel Member', {
-      channel_id: channelData ? channelData?.name : threadID,
-      user_id: user
-    }).then(() => {
-      mutate(['channel_members', channelData ? channelData.name : threadID])
-    })
+    const channel_id = channelData?.name ?? threadID
+    try {
+      await createDoc('Raven Channel Member', {
+        channel_id,
+        user_id: user
+      })
+      await trackingCall({ channel_id })
+      mutate(['channel_members', channel_id])
+    } catch (error) {
+      console.error('Lỗi khi tham gia kênh:', error)
+    }
   }
 
   return (
@@ -36,15 +40,15 @@ export const JoinChannelBox = ({ channelData, user }: JoinChannelBoxProps) => {
       >
         <ErrorBanner error={error} />
         <Text as='span' size={'2'}>
-          You are not a member of this {channelData ? 'channel' : 'thread'}.
+          Bạn không phải là thành viên của {channelData ? 'kênh' : 'chủ đề'} này.
         </Text>
         <Button onClick={joinChannel} size={channelData ? '2' : '1'} disabled={loading}>
           {loading && <Loader className='text-white' />}
           {loading ? (
-            'Joining'
+            'Đang tham gia'
           ) : (
             <span className='inline-flex gap-1 not-cal font-medium'>
-              Join {channelData ? `${channelData?.channel_name}` : 'Conversation'}
+              Tham gia {channelData ? `${channelData?.channel_name}` : 'cuộc trò chuyện'}
             </span>
           )}
         </Button>

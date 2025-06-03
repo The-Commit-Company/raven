@@ -24,5 +24,4 @@ const ChatDialogs = ({ deleteProps, editProps, forwardProps, attachDocProps, rea
     </>
   )
 }
-
 export default memo(ChatDialogs)

@@ -1,4 +1,5 @@
 import { MutableRefObject } from 'react'
+import { VirtuosoHandle } from 'react-virtuoso'
 import { Message } from '../../../../../../types/Messaging/Message'
 
 export const useMessageLoading = (
@@ -9,9 +10,9 @@ export const useMessageLoading = (
   loadingOlderMessages: boolean,
   loadingNewerMessages: boolean,
   channelID: string,
-  scrollRef: MutableRefObject<HTMLDivElement | null>,
+  virtuosoRef: MutableRefObject<VirtuosoHandle | null>,
   highlightedMessage: string | null,
-  scrollToBottom: (behavior?: ScrollBehavior) => void,
+  scrollToBottom: (behavior?: 'auto' | 'smooth') => void,
   latestMessagesLoadedRef: MutableRefObject<boolean>
 ) => {
   const loadOlderMessages = () => {
@@ -19,11 +20,9 @@ export const useMessageLoading = (
       return Promise.resolve()
     }
 
-    const scrollContainer = scrollRef.current
-    if (!scrollContainer) return Promise.resolve()
-
-    const previousScrollHeight = scrollContainer.scrollHeight
-    const previousScrollTop = scrollContainer.scrollTop
+    if (!virtuosoRef.current) {
+      return Promise.resolve()
+    }
 
     return mutate(
       (d: any) => {
@@ -48,7 +47,9 @@ export const useMessageLoading = (
                     }
                   }
                 })
-                .catch(() => d)
+                .catch(() => {
+                  return d
+                })
             }
           }
         }
@@ -56,22 +57,26 @@ export const useMessageLoading = (
       },
       { revalidate: false }
     ).then(() => {
-      requestAnimationFrame(() => {
-        if (scrollContainer) {
-          const newScrollHeight = scrollContainer.scrollHeight
-          const heightDifference = newScrollHeight - previousScrollHeight
-          scrollContainer.scrollTop = previousScrollTop + heightDifference
-        }
-      })
+      console.log('loadOlderMessages')
+      if (!highlightedMessage && virtuosoRef.current) {
+        requestAnimationFrame(() => {
+          if (virtuosoRef.current) {
+            virtuosoRef.current.scrollToIndex({
+              index: 5,
+              behavior: 'auto'
+            })
+          }
+        })
+      }
     })
   }
 
   const loadNewerMessages = () => {
-    if (loadingNewerMessages || !data?.message.has_new_messages || highlightedMessage) {
+    if (loadingNewerMessages || !data?.message.has_new_messages) {
       return Promise.resolve()
     }
 
-    mutate(
+    return mutate(
       (d: any) => {
         let newestMessage: Message | null = null
         if (d && d.message.messages.length > 0) {
@@ -95,7 +100,9 @@ export const useMessageLoading = (
                     }
                   }
                 })
-                .catch(() => d)
+                .catch(() => {
+                  return d
+                })
             }
           }
         }
@@ -105,9 +112,12 @@ export const useMessageLoading = (
     ).then((res: any) => {
       if (res?.message.has_new_messages === false) {
         latestMessagesLoadedRef.current = true
-        requestAnimationFrame(() => {
-          scrollToBottom('auto')
-        })
+
+        if (!highlightedMessage) {
+          requestAnimationFrame(() => {
+            scrollToBottom('auto')
+          })
+        }
       }
     })
   }

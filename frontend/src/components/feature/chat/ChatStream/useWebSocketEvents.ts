@@ -1,27 +1,29 @@
 import { UserContext } from '@/utils/auth/UserProvider'
 import { useFrappeDocumentEventListener, useFrappeEventListener } from 'frappe-react-sdk'
-import { MutableRefObject, useContext } from 'react'
+import { useContext } from 'react'
 
 export const useWebSocketEvents = (
   channelID: string,
   mutate: any,
-  scrollRef: MutableRefObject<HTMLDivElement | null>,
-  scrollToBottom: (behavior?: ScrollBehavior) => void,
+  scrollToBottom: (behavior?: 'smooth' | 'auto') => void,
   setHasNewMessages: (hasNew: boolean) => void,
   setNewMessageCount: (count: number | ((prev: number) => number)) => void,
-  setUnreadMessageIds: (ids: Set<string> | ((prev: Set<string>) => Set<string>)) => void
+  // Thêm callback để track tin nhắn mới
+  onNewMessageAdded?: (messageId: string) => void,
+  isAtBottom?: boolean
 ) => {
   const { currentUser } = useContext(UserContext)
 
-  useFrappeDocumentEventListener('Raven Channel', channelID ?? '', () => {})
+  useFrappeDocumentEventListener('Raven Channel', channelID ?? '', () => {
+    console.debug(`Raven Channel event received for channel: ${channelID}`)
+  })
 
-  // Message created event
   useFrappeEventListener('message_created', (event) => {
     if (event.channel_id !== channelID) return
 
     mutate(
       (d: any) => {
-        if (!d || d.message.has_new_messages !== false) return d
+        if (!d) return d
 
         const existingMessages = d.message.messages ?? []
         const newMessages = [...existingMessages]
@@ -38,41 +40,26 @@ export const useWebSocketEvents = (
 
         newMessages.sort((a: any, b: any) => new Date(b.creation).getTime() - new Date(a.creation).getTime())
 
-        // Handle unread messages
-        if (scrollRef.current) {
-          const isNearBottom =
-            scrollRef.current.scrollTop + scrollRef.current.clientHeight >= scrollRef.current.scrollHeight - 100
-
-          if (!isNearBottom && event.message_details.owner !== currentUser) {
-            setNewMessageCount((count) => count + 1)
-            setUnreadMessageIds((prev) => {
-              const newSet = new Set(prev)
-              newSet.add(event.message_details.name)
-              setNewMessageCount(newSet.size)
-              return newSet
-            })
-          }
-        }
-
         return {
           message: {
             messages: newMessages,
             has_old_messages: d.message.has_old_messages ?? false,
-            has_new_messages: false
+            has_new_messages: d.message.has_new_messages ?? false
           }
         }
       },
       { revalidate: false }
     ).then(() => {
       const isFromOtherUser = event.message_details?.owner !== currentUser
-      const isUserNearBottom =
-        scrollRef.current &&
-        scrollRef.current.scrollTop + scrollRef.current.clientHeight >= scrollRef.current.scrollHeight - 100
 
-      if (isFromOtherUser && !isUserNearBottom) {
+      if (!isFromOtherUser) {
+        scrollToBottom('auto')
+      }
+
+      if (isFromOtherUser && !isAtBottom) {
+        setNewMessageCount((count) => count + 1)
         setHasNewMessages(true)
-      } else {
-        scrollToBottom('smooth')
+        onNewMessageAdded?.(event.message_details.name)
       }
     })
   })

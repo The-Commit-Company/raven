@@ -18,7 +18,7 @@ function debounce<F extends (...args: any[]) => void>(func: F, delay: number) {
   }
 }
 
-export const useChannelSeenUsers = (channelId: string) => {
+export const useChannelSeenUsers = (channelId: string | undefined) => {
   const { currentUser } = useContext(UserContext)
   const { call: getSeenCall } = useFrappePostCall('raven.api.raven_channel_member.get_seen_info')
   const { call: trackSeenCall } = useFrappePostCall('raven.api.raven_channel_member.track_seen')
@@ -108,6 +108,7 @@ export const useChannelSeenUsers = (channelId: string) => {
   return {
     seenUsers,
     loading,
-    refetch: fetchSeenUsers
+    refetch: fetchSeenUsers,
+    refetchWithTrackSeen: trackSeen
   }
 }

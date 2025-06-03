@@ -1,13 +1,14 @@
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
+import BeatLoader from '@/components/layout/Loaders/BeatLoader'
+import useUnreadThreadsCount from '@/hooks/useUnreadThreadsCount'
+import eventBus, { EventBusEvents } from '@/utils/event-emitter'
+import { Flex, Text } from '@radix-ui/themes'
+import { FrappeConfig, FrappeContext, FrappeError, useSWRInfinite } from 'frappe-react-sdk'
+import { useCallback, useContext, useEffect, useMemo, useRef } from 'react'
+import { LuListTree } from 'react-icons/lu'
+import { useParams } from 'react-router-dom'
 import { ThreadPreviewBox } from '../ThreadPreviewBox'
 import { ThreadMessage } from '../Threads'
-import { FrappeConfig, FrappeContext, FrappeError, useSWRInfinite } from 'frappe-react-sdk'
-import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
-import { useParams } from 'react-router-dom'
-import useUnreadThreadsCount from '@/hooks/useUnreadThreadsCount'
-import { useContext, useMemo, useCallback, useRef, useEffect } from 'react'
-import BeatLoader from '@/components/layout/Loaders/BeatLoader'
-import { Flex, Text } from '@radix-ui/themes'
-import { LuListTree } from 'react-icons/lu'
 
 type Props = {
   /** Whether to fetch AI threads */
@@ -112,7 +113,7 @@ const ThreadsList = ({
   )
 
   useEffect(() => {
-    const handleThreadUpdate = (event: CustomEvent) => {
+    const handleThreadUpdate = (data: EventBusEvents['thread:updated']) => {
       // Revalidate the thread reply count when we receive a thread update
       // Only update locally, do not refetch from the server
       mutate(
@@ -123,11 +124,11 @@ const ThreadsList = ({
             return {
               ...page,
               message: page.message.map((message) => {
-                if (message.name === event.detail.threadId) {
+                if (message.name === data.threadId) {
                   return {
                     ...message,
-                    reply_count: event.detail.numberOfReplies,
-                    last_message_timestamp: event.detail.lastMessageTimestamp
+                    reply_count: data.numberOfReplies,
+                    last_message_timestamp: data.lastMessageTimestamp
                   }
                 }
                 return message
@@ -143,11 +144,36 @@ const ThreadsList = ({
       )
     }
 
-    // Need to cast to any due to TypeScript's DOM event types
-    window.addEventListener('thread_updated', handleThreadUpdate as any)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const handleThreadCreated = (data: EventBusEvents['thread:created']) => {
+      mutate()
+    }
+
+    const handleThreadDeleted = (data: EventBusEvents['thread:deleted']) => {
+      // Remove thread from local data without refetching
+      mutate(
+        (d) => {
+          if (!d) return d
+
+          return d.map((page) => ({
+            ...page,
+            message: page.message.filter((message) => message.name !== data.threadId)
+          }))
+        },
+        {
+          revalidate: false
+        }
+      )
+    }
+
+    eventBus.on('thread:updated', handleThreadUpdate)
+    eventBus.on('thread:created', handleThreadCreated)
+    eventBus.on('thread:deleted', handleThreadDeleted)
 
     return () => {
-      window.removeEventListener('thread_updated', handleThreadUpdate as any)
+      eventBus.off('thread:updated', handleThreadUpdate)
+      eventBus.off('thread:created', handleThreadCreated)
+      eventBus.off('thread:deleted', handleThreadDeleted)
     }
   }, [mutate])
 

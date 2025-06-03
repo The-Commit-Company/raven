@@ -1,39 +1,60 @@
+// useScrollBehavior.ts - Virtuoso specific scroll behavior
 import { MutableRefObject, useCallback } from 'react'
+import { VirtuosoHandle } from 'react-virtuoso'
 
-export const useScrollBehavior = (scrollRef: MutableRefObject<HTMLDivElement | null>) => {
+export const useScrollBehavior = (virtuosoRef: MutableRefObject<VirtuosoHandle | null>) => {
   const scrollToBottom = useCallback(
-    (behavior: ScrollBehavior = 'auto') => {
-      if (!scrollRef.current) return
+    (behavior: 'smooth' | 'auto' = 'auto') => {
+      if (!virtuosoRef.current) return
 
-      const performScroll = () => {
-        if (scrollRef.current) {
-          scrollRef.current.scrollTo({
-            top: scrollRef.current.scrollHeight,
-            behavior
-          })
-        }
+      if (behavior === 'smooth') {
+        virtuosoRef.current.scrollToIndex({
+          index: 'LAST',
+          behavior: 'smooth'
+        })
+      } else {
+        virtuosoRef.current.scrollToIndex({
+          index: 'LAST',
+          behavior: 'auto'
+        })
       }
-
-      // Triple attempt for reliability
-      requestAnimationFrame(performScroll)
-      setTimeout(performScroll, 100)
-      setTimeout(performScroll, 500)
     },
-    [scrollRef]
+    [virtuosoRef]
   )
 
-  const scrollToMessage = useCallback((messageID: string, behavior: ScrollBehavior = 'smooth') => {
-    const performScroll = () => {
-      document.getElementById(`message-${messageID}`)?.scrollIntoView({
+  const scrollToMessage = useCallback(
+    (messageID: string, messages: any[]) => {
+      if (!virtuosoRef.current || !messages) return
+
+      const messageIndex = messages.findIndex((message) => message.name === messageID)
+
+      if (messageIndex !== -1) {
+        virtuosoRef.current.scrollToIndex({
+          index: messageIndex,
+          behavior: 'smooth',
+          align: 'center'
+        })
+      }
+    },
+    [virtuosoRef]
+  )
+
+  const scrollToIndex = useCallback(
+    (index: number, behavior: 'smooth' | 'auto' = 'smooth') => {
+      if (!virtuosoRef.current) return
+
+      virtuosoRef.current.scrollToIndex({
+        index,
         behavior,
-        block: 'center'
+        align: 'start'
       })
-    }
+    },
+    [virtuosoRef]
+  )
 
-    requestAnimationFrame(performScroll)
-    setTimeout(performScroll, 100)
-    setTimeout(performScroll, 250)
-  }, [])
-
-  return { scrollToBottom, scrollToMessage }
+  return {
+    scrollToBottom,
+    scrollToMessage,
+    scrollToIndex
+  }
 }

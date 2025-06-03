@@ -9,9 +9,10 @@ import { ChannelListItem, DMChannelListItem } from '@/utils/channel/ChannelListP
 import { Box, Checkbox, Flex, IconButton } from '@radix-ui/themes'
 import clsx from 'clsx'
 import { useSWRConfig } from 'frappe-react-sdk'
-import { useCallback, useContext, useMemo, useRef, useState } from 'react'
+import { MutableRefObject, useCallback, useContext, useMemo, useRef, useState } from 'react'
 import { BiX } from 'react-icons/bi'
 import { useParams } from 'react-router-dom'
+import { VirtuosoHandle } from 'react-virtuoso'
 import { Message } from '../../../../../../types/Messaging/Message'
 import { CustomFile, FileDrop } from '../../file-upload/FileDrop'
 import { FileListItem } from '../../file-upload/FileListItem'
@@ -38,6 +39,8 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
   const { currentUser } = useContext(UserContext)
 
+  const virtuosoRef = useRef<VirtuosoHandle>(null)
+
   // Fetch danh sách thành viên của channel hiện tại, cũng như trạng thái loading
   const { channelMembers, isLoading } = useFetchChannelMembers(channelData.name)
 
@@ -60,8 +63,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
   // Hook để mutate SWR cache
   const { mutate } = useSWRConfig()
 
-  // Ref để scroll đến cuối khi có message mới
-  const scrollRef = useRef<HTMLDivElement>(null)
+  // Using Virtuoso's ref for scrolling
 
   // Hàm xử lý khi message được gửi thành công
   const onMessageSendCompleted = (messages: RavenMessage[]) => {
@@ -114,11 +116,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         }
       },
       { revalidate: false }
-    ).then(() => {
-      // Nếu người dùng đang xem trang, thì chúng ta cũng cần phải
-      // Nếu người dùng là người gửi tin nhắn, thì scroll đến cuối
-      scrollRef.current?.scrollTo(0, scrollRef.current?.scrollHeight)
-    })
+    )
 
     // Dừng indicator typing
     stopTyping()
@@ -134,14 +132,14 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
     return null
   }, [user, channelMembers])
 
-  const chatStreamRef = useRef<any>(null)
+  const chatStreamRef = useRef<{ onUpArrow: () => void } | null>(null)
 
   const onUpArrowPressed = useCallback(() => {
     // Hàm gọi khi người dùng nhấn phím ↑ (dùng để mở lại tin nhắn trước)
     chatStreamRef.current?.onUpArrow()
   }, [])
 
-  const tiptapRef = useRef<any>(null)
+  const tiptapRef = useRef<{ focusEditor: () => void } | null>(null)
 
   const isMobile = useIsMobile()
 
@@ -244,13 +242,13 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
         maxFiles={10}
         maxFileSize={10000000}
       >
-        <ChatStream // Component hiển thị danh sách các tin nhắn.
+        <ChatStream
           channelID={channelData.name}
-          scrollRef={scrollRef}
-          ref={chatStreamRef}
           onModalClose={onModalClose}
           pinnedMessagesString={channelData.pinned_messages_string}
           replyToMessage={handleReplyAction}
+          virtuosoRef={virtuosoRef as MutableRefObject<VirtuosoHandle>}
+          ref={chatStreamRef as any}
         />
         {/* Chỉ hiển thị khu vực nhập liệu nếu người dùng có quyền gửi tin nhắn. */}
         {canUserSendMessage && (

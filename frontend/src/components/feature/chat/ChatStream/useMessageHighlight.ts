@@ -9,11 +9,17 @@ export const useMessageHighlight = (
     if (highlightedMessage) {
       timer = setTimeout(() => {
         setHighlightedMessage(null)
-      }, 3000)
+      }, 6000)
     }
 
     return () => {
       if (timer) clearTimeout(timer)
     }
   }, [highlightedMessage, setHighlightedMessage])
+
+  useEffect(() => {
+    return () => {
+      setHighlightedMessage(null)
+    }
+  }, [setHighlightedMessage])
 }
