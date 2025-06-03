@@ -45,7 +45,6 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
     const [isAtBottom, setIsAtBottom] = useState(false)
     const [hasScrolledToTarget, setHasScrolledToTarget] = useState(false)
     const [isLoadingMessages, setIsLoadingMessages] = useState(false)
-    const userHasScrolledRef = useRef(false)
     const lastScrollTopRef = useRef(0)
     const hasInitialLoadedWithMessageId = useRef(false)
 
@@ -54,7 +53,6 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       setIsInitialLoadComplete(false)
       setHasScrolledToTarget(false)
       setIsLoadingMessages(false)
-      userHasScrolledRef.current = false
       lastScrollTopRef.current = 0
       // Reset flag khi thay đổi channel hoặc message_id
       hasInitialLoadedWithMessageId.current = false
@@ -159,14 +157,6 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
         }
       }
     }, [messageId])
-
-    //Theo dõi người dùng đã scroll bằng tay chưa (dùng cho logic auto-scroll).
-    const handleScroll = useCallback((scrollTop: number) => {
-      if (Math.abs(scrollTop - lastScrollTopRef.current) > 50) {
-        userHasScrolledRef.current = true
-      }
-      lastScrollTopRef.current = scrollTop
-    }, [])
 
     //Tạo phương thức onUpArrow để chỉnh sửa tin nhắn cuối cùng do chính mình gửi khi bấm phím.
     useImperativeHandle(ref, () => {
@@ -320,7 +310,6 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
     const handleGoToLatestMessages = useCallback(() => {
       clearAllNewMessages()
       goToLatestMessages()
-      userHasScrolledRef.current = false
     }, [clearAllNewMessages, goToLatestMessages])
 
     const virtuosoComponents = useMemo(
@@ -336,11 +325,10 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
         requestAnimationFrame(() => {
           virtuosoRef.current.scrollToIndex({
             index: messages.length - 1,
-            behavior: 'smooth',
+            behavior: 'auto',
             align: 'end'
           })
         })
-        userHasScrolledRef.current = false
       }
     }, [messages, virtuosoRef])
 
@@ -360,29 +348,20 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
           <Virtuoso
             ref={virtuosoRef}
             data={messages}
-            totalCount={messages.length}
             itemContent={itemRenderer}
             followOutput={isAtBottom ? 'auto' : false}
             initialTopMostItemIndex={!isSavedMessage ? messages.length - 1 : targetIndex}
             atTopStateChange={handleAtTopStateChange}
             atBottomStateChange={handleAtBottomStateChange}
             rangeChanged={handleRangeChanged}
+            computeItemKey={(index, item) => item?.name ?? `fallback-${index}`}
             components={virtuosoComponents}
             style={{ height: '100%', willChange: 'transform' }}
-            increaseViewPortby={300}
-            useWindowScroll={false}
-            className='pb-4'
+            increaseViewportBy={300}
             overscan={200}
             initialItemCount={20}
             defaultItemHeight={50}
-            scrollerRef={(ref) => {
-              if (ref) {
-                ref.addEventListener('scroll', (e: any) => {
-                  handleScroll(e.target.scrollTop)
-                })
-              }
-            }}
-
+            useWindowScroll={false}
           />
         )}
 
