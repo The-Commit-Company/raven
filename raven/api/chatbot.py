@@ -88,47 +88,52 @@ def send_message(conversation_id, message, is_user=True):
         ai_bot_message = None
         if is_user:
             try:
+                print("[LOG] Bắt đầu xử lý AI cho conversation_id:", conversation_id)
                 # Lấy danh sách tin nhắn trước đó để làm context
                 messages = conversation.messages
                 chat_messages = []
-                
                 # Chuyển đổi tin nhắn thành định dạng của ChatGPT
                 for msg in messages:
                     chat_messages.append({
                         "role": "user" if msg.is_user else "assistant",
                         "content": msg.message
                     })
-                
+                print("[LOG] Context gửi tới OpenAI:", chat_messages)
                 # Kiểm tra cấu hình AI
                 raven_settings = frappe.get_cached_doc("Raven Settings")
+                print("[LOG] Raven Settings:", raven_settings.as_dict())
                 if not raven_settings.enable_ai_integration:
+                    print("[LOG] AI integration chưa bật!")
                     frappe.throw(_("AI Integration is not enabled"))
-                
-                # Gọi API ChatGPT
-                print(f"Gửi tới OpenAI: {chat_messages}")
+                print("[LOG] Trước khi gọi get_open_ai_client()")
                 client = get_open_ai_client()
+                print(f"[LOG] Client OpenAI: {client}")
                 if not client:
+                    print("[LOG] Không thể kết nối OpenAI!")
                     frappe.throw(_("Không thể kết nối với OpenAI"))
-                    
+                print("[LOG] Gọi OpenAI...")
                 response = client.chat.completions.create(
                     model="gpt-3.5-turbo",
                     messages=chat_messages,
                     temperature=0.7,
                     max_tokens=1000
                 )
-                print(f"Phản hồi OpenAI: {response}")
+                print(f"[LOG] Phản hồi OpenAI: {response}")
                 # Lấy phản hồi từ AI
                 ai_response = response.choices[0].message.content
+                print(f"[LOG] Nội dung phản hồi AI: {ai_response}")
                 if not ai_response:
+                    print("[LOG] Không nhận được phản hồi từ AI!")
                     frappe.throw(_("Không nhận được phản hồi từ AI"))
-                print(f"Nhận được phản hồi từ AI: {ai_response}")
                 # Gửi phản hồi từ AI
                 send_message(conversation_id, ai_response, is_user=False)
             except Exception as e:
-                print(f"Lỗi khi xử lý AI: {str(e)}")
-                print(frappe.get_traceback())
+                error_message = f"{str(e)}\n{traceback.format_exc()}"
+                frappe.log_error(error_message, "AI Handler Error")
+                print("[LOG] Ghi lỗi vào Error Log:", error_message)
                 # Nếu lỗi quota OpenAI thì luôn lưu message bot trả lời vào child table
                 if 'insufficient_quota' in str(e) or '429' in str(e):
+                    print("[LOG] Ghi message lỗi quota vào child table!")
                     conversation.append("messages", {
                         "sender": "AI Assistant",
                         "is_user": False,
@@ -136,6 +141,7 @@ def send_message(conversation_id, message, is_user=True):
                         "timestamp": frappe.utils.now()
                     })
                 else:
+                    print(f"[LOG] Sẽ trả về message lỗi mặc định cho user. Lỗi: {str(e)}")
                     conversation.append("messages", {
                         "sender": "AI Assistant",
                         "is_user": False,
@@ -150,8 +156,8 @@ def send_message(conversation_id, message, is_user=True):
         }
         
     except Exception as e:
-        print(f"Lỗi tổng thể: {str(e)}")
-        print(frappe.get_traceback())
+        error_message = f"{str(e)}\n{frappe.get_traceback()}"
+        frappe.log_error(error_message, "Lỗi tổng thể khi gửi tin nhắn")
         frappe.throw(_("Có lỗi xảy ra khi gửi tin nhắn"))
 
 @frappe.whitelist()
