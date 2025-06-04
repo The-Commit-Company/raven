@@ -4,7 +4,7 @@ import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { useGetUser } from '@/hooks/useGetUser'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
-import { ContextMenu, Flex, Text, Tooltip } from '@radix-ui/themes'
+import { Box, ContextMenu, Flex, Text, Tooltip } from '@radix-ui/themes'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
@@ -33,9 +33,12 @@ import MentionList from '../chat/ChatInput/MentionListCustom'
 import ThreadsList from '../threads/ThreadManager/ThreadsList'
 import { MessageSaved } from './DirectMessageSaved'
 import clsx from 'clsx'
+import { useIsTablet } from '@/hooks/useMediaQuery'
 // import { useChannelListRealtimeSync } from '@/utils/channel/useChannelListRealtimeSync'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
+
+
 
 interface DirectMessageListProps {
   dm_channels: DMChannelWithUnreadCount[] | any
@@ -208,10 +211,11 @@ const isDMChannel = (c: UnifiedChannel): c is DMChannelWithUnreadCount => {
 }
 
 export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel }) => {
+  const isTablet = useIsTablet()
   const { currentUser } = useContext(UserContext)
   const navigate = useNavigate()
   const { setChannels } = useLocalChannelList()
-  const { workspaceID } = useParams()
+  const { workspaceID, channelID } = useParams()
 
   const manuallyMarked = useAtomValue(manuallyMarkedAtom)
   const isManuallyMarked = manuallyMarked.has(channel.name)
@@ -222,6 +226,8 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   const peerUserId = isDM ? channel.peer_user_id : null
   const peerUser = useGetUser(peerUserId || '')
   const isActive = peerUserId ? useIsUserActive(peerUserId) : false
+
+  const isSelectedChannel = channelID === channel.name
 
   if (!isGroupChannel && (!isDM || !peerUserId || !peerUser?.enabled)) return null
 
@@ -298,21 +304,40 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   return (
     <div
       onClick={handleNavigate}
-      className='py-1.5 px-2.5 data-[state=open]:bg-gray-3 group relative cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2'
+      className={clsx(
+        'py-1.5 px-2.5 data-[state=open]:bg-gray-3 group relative cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2 touch-manipulation',
+        {
+          ' bg-gray-300 dark:bg-gray-700': isSelectedChannel
+        }
+      )}
     >
       <SidebarIcon>
-        {peerUser ? (
-          <UserAvatar
-            src={peerUser.user_image}
-            alt={peerUser.full_name}
-            isBot={peerUser.type === 'Bot'}
-            isActive={isActive}
-            size={{ initial: '2', md: '1' }}
-            availabilityStatus={peerUser.availability_status}
-          />
-        ) : (
-          <ChannelIcon type={channel.type} size='18' />
-        )}
+        <Box className='relative'>
+          {peerUser ? (
+            <UserAvatar
+              src={peerUser.user_image}
+              alt={peerUser.full_name}
+              isBot={peerUser.type === 'Bot'}
+              isActive={isActive}
+              size={{ initial: '2', md: '1' }}
+              availabilityStatus={peerUser.availability_status}
+            />
+          ) : (
+            <ChannelIcon type={channel.type} className={`${isTablet ? 'w-[32px] h-[32px]' : 'w-[24px] h-[24px]'} text-center`} />
+          )}
+          {shouldShowBadge && (
+            <SidebarBadge
+              className={clsx(
+                'absolute bg-red-500 text-white text-[10px] font-medium rounded-full flex items-center justify-center top-0 right-0 w-[15px] h-[15px]',
+                isTablet
+                  ? 'translate-x-[30%] -translate-y-[185%]'
+                  : 'translate-x-[40%] -translate-y-[150%]'
+              )}
+            >
+              {channel.unread_count || 1}
+            </SidebarBadge>
+          )}
+        </Box>
       </SidebarIcon>
 
       <Flex direction='column' justify='center' className='w-full'>
@@ -333,8 +358,6 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
           {formattedLastMessage}
         </Text>
       </Flex>
-
-      {shouldShowBadge && <SidebarBadge>{channel.unread_count || 1}</SidebarBadge>}
 
       {formattedLastMessage && (
         <Tooltip content={channel.is_done ? 'Đánh dấu chưa xong' : 'Đánh dấu đã xong'} side='bottom'>

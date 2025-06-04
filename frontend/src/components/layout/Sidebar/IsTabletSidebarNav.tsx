@@ -13,6 +13,7 @@ export default function FilterTabs() {
   const { title, setTitle } = useSidebarMode()
   const { totalUnreadCount } = useUnreadMessageCount()
   const { mentionUnreadCount, resetMentions } = useMentionUnreadCount()
+  
   const isTablet = useIsTablet()
 
   const { setMode } = useSidebarMode()
@@ -35,10 +36,10 @@ export default function FilterTabs() {
     setTitle(label)
     if (label === 'Nhắc đến') resetMentions()
   }
-
+  
   return (
     <>
-      <div className='flex items-center text-white p-2 pl-0 gap-2 w-full max-w-full md:mt-5'>
+      <div className='flex items-cente p-2 pl-0 gap-2 w-full max-w-full md:mt-5'>
         <button
           onClick={() => {
             if (isTablet) {
@@ -46,9 +47,11 @@ export default function FilterTabs() {
               setMode('default')
             }
           }}
-          className='w-7 h-7 shrink-0 rounded-full dark:bg-gray-700 flex items-center justify-center'
+          className='w-7 h-7 shrink-0 rounded-full dark:bg-gray-700 flex items-center justify-center relative'
         >
-          <HiMenu className='w-4 h-4' />
+          <HiMenu className='w-4 h-4 dark:text-white' />
+
+          {(totalUnreadCount > 0 || mentionUnreadCount > 0) && <span className='absolute top-0 right-0 w-[8px] h-[8px] bg-red-500 rounded-full' />}
         </button>
 
         <div
@@ -120,11 +123,12 @@ export default function FilterTabs() {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ duration: 0.3 }}
-              className='fixed top-0 left-0 h-full w-64 bg-white dark:bg-neutral-900 z-50 shadow-lg p-4'
+              style={{zIndex: '6886'}}
+              className='fixed top-0 left-0 h-full w-64 bg-white dark:bg-neutral-900 shadow-lg p-4'
             >
               <button
                 onClick={() => setShowFilterList(false)}
-                className='dark:text-white text-xl absolute top-4 right-4'
+                className='dark:text-white text-xl absolute top-4 right-4 bg-transparent'
               >
                 ✕
               </button>
