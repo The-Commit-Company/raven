@@ -13,7 +13,8 @@ import {
   HiOutlineInbox,
   HiOutlineTag,
   HiOutlineUser,
-  HiOutlineUsers
+  HiOutlineUsers,
+  HiOutlineChip
 } from 'react-icons/hi'
 
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
@@ -48,6 +49,7 @@ export const filterItems = [
   { label: 'Nhãn', icon: HiOutlineTag },
   { label: 'Cuộc trò chuyện riêng tư', icon: HiOutlineUser },
   { label: 'Trò chuyện nhóm', icon: HiOutlineUsers },
+  { label: 'Chatbot AI', icon: HiOutlineChip },
   // { label: 'Docs', icon: HiOutlineDocumentText },
   { label: 'Chủ đề', icon: HiOutlineHashtag },
   { label: 'Xong', icon: HiOutlineCheckCircle }

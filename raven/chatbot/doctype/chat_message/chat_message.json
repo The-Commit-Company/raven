@@ -1,0 +1,74 @@
+{
+    "actions": [],
+    "creation": "2024-03-19 10:00:00.000000",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+        "sender",
+        "is_user",
+        "message",
+        "timestamp"
+    ],
+    "fields": [
+        {
+            "fieldname": "sender",
+            "fieldtype": "Data",
+            "label": "Sender",
+            "reqd": 1
+        },
+        {
+            "fieldname": "is_user",
+            "fieldtype": "Check",
+            "label": "Is User"
+        },
+        {
+            "fieldname": "message",
+            "fieldtype": "Text",
+            "label": "Message",
+            "reqd": 1
+        },
+        {
+            "fieldname": "timestamp",
+            "fieldtype": "Datetime",
+            "label": "Timestamp",
+            "read_only": 1
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2024-03-19 10:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "Chatbot",
+    "name": "ChatMessage",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Chatbot User",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": [],
+    "track_changes": 1
+} 
