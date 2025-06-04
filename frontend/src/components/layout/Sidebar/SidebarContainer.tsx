@@ -13,10 +13,12 @@ import {
   HiOutlineInbox,
   HiOutlineTag,
   HiOutlineUser,
+  HiOutlineUserGroup,
   HiOutlineUsers
 } from 'react-icons/hi'
 
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
+import clsx from 'clsx'
 
 export const useMentionUnreadCount = () => {
   const { data: mentionsCount, mutate } = useFrappeGetCall<{ message: number }>(
@@ -50,12 +52,13 @@ export const filterItems = [
   { label: 'Trò chuyện nhóm', icon: HiOutlineUsers },
   // { label: 'Docs', icon: HiOutlineDocumentText },
   { label: 'Chủ đề', icon: HiOutlineHashtag },
-  { label: 'Xong', icon: HiOutlineCheckCircle }
+  { label: 'Xong', icon: HiOutlineCheckCircle },
+  { label: 'Thành viên', icon: HiOutlineUserGroup }
 ]
 
 export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.RefObject<any> }) {
   const { mode, setMode, tempMode } = useSidebarMode()
-  const { totalUnreadCount } = useUnreadMessageCount()
+  // const { totalUnreadCount } = useUnreadMessageCount()
 
   const isCollapsed = false
   const isIconOnly = tempMode === 'show-only-icons'
@@ -110,7 +113,6 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
   )
 }
 
-
 interface FilterListProps {
   onClose?: () => void
 }
@@ -129,7 +131,7 @@ export function FilterList({ onClose }: FilterListProps) {
   }
 
   return (
-    <ul className={`space-y-1 text-sm text-gray-12 px-3 ${isIconOnly ? '' : 'py-2'}`}>
+    <ul className={clsx('space-y-1 text-sm text-gray-12', isIconOnly ? 'px-1' : 'px-3 py-2')}>
       {filterItems.map((item, idx) => {
         const isActive = item.label === title
         let badgeCount = 0
@@ -163,7 +165,20 @@ export function FilterList({ onClose }: FilterListProps) {
                   fontSize: '0.7rem',
                   lineHeight: '1rem',
                   fontWeight: 500,
-                  marginRight: isIconOnly ? '0px' : '1rem'
+                  marginRight: isIconOnly ? '0px' : '1rem',
+                  ...(isIconOnly
+                    ? {
+                        backgroundColor: 'red',
+                        color: 'white',
+                        borderRadius: '50%',
+                        width: '15px',
+                        height: '15px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        textAlign: 'center'
+                      }
+                    : {})
                 }}
               >
                 {badgeCount}

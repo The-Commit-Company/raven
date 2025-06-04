@@ -78,10 +78,10 @@ const MentionsList: React.FC = () => {
       <Flex direction='column' align='center' justify='center' className='h-[320px] px-6 text-center'>
         <LuAtSign size={48} className='text-gray-8 mb-4' />
         <Text size='5' weight='medium' className='mb-2'>
-          No mentions yet
+          Chưa có lượt nhắc nào
         </Text>
         <Text size='2' color='gray'>
-          When someone mentions you in a message, you'll see it here.
+          Khi ai đó đề cập đến bạn trong cuộc trò chuyện, nội dung sẽ hiển thị ở đây.
         </Text>
       </Flex>
     )
@@ -99,12 +99,12 @@ const MentionsList: React.FC = () => {
         {isReachingEnd ? (
           <div className='p-4 text-center'>
             <Text size='2' color='gray'>
-              You've reached the end of your mentions.
+              Bạn đã xem hết tất cả lượt nhắc.
             </Text>
           </div>
         ) : isLoadingMore ? (
           <div className='p-4'>
-            <BeatLoader text='Loading more mentions...' />
+            <BeatLoader text='Đang tải thêm lượt nhắc...' />
           </div>
         ) : null}
       </div>

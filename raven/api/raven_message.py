@@ -213,19 +213,21 @@ def get_pinned_messages(channel_id):
 		],
 		order_by="creation asc",
 	)
-
+import frappe
+from pypika.enums import JoinType
 
 @frappe.whitelist()
 def get_saved_messages():
 	"""
-	Fetches list of all messages liked by the user
-	Check if the user has permission to view the message
+	Lấy danh sách tất cả các tin nhắn được đánh dấu (liked/flagged) bởi người dùng hiện tại.
+	Không sắp xếp để giữ đúng thứ tự lưu trong hệ thống (nếu cần thứ tự khác, xử lý tại frontend).
 	"""
 
 	raven_message = frappe.qb.DocType("Raven Message")
 	raven_channel = frappe.qb.DocType("Raven Channel")
 	raven_channel_member = frappe.qb.DocType("Raven Channel Member")
 
+	# Xây dựng truy vấn
 	query = (
 		frappe.qb.from_(raven_message)
 		.join(raven_channel, JoinType.left)
@@ -249,19 +251,17 @@ def get_saved_messages():
 			raven_message.bot,
 			raven_message.content,
 		)
-		.where(raven_message._liked_by.like("%" + frappe.session.user + "%"))
+		.where(raven_message._liked_by.like(f"%{frappe.session.user}%"))
 		.where(
 			(raven_channel.type.isin(["Open", "Public"]))
 			| (raven_channel_member.user_id == frappe.session.user)
 		)
-		.orderby(raven_message.creation, order=Order.asc)
-		.distinct()
-	)  # Add DISTINCT keyword to retrieve only unique messages
+		.distinct()  # Tránh trùng lặp nếu join trả về nhiều dòng cho 1 message
+	)
 
 	messages = query.run(as_dict=True)
 
 	return messages
-
 
 def parse_messages(messages):
 

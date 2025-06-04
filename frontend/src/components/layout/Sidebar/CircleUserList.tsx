@@ -1,7 +1,7 @@
 import { useMergedUnreadCount } from '@/components/feature/direct-messages/DirectMessageListCustom'
 import { useChannelActions } from '@/hooks/useChannelActions'
 import { useGetUser } from '@/hooks/useGetUser'
-import { useIsMobile, useIsTablet } from '@/hooks/useMediaQuery'
+import { useIsMobile } from '@/hooks/useMediaQuery'
 import { useUnreadMessages } from '@/utils/layout/sidebar'
 import { ChannelInfo, useCircleUserList } from '@/utils/users/CircleUserListProvider'
 import { closestCenter, DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
@@ -114,6 +114,7 @@ const CircleUserList = ({ size }: { size?: number }) => {
   const channelID = useParams().channelID || ''
   const enrichedSelectedChannels = useMergedUnreadCount(selectedChannels as any, unread_count?.message ?? [])
   const [items, setItems] = useState(enrichedSelectedChannels.map((c) => c.name))
+  const [showAll, setShowAll] = useState(false)
 
   useEffect(() => {
     const newItems = enrichedSelectedChannels.map((c) => c.name)
@@ -261,45 +262,61 @@ const CircleUserList = ({ size }: { size?: number }) => {
             </div>
           ) : (
             // ✅ Nếu không phải mobile: dùng layout cũ flex-wrap
-            <div className='flex flex-wrap gap-3 pl-0 pr-0 p-2 w-full overflow-hidden'>
-              {items.map((channelName) => {
-                const channel = enrichedSelectedChannels.find((c) => c.name === channelName)
-                if (!channel) return null
-                return (
-                  <ContextMenu.Root key={channel.name}>
-                    <ContextMenu.Trigger asChild>
-                      <div className='w-[70px] h-[70px]'>
-                        <SortableCircleUserItem
-                          channel={channel}
-                          isActive={channel.name === channelID}
-                          onActivate={() => {}}
-                        />
-                      </div>
-                    </ContextMenu.Trigger>
-                    <ContextMenu.Portal>
-                      <ContextMenu.Content className='z-50 bg-white dark:bg-gray-800 text-black dark:text-white rounded shadow-md p-1'>
-                        <ContextMenu.Item
-                          className='px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer'
-                          onClick={() => {
-                            markAsUnread(channel)
-                            setSelectedChannels((prev) => [...prev])
-                          }}
-                        >
-                          {channel.unread_count > 0 || isManuallyMarked(channel.name)
-                            ? 'Đánh dấu đã đọc'
-                            : 'Đánh dấu chưa đọc'}
-                        </ContextMenu.Item>
-                        <ContextMenu.Item
-                          className='px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer'
-                          onClick={() => togglePin(channel)}
-                        >
-                          {isPinned(channel.name) ? 'Bỏ ghim khỏi danh sách' : 'Ghim lên đầu'}
-                        </ContextMenu.Item>
-                      </ContextMenu.Content>
-                    </ContextMenu.Portal>
-                  </ContextMenu.Root>
-                )
-              })}
+            <div>
+              <div
+                className={clsx(
+                  'flex flex-wrap gap-3 overflow-hidden pl-0 pr-0 p-2 mb-5 transition-all duration-300 ease-in-out',
+                  showAll ? 'max-h-[1000px]' : 'max-h-[120px]'
+                )}
+              >
+                {items.map((channelName) => {
+                  const channel = enrichedSelectedChannels.find((c) => c.name === channelName)
+                  if (!channel) return null
+                  return (
+                    <ContextMenu.Root key={channel.name}>
+                      <ContextMenu.Trigger asChild>
+                        <div className='w-[50px] h-[50px]'>
+                          <SortableCircleUserItem
+                            channel={channel}
+                            isActive={channel.name === channelID}
+                            onActivate={() => {}}
+                          />
+                        </div>
+                      </ContextMenu.Trigger>
+                      <ContextMenu.Portal>
+                        <ContextMenu.Content className='z-50 bg-white dark:bg-gray-800 text-black dark:text-white rounded shadow-md p-1'>
+                          <ContextMenu.Item
+                            className='px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer'
+                            onClick={() => {
+                              markAsUnread(channel)
+                              setSelectedChannels((prev) => [...prev])
+                            }}
+                          >
+                            {channel.unread_count > 0 || isManuallyMarked(channel.name)
+                              ? 'Đánh dấu đã đọc'
+                              : 'Đánh dấu chưa đọc'}
+                          </ContextMenu.Item>
+                          <ContextMenu.Item
+                            className='px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer'
+                            onClick={() => togglePin(channel)}
+                          >
+                            {isPinned(channel.name) ? 'Bỏ ghim khỏi danh sách' : 'Ghim lên đầu'}
+                          </ContextMenu.Item>
+                        </ContextMenu.Content>
+                      </ContextMenu.Portal>
+                    </ContextMenu.Root>
+                  )
+                })}
+              </div>
+
+              {items.length > 10 && (
+                <button
+                  onClick={() => setShowAll((prev) => !prev)}
+                  className='text-xs mt-2 text-blue-500 hover:underline'
+                >
+                  {showAll ? 'Ẩn bớt' : 'Hiện thêm'}
+                </button>
+              )}
             </div>
           )}
         </SortableContext>
