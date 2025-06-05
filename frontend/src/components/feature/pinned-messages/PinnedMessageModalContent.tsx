@@ -1,10 +1,10 @@
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { Dialog, Flex, IconButton, Text, VisuallyHidden } from '@radix-ui/themes'
 import { useFrappeGetCall } from 'frappe-react-sdk'
+import { IoClose } from 'react-icons/io5'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Message } from '../../../../../types/Messaging/Message'
-import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { MessageBox } from '../GlobalSearch/MessageBox'
-import { IoClose } from 'react-icons/io5'
 
 export const PinnedMessageModalContent = ({ onClose }: { onClose: () => void }) => {
   const { channelID } = useParams<{ channelID: string }>()
@@ -45,14 +45,14 @@ export const PinnedMessageModalContent = ({ onClose }: { onClose: () => void }) 
     <>
       <Dialog.Title>
         <Flex justify={'between'} align={'center'}>
-          <Text>Pinned Messages</Text>
+          <Text>Tin nhắn đã ghim</Text>
           <IconButton variant='ghost' color='gray' aria-label='Close' onClick={onClose}>
             <IoClose size='20' />
           </IconButton>
         </Flex>
       </Dialog.Title>
       <VisuallyHidden>
-        <Dialog.Description>Pinned Messages</Dialog.Description>
+        <Dialog.Description>Tin nhắn đã ghim</Dialog.Description>
       </VisuallyHidden>
       <ErrorBanner error={error} />
       <Flex direction='column' gap='3' justify='start'>
