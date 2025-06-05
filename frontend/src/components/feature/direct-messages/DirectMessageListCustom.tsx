@@ -34,6 +34,7 @@ import ThreadsList from '../threads/ThreadManager/ThreadsList'
 import { MessageSaved } from './DirectMessageSaved'
 import clsx from 'clsx'
 import { useIsTablet } from '@/hooks/useMediaQuery'
+import UserChannelList from '../channels/UserChannelList'
 // import { useChannelListRealtimeSync } from '@/utils/channel/useChannelListRealtimeSync'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
@@ -168,6 +169,7 @@ export const DirectMessageItemList = () => {
   if (title === 'Nhắc đến') return <MentionList />
   if (title === 'Xong') return <DoneChannelList />
   if (title === 'Chủ đề') return <ThreadsList />
+  if (title === 'Thành viên') return <UserChannelList/>
 
   if (filteredChannels.length === 0 && title !== 'Trò chuyện') {
     return <div className='text-gray-500 text-sm italic p-4 text-center'>Không có kết quả</div>
