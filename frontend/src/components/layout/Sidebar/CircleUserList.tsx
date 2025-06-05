@@ -95,7 +95,7 @@ const CircleUserItem = ({ channel, isActive, onActivate }: Props) => {
             </div>
 
             {channel.unread_count > 0 && (
-              <div className='absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border border-white'>
+              <div className='absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-white'>
                 {channel.unread_count > 9 ? '9+' : channel.unread_count}
               </div>
             )}

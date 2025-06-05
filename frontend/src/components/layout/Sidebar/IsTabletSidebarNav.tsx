@@ -3,7 +3,7 @@ import { useUnreadMessageCount } from '@/hooks/useUnreadMessageCount'
 import { filterItems, useMentionUnreadCount, FilterList } from './SidebarContainer'
 import { useSidebarMode } from '@/utils/layout/sidebar'
 import { useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+// import { AnimatePresence, motion } from 'framer-motion'
 import { useIsTablet } from '@/hooks/useMediaQuery'
 import clsx from 'clsx'
 
@@ -104,41 +104,6 @@ export default function FilterTabs() {
       </div>
 
       {/* Slide-in FilterList for tablet */}
-      <AnimatePresence>
-        {showFilterList && isTablet && (
-          <>
-            {/* Overlay đen trong suốt */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.5 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className='fixed inset-0 bg-black z-40'
-              onClick={() => setShowFilterList(false)}
-            />
-
-            {/* Sidebar FilterList */}
-            <motion.div
-              initial={{ x: '-100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '-100%' }}
-              transition={{ duration: 0.3 }}
-              style={{zIndex: '6886'}}
-              className='fixed top-0 left-0 h-full w-64 bg-white dark:bg-neutral-900 shadow-lg p-4'
-            >
-              <button
-                onClick={() => setShowFilterList(false)}
-                className='dark:text-white text-xl absolute top-4 right-4 bg-transparent'
-              >
-                ✕
-              </button>
-              <div className='mt-14'>
-                <FilterList onClose={() => setShowFilterList(false)} />
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
     </>
   )
 }

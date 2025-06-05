@@ -349,7 +349,7 @@ export const useFetchUnreadMessageCount = () => {
     let blinkState = false
     let activeTitle = app_name
 
-    const audio = new Audio('/notification.mp3')
+    const audio = new Audio(`${import.meta.env.BASE_URL}notification.mp3`)
     audio.volume = 0.7
 
     const allChannelMap = new Map((unread_count?.message || []).map((c) => [c.name, c]))

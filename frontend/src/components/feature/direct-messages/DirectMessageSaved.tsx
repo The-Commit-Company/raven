@@ -22,7 +22,7 @@ import { FileMessageBlock } from '../chat/ChatMessage/Renderers/FileMessage'
 import { ImageSavedMessage } from '../chat/ChatMessage/Renderers/ImageSavedMessage'
 import { PollMessageBlock } from '../chat/ChatMessage/Renderers/PollMessage'
 import { BiChevronDown, BiChevronRight } from 'react-icons/bi'
-import { AnimatePresence, motion } from 'framer-motion'
+// import { AnimatePresence, motion } from 'framer-motion'
 
 type MessageBoxProps = {
   message: Message & { workspace?: string }
@@ -308,7 +308,7 @@ const GroupedMessages = ({
         {collapsed ? <BiChevronRight className='w-4 h-4' /> : <BiChevronDown className='w-4 h-4' />}
       </div>
 
-      <AnimatePresence initial={false}>
+      {/* <AnimatePresence initial={false}>
         {!collapsed && (
           <motion.div
             key='message-group'
@@ -328,7 +328,7 @@ const GroupedMessages = ({
             ))}
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
     </div>
   )
 }
