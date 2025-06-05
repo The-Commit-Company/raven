@@ -75,42 +75,5 @@ export const MessageItemRenderer = memo(
         />
       </div>
     )
-  },
-  // Custom comparison function for better memoization
-  (prevProps, nextProps) => {
-    // Quick reference equality checks first
-    if (
-      prevProps.message === nextProps.message &&
-      prevProps.isHighlighted === nextProps.isHighlighted &&
-      prevProps.seenUsers === nextProps.seenUsers &&
-      prevProps.channel === nextProps.channel
-    ) {
-      return true
-    }
-
-    // Deep comparison for message if references differ
-    const prevMessage = prevProps.message
-    const nextMessage = nextProps.message
-
-    if (
-      prevMessage.name !== nextMessage.name ||
-      prevMessage.modified !== nextMessage.modified ||
-      prevMessage.message_type !== nextMessage.message_type ||
-      prevProps.isHighlighted !== nextProps.isHighlighted
-    ) {
-      return false
-    }
-
-    // For system and date messages, we can skip other checks
-    if (nextMessage.message_type === 'System' || nextMessage.message_type === 'date') {
-      return true
-    }
-
-    // Check if seen users or channel changed
-    if (prevProps.seenUsers !== nextProps.seenUsers || prevProps.channel !== nextProps.channel) {
-      return false
-    }
-
-    return true
   }
 )
