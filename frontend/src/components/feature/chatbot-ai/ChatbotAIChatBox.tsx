@@ -57,7 +57,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading }) 
               className={`rounded-lg px-4 py-2 max-w-[70%] ${msg.role === 'user' ? 'bg-accent-3 text-right' : 'bg-gray-3'}`}
               style={{ fontSize: '15px', lineHeight: '1.6' }}
             >
-              <Text className="text-sm text-gray-12">{msg.content}</Text>
+              <Text className="text-sm text-gray-12" style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</Text>
             </Box>
           </Flex>
         ))}

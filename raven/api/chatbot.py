@@ -41,6 +41,28 @@ def get_messages(conversation_id=None):
     return messages
 
 @frappe.whitelist()
+def analyze_topic(message):
+    """Phân tích tin nhắn để tìm chủ đề chính"""
+    try:
+        client = get_open_ai_client()
+        if not client:
+            return None
+            
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "Bạn là một trợ lý AI giúp phân tích chủ đề chính của một tin nhắn. Hãy trả về một cụm từ ngắn gọn (tối đa 5 từ) mô tả chủ đề chính."},
+                {"role": "user", "content": message}
+            ],
+            temperature=0.3,
+            max_tokens=50
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        print(f"Lỗi khi phân tích chủ đề: {str(e)}")
+        return None
+
+@frappe.whitelist()
 def send_message(conversation_id, message, is_user=True):
     """Gửi tin nhắn mới"""
     try:
@@ -56,6 +78,17 @@ def send_message(conversation_id, message, is_user=True):
             
         conversation = frappe.get_doc("ChatConversation", conversation_id)
         print(f"Đã tìm thấy conversation: {conversation.name}")
+        
+        # Kiểm tra nếu là tin nhắn đầu tiên của người dùng
+        if is_user and len(conversation.messages) == 0:
+            # Phân tích chủ đề từ tin nhắn đầu tiên
+            topic = analyze_topic(message)
+            if topic:
+                # Đổi tên conversation
+                conversation.title = topic
+                conversation.save(ignore_permissions=True)
+                frappe.db.commit()
+                print(f"Đã đổi tên conversation thành: {topic}")
         
         # Thêm tin nhắn mới vào child table
         conversation.append("messages", {
