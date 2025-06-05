@@ -55,6 +55,7 @@ interface MessageBlockProps {
   showThreadButton?: boolean
   seenUsers: SeenUser[]
   channel: any
+  isThinking?: boolean
 }
 
 // Component chính hiển thị một tin nhắn trong cuộc trò chuyện
@@ -71,7 +72,8 @@ export const MessageItem = React.memo(
     setReactionMessage, // Hàm xử lý reaction
     showThreadButton = true, // Có hiển thị nút luồng không (mặc định là có)
     seenUsers,
-    channel
+    channel,
+    isThinking = false
   }: MessageBlockProps) => {
     const {
       owner: userID, // ID người gửi
@@ -239,6 +241,7 @@ export const MessageItem = React.memo(
             seenByOthers={seenByOthers}
             channel={channel}
             unseenByOthers={unseenByOthers}
+            isThinking={isThinking}
           />
         ) : (
           // Sử dụng layout mặc định nếu không phải 'Left-Right'
@@ -285,9 +288,17 @@ export const MessageItem = React.memo(
                       ? 'bg-gray-2 dark:bg-gray-3'
                       : '',
                   // Đổi màu nền khi mở emoji picker
-                  isEmojiPickerOpen ? 'bg-gray-2 dark:bg-gray-3' : ''
+                  isEmojiPickerOpen ? 'bg-gray-2 dark:bg-gray-3' : '',
+                  isThinking && 'animate-pulse'
                 )}
               >
+                {isThinking && (
+                  <div className="absolute left-0 top-0 w-full h-full flex items-center justify-center bg-gray-100/50 dark:bg-gray-800/50">
+                    <Text size="2" className="text-gray-500 dark:text-gray-400">
+                      AI đang suy nghĩ...
+                    </Text>
+                  </div>
+                )}
                 {/* Nội dung chính của tin nhắn */}
                 <Flex className='gap-2.5 sm:gap-3 items-start'>
                   {/* Hiển thị avatar hoặc thời gian nếu là tin nhắn tiếp nối */}

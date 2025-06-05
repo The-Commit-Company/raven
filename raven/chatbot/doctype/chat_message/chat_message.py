@@ -7,17 +7,18 @@ class ChatMessage(Document):
             self.timestamp = frappe.utils.now()
     
     def after_insert(self):
-        # Gửi sự kiện realtime khi có tin nhắn mới
         conversation = frappe.get_doc("ChatConversation", self.parent)
+        frappe.log_error(f"[DEBUG] Publish new_message: parent={self.parent}, sender={self.sender}, user={conversation.user}", "ChatMessage after_insert")
         frappe.publish_realtime(
-            "chatbot_message_created",
+            "new_message",
             {
-                "message_id": self.name,
-                "conversation_id": self.parent,
-                "sender": self.sender,
-                "is_user": self.is_user,
+                "channel_id": self.parent,
+                "user": self.sender,
                 "message": self.message,
-                "timestamp": self.timestamp
+                "is_user": self.is_user,
+                "timestamp": self.timestamp,
+                "message_type": "Text",
+                "content": self.message
             },
             user=conversation.user
         )

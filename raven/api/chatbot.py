@@ -64,7 +64,6 @@ def analyze_topic(message):
 
 @frappe.whitelist()
 def send_message(conversation_id, message, is_user=True):
-    """Gửi tin nhắn mới"""
     try:
         print("=== BẮT ĐẦU GỬI TIN NHẮN ===")
         print(f"Conversation ID: {conversation_id}")
@@ -101,97 +100,108 @@ def send_message(conversation_id, message, is_user=True):
         frappe.db.commit()
         print(f"Đã lưu tin nhắn vào conversation thành công")
         
-        # Gửi realtime update
+        # Gửi realtime update (chỉ gửi ở đây, không rely vào after_insert của ChatMessage)
         frappe.publish_realtime(
-            "chatbot_message_created",
+            "new_message",
             {
-                "conversation_id": conversation_id,
-                "sender": frappe.session.user if is_user else "AI Assistant",
+                "channel_id": conversation_id,
+                "user": frappe.session.user if is_user else "AI Assistant",
                 "message": message,
                 "is_user": is_user,
                 "timestamp": frappe.utils.now(),
                 "message_type": "Text",
                 "content": message
             },
-            user=frappe.session.user
+            user=conversation.user
         )
         
-        # Nếu là tin nhắn từ người dùng, gửi phản hồi từ AI
-        ai_error_message = None
-        ai_bot_message = None
+        # Nếu là tin nhắn từ người dùng, gọi AI trả lời ở background
         if is_user:
-            try:
-                print("[LOG] Bắt đầu xử lý AI cho conversation_id:", conversation_id)
-                # Lấy danh sách tin nhắn trước đó để làm context
-                messages = conversation.messages
-                chat_messages = []
-                # Chuyển đổi tin nhắn thành định dạng của ChatGPT
-                for msg in messages:
-                    chat_messages.append({
-                        "role": "user" if msg.is_user else "assistant",
-                        "content": msg.message
-                    })
-                print("[LOG] Context gửi tới OpenAI:", chat_messages)
-                # Kiểm tra cấu hình AI
-                raven_settings = frappe.get_cached_doc("Raven Settings")
-                print("[LOG] Raven Settings:", raven_settings.as_dict())
-                if not raven_settings.enable_ai_integration:
-                    print("[LOG] AI integration chưa bật!")
-                    frappe.throw(_("AI Integration is not enabled"))
-                print("[LOG] Trước khi gọi get_open_ai_client()")
-                client = get_open_ai_client()
-                print(f"[LOG] Client OpenAI: {client}")
-                if not client:
-                    print("[LOG] Không thể kết nối OpenAI!")
-                    frappe.throw(_("Không thể kết nối với OpenAI"))
-                print("[LOG] Gọi OpenAI...")
-                response = client.chat.completions.create(
-                    model="gpt-3.5-turbo",
-                    messages=chat_messages,
-                    temperature=0.7,
-                    max_tokens=1000
-                )
-                print(f"[LOG] Phản hồi OpenAI: {response}")
-                # Lấy phản hồi từ AI
-                ai_response = response.choices[0].message.content
-                print(f"[LOG] Nội dung phản hồi AI: {ai_response}")
-                if not ai_response:
-                    print("[LOG] Không nhận được phản hồi từ AI!")
-                    frappe.throw(_("Không nhận được phản hồi từ AI"))
-                # Gửi phản hồi từ AI
-                send_message(conversation_id, ai_response, is_user=False)
-            except Exception as e:
-                error_message = f"{str(e)}\n{traceback.format_exc()}"
-                frappe.log_error(error_message, "AI Handler Error")
-                print("[LOG] Ghi lỗi vào Error Log:", error_message)
-                # Nếu lỗi quota OpenAI thì luôn lưu message bot trả lời vào child table
-                if 'insufficient_quota' in str(e) or '429' in str(e):
-                    print("[LOG] Ghi message lỗi quota vào child table!")
-                    conversation.append("messages", {
-                        "sender": "AI Assistant",
-                        "is_user": False,
-                        "message": "Xin lỗi, OpenAI cần trả phí để trả lời",
-                        "timestamp": frappe.utils.now()
-                    })
-                else:
-                    print(f"[LOG] Sẽ trả về message lỗi mặc định cho user. Lỗi: {str(e)}")
-                    conversation.append("messages", {
-                        "sender": "AI Assistant",
-                        "is_user": False,
-                        "message": "Xin lỗi, tôi không thể xử lý tin nhắn của bạn lúc này. Vui lòng thử lại sau.",
-                        "timestamp": frappe.utils.now()
-                    })
-                conversation.save(ignore_permissions=True)
-                frappe.db.commit()
-        # Trả về conversation (luôn có message bot trả lời nếu lỗi)
+            frappe.enqueue(
+                "raven.api.chatbot.handle_ai_reply",
+                queue='long',
+                conversation_id=conversation_id
+            )
+        # Trả về conversation (lúc này chỉ có message user)
         return {
             "conversation": conversation
         }
-        
     except Exception as e:
         error_message = f"{str(e)}\n{frappe.get_traceback()}"
         frappe.log_error(error_message, "Lỗi tổng thể khi gửi tin nhắn")
         frappe.throw(_("Có lỗi xảy ra khi gửi tin nhắn"))
+
+# Hàm xử lý AI ở background
+
+def handle_ai_reply(conversation_id):
+    import traceback
+    try:
+        conversation = frappe.get_doc("ChatConversation", conversation_id)
+        messages = conversation.messages
+        chat_messages = []
+        for msg in messages:
+            chat_messages.append({
+                "role": "user" if msg.is_user else "assistant",
+                "content": msg.message
+            })
+        print("[LOG] Context gửi tới OpenAI:", chat_messages)
+        # Kiểm tra cấu hình AI
+        raven_settings = frappe.get_cached_doc("Raven Settings")
+        print("[LOG] Raven Settings:", raven_settings.as_dict())
+        if not raven_settings.enable_ai_integration:
+            print("[LOG] AI integration chưa bật!")
+            return
+        print("[LOG] Trước khi gọi get_open_ai_client()")
+        client = get_open_ai_client()
+        print(f"[LOG] Client OpenAI: {client}")
+        if not client:
+            print("[LOG] Không thể kết nối OpenAI!")
+            return
+        print("[LOG] Gọi OpenAI...")
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=chat_messages,
+            temperature=0.7,
+            max_tokens=1000
+        )
+        print(f"[LOG] Phản hồi OpenAI: {response}")
+        ai_response = response.choices[0].message.content
+        print(f"[LOG] Nội dung phản hồi AI: {ai_response}")
+        if not ai_response:
+            print("[LOG] Không nhận được phản hồi từ AI!")
+            return
+        # Lưu message AI vào DB
+        conversation.append("messages", {
+            "sender": "AI Assistant",
+            "is_user": False,
+            "message": ai_response,
+            "timestamp": frappe.utils.now()
+        })
+        conversation.save(ignore_permissions=True)
+        frappe.db.commit()
+        # Gửi realtime update (dùng event 'new_message' để đồng bộ với kênh thường)
+        frappe.publish_realtime(
+            "new_message",
+            {
+                "channel_id": conversation_id,
+                "user": "AI Assistant",
+                "message": ai_response,
+                "is_user": False,
+                "timestamp": frappe.utils.now(),
+                "message_type": "Text",
+                "content": ai_response
+            },
+            user=conversation.user
+        )
+    except Exception as e:
+        error_message = (
+            f"User: {frappe.session.user}\n"
+            f"Conversation ID: {conversation_id}\n"
+            f"Error: {str(e)}\n"
+            f"Traceback: {traceback.format_exc()}"
+        )
+        frappe.log_error(error_message, "AI Handler Error (Background)")
+        print("[LOG] Ghi lỗi vào Error Log (Background):", error_message)
 
 @frappe.whitelist()
 def get_topics():

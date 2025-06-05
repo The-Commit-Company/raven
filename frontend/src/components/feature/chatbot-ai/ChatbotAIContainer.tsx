@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, ScrollArea, Text } from '@radix-ui/themes';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
-import { useRenameChatbotConversation, useDeleteChatbotConversation } from '@/hooks/useChatbotAPI';
+import { useDeleteChatbotConversation } from '@/hooks/useChatbotAPI';
 
 export interface ChatSession {
   id: string;
@@ -21,7 +21,6 @@ interface Props {
 const ChatbotAIContainer: React.FC<Props> = ({ sessions, selectedId, onSelectSession, onUpdateSessions, onNewSession, mutateConversations }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
-  const { call: renameConversation } = useRenameChatbotConversation();
   const { call: deleteConversation } = useDeleteChatbotConversation();
 
   const handleNewSession = () => {
@@ -33,10 +32,12 @@ const ChatbotAIContainer: React.FC<Props> = ({ sessions, selectedId, onSelectSes
     setEditValue(title);
   };
 
-  const handleEditSave = async (id: string) => {
+  const handleEditSave = (id: string) => {
     if (editValue.trim() && editValue.trim() !== sessions.find(s => s.id === id)?.title) {
-      await renameConversation({ doctype: 'ChatConversation', name: id, fieldname: 'title', value: editValue.trim() });
-      mutateConversations && mutateConversations();
+      // Cập nhật UI ngay lập tức
+      const newSessions = sessions.map(s => s.id === id ? { ...s, title: 'Đang xử lý...' } : s);
+      onUpdateSessions(newSessions);
+      // Sau đó gọi API đổi tên ở ChatbotAIPage
     }
     setEditingId(null);
     setEditValue('');

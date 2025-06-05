@@ -142,6 +142,13 @@ const MainPageContent = () => {
     })
   }, [])
 
+  // Lắng nghe realtime event new_message cho Chatbot AI
+  useFrappeEventListener('new_message', (data) => {
+    if (data.channel_id === selectedAISessionId) {
+      mutateConversationDoc();
+    }
+  });
+
   // Load layout from localStorage before first render
   useEffect(() => {
     const raw = localStorage.getItem('layout')
