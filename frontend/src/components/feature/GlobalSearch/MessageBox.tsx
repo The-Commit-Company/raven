@@ -61,7 +61,7 @@ export const MessageBox = ({ message, handleScrollToMessage }: MessageBoxProps) 
             className='invisible group-hover:visible cursor-pointer'
             onClick={() => handleScrollToMessage(message.name, channel_id, message.workspace)}
           >
-            View in channel
+            Xem trong kênh
           </Link>
         ) : null}
       </Flex>
