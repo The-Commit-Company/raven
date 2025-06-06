@@ -12,8 +12,10 @@ import { getEmbedUrlFromYoutubeUrl, isValidUrl, isValidYoutubeUrl } from '@/util
 import * as Popover from '@radix-ui/react-popover'
 import { Tooltip, TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip'
 import { Box, Text } from '@radix-ui/themes'
+import clsx from 'clsx'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { BiChevronDown, BiChevronRight } from 'react-icons/bi'
 import { HiFlag } from 'react-icons/hi'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -21,8 +23,6 @@ import { Message } from '../../../../../types/Messaging/Message'
 import { FileMessageBlock } from '../chat/ChatMessage/Renderers/FileMessage'
 import { ImageSavedMessage } from '../chat/ChatMessage/Renderers/ImageSavedMessage'
 import { PollMessageBlock } from '../chat/ChatMessage/Renderers/PollMessage'
-import { BiChevronDown, BiChevronRight } from 'react-icons/bi'
-import clsx from 'clsx'
 // import { AnimatePresence, motion } from 'framer-motion'
 
 type MessageBoxProps = {
@@ -187,8 +187,8 @@ const MessageContentRenderer = ({ message, user }: MessageContentRendererProps) 
 
 const MessageContent = ({
   message,
-  user,
-  channelName
+  user
+  // channelName
 }: {
   message: Message & { workspace?: string }
   user: any
