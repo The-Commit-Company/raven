@@ -3,6 +3,7 @@
 
 import frappe
 from frappe.model.document import Document
+import json
 
 
 class RavenSchedulerEvent(Document):
@@ -79,8 +80,9 @@ class RavenSchedulerEvent(Document):
 		# bot = frappe.get_doc('Raven Bot', self.bot)
 		# bot.send_message(self.channel, {'text': self.content})
 		# return code snippet with bot & content as values
+		content = json.dumps(self.content)
 		script = f"""
 bot = frappe.get_doc('Raven Bot', '{self.bot}')\n
-bot.send_message('{self.channel}', '{self.content}')
+bot.send_message('{self.channel}', {content})
 """
 		return script
