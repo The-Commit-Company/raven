@@ -17,11 +17,11 @@ from raven.ai.functions import (
 	get_document,
 	get_documents,
 	get_list,
+	get_value,
+	set_value,
 	submit_document,
 	update_document,
 	update_documents,
-	get_value,
-	set_value,
 )
 from raven.ai.openai_client import get_open_ai_client
 
@@ -284,7 +284,7 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 							fields=args.get("fields"),
 							limit=args.get("limit", 20),
 						)
-					
+
 					if function.type == "Get Value":
 						self.publish_event(f"Fetching value for {function.reference_doctype}...")
 						function_output = get_value(

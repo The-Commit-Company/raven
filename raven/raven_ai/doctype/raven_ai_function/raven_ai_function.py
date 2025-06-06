@@ -16,7 +16,10 @@ class RavenAIFunction(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
-		from raven.raven_ai.doctype.raven_ai_function_params.raven_ai_function_params import RavenAIFunctionParams
+
+		from raven.raven_ai.doctype.raven_ai_function_params.raven_ai_function_params import (
+			RavenAIFunctionParams,
+		)
 
 		description: DF.SmallText
 		function_definition: DF.JSON | None
@@ -28,7 +31,26 @@ class RavenAIFunction(Document):
 		reference_doctype: DF.Link | None
 		requires_write_permissions: DF.Check
 		strict: DF.Check
-		type: DF.Literal["Get Document", "Get Multiple Documents", "Get List", "Create Document", "Create Multiple Documents", "Update Document", "Update Multiple Documents", "Delete Document", "Delete Multiple Documents", "Submit Document", "Cancel Document", "Get Amended Document", "Custom Function", "Send Message", "Attach File to Document", "Get Report Result", "Get Value", "Set Value"]
+		type: DF.Literal[
+			"Get Document",
+			"Get Multiple Documents",
+			"Get List",
+			"Create Document",
+			"Create Multiple Documents",
+			"Update Document",
+			"Update Multiple Documents",
+			"Delete Document",
+			"Delete Multiple Documents",
+			"Submit Document",
+			"Cancel Document",
+			"Get Amended Document",
+			"Custom Function",
+			"Send Message",
+			"Attach File to Document",
+			"Get Report Result",
+			"Get Value",
+			"Set Value",
+		]
 	# end: auto-generated types
 
 	def before_validate(self):
@@ -268,10 +290,7 @@ class RavenAIFunction(Document):
 						"description": "Filters to apply when retrieving the value",
 					},
 					"fieldname": {
-						"anyOf": [
-							{"type": "string"},
-							{"type": "array", "items": {"type": "string"}}
-						],
+						"anyOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}],
 						"description": "The fields whose value needs to be returned. Can be a single field or a list of fields. If a list of fields is provided, the values will be returned as a tuple.",
 					},
 				},
@@ -291,10 +310,7 @@ class RavenAIFunction(Document):
 						"description": "The ID of the document to set the value for",
 					},
 					"fieldname": {
-						"anyOf": [
-							{"type": "string"},
-							{"type": "object", "additionalProperties": True}
-						],
+						"anyOf": [{"type": "string"}, {"type": "object", "additionalProperties": True}],
 						"description": "The fields whose value needs to be set. Can be a single field or a JSON object with key value pairs.",
 					},
 					"value": {
