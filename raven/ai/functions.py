@@ -226,12 +226,12 @@ def get_value(doctype: str, filters: dict = None, fieldname: str | list = "name"
 			if not meta.has_field(field):
 				return {"message": f"Field {field} does not exist in {doctype}"}
 
-		return frappe.db.get_value(doctype, filters, fieldname)
+		return client.get_value(doctype, filters=filters, fieldname=fieldname)
 	else:
 		if not meta.has_field(fieldname):
 			return {"message": f"Field {fieldname} does not exist in {doctype}"}
 
-		return frappe.db.get_value(doctype, filters, fieldname)
+		return client.get_value(doctype, filters=filters, fieldname=fieldname)
 
 
 def set_value(doctype: str, document_id: str, fieldname: str | dict, value: str = None):
@@ -244,11 +244,10 @@ def set_value(doctype: str, document_id: str, fieldname: str | dict, value: str 
 	        :param value: value if fieldname is JSON
 
 	        Example:
-	                frappe.db.set_value("Customer", "CUST-00001", {"customer_name": "John Doe", "customer_email": "john.doe@example.com"}) OR
-	                frappe.db.set_value("Customer", "CUST-00001", "customer_name", "John Doe")
+	                client.set_value("Customer", "CUST-00001", {"customer_name": "John Doe", "customer_email": "john.doe@example.com"}) OR
+	                client.set_value("Customer", "CUST-00001", "customer_name", "John Doe")
 	"""
 	if isinstance(fieldname, dict):
-		return frappe.db.set_value(doctype, document_id, fieldname)
+		return client.set_value(doctype, document_id, fieldname)
 	else:
-		return frappe.db.set_value(doctype, document_id, fieldname, value)
-
+		return client.set_value(doctype, document_id, fieldname, value)
