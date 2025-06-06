@@ -209,3 +209,45 @@ def get_list(doctype: str, filters: dict = None, fields: list = None, limit: int
 
 	# Use the frappe.get_list method to get the list of documents
 	return frappe.get_list(doctype, filters=filters, fields=filtered_fields, limit=limit)
+
+
+def get_value(doctype: str, filters: dict = None, fieldname: str | list = "name"):
+	"""
+	Returns a value from a document
+
+	        :param doctype: DocType to be queried
+	        :param fieldname: Field to be returned (default `name`) - can be a list of fields(str) or a single field(str)
+	        :param filters: dict or string for identifying the record
+	"""
+	meta = frappe.get_meta(doctype)
+
+	if isinstance(fieldname, list):
+		for field in fieldname:
+			if not meta.has_field(field):
+				return {"message": f"Field {field} does not exist in {doctype}"}
+
+		return client.get_value(doctype, filters=filters, fieldname=fieldname)
+	else:
+		if not meta.has_field(fieldname):
+			return {"message": f"Field {fieldname} does not exist in {doctype}"}
+
+		return client.get_value(doctype, filters=filters, fieldname=fieldname)
+
+
+def set_value(doctype: str, document_id: str, fieldname: str | dict, value: str = None):
+	"""
+	Set a value in a document
+
+	        :param doctype: DocType to be queried
+	        :param document_id: Document ID to be updated
+	        :param fieldname: Field to be updated - fieldname string or JSON / dict with key value pair
+	        :param value: value if fieldname is JSON
+
+	        Example:
+	                client.set_value("Customer", "CUST-00001", {"customer_name": "John Doe", "customer_email": "john.doe@example.com"}) OR
+	                client.set_value("Customer", "CUST-00001", "customer_name", "John Doe")
+	"""
+	if isinstance(fieldname, dict):
+		return client.set_value(doctype, document_id, fieldname)
+	else:
+		return client.set_value(doctype, document_id, fieldname, value)

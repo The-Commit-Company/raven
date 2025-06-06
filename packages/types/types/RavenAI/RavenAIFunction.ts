@@ -1,8 +1,7 @@
-import { RavenAIFunctionParams } from './RavenAIFunctionParams'
 
 export interface RavenAIFunction{
-	creation: string
 	name: string
+	creation: string
 	modified: string
 	owner: string
 	modified_by: string
@@ -18,7 +17,7 @@ export interface RavenAIFunction{
 	/**	Function Path : Small Text	*/
 	function_path?: string
 	/**	Type : Select	*/
-	type: "Get Document" | "Get Multiple Documents" | "Get List" | "Get Value" | "Set Value" | "Create Document" | "Create Multiple Documents" | "Update Document" | "Update Multiple Documents" | "Delete Document" | "Delete Multiple Documents" | "Submit Document" | "Cancel Document" | "Get Amended Document" | "Custom Function" | "Send Message" | "Attach File to Document" | "Get Report Result"
+	type: "Get Document" | "Get Multiple Documents" | "Get List" | "Create Document" | "Create Multiple Documents" | "Update Document" | "Update Multiple Documents" | "Delete Document" | "Delete Multiple Documents" | "Submit Document" | "Cancel Document" | "Get Amended Document" | "Custom Function" | "Send Message" | "Attach File to Document" | "Get Report Result" | "Get Value" | "Set Value"
 	/**	Reference DocType : Link - DocType	*/
 	reference_doctype?: string
 	/**	Pass parameters as JSON : Check - If checked, the params will be passed as a JSON object instead of named parameters	*/
@@ -28,7 +27,7 @@ export interface RavenAIFunction{
 	/**	Strict : Check	*/
 	strict?: 0 | 1
 	/**	Parameters : Table - Raven AI Function Params	*/
-	parameters?: RavenAIFunctionParams[]
+	parameters?: any
 	/**	Params : JSON	*/
 	params?: any
 	/**	Function Definition : JSON	*/
