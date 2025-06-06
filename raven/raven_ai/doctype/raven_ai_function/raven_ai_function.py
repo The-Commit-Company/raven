@@ -28,7 +28,7 @@ class RavenAIFunction(Document):
 		reference_doctype: DF.Link | None
 		requires_write_permissions: DF.Check
 		strict: DF.Check
-		type: DF.Literal["Get Document", "Get Multiple Documents", "Get List", "Create Document", "Create Multiple Documents", "Update Document", "Update Multiple Documents", "Delete Document", "Delete Multiple Documents", "Submit Document", "Cancel Document", "Get Amended Document", "Custom Function", "Send Message", "Attach File to Document", "Get Report Result", "Get Value"]
+		type: DF.Literal["Get Document", "Get Multiple Documents", "Get List", "Create Document", "Create Multiple Documents", "Update Document", "Update Multiple Documents", "Delete Document", "Delete Multiple Documents", "Submit Document", "Cancel Document", "Get Amended Document", "Custom Function", "Send Message", "Attach File to Document", "Get Report Result", "Get Value", "Set Value"]
 	# end: auto-generated types
 
 	def before_validate(self):
@@ -276,6 +276,33 @@ class RavenAIFunction(Document):
 					},
 				},
 				"required": ["doctype", "filters", "fieldname"],
+				"additionalProperties": False,
+			}
+		elif self.type == "Set Value":
+			params = {
+				"type": "object",
+				"properties": {
+					"doctype": {
+						"type": "string",
+						"description": "The DocType to set the value for",
+					},
+					"document_id": {
+						"type": "string",
+						"description": "The ID of the document to set the value for",
+					},
+					"fieldname": {
+						"anyOf": [
+							{"type": "string"},
+							{"type": "object", "additionalProperties": True}
+						],
+						"description": "The fields whose value needs to be set. Can be a single field or a JSON object with key value pairs.",
+					},
+					"value": {
+						"type": "string",
+						"description": "The value to set for the field. This is required if fieldname is a string.",
+					},
+				},
+				"required": ["doctype", "document_id", "fieldname"],
 				"additionalProperties": False,
 			}
 		else:

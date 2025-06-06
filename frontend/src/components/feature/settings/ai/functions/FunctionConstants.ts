@@ -24,6 +24,12 @@ export const FUNCTION_TYPES = [
         type: "Standard"
     },
     {
+        value: "Set Value",
+        description: "Set a value in a document in the system. This function can set a single value or multiple values in a document.",
+        requires_write_permissions: true,
+        type: "Standard"
+    },
+    {
         value: "Create Document",
         description: "Create any document in the system.",
         requires_write_permissions: true,

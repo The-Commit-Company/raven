@@ -21,6 +21,7 @@ from raven.ai.functions import (
 	update_document,
 	update_documents,
 	get_value,
+	set_value,
 )
 from raven.ai.openai_client import get_open_ai_client
 
@@ -292,6 +293,14 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 							fieldname=args.get("fieldname"),
 						)
 
+					if function.type == "Set Value":
+						self.publish_event(f"Setting value for {function.reference_doctype}...")
+						function_output = set_value(
+							doctype=function.reference_doctype,
+							document_id=args.get("document_id"),
+							fieldname=args.get("fieldname"),
+							value=args.get("value"),
+						)
 					tool_outputs.append(
 						{"tool_call_id": tool.id, "output": json.dumps(function_output, default=str)}
 					)
