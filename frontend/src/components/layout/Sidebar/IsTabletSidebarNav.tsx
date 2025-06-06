@@ -2,18 +2,16 @@ import { HiMenu } from 'react-icons/hi'
 import { useUnreadMessageCount } from '@/hooks/useUnreadMessageCount'
 import { filterItems, useMentionUnreadCount, FilterList } from './SidebarContainer'
 import { useSidebarMode } from '@/utils/layout/sidebar'
-import { useState } from 'react'
-// import { AnimatePresence, motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useIsTablet } from '@/hooks/useMediaQuery'
 import clsx from 'clsx'
 
 export default function FilterTabs() {
-  const [showFilterList, setShowFilterList] = useState(false)
-
   const { title, setTitle } = useSidebarMode()
   const { totalUnreadCount } = useUnreadMessageCount()
   const { mentionUnreadCount, resetMentions } = useMentionUnreadCount()
-  
+
   const isTablet = useIsTablet()
 
   const { setMode } = useSidebarMode()
@@ -36,7 +34,19 @@ export default function FilterTabs() {
     setTitle(label)
     if (label === 'Nhắc đến') resetMentions()
   }
-  
+
+  const [showFilterList, setShowFilterList] = useState(false)
+  const [shouldRenderFilterList, setShouldRenderFilterList] = useState(false)
+
+  useEffect(() => {
+    if (showFilterList) {
+      setShouldRenderFilterList(true)
+    } else {
+      const timeout = setTimeout(() => setShouldRenderFilterList(false), 300)
+      return () => clearTimeout(timeout)
+    }
+  }, [showFilterList])
+
   return (
     <>
       <div className='flex items-cente p-2 pl-0 gap-2 w-full max-w-full md:mt-5'>
@@ -51,7 +61,9 @@ export default function FilterTabs() {
         >
           <HiMenu className='w-4 h-4 dark:text-white' />
 
-          {(totalUnreadCount > 0 || mentionUnreadCount > 0) && <span className='absolute top-0 right-0 w-[8px] h-[8px] bg-red-500 rounded-full' />}
+          {(totalUnreadCount > 0 || mentionUnreadCount > 0) && (
+            <span className='absolute top-0 right-0 w-[8px] h-[8px] bg-red-500 rounded-full' />
+          )}
         </button>
 
         <div
@@ -103,7 +115,36 @@ export default function FilterTabs() {
         </div>
       </div>
 
-      {/* Slide-in FilterList for tablet */}
+      {isTablet && shouldRenderFilterList && (
+        <>
+          {/* Overlay */}
+          <div
+            onClick={() => setShowFilterList(false)}
+            className={clsx(
+              'fixed inset-0 bg-black bg-opacity-40 z-40 transition-opacity duration-300',
+              showFilterList ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            )}
+          />
+
+          {/* Sidebar */}
+          <div
+            className={clsx(
+              'fixed top-0 left-0 h-full w-60 bg-white dark:bg-neutral-800 shadow-lg z-50',
+              showFilterList ? 'animate-slide-in-left' : 'animate-slide-out-left'
+            )}
+          >
+            <button
+              onClick={() => setShowFilterList(false)}
+              className='dark:text-white text-xl absolute top-4 right-4 bg-transparent'
+            >
+              ✕
+            </button>
+            <div className='mt-14'>
+              <FilterList onClose={() => setShowFilterList(false)} />
+            </div>
+          </div>
+        </>
+      )}
     </>
   )
 }

@@ -6,11 +6,12 @@ import { useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useSetAtom } from 'jotai'
 import { useFrappePostCall } from 'frappe-react-sdk'
-import { Badge, Flex } from '@radix-ui/themes'
+import { Badge, Box, Flex } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import ChannelItem from './ChannelItem'
+import clsx from 'clsx'
 
 const UserChannelList = () => {
   const { dm_channels } = useChannelList()
@@ -19,7 +20,6 @@ const UserChannelList = () => {
   const usersWithoutChannels = users?.filter(
     (user) => !dm_channels.find((channel) => channel.peer_user_id === user.name)
   )
-
 
   return (
     <div className='space-y-2'>
@@ -66,23 +66,25 @@ const UserWithoutDMItem = ({ userID }: { userID: string }) => {
   }
 
   return (
-    <button
+    <Box
       onClick={onClick}
-      className='w-full text-left p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700'
+      className={clsx('w-full text-left p-2 rounded cursor-pointer', 'hover:bg-gray-100 dark:hover:bg-gray-700')}
     >
       <Flex width='100%' justify='between' align='center'>
         <Flex gap='2' align='center'>
           <UserAvatar src={user?.user_image} isBot={user?.type === 'Bot'} alt={user?.full_name ?? userID} />
           <span>{user?.full_name ?? userID}</span>
         </Flex>
+
         {loading ? <Loader /> : null}
-        {!user?.enabled ? (
+
+        {!user?.enabled && (
           <Badge color='gray' variant='soft'>
             Disabled
           </Badge>
-        ) : null}
+        )}
       </Flex>
-    </button>
+    </Box>
   )
 }
 

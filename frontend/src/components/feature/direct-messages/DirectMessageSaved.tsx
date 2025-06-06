@@ -22,6 +22,7 @@ import { FileMessageBlock } from '../chat/ChatMessage/Renderers/FileMessage'
 import { ImageSavedMessage } from '../chat/ChatMessage/Renderers/ImageSavedMessage'
 import { PollMessageBlock } from '../chat/ChatMessage/Renderers/PollMessage'
 import { BiChevronDown, BiChevronRight } from 'react-icons/bi'
+import clsx from 'clsx'
 // import { AnimatePresence, motion } from 'framer-motion'
 
 type MessageBoxProps = {
@@ -308,27 +309,23 @@ const GroupedMessages = ({
         {collapsed ? <BiChevronRight className='w-4 h-4' /> : <BiChevronDown className='w-4 h-4' />}
       </div>
 
-      {/* <AnimatePresence initial={false}>
-        {!collapsed && (
-          <motion.div
-            key='message-group'
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: 'easeInOut' }}
-            className='overflow-hidden space-y-0.5'
-          >
-            {messages.map((msg) => (
-              <DirectMessageSaved
-                key={msg.name}
-                message={msg}
-                handleUnflagMessage={handleUnflagMessage}
-                channelName={channelName}
-              />
-            ))}
-          </motion.div>
+      <div
+        className={clsx(
+          'transition-opacity duration-300 ease-in-out overflow-x-hidden overflow-y-auto',
+          collapsed ? 'opacity-0 max-h-0 pointer-events-none' : 'opacity-100 max-h-[400px]'
         )}
-      </AnimatePresence> */}
+      >
+        <div className='space-y-0.5'>
+          {messages.map((msg) => (
+            <DirectMessageSaved
+              key={msg.name}
+              message={msg}
+              handleUnflagMessage={handleUnflagMessage}
+              channelName={channelName}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
