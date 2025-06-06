@@ -39,8 +39,6 @@ import UserChannelList from '../channels/UserChannelList'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
 
-
-
 interface DirectMessageListProps {
   dm_channels: DMChannelWithUnreadCount[] | any
   isLoading?: boolean
@@ -169,7 +167,7 @@ export const DirectMessageItemList = () => {
   if (title === 'Nhắc đến') return <MentionList />
   if (title === 'Xong') return <DoneChannelList />
   if (title === 'Chủ đề') return <ThreadsList />
-  if (title === 'Thành viên') return <UserChannelList/>
+  if (title === 'Thành viên') return <UserChannelList />
 
   if (filteredChannels.length === 0 && title !== 'Trò chuyện') {
     return <div className='text-gray-500 text-sm italic p-4 text-center'>Không có kết quả</div>
@@ -189,7 +187,7 @@ export const DirectMessageItem = ({ dm_channel }: { dm_channel: DMChannelWithUnr
   return (
     <ContextMenu.Root>
       <ContextMenu.Trigger>
-        <main>
+        <main className='select-none'>
           <DirectMessageItemElement channel={dm_channel} />
         </main>
       </ContextMenu.Trigger>
@@ -295,11 +293,11 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
       const updated = doneList.filter((name) => name !== channel.name)
       localStorage.setItem('done_channels', JSON.stringify(updated))
 
-      toast.success('↩️ Đánh dấu chưa xong')
+      toast.success('Đánh dấu chưa xong')
       setChannels((prev) => prev.map((c) => (c.name === channel.name ? { ...c, is_done: 0 } : c)))
     } catch (err) {
-      console.error('❌ Lỗi khi đánh dấu chưa xong', err)
-      toast.error('❌ Lỗi khi đánh dấu chưa xong')
+      console.error('Lỗi khi đánh dấu chưa xong', err)
+      toast.error('Lỗi khi đánh dấu chưa xong')
     }
   }
 
@@ -325,18 +323,19 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
               availabilityStatus={peerUser.availability_status}
             />
           ) : (
-            <ChannelIcon type={channel.type} className={`${isTablet ? 'w-[32px] h-[32px]' : 'w-[24px] h-[24px]'} text-center`} />
+            <ChannelIcon
+              type={channel.type}
+              className={`${isTablet ? 'w-[32px] h-[32px]' : 'w-[24px] h-[24px]'} text-center`}
+            />
           )}
           {shouldShowBadge && (
             <SidebarBadge
               className={clsx(
-                'absolute bg-red-500 text-white text-[10px] font-medium rounded-full flex items-center justify-center top-0 right-0 w-[15px] h-[15px]',
-                isTablet
-                  ? 'translate-x-[30%] -translate-y-[185%]'
-                  : 'translate-x-[40%] -translate-y-[150%]'
+                'absolute bg-red-500 text-white text-[8px] font-medium rounded-full flex items-center justify-center top-0 right-0 w-[14px] h-[14px]',
+                isTablet ? 'translate-x-[30%] -translate-y-[185%]' : 'translate-x-[40%] -translate-y-[150%]'
               )}
             >
-              {channel.unread_count || 1}
+              {channel.unread_count > 9 ? '9+' : channel.unread_count || 1}
             </SidebarBadge>
           )}
         </Box>
