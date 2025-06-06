@@ -4,48 +4,42 @@
     "doctype": "DocType",
     "engine": "InnoDB",
     "field_order": [
-        "basic_info",
-        "title",
-        "description",
-        "default_prompt",
-        "icon"
+        "sender",
+        "is_user",
+        "message",
+        "timestamp"
     ],
     "fields": [
         {
-            "fieldname": "basic_info",
-            "fieldtype": "Section Break",
-            "label": "Basic Info"
-        },
-        {
-            "fieldname": "title",
+            "fieldname": "sender",
             "fieldtype": "Data",
-            "label": "Title",
+            "label": "Sender",
             "reqd": 1
         },
         {
-            "fieldname": "description",
-            "fieldtype": "Small Text",
-            "label": "Description",
-            "reqd": 1
+            "fieldname": "is_user",
+            "fieldtype": "Check",
+            "label": "Is User"
         },
         {
-            "fieldname": "default_prompt",
+            "fieldname": "message",
             "fieldtype": "Text",
-            "label": "Default Prompt",
+            "label": "Message",
             "reqd": 1
         },
         {
-            "fieldname": "icon",
-            "fieldtype": "Attach Image",
-            "label": "Icon"
+            "fieldname": "timestamp",
+            "fieldtype": "Datetime",
+            "label": "Timestamp",
+            "read_only": 1
         }
     ],
     "index_web_pages_for_search": 1,
     "links": [],
     "modified": "2024-03-19 10:00:00.000000",
     "modified_by": "Administrator",
-    "module": "Chatbot",
-    "name": "ChatTopic",
+    "module": "Raven",
+    "name": "ChatMessage",
     "owner": "Administrator",
     "permissions": [
         {
