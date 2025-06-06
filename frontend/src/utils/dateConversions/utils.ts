@@ -4,11 +4,16 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 
+// ✨ Thêm locale Vietnamese
+import 'dayjs/locale/vi'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(advancedFormat)
 dayjs.extend(relativeTime)
+
+// ⚠️ Cấu hình ngôn ngữ mặc định
+dayjs.locale('vi')
 
 const DEFAULT_TIME_ZONE = 'Asia/Ho_Chi_Minh'
 export const SYSTEM_TIMEZONE = window.frappe?.boot?.time_zone?.system || DEFAULT_TIME_ZONE

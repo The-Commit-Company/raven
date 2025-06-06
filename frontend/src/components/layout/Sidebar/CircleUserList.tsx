@@ -214,11 +214,13 @@ const CircleUserList = ({ size }: { size?: number }) => {
                       return (
                         <ContextMenu.Root key={channel.name}>
                           <ContextMenu.Trigger asChild>
-                            <SortableCircleUserItem
-                              channel={channel}
-                              isActive={channel.name === channelID}
-                              onActivate={() => {}}
-                            />
+                            <div className='select-none'>
+                              <SortableCircleUserItem
+                                channel={channel}
+                                isActive={channel.name === channelID}
+                                onActivate={() => {}}
+                              />
+                            </div>
                           </ContextMenu.Trigger>
                           <ContextMenu.Portal>
                             <ContextMenu.Content className='z-50 bg-white dark:bg-gray-800 text-black dark:text-white rounded shadow-md p-1'>

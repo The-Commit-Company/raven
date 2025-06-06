@@ -162,7 +162,7 @@ export function FilterList({ onClose }: FilterListProps) {
                   right: isIconOnly ? '3%' : undefined,
                   top: isIconOnly ? 'auto' : undefined,
                   transform: isIconOnly ? 'translateY(-50%)' : undefined,
-                  fontSize: '0.7rem',
+                  fontSize: isIconOnly ? '0.5rem' : '0.8rem',
                   lineHeight: '1rem',
                   fontWeight: 500,
                   marginRight: isIconOnly ? '0px' : '1rem',
@@ -171,8 +171,8 @@ export function FilterList({ onClose }: FilterListProps) {
                         backgroundColor: 'red',
                         color: 'white',
                         borderRadius: '50%',
-                        width: '15px',
-                        height: '15px',
+                        width: '14px',
+                        height: '14px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -181,7 +181,7 @@ export function FilterList({ onClose }: FilterListProps) {
                     : {})
                 }}
               >
-                {badgeCount}
+                {badgeCount > 9 ? '9+' : badgeCount}
               </span>
             )}
           </li>
