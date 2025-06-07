@@ -353,7 +353,7 @@ export const useFetchUnreadMessageCount = () => {
   }
 
   useEffect(() => {
-    const app_name = window.app_name || 'Raven'
+    const app_name = window.app_name || 'Raven' || 'Raven'
     let blinkInterval: NodeJS.Timeout
     let blinkState = false
     let activeTitle = app_name
