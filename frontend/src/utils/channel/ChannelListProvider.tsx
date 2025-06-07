@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { KeyedMutator } from 'swr'
 
 export type UnreadChannelCountItem = {
+  last_message_content: any
   name: string
   user_id?: string
   unread_count: number

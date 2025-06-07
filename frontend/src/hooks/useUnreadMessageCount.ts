@@ -204,10 +204,17 @@
 import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { UnreadCountData, useChannelList, useUpdateLastMessageInChannelList } from '@/utils/channel/ChannelListProvider'
-import { FrappeConfig, FrappeContext, useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
+import {
+  FrappeConfig,
+  FrappeContext,
+  useFrappeEventListener,
+  useFrappeGetCall,
+  useFrappePostCall
+} from 'frappe-react-sdk'
 import { useAtomValue } from 'jotai'
-import { useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import { useContext, useEffect, useMemo, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { useNotificationAudio } from './useNotificationAudio'
 
 export const useUnreadMessageCount = () => {
   const manuallyMarked = useAtomValue(manuallyMarkedAtom)
@@ -302,13 +309,24 @@ export const useFetchUnreadMessageCount = () => {
   }
 
   const { channelID } = useParams()
-  const { state } = useLocation()
   const { updateLastMessageInChannelList } = useUpdateLastMessageInChannelList()
+  const { call: trackVisit } = useFrappePostCall('raven.api.raven_channel_member.track_visit')
+
+  const { play } = useNotificationAudio()
 
   useFrappeEventListener('raven:unread_channel_count_updated', (event) => {
     if (event.sent_by !== currentUser) {
-      if (channelID === event.channel_id && !state?.baseMessage) {
-        updateUnreadCountToZero(channelID)
+      if (channelID === event.channel_id) {
+        trackVisit({ channel_id: channelID })
+
+        setLatestUnreadData({
+          name: event.channel_id,
+          last_message_sender_name: event.last_message_sender_name,
+          is_direct_message: event.is_direct_message,
+          channel_name: event.channel_name,
+          last_message_timestamp: event.last_message_timestamp
+        })
+        play()
       } else {
         fetchUnreadCountForChannel(event.channel_id)
       }
@@ -334,23 +352,11 @@ export const useFetchUnreadMessageCount = () => {
     )
   }
 
-  // const dmWithUnread = useMemo(() => {
-  //   return unread_count?.message.filter((c) => c.unread_count > 0 && c.is_direct_message === 1) || []
-  // }, [unread_count])
-
-  // const dmChannel = useMemo(() => {
-  //   return dm_channels.find((c) => c.name === dmWithUnread?.name)
-  // }, [dmWithUnread, dm_channels])
-  const lastPlayedMessageIdRef = useRef<string | null>(null)
-
   useEffect(() => {
     const app_name = window.app_name || 'Raven'
     let blinkInterval: NodeJS.Timeout
     let blinkState = false
     let activeTitle = app_name
-
-    const audio = new Audio(`${import.meta.env.BASE_URL}notification.mp3`)
-    audio.volume = 0.7
 
     const allChannelMap = new Map((unread_count?.message || []).map((c) => [c.name, c]))
     const manualOnly = Array.from(manuallyMarked).filter((id) => !allChannelMap.has(id))
@@ -363,7 +369,6 @@ export const useFetchUnreadMessageCount = () => {
       return
     }
 
-    // const isManualOnly = totalUnread > 0 && serverUnreadCount === 0
     let hasRealNewMessage = false
 
     if (latestUnreadData) {
@@ -381,10 +386,8 @@ export const useFetchUnreadMessageCount = () => {
           activeTitle = `(${totalUnread}) ${last_message_sender_name} đã nhắn cho bạn`
         }
 
-        if (last_message_timestamp && last_message_timestamp !== lastPlayedMessageIdRef.current) {
-          audio.play().catch(() => {})
-          lastPlayedMessageIdRef.current = last_message_timestamp
-        }
+        // Dùng play() thống nhất
+        play(last_message_timestamp)
       } else {
         activeTitle = `(${totalUnread}) Bạn có tin nhắn chưa đọc`
       }
@@ -406,20 +409,11 @@ export const useFetchUnreadMessageCount = () => {
     }
 
     const handleVisibilityChange = () => {
-      if (document.hidden && hasRealNewMessage) {
-        startBlink()
-      } else {
-        stopBlink()
-      }
+      document.hidden && hasRealNewMessage ? startBlink() : stopBlink()
     }
 
     document.addEventListener('visibilitychange', handleVisibilityChange)
-
-    if (document.hidden && hasRealNewMessage) {
-      startBlink()
-    } else {
-      stopBlink()
-    }
+    document.hidden && hasRealNewMessage ? startBlink() : stopBlink()
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange)

@@ -35,8 +35,8 @@ export const CreateChannelButton = () => {
             size='1'
             radius='large'
             color='gray'
-            aria-label='Create Channel'
-            title='Create Channel'
+            aria-label='Tạo nhóm chat'
+            title='Tạo nhóm chat'
             className='transition-all ease-ease text-gray-10 bg-transparent hover:bg-gray-3 hover:text-gray-12 cursor-pointer'
           >
             <FiPlus size='16' />
@@ -56,8 +56,8 @@ export const CreateChannelButton = () => {
             size='1'
             radius='large'
             color='gray'
-            aria-label='Create Channel'
-            title='Create Channel'
+            aria-label='Tạo nhóm chat'
+            title='Tạo nhóm chat'
             className='transition-all ease-ease text-gray-10 bg-transparent hover:bg-gray-3 hover:text-gray-12'
           >
             <FiPlus size='16' />

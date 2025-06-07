@@ -6,22 +6,16 @@ import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
 import { Box, ContextMenu, Flex, Text, Tooltip } from '@radix-ui/themes'
 import { useFrappePostCall } from 'frappe-react-sdk'
-import { useContext, useEffect, useMemo, useState } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useContext, useMemo, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { UserContext } from '../../../utils/auth/UserProvider'
-// import { ChannelInfo } from '@/utils/users/CircleUserListProvider'
 
 import { ChannelWithUnreadCount, DMChannelWithUnreadCount } from '@/components/layout/Sidebar/useGetChannelUnreadCounts'
 import { useChannelActions } from '@/hooks/useChannelActions'
 import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
-import {
-  LocalChannelListProvider,
-  useLocalChannelList,
-  useSidebarMode,
-  useUnreadMessages
-} from '@/utils/layout/sidebar'
+import { useSidebarMode } from '@/utils/layout/sidebar'
 import { __ } from '@/utils/translations'
 import { useAtomValue } from 'jotai'
 import { ChannelListContext, ChannelListContextType } from '../../../utils/channel/ChannelListProvider'
@@ -30,134 +24,41 @@ import { formatLastMessage } from '@/utils/channel/useFormatLastMessage'
 import { HiCheck } from 'react-icons/hi'
 import { DoneChannelList } from '../channels/DoneChannelList'
 import MentionList from '../chat/ChatInput/MentionListCustom'
-import ThreadsList from '../threads/ThreadManager/ThreadsList'
 import { MessageSaved } from './DirectMessageSaved'
 import clsx from 'clsx'
 import { useIsTablet } from '@/hooks/useMediaQuery'
 import UserChannelList from '../channels/UserChannelList'
-// import { useChannelListRealtimeSync } from '@/utils/channel/useChannelListRealtimeSync'
+import { useEnrichedChannels } from '@/utils/channel/ChannelAtom'
+import ParticipatingThreads from '../threads/ThreadManager/ParticipatingThreads'
+import ThreadsCustom from '../threads/ThreadsCustom'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
 
-interface DirectMessageListProps {
-  dm_channels: DMChannelWithUnreadCount[] | any
-  isLoading?: boolean
-}
-
-const MAX_PREVIEW_LENGTH = 30 // hoặc bất kỳ độ dài bạn muốn
-
-const truncateText = (text: string, maxLength: number = MAX_PREVIEW_LENGTH): string =>
-  text.length > maxLength ? text.slice(0, maxLength) + '...' : text
-
-export const useMergedUnreadCount = (
-  selectedChannels: UnifiedChannel[],
-  unreadMessageList: {
-    name: string
-    unread_count: number
-    last_message_details?: any
-    last_message_timestamp?: string
-  }[]
-) => {
-  const manuallyMarked = useAtomValue(manuallyMarkedAtom)
-  const { channelID } = useParams()
-  const { state } = useLocation()
-
-  return selectedChannels.map((channel) => {
-    const found = unreadMessageList.find((m) => m.name === channel.name)
-    const count = found?.unread_count ?? 0
-    const isManually = manuallyMarked.has(channel.name)
-
-    let mergedLastMessageDetails = found?.last_message_details || channel.last_message_details
-
-    if (mergedLastMessageDetails?.content && typeof mergedLastMessageDetails.content === 'string') {
-      mergedLastMessageDetails = {
-        ...mergedLastMessageDetails,
-        content: truncateText(mergedLastMessageDetails.content, MAX_PREVIEW_LENGTH)
-      }
-    }
-
-    let finalUnreadCount = count
-
-    const isCurrentChannel = channelID === channel.name
-    const fromBaseMessage = !!state?.baseMessage
-    const isTabVisible = !document.hidden
-
-    if (channel.is_done === 1) {
-      finalUnreadCount = 0
-    } else if (isManually) {
-      finalUnreadCount = Math.max(count, 1)
-    }
-
-    // ✅ Nếu đang ở đúng channel, tab đang mở, và không mở từ baseMessage → bỏ count
-    if (isCurrentChannel && isTabVisible && !fromBaseMessage) {
-      finalUnreadCount = 0
-    }
-
-    return {
-      ...channel,
-      unread_count: finalUnreadCount,
-      last_message_details: mergedLastMessageDetails,
-      last_message_timestamp: found?.last_message_timestamp ?? channel.last_message_timestamp
-    }
-  })
-}
-
-export const DirectMessageList = ({ dm_channels, isLoading = false }: DirectMessageListProps) => {
-  const newUnreadCount = useUnreadMessages()
-  const enrichedDMs = useMergedUnreadCount(dm_channels, newUnreadCount?.message ?? [])
-
+export const DirectMessageList = () => {
+  const enriched = useEnrichedChannels()
+  
   return (
     <SidebarGroup pb='4'>
       <SidebarGroup>
-        <div className='flex gap-3 flex-col fade-in'>
-          {isLoading ? (
-            <div className='p-3 text-sm text-gray-500 italic'>Đang tải danh sách...</div>
-          ) : (
-            <LocalChannelListProvider initialChannels={enrichedDMs as any}>
-              <SyncLocalChannels enrichedDMs={enrichedDMs} />
-              <DirectMessageItemList />
-              {dm_channels.length < 1 && <ExtraUsersItemList />}
-            </LocalChannelListProvider>
-          )}
-        </div>
+        <DirectMessageItemList channel_list={enriched} />
       </SidebarGroup>
     </SidebarGroup>
   )
 }
 
-// ⬇️ Tách logic sync ra component riêng nằm bên trong Provider
-const SyncLocalChannels = ({ enrichedDMs }: { enrichedDMs: any[] }) => {
-  const { setChannels } = useLocalChannelList()
-
-  useEffect(() => {
-    const stored = localStorage.getItem('done_channels')
-    const doneList: string[] = stored ? JSON.parse(stored) : []
-
-    const syncedDMs = enrichedDMs.map((dm) => ({
-      ...dm,
-      is_done: doneList.includes(dm.name) ? 1 : 0
-    }))
-
-    setChannels(syncedDMs)
-  }, [enrichedDMs, setChannels])
-
-  return null
-}
-
-export const DirectMessageItemList = () => {
-  const { localChannels } = useLocalChannelList()
+export const DirectMessageItemList = ({ channel_list }: any) => {
   const { title } = useSidebarMode()
 
   const getFilteredChannels = (): DMChannelWithUnreadCount[] => {
     switch (title) {
       case 'Trò chuyện nhóm':
-        return localChannels.filter((c) => c.group_type === 'channel' && c.is_done === 0)
+        return channel_list.filter((c: { group_type: string; is_done: number }) => c.group_type === 'channel' && c.is_done === 0)
       case 'Cuộc trò chuyện riêng tư':
-        return localChannels.filter((c) => c.group_type === 'dm' && c.is_done === 0)
+        return channel_list.filter((c: { group_type: string; is_done: number }) => c.group_type === 'dm' && c.is_done === 0)
       case 'Chưa đọc':
-        return localChannels.filter((c) => c.unread_count > 0 && c.is_done === 0)
+        return channel_list.filter((c: { unread_count: number; is_done: number }) => c.unread_count > 0 && c.is_done === 0)
       default:
-        return localChannels.filter((c) => c.is_done === 0)
+        return channel_list.filter((c: { is_done: number }) => c.is_done === 0)
     }
   }
 
@@ -166,7 +67,7 @@ export const DirectMessageItemList = () => {
   if (title === 'Đã gắn cờ') return <MessageSaved />
   if (title === 'Nhắc đến') return <MentionList />
   if (title === 'Xong') return <DoneChannelList />
-  if (title === 'Chủ đề') return <ThreadsList />
+  if (title === 'Chủ đề') return <ThreadsCustom />
   if (title === 'Thành viên') return <UserChannelList />
 
   if (filteredChannels.length === 0 && title !== 'Trò chuyện') {
@@ -214,7 +115,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   const isTablet = useIsTablet()
   const { currentUser } = useContext(UserContext)
   const navigate = useNavigate()
-  const { setChannels } = useLocalChannelList()
+  // const { setChannels } = useLocalChannelList()
   const { workspaceID, channelID } = useParams()
 
   const manuallyMarked = useAtomValue(manuallyMarkedAtom)
@@ -256,7 +157,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
     return formatLastMessage(channel, currentUser, lastSender?.full_name)
   }, [channel, currentUser, lastSender?.full_name])
 
-  const shouldShowBadge = channel.unread_count > 0 || isManuallyMarked
+  const shouldShowBadge = (channel.unread_count > 0 && channel.name !== channelID) || isManuallyMarked
 
   const { clearManualMark } = useChannelActions()
 
@@ -277,7 +178,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
 
       toast.success('Đánh dấu đã xong')
       setTimeout(() => {
-        setChannels((prev) => prev.map((c) => (c.name === channel.name ? { ...c, is_done: 1 } : c)))
+        // setChannels((prev) => prev.map((c) => (c.name === channel.name ? { ...c, is_done: 1 } : c)))
       }, 300)
     } catch (err) {
       console.error('Lỗi khi đánh dấu đã xong', err)
@@ -294,7 +195,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
       localStorage.setItem('done_channels', JSON.stringify(updated))
 
       toast.success('Đánh dấu chưa xong')
-      setChannels((prev) => prev.map((c) => (c.name === channel.name ? { ...c, is_done: 0 } : c)))
+      // setChannels((prev) => prev.map((c) => (c.name === channel.name ? { ...c, is_done: 0 } : c)))
     } catch (err) {
       console.error('Lỗi khi đánh dấu chưa xong', err)
       toast.error('Lỗi khi đánh dấu chưa xong')

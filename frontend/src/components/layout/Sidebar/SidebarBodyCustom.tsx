@@ -1,21 +1,23 @@
 import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
 import { Flex, ScrollArea } from '@radix-ui/themes'
-import { atomWithStorage } from 'jotai/utils'
-import { useContext, useMemo } from 'react'
+import { useContext, useEffect, useMemo } from 'react'
 import { DirectMessageList } from '../../feature/direct-messages/DirectMessageListCustom'
 import CircleUserList from './CircleUserList'
 import { useIsTablet } from '@/hooks/useMediaQuery'
 import IsTabletSidebarNav from './IsTabletSidebarNav'
-
-export const showOnlyMyChannelsAtom = atomWithStorage('showOnlyMyChannels', false)
+import { useAtomValue, useSetAtom } from 'jotai'
+import { prepareSortedChannels, sortedChannelsAtom } from '@/utils/channel/ChannelAtom'
 
 export type SidebarBodyProps = {
-  size: number 
+  size: number
 }
 
 export const SidebarBody = ({ size }: SidebarBodyProps) => {
-  // const unread_count = useFetchUnreadMessageCount()
   const { channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
+  const setSortedChannels = useSetAtom(sortedChannelsAtom)
+  useEffect(() => {
+    setSortedChannels(prepareSortedChannels(channels, dm_channels))
+  }, [channels, dm_channels, setSortedChannels])
 
   const isTablet = useIsTablet()
 
@@ -31,25 +33,14 @@ export const SidebarBody = ({ size }: SidebarBodyProps) => {
   //   unread_count: unread_count?.message
   // })
 
-  const sortedChannels = useMemo(() => {
-    return [
-      ...channels.map((channel) => ({ ...channel, group_type: 'channel' })),
-      ...dm_channels.map((dm) => ({ ...dm, group_type: 'dm' }))
-    ].sort((a, b) => {
-      const timeA = new Date(a.last_message_timestamp || 0).getTime()
-      const timeB = new Date(b.last_message_timestamp || 0).getTime()
-      return timeB - timeA
-    })
-  }, [channels, dm_channels])
-
   return (
     <ScrollArea type='hover' scrollbars='vertical' className='h-[calc(100vh-4rem)] sidebar-scroll'>
       <Flex direction='column' gap='2' className='overflow-x-hidden pb-12 sm:pb-0' px='2'>
         <Flex direction='column' gap='1' className='pb-0.5'></Flex>
-        <CircleUserList size={size} />
-        {isTablet && <IsTabletSidebarNav/>}
+        <CircleUserList />
+        {isTablet && <IsTabletSidebarNav />}
         {/* <PinnedChannels unread_count={unread_count?.message} /> */}
-        <DirectMessageList dm_channels={sortedChannels} />
+        <DirectMessageList />
       </Flex>
     </ScrollArea>
   )

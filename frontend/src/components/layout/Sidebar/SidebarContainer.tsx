@@ -3,7 +3,7 @@ import { useSidebarMode } from '@/utils/layout/sidebar'
 import { Tooltip } from '@radix-ui/themes'
 import { useEffect, useRef } from 'react'
 import {
-  HiChatAlt2,
+  HiOutlineChatAlt2,
   HiMenuAlt2,
   HiOutlineAtSymbol,
   HiOutlineCheckCircle,
@@ -43,7 +43,7 @@ export const useMentionUnreadCount = () => {
 }
 
 export const filterItems = [
-  { label: 'Trò chuyện', icon: HiChatAlt2 },
+  { label: 'Trò chuyện', icon: HiOutlineChatAlt2 },
   { label: 'Chưa đọc', icon: HiOutlineInbox },
   { label: 'Đã gắn cờ', icon: HiOutlineFlag },
   { label: 'Nhắc đến', icon: HiOutlineAtSymbol },
@@ -58,7 +58,6 @@ export const filterItems = [
 
 export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.RefObject<any> }) {
   const { mode, setMode, tempMode } = useSidebarMode()
-  // const { totalUnreadCount } = useUnreadMessageCount()
 
   const isCollapsed = false
   const isIconOnly = tempMode === 'show-only-icons'
@@ -94,7 +93,6 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
         <div className='flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300'>
           <span className='relative inline-block cursor-pointer py-3 group' style={{ zIndex: 999 }}>
             <HiMenuAlt2
-              // onClick={toggleCollapse}
               onClick={handleToggleIconMode}
               className={`w-5 h-5 ${!isIconOnly && 'ml-3 mr-2'} p-1 rounded group-hover:bg-gray-200 dark:group-hover:bg-gray-700`}
             />
