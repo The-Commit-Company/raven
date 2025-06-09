@@ -66,9 +66,8 @@ const MainPageContent = () => {
   const { data: conversations, mutate: mutateConversations, isLoading: loadingConversations } = useChatbotConversations();
   const { call: createConversation } = useCreateChatbotConversation();
 
-  // Khi chọn session, lấy messages từ backend (chuẩn child table Frappe)
-  const { data: conversationDoc, mutate: mutateConversationDoc, isLoading: loadingConversationDoc } = useChatbotConversationWithMessages(selectedAISessionId || undefined);
-  const messages = conversationDoc?.messages || [];
+  // Lấy messages từ backend
+  const { data: messages, mutate: mutateMessages, isLoading: loadingMessages } = useChatbotMessages(selectedAISessionId || undefined);
   const { call: sendMessage, loading: sending } = useSendChatbotMessage();
 
   // Chuyển đổi dữ liệu conversation sang ChatSession cho UI
@@ -93,7 +92,7 @@ const MainPageContent = () => {
   const handleSendMessage = async (content: string) => {
     if (!selectedAISessionId) return;
     await sendMessage({ conversation_id: selectedAISessionId, message: content });
-    await mutateConversationDoc(); // Sau khi gửi tin nhắn thì refetch lại conversation để lấy messages mới
+    await mutateMessages(); // Sau khi gửi tin nhắn thì refetch lại messages
   };
 
   // Lấy session đang chọn từ backend
@@ -145,7 +144,7 @@ const MainPageContent = () => {
   // Lắng nghe realtime event new_message cho Chatbot AI
   useFrappeEventListener('new_message', (data) => {
     if (data.channel_id === selectedAISessionId) {
-      mutateConversationDoc();
+      mutateMessages();
     }
   });
 
@@ -269,7 +268,7 @@ const MainPageContent = () => {
                       }))
                     }}
                     onSendMessage={handleSendMessage}
-                    loading={sending || loadingConversationDoc}
+                    loading={sending || loadingMessages}
                   />
                 ) : title === 'Chatbot AI' ? (
                   <div className='flex items-center justify-center h-full text-gray-6'>Chọn đoạn chat để bắt đầu</div>

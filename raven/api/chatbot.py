@@ -79,28 +79,40 @@ def send_message(conversation_id, message, is_user=True):
         print(f"Đã tìm thấy conversation: {conversation.name}")
         
         # Kiểm tra nếu là tin nhắn đầu tiên của người dùng
-        if is_user and len(conversation.messages) == 0:
-            # Phân tích chủ đề từ tin nhắn đầu tiên
-            topic = analyze_topic(message)
-            if topic:
-                # Đổi tên conversation
-                conversation.title = topic
-                conversation.save(ignore_permissions=True)
-                frappe.db.commit()
-                print(f"Đã đổi tên conversation thành: {topic}")
+        if is_user:
+            # Lấy số lượng tin nhắn hiện tại
+            message_count = frappe.db.count("ChatMessage", {
+                "parent": conversation_id,
+                "parentfield": "messages",
+                "parenttype": "ChatConversation"
+            })
+            
+            if message_count == 0:
+                # Phân tích chủ đề từ tin nhắn đầu tiên
+                topic = analyze_topic(message)
+                if topic:
+                    # Đổi tên conversation
+                    conversation.title = topic
+                    conversation.save(ignore_permissions=True)
+                    frappe.db.commit()
+                    print(f"Đã đổi tên conversation thành: {topic}")
         
-        # Thêm tin nhắn mới vào child table
-        conversation.append("messages", {
+        # Tạo tin nhắn mới
+        new_message = frappe.get_doc({
+            "doctype": "ChatMessage",
+            "parent": conversation_id,
+            "parentfield": "messages",
+            "parenttype": "ChatConversation",
             "sender": frappe.session.user if is_user else "AI Assistant",
             "is_user": is_user,
             "message": message,
             "timestamp": frappe.utils.now()
         })
-        conversation.save(ignore_permissions=True)
+        new_message.insert(ignore_permissions=True)
         frappe.db.commit()
         print(f"Đã lưu tin nhắn vào conversation thành công")
         
-        # Gửi realtime update (chỉ gửi ở đây, không rely vào after_insert của ChatMessage)
+        # Gửi realtime update
         frappe.publish_realtime(
             "new_message",
             {
@@ -122,7 +134,8 @@ def send_message(conversation_id, message, is_user=True):
                 queue='long',
                 conversation_id=conversation_id
             )
-        # Trả về conversation (lúc này chỉ có message user)
+            
+        # Trả về conversation
         return {
             "conversation": conversation
         }
@@ -136,8 +149,18 @@ def send_message(conversation_id, message, is_user=True):
 def handle_ai_reply(conversation_id):
     import traceback
     try:
-        conversation = frappe.get_doc("ChatConversation", conversation_id)
-        messages = conversation.messages
+        # Lấy tất cả tin nhắn của conversation
+        messages = frappe.get_all(
+            "ChatMessage",
+            filters={
+                "parent": conversation_id,
+                "parentfield": "messages",
+                "parenttype": "ChatConversation"
+            },
+            fields=["sender", "is_user", "message", "timestamp"],
+            order_by="timestamp asc"
+        )
+        
         chat_messages = []
         for msg in messages:
             chat_messages.append({
@@ -145,18 +168,21 @@ def handle_ai_reply(conversation_id):
                 "content": msg.message
             })
         print("[LOG] Context gửi tới OpenAI:", chat_messages)
+        
         # Kiểm tra cấu hình AI
         raven_settings = frappe.get_cached_doc("Raven Settings")
         print("[LOG] Raven Settings:", raven_settings.as_dict())
         if not raven_settings.enable_ai_integration:
             print("[LOG] AI integration chưa bật!")
             return
+            
         print("[LOG] Trước khi gọi get_open_ai_client()")
         client = get_open_ai_client()
         print(f"[LOG] Client OpenAI: {client}")
         if not client:
             print("[LOG] Không thể kết nối OpenAI!")
             return
+            
         print("[LOG] Gọi OpenAI...")
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
@@ -170,16 +196,22 @@ def handle_ai_reply(conversation_id):
         if not ai_response:
             print("[LOG] Không nhận được phản hồi từ AI!")
             return
-        # Lưu message AI vào DB
-        conversation.append("messages", {
+            
+        # Tạo tin nhắn AI mới
+        new_message = frappe.get_doc({
+            "doctype": "ChatMessage",
+            "parent": conversation_id,
+            "parentfield": "messages",
+            "parenttype": "ChatConversation",
             "sender": "AI Assistant",
             "is_user": False,
             "message": ai_response,
             "timestamp": frappe.utils.now()
         })
-        conversation.save(ignore_permissions=True)
+        new_message.insert(ignore_permissions=True)
         frappe.db.commit()
-        # Gửi realtime update (dùng event 'new_message' để đồng bộ với kênh thường)
+        
+        # Gửi realtime update
         frappe.publish_realtime(
             "new_message",
             {
@@ -191,7 +223,7 @@ def handle_ai_reply(conversation_id):
                 "message_type": "Text",
                 "content": ai_response
             },
-            user=conversation.user
+            user=frappe.get_doc("ChatConversation", conversation_id).user
         )
     except Exception as e:
         error_message = (

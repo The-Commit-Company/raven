@@ -4,12 +4,36 @@
     "doctype": "DocType",
     "engine": "InnoDB",
     "field_order": [
+        "parent",
+        "parentfield",
+        "parenttype",
         "sender",
         "is_user",
         "message",
         "timestamp"
     ],
     "fields": [
+        {
+            "fieldname": "parent",
+            "fieldtype": "Data",
+            "label": "Parent",
+            "in_list_view": 1,
+            "reqd": 1
+        },
+        {
+            "fieldname": "parentfield",
+            "fieldtype": "Data",
+            "label": "Parent Field",
+            "in_list_view": 1,
+            "reqd": 1
+        },
+        {
+            "fieldname": "parenttype",
+            "fieldtype": "Data",
+            "label": "Parent Type",
+            "in_list_view": 1,
+            "reqd": 1
+        },
         {
             "fieldname": "sender",
             "fieldtype": "Data",
