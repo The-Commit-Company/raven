@@ -29,7 +29,6 @@ import clsx from 'clsx'
 import { useIsTablet } from '@/hooks/useMediaQuery'
 import UserChannelList from '../channels/UserChannelList'
 import { useEnrichedChannels } from '@/utils/channel/ChannelAtom'
-import ParticipatingThreads from '../threads/ThreadManager/ParticipatingThreads'
 import ThreadsCustom from '../threads/ThreadsCustom'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
@@ -272,7 +271,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
             className='cursor-pointer absolute top-1/2 right-0 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-200 hover:bg-gray-300 p-1 rounded-full flex items-center justify-center'
             title={channel.is_done ? 'Chưa xong' : 'Đã xong'}
           >
-            <HiCheck className={`h-5 w-5 ${channel.is_done ? 'text-green-600' : 'text-gray-800'}`} />
+            <HiCheck className={`h-3 w-3 ${channel.is_done ? 'text-green-600' : 'text-gray-800'}`} />
           </button>
         </Tooltip>
       )}

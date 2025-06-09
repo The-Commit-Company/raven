@@ -319,6 +319,11 @@ export const useFetchUnreadMessageCount = () => {
       if (channelID === event.channel_id) {
         trackVisit({ channel_id: channelID })
 
+        const currentUnread = unread_count?.message.find((c) => c.name === event.channel_id)?.unread_count || 0
+        const isManuallyMarked = manuallyMarked.has(event.channel_id)
+
+        const shouldPlay = !isManuallyMarked || (isManuallyMarked && currentUnread > 1)
+
         setLatestUnreadData({
           name: event.channel_id,
           last_message_sender_name: event.last_message_sender_name,
@@ -326,7 +331,10 @@ export const useFetchUnreadMessageCount = () => {
           channel_name: event.channel_name,
           last_message_timestamp: event.last_message_timestamp
         })
-        play()
+
+        if (shouldPlay) {
+          play(event.last_message_timestamp)
+        }
       } else {
         fetchUnreadCountForChannel(event.channel_id)
       }
@@ -385,8 +393,6 @@ export const useFetchUnreadMessageCount = () => {
         } else {
           activeTitle = `(${totalUnread}) ${last_message_sender_name} đã nhắn cho bạn`
         }
-
-        // Dùng play() thống nhất
         play(last_message_timestamp)
       } else {
         activeTitle = `(${totalUnread}) Bạn có tin nhắn chưa đọc`
