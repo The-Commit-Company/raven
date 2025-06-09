@@ -5,7 +5,9 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 const arraysAreEqual = (arr1: any[], arr2: any[]) => {
   if (arr1.length !== arr2.length) return false
   for (let i = 0; i < arr1.length; i++) {
-    if (JSON.stringify(arr1[i]) !== JSON.stringify(arr2[i])) return false
+    if (arr1[i].user !== arr2[i].user || arr1[i].seen_at !== arr2[i].seen_at) {
+      return false
+    }
   }
   return true
 }
@@ -18,7 +20,7 @@ function debounce<F extends (...args: any[]) => void>(func: F, delay: number) {
   }
 }
 
-export const useChannelSeenUsers = (channelId: string | undefined) => {
+export const useChannelSeenUsers = ({ channelId }: { channelId: string }) => {
   const { currentUser } = useContext(UserContext)
   const { call: getSeenCall } = useFrappePostCall('raven.api.raven_channel_member.get_seen_info')
   const { call: trackSeenCall } = useFrappePostCall('raven.api.raven_channel_member.track_seen')
@@ -37,8 +39,8 @@ export const useChannelSeenUsers = (channelId: string | undefined) => {
       const { message = [] } = await getSeenCall({ channel_id: channelId })
       const data = Array.isArray(message) ? message : []
       if (!arraysAreEqual(seenUsersRef.current, data)) {
-        setSeenUsers(data)
         seenUsersRef.current = data
+        setSeenUsers(data)
       }
     } catch (err) {
       console.error('Failed to fetch seen users:', err)
@@ -49,7 +51,7 @@ export const useChannelSeenUsers = (channelId: string | undefined) => {
 
   const trackSeen = useCallback(
     debounce(async () => {
-      if (!channelId) return
+      if (!channelId || pendingSeenUpdate.current) return
       pendingSeenUpdate.current = true
       try {
         await trackSeenCall({ channel_id: channelId })
@@ -58,25 +60,56 @@ export const useChannelSeenUsers = (channelId: string | undefined) => {
       } finally {
         pendingSeenUpdate.current = false
       }
-    }, 1000),
+    }, 1500),
     [channelId, trackSeenCall]
   )
 
-  useEffect(() => {
-    if (channelId) {
-      trackSeen()
-      fetchSeenUsers()
-    }
-  }, [channelId, trackSeen, fetchSeenUsers])
-
-  useFrappeEventListener('channel_seen_updated', (data: any) => {
-    if (data.channel_id === channelId && data.user !== currentUser) {
-      fetchSeenUsers()
-    }
-  })
-
   const isTabActive = () => !document.hidden && document.visibilityState === 'visible'
 
+  const updateSeenUserFromSocket = useCallback(
+    (data: any) => {
+      if (data.channel_id !== channelId || data.user === currentUser) return
+      setSeenUsers((prev) => {
+        const idx = prev.findIndex((u) => u.user === data.user)
+        if (idx !== -1) {
+          const updated = [...prev]
+          updated[idx] = {
+            ...updated[idx],
+            seen_at: data.seen_at,
+            full_name: data.full_name || updated[idx].full_name,
+            user_image: data.user_image || updated[idx].user_image
+          }
+          seenUsersRef.current = updated
+          return updated
+        }
+        const added = [
+          ...prev,
+          {
+            user: data.user,
+            seen_at: data.seen_at,
+            full_name: data.full_name,
+            user_image: data.user_image
+          }
+        ]
+        seenUsersRef.current = added
+        return added
+      })
+    },
+    [channelId, currentUser]
+  )
+
+  // INIT
+  useEffect(() => {
+    if (channelId) {
+      fetchSeenUsers()
+      trackSeen()
+    }
+  }, [channelId, fetchSeenUsers, trackSeen])
+
+  // SOCKET: update khi có người seen
+  useFrappeEventListener('raven:channel_seen_updated', updateSeenUserFromSocket)
+
+  // SOCKET: khi có tin nhắn mới
   useFrappeEventListener('new_message', (data: any) => {
     if (data.channel_id === channelId && data.user !== currentUser) {
       if (isTabActive()) {
@@ -87,6 +120,7 @@ export const useChannelSeenUsers = (channelId: string | undefined) => {
     }
   })
 
+  // HANDLE visibility change
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (isTabActive() && hasUnreadWhileHidden.current) {
@@ -95,10 +129,8 @@ export const useChannelSeenUsers = (channelId: string | undefined) => {
         fetchSeenUsers()
       }
     }
-
     document.addEventListener('visibilitychange', handleVisibilityChange)
     window.addEventListener('focus', handleVisibilityChange)
-
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
       window.removeEventListener('focus', handleVisibilityChange)
@@ -109,6 +141,8 @@ export const useChannelSeenUsers = (channelId: string | undefined) => {
     seenUsers,
     loading,
     refetch: fetchSeenUsers,
-    refetchWithTrackSeen: trackSeen
+    refetchWithTrackSeen: () => {
+      trackSeen()
+    }
   }
 }
