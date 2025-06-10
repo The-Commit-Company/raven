@@ -86,7 +86,7 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
   const navigate = useNavigate()
   const methods = useForm<ChannelCreationForm>({
     defaultValues: {
-      type: 'Public',
+      type: 'Private',
       channel_name: '',
       channel_description: ''
     }
@@ -233,9 +233,8 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
                     message: __('Channel name cannot be less than {0} characters.', ['3'])
                   },
                   pattern: {
-                    // no special characters allowed
-                    // cannot start with a space
-                    value: /^[a-zA-Z0-9][a-zA-Z0-9-]*$/,
+                    // Cho phép chữ cái tiếng Việt, số và dấu gạch ngang
+                    value: /^[a-zA-ZÀ-ỹ0-9][a-zA-ZÀ-ỹ0-9-]*$/,
                     message: __('Channel name can only contain letters, numbers and hyphens.')
                   }
                 }}
@@ -284,42 +283,45 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
               <HelperText>What is this channel about?</HelperText>
               {errors?.channel_description && <ErrorText>{errors.channel_description?.message}</ErrorText>}
             </Box>
-            <Flex gap='2' direction='column'>
-              <Label htmlFor='channel_type'>Channel Type</Label>
-              <Controller
-                name='type'
-                control={control}
-                render={({ field }) => (
-                  <RadioGroup.Root
-                    defaultValue='1'
-                    variant='soft'
-                    id='channel_type'
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <Flex gap='4'>
-                      <Text as='label' size='2'>
-                        <Flex gap='2'>
-                          <RadioGroup.Item value='Public' /> {__('Public')}
-                        </Flex>
-                      </Text>
-                      <Text as='label' size='2'>
-                        <Flex gap='2'>
-                          <RadioGroup.Item value='Private' /> {__('Private')}
-                        </Flex>
-                      </Text>
-                      <Text as='label' size='2'>
-                        <Flex gap='2'>
-                          <RadioGroup.Item value='Open' /> {__('Open')}
-                        </Flex>
-                      </Text>
-                    </Flex>
-                  </RadioGroup.Root>
-                )}
-              />
-              {/* Added min height to avoid layout shift when two lines of text are shown */}
-              <HelperText className='min-h-[3rem]'>{helperText}</HelperText>
-            </Flex>
+            {/* Ẩn phần chọn Channel Type, chỉ comment lại để dùng sau */}
+            {false && (
+              <Flex gap='2' direction='column'>
+                <Label htmlFor='channel_type'>Channel Type</Label>
+                <Controller
+                  name='type'
+                  control={control}
+                  render={({ field }) => (
+                    <RadioGroup.Root
+                      defaultValue='1'
+                      variant='soft'
+                      id='channel_type'
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <Flex gap='4'>
+                        <Text as='label' size='2'>
+                          <Flex gap='2'>
+                            <RadioGroup.Item value='Public' /> {__('Public')}
+                          </Flex>
+                        </Text>
+                        <Text as='label' size='2'>
+                          <Flex gap='2'>
+                            <RadioGroup.Item value='Private' /> {__('Private')}
+                          </Flex>
+                        </Text>
+                        <Text as='label' size='2'>
+                          <Flex gap='2'>
+                            <RadioGroup.Item value='Open' /> {__('Open')}
+                          </Flex>
+                        </Text>
+                      </Flex>
+                    </RadioGroup.Root>
+                  )}
+                />
+                {/* Added min height to avoid layout shift when two lines of text are shown */}
+                <HelperText className='min-h-[3rem]'>{helperText}</HelperText>
+              </Flex>
+            )}
           </Flex>
           <Flex gap='3' mt='4' justify='end'>
             <Dialog.Close disabled={creatingChannel}>
