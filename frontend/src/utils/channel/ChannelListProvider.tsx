@@ -81,7 +81,8 @@ const useFetchChannelList = (): ChannelListContextType => {
   const { data, mutate, ...rest } = useFrappeGetCall<{ message: ChannelList }>(
     'raven.api.raven_channel.get_all_channels',
     {
-      hide_archived: false
+      hide_archived: false,
+      filter_done: 'only_not_done'
     },
     `channel_list`,
     {

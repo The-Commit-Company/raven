@@ -3,6 +3,7 @@ export {}
 declare global {
   interface Window {
     app_name?: string
+    __blinkInterval?: NodeJS.Timeout
   }
   interface FrappeBoot {
     user?: {

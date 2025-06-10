@@ -11,8 +11,23 @@ export type ChannelWithGroupType = {
   [key: string]: any
 }
 
+// Danh sách đầy đủ các channel (cả group và DM)
 export const sortedChannelsAtom = atom<ChannelWithGroupType[]>([])
 
+// Danh sách các channel đã mark done (tên)
+export const doneListAtom = atom<string[]>([])
+
+// Action để cập nhật sortedChannelsAtom một cách an toàn
+export const setSortedChannelsAtom = atom(
+  null,
+  (get, set, updater: (prev: ChannelWithGroupType[]) => ChannelWithGroupType[]) => {
+    const prev = get(sortedChannelsAtom)
+    const next = updater(prev)
+    set(sortedChannelsAtom, next)
+  }
+)
+
+// Hàm chuẩn bị dữ liệu ban đầu (channel + dm)
 export const prepareSortedChannels = (
   channels: any[],
   dm_channels: any[]
@@ -27,11 +42,15 @@ export const prepareSortedChannels = (
   })
 }
 
+// Hook để lấy danh sách channel đã loại bỏ những cái đã "done"
 export const useEnrichedChannels = (): ChannelWithGroupType[] => {
   const channels = useAtomValue(sortedChannelsAtom)
+  const doneList = useAtomValue(doneListAtom)
   const { message: unreadList } = useUnreadMessages() || {}
 
-  return channels.map((channel) => {
+  const filteredChannels = channels.filter((channel) => !doneList.includes(channel.name))
+
+  return filteredChannels.map((channel) => {
     const unread = unreadList?.find((u) => u.name === channel.name)
 
     return {
@@ -42,4 +61,3 @@ export const useEnrichedChannels = (): ChannelWithGroupType[] => {
     }
   })
 }
-
