@@ -1,0 +1,111 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-06-08 23:11:08.792467",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "slack_export_zip_file",
+  "status",
+  "column_break_vcfh",
+  "channels_json_file",
+  "users_json_file",
+  "section_break_ikbl",
+  "users",
+  "section_break_lsxa",
+  "channels",
+  "section_break_uatb",
+  "error_logs"
+ ],
+ "fields": [
+  {
+   "fieldname": "slack_export_zip_file",
+   "fieldtype": "Attach",
+   "in_list_view": 1,
+   "label": "Slack Export Zip File",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_vcfh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "channels_json_file",
+   "fieldtype": "Attach",
+   "label": "Channels JSON File",
+   "read_only": 1
+  },
+  {
+   "fieldname": "users_json_file",
+   "fieldtype": "Attach",
+   "label": "Users JSON File",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_ikbl",
+   "fieldtype": "Section Break"
+  },
+  {
+   "depends_on": "eval: doc.slack_export_zip_file;",
+   "fieldname": "users",
+   "fieldtype": "Table",
+   "label": "Users",
+   "options": "Raven Slack Import Users"
+  },
+  {
+   "fieldname": "section_break_lsxa",
+   "fieldtype": "Section Break"
+  },
+  {
+   "depends_on": "eval: doc.slack_export_zip_file;",
+   "fieldname": "channels",
+   "fieldtype": "Table",
+   "label": "Channels",
+   "options": "Raven Slack Import Channels"
+  },
+  {
+   "default": "Not Started",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Not Started\nStaged\nIn Progress\nCompleted"
+  },
+  {
+   "fieldname": "section_break_uatb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "error_logs",
+   "fieldtype": "JSON",
+   "label": "Error Logs",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-06-09 02:26:40.526014",
+ "modified_by": "Administrator",
+ "module": "Raven Importers",
+ "name": "Raven Slack Import",
+ "naming_rule": "By script",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

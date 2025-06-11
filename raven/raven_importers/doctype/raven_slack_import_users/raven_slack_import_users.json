@@ -1,0 +1,92 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-06-09 00:21:13.917435",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "slack_user_id",
+  "slack_name",
+  "slack_real_name",
+  "import_type",
+  "raven_user",
+  "first_name",
+  "last_name",
+  "email",
+  "is_bot"
+ ],
+ "fields": [
+  {
+   "fieldname": "slack_user_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Slack User ID",
+   "reqd": 1
+  },
+  {
+   "fieldname": "slack_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Slack Name"
+  },
+  {
+   "fieldname": "slack_real_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Slack Real Name"
+  },
+  {
+   "fieldname": "import_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Import Type",
+   "options": "Map to Existing User\nCreate New User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "raven_user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Raven User",
+   "options": "Raven User"
+  },
+  {
+   "fieldname": "first_name",
+   "fieldtype": "Data",
+   "label": "First Name"
+  },
+  {
+   "fieldname": "last_name",
+   "fieldtype": "Data",
+   "label": "Last Name"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Email"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_bot",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Bot"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-06-09 01:21:55.793738",
+ "modified_by": "Administrator",
+ "module": "Raven Importers",
+ "name": "Raven Slack Import Users",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

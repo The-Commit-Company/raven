@@ -1,0 +1,120 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-06-09 00:24:11.489718",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "slack_id",
+  "slack_name",
+  "slack_is_general",
+  "slack_is_archived",
+  "import_type",
+  "channel_type",
+  "raven_workspace",
+  "raven_channel",
+  "members",
+  "slack_topic",
+  "slack_purpose",
+  "slack_creator_user_id",
+  "created_on"
+ ],
+ "fields": [
+  {
+   "fieldname": "slack_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Slack ID",
+   "reqd": 1
+  },
+  {
+   "fieldname": "slack_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Slack Name"
+  },
+  {
+   "default": "0",
+   "fieldname": "slack_is_general",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Slack - Is General"
+  },
+  {
+   "default": "0",
+   "fieldname": "slack_is_archived",
+   "fieldtype": "Check",
+   "label": "Slack - Is Archived"
+  },
+  {
+   "default": "Create New Channel",
+   "fieldname": "import_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Import Type",
+   "options": "Map To Existing Channel\nCreate New Channel",
+   "reqd": 1
+  },
+  {
+   "fieldname": "raven_workspace",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Raven Workspace",
+   "options": "Raven Workspace"
+  },
+  {
+   "fieldname": "raven_channel",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Raven Channel",
+   "options": "Raven Channel"
+  },
+  {
+   "fieldname": "members",
+   "fieldtype": "JSON",
+   "label": "Members"
+  },
+  {
+   "fieldname": "slack_topic",
+   "fieldtype": "Data",
+   "label": "Slack Topic"
+  },
+  {
+   "fieldname": "slack_purpose",
+   "fieldtype": "Data",
+   "label": "Slack Purpose"
+  },
+  {
+   "description": "This user will be made an admin for this channel",
+   "fieldname": "slack_creator_user_id",
+   "fieldtype": "Data",
+   "label": "Slack Creator User ID"
+  },
+  {
+   "fieldname": "created_on",
+   "fieldtype": "Datetime",
+   "label": "Created On"
+  },
+  {
+   "fieldname": "channel_type",
+   "fieldtype": "Select",
+   "label": "Channel Type",
+   "options": "Open\nPublic\nPrivate"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-06-09 01:24:42.839870",
+ "modified_by": "Administrator",
+ "module": "Raven Importers",
+ "name": "Raven Slack Import Channels",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
