@@ -16,7 +16,7 @@ export const ChannelSettings = ({ onClose, channelData, allowSettingChange }: Pr
       <Flex direction='column' gap='3'>
         <Box className={'rounded-md border border-gray-6'}>
           <Flex direction='column'>
-            <ChangeChannelTypeButton channelData={channelData} allowSettingChange={allowSettingChange} />
+            {/* <ChangeChannelTypeButton channelData={channelData} allowSettingChange={allowSettingChange} /> */}
             <Separator className={'w-full'} />
             <ArchiveChannelButton onClose={onClose} channelData={channelData} allowSettingChange={allowSettingChange} />
             <Separator className={'w-full'} />

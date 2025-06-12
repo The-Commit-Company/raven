@@ -16,16 +16,17 @@ interface ViewChannelDetailsModalContentProps {
   open: boolean
   setOpen: (open: boolean) => void
   channelData: ChannelListItem
+  defaultTab?: string
 }
 
-const ViewChannelDetailsModal = ({ open, setOpen, channelData }: ViewChannelDetailsModalContentProps) => {
+const ViewChannelDetailsModal = ({ open, setOpen, channelData, defaultTab }: ViewChannelDetailsModalContentProps) => {
   const isDesktop = useIsDesktop()
 
   if (isDesktop) {
     return (
       <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Content className={DIALOG_CONTENT_CLASS}>
-          <ViewChannelDetailsModalContent open={open} setOpen={setOpen} channelData={channelData} />
+          <ViewChannelDetailsModalContent open={open} setOpen={setOpen} channelData={channelData} defaultTab={defaultTab} />
         </Dialog.Content>
       </Dialog.Root>
     )
@@ -33,7 +34,7 @@ const ViewChannelDetailsModal = ({ open, setOpen, channelData }: ViewChannelDeta
     return (
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerContent>
-          <ViewChannelDetailsModalContent open={open} setOpen={setOpen} channelData={channelData} />
+          <ViewChannelDetailsModalContent open={open} setOpen={setOpen} channelData={channelData} defaultTab={defaultTab} />
         </DrawerContent>
       </Drawer>
     )
@@ -42,7 +43,7 @@ const ViewChannelDetailsModal = ({ open, setOpen, channelData }: ViewChannelDeta
 
 export default ViewChannelDetailsModal
 
-const ViewChannelDetailsModalContent = ({ setOpen, channelData }: ViewChannelDetailsModalContentProps) => {
+const ViewChannelDetailsModalContent = ({ setOpen, channelData, defaultTab = 'About' }: ViewChannelDetailsModalContentProps) => {
   const { data } = useFetchActiveUsers()
 
   const activeUsers = data?.message ?? []
@@ -69,7 +70,7 @@ const ViewChannelDetailsModalContent = ({ setOpen, channelData }: ViewChannelDet
         </Flex>
       </Dialog.Title>
 
-      <Tabs.Root defaultValue='About'>
+      <Tabs.Root defaultValue={defaultTab}>
         <Flex direction={'column'} gap='4'>
           <Tabs.List>
             <Tabs.Trigger value='About'>About</Tabs.Trigger>

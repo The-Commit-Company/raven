@@ -8,6 +8,8 @@ import { ViewChannelMemberAvatars } from './ViewChannelMemberAvatars'
 import { BiChevronLeft } from 'react-icons/bi'
 import { Link } from 'react-router-dom'
 import { ViewPinnedMessagesButton } from '../pinned-messages/ViewPinnedMessagesButton'
+import ViewChannelDetailsModal from '../channels/ViewChannelDetailsModal'
+import { useState } from 'react'
 
 interface ChannelHeaderProps {
   channelData: ChannelListItem
@@ -17,6 +19,7 @@ export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
   // The channel header has the channel name, the channel type icon, edit channel name button, and the view or add members button
 
   const lastWorkspace = localStorage.getItem('ravenLastWorkspace')
+  const [open, setOpen] = useState(false)
 
   return (
     <PageHeader>
@@ -52,9 +55,18 @@ export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
       </Flex>
 
       <Flex gap='2' align='center' className='animate-fadein'>
-        <ViewChannelMemberAvatars channelData={channelData} />
+        <div onClick={() => setOpen(true)}>
+          <ViewChannelMemberAvatars channelData={channelData} />
+        </div>
         <ChannelHeaderMenu channelData={channelData} />
       </Flex>
+
+      <ViewChannelDetailsModal
+        open={open}
+        setOpen={setOpen}
+        channelData={channelData}
+        defaultTab='Members'
+      />
     </PageHeader>
   )
 }

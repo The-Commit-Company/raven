@@ -32,6 +32,9 @@ type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
 
 export const DirectMessageList = () => {
   const enriched = useEnrichedChannels()
+
+  console.log(">>>>>>>>>> enriched:", enriched);
+  
   return (
     <SidebarGroup pb='4'>
       <SidebarGroup>

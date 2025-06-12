@@ -23,16 +23,6 @@ export function useChannelDone() {
   const { call: markDoneCall } = useFrappePostCall('raven.api.raven_channel.mark_channel_as_done')
   const { call: markNotDoneCall } = useFrappePostCall('raven.api.raven_channel.mark_channel_as_not_done')
 
-  // ✅ Lắng nghe realtime khi server gửi cập nhật
-  useFrappeEventListener('raven:channel_done_updated', (data: { channel_id: string; is_done: number }) => {
-    setDoneList((prev) =>
-      data.is_done
-        ? prev.includes(data.channel_id)
-          ? prev
-          : [...prev, data.channel_id]
-        : prev.filter((id) => id !== data.channel_id)
-    )
-  })
 
   // ✅ Đồng bộ lại is_done cho từng channel trong channelsAtom
   useEffect(() => {
