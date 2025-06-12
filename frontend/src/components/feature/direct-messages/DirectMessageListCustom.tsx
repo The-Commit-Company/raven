@@ -138,6 +138,23 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
     return null
   }
 
+
+ const lastOwner = (() => {
+    try {
+      const raw = typeof channel.last_message_details === 'string'
+        ? JSON.parse(channel.last_message_details)
+        : channel.last_message_details
+      return raw?.owner ?? ''
+    } catch {
+      return ''
+    }
+  })()
+
+  const user = useGetUser(lastOwner)
+
+  const formattedMessage = formatLastMessage(channel, currentUser, user?.full_name)
+
+
   // 4. Tính hiển thị
   const displayName = peerUser
     ? peerUserId !== currentUser
@@ -189,7 +206,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
           </Text>
         </Flex>
         <Text size='1' color='gray' className='truncate'>
-          {formatLastMessage(channel, currentUser, channel.peer_user_name)}
+          {formattedMessage}
         </Text>
       </Flex>
 
