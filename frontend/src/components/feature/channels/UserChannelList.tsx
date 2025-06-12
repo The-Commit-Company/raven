@@ -4,9 +4,8 @@ import { useChannelList } from '@/utils/channel/ChannelListProvider'
 import { UserListContext } from '@/utils/users/UserListProvider'
 import { useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useSetAtom } from 'jotai'
 import { useFrappePostCall } from 'frappe-react-sdk'
-import { Badge, Box, Flex } from '@radix-ui/themes'
+import { Badge, Box, Flex, Text } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
@@ -22,8 +21,8 @@ const UserChannelList = () => {
   )
 
   return (
-    <div className='space-y-2'>
-      <div className='space-y-1'>
+    <div>
+      <div>
         {dm_channels.map((channel) => (
           <ChannelItem
             key={channel.name}
@@ -32,6 +31,8 @@ const UserChannelList = () => {
             peer_user_id={channel.peer_user_id}
           />
         ))}
+        <br />
+       <h5 className="text-sm mt-0 font-medium">Những người chưa từng nhắn</h5>
         {usersWithoutChannels.map((user) => (
           <UserWithoutDMItem key={user.name} userID={user.name} />
         ))}
@@ -59,7 +60,7 @@ const UserWithoutDMItem = ({ userID }: { userID: string }) => {
         }
       })
       .catch((err) => {
-        toast.error('Could not create a DM channel', {
+        toast.error('Không thể tạo được đoạn chat', {
           description: getErrorMessage(err)
         })
       })

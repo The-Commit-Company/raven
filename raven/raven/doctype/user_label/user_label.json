@@ -1,0 +1,49 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2025-06-12 16:27:31.378646",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "target_user",
+  "label"
+ ],
+ "fields": [
+  {
+   "fieldname": "target_user",
+   "fieldtype": "Link",
+   "label": "Target User",
+   "options": "User"
+  },
+  {
+   "fieldname": "label",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Label",
+   "reqd": 1
+  }
+ ],
+ "links": [],
+ "modified": "2025-06-12 16:46:55.948008",
+ "modified_by": "Administrator",
+ "module": "Raven",
+ "name": "User Label",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "track_seen": 1
+}

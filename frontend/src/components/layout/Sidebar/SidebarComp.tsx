@@ -185,9 +185,6 @@ export const SidebarBadge = ({ children, className, ...props }: BadgeSidebar) =>
   return (
     <Theme accentColor='gray'>
       <div
-        style={{
-          top: '70%'
-        }}
         className={className ? className : 'absolute top-1/2 right-0 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center min-w-2 bg-red-500 text-xs py-0.5 px-2 rounded-radius2 whitespace-nowrap font-medium text-[10px] text-white'}
       >
         {children}

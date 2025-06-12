@@ -111,10 +111,8 @@ def mark_channel_as_unread(channel_id):
         fields=["creation"],
     )
 
-    from datetime import timedelta
-
     if last_message:
-        last_visit_time = last_message[0].creation  # Không lùi 1 giây
+        last_visit_time = last_message[0].creation
     else:
         last_visit_time = "2000-01-01 00:00:00"
 
@@ -125,6 +123,16 @@ def mark_channel_as_unread(channel_id):
     channel_member.last_visit = last_visit_time
     channel_member.save()
     frappe.db.commit()
+
+    # Gửi realtime event đến chính user để đồng bộ trên các thiết bị khác
+    frappe.publish_realtime(
+        event="raven:manually_marked_updated",
+        message={
+            "channel_id": channel_id,
+            "action": "add"
+        },
+        user=user
+    )
 
     return {"message": "Channel marked as unread successfully"}
 

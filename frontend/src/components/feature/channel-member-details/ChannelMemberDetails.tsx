@@ -98,11 +98,7 @@ const MemberList = ({ channelData, channelMembers, activeUsers, updateMembers, i
                       <Text size='2' weight='medium'>
                         {member.first_name}
                       </Text>
-                      {activeUsers.includes(member.name) ? <BiCircle color='green' /> : <BiCircle />}
                       <Flex gap='1'>
-                        <Text weight='light' size='1'>
-                          {member.full_name}
-                        </Text>
                         {member.name === currentUser && (
                           <Text weight='light' size='1'>
                             (You)

@@ -11,90 +11,108 @@ from frappe.query_builder import DocType
 
 @frappe.whitelist()
 def get_all_channels(hide_archived=True):
-	"""
-	Fetches all channels where current user is a member - both channels and DMs
-	To be used on the web app.
-	"""
+    """
+    Trả về danh sách channel (gồm group và DMs) mà user hiện tại là thành viên.
+    Trạng thái is_done lấy từ Raven Channel Member.
+    """
 
-	if hide_archived == "false":
-		hide_archived = False
+    if hide_archived == "false":
+        hide_archived = False
 
-	# 1. Get "channels" - public, open, private, and DMs
-	channels = get_channel_list(hide_archived)
+    # Lấy danh sách channel đã enrich theo user
+    channels = get_channel_list(hide_archived)
 
-	# 3. For every channel, we need to fetch the peer's User ID (if it's a DM)
-	parsed_channels = []
-	for channel in channels:
-		parsed_channel = {
-			**channel,
-			"peer_user_id": get_peer_user_id(
-				channel.get("name"),
-				channel.get("is_direct_message"),
-				channel.get("is_self_message"),
-			),
-		}
+    # Bổ sung peer_user_id nếu là DM
+    parsed_channels = []
+    for channel in channels:
+        parsed_channels.append({
+            **channel,
+            "peer_user_id": get_peer_user_id(
+                channel.get("name"),
+                channel.get("is_direct_message"),
+                channel.get("is_self_message")
+            )
+        })
 
-		parsed_channels.append(parsed_channel)
-
-	channel_list = [channel for channel in parsed_channels if not channel.get("is_direct_message")]
-	dm_list = [channel for channel in parsed_channels if channel.get("is_direct_message")]
-
-	return {"channels": channel_list, "dm_channels": dm_list}
+    return {
+        "channels": [c for c in parsed_channels if not c["is_direct_message"]],
+        "dm_channels": [c for c in parsed_channels if c["is_direct_message"]]
+    }
 
 
 def get_channel_list(hide_archived=False):
-	"""
-	get List of all channels where current user is a member (all includes public, private, open, and DM channels)
-	"""
-	channel = frappe.qb.DocType("Raven Channel")
-	channel_member = frappe.qb.DocType("Raven Channel Member")
+    """
+    Lấy tất cả các channel mà user hiện tại là thành viên.
+    Enrich thêm is_done từ Raven Channel Member.
+    """
 
-	workspace_member = frappe.qb.DocType("Raven Workspace Member")
+    channel = frappe.qb.DocType("Raven Channel")
+    member = frappe.qb.DocType("Raven Channel Member")
+    workspace_member = frappe.qb.DocType("Raven Workspace Member")
 
-	query = (
-		frappe.qb.from_(channel)
-		.select(
-			channel.name,
-            channel.is_done,   
-			channel.channel_name,
-			channel.type,
-			channel.channel_description,
-			channel.is_archived,
-			channel.is_direct_message,
-			channel.is_self_message,
-			channel.creation,
-			channel.owner,
-			channel.last_message_timestamp,
-			channel.last_message_details,
-			channel.pinned_messages_string,
-			channel.workspace,
-			channel_member.name.as_("member_id"),
-		)
-		.left_join(channel_member)
-		.on(
-			(channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user)
-		)
-		.left_join(workspace_member)
-		.on(
-			(channel.workspace == workspace_member.workspace)
-			& (workspace_member.user == frappe.session.user)
-		)
-		.where(
-			((channel.is_direct_message == 1) & (channel_member.user_id == frappe.session.user))
-			| (
-				(workspace_member.user == frappe.session.user)
-				& ((channel.type != "Private") | (channel_member.user_id == frappe.session.user))
-			)
-		)
-		.where(channel.is_thread == 0)
-	)
+    query = (
+        frappe.qb.from_(channel)
+        .select(
+            channel.name,
+            channel.channel_name,
+            channel.type,
+            channel.channel_description,
+            channel.is_archived,
+            channel.is_direct_message,
+            channel.is_self_message,
+            channel.creation,
+            channel.owner,
+            channel.last_message_timestamp,
+            channel.last_message_details,
+            channel.pinned_messages_string,
+            channel.workspace,
 
-	if hide_archived:
-		query = query.where(channel.is_archived == 0)
+            member.name.as_("member_id"),
+            member.is_done.as_("is_done")
+        )
+        .left_join(member)
+        .on((channel.name == member.channel_id) & (member.user_id == frappe.session.user))
+        .left_join(workspace_member)
+        .on((channel.workspace == workspace_member.workspace) & (workspace_member.user == frappe.session.user))
+        .where(
+            ((channel.is_direct_message == 1) & (member.user_id == frappe.session.user))
+            |
+            ((workspace_member.user == frappe.session.user)
+             & ((channel.type != "Private") | (member.user_id == frappe.session.user)))
+        )
+        .where(channel.is_thread == 0)
+    )
 
-	query = query.orderby(channel.last_message_timestamp, order=Order.desc)
+    if hide_archived:
+        query = query.where(channel.is_archived == 0)
 
-	return query.run(as_dict=True)
+    query = query.orderby(channel.last_message_timestamp, order=Order.desc)
+
+    results = query.run(as_dict=True)
+
+    # Chuẩn hóa kết quả: đảm bảo có is_done
+    for row in results:
+        row["is_done"] = int(row.get("is_done") or 0)
+
+    return results
+
+
+def get_peer_user_id(channel_id: str, is_direct_message: int, is_self_message: bool = False) -> str:
+    """
+    Lấy user_id của người còn lại trong DM
+    """
+    if is_direct_message == 0:
+        return None
+
+    if is_self_message:
+        return frappe.session.user
+
+    members = get_channel_members(channel_id)
+    for user_id in members:
+        if user_id != frappe.session.user:
+            return user_id
+
+    return None
 
 @frappe.whitelist()
 def get_list_channel_ok():
@@ -373,3 +391,107 @@ def get_unread_channels():
         )
 
     return unread_channels
+
+from frappe.query_builder import DocType
+from frappe.query_builder.functions import Count
+from frappe import _
+
+@frappe.whitelist(methods=["GET"])
+def get_done_channels():
+    """
+    Trả về danh sách đầy đủ các channel mà user hiện tại đã đánh dấu is_done = 1
+    Bao gồm thông tin từ Raven Channel + member_id + peer_user_id (nếu là DM)
+    """
+    user = frappe.session.user
+
+    Channel = DocType("Raven Channel")
+    Member = DocType("Raven Channel Member")
+
+    query = (
+        frappe.qb.from_(Channel)
+        .join(Member)
+        .on(Channel.name == Member.channel_id)
+        .select(
+            Channel.name,
+            Channel.channel_name,
+            Channel.type,
+            Channel.channel_description,
+            Channel.is_archived,
+            Channel.is_direct_message,
+            Channel.is_self_message,
+            Channel.creation,
+            Channel.owner,
+            Channel.last_message_timestamp,
+            Channel.last_message_details,
+            Channel.pinned_messages_string,
+            Channel.workspace,
+
+            Member.name.as_("member_id"),
+            Member.is_done
+        )
+        .where((Member.user_id == user) & (Member.is_done == 1))
+        .orderby(Channel.last_message_timestamp, order=Order.desc)
+    )
+
+    results = query.run(as_dict=True)
+
+    # Bổ sung peer_user_id nếu là DM
+    for row in results:
+        if row.get("is_direct_message"):
+            row["peer_user_id"] = get_peer_user_id(
+                row["name"], row["is_direct_message"], row["is_self_message"]
+            )
+        else:
+            row["peer_user_id"] = None
+
+        # Parse JSON string (nếu cần)
+        if isinstance(row.get("last_message_details"), str):
+            try:
+                import json
+                row["last_message_details"] = json.loads(row["last_message_details"])
+            except Exception:
+                pass
+
+    return results
+
+
+@frappe.whitelist(methods=["POST"])
+def mark_channel_as_done(channel_id):
+    user = frappe.session.user
+
+    frappe.db.set_value(
+        "Raven Channel Member",
+        {"channel_id": channel_id, "user_id": user},
+        "is_done",
+        1
+    )
+
+    frappe.publish_realtime(
+        event="channel_done_updated",
+        message={"channel_id": channel_id, "is_done": 1},
+        user=user,
+        after_commit=True
+    )
+
+    return {"status": "success", "channel_id": channel_id, "is_done": 1}
+
+
+@frappe.whitelist(methods=["POST"])
+def mark_channel_as_not_done(channel_id):
+    user = frappe.session.user
+
+    frappe.db.set_value(
+        "Raven Channel Member",
+        {"channel_id": channel_id, "user_id": user},
+        "is_done",
+        0
+    )
+
+    frappe.publish_realtime(
+        event="channel_done_updated",
+        message={"channel_id": channel_id, "is_done": 0},
+        user=user,
+        after_commit=True
+    )
+
+    return {"status": "success", "channel_id": channel_id, "is_done": 0}

@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { KeyedMutator } from 'swr'
 
 export type UnreadChannelCountItem = {
+  last_message_content: any
   name: string
   user_id?: string
   unread_count: number
@@ -80,7 +81,8 @@ const useFetchChannelList = (): ChannelListContextType => {
   const { data, mutate, ...rest } = useFrappeGetCall<{ message: ChannelList }>(
     'raven.api.raven_channel.get_all_channels',
     {
-      hide_archived: false
+      hide_archived: false,
+      filter_done: 'only_not_done'
     },
     `channel_list`,
     {

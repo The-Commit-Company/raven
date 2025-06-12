@@ -17,6 +17,7 @@
   "is_synced",
   "linked_doctype",
   "linked_document",
+  "is_done",
   "notification_settings_section",
   "allow_notifications"
  ],
@@ -93,11 +94,19 @@
    "fieldname": "seen_at",
    "fieldtype": "Datetime",
    "label": "Seen At"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_done",
+   "fieldtype": "Check",
+   "label": "Is Done",
+   "options": "linked_doctype",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-01 14:33:15.042408",
+ "modified": "2025-06-09 18:14:31.697549",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel Member",

@@ -32,9 +32,6 @@ const ChannelItem = ({
 
   const isActive = currentChannelID === channelID
 
-  console.log(channelID);
-  
-
   const userName =
     user?.full_name ?? peer_user_id ?? replaceCurrentUserFromDMChannelName(channelName, currentUser)
 

@@ -232,9 +232,9 @@ const EmptyStateForThreads = ({ isFiltered = false }: { isFiltered?: boolean }) 
             description: 'There are no unread threads to show. Clear the filter to see all threads.'
           }
         : {
-            title: 'No threads yet',
+            title: 'Chưa có chủ đề nào',
             description:
-              'Threads help keep conversations organized. Reply to any message to start a new thread or use the thread icon on messages to join existing discussions.'
+              'Chủ đề giúp cuộc trò chuyện trở nên rõ ràng hơn'
           },
     [isFiltered]
   )

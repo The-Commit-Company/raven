@@ -1,53 +1,73 @@
+import { useGetUser } from '@/hooks/useGetUser'
+
 const MAX_PREVIEW_LENGTH = 20
 
 const truncateText = (text: string, maxLength: number = MAX_PREVIEW_LENGTH): string =>
   text.length > maxLength ? text.slice(0, maxLength) + '...' : text
+
+const isImageFile = (filename: string = ''): boolean => /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(filename)
+
+const isVideoFile = (filename: string = ''): boolean => /\.(mp4|mov|avi|wmv|flv|webm|mkv)$/i.test(filename)
+
+const isAudioFile = (filename: string = ''): boolean => /\.(mp3|wav|ogg|m4a|aac)$/i.test(filename)
+
+const stripHtmlTags = (html: string): string => html.replace(/<\/?[^>]+(>|$)/g, '')
 
 interface Channel {
   is_direct_message: boolean
   last_message_details: any
 }
 
-export function formatLastMessage(
-  channel: Channel,
-  currentUser: string,
-  senderName?: string // optional
-): string {
-  let lastMessageText = ''
-  let senderPrefix = ''
+export function formatLastMessage(channel: Channel, currentUser: string, senderName?: string): string {
+  if (!channel?.last_message_details) return ''
 
+  let raw: any
   try {
-    const raw =
+    raw =
       typeof channel.last_message_details === 'string'
         ? JSON.parse(channel.last_message_details)
         : channel.last_message_details
-
-    const isCurrentUser = raw?.owner === currentUser
-    const isGroup = !channel.is_direct_message
-
-    if (isGroup) {
-      senderPrefix = isCurrentUser ? 'Bạn' : senderName || raw?.owner || ''
-    } else {
-      senderPrefix = isCurrentUser ? 'Bạn' : ''
-    }
-
-    if (raw?.message_type === 'Image') {
-      lastMessageText = 'Đã gửi ảnh'
-    } else if (raw?.message_type === 'File' && (raw.file || raw.attachment?.file_url)) {
-      const fileName = raw.content || 'tệp tin'
-      lastMessageText = `Đã gửi file ${truncateText(fileName)}`
-    } else if (raw?.json_content) {
-      const json = typeof raw.json_content === 'string' ? JSON.parse(raw.json_content) : raw.json_content
-      const paragraph = json?.content?.[0]?.content?.[0]
-      lastMessageText = truncateText(paragraph?.text || '')
-    } else if (raw?.content && typeof raw.content === 'string') {
-      const plainText = raw.content.replace(/<[^>]+>/g, '')
-      lastMessageText = truncateText(plainText)
-    }
-  } catch (err: any) {
-    console.error('Failed to format last message', err)
+  } catch {
     return ''
   }
 
-  return senderPrefix ? `${senderPrefix}: ${lastMessageText}` : lastMessageText
+  const user = useGetUser(raw.owner)
+  const isCurrentUser = raw.owner === currentUser
+  const senderLabel = isCurrentUser ? 'Bạn' : (user?.full_name ?? senderName ?? raw.owner ?? 'Người dùng')
+
+  let contentLabel = ''
+
+  if (typeof raw.content === 'string') {
+    const filename = raw.content
+
+    switch (raw.message_type) {
+      case 'Image':
+        contentLabel = 'gửi ảnh'
+        break
+      case 'Audio':
+        contentLabel = 'gửi âm thanh'
+        break
+      case 'File':
+        contentLabel = isImageFile(filename)
+          ? 'gửi ảnh'
+          : isVideoFile(filename)
+            ? 'gửi video'
+            : isAudioFile(filename)
+              ? 'gửi âm thanh'
+              : 'gửi file'
+        break
+      case 'Text':
+        const text = stripHtmlTags(filename)
+        contentLabel = truncateText(text)
+        break
+    }
+  }
+
+  if (!contentLabel) return ''
+
+  if (raw.message_type === 'Text' && !isCurrentUser) {
+    return contentLabel // chỉ nội dung nếu là text và không phải currentUser
+  }
+
+  return `${senderLabel}${isCurrentUser ? ':' : ''} ${contentLabel}`
 }
