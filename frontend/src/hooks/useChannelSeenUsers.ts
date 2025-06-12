@@ -103,14 +103,9 @@ export const useChannelSeenUsers = ({ channelId, messages }: { channelId: string
   useEffect(() => {
     if (channelId && messages && messages.length > 0) {
       fetchSeenUsers()
-    }
-  }, [channelId, messages])
-
-  useEffect(() => {
-    if (channelId && messages && messages.length > 0) {
       trackSeen()
     }
-  }, [channelId])
+  }, [channelId, messages, fetchSeenUsers, trackSeen])
 
   // SOCKET: update khi có người seen
   useFrappeEventListener('raven:channel_seen_updated', updateSeenUserFromSocket)
