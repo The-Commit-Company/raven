@@ -1,7 +1,9 @@
-import { Flex, Box } from '@radix-ui/themes'
+// import { Flex, Box } from '@radix-ui/themes'
 import { lazy, Suspense, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Outlet, useParams } from 'react-router-dom'
 // import { Sidebar } from '../components/layout/Sidebar/Sidebar'
+import ChatbotAIChatBox from '@/components/feature/chatbot-ai/ChatbotAIChatBox'
+import ChatbotAIContainer, { ChatSession } from '@/components/feature/chatbot-ai/ChatbotAIContainer'
 import CommandMenu from '@/components/feature/CommandMenu/CommandMenu'
 import MessageActionController from '@/components/feature/message-actions/MessageActionController'
 import { FullPageLoader } from '@/components/layout/Loaders/FullPageLoader'
@@ -13,7 +15,13 @@ import WorkspacesSidebar from '@/components/layout/Sidebar/WorkspacesSidebar'
 import { HStack } from '@/components/layout/Stack'
 import { useFetchActiveUsersRealtime } from '@/hooks/fetchers/useFetchActiveUsers'
 import { useActiveSocketConnection } from '@/hooks/useActiveSocketConnection'
-import { useIsMobile, useIsTablet } from '@/hooks/useMediaQuery'
+import {
+  useChatbotConversations,
+  useChatbotMessages,
+  useCreateChatbotConversation,
+  useSendChatbotMessage
+} from '@/hooks/useChatbotAPI'
+import { useIsMobile } from '@/hooks/useMediaQuery'
 import { useUnreadThreadsCountEventListener } from '@/hooks/useUnreadThreadsCount'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { SidebarMode, SidebarModeProvider, useSidebarMode } from '@/utils/layout/sidebar'
@@ -50,13 +58,70 @@ const MainPageContent = () => {
   const { currentUser } = useContext(UserContext)
   const { threadID } = useParams()
   const isMobile = useIsMobile()
-  const isTablet = useIsTablet()
   const sidebarRef = useRef<any>(null)
   const { handleSidebarResize, handleSidebarPointerUp } = useSidebarResizeLogic(sidebarRef)
-  const { mode, setMode } = useSidebarMode()
+  const { mode, setMode, title } = useSidebarMode()
   const [panelSize, setPanelSize] = useState(30)
   const [initialLayoutLoaded, setInitialLayoutLoaded] = useState(false)
   const [initialLayout, setInitialLayout] = useState<string | null>(null)
+  const [selectedAISessionId, setSelectedAISessionId] = useState<string | null>(null)
+
+  // Lấy danh sách conversation từ backend
+  const {
+    data: conversations,
+    mutate: mutateConversations,
+    isLoading: loadingConversations
+  } = useChatbotConversations()
+  const { call: createConversation } = useCreateChatbotConversation()
+
+  // Lấy messages từ backend
+  const {
+    data: messages,
+    mutate: mutateMessages,
+    isLoading: loadingMessages
+  } = useChatbotMessages(selectedAISessionId || undefined)
+  const { call: sendMessage, loading: sending } = useSendChatbotMessage()
+
+  // Chuyển đổi dữ liệu conversation sang ChatSession cho UI
+  const sessions: ChatSession[] = (
+    Array.isArray(conversations)
+      ? conversations
+      : Array.isArray((conversations as any)?.message)
+        ? (conversations as any).message
+        : []
+  ).map((c: any) => ({
+    id: c.name,
+    title: c.title,
+    messages: []
+  }))
+
+  // Hàm tạo session mới (chỉ gọi backend, không tạo local)
+  const handleNewSession = async () => {
+    const title = `Đoạn chat mới ${sessions.length + 1}`
+    const res = await createConversation({ title })
+    await mutateConversations()
+    setSelectedAISessionId(res.message.name) // Đúng id backend
+  }
+
+  // Hàm update tiêu đề session (chỉ update local UI, không update backend)
+  const handleUpdateAISessions = () => {}
+
+  // Hàm gửi tin nhắn Chatbot AI
+  const handleSendMessage = async (content: string) => {
+    if (!selectedAISessionId) return
+    await sendMessage({ conversation_id: selectedAISessionId, message: content })
+    await mutateMessages() // Sau khi gửi tin nhắn thì refetch lại messages
+  }
+
+  // Lấy session đang chọn từ backend
+  const selectedSession = sessions.find((s) => s.id === selectedAISessionId)
+
+  // Nếu selectedAISessionId không còn trong danh sách backend, tự động bỏ chọn hoặc chọn session đầu tiên
+  useEffect(() => {
+    if (selectedAISessionId && !sessions.find((s) => s.id === selectedAISessionId)) {
+      setSelectedAISessionId(sessions.length > 0 ? sessions[0].id : null)
+    }
+  }, [sessions, selectedAISessionId])
 
   useFetchActiveUsersRealtime()
   useActiveSocketConnection()
@@ -93,6 +158,13 @@ const MainPageContent = () => {
       showNotification(payload)
     })
   }, [])
+
+  // Lắng nghe realtime event new_message cho Chatbot AI
+  useFrappeEventListener('new_message', (data) => {
+    if (data.channel_id === selectedAISessionId) {
+      mutateMessages()
+    }
+  })
 
   // Load layout from localStorage before first render
   useEffect(() => {
@@ -144,98 +216,39 @@ const MainPageContent = () => {
     <UserListProvider>
       <CircleUserListProvider>
         <HStack gap='0' className={`flex h-screen ${mode}`}>
-          {/* Sidebar cố định chỉ hiện khi desktop */}
-          {!isMobile && !isTablet && <WorkspacesSidebar />}
+          {!isMobile && <WorkspacesSidebar />}
 
-          {isMobile ? (
-            // ==============================
-            // 📱 MOBILE LAYOUT
-            // ==============================
-            <Flex className='w-full h-full'>
-              <Box className='w-full h-full'>
-                <SidebarHeader />
-                <Box className='px-2'>
-                  <Box className='h-px bg-gray-400 dark:bg-gray-600' />
-                </Box>
-                <SidebarBody size={panelSize} />
-              </Box>
-              <Box className='w-full absolute dark:bg-gray-2'>
-                <Outlet />
-              </Box>
-            </Flex>
-          ) : isTablet ? (
-            // ==============================
-            // 💊 TABLET LAYOUT: 2 Panel
-            // ==============================
-            <PanelGroup
-              direction='horizontal'
-              className='flex-1'
-              autoSaveId={isMobile ? undefined : isTablet ? 'main-layout-tablet' : 'main-layout-desktop'}
-              storage={localStorageWrapper}
+          <PanelGroup direction='horizontal' className='flex-1' autoSaveId='main-layout' storage={localStorageWrapper}>
+            <Panel
+              ref={sidebarRef}
+              minSize={3}
+              maxSize={15}
+              {...(!initialLayout ? { defaultSize: 15 } : {})}
+              onResize={handleSidebarResize}
             >
-              {/* Sidebar Panel */}
-              <Panel
-                onResize={(size) => setPanelSize(size)}
-                minSize={45}
-                maxSize={45}
-                {...(!initialLayout ? { defaultSize: 45 } : {})}
-              >
-                <div className='flex flex-col gap-1 w-full h-full overflow-hidden'>
-                  <SidebarHeader />
-                  <div className='px-2'>
-                    <div className='h-px bg-gray-400 dark:bg-gray-600' />
-                  </div>
-                  <SidebarBody size={panelSize} />
-                </div>
-              </Panel>
+              <SidebarContainer sidebarRef={sidebarRef} />
+            </Panel>
 
-              {/* Resize Handle */}
-              <PanelResizeHandle
-                className='cursor-col-resize bg-gray-300 dark:bg-gray-600 w-px panel-1'
-                onPointerUp={handleSidebarPointerUp}
-              />
-
-              {/* Main Content Panel */}
-              <Panel minSize={55} maxSize={55} {...(!initialLayout ? { defaultSize: 55 } : {})}>
-                <div className='h-full w-full dark:bg-gray-2 overflow-hidden'>
-                  <Outlet />
-                </div>
-              </Panel>
-            </PanelGroup>
-          ) : (
-            // ==============================
-            // 🖥 DESKTOP LAYOUT: 3 Panel
-            // ==============================
-            <PanelGroup
-              direction='horizontal'
-              className='flex-1'
-              autoSaveId='main-layout'
-              storage={localStorageWrapper}
+            <PanelResizeHandle
+              className='cursor-col-resize bg-gray-300 dark:bg-gray-600 w-px panel-1'
+              onPointerUp={handleSidebarPointerUp}
+            />
+            <Panel
+              onResize={(size) => setPanelSize(size)}
+              minSize={isSmallScreen ? 20 : 20}
+              maxSize={isSmallScreen ? 40 : 60}
+              {...(!initialLayout ? { defaultSize: isSmallScreen ? 30 : 40 } : {})}
             >
-              {/* Sidebar Panel */}
-              <Panel
-                ref={sidebarRef}
-                minSize={3}
-                maxSize={15}
-                {...(!initialLayout ? { defaultSize: 15 } : {})}
-                onResize={handleSidebarResize}
-              >
-                <SidebarContainer sidebarRef={sidebarRef} />
-              </Panel>
-
-              {/* Resize Handle 1 */}
-              <PanelResizeHandle
-                className='cursor-col-resize bg-gray-300 dark:bg-gray-600 w-px panel-1'
-                onPointerUp={handleSidebarPointerUp}
-              />
-
-              {/* Middle Panel */}
-              <Panel
-                onResize={(size) => setPanelSize(size)}
-                minSize={20}
-                maxSize={isSmallScreen ? 40 : 60}
-                {...(!initialLayout ? { defaultSize: isSmallScreen ? 30 : 40 } : {})}
-              >
+              {title === 'Chatbot AI' ? (
+                <ChatbotAIContainer
+                  sessions={sessions}
+                  selectedId={selectedAISessionId}
+                  onSelectSession={setSelectedAISessionId}
+                  onUpdateSessions={handleUpdateAISessions}
+                  onNewSession={handleNewSession}
+                  mutateConversations={mutateConversations}
+                />
+              ) : (
                 <div className='flex flex-col gap-1 w-full h-full'>
                   <SidebarHeader />
                   <div className='px-2'>
@@ -243,24 +256,47 @@ const MainPageContent = () => {
                   </div>
                   <SidebarBody size={panelSize} />
                 </div>
-              </Panel>
+              )}
+            </Panel>
 
-              {/* Resize Handle 2 */}
-              <PanelResizeHandle
-                className='cursor-col-resize bg-gray-300 dark:bg-gray-600 w-px handle-2'
-                onPointerUp={handleSidebarPointerUp}
-              />
+            <PanelResizeHandle
+              className='cursor-col-resize bg-gray-300 dark:bg-gray-600 w-px handle-2'
+              onPointerUp={handleSidebarPointerUp}
+            />
 
-              {/* Main Content Panel */}
-              <Panel minSize={30} maxSize={90} {...(!initialLayout ? { defaultSize: 60 } : {})}>
-                <div className='h-full w-full dark:bg-gray-2 overflow-hidden'>
+            <Panel
+              minSize={isSmallScreen ? 20 : 30}
+              maxSize={isSmallScreen ? 80 : 90}
+              {...(!initialLayout ? { defaultSize: isSmallScreen ? 70 : 60 } : {})}
+            >
+              <div className='h-full w-full dark:bg-gray-2 overflow-hidden'>
+                {title === 'Chatbot AI' && selectedAISessionId && selectedSession ? (
+                  <ChatbotAIChatBox
+                    session={{
+                      id: selectedAISessionId,
+                      title: selectedSession.title,
+                      messages: (Array.isArray(messages)
+                        ? messages
+                        : Array.isArray((messages as any)?.message)
+                          ? (messages as any).message
+                          : []
+                      ).map((m: any) => ({
+                        role: m.is_user ? ('user' as const) : ('ai' as const),
+                        content: m.message as string
+                      }))
+                    }}
+                    onSendMessage={handleSendMessage}
+                    loading={sending || loadingMessages}
+                  />
+                ) : title === 'Chatbot AI' ? (
+                  <div className='flex items-center justify-center h-full text-gray-6'>Chọn đoạn chat để bắt đầu</div>
+                ) : (
                   <Outlet />
-                </div>
-              </Panel>
-            </PanelGroup>
-          )}
+                )}
+              </div>
+            </Panel>
+          </PanelGroup>
         </HStack>
-
         <CommandMenu />
         <MessageActionController />
       </CircleUserListProvider>

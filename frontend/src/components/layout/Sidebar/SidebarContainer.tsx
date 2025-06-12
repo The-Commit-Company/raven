@@ -7,6 +7,7 @@ import {
   HiMenuAlt2,
   HiOutlineAtSymbol,
   HiOutlineCheckCircle,
+  HiOutlineChip,
   HiOutlineCog,
   HiOutlineFlag,
   HiOutlineHashtag,
@@ -17,8 +18,8 @@ import {
   HiOutlineUsers
 } from 'react-icons/hi'
 
-import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import clsx from 'clsx'
+import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 
 export const useMentionUnreadCount = () => {
   const { data: mentionsCount, mutate } = useFrappeGetCall<{ message: number }>(
@@ -50,6 +51,7 @@ export const filterItems = [
   { label: 'Nhãn', icon: HiOutlineTag },
   { label: 'Cuộc trò chuyện riêng tư', icon: HiOutlineUser },
   { label: 'Trò chuyện nhóm', icon: HiOutlineUsers },
+  { label: 'Chatbot AI', icon: HiOutlineChip },
   // { label: 'Docs', icon: HiOutlineDocumentText },
   { label: 'Chủ đề', icon: HiOutlineHashtag },
   { label: 'Xong', icon: HiOutlineCheckCircle },

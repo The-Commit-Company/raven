@@ -37,6 +37,7 @@ export interface Props {
   onViewReaction: () => void
   onAttachToDocument: () => void
   unseenByOthers: any
+  isThinking?: boolean
 }
 
 export const LeftRightLayout = ({
@@ -55,7 +56,8 @@ export const LeftRightLayout = ({
   seenByOthers,
   hasBeenSeen,
   channel,
-  unseenByOthers
+  unseenByOthers,
+  isThinking = false
 }: Props) => {
   const {
     // name,
@@ -149,9 +151,17 @@ export const LeftRightLayout = ({
                     ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20'
                     : !isDesktop && isHovered
                       ? 'bg-gray-2 dark:bg-gray-3'
-                      : ''
+                      : '',
+                  isThinking && 'animate-pulse'
                 )}
               >
+                {isThinking && (
+                  <div className="absolute left-0 top-0 w-full h-full flex items-center justify-center bg-gray-100/50 dark:bg-gray-800/50">
+                    <Text size="2" className="text-gray-500 dark:text-gray-400">
+                      AI đang suy nghĩ...
+                    </Text>
+                  </div>
+                )}
                 {!is_continuation && !alignToRight ? (
                   <Flex align='center' gap='2'>
                     <UserHoverCard user={user} userID={userID} isActive={isActive} />
