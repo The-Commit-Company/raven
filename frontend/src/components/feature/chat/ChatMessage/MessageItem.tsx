@@ -265,10 +265,22 @@ export const MessageItem = React.memo(
             ) : null}
 
             {is_retracted === 1 ? (
-              <Flex className='gap-2.5 sm:gap-3 items-start'>
-                {/* Hiển thị avatar hoặc thời gian nếu là tin nhắn tiếp nối */}
-                <MessageLeftElement message={message} user={user} isActive={isActive} />
-                <div className='pb-5'>
+              <div
+                className={clsx(
+                  `group
+                select-none
+                sm:select-auto
+                data-[state=open]:shadow-sm
+                transition-colors
+                px-1
+                py-1.5
+                sm:p-1.5
+                rounded-md`
+                )}
+              >
+                <Flex className='gap-2.5 sm:gap-3 items-start'>
+                  {/* Hiển thị avatar hoặc thời gian nếu là tin nhắn tiếp nối */}
+                  <MessageLeftElement message={message} user={user} isActive={isActive} />
                   <RetractedMessage
                     message={message}
                     user={user}
@@ -277,8 +289,8 @@ export const MessageItem = React.memo(
                     timestamp={timestamp}
                     is_continuation={is_continuation}
                   />
-                </div>
-              </Flex>
+                </Flex>
+              </div>
             ) : (
               <ContextMenu.Root modal={false} onOpenChange={onContextMenuChange}>
                 {/* Kích hoạt context menu */}
