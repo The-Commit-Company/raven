@@ -11,8 +11,8 @@ import { UserContext } from '@/utils/auth/UserProvider'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { Avatar, Badge, Box, BoxProps, Button, ContextMenu, Flex, HoverCard, Text, Theme } from '@radix-ui/themes'
 import { clsx } from 'clsx'
-import { FrappeConfig, FrappeContext, useFrappeEventListener } from 'frappe-react-sdk'
-import React, { memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
+import React, { memo, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { BiChat } from 'react-icons/bi'
 import { BsFillCircleFill } from 'react-icons/bs'
 import { RiPushpinFill, RiRobot2Fill, RiShareForwardFill } from 'react-icons/ri'
@@ -61,7 +61,7 @@ interface MessageBlockProps {
 
 export const MessageItem = React.memo(
   ({
-    message: initialMessage,
+    message,
     setDeleteMessage,
     isHighlighted,
     onReplyMessageClick,
@@ -75,7 +75,6 @@ export const MessageItem = React.memo(
     channel,
     isThinking = false
   }: MessageBlockProps) => {
-    const [message, setMessage] = useState<Message>(initialMessage)
     const [isEmojiPickerOpen, setEmojiPickerOpen] = useState(false)
     const [selectedText, setSelectedText] = useState('')
     const [isHovered, setIsHovered] = useState(false)
@@ -91,26 +90,6 @@ export const MessageItem = React.memo(
       replied_message_details,
       is_retracted
     } = message
-
-    useEffect(() => {
-      setMessage(initialMessage)
-    }, [initialMessage])
-
-    // Lắng nghe sự kiện thu hồi tin nhắn
-    useFrappeEventListener(
-      'raven_message_retracted',
-      useCallback(
-        (data: any) => {
-          if (data && data.message_id === message.name) {
-            setMessage((prevMessage) => ({
-              ...prevMessage,
-              is_retracted: 1
-            }))
-          }
-        },
-        [message.name]
-      )
-    )
 
     // Lấy thông tin người dùng và trạng thái hoạt động
     const { user, isActive } = useGetUserDetails(is_bot_message && bot ? bot : userID)
