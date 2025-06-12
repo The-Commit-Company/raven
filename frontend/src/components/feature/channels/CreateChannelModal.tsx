@@ -18,7 +18,8 @@ import { CustomCallout } from '@/components/common/Callouts/CustomCallout'
 interface ChannelCreationForm {
   channel_name: string
   channel_description: string
-  type: 'Public' | 'Private' | 'Open'
+  // type: 'Public' | 'Private' | 'Open'
+  type: 'Private'
 }
 
 export const CreateChannelButton = () => {
@@ -134,7 +135,7 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
       if (result) {
         mutate(
           'channel_list',
-          (data) => {
+          (data: { message: { channels: any } }) => {
             return {
               message: {
                 ...data.message,
@@ -169,22 +170,8 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
       case 'Private':
         return {
           channelIcon: <BiLockAlt />,
-          header: __('Create a private channel'),
-          helperText: __('When a channel is set to private, it can only be viewed or joined by invitation.')
-        }
-      case 'Open':
-        return {
-          channelIcon: <BiGlobe />,
-          header: __('Create an open channel'),
-          helperText: __('When a channel is set to open, everyone is a member.')
-        }
-      default:
-        return {
-          channelIcon: <BiHash />,
-          header: __('Create a public channel'),
-          helperText: __(
-            'When a channel is set to public, anyone can join the channel and read messages, but only members can post messages.'
-          )
+          header: __('Create a channel'),
+          helperText: __('When a channel is created, it can only be viewed or joined by invitation.')
         }
     }
   }, [channelType])
@@ -202,7 +189,7 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Flex direction='column' gap='4' py='4'>
-            {!canCreateChannel?.message && (
+            {/* {!canCreateChannel?.message && (
               <CustomCallout
                 iconChildren={<BiInfoCircle size='18' />}
                 rootProps={{ color: 'yellow', variant: 'surface' }}
@@ -213,7 +200,7 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
                   </Text>
                 }
               />
-            )}
+            )} */}
             <ErrorBanner error={channelCreationError} />
             <Box>
               <Label htmlFor='channel_name' isRequired>

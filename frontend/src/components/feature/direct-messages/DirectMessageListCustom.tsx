@@ -27,14 +27,12 @@ import { useEnrichedChannels } from '@/utils/channel/ChannelAtom'
 import ThreadsCustom from '../threads/ThreadsCustom'
 import { formatLastMessage } from '@/utils/channel/useFormatLastMessage'
 import { useChannelDone } from '@/hooks/useChannelDone'
+import LabelByUserList from '../labels/LabelByUserList'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
 
 export const DirectMessageList = () => {
-  const enriched = useEnrichedChannels()
-
-  console.log(">>>>>>>>>> enriched:", enriched);
-  
+  const enriched = useEnrichedChannels()  
   return (
     <SidebarGroup pb='4'>
       <SidebarGroup>
@@ -73,6 +71,7 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
   if (title === 'Xong') return <DoneChannelList />
   if (title === 'Chủ đề') return <ThreadsCustom />
   if (title === 'Thành viên') return <UserChannelList />
+  if (title === 'Nhãn') return <LabelByUserList/>
 
   if (filteredChannels.length === 0 && title !== 'Trò chuyện') {
     return <div className='text-gray-500 text-sm italic p-4 text-center'>Không có kết quả</div>
@@ -104,7 +103,7 @@ export const DirectMessageItem = ({ dm_channel }: { dm_channel: DMChannelWithUnr
           onClick={() => togglePin(dm_channel)}
           className='cursor-pointer dark:hover:bg-gray-700 px-2 py-1 rounded'
         >
-          {isPinned(dm_channel.name) ? 'Unpin message' : 'Pin message to top'}
+          {isPinned(dm_channel.name) ? 'Bỏ ghim tin nhắn' : 'Ghim tin nhắn lên đầu'}
         </ContextMenu.Item>
       </ContextMenu.Content>
     </ContextMenu.Root>

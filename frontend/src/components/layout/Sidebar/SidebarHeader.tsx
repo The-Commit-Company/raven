@@ -11,10 +11,14 @@ import MentionsButton from './MentionsButton'
 import { HStack } from '../Stack'
 import { getKeyboardMetaKeyString } from '@/utils/layout/keyboardKey'
 import { CreateChannelButton } from '@/components/feature/channels/CreateChannelModal'
+import { FiPlus } from 'react-icons/fi'
+import { CreateLabelButton } from '@/components/feature/channels/CreateLabelModal'
 
 export const SidebarHeader = () => {
   const isDesktop = useIsDesktop()
   const { mode, title } = useSidebarMode()
+
+  const isLabelMode = title === 'Nhãn'
 
   if (isDesktop) {
     return (
@@ -22,8 +26,14 @@ export const SidebarHeader = () => {
         <Flex justify='between' px='2' align='center' pt='2'>
           <span className='font-medium text-base'>{title}</span>
           <Box>
-            <SearchButton />
-            <CreateChannelButton />
+            {isLabelMode ? (
+              <CreateLabelButton/>
+            ) : (
+              <>
+                <SearchButton />
+                <CreateChannelButton />
+              </>
+            )}
           </Box>
         </Flex>
       </header>
@@ -37,16 +47,22 @@ export const SidebarHeader = () => {
           raven
         </Text>
         <Flex align='center' gap='4' className='pr-1 sm:pr-0'>
-          {/* <MentionsButton /> */}
           <ColorModeToggleButton />
-          <SearchButton />
-          <CreateChannelButton/>
+          {isLabelMode ? (
+            <button className='p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded'>
+              <FiPlus size={18} />
+            </button>
+          ) : (
+            <>
+              <SearchButton />
+              <CreateChannelButton />
+            </>
+          )}
         </Flex>
       </Flex>
     </header>
   )
 }
-
 // const CommandMenuButton = () => {
 //   const setOpen = useSetAtom(commandMenuOpenAtom)
 
