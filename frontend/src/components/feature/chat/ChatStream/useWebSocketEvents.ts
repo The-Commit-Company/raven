@@ -161,4 +161,30 @@ export const useWebSocketEvents = (
       { revalidate: false }
     )
   })
+
+  // Message retracted
+  useFrappeEventListener('raven_message_retracted', (event) => {
+    mutate(
+      (d: any) => {
+        if (event.message_id && d) {
+          const updatedMessages = d.message.messages.map((message: any) => {
+            if (message.name === event.message_id) {
+              return { ...message, is_retracted: 1 }
+            }
+            return message
+          })
+
+          return {
+            message: {
+              messages: updatedMessages,
+              has_old_messages: d.message.has_old_messages,
+              has_new_messages: d.message.has_new_messages
+            }
+          }
+        }
+        return d
+      },
+      { revalidate: false }
+    )
+  })
 }

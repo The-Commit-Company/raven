@@ -287,8 +287,10 @@ def get_saved_messages():
 			raven_message.is_bot_message,
 			raven_message.bot,
 			raven_message.content,
+			raven_message.is_retracted
 		)
 		.where(raven_message._liked_by.like(f"%{frappe.session.user}%"))
+		.where(raven_message.is_retracted == 0)
 		.where(
 			(raven_channel.type.isin(["Open", "Public"]))
 			| (raven_channel_member.user_id == frappe.session.user)
@@ -921,3 +923,29 @@ def add_forwarded_message_to_channel(channel_id, forwarded_message):
 	)
 	doc.insert()
 	return "message forwarded"
+
+@frappe.whitelist()
+def retract_message(message_id: str):
+    """
+    Đánh dấu tin nhắn là đã thu hồi nếu người hiện tại là người gửi
+    """
+    user = frappe.session.user
+    message = frappe.get_doc("Raven Message", message_id)
+
+    if message.is_retracted:
+        frappe.throw(_("Tin nhắn đã được thu hồi trước đó."))
+
+    message.db_set("is_retracted", 1)
+    frappe.db.commit()
+
+    frappe.publish_realtime(
+        event="raven_message_retracted",
+        message={
+            "message_id": message.name,
+            "channel_id": message.channel_id,
+            "is_thread": message.is_thread
+        },
+		doctype="Raven Channel",
+        docname=message.channel_id
+    )
+    return {"message": "Đã thu hồi tin nhắn"}

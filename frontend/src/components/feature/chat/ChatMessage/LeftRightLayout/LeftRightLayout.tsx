@@ -19,6 +19,7 @@ import { DateTooltip } from '../Renderers/DateTooltip'
 import { DoctypeLinkRenderer } from '../Renderers/DoctypeLinkRenderer'
 import { ThreadMessage } from '../Renderers/ThreadMessage'
 import { ReplyMessageBox } from '../ReplyMessageBox/ReplyMessageBox'
+import RetractedMessage from '../RetractedMessage'
 
 export interface Props {
   message: Message
@@ -37,6 +38,8 @@ export interface Props {
   onViewReaction: () => void
   onAttachToDocument: () => void
   unseenByOthers: any
+  isThinking?: boolean
+  is_retracted?: number
 }
 
 export const LeftRightLayout = ({
@@ -55,7 +58,9 @@ export const LeftRightLayout = ({
   seenByOthers,
   hasBeenSeen,
   channel,
-  unseenByOthers
+  unseenByOthers,
+  isThinking = false,
+  is_retracted
 }: Props) => {
   const {
     // name,
@@ -93,7 +98,7 @@ export const LeftRightLayout = ({
   })
 
   const onMouseEnter = () => {
-    if (isDesktop) {
+    if (isDesktop && !is_retracted) {
       setIsHovered(true)
     }
   }
@@ -112,7 +117,7 @@ export const LeftRightLayout = ({
   const [selectedText, setSelectedText] = useState('')
 
   const onContextMenuChange = (open: boolean) => {
-    if (open) {
+    if (open && !is_retracted) {
       // Get the selection that te user is actually highlighting
       const selection = document.getSelection()
       if (selection) {
@@ -121,6 +126,34 @@ export const LeftRightLayout = ({
     } else {
       setSelectedText('')
     }
+  }
+
+  if (is_retracted === 1) {
+    return (
+      <div className={clsx('flex py-0.5', alignToRight ? 'justify-end mr-4' : 'justify-start')}>
+        <Flex align={'start'} gap={'2'} className='relative'>
+          {!alignToRight && (
+            <MessageLeftElement message={message} user={user} isActive={isActive} className='mt-[5px]' />
+          )}
+          <Stack gap={'0'} align={'end'}>
+            {alignToRight && !is_continuation && (
+              <Box className='text-right pr-1 pb-0.5'>
+                <DateTooltip timestamp={timestamp} />
+              </Box>
+            )}
+
+            <RetractedMessage
+              message={message}
+              user={user}
+              currentUser={currentUser}
+              alignToRight={alignToRight}
+              timestamp={timestamp}
+              is_continuation={is_continuation}
+            />
+          </Stack>
+        </Flex>
+      </div>
+    )
   }
 
   return (
@@ -149,7 +182,8 @@ export const LeftRightLayout = ({
                     ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20'
                     : !isDesktop && isHovered
                       ? 'bg-gray-2 dark:bg-gray-3'
-                      : ''
+                      : '',
+                  isThinking && 'animate-pulse'
                 )}
               >
                 {!is_continuation && !alignToRight ? (

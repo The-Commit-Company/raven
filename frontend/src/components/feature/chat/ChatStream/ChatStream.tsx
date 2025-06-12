@@ -199,7 +199,8 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
 
     const { name: userID } = useUserData()
     const { seenUsers } = useChannelSeenUsers({
-      channelId: channelID
+      channelId: channelID,
+      messages
     })
     const { channel } = useCurrentChannelData(channelID)
 
