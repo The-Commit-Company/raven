@@ -35,7 +35,8 @@
   "is_bot_message",
   "bot",
   "hide_link_preview",
-  "notification"
+  "notification",
+  "is_retracted"
  ],
  "fields": [
   {
@@ -202,11 +203,17 @@
    "fieldname": "blurhash",
    "fieldtype": "Small Text",
    "label": "Blurhash"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_retracted",
+   "fieldtype": "Check",
+   "label": "Is Retracted"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-01 14:33:26.037206",
+ "modified": "2025-06-12 10:55:10.291643",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",

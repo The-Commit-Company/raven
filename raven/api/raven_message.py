@@ -884,3 +884,18 @@ def add_forwarded_message_to_channel(channel_id, forwarded_message):
 	)
 	doc.insert()
 	return "message forwarded"
+
+@frappe.whitelist()
+def retract_message(message_id: str):
+    """
+    Đánh dấu tin nhắn là đã thu hồi nếu người hiện tại là người gửi
+    """
+    user = frappe.session.user
+    message = frappe.get_doc("Raven Message", message_id)
+
+    if message.is_retracted:
+        frappe.throw(_("Tin nhắn đã được thu hồi trước đó."))
+
+    message.db_set("is_retracted", 1)
+    frappe.db.commit()
+    return {"message": "Đã thu hồi tin nhắn"}

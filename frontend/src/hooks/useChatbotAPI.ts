@@ -3,7 +3,7 @@ import { useFrappeGetCall, useFrappeGetDoc, useFrappePostCall } from 'frappe-rea
 // Lấy danh sách cuộc trò chuyện Chatbot AI
 export function useChatbotConversations() {
   return useFrappeGetCall<any[]>('raven.api.chatbot.get_conversations', undefined, 'chatbot_conversations', {
-    revalidateOnFocus: true
+    revalidateOnFocus: false
   })
 }
 
@@ -18,7 +18,7 @@ export function useChatbotMessages(conversation_id?: string) {
     'raven.api.chatbot.get_messages',
     conversation_id ? { conversation_id } : undefined,
     conversation_id ? ['chatbot_messages', conversation_id] : undefined,
-    { revalidateOnFocus: true }
+    { revalidateOnFocus: false }
   )
 }
 

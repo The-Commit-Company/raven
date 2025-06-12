@@ -35,6 +35,7 @@ import { PollMessageBlock } from './Renderers/PollMessage'
 import { ThreadMessage } from './Renderers/ThreadMessage'
 import { TiptapRenderer } from './Renderers/TiptapRenderer/TiptapRenderer'
 import { ReplyMessageBox } from './ReplyMessageBox/ReplyMessageBox'
+import RetractedMessage from './RetractedMessage'
 
 interface SeenUser {
   name: string
@@ -83,7 +84,8 @@ export const MessageItem = React.memo(
       message_reactions, // Các reaction của tin nhắn
       is_continuation, // Có phải là tin nhắn tiếp nối không
       linked_message, // Tin nhắn được liên kết
-      replied_message_details // Chi tiết tin nhắn được trả lời
+      replied_message_details, // Chi tiết tin nhắn được trả lời,
+      is_retracted
     } = message
 
     // Lấy thông tin người dùng và trạng thái hoạt động
@@ -242,6 +244,7 @@ export const MessageItem = React.memo(
             channel={channel}
             unseenByOthers={unseenByOthers}
             isThinking={isThinking}
+            is_retracted={is_retracted}
           />
         ) : (
           // Sử dụng layout mặc định nếu không phải 'Left-Right'
@@ -260,17 +263,33 @@ export const MessageItem = React.memo(
                         left-6 z-0`}
               ></div>
             ) : null}
-            {/* Context menu cho tin nhắn (hiển thị khi click chuột phải) */}
-            <ContextMenu.Root modal={false} onOpenChange={onContextMenuChange}>
-              {/* Kích hoạt context menu */}
-              <ContextMenu.Trigger
-                {...bind} // Bind sự kiện nhấn đúp cho mobile
-                ref={ref} // Ref để phát hiện click bên ngoài
-                onMouseEnter={onMouseEnter} // Xử lý khi di chuột vào
-                onMouseLeave={onMouseLeave} // Xử lý khi di chuột ra
-                className={clsx(
-                  // Các class CSS áp dụng cho tin nhắn
-                  `group
+
+            {is_retracted === 1 ? (
+              <Flex className='gap-2.5 sm:gap-3 items-start'>
+                {/* Hiển thị avatar hoặc thời gian nếu là tin nhắn tiếp nối */}
+                <MessageLeftElement message={message} user={user} isActive={isActive} />
+                <div className='pb-5'>
+                  <RetractedMessage
+                    message={message}
+                    user={user}
+                    currentUser={currentUser || ''}
+                    alignToRight={false}
+                    timestamp={timestamp}
+                    is_continuation={is_continuation}
+                  />
+                </div>
+              </Flex>
+            ) : (
+              <ContextMenu.Root modal={false} onOpenChange={onContextMenuChange}>
+                {/* Kích hoạt context menu */}
+                <ContextMenu.Trigger
+                  {...bind} // Bind sự kiện nhấn đúp cho mobile
+                  ref={ref} // Ref để phát hiện click bên ngoài
+                  onMouseEnter={onMouseEnter} // Xử lý khi di chuột vào
+                  onMouseLeave={onMouseLeave} // Xử lý khi di chuột ra
+                  className={clsx(
+                    // Các class CSS áp dụng cho tin nhắn
+                    `group
                 select-none
                 sm:select-auto
                 data-[state=open]:shadow-sm
@@ -279,123 +298,124 @@ export const MessageItem = React.memo(
                 py-1.5
                 sm:p-1.5
                 rounded-md`,
-                  // Thêm padding top nếu không phải là tin nhắn tiếp nối
-                  is_continuation ? '' : 'pt-2.5 sm:pt-3',
-                  // Đổi màu nền nếu được làm nổi bật hoặc đang hover
-                  isHighlighted
-                    ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20'
-                    : !isDesktop && isHovered
-                      ? 'bg-gray-2 dark:bg-gray-3'
-                      : '',
-                  // Đổi màu nền khi mở emoji picker
-                  isEmojiPickerOpen ? 'bg-gray-2 dark:bg-gray-3' : '',
-                  isThinking && 'animate-pulse'
-                )}
-              >
-                {/* Nội dung chính của tin nhắn */}
-                <Flex className='gap-2.5 sm:gap-3 items-start'>
-                  {/* Hiển thị avatar hoặc thời gian nếu là tin nhắn tiếp nối */}
-                  <MessageLeftElement message={message} user={user} isActive={isActive} />
-                  {/* Nội dung chi tiết của tin nhắn */}
-                  <Flex
-                    direction='column'
-                    justify='center'
-                    className='gap-0.5 w-fit max-w-full relative'
-                    style={{ maxWidth: 'min(100%, calc(100% - 70px))' }}
-                  >
-                    {/* Hiển thị thông tin người gửi và thời gian nếu không phải là tin nhắn tiếp nối */}
-                    {!is_continuation ? (
-                      <Flex align='center' gap='2' mt='-1'>
-                        {/* Hiển thị thông tin người gửi khi hover */}
-                        <UserHoverCard user={user} userID={userID} isActive={isActive} />
-                        {/* Hiển thị thời gian với tooltip */}
-                        <DateTooltip timestamp={timestamp} />
-                      </Flex>
-                    ) : null}
-                    {/* Nội dung tin nhắn */}
-                    {/* Hiển thị biểu tượng nếu là tin nhắn được chuyển tiếp */}
-                    {message.is_forwarded === 1 && (
-                      <Flex className='text-gray-10 text-xs' gap={'1'} align={'center'}>
-                        <RiShareForwardFill size='12' /> forwarded
-                      </Flex>
-                    )}
-                    {/* Hiển thị biểu tượng nếu tin nhắn được ghim */}
-                    {message.is_pinned === 1 && (
-                      <Flex className='text-accent-9 text-xs' gap={'1'} align={'center'}>
-                        <RiPushpinFill size='12' /> Pinned
-                      </Flex>
-                    )}
-                    {/* Hiển thị tin nhắn được trả lời nếu có */}
-                    {linked_message && replied_message_details && (
-                      <ReplyMessageBox
-                        className='sm:min-w-[28rem] cursor-pointer mb-1'
-                        role='button'
-                        onClick={() => onReplyMessageClick(linked_message)} // Xử lý khi nhấn vào tin nhắn được trả lời
-                        message={replyMessageDetails} // Chi tiết tin nhắn được trả lời
-                        currentUser={currentUser}
-                      />
-                    )}
-                    {/* Hiển thị nội dung tin nhắn tùy theo loại */}
-                    <MessageContent message={message} user={user} currentUser={currentUser} />
-                    {/* Hiển thị liên kết tài liệu nếu có */}
-                    {message.link_doctype && message.link_document && (
-                      <Box className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
-                        <DoctypeLinkRenderer doctype={message.link_doctype} docname={message.link_document} />
-                      </Box>
-                    )}
-                    {/* Hiển thị dấu hiệu đã chỉnh sửa nếu tin nhắn được sửa */}
-                    {message.is_edited === 1 && (
-                      <Text size='1' className='text-gray-10'>
-                        (edited)
-                      </Text>
-                    )}
-                    {/* Hiển thị các reaction của tin nhắn */}
-                    {message_reactions?.length && (
-                      <MessageReactions message={message} message_reactions={message_reactions} />
-                    )}
-                    {/* Hiển thị thông tin luồng nếu đây là tin nhắn trong luồng */}
-                    {message.is_thread === 1 ? <ThreadMessage thread={message} /> : null}
-
-                    <div className='absolute bottom-0 -right-5'>
-                      <MessageSeenStatus
-                        hasBeenSeen={hasBeenSeen}
-                        channelType={channel?.type}
-                        seenByOthers={seenByOthers}
-                        unseenByOthers={unseenByOthers}
-                        currentUserOwnsMessage={message.owner === currentUser}
-                      />
-                    </div>
-                  </Flex>
-                  {/* Hiển thị các hành động nhanh khi hover hoặc mở emoji picker */}
-                  {(isHoveredDebounced || isEmojiPickerOpen) && (
-                    <QuickActions
-                      message={message} // Đối tượng tin nhắn
-                      onDelete={onDelete} // Xử lý xóa
-                      isEmojiPickerOpen={isEmojiPickerOpen} // Trạng thái mở emoji picker
-                      setIsEmojiPickerOpen={setEmojiPickerOpen} // Hàm đóng/mở emoji picker
-                      onEdit={onEdit} // Xử lý chỉnh sửa
-                      onReply={onReply} // Xử lý trả lời
-                      onForward={onForward} // Xử lý chuyển tiếp
-                      showThreadButton={showThreadButton} // Có hiển thị nút luồng không
-                      onAttachDocument={onAttachToDocument} // Xử lý đính kèm tài liệu
-                    />
+                    // Thêm padding top nếu không phải là tin nhắn tiếp nối
+                    is_continuation ? '' : 'pt-2.5 sm:pt-3',
+                    // Đổi màu nền nếu được làm nổi bật hoặc đang hover
+                    isHighlighted
+                      ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20'
+                      : !isDesktop && isHovered
+                        ? 'bg-gray-2 dark:bg-gray-3'
+                        : '',
+                    // Đổi màu nền khi mở emoji picker
+                    isEmojiPickerOpen ? 'bg-gray-2 dark:bg-gray-3' : '',
+                    isThinking && 'animate-pulse'
                   )}
-                </Flex>
-              </ContextMenu.Trigger>
+                >
+                  {/* Nội dung chính của tin nhắn */}
+                  <Flex className='gap-2.5 sm:gap-3 items-start'>
+                    {/* Hiển thị avatar hoặc thời gian nếu là tin nhắn tiếp nối */}
+                    <MessageLeftElement message={message} user={user} isActive={isActive} />
+                    {/* Nội dung chi tiết của tin nhắn */}
+                    <Flex
+                      direction='column'
+                      justify='center'
+                      className='gap-0.5 w-fit max-w-full relative'
+                      style={{ maxWidth: 'min(100%, calc(100% - 70px))' }}
+                    >
+                      {/* Hiển thị thông tin người gửi và thời gian nếu không phải là tin nhắn tiếp nối */}
+                      {!is_continuation ? (
+                        <Flex align='center' gap='2' mt='-1'>
+                          {/* Hiển thị thông tin người gửi khi hover */}
+                          <UserHoverCard user={user} userID={userID} isActive={isActive} />
+                          {/* Hiển thị thời gian với tooltip */}
+                          <DateTooltip timestamp={timestamp} />
+                        </Flex>
+                      ) : null}
+                      {/* Nội dung tin nhắn */}
+                      {/* Hiển thị biểu tượng nếu là tin nhắn được chuyển tiếp */}
+                      {message.is_forwarded === 1 && (
+                        <Flex className='text-gray-10 text-xs' gap={'1'} align={'center'}>
+                          <RiShareForwardFill size='12' /> forwarded
+                        </Flex>
+                      )}
+                      {/* Hiển thị biểu tượng nếu tin nhắn được ghim */}
+                      {message.is_pinned === 1 && (
+                        <Flex className='text-accent-9 text-xs' gap={'1'} align={'center'}>
+                          <RiPushpinFill size='12' /> Pinned
+                        </Flex>
+                      )}
+                      {/* Hiển thị tin nhắn được trả lời nếu có */}
+                      {linked_message && replied_message_details && (
+                        <ReplyMessageBox
+                          className='sm:min-w-[28rem] cursor-pointer mb-1'
+                          role='button'
+                          onClick={() => onReplyMessageClick(linked_message)} // Xử lý khi nhấn vào tin nhắn được trả lời
+                          message={replyMessageDetails} // Chi tiết tin nhắn được trả lời
+                          currentUser={currentUser}
+                        />
+                      )}
+                      {/* Hiển thị nội dung tin nhắn tùy theo loại */}
+                      <MessageContent message={message} user={user} currentUser={currentUser} />
+                      {/* Hiển thị liên kết tài liệu nếu có */}
+                      {message.link_doctype && message.link_document && (
+                        <Box className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
+                          <DoctypeLinkRenderer doctype={message.link_doctype} docname={message.link_document} />
+                        </Box>
+                      )}
+                      {/* Hiển thị dấu hiệu đã chỉnh sửa nếu tin nhắn được sửa */}
+                      {message.is_edited === 1 && (
+                        <Text size='1' className='text-gray-10'>
+                          (edited)
+                        </Text>
+                      )}
+                      {/* Hiển thị các reaction của tin nhắn */}
+                      {message_reactions?.length && (
+                        <MessageReactions message={message} message_reactions={message_reactions} />
+                      )}
+                      {/* Hiển thị thông tin luồng nếu đây là tin nhắn trong luồng */}
+                      {message.is_thread === 1 ? <ThreadMessage thread={message} /> : null}
 
-              {/* Menu ngữ cảnh khi click chuột phải */}
-              <MessageContextMenu
-                message={message} // Đối tượng tin nhắn
-                onDelete={onDelete} // Xử lý xóa
-                showThreadButton={showThreadButton} // Có hiển thị nút luồng không
-                onEdit={onEdit} // Xử lý chỉnh sửa
-                onReply={onReply} // Xử lý trả lời
-                onForward={onForward} // Xử lý chuyển tiếp
-                onViewReaction={onViewReaction} // Xem các reaction
-                selectedText={selectedText} // Văn bản được chọn
-                onAttachDocument={onAttachToDocument} // Xử lý đính kèm tài liệu
-              />
-            </ContextMenu.Root>
+                      <div className='absolute bottom-0 -right-5'>
+                        <MessageSeenStatus
+                          hasBeenSeen={hasBeenSeen}
+                          channelType={channel?.type}
+                          seenByOthers={seenByOthers}
+                          unseenByOthers={unseenByOthers}
+                          currentUserOwnsMessage={message.owner === currentUser}
+                        />
+                      </div>
+                    </Flex>
+                    {/* Hiển thị các hành động nhanh khi hover hoặc mở emoji picker */}
+                    {(isHoveredDebounced || isEmojiPickerOpen) && (
+                      <QuickActions
+                        message={message} // Đối tượng tin nhắn
+                        onDelete={onDelete} // Xử lý xóa
+                        isEmojiPickerOpen={isEmojiPickerOpen} // Trạng thái mở emoji picker
+                        setIsEmojiPickerOpen={setEmojiPickerOpen} // Hàm đóng/mở emoji picker
+                        onEdit={onEdit} // Xử lý chỉnh sửa
+                        onReply={onReply} // Xử lý trả lời
+                        onForward={onForward} // Xử lý chuyển tiếp
+                        showThreadButton={showThreadButton} // Có hiển thị nút luồng không
+                        onAttachDocument={onAttachToDocument} // Xử lý đính kèm tài liệu
+                      />
+                    )}
+                  </Flex>
+                </ContextMenu.Trigger>
+
+                {/* Menu ngữ cảnh khi click chuột phải*/}
+                <MessageContextMenu
+                  message={message}
+                  onDelete={onDelete}
+                  showThreadButton={showThreadButton}
+                  onEdit={onEdit}
+                  onReply={onReply}
+                  onForward={onForward}
+                  onViewReaction={onViewReaction}
+                  selectedText={selectedText}
+                  onAttachDocument={onAttachToDocument}
+                />
+              </ContextMenu.Root>
+            )}
           </Box>
         )}
       </div>
