@@ -1,4 +1,4 @@
-import { Flex, Box } from '@radix-ui/themes'
+import { Box, Flex } from '@radix-ui/themes'
 import { lazy, Suspense, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Outlet, useParams } from 'react-router-dom'
 // import { Sidebar } from '../components/layout/Sidebar/Sidebar'

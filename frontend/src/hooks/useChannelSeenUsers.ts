@@ -4,8 +4,10 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 
 const arraysAreEqual = (arr1: any[], arr2: any[]) => {
   if (arr1.length !== arr2.length) return false
-  for (let i = 0; i < arr1.length; i++) {
-    if (arr1[i].user !== arr2[i].user || arr1[i].seen_at !== arr2[i].seen_at) {
+  const sorted1 = [...arr1].sort((a, b) => a.user.localeCompare(b.user))
+  const sorted2 = [...arr2].sort((a, b) => a.user.localeCompare(b.user))
+  for (let i = 0; i < sorted1.length; i++) {
+    if (sorted1[i].user !== sorted2[i].user || sorted1[i].seen_at !== sorted2[i].seen_at) {
       return false
     }
   }
@@ -20,11 +22,10 @@ function debounce<F extends (...args: any[]) => void>(func: F, delay: number) {
   }
 }
 
-export const useChannelSeenUsers = ({ channelId }: { channelId: string }) => {
+export const useChannelSeenUsers = ({ channelId, messages }: { channelId: string; messages: any }) => {
   const { currentUser } = useContext(UserContext)
   const { call: getSeenCall } = useFrappePostCall('raven.api.raven_channel_member.get_seen_info')
   const { call: trackSeenCall } = useFrappePostCall('raven.api.raven_channel_member.track_seen')
-
   const [seenUsers, setSeenUsers] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -100,11 +101,16 @@ export const useChannelSeenUsers = ({ channelId }: { channelId: string }) => {
 
   // INIT
   useEffect(() => {
-    if (channelId) {
+    if (channelId && messages && messages.length > 0) {
       fetchSeenUsers()
+    }
+  }, [channelId, messages])
+
+  useEffect(() => {
+    if (channelId && messages && messages.length > 0) {
       trackSeen()
     }
-  }, [channelId, fetchSeenUsers, trackSeen])
+  }, [channelId])
 
   // SOCKET: update khi có người seen
   useFrappeEventListener('raven:channel_seen_updated', updateSeenUserFromSocket)

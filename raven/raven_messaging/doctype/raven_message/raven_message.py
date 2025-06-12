@@ -43,6 +43,7 @@ class RavenMessage(Document):
 		is_edited: DF.Check
 		is_forwarded: DF.Check
 		is_reply: DF.Check
+		is_retracted: DF.Check
 		is_thread: DF.Check
 		json: DF.JSON | None
 		link_doctype: DF.Link | None
