@@ -292,13 +292,6 @@ export const MessageItem = React.memo(
                   isThinking && 'animate-pulse'
                 )}
               >
-                {isThinking && (
-                  <div className="absolute left-0 top-0 w-full h-full flex items-center justify-center bg-gray-100/50 dark:bg-gray-800/50">
-                    <Text size="2" className="text-gray-500 dark:text-gray-400">
-                      AI đang suy nghĩ...
-                    </Text>
-                  </div>
-                )}
                 {/* Nội dung chính của tin nhắn */}
                 <Flex className='gap-2.5 sm:gap-3 items-start'>
                   {/* Hiển thị avatar hoặc thời gian nếu là tin nhắn tiếp nối */}
