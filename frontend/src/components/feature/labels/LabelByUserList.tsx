@@ -55,7 +55,7 @@ const LabelItem: React.FC<LabelItemProps> = ({ label, onEdit, onDelete }) => {
 
       <Popover.Root>
         <Tooltip content='Tuỳ chọn nhãn' delayDuration={300}>
-          <Popover.Trigger asChild>
+          <Popover.Trigger>
             <IconButton
               className='p-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-150 cursor-pointer'
               aria-label='Mở menu nhãn'
