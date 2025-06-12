@@ -198,7 +198,9 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       useChatStreamActions(onModalClose)
 
     const { name: userID } = useUserData()
-    const { seenUsers } = useChannelSeenUsers(channelID)
+    const { seenUsers } = useChannelSeenUsers({
+      channelId: channelID
+    })
     const { channel } = useCurrentChannelData(channelID)
 
     // 🔥 PERFORMANCE: Ultra-stable callback with minimal dependencies
