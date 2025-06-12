@@ -250,8 +250,10 @@ def get_saved_messages():
 			raven_message.is_bot_message,
 			raven_message.bot,
 			raven_message.content,
+			raven_message.is_retracted
 		)
 		.where(raven_message._liked_by.like(f"%{frappe.session.user}%"))
+		.where(raven_message.is_retracted == 0)
 		.where(
 			(raven_channel.type.isin(["Open", "Public"]))
 			| (raven_channel_member.user_id == frappe.session.user)
