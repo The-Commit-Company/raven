@@ -898,4 +898,15 @@ def retract_message(message_id: str):
 
     message.db_set("is_retracted", 1)
     frappe.db.commit()
+
+    frappe.publish_realtime(
+        event="raven_message_retracted",
+        message={
+            "message_id": message.name,
+            "channel_id": message.channel_id,
+            "is_thread": message.is_thread
+        },
+		doctype="Raven Channel",
+        docname=message.channel_id
+    )
     return {"message": "Đã thu hồi tin nhắn"}

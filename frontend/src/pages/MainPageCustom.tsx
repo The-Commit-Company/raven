@@ -1,5 +1,7 @@
-import ChatbotAIChatBox from '@/components/feature/chatbot-ai/ChatbotAIChatBox'
-import ChatbotAIContainer, { ChatSession } from '@/components/feature/chatbot-ai/ChatbotAIContainer'
+import { Box, Flex } from '@radix-ui/themes'
+import { lazy, Suspense, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { Outlet, useParams } from 'react-router-dom'
+// import { Sidebar } from '../components/layout/Sidebar/Sidebar'
 import CommandMenu from '@/components/feature/CommandMenu/CommandMenu'
 import MessageActionController from '@/components/feature/message-actions/MessageActionController'
 import { FullPageLoader } from '@/components/layout/Loaders/FullPageLoader'
@@ -11,12 +13,6 @@ import WorkspacesSidebar from '@/components/layout/Sidebar/WorkspacesSidebar'
 import { HStack } from '@/components/layout/Stack'
 import { useFetchActiveUsersRealtime } from '@/hooks/fetchers/useFetchActiveUsers'
 import { useActiveSocketConnection } from '@/hooks/useActiveSocketConnection'
-import {
-  useChatbotConversations,
-  useChatbotMessages,
-  useCreateChatbotConversation,
-  useSendChatbotMessage
-} from '@/hooks/useChatbotAPI'
 import { useIsMobile, useIsTablet } from '@/hooks/useMediaQuery'
 import { useUnreadThreadsCountEventListener } from '@/hooks/useUnreadThreadsCount'
 import { UserContext } from '@/utils/auth/UserProvider'
@@ -25,11 +21,8 @@ import { showNotification } from '@/utils/pushNotifications'
 import { hasRavenUserRole } from '@/utils/roles'
 import { CircleUserListProvider } from '@/utils/users/CircleUserListProvider'
 import { UserListProvider } from '@/utils/users/UserListProvider'
-import { Box, Flex } from '@radix-ui/themes'
 import { useFrappeEventListener, useSWRConfig } from 'frappe-react-sdk'
-import { lazy, Suspense, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import { Outlet, useParams } from 'react-router-dom'
 import { ChannelListProvider } from '../utils/channel/ChannelListProvider'
 
 const AddRavenUsersPage = lazy(() => import('@/pages/AddRavenUsersPage'))
@@ -60,68 +53,10 @@ const MainPageContent = () => {
   const isTablet = useIsTablet()
   const sidebarRef = useRef<any>(null)
   const { handleSidebarResize, handleSidebarPointerUp } = useSidebarResizeLogic(sidebarRef)
-  const { mode, setMode, title } = useSidebarMode()
+  const { mode, setMode } = useSidebarMode()
   const [panelSize, setPanelSize] = useState(30)
   const [initialLayoutLoaded, setInitialLayoutLoaded] = useState(false)
   const [initialLayout, setInitialLayout] = useState<string | null>(null)
-  const [selectedAISessionId, setSelectedAISessionId] = useState<string | null>(null)
-
-  // Lấy danh sách conversation từ backend
-  const {
-    data: conversations,
-    mutate: mutateConversations,
-    // isLoading: loadingConversations
-  } = useChatbotConversations()
-  const { call: createConversation } = useCreateChatbotConversation()
-
-  // Lấy messages từ backend
-  const {
-    data: messages,
-    mutate: mutateMessages,
-    isLoading: loadingMessages
-  } = useChatbotMessages(selectedAISessionId || undefined)
-  const { call: sendMessage, loading: sending } = useSendChatbotMessage()
-
-  // Chuyển đổi dữ liệu conversation sang ChatSession cho UI
-  const sessions: ChatSession[] = (
-    Array.isArray(conversations)
-      ? conversations
-      : Array.isArray((conversations as any)?.message)
-        ? (conversations as any).message
-        : []
-  ).map((c: any) => ({
-    id: c.name,
-    title: c.title,
-    messages: []
-  }))
-
-  // Hàm tạo session mới (chỉ gọi backend, không tạo local)
-  const handleNewSession = async () => {
-    const title = `Đoạn chat mới ${sessions.length + 1}`
-    const res = await createConversation({ title })
-    await mutateConversations()
-    setSelectedAISessionId(res.message.name) // Đúng id backend
-  }
-
-  // Hàm update tiêu đề session (chỉ update local UI, không update backend)
-  const handleUpdateAISessions = () => {}
-
-  // Hàm gửi tin nhắn Chatbot AI
-  const handleSendMessage = async (content: string) => {
-    if (!selectedAISessionId) return
-    await sendMessage({ conversation_id: selectedAISessionId, message: content })
-    await mutateMessages() // Sau khi gửi tin nhắn thì refetch lại messages
-  }
-
-  // Lấy session đang chọn từ backend
-  const selectedSession = sessions.find((s) => s.id === selectedAISessionId)
-
-  // Nếu selectedAISessionId không còn trong danh sách backend, tự động bỏ chọn hoặc chọn session đầu tiên
-  useEffect(() => {
-    if (selectedAISessionId && !sessions.find((s) => s.id === selectedAISessionId)) {
-      setSelectedAISessionId(sessions.length > 0 ? sessions[0].id : null)
-    }
-  }, [sessions, selectedAISessionId])
 
   useFetchActiveUsersRealtime()
   useActiveSocketConnection()
@@ -158,13 +93,6 @@ const MainPageContent = () => {
       showNotification(payload)
     })
   }, [])
-
-  // Lắng nghe realtime event new_message cho Chatbot AI
-  useFrappeEventListener('new_message', (data) => {
-    if (data.channel_id === selectedAISessionId) {
-      mutateMessages()
-    }
-  })
 
   // Load layout from localStorage before first render
   useEffect(() => {
@@ -308,24 +236,13 @@ const MainPageContent = () => {
                 maxSize={isSmallScreen ? 40 : 60}
                 {...(!initialLayout ? { defaultSize: isSmallScreen ? 30 : 40 } : {})}
               >
-                {title === 'Chatbot AI' ? (
-                  <ChatbotAIContainer
-                    sessions={sessions}
-                    selectedId={selectedAISessionId}
-                    onSelectSession={setSelectedAISessionId}
-                    onUpdateSessions={handleUpdateAISessions}
-                    onNewSession={handleNewSession}
-                    mutateConversations={mutateConversations}
-                  />
-                ) : (
-                  <div className='flex flex-col gap-1 w-full h-full'>
-                    <SidebarHeader />
-                    <div className='px-2'>
-                      <div className='h-px bg-gray-400 dark:bg-gray-600' />
-                    </div>
-                    <SidebarBody size={panelSize} />
+                <div className='flex flex-col gap-1 w-full h-full'>
+                  <SidebarHeader />
+                  <div className='px-2'>
+                    <div className='h-px bg-gray-400 dark:bg-gray-600' />
                   </div>
-                )}
+                  <SidebarBody size={panelSize} />
+                </div>
               </Panel>
 
               {/* Resize Handle 2 */}
@@ -337,29 +254,7 @@ const MainPageContent = () => {
               {/* Main Content Panel */}
               <Panel minSize={30} maxSize={90} {...(!initialLayout ? { defaultSize: 60 } : {})}>
                 <div className='h-full w-full dark:bg-gray-2 overflow-hidden'>
-                  {title === 'Chatbot AI' && selectedAISessionId && selectedSession ? (
-                    <ChatbotAIChatBox
-                      session={{
-                        id: selectedAISessionId,
-                        title: selectedSession.title,
-                        messages: (Array.isArray(messages)
-                          ? messages
-                          : Array.isArray((messages as any)?.message)
-                            ? (messages as any).message
-                            : []
-                        ).map((m: any) => ({
-                          role: m.is_user ? ('user' as const) : ('ai' as const),
-                          content: m.message as string
-                        }))
-                      }}
-                      onSendMessage={handleSendMessage}
-                      loading={sending || loadingMessages}
-                    />
-                  ) : title === 'Chatbot AI' ? (
-                    <div className='flex items-center justify-center h-full text-gray-6'>Chọn đoạn chat để bắt đầu</div>
-                  ) : (
-                    <Outlet />
-                  )}
+                  <Outlet />
                 </div>
               </Panel>
             </PanelGroup>
