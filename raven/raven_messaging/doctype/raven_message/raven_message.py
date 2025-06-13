@@ -439,6 +439,7 @@ class RavenMessage(Document):
 				"content": self.content if self.message_type == "Text" else self.file,
 				"from_user": self.owner,
 				"type": "New message",
+				"image": owner_image,
 				"creation": get_milliseconds_since_epoch(self.creation),
 			},
 		)
