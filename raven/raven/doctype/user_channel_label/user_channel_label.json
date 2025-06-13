@@ -1,0 +1,40 @@
+{
+  "doctype": "DocType",
+  "name": "User Channel Label",
+  "module": "Raven",
+  "custom": 1,
+  "fields": [
+    {
+      "fieldname": "user",
+      "label": "User",
+      "fieldtype": "Link",
+      "options": "User",
+      "reqd": 1
+    },
+    {
+      "fieldname": "channel_id",
+      "label": "Channel",
+      "fieldtype": "Link",
+      "options": "Raven Channel",
+      "reqd": 1
+    },
+    {
+      "fieldname": "label",
+      "label": "Label",
+      "fieldtype": "Link",
+      "options": "User Label",
+      "reqd": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1
+    }
+  ],
+  "istable": 0,
+  "editable_grid": 0
+}

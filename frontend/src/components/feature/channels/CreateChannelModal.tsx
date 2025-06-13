@@ -18,7 +18,8 @@ import { CustomCallout } from '@/components/common/Callouts/CustomCallout'
 interface ChannelCreationForm {
   channel_name: string
   channel_description: string
-  type: 'Public' | 'Private' | 'Open'
+  // type: 'Public' | 'Private' | 'Open'
+  type: 'Private'
 }
 
 export const CreateChannelButton = () => {
@@ -35,9 +36,9 @@ export const CreateChannelButton = () => {
             size='1'
             radius='large'
             color='gray'
-            aria-label='Create Channel'
-            title='Create Channel'
-            className='transition-all ease-ease text-gray-10 bg-transparent hover:bg-gray-3 hover:text-gray-12'
+            aria-label='Tạo nhóm chat'
+            title='Tạo nhóm chat'
+            className='transition-all ease-ease text-gray-10 bg-transparent hover:bg-gray-3 hover:text-gray-12 cursor-pointer'
           >
             <FiPlus size='16' />
           </IconButton>
@@ -56,8 +57,8 @@ export const CreateChannelButton = () => {
             size='1'
             radius='large'
             color='gray'
-            aria-label='Create Channel'
-            title='Create Channel'
+            aria-label='Tạo nhóm chat'
+            title='Tạo nhóm chat'
             className='transition-all ease-ease text-gray-10 bg-transparent hover:bg-gray-3 hover:text-gray-12'
           >
             <FiPlus size='16' />
@@ -86,7 +87,7 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
   const navigate = useNavigate()
   const methods = useForm<ChannelCreationForm>({
     defaultValues: {
-      type: 'Public',
+      type: 'Private',
       channel_name: '',
       channel_description: ''
     }
@@ -134,7 +135,7 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
       if (result) {
         mutate(
           'channel_list',
-          (data) => {
+          (data: { message: { channels: any } }) => {
             return {
               message: {
                 ...data.message,
@@ -169,22 +170,8 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
       case 'Private':
         return {
           channelIcon: <BiLockAlt />,
-          header: __('Create a private channel'),
-          helperText: __('When a channel is set to private, it can only be viewed or joined by invitation.')
-        }
-      case 'Open':
-        return {
-          channelIcon: <BiGlobe />,
-          header: __('Create an open channel'),
-          helperText: __('When a channel is set to open, everyone is a member.')
-        }
-      default:
-        return {
-          channelIcon: <BiHash />,
-          header: __('Create a public channel'),
-          helperText: __(
-            'When a channel is set to public, anyone can join the channel and read messages, but only members can post messages.'
-          )
+          header: __('Create a channel'),
+          helperText: __('When a channel is created, it can only be viewed or joined by invitation.')
         }
     }
   }, [channelType])
@@ -202,7 +189,7 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Flex direction='column' gap='4' py='4'>
-            {!canCreateChannel?.message && (
+            {/* {!canCreateChannel?.message && (
               <CustomCallout
                 iconChildren={<BiInfoCircle size='18' />}
                 rootProps={{ color: 'yellow', variant: 'surface' }}
@@ -213,7 +200,7 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
                   </Text>
                 }
               />
-            )}
+            )} */}
             <ErrorBanner error={channelCreationError} />
             <Box>
               <Label htmlFor='channel_name' isRequired>
@@ -233,9 +220,8 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
                     message: __('Channel name cannot be less than {0} characters.', ['3'])
                   },
                   pattern: {
-                    // no special characters allowed
-                    // cannot start with a space
-                    value: /^[a-zA-Z0-9][a-zA-Z0-9-]*$/,
+                    // Cho phép chữ cái tiếng Việt, số và dấu gạch ngang
+                    value: /^[a-zA-ZÀ-ỹ0-9][a-zA-ZÀ-ỹ0-9-]*$/,
                     message: __('Channel name can only contain letters, numbers and hyphens.')
                   }
                 }}
@@ -284,42 +270,45 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
               <HelperText>What is this channel about?</HelperText>
               {errors?.channel_description && <ErrorText>{errors.channel_description?.message}</ErrorText>}
             </Box>
-            <Flex gap='2' direction='column'>
-              <Label htmlFor='channel_type'>Channel Type</Label>
-              <Controller
-                name='type'
-                control={control}
-                render={({ field }) => (
-                  <RadioGroup.Root
-                    defaultValue='1'
-                    variant='soft'
-                    id='channel_type'
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <Flex gap='4'>
-                      <Text as='label' size='2'>
-                        <Flex gap='2'>
-                          <RadioGroup.Item value='Public' /> {__('Public')}
-                        </Flex>
-                      </Text>
-                      <Text as='label' size='2'>
-                        <Flex gap='2'>
-                          <RadioGroup.Item value='Private' /> {__('Private')}
-                        </Flex>
-                      </Text>
-                      <Text as='label' size='2'>
-                        <Flex gap='2'>
-                          <RadioGroup.Item value='Open' /> {__('Open')}
-                        </Flex>
-                      </Text>
-                    </Flex>
-                  </RadioGroup.Root>
-                )}
-              />
-              {/* Added min height to avoid layout shift when two lines of text are shown */}
-              <HelperText className='min-h-[3rem]'>{helperText}</HelperText>
-            </Flex>
+            {/* Ẩn phần chọn Channel Type, chỉ comment lại để dùng sau */}
+            {false && (
+              <Flex gap='2' direction='column'>
+                <Label htmlFor='channel_type'>Channel Type</Label>
+                <Controller
+                  name='type'
+                  control={control}
+                  render={({ field }) => (
+                    <RadioGroup.Root
+                      defaultValue='1'
+                      variant='soft'
+                      id='channel_type'
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <Flex gap='4'>
+                        <Text as='label' size='2'>
+                          <Flex gap='2'>
+                            <RadioGroup.Item value='Public' /> {__('Public')}
+                          </Flex>
+                        </Text>
+                        <Text as='label' size='2'>
+                          <Flex gap='2'>
+                            <RadioGroup.Item value='Private' /> {__('Private')}
+                          </Flex>
+                        </Text>
+                        <Text as='label' size='2'>
+                          <Flex gap='2'>
+                            <RadioGroup.Item value='Open' /> {__('Open')}
+                          </Flex>
+                        </Text>
+                      </Flex>
+                    </RadioGroup.Root>
+                  )}
+                />
+                {/* Added min height to avoid layout shift when two lines of text are shown */}
+                <HelperText className='min-h-[3rem]'>{helperText}</HelperText>
+              </Flex>
+            )}
           </Flex>
           <Flex gap='3' mt='4' justify='end'>
             <Dialog.Close disabled={creatingChannel}>

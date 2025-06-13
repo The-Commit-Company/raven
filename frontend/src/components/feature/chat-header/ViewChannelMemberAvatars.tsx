@@ -15,7 +15,7 @@ export const ViewChannelMemberAvatars = ({ channelData }: ViewChannelDetailsButt
   const extraNumber = Math.min(totalMembers - 3, 9)
 
   return (
-    <div className={'flex items-center -space-x-1 rtl:space-x-reverse animate-fadein'}>
+    <div className={'flex items-center -space-x-1 rtl:space-x-reverse animate-fadein cursor-pointer'}>
       {Object.entries(channelMembers).map(([name, member], index) => {
         if (index < 3)
           return (

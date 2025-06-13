@@ -8,6 +8,7 @@ export interface UnreadItem {
   last_message_timestamp?: string
   is_direct_message?: number
   last_message_content?: string
+  last_message_sender_name?: string
 }
 
 interface UnreadContextValue {

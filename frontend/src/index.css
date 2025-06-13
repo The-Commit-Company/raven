@@ -79,7 +79,9 @@ html header button {
   display: block !important;
   width: 100%;
 }
-
+.select-none {
+  -webkit-tap-highlight-color: transparent;
+}
 /*
   Adds Utility to hide scrollbar to tailwind
     https://github.com/tailwindlabs/tailwindcss/discussions/2394
@@ -131,6 +133,7 @@ html header button {
     animation: slideOutLeft 0.2s ease-in forwards;
   }
 }
+
 
 /* animations */
 .slideInBottom {

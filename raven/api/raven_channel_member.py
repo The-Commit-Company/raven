@@ -25,21 +25,24 @@ def track_visit(channel_id):
 
 @frappe.whitelist(methods=["POST"])
 def track_seen(channel_id):
+    user = frappe.session.user
+    now = frappe.utils.now_datetime()
+    user_doc = frappe.get_doc("Raven User", frappe.session.user)
+
+    # Cập nhật seen_at
     track_channel_seen(channel_id=channel_id, commit=True)
 
-    members = frappe.get_all("Raven Channel Member", filters={"channel_id": channel_id}, pluck="user_id")
-
-    for member in members:
-        if member != frappe.session.user:
-            frappe.publish_realtime(
-                event="channel_seen_updated",
-                message={
-                    "channel_id": channel_id,
-                    "user": frappe.session.user,
-                    "seen_at": frappe.utils.now_datetime()
-                },
-                user=member
-            )
+    # 🔥 Gửi duy nhất 1 realtime event (broadcast)
+    frappe.publish_realtime(
+        event="raven:channel_seen_updated",
+        message={
+            "channel_id": channel_id,
+            "user": user,
+            "seen_at": now,
+            "full_name": user_doc.full_name,
+            "user_image": user_doc.user_image,
+        }
+    )
 
     return True
 
@@ -53,6 +56,10 @@ def get_seen_info(channel_id: str):
         fields=["user_id", "seen_at"]
     )
 
+    if not channel_members:
+        return []
+
+
     # Lấy danh sách user_id
     user_ids = [m["user_id"] for m in channel_members]
     users = frappe.get_all(
@@ -60,20 +67,18 @@ def get_seen_info(channel_id: str):
         filters={"name": ["in", user_ids]},
         fields=["name", "full_name", "user_image"]
     )
-    user_info_map = {u["name"]: u for u in users}
+    user_map = {u["name"]: u for u in users}
 
     # Gộp thông tin
-    result = []
-    for member in channel_members:
-        user = user_info_map.get(member["user_id"])
-        if user:
-            result.append({
-                "user": member["user_id"],
-                "seen_at": member["seen_at"],
-                "full_name": user["full_name"],
-                "user_image": user["user_image"]
-            })
-    return result
+    return [
+        {
+            "user": m["user_id"],
+            "seen_at": m["seen_at"],
+            "full_name": user_map[m["user_id"]]["full_name"],
+            "user_image": user_map[m["user_id"]]["user_image"],
+        }
+        for m in channel_members if m["user_id"] in user_map
+    ]
 
 
 @frappe.whitelist(methods=["POST"])
@@ -106,10 +111,8 @@ def mark_channel_as_unread(channel_id):
         fields=["creation"],
     )
 
-    from datetime import timedelta
-
     if last_message:
-        last_visit_time = last_message[0].creation  # Không lùi 1 giây
+        last_visit_time = last_message[0].creation
     else:
         last_visit_time = "2000-01-01 00:00:00"
 
@@ -120,6 +123,16 @@ def mark_channel_as_unread(channel_id):
     channel_member.last_visit = last_visit_time
     channel_member.save()
     frappe.db.commit()
+
+    # Gửi realtime event đến chính user để đồng bộ trên các thiết bị khác
+    frappe.publish_realtime(
+        event="raven:manually_marked_updated",
+        message={
+            "channel_id": channel_id,
+            "action": "add"
+        },
+        user=user
+    )
 
     return {"message": "Channel marked as unread successfully"}
 

@@ -25,6 +25,7 @@ class RavenChannelMember(Document):
 		allow_notifications: DF.Check
 		channel_id: DF.Link
 		is_admin: DF.Check
+		is_done: DF.Check
 		is_synced: DF.Check
 		last_visit: DF.Datetime
 		linked_doctype: DF.Link | None

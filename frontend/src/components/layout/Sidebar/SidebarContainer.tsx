@@ -1,25 +1,30 @@
 import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
 import { useSidebarMode } from '@/utils/layout/sidebar'
 import { Tooltip } from '@radix-ui/themes'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
-  HiChatAlt2,
+  HiOutlineChatAlt2,
   HiMenuAlt2,
   HiOutlineAtSymbol,
   HiOutlineCheckCircle,
+  HiOutlineChip,
   HiOutlineCog,
   HiOutlineFlag,
   HiOutlineHashtag,
   HiOutlineInbox,
   HiOutlineTag,
   HiOutlineUser,
-  HiOutlineUsers,
-  HiOutlineChip
+  HiOutlineUserGroup,
+  HiOutlineUsers
 } from 'react-icons/hi'
 
+import clsx from 'clsx'
+import { CreateLabelButton } from '@/components/feature/channels/CreateLabelModal'
+import { FiChevronDown, FiChevronRight } from 'react-icons/fi'
+import { MdLabelOutline } from 'react-icons/md'
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 
-const useMentionUnreadCount = () => {
+export const useMentionUnreadCount = () => {
   const { data: mentionsCount, mutate } = useFrappeGetCall<{ message: number }>(
     'raven.api.mentions.get_unread_mention_count',
     undefined,
@@ -42,7 +47,7 @@ const useMentionUnreadCount = () => {
 }
 
 export const filterItems = [
-  { label: 'Trò chuyện', icon: HiChatAlt2 },
+  { label: 'Trò chuyện', icon: HiOutlineChatAlt2 },
   { label: 'Chưa đọc', icon: HiOutlineInbox },
   { label: 'Đã gắn cờ', icon: HiOutlineFlag },
   { label: 'Nhắc đến', icon: HiOutlineAtSymbol },
@@ -52,12 +57,12 @@ export const filterItems = [
   { label: 'Chatbot AI', icon: HiOutlineChip },
   // { label: 'Docs', icon: HiOutlineDocumentText },
   { label: 'Chủ đề', icon: HiOutlineHashtag },
-  { label: 'Xong', icon: HiOutlineCheckCircle }
+  { label: 'Xong', icon: HiOutlineCheckCircle },
+  { label: 'Thành viên', icon: HiOutlineUserGroup }
 ]
 
 export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.RefObject<any> }) {
   const { mode, setMode, tempMode } = useSidebarMode()
-  const { totalUnreadCount } = useUnreadMessageCount()
 
   const isCollapsed = false
   const isIconOnly = tempMode === 'show-only-icons'
@@ -93,29 +98,9 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
         <div className='flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-300'>
           <span className='relative inline-block cursor-pointer py-3 group' style={{ zIndex: 999 }}>
             <HiMenuAlt2
-              // onClick={toggleCollapse}
               onClick={handleToggleIconMode}
               className={`w-5 h-5 ${!isIconOnly && 'ml-3 mr-2'} p-1 rounded group-hover:bg-gray-200 dark:group-hover:bg-gray-700`}
             />
-
-            {/* {isCollapsed && renderCollapsedPopup()} */}
-
-            {/* {!isCollapsed && (
-              <div
-                className='absolute left-0 w-44 z-50 hidden group-hover:block
-                  bg-white dark:bg-gray-1 border border-gray-200 dark:border-gray-700
-                  rounded-md shadow-md'
-              >
-                <ul className='py-1'>
-                  <li
-                    className='flex items-center gap-2 px-3 py-1 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer'
-                  >
-                    <HiOutlineViewGrid className='w-4 h-4' />
-                    {isIconOnly ? 'Hiển thị bộ lọc' : 'Chỉ hiển thị biểu tượng'}
-                  </li>
-                </ul>
-              </div>
-            )} */}
           </span>
           {!isCollapsed && !isIconOnly && <span className='text-base'>Bộ lọc</span>}
         </div>
@@ -131,7 +116,13 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
   )
 }
 
-export function FilterList() {
+interface FilterListProps {
+  onClose?: () => void
+}
+
+export function FilterList({ onClose }: FilterListProps) {
+  const [isLabelOpen, setIsLabelOpen] = useState(false)
+
   const { title, setTitle, tempMode } = useSidebarMode()
   const isIconOnly = tempMode === 'show-only-icons'
 
@@ -141,10 +132,11 @@ export function FilterList() {
   const handleClick = (label: string) => {
     setTitle(label)
     if (label === 'Nhắc đến') resetMentions()
+    if (onClose) onClose()
   }
 
   return (
-    <ul className={`space-y-1 text-sm text-gray-12 px-3 ${isIconOnly ? '' : 'py-2'}`}>
+    <ul className={clsx('space-y-1 text-sm text-gray-12', isIconOnly ? 'px-1' : 'px-3 py-2')}>
       {filterItems.map((item, idx) => {
         const isActive = item.label === title
         let badgeCount = 0
@@ -152,12 +144,70 @@ export function FilterList() {
         if (['Trò chuyện', 'Chưa đọc'].includes(item.label)) badgeCount = totalUnreadCount
         if (item.label === 'Nhắc đến') badgeCount = mentionUnreadCount
 
-        return (
+        return item.label === 'Nhãn' ? (
+          <div key={idx}>
+            <div className='group relative'>
+              <li
+                className={clsx(
+                  'flex items-center gap-2 justify-center',
+                  !isIconOnly && 'pl-1 justify-between',
+                  'py-1.5 px-2 rounded-md cursor-pointer hover:bg-gray-3',
+                  isLabelOpen && 'bg-gray-4 font-semibold'
+                )}
+                onClick={() => {
+                  handleClick(item.label)
+                }}
+              >
+                <div className='flex items-center gap-2'>
+                  <item.icon className='w-5 h-5' />
+                  {!isIconOnly && <span className='truncate flex-1 min-w-0'>{item.label}</span>}
+                </div>
+
+                {!isIconOnly && (
+                  <div className='flex items-center gap-2'>
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <CreateLabelButton />
+                    </div>
+                    <div
+                      className='relative w-4 h-4' // đảm bảo có kích thước để canh giữa
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setIsLabelOpen((prev) => !prev)
+                      }}
+                    >
+                      {isLabelOpen ? (
+                        <FiChevronDown className='absolute inset-0 m-auto' size={16} />
+                      ) : (
+                        <FiChevronRight className='absolute inset-0 m-auto' size={16} />
+                      )}
+                    </div>
+                  </div>
+                )}
+              </li>
+            </div>
+
+            {!isIconOnly && isLabelOpen && (
+              <ul className='mt-1 space-y-1'>
+                {['Công việc', 'Cá nhân', 'Khẩn cấp'].map((label, i) => (
+                  <li
+                    key={i}
+                    className='flex items-center pl-5 gap-2 cursor-pointer px-2 py-1 rounded hover:bg-gray-2'
+                    onClick={() => handleClick(label)}
+                  >
+                    <MdLabelOutline className='w-4 h-4 text-gray-11 shrink-0' />
+
+                    <span className='truncate'>{label}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ) : (
           <li
             key={idx}
             onClick={() => handleClick(item.label)}
             className={`flex ${isIconOnly ? 'justify-center' : 'justify-between'} relative items-center gap-2 py-1.5 rounded-md cursor-pointer
-              hover:bg-gray-3 ${isActive ? 'bg-gray-4 font-semibold' : ''}`}
+      hover:bg-gray-3 ${isActive ? 'bg-gray-4 font-semibold' : ''}`}
           >
             <div className='flex items-center gap-2'>
               <Tooltip content={item.label} side='right' delayDuration={300}>
@@ -173,15 +223,20 @@ export function FilterList() {
                 style={{
                   position: isIconOnly ? 'absolute' : 'static',
                   right: isIconOnly ? '3%' : undefined,
-                  top: isIconOnly ? 'auto' : undefined,
-                  transform: isIconOnly ? 'translateY(-50%)' : undefined,
-                  fontSize: '0.7rem',
-                  lineHeight: '1rem',
+                  fontSize: isIconOnly ? '0.5rem' : '0.8rem',
+                  backgroundColor: isIconOnly ? 'red' : undefined,
+                  color: isIconOnly ? 'white' : undefined,
+                  borderRadius: isIconOnly ? '50%' : undefined,
+                  width: isIconOnly ? '14px' : undefined,
+                  height: isIconOnly ? '14px' : undefined,
+                  display: isIconOnly ? 'flex' : undefined,
+                  alignItems: isIconOnly ? 'center' : undefined,
+                  justifyContent: isIconOnly ? 'center' : undefined,
                   fontWeight: 500,
                   marginRight: isIconOnly ? '0px' : '1rem'
                 }}
               >
-                {badgeCount}
+                {badgeCount > 9 ? '9+' : badgeCount}
               </span>
             )}
           </li>

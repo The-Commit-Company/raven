@@ -1,13 +1,10 @@
-import { useFrappeGetCall, useFrappePostCall, useFrappeGetDoc } from 'frappe-react-sdk'
+import { useFrappeGetCall, useFrappeGetDoc, useFrappePostCall } from 'frappe-react-sdk'
 
 // Lấy danh sách cuộc trò chuyện Chatbot AI
 export function useChatbotConversations() {
-  return useFrappeGetCall<any[]>(
-    'raven.api.chatbot.get_conversations',
-    undefined,
-    'chatbot_conversations',
-    { revalidateOnFocus: true }
-  )
+  return useFrappeGetCall<any[]>('raven.api.chatbot.get_conversations', undefined, 'chatbot_conversations', {
+    revalidateOnFocus: false
+  })
 }
 
 // Tạo cuộc trò chuyện mới
@@ -21,7 +18,7 @@ export function useChatbotMessages(conversation_id?: string) {
     'raven.api.chatbot.get_messages',
     conversation_id ? { conversation_id } : undefined,
     conversation_id ? ['chatbot_messages', conversation_id] : undefined,
-    { revalidateOnFocus: true }
+    { revalidateOnFocus: false }
   )
 }
 
@@ -32,12 +29,9 @@ export function useSendChatbotMessage() {
 
 // Lấy danh sách chủ đề
 export function useChatbotTopics() {
-  return useFrappeGetCall<any[]>(
-    'raven.api.chatbot.get_topics',
-    undefined,
-    'chatbot_topics',
-    { revalidateOnFocus: false }
-  )
+  return useFrappeGetCall<any[]>('raven.api.chatbot.get_topics', undefined, 'chatbot_topics', {
+    revalidateOnFocus: false
+  })
 }
 
 // Đổi tên cuộc trò chuyện
@@ -53,4 +47,4 @@ export function useDeleteChatbotConversation() {
 // Lấy 1 conversation kèm bảng con messages (chuẩn Frappe)
 export function useChatbotConversationWithMessages(conversation_id?: string) {
   return useFrappeGetDoc<any>('ChatConversation', conversation_id || '')
-} 
+}

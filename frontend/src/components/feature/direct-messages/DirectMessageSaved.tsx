@@ -12,8 +12,10 @@ import { getEmbedUrlFromYoutubeUrl, isValidUrl, isValidYoutubeUrl } from '@/util
 import * as Popover from '@radix-ui/react-popover'
 import { Tooltip, TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip'
 import { Box, Text } from '@radix-ui/themes'
+import clsx from 'clsx'
 import { useFrappePostCall } from 'frappe-react-sdk'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { BiChevronDown, BiChevronRight } from 'react-icons/bi'
 import { HiFlag } from 'react-icons/hi'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -21,10 +23,12 @@ import { Message } from '../../../../../types/Messaging/Message'
 import { FileMessageBlock } from '../chat/ChatMessage/Renderers/FileMessage'
 import { ImageSavedMessage } from '../chat/ChatMessage/Renderers/ImageSavedMessage'
 import { PollMessageBlock } from '../chat/ChatMessage/Renderers/PollMessage'
+// import { AnimatePresence, motion } from 'framer-motion'
 
 type MessageBoxProps = {
   message: Message & { workspace?: string }
   handleUnflagMessage: (message_id: string) => void
+  channelName: string | null
 }
 
 type MessageContentRendererProps = {
@@ -38,6 +42,28 @@ const MESSAGE_TYPES = {
   POLL: 'Poll'
 } as const
 
+const COLLAPSED_KEY = 'raven_saved_collapsed_channel_ids'
+
+const getCollapsedFromStorage = (): Set<string> => {
+  try {
+    const raw = localStorage.getItem(COLLAPSED_KEY)
+    const parsed = raw ? JSON.parse(raw) : []
+    return new Set(parsed)
+  } catch {
+    return new Set()
+  }
+}
+
+const updateCollapsedInStorage = (channelId: string, collapsed: boolean) => {
+  const current = getCollapsedFromStorage()
+  if (collapsed) {
+    current.add(channelId)
+  } else {
+    current.delete(channelId)
+  }
+  localStorage.setItem(COLLAPSED_KEY, JSON.stringify([...current]))
+}
+
 const createNavigationPath = (baseRoute: string, channelId: string, messageId: string) => ({
   pathname: `${baseRoute}/${channelId}`,
   search: `message_id=${messageId}`
@@ -50,10 +76,10 @@ const getChannelDisplayName = (channelData: any, users: Record<string, any>): st
     const peerUserName =
       users[(channelData as DMChannelListItem).peer_user_id]?.full_name ??
       (channelData as DMChannelListItem).peer_user_id
-    return `From chat with ${peerUserName}`
+    return `Từ cuộc trò chuyện với ${peerUserName}`
   }
 
-  return channelData.channel_name
+  return `Trong ${channelData.channel_name}`
 }
 
 const UnflagButton = ({ onUnflag }: { onUnflag: (e: React.MouseEvent) => void }) => (
@@ -62,7 +88,7 @@ const UnflagButton = ({ onUnflag }: { onUnflag: (e: React.MouseEvent) => void })
       <Tooltip>
         <TooltipTrigger asChild>
           <Popover.Trigger asChild>
-            <Box className='absolute top-2 right-2 hover:bg-gray-3 p-1 rounded-lg cursor-pointer' onClick={onUnflag}>
+            <Box className='hover:bg-gray-3 p-1 rounded-lg cursor-pointer' onClick={onUnflag}>
               <HiFlag className='text-red-500 hover:text-red-600 w-4 h-4' />
             </Box>
           </Popover.Trigger>
@@ -96,7 +122,13 @@ const MessageAvatar = ({ user, isActive }: { user: any; isActive: boolean }) => 
   </div>
 )
 
+const MAX_LENGTH = 80
+
+const truncate = (text: string, maxLength = MAX_LENGTH) =>
+  text.length > maxLength ? text.slice(0, maxLength).trim() + '...' : text
+
 const TextContent = ({ content }: { content: string }) => {
+  const display = truncate(content)
   if (isValidUrl(content)) {
     return (
       <a
@@ -106,12 +138,16 @@ const TextContent = ({ content }: { content: string }) => {
         className='text-link-1 hover:text-link-2 hover:underline break-words transition-colors'
         onClick={(e) => e.stopPropagation()}
       >
-        {content}
+        {display}
       </a>
     )
   }
 
-  return <span className='break-words'>{content}</span>
+  return (
+    <span className='break-words' title={content}>
+      {display}
+    </span>
+  )
 }
 
 const YouTubeEmbed = ({ embedUrl }: { embedUrl: string }) => (
@@ -151,8 +187,8 @@ const MessageContentRenderer = ({ message, user }: MessageContentRendererProps) 
 
 const MessageContent = ({
   message,
-  user,
-  channelName
+  user
+  // channelName
 }: {
   message: Message & { workspace?: string }
   user: any
@@ -170,8 +206,9 @@ const MessageContent = ({
     <div className='flex-1 min-w-0 space-y-2'>
       {/* Text Content */}
       {message.content && (
-        <Text className='text-gray-900 dark:text-gray-100' weight='medium' size='2'>
-          <span className='font-semibold'>{user?.full_name}:</span> <TextContent content={message.content} />
+        <Text className='text-gray-900 dark:text-gray-100' size='2'>
+          <span className='font-semibold text-[13px]'>{user?.full_name}:</span>{' '}
+          <TextContent content={message.content} />
         </Text>
       )}
 
@@ -181,12 +218,12 @@ const MessageContent = ({
       {/* Message Type Content */}
       <MessageContentRenderer message={message} user={user} />
 
-      {/* Channel Info */}
+      {/* Channel Info
       {channelName && (
         <Text size='1' color='gray' className='block truncate text-gray-500 dark:text-gray-400'>
           {channelName}
         </Text>
-      )}
+      )} */}
     </div>
   )
 }
@@ -227,13 +264,69 @@ const DirectMessageSaved = ({ message, handleUnflagMessage }: MessageBoxProps) =
                  transition-colors duration-150 ease-in-out rounded-lg mx-1'
       onClick={handleNavigateToChannel}
     >
-      <UnflagButton onUnflag={handleUnflagClick} />
-
       <div className='flex items-start gap-3 w-full pr-8'>
         <MessageAvatar user={user} isActive={isActive} />
         <MessageContent message={message} user={user} channelName={channelName} />
+        <UnflagButton onUnflag={handleUnflagClick} />
       </div>
     </article>
+  )
+}
+
+const GroupedMessages = ({
+  channelId,
+  messages,
+  handleUnflagMessage
+}: {
+  channelId: string
+  messages: Message[]
+  handleUnflagMessage: (id: string) => void
+}) => {
+  const { channel } = useCurrentChannelData(channelId)
+  const users = useGetUserRecords()
+
+  const channelName = useMemo(
+    () => getChannelDisplayName(channel?.channelData, users) ?? 'Kênh không xác định',
+    [channel?.channelData, users]
+  )
+
+  const initialCollapsed = useMemo(() => getCollapsedFromStorage().has(channelId), [channelId])
+  const [collapsed, setCollapsed] = useState(initialCollapsed)
+
+  const toggleCollapse = () => {
+    const newState = !collapsed
+    setCollapsed(newState)
+    updateCollapsedInStorage(channelId, newState)
+  }
+
+  return (
+    <div>
+      <div
+        className='flex items-center justify-between px-3 py-1 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded'
+        onClick={toggleCollapse}
+      >
+        <Text className='text-sm text-gray-700 dark:text-gray-300'>{channelName}</Text>
+        {collapsed ? <BiChevronRight className='w-4 h-4' /> : <BiChevronDown className='w-4 h-4' />}
+      </div>
+
+      <div
+        className={clsx(
+          'transition-opacity duration-300 ease-in-out overflow-x-hidden overflow-y-auto',
+          collapsed ? 'opacity-0 max-h-0 pointer-events-none' : 'opacity-100 max-h-[400px]'
+        )}
+      >
+        <div className='space-y-0.5'>
+          {messages.map((msg) => (
+            <DirectMessageSaved
+              key={msg.name}
+              message={msg}
+              handleUnflagMessage={handleUnflagMessage}
+              channelName={channelName}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -267,14 +360,29 @@ export const MessageSaved = () => {
     [call]
   )
 
+  const groupedMessages = useMemo(() => {
+    return messages.reduce<Record<string, Message[]>>((acc, msg) => {
+      if (!acc[msg.channel_id]) {
+        acc[msg.channel_id] = []
+      }
+      acc[msg.channel_id].push(msg)
+      return acc
+    }, {})
+  }, [messages])
+
   if (!messages?.length || isLoading) {
     return <div className='text-gray-500 text-sm italic p-4 text-center'>Không có kết quả</div>
   }
 
   return (
-    <div className='space-y-0.5'>
-      {messages.map((message) => (
-        <DirectMessageSaved key={message.name} message={message} handleUnflagMessage={handleUnflagMessage} />
+    <div className='space-y-4'>
+      {Object.entries(groupedMessages).map(([channelId, msgs]) => (
+        <GroupedMessages
+          key={channelId}
+          channelId={channelId}
+          messages={msgs}
+          handleUnflagMessage={handleUnflagMessage}
+        />
       ))}
     </div>
   )

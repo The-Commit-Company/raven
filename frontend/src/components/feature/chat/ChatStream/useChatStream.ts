@@ -99,7 +99,7 @@ const useChatStream = (
   // Reset tin nhắn mới khi chuyển channel
   useEffect(() => {
     messageState.clearAllNewMessages()
-  }, [channelID, messageState.clearAllNewMessages])
+  }, [channelID])
 
   // Track visit on unmount
   useEffect(() => {
@@ -108,7 +108,7 @@ const useChatStream = (
         api.trackVisit({ channel_id: channelID })
       }
     }
-  }, [channelID, api.trackVisit, messageState.latestMessagesLoaded])
+  }, [channelID])
 
   // Scroll to message function
   const scrollToMessage = (messageID: string) => {

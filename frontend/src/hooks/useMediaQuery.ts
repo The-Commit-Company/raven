@@ -21,7 +21,7 @@ const useMediaQuery = (query: string) => {
 export default useMediaQuery
 
 export const useIsDesktop = () => {
-  const isDesktop = useMediaQuery('(min-width: 768px)')
+  const isDesktop = useMediaQuery('(min-width: 1024px)')
 
   return isDesktop
 }
@@ -30,4 +30,11 @@ export const useIsMobile = () => {
   const isMobile = useMediaQuery('(max-width: 768px)')
 
   return isMobile
+}
+
+
+export const useIsTablet = () => {
+  const isTablet = useMediaQuery('(max-width: 1024px)')
+
+  return isTablet
 }

@@ -3,26 +3,35 @@ import { commandMenuOpenAtom } from '@/components/feature/CommandMenu/CommandMen
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { useSidebarMode } from '@/utils/layout/sidebar'
 import { __ } from '@/utils/translations'
-import { Button, Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
+import { Box, Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
 import { useSetAtom } from 'jotai'
 import { BiMoon, BiSun } from 'react-icons/bi'
 import { TbSearch } from 'react-icons/tb'
-import MentionsButton from './MentionsButton'
-import { HStack } from '../Stack'
-import { getKeyboardMetaKeyString } from '@/utils/layout/keyboardKey'
+import { CreateChannelButton } from '@/components/feature/channels/CreateChannelModal'
+import { CreateLabelButton } from '@/components/feature/channels/CreateLabelModal'
 
 export const SidebarHeader = () => {
   const isDesktop = useIsDesktop()
   const { mode, title } = useSidebarMode()
 
+  const isLabelMode = title === 'Nhãn'
+
   if (isDesktop) {
     return (
       <header style={{ padding: mode === 'hide-filter' ? '20px 60px' : '6px 10px' }}>
         <Flex justify='between' px='2' align='center' pt='2'>
-          {/* <CommandMenuButton />
-          {/* <MentionsButton /> */}
+          <span className='font-medium text-base'>{title}</span>
+          <Box>
+            {isLabelMode ? (
+              <CreateLabelButton/>
+            ) : (
+              <>
+                <SearchButton />
+                <CreateChannelButton />
+              </>
+            )}
+          </Box>
         </Flex>
-        <span className='font-medium text-base'>{title}</span>
       </header>
     )
   }
@@ -34,48 +43,55 @@ export const SidebarHeader = () => {
           raven
         </Text>
         <Flex align='center' gap='4' className='pr-1 sm:pr-0'>
-          <MentionsButton />
-          <SearchButton />
           <ColorModeToggleButton />
+          {isLabelMode ? (
+            <button className='p-2 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 rounded'>
+              <CreateLabelButton/>
+            </button>
+          ) : (
+            <>
+              <SearchButton />
+              <CreateChannelButton />
+            </>
+          )}
         </Flex>
       </Flex>
     </header>
   )
 }
+// const CommandMenuButton = () => {
+//   const setOpen = useSetAtom(commandMenuOpenAtom)
 
-const CommandMenuButton = () => {
-  const setOpen = useSetAtom(commandMenuOpenAtom)
-
-  return (
-    <Button
-      onClick={() => setOpen(true)}
-      aria-label='Open command menu'
-      title={__('Open command menu')}
-      className='bg-gray-3 hover:bg-gray-4 p-2 rounded-md flex justify-between items-center min-w-48 text-gray-11 sm:hover:text-gray-12'
-      color='gray'
-    >
-      <HStack>
-        <TbSearch className='text-lg sm:text-base' />
-        <Text as='span' className='not-cal -mt-0.5' weight='regular'>
-          Search
-        </Text>
-      </HStack>
-      <div className='dark:font-bold'>{getKeyboardMetaKeyString()}+K</div>
-    </Button>
-  )
-}
+//   return (
+//     <Button
+//       onClick={() => setOpen(true)}
+//       aria-label='Open command menu'
+//       title={__('Open command menu')}
+//       className='bg-gray-3 hover:bg-gray-4 p-2 rounded-md flex justify-between items-center min-w-48 text-gray-11 sm:hover:text-gray-12'
+//       color='gray'
+//     >
+//       <HStack>
+//         <TbSearch className='text-lg sm:text-base' />
+//         <Text as='span' className='not-cal -mt-0.5' weight='regular'>
+//           Search
+//         </Text>
+//       </HStack>
+//       <div className='dark:font-bold'>{getKeyboardMetaKeyString()}+K</div>
+//     </Button>
+//   )
+// }
 /** Only used on mobile */
 const SearchButton = () => {
   const setOpen = useSetAtom(commandMenuOpenAtom)
 
   return (
-    <Tooltip content='Search'>
+    <Tooltip content='Tìm kiếm'>
       <IconButton
         size={{ initial: '2', md: '1' }}
-        aria-label='Open command menu'
-        title={__('Open command menu')}
+        aria-label='Mở mục tìm kiếm'
+        title={__('Mở mục tìm kiếm')}
         color='gray'
-        className='text-gray-11 sm:hover:text-gray-12 p-2'
+        className='text-gray-11 sm:hover:text-gray-12 p-2 cursor-pointer'
         variant='ghost'
         onClick={() => setOpen(true)}
       >

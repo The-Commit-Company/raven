@@ -20,7 +20,9 @@ export const useMessageLoading = (
       return Promise.resolve()
     }
 
-    if (!virtuosoRef.current) return Promise.resolve()
+    if (!virtuosoRef.current) {
+      return Promise.resolve()
+    }
 
     return mutate(
       (d: any) => {
@@ -45,7 +47,9 @@ export const useMessageLoading = (
                     }
                   }
                 })
-                .catch(() => d)
+                .catch(() => {
+                  return d
+                })
             }
           }
         }
@@ -53,24 +57,25 @@ export const useMessageLoading = (
       },
       { revalidate: false }
     ).then(() => {
-      const scrollContainer = virtuosoRef.current
-      requestAnimationFrame(() => {
-        if (scrollContainer) {
-          scrollContainer.scrollToIndex({
-            index: 0,
-            behavior: 'auto'
-          })
-        }
-      })
+      if (!highlightedMessage && virtuosoRef.current) {
+        requestAnimationFrame(() => {
+          if (virtuosoRef.current) {
+            virtuosoRef.current.scrollToIndex({
+              index: 5,
+              behavior: 'auto'
+            })
+          }
+        })
+      }
     })
   }
 
   const loadNewerMessages = () => {
-    if (loadingNewerMessages || !data?.message.has_new_messages || highlightedMessage) {
+    if (loadingNewerMessages || !data?.message.has_new_messages) {
       return Promise.resolve()
     }
 
-    mutate(
+    return mutate(
       (d: any) => {
         let newestMessage: Message | null = null
         if (d && d.message.messages.length > 0) {
@@ -94,7 +99,9 @@ export const useMessageLoading = (
                     }
                   }
                 })
-                .catch(() => d)
+                .catch(() => {
+                  return d
+                })
             }
           }
         }
@@ -104,9 +111,12 @@ export const useMessageLoading = (
     ).then((res: any) => {
       if (res?.message.has_new_messages === false) {
         latestMessagesLoadedRef.current = true
-        requestAnimationFrame(() => {
-          scrollToBottom('auto')
-        })
+
+        if (!highlightedMessage) {
+          requestAnimationFrame(() => {
+            scrollToBottom('auto')
+          })
+        }
       }
     })
   }

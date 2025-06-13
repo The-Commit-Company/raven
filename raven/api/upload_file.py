@@ -53,38 +53,22 @@ def upload_JPEG_wrt_EXIF(content, filename, optimize=False):
 @frappe.whitelist()
 def upload_file_with_message():
 	"""
-	When the user uploads a file on Raven, this API is called.
-	Along with the file, the user also send additional information: the channel ID
-	We need to do two things:
-
-	1. Create a Raven Message Doc
-	2. Upload the file
-	3. If the file is an image, we need to measure it's dimensions
-	4. Store the file URL and the dimensions in the Raven Message Doc
+	Handles uploading a file with a message to a Raven channel.
+	Creates a Raven Message doc, processes the file (e.g., compresses images), and updates the channel.
 	"""
 	fileExt = ["jpg", "JPG", "jpeg", "JPEG", "png", "PNG", "gif", "GIF", "webp", "WEBP"]
 	thumbnailExt = ["jpg", "JPG", "jpeg", "JPEG", "png", "PNG"]
 
 	frappe.form_dict.doctype = "Raven Message"
 	frappe.form_dict.fieldname = "file"
-
-	if (
-		frappe.form_dict.compressImages == "1"
-		or frappe.form_dict.compressImages == True
-		or frappe.form_dict.compressImages == "true"
-	):
-		frappe.form_dict.optimize = True
-	else:
-		frappe.form_dict.optimize = False
+	frappe.form_dict.optimize = frappe.form_dict.get("compressImages") in ["1", 1, True, "true"]
 
 	message_doc = frappe.new_doc("Raven Message")
 	message_doc.channel_id = frappe.form_dict.channelID
 	message_doc.message_type = "File"
 	message_doc.text = frappe.form_dict.caption
 
-	# If no caption is provided, use the filename as the caption
 	if not frappe.form_dict.caption:
-		# Get the filename
 		try:
 			filename = frappe.request.files["file"].filename
 		except Exception:
@@ -92,37 +76,28 @@ def upload_file_with_message():
 		message_doc.content = filename
 
 	message_doc.is_reply = frappe.form_dict.is_reply
-	if message_doc.is_reply == "1" or message_doc.is_reply == 1:
+	if message_doc.is_reply in ["1", 1, True]:
 		message_doc.linked_message = frappe.form_dict.linked_message
 
 	message_doc.insert()
-
 	frappe.form_dict.docname = message_doc.name
 
-	# Get the files
 	files = frappe.request.files
-	# Get the file & content
 	if "file" in files:
 		file = files["file"]
 		filename = file.filename
-		"""
-        If the file is a JPEG, we need to transpose the image
-        Else, we need to upload the file as is
-        """
-		if filename.endswith(".jpeg") or filename.endswith(".jpg"):
+
+		if filename.lower().endswith((".jpeg", ".jpg")):
 			content = file.stream.read()
 			file_doc = upload_JPEG_wrt_EXIF(content, filename, frappe.form_dict.optimize)
 		else:
 			file_doc = upload_file()
 
 	message_doc.reload()
-
 	message_doc.file = file_doc.file_url
 
 	if file_doc.file_type in fileExt:
-
 		message_doc.message_type = "Image"
-
 		image, filename, extn = get_local_image(file_doc.file_url)
 		width, height = image.size
 
@@ -130,11 +105,9 @@ def upload_file_with_message():
 		MAX_HEIGHT = 320
 		is_landscape = width > height
 
-		# If it's a landscape image, then the thumbnail needs to be 480px wide
 		if is_landscape:
 			thumbnail_width = min(width, MAX_WIDTH)
 			thumbnail_height = int(height * thumbnail_width / width)
-
 		else:
 			thumbnail_height = min(height, MAX_HEIGHT)
 			thumbnail_width = int(width * thumbnail_height / height)
@@ -143,36 +116,38 @@ def upload_file_with_message():
 
 		x_components = 4 if is_landscape else 3
 		y_components = 3 if is_landscape else 4
-
 		blurhash_string = blurhash.encode(image, x_components=x_components, y_components=y_components)
 
 		message_doc.blurhash = blurhash_string
-
-		# thumbnail_size = thumbnail_width, thumbnail_height
-
-		# if extn in thumbnailExt:
-
-		# TODO: Generate thumbnail of the image
-
-		# Need to add a provision in Frappe to generate thumbnails for all images - not just public files
-		# Generated thumbnail here throws a permissions error when trying to access.
-		# thumbnail_url = f"{filename}_small.{extn}"
-
-		# path = os.path.abspath(frappe.get_site_path(thumbnail_url.lstrip("/")))
-		# image.thumbnail(thumbnail_size, Image.Resampling.LANCZOS)
-
-		# try:
-		#     image.save(path)
-		# except OSError:
-		#     frappe.msgprint(_("Unable to write file format for {0}").format(path))
-		#     thumbnail_url = file_doc.file_url
-
 		message_doc.image_width = width
 		message_doc.image_height = height
-		# message_doc.file_thumbnail = thumbnail_url
 		message_doc.thumbnail_width = thumbnail_width
 		message_doc.thumbnail_height = thumbnail_height
 
 	message_doc.save()
+
+	# Cập nhật last_message_details cho channel
+	channel = frappe.get_doc("Raven Channel", message_doc.channel_id)
+	channel.last_message_details = frappe.as_json({
+		"message_id": message_doc.name,
+		"content": message_doc.content or message_doc.file,
+		"owner": message_doc.owner,
+		"message_type": message_doc.message_type,
+		"is_bot_message": 0,
+		"bot": None,
+	})
+	channel.last_message_timestamp = message_doc.creation
+	channel.save(ignore_permissions=True)
+
+	# Gửi realtime update để cập nhật channel list cho các thành viên khác
+	members = frappe.get_all("Raven Channel Member", filters={"channel_id": message_doc.channel_id}, pluck="user_id")
+
+	for member in members:
+		if member != frappe.session.user:
+			frappe.publish_realtime(
+				event="channel_list_updated",
+				message={"channel_id": message_doc.channel_id},
+				user=member
+		 )
 
 	return message_doc
