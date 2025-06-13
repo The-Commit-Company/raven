@@ -164,75 +164,74 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   const shouldShowBadge = (channel.unread_count > 0 && channel.name !== channelID) || isManuallyMarked
 
   const handleNavigate = () => {
-    clearManualMark(channel.name)
     navigate(`/${workspaceID}/${channel.name}`)
+    clearManualMark(channel.name)
   }
 
   // 5. Render
   return (
-    <div onClick={handleNavigate}>
-      <div
-        className={clsx(
-          'group relative cursor-pointer flex items-center p-2',
-          isSelectedChannel
-            ? 'bg-gray-300 dark:bg-gray-700'
-            : isTablet
-              ? 'active:bg-gray-100 dark:active:bg-gray-700'
-              : 'hover:bg-gray-100 dark:hover:bg-gray-700'
-        )}
-      >
-        <SidebarIcon>
-          <Box className='relative'>
-            {peerUser ? (
-              <UserAvatar
-                src={peerUser.user_image}
-                alt={peerUser.full_name}
-                isBot={peerUser.type === 'Bot'}
-                isActive={isActive}
-                size={{ initial: '2', md: '1' }}
-                availabilityStatus={peerUser.availability_status}
-              />
-            ) : (
-              <ChannelIcon type={channel.type} className={isTablet ? 'w-[32px] h-[32px]' : 'w-[24px] h-[24px]'} />
-            )}
-            {shouldShowBadge && (
-              <SidebarBadge className='absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-[14px] h-[14px] text-[8px] rounded-full bg-red-500 text-white flex items-center justify-center'>
-                {channel.unread_count > 9 ? '9+' : channel.unread_count || 1}
-              </SidebarBadge>
-            )}
-          </Box>
-        </SidebarIcon>
+    <div
+      onClick={handleNavigate}
+      className={clsx(
+        'group relative cursor-pointer flex items-center p-2',
+        isSelectedChannel && !isTablet
+          ? 'bg-gray-300 dark:bg-gray-700'
+          : isTablet
+            ? ''
+            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+      )}
+    >
+      <SidebarIcon>
+        <Box className='relative'>
+          {peerUser ? (
+            <UserAvatar
+              src={peerUser.user_image}
+              alt={peerUser.full_name}
+              isBot={peerUser.type === 'Bot'}
+              isActive={isActive}
+              size={{ initial: '2', md: '1' }}
+              availabilityStatus={peerUser.availability_status}
+            />
+          ) : (
+            <ChannelIcon type={channel.type} className={isTablet ? 'w-[32px] h-[32px]' : 'w-[24px] h-[24px]'} />
+          )}
+          {shouldShowBadge && (
+            <SidebarBadge className='absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-[14px] h-[14px] text-[8px] rounded-full bg-red-500 text-white flex items-center justify-center'>
+              {channel.unread_count > 9 ? '9+' : channel.unread_count || 1}
+            </SidebarBadge>
+          )}
+        </Box>
+      </SidebarIcon>
 
-        <Flex direction='column' justify='center' className='flex-1 ml-2'>
-          <Flex justify='between' align='center'>
-            <Text as='span' className={`${shouldShowBadge ? 'font-bold' : 'font-medium'} truncate`}>
-              {displayName}
-            </Text>
-          </Flex>
-          <Text size='1' color='gray' className='truncate'>
-            {formattedMessage}
+      <Flex direction='column' justify='center' className='flex-1 ml-2'>
+        <Flex justify='between' align='center'>
+          <Text as='span' className={`${shouldShowBadge ? 'font-bold' : 'font-medium'} truncate`}>
+            {displayName}
           </Text>
         </Flex>
+        <Text size='1' color='gray' className='truncate'>
+          {formattedMessage}
+        </Text>
+      </Flex>
 
-        {channel.last_message_details && (
-          <Tooltip content={channel.is_done ? 'Đánh dấu chưa xong' : 'Đánh dấu đã xong'} side='bottom'>
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                channel.is_done ? markAsNotDone(channel.name) : markAsDone(channel.name)
-              }}
-              className='absolute right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded-full bg-gray-200 hover:bg-gray-300 h-[20px] w-[20px] flex items-center justify-center cursor-pointer'
-              title={channel.is_done ? 'Chưa xong' : 'Đã xong'}
-            >
-              <HiCheck
-                className={`h-3 w-3 transition-colors duration-150 ${
-                  channel.is_done ? 'text-green-600' : 'text-gray-800'
-                }`}
-              />
-            </button>
-          </Tooltip>
-        )}
-      </div>
+      {channel.last_message_details && (
+        <Tooltip content={channel.is_done ? 'Đánh dấu chưa xong' : 'Đánh dấu đã xong'} side='bottom'>
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              channel.is_done ? markAsNotDone(channel.name) : markAsDone(channel.name)
+            }}
+            className='absolute right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded-full bg-gray-200 hover:bg-gray-300 h-[20px] w-[20px] flex items-center justify-center cursor-pointer'
+            title={channel.is_done ? 'Chưa xong' : 'Đã xong'}
+          >
+            <HiCheck
+              className={`h-3 w-3 transition-colors duration-150 ${
+                channel.is_done ? 'text-green-600' : 'text-gray-800'
+              }`}
+            />
+          </button>
+        </Tooltip>
+      )}
     </div>
   )
 }
