@@ -1,9 +1,10 @@
 # Copyright (c) 2024, The Commit Company and contributors
 # For license information, please see license.txt
 
+import json
+
 import frappe
 from frappe.model.document import Document
-import json
 
 
 class RavenSchedulerEvent(Document):
