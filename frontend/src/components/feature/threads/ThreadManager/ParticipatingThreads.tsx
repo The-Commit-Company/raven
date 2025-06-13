@@ -20,7 +20,7 @@ const ParticipatingThreads = (props: Props) => {
 
     return (
         <div>
-            <div className='flex gap-2 justify-between p-2 border-b border-gray-4'>
+            <div className='flex gap-2 flex-wrap justify-between p-2 border-b border-gray-4'>
 
                 <SearchFilter search={search} setSearch={setSearch} />
 
