@@ -24,10 +24,6 @@ const ChannelItem = ({
 
   const isDisabled = channel.user_labels?.includes(label)
 
-
-  console.log(isDisabled);
-  
-
   return (
     <label
       className={clsx(
@@ -37,10 +33,11 @@ const ChannelItem = ({
     >
       <Checkbox
         checked={selected.has(channel.name)}
-        disabled={isDisabled}
         onCheckedChange={() => {
           if (!isDisabled) handleToggle(channel.name)
         }}
+        readOnly={isDisabled} // giữ cho checkbox không thay đổi được
+        className={clsx(isDisabled && 'pointer-events-none opacity-50')}
       />
       <div className='flex items-center gap-2 text-sm truncate'>
         {isDM ? (
@@ -53,9 +50,7 @@ const ChannelItem = ({
             {avatarChar}
           </div>
         ) : (
-          <div
-            className='rounded-full flex items-center justify-center border-2 border-teal-400 text-teal-600 w-7 h-7'
-          >
+          <div className='rounded-full flex items-center justify-center border-2 border-teal-400 text-teal-600 w-7 h-7'>
             <FaUsers className='w-4 h-4' />
           </div>
         )}
@@ -64,6 +59,5 @@ const ChannelItem = ({
     </label>
   )
 }
-
 
 export default ChannelItem
