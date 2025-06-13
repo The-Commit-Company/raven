@@ -1,4 +1,3 @@
-// ChatStream.tsx - Ultra optimized version for low-end devices
 import { Loader } from '@/components/common/Loader'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState/EmptyState'
@@ -15,8 +14,8 @@ import {
   useEffect,
   useImperativeHandle,
   useMemo,
-  useRef,
-  useState
+  useReducer,
+  useRef
 } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
@@ -37,7 +36,85 @@ type Props = {
   virtuosoRef: MutableRefObject<VirtuosoHandle>
 }
 
-// 🔥 PERFORMANCE: Animation frame scheduler for smooth operations
+interface ScrollState {
+  isAtBottom: boolean
+  hasScrolledToTarget: boolean
+  isScrolling: boolean
+  lastScrollTop: number
+}
+
+interface RenderState {
+  isVirtuosoReady: boolean
+  isContentMeasured: boolean
+  initialRenderComplete: boolean
+  isInitialLoadComplete: boolean
+}
+
+interface LoadingState {
+  isLoadingMessages: boolean
+  hasInitialLoadedWithMessageId: boolean
+}
+
+const scrollStateReducer = (state: ScrollState, action: any): ScrollState => {
+  switch (action.type) {
+    case 'SET_AT_BOTTOM':
+      return { ...state, isAtBottom: action.payload }
+    case 'SET_SCROLLED_TO_TARGET':
+      return { ...state, hasScrolledToTarget: action.payload }
+    case 'SET_SCROLLING':
+      return { ...state, isScrolling: action.payload }
+    case 'SET_LAST_SCROLL_TOP':
+      return { ...state, lastScrollTop: action.payload }
+    case 'RESET':
+      return {
+        isAtBottom: false,
+        hasScrolledToTarget: false,
+        isScrolling: false,
+        lastScrollTop: 0
+      }
+    default:
+      return state
+  }
+}
+
+const renderStateReducer = (state: RenderState, action: any): RenderState => {
+  switch (action.type) {
+    case 'SET_VIRTUOSO_READY':
+      return { ...state, isVirtuosoReady: action.payload }
+    case 'SET_CONTENT_MEASURED':
+      return { ...state, isContentMeasured: action.payload }
+    case 'SET_INITIAL_RENDER_COMPLETE':
+      return { ...state, initialRenderComplete: action.payload }
+    case 'SET_INITIAL_LOAD_COMPLETE':
+      return { ...state, isInitialLoadComplete: action.payload }
+    case 'RESET':
+      return {
+        isVirtuosoReady: false,
+        isContentMeasured: false,
+        initialRenderComplete: false,
+        isInitialLoadComplete: false
+      }
+    default:
+      return state
+  }
+}
+
+const loadingStateReducer = (state: LoadingState, action: any): LoadingState => {
+  switch (action.type) {
+    case 'SET_LOADING_MESSAGES':
+      return { ...state, isLoadingMessages: action.payload }
+    case 'SET_INITIAL_LOADED_WITH_MESSAGE_ID':
+      return { ...state, hasInitialLoadedWithMessageId: action.payload }
+    case 'RESET':
+      return {
+        isLoadingMessages: false,
+        hasInitialLoadedWithMessageId: false
+      }
+    default:
+      return state
+  }
+}
+
 const useAnimationFrame = () => {
   const rafRef = useRef<number>()
 
@@ -66,43 +143,38 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
     const isSavedMessage = searchParams.has('message_id')
     const messageId = searchParams.get('message_id')
 
-    // 🔥 SCROLLBAR OPTIMIZATION: States for smooth scrollbar handling
-    const [isVirtuosoReady, setIsVirtuosoReady] = useState(false)
-    const [isContentMeasured, setIsContentMeasured] = useState(false)
-    const [scrollbarVisible, setScrollbarVisible] = useState(false)
-    const [initialRenderComplete, setInitialRenderComplete] = useState(false)
+    const [scrollState, dispatchScrollState] = useReducer(scrollStateReducer, {
+      isAtBottom: false,
+      hasScrolledToTarget: false,
+      isScrolling: false,
+      lastScrollTop: 0
+    })
 
-    // Performance states
-    const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false)
-    const [isAtBottom, setIsAtBottom] = useState(false)
-    const [hasScrolledToTarget, setHasScrolledToTarget] = useState(false)
-    const [isLoadingMessages, setIsLoadingMessages] = useState(false)
+    const [renderState, dispatchRenderState] = useReducer(renderStateReducer, {
+      isVirtuosoReady: false,
+      isContentMeasured: false,
+      initialRenderComplete: false,
+      isInitialLoadComplete: false
+    })
 
-    // Refs for performance optimization
-    const lastScrollTopRef = useRef(0)
-    const hasInitialLoadedWithMessageId = useRef(false)
+    const [loadingState, dispatchLoadingState] = useReducer(loadingStateReducer, {
+      isLoadingMessages: false,
+      hasInitialLoadedWithMessageId: false
+    })
+
     const scrollTimeoutRef = useRef<NodeJS.Timeout>()
-    const isScrollingRef = useRef(false)
     const initialRenderRef = useRef(true)
     const measureTimeoutRef = useRef<NodeJS.Timeout>()
 
-    // Animation frame scheduler
     const scheduleFrame = useAnimationFrame()
 
-    // Reset state khi channelID hoặc messageId thay đổi
     useEffect(() => {
-      setIsInitialLoadComplete(false)
-      setHasScrolledToTarget(false)
-      setIsLoadingMessages(false)
-      setIsVirtuosoReady(false)
-      setIsContentMeasured(false)
-      setScrollbarVisible(false)
-      setInitialRenderComplete(false)
-      initialRenderRef.current = true
-      lastScrollTopRef.current = 0
-      hasInitialLoadedWithMessageId.current = false
+      dispatchScrollState({ type: 'RESET' })
+      dispatchRenderState({ type: 'RESET' })
+      dispatchLoadingState({ type: 'RESET' })
 
-      // Clear all timeouts
+      initialRenderRef.current = true
+
       if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current)
       if (measureTimeoutRef.current) clearTimeout(measureTimeoutRef.current)
     }, [channelID, messageId])
@@ -122,55 +194,44 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       newMessageIds,
       markMessageAsSeen,
       clearAllNewMessages
-    } = useChatStream(channelID, virtuosoRef, pinnedMessagesString, isAtBottom)
+    } = useChatStream(channelID, virtuosoRef, pinnedMessagesString, scrollState.isAtBottom)
 
-    // 🔥 SCROLLBAR OPTIMIZATION: Progressive scrollbar reveal
     useEffect(() => {
-      if (messages && messages.length > 0 && !isInitialLoadComplete) {
-        // Stage 1: Basic content loaded
+      if (messages && messages.length > 0 && !renderState.isInitialLoadComplete) {
         setTimeout(() => {
-          setIsInitialLoadComplete(true)
+          dispatchRenderState({ type: 'SET_INITIAL_LOAD_COMPLETE', payload: true })
         }, 100)
-
-        // Stage 2: Allow Virtuoso to measure content
-        setTimeout(() => {
-          setIsVirtuosoReady(true)
-        }, 200)
-
-        // Stage 3: Content measured, start revealing scrollbar
-        setTimeout(() => {
-          setIsContentMeasured(true)
-        }, 400)
-
-        // Stage 4: Full scrollbar reveal
-        setTimeout(() => {
-          setScrollbarVisible(true)
-          setInitialRenderComplete(true)
-        }, 600)
+        setTimeout(() => dispatchRenderState({ type: 'SET_VIRTUOSO_READY', payload: true }), 200)
+        setTimeout(() => dispatchRenderState({ type: 'SET_CONTENT_MEASURED', payload: true }), 300)
+        setTimeout(() => dispatchRenderState({ type: 'SET_INITIAL_RENDER_COMPLETE', payload: true }), 500)
       }
-    }, [messages, isInitialLoadComplete])
+    }, [messages, renderState.isInitialLoadComplete])
 
-    // 🔥 PERFORMANCE: Debounced scroll handler
     const debouncedRangeChanged = useDebounceDynamic(
       useCallback(
         (range: any) => {
-          if (!messages || !isInitialLoadComplete || !isVirtuosoReady || isScrollingRef.current) return
+          if (
+            !messages ||
+            !renderState.isInitialLoadComplete ||
+            !renderState.isVirtuosoReady ||
+            scrollState.isScrolling
+          )
+            return
 
           const shouldLoadNewer =
             hasNewMessages &&
             range &&
             range.endIndex >= messages.length - 5 &&
-            !isLoadingMessages &&
-            !hasInitialLoadedWithMessageId.current
+            !loadingState.isLoadingMessages &&
+            !loadingState.hasInitialLoadedWithMessageId
 
           if (shouldLoadNewer) {
-            setIsLoadingMessages(true)
+            dispatchLoadingState({ type: 'SET_LOADING_MESSAGES', payload: true })
             loadNewerMessages().finally(() => {
-              setTimeout(() => setIsLoadingMessages(false), 300)
+              setTimeout(() => dispatchLoadingState({ type: 'SET_LOADING_MESSAGES', payload: false }), 300)
             })
           }
 
-          // Mark messages as seen - heavily throttled
           if (range && newMessageIds.size > 0) {
             const visibleMessages = messages.slice(range.startIndex, range.endIndex + 1)
             visibleMessages.forEach((message: any) => {
@@ -184,14 +245,16 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
           hasNewMessages,
           loadNewerMessages,
           messages,
-          isInitialLoadComplete,
-          isVirtuosoReady,
+          renderState.isInitialLoadComplete,
+          renderState.isVirtuosoReady,
+          scrollState.isScrolling,
+          loadingState.isLoadingMessages,
+          loadingState.hasInitialLoadedWithMessageId,
           newMessageIds,
-          markMessageAsSeen,
-          isLoadingMessages
+          markMessageAsSeen
         ]
       ),
-      300 // Increased debounce for low-end devices
+      300
     )
 
     const { deleteActions, editActions, forwardActions, attachDocActions, reactionActions } =
@@ -204,7 +267,6 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
     })
     const { channel } = useCurrentChannelData(channelID)
 
-    // 🔥 PERFORMANCE: Ultra-stable callback with minimal dependencies
     const onReplyMessageClick = useCallback(
       (messageID: string) => {
         scheduleFrame(() => scrollToMessage(messageID))
@@ -217,18 +279,17 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       return messages.findIndex((msg) => msg.name === messageId)
     }, [messageId, messages])
 
-    // 🔥 PERFORMANCE: Optimized scroll to target with RAF
     useEffect(() => {
       if (
-        isInitialLoadComplete &&
+        renderState.isInitialLoadComplete &&
         messageId &&
         messages &&
         targetIndex !== undefined &&
         targetIndex >= 0 &&
-        !hasScrolledToTarget &&
-        !isLoadingMessages &&
+        !scrollState.hasScrolledToTarget &&
+        !loadingState.isLoadingMessages &&
         virtuosoRef.current &&
-        isVirtuosoReady
+        renderState.isVirtuosoReady
       ) {
         scheduleFrame(() => {
           if (virtuosoRef.current) {
@@ -237,19 +298,19 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
               behavior: 'auto',
               align: 'center'
             })
-            setHasScrolledToTarget(true)
+            dispatchScrollState({ type: 'SET_SCROLLED_TO_TARGET', payload: true })
           }
         })
       }
     }, [
-      isInitialLoadComplete,
+      renderState.isInitialLoadComplete,
+      renderState.isVirtuosoReady,
+      scrollState.hasScrolledToTarget,
+      loadingState.isLoadingMessages,
       messageId,
       messages,
       targetIndex,
-      hasScrolledToTarget,
-      isLoadingMessages,
       virtuosoRef,
-      isVirtuosoReady,
       scheduleFrame
     ])
 
@@ -271,7 +332,6 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       }
     }, [messages, userID, editActions.setEditMessage])
 
-    // 🔥 PERFORMANCE: Ultra-optimized item renderer with minimal re-renders
     const itemRenderer = useCallback(
       (index: number) => {
         const message = messages?.[index]
@@ -310,7 +370,6 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       ]
     )
 
-    // 🔥 PERFORMANCE: Minimal header/footer components
     const Header = useMemo(() => {
       return hasOlderMessages && !isLoading
         ? () => (
@@ -331,26 +390,26 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
         : undefined
     }, [hasNewMessages])
 
-    // 🔥 PERFORMANCE: Throttled top state change
     const handleAtTopStateChange = useCallback(
       (atTop: boolean) => {
-        if (atTop && hasOlderMessages && isInitialLoadComplete && !isLoadingMessages) {
-          isScrollingRef.current = true
-          setIsLoadingMessages(true)
+        if (atTop && hasOlderMessages && renderState.isInitialLoadComplete && !loadingState.isLoadingMessages) {
+          dispatchScrollState({ type: 'SET_SCROLLING', payload: true })
+          dispatchLoadingState({ type: 'SET_LOADING_MESSAGES', payload: true })
+
           loadOlderMessages().finally(() => {
             setTimeout(() => {
-              setIsLoadingMessages(false)
-              isScrollingRef.current = false
+              dispatchLoadingState({ type: 'SET_LOADING_MESSAGES', payload: false })
+              dispatchScrollState({ type: 'SET_SCROLLING', payload: false })
             }, 300)
           })
         }
       },
-      [hasOlderMessages, loadOlderMessages, isInitialLoadComplete, isLoadingMessages]
+      [hasOlderMessages, loadOlderMessages, renderState.isInitialLoadComplete, loadingState.isLoadingMessages]
     )
 
     const handleAtBottomStateChange = useCallback(
       (atBottom: boolean) => {
-        setIsAtBottom(atBottom)
+        dispatchScrollState({ type: 'SET_AT_BOTTOM', payload: atBottom })
         if (atBottom) {
           scheduleFrame(() => clearAllNewMessages())
         }
@@ -358,10 +417,9 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       [clearAllNewMessages, scheduleFrame]
     )
 
-    // 🔥 PERFORMANCE: Optimized range change handler
     const handleRangeChanged = useCallback(
       (range: any) => {
-        if (!messages || !isInitialLoadComplete || !isVirtuosoReady) return
+        if (!messages || !renderState.isInitialLoadComplete || !renderState.isVirtuosoReady) return
 
         if (initialRenderRef.current) {
           initialRenderRef.current = false
@@ -370,7 +428,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
 
         debouncedRangeChanged(range)
       },
-      [messages, isInitialLoadComplete, isVirtuosoReady, debouncedRangeChanged]
+      [messages, renderState.isInitialLoadComplete, renderState.isVirtuosoReady, debouncedRangeChanged]
     )
 
     const handleGoToLatestMessages = useCallback(() => {
@@ -382,10 +440,10 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
 
     const virtuosoComponents = useMemo(
       () => ({
-        Header: isInitialLoadComplete && hasOlderMessages ? Header : undefined,
+        Header: renderState.isInitialLoadComplete && hasOlderMessages ? Header : undefined,
         Footer: hasNewMessages ? Footer : undefined
       }),
-      [isInitialLoadComplete, hasOlderMessages, hasNewMessages, Header, Footer]
+      [renderState.isInitialLoadComplete, hasOlderMessages, hasNewMessages, Header, Footer]
     )
 
     const scrollActionToBottom = useCallback(() => {
@@ -404,22 +462,31 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       return item?.name ?? `fallback-${index}`
     }, [])
 
-    // 🔥 SCROLLBAR STYLING: Dynamic styles for smooth reveal
     const virtuosoStyles = useMemo(
       () => ({
         height: '100%',
         willChange: 'transform',
-        transition: initialRenderComplete ? 'opacity 0.3s ease-out' : 'none',
-        scrollbarWidth: scrollbarVisible ? 'thin' : 'none',
-        scrollbarColor: scrollbarVisible ? 'rgba(155, 155, 155, 0.5) transparent' : 'transparent transparent',
-        '--scrollbar-width': scrollbarVisible ? '6px' : '0px',
-        '--scrollbar-opacity': scrollbarVisible ? '0.5' : '0'
+        scrollbarWidth: renderState.initialRenderComplete ? 'thin' : 'none',
+        scrollbarColor: renderState.initialRenderComplete
+          ? 'rgba(155, 155, 155, 0.5) transparent'
+          : 'transparent transparent',
+        '--scrollbar-width': renderState.initialRenderComplete ? '6px' : '0px',
+        '--scrollbar-opacity': renderState.initialRenderComplete ? '0.5' : '0'
       }),
-      [initialRenderComplete, scrollbarVisible]
+      [renderState.initialRenderComplete]
+    )
+
+    const containerStyles = useMemo(
+      () => ({
+        opacity: renderState.initialRenderComplete ? 1 : 0,
+        transform: renderState.initialRenderComplete ? 'translateY(0)' : 'translateY(8px)',
+        transition: 'opacity 0.2s ease-out, transform 0.2s ease-out'
+      }),
+      [renderState.initialRenderComplete]
     )
 
     return (
-      <div className='relative h-full flex flex-col overflow-hidden pb-16 sm:pb-0'>
+      <div className='relative h-full flex flex-col overflow-hidden pb-16 sm:pb-0' style={containerStyles}>
         {!isLoading && !hasOlderMessages && <ChannelHistoryFirstMessage channelID={channelID ?? ''} />}
 
         {isLoading && <ChatStreamLoader />}
@@ -431,7 +498,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
             ref={virtuosoRef}
             data={messages}
             itemContent={itemRenderer}
-            followOutput={isAtBottom ? 'auto' : false}
+            followOutput={scrollState.isAtBottom ? 'auto' : false}
             initialTopMostItemIndex={!isSavedMessage ? messages.length - 1 : targetIndex}
             atTopStateChange={handleAtTopStateChange}
             atBottomStateChange={handleAtBottomStateChange}
@@ -442,9 +509,9 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
             {...virtuosoSettings}
             useWindowScroll={false}
             totalListHeightChanged={() => {
-              if (!isContentMeasured) {
+              if (!renderState.isContentMeasured) {
                 measureTimeoutRef.current = setTimeout(() => {
-                  setIsContentMeasured(true)
+                  dispatchRenderState({ type: 'SET_CONTENT_MEASURED', payload: true })
                 }, 100)
               }
             }}
@@ -456,7 +523,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
           newMessageCount={newMessageCount}
           onGoToLatestMessages={handleGoToLatestMessages}
           onScrollToBottom={scrollActionToBottom}
-          isAtBottom={isAtBottom}
+          isAtBottom={scrollState.isAtBottom}
           hasMessageId={!!messageId}
         />
 
