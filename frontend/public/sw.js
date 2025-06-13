@@ -21,16 +21,12 @@ try {
     }
 
     onBackgroundMessage(messaging, (payload) => {
-        const notificationTitle = payload.data.notification.title
+        const notificationTitle = payload.notification.title
         let notificationOptions = {
-            body: payload.data.notification.body || "",
+            body: payload.notification.body || "",
         }
-        if (payload.data.notification_icon) {
-            notificationOptions["icon"] = payload.data.notification_icon
-        }
-
-        if (payload.data.notification.image) {
-            notificationOptions["image"] = payload.data.notification.image
+        if (payload.data.image) {
+            notificationOptions["icon"] = payload.data.image
         }
 
         if (payload.data.creation) {
