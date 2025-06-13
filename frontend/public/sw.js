@@ -21,6 +21,7 @@ try {
     }
 
     onBackgroundMessage(messaging, (payload) => {
+        console.log("Background message received", payload)
         const notificationTitle = payload.notification.title
         let notificationOptions = {
             body: payload.notification.body || "",
