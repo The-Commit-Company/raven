@@ -21,6 +21,7 @@ try {
     }
 
     onBackgroundMessage(messaging, (payload) => {
+        console.log("Background message received", payload)
         const notificationTitle = payload.data.title
         let notificationOptions = {
             body: payload.data.body || "",
@@ -36,7 +37,12 @@ try {
         if (payload.data.creation) {
             notificationOptions["timestamp"] = payload.data.creation
         }
-        const url = `${payload.data.base_url}/raven/channel/${payload.data.channel_id}`
+        let url = `${payload.data.base_url}/raven/channel/${payload.data.channel_id}`
+
+        if (payload.data.message_url) {
+            url = payload.data.message_url
+        }
+
         if (isChrome()) {
             notificationOptions["data"] = {
                 url: url,
