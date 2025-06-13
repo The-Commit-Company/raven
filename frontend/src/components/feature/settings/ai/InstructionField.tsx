@@ -64,6 +64,7 @@ const variables = [
     { variable: 'employee_id', description: 'The ID of the employee' },
     { variable: "employee_company", description: "The company of the employee (value in Employee DocType)" },
     { variable: 'department', description: 'The department of the employee' },
+    { variable: 'lang', description: 'The current user language' },
 ]
 
 const DynamicInstructionField = ({ allowUsingTemplate, instructionRequired, autoFocus }: Props) => {
