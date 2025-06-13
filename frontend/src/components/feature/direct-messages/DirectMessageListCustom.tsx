@@ -32,7 +32,7 @@ import LabelByUserList from '../labels/LabelByUserList'
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
 
 export const DirectMessageList = () => {
-  const enriched = useEnrichedChannels()  
+  const enriched = useEnrichedChannels()
   return (
     <SidebarGroup pb='4'>
       <SidebarGroup>
@@ -71,7 +71,7 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
   if (title === 'Xong') return <DoneChannelList />
   if (title === 'Chủ đề') return <ThreadsCustom />
   if (title === 'Thành viên') return <UserChannelList />
-  if (title === 'Nhãn') return <LabelByUserList/>
+  if (title === 'Nhãn') return <LabelByUserList />
 
   if (filteredChannels.length === 0 && title !== 'Trò chuyện') {
     return <div className='text-gray-500 text-sm italic p-4 text-center'>Không có kết quả</div>
@@ -138,12 +138,12 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
     return null
   }
 
-
- const lastOwner = (() => {
+  const lastOwner = (() => {
     try {
-      const raw = typeof channel.last_message_details === 'string'
-        ? JSON.parse(channel.last_message_details)
-        : channel.last_message_details
+      const raw =
+        typeof channel.last_message_details === 'string'
+          ? JSON.parse(channel.last_message_details)
+          : channel.last_message_details
       return raw?.owner ?? ''
     } catch {
       return ''
@@ -153,7 +153,6 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   const user = useGetUser(lastOwner)
 
   const formattedMessage = formatLastMessage(channel, currentUser, user?.full_name)
-
 
   // 4. Tính hiển thị
   const displayName = peerUser
@@ -173,9 +172,14 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   return (
     <div
       onClick={handleNavigate}
-      className={`... group relative cursor-pointer flex items-center p-2 ${
-        isSelectedChannel ? 'bg-gray-300 dark:bg-gray-700' : 'hover:bg-gray-100 dark:hover:bg-gray-700'
-      }`}
+      className={clsx(
+        'group relative cursor-pointer flex items-center p-2 transition-colors duration-150',
+        isSelectedChannel
+          ? 'bg-gray-300 dark:bg-gray-700'
+          : isTablet
+            ? 'active:bg-gray-100 dark:active:bg-gray-700'
+            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+      )}
     >
       <SidebarIcon>
         <Box className='relative'>

@@ -3,15 +3,11 @@ import { commandMenuOpenAtom } from '@/components/feature/CommandMenu/CommandMen
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { useSidebarMode } from '@/utils/layout/sidebar'
 import { __ } from '@/utils/translations'
-import { Box, Button, Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
+import { Box, Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
 import { useSetAtom } from 'jotai'
 import { BiMoon, BiSun } from 'react-icons/bi'
 import { TbSearch } from 'react-icons/tb'
-import MentionsButton from './MentionsButton'
-import { HStack } from '../Stack'
-import { getKeyboardMetaKeyString } from '@/utils/layout/keyboardKey'
 import { CreateChannelButton } from '@/components/feature/channels/CreateChannelModal'
-import { FiPlus } from 'react-icons/fi'
 import { CreateLabelButton } from '@/components/feature/channels/CreateLabelModal'
 
 export const SidebarHeader = () => {
@@ -49,8 +45,8 @@ export const SidebarHeader = () => {
         <Flex align='center' gap='4' className='pr-1 sm:pr-0'>
           <ColorModeToggleButton />
           {isLabelMode ? (
-            <button className='p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded'>
-              <FiPlus size={18} />
+            <button className='p-2 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 rounded'>
+              <CreateLabelButton/>
             </button>
           ) : (
             <>

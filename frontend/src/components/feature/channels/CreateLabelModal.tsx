@@ -90,6 +90,8 @@ export const CreateLabelContent = ({ isOpen, setIsOpen }: { isOpen: boolean; set
       toast.success('Đã tạo nhãn')
       reset()
       setIsOpen(false)
+
+      window.dispatchEvent(new CustomEvent('label_created'))
     } catch (err) {
       console.error(err)
       toast.error('Không thể tạo nhãn')
@@ -143,9 +145,6 @@ export const CreateLabelContent = ({ isOpen, setIsOpen }: { isOpen: boolean; set
         </Box>
 
         <Flex justify='between' align='center' pt='2'>
-          {/* <Button type='button' variant='soft' size='1'>
-            Thêm quy tắc nhãn
-          </Button> */}
           <Flex gap='3' align='center'>
             <Button type='submit' size='2' disabled={loading}>
               Tạo
