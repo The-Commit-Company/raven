@@ -3,7 +3,7 @@ import { useSetAtom } from 'jotai'
 import { BiBoltCircle, BiBot, BiFile, BiGroup, BiMessageSquareDots, BiTime, BiUserCircle } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { commandMenuOpenAtom } from './CommandMenu'
-import { PiMagicWand, PiOpenAiLogo } from 'react-icons/pi'
+import { PiMagicWand } from 'react-icons/pi'
 import { LuSquareFunction } from 'react-icons/lu'
 import { AiOutlineApi } from 'react-icons/ai'
 
