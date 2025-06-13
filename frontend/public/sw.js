@@ -21,17 +21,16 @@ try {
     }
 
     onBackgroundMessage(messaging, (payload) => {
-        console.log("Background message received", payload)
-        const notificationTitle = payload.data.title
+        const notificationTitle = payload.data.notification.title
         let notificationOptions = {
-            body: payload.data.body || "",
+            body: payload.data.notification.body || "",
         }
         if (payload.data.notification_icon) {
             notificationOptions["icon"] = payload.data.notification_icon
         }
 
-        if (payload.data.raven_message_type === "Image") {
-            notificationOptions["image"] = payload.data.content
+        if (payload.data.notification.image) {
+            notificationOptions["image"] = payload.data.notification.image
         }
 
         if (payload.data.creation) {
