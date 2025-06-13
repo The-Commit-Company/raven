@@ -3,7 +3,7 @@ import { useSetAtom } from 'jotai'
 import { BiBoltCircle, BiBot, BiFile, BiGroup, BiMessageSquareDots, BiTime, BiUserCircle } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { commandMenuOpenAtom } from './CommandMenu'
-import { PiOpenAiLogo } from 'react-icons/pi'
+import { PiMagicWand, PiOpenAiLogo } from 'react-icons/pi'
 import { LuSquareFunction } from 'react-icons/lu'
 import { AiOutlineApi } from 'react-icons/ai'
 
@@ -83,8 +83,8 @@ const SettingsList = (props: Props) => {
             </Command.Item>
 
             <Command.Item value='ai-settings' onSelect={onSelect}>
-                <PiOpenAiLogo size={ICON_SIZE} />
-                OpenAI Settings
+                <PiMagicWand size={ICON_SIZE} />
+                AI Settings
             </Command.Item>
         </Command.Group>
     )
