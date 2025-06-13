@@ -3,6 +3,8 @@ from frappe import _
 from frappe.model.document import Document
 from raven.ai.openai_client import get_open_ai_client
 import traceback
+from raven.chatbot.doctype.chatconversation.chatconversation import ChatConversation
+from raven.chatbot.doctype.chatmessage.chatmessage import ChatMessage
 
 @frappe.whitelist()
 def get_conversations():
@@ -143,8 +145,6 @@ def send_message(conversation_id, message, is_user=True):
         error_message = f"{str(e)}\n{frappe.get_traceback()}"
         frappe.log_error(error_message, "Lỗi tổng thể khi gửi tin nhắn")
         frappe.throw(_("Có lỗi xảy ra khi gửi tin nhắn"))
-
-# Hàm xử lý AI ở background
 
 def handle_ai_reply(conversation_id):
     import traceback
