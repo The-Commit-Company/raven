@@ -21,7 +21,7 @@ import { DoneChannelList } from '../channels/DoneChannelList'
 import MentionList from '../chat/ChatInput/MentionListCustom'
 import { MessageSaved } from './DirectMessageSaved'
 import clsx from 'clsx'
-import { useIsTablet } from '@/hooks/useMediaQuery'
+import { useIsMobile, useIsTablet } from '@/hooks/useMediaQuery'
 import UserChannelList from '../channels/UserChannelList'
 import { useEnrichedChannels } from '@/utils/channel/ChannelAtom'
 import ThreadsCustom from '../threads/ThreadsCustom'
@@ -117,6 +117,7 @@ const isDMChannel = (c: UnifiedChannel): c is DMChannelWithUnreadCount => {
 export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel }) => {
   // 1. Gọi tất cả hooks ngay từ đầu
   const isTablet = useIsTablet()
+  const isMobile = useIsMobile()
   const { currentUser } = useContext(UserContext)
   const navigate = useNavigate()
   const { workspaceID, channelID } = useParams<{ workspaceID: string; channelID: string }>()
@@ -168,19 +169,16 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
     clearManualMark(channel.name)
   }
 
+
+  const bgClass = isSelectedChannel && !isTablet
+  ? 'bg-gray-300 dark:bg-gray-700'
+  : !isTablet && !isMobile
+    ? 'hover:bg-gray-100 dark:hover:bg-gray-700'
+    : ''
+
   // 5. Render
   return (
-    <div
-      onClick={handleNavigate}
-      className={clsx(
-        'group relative cursor-pointer flex items-center p-2',
-        isSelectedChannel && !isTablet
-          ? 'bg-gray-300 dark:bg-gray-700'
-          : isTablet
-            ? ''
-            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
-      )}
-    >
+    <div onClick={handleNavigate} className={clsx('group relative cursor-pointer flex items-center p-1 mb-2', bgClass)}>
       <SidebarIcon>
         <Box className='relative'>
           {peerUser ? (
@@ -205,7 +203,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
 
       <Flex direction='column' justify='center' className='flex-1 ml-2'>
         <Flex justify='between' align='center'>
-          <Text as='span' className={`${shouldShowBadge ? 'font-bold' : 'font-medium'} truncate`}>
+          <Text size='2' as='span' className={`${shouldShowBadge ? 'font-bold' : 'font-medium'} truncate`}>
             {displayName}
           </Text>
         </Flex>
