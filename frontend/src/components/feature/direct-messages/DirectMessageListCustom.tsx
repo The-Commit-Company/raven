@@ -173,7 +173,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   const bgClass = isSelectedChannel && !isTablet
   ? 'bg-gray-300 dark:bg-gray-700'
   : !isTablet && !isMobile
-    ? 'hover:bg-gray-100 dark:hover:bg-gray-700'
+    ? 'hover:bg-gray-100 dark:hover:bg-gray-600'
     : ''
 
   // 5. Render
