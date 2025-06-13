@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FiPlus } from 'react-icons/fi'
 import { Dialog } from '@radix-ui/themes'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
@@ -17,37 +17,68 @@ interface CreateLabelForm {
 const DIALOG_CONTENT_CLASS =
   'z-[300] bg-white dark:bg-gray-900 rounded-xl p-6 shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto'
 
+
+
 export const CreateLabelButton = () => {
   const [isOpen, setIsOpen] = useState(false)
   const isDesktop = useIsDesktop()
+  const dialogRef = useRef<HTMLDivElement>(null)
+
+  // Close when clicking outside content (desktop only)
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (dialogRef.current && !dialogRef.current.contains(e.target as Node)) {
+        setIsOpen(false)
+        console.log('hello')
+      }
+    }
+
+    if (isDesktop && isOpen) {
+      document.addEventListener('mousedown', handleOutsideClick)
+      return () => document.removeEventListener('mousedown', handleOutsideClick)
+    }
+  }, [isOpen, isDesktop])
+
+  const handleChangeOpen = (open: boolean) => {
+    if (!open) console.log('hello')
+    setIsOpen(open)
+  }
 
   if (isDesktop) {
     return (
-      <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
-        <Dialog.Trigger>
-          <IconButton
-            variant='soft'
-            size='1'
-            radius='large'
-            color='gray'
-            aria-label='Tạo nhãn'
-            title='Tạo nhãn'
-            className='transition-all ease-ease text-gray-10 bg-transparent hover:bg-gray-3 hover:text-gray-12 cursor-pointer'
-          >
-            <FiPlus size='16' />
-          </IconButton>
-        </Dialog.Trigger>
-        <Dialog.Content className={DIALOG_CONTENT_CLASS}>
-          <CreateLabelContent isOpen={isOpen} setIsOpen={setIsOpen} />
-        </Dialog.Content>
-      </Dialog.Root>
+      <>
+        {/* Button mở modal */}
+        <IconButton
+          onClick={() => setIsOpen(true)}
+          variant='soft'
+          size='1'
+          radius='large'
+          color='gray'
+          aria-label='Tạo nhãn'
+          title='Tạo nhãn'
+          className='transition-all ease-ease text-gray-10 bg-transparent hover:bg-gray-3 hover:text-gray-12 cursor-pointer'
+        >
+          <FiPlus size='16' />
+        </IconButton>
+
+        {/* Modal desktop */}
+        <Dialog.Root open={isOpen} onOpenChange={handleChangeOpen}>
+          <Dialog.Content ref={dialogRef} className={DIALOG_CONTENT_CLASS}>
+            <CreateLabelContent isOpen={isOpen} setIsOpen={setIsOpen} />
+          </Dialog.Content>
+        </Dialog.Root>
+      </>
     )
   }
 
+  // Drawer cho mobile
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>
         <IconButton
+          onClick={() => {
+            setTimeout(() => setIsOpen(true), 50) // Cho phép Drawer hoàn tất mở trước
+          }}
           variant='soft'
           size='1'
           radius='large'
@@ -90,7 +121,6 @@ export const CreateLabelContent = ({ isOpen, setIsOpen }: { isOpen: boolean; set
       toast.success('Đã tạo nhãn')
       reset()
       setIsOpen(false)
-
       window.dispatchEvent(new CustomEvent('label_created'))
     } catch (err) {
       console.error(err)
@@ -111,11 +141,12 @@ export const CreateLabelContent = ({ isOpen, setIsOpen }: { isOpen: boolean; set
           <Dialog.Close>
             <IoMdClose
               type='button'
-              className='text-gray-500 hover:text-black dark:hover:text-white transition-colors p-1 ml-auto'
+              className='text-gray-500 hover:text-black dark:hover:text-white transition-colors p-1 ml-auto cursor-pointer'
               aria-label='Đóng'
             />
           </Dialog.Close>
         </Dialog.Title>
+
         <Dialog.Description className='text-sm text-gray-500'>
           Nhập tên nhãn để tạo mới. Chỉ bạn có thể thấy nhãn này.
         </Dialog.Description>
@@ -146,11 +177,11 @@ export const CreateLabelContent = ({ isOpen, setIsOpen }: { isOpen: boolean; set
 
         <Flex justify='between' align='center' pt='2'>
           <Flex gap='3' align='center'>
-            <Button type='submit' size='2' disabled={loading}>
+            <Button className='cursor-pointer' type='submit' size='2' disabled={loading}>
               Tạo
             </Button>
             <Dialog.Close>
-              <Button variant='ghost' type='button' size='2'>
+              <Button className='cursor-pointer' variant='ghost' type='button' size='2'>
                 Hủy bỏ
               </Button>
             </Dialog.Close>

@@ -168,8 +168,18 @@ export function FilterList({ onClose }: FilterListProps) {
                     <div onClick={(e) => e.stopPropagation()}>
                       <CreateLabelButton />
                     </div>
-                    <div onClick={() => setIsLabelOpen((prev) => !prev)}>
-                      {isLabelOpen ? <FiChevronDown size={14} /> : <FiChevronRight size={14} />}
+                    <div
+                      className='relative w-4 h-4' // đảm bảo có kích thước để canh giữa
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setIsLabelOpen((prev) => !prev)
+                      }}
+                    >
+                      {isLabelOpen ? (
+                        <FiChevronDown className='absolute inset-0 m-auto' size={16} />
+                      ) : (
+                        <FiChevronRight className='absolute inset-0 m-auto' size={16} />
+                      )}
                     </div>
                   </div>
                 )}

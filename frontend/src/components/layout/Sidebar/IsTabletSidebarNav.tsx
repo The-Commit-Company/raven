@@ -121,7 +121,7 @@ export default function FilterTabs() {
           <div
             onClick={() => setShowFilterList(false)}
             className={clsx(
-              'fixed inset-0 bg-black bg-opacity-40 z-40 transition-opacity duration-300',
+              'fixed inset-0 bg-black bg-opacity-40 z-20 transition-opacity duration-300',
               showFilterList ? 'opacity-100' : 'opacity-0 pointer-events-none'
             )}
           />
@@ -129,7 +129,7 @@ export default function FilterTabs() {
           {/* Sidebar */}
           <div
             className={clsx(
-              'fixed top-0 left-0 h-full w-60 bg-white dark:bg-neutral-800 shadow-lg z-50',
+              'fixed top-0 left-0 h-full w-60 bg-white dark:bg-neutral-800 shadow-lg z-30',
               showFilterList ? 'animate-slide-in-left' : 'animate-slide-out-left'
             )}
           >
