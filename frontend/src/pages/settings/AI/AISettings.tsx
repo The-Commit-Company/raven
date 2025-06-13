@@ -6,12 +6,13 @@ import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import useRavenSettings from '@/hooks/fetchers/useRavenSettings'
 import { RavenSettings } from '@/types/Raven/RavenSettings'
 import { hasRavenAdminRole, isSystemManager } from '@/utils/roles'
-import { Box, Button, Checkbox, Flex, Separator, Text, TextField, Select, Heading, Tabs, Callout } from '@radix-ui/themes'
+import { Box, Button, Checkbox, Flex, Separator, Text, TextField, Select, Tabs, Callout } from '@radix-ui/themes'
 import { useFrappeGetCall, useFrappeUpdateDoc, useFrappePostCall } from 'frappe-react-sdk'
 import { useEffect, useState } from 'react'
-import { Controller, FormProvider, useForm } from 'react-hook-form'
+import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { toast } from 'sonner'
 import { BiInfoCircle, BiCheckCircle, BiXCircle } from 'react-icons/bi'
+import { Stack } from '@/components/layout/Stack'
 
 const AISettings = () => {
 
@@ -23,7 +24,7 @@ const AISettings = () => {
         disabled: !isRavenAdmin
     })
 
-    const { handleSubmit, control, watch, reset, register, formState: { errors } } = methods
+    const { handleSubmit, control, watch, reset } = methods
 
     useEffect(() => {
         if (ravenSettings) {
@@ -65,12 +66,8 @@ const AISettings = () => {
     }, [])
 
     const isAIEnabled = watch('enable_ai_integration')
-    const enableOpenAI = watch('enable_openai_services')
-    const enableLocalLLM = watch('enable_local_llm')
-    const localLLMProvider = watch('local_llm_provider')
-    const localLLMUrl = watch('local_llm_api_url')
 
-    const { data: openaiVersion } = useFrappeGetCall<{ message: string }>('raven.api.ai_features.get_open_ai_version')
+
 
     return (
         <PageContainer>
@@ -107,7 +104,7 @@ const AISettings = () => {
                             </Text>
                         </Flex>
                         <Separator size='4' />
-                        
+
                         {isAIEnabled ? (
                             <Tabs.Root defaultValue="openai">
                                 <Tabs.List>
@@ -117,24 +114,11 @@ const AISettings = () => {
 
                                 <Box mt="4">
                                     <Tabs.Content value="openai">
-                                        <OpenAISection 
-                                            control={control} 
-                                            register={register} 
-                                            errors={errors}
-                                            enableOpenAI={enableOpenAI}
-                                            openaiVersion={openaiVersion}
-                                        />
+                                        <OpenAISection />
                                     </Tabs.Content>
 
                                     <Tabs.Content value="local">
-                                        <LocalLLMSection 
-                                            control={control} 
-                                            register={register} 
-                                            errors={errors}
-                                            enableLocalLLM={enableLocalLLM}
-                                            localLLMProvider={localLLMProvider}
-                                            localLLMUrl={localLLMUrl}
-                                        />
+                                        <LocalLLMSection />
                                     </Tabs.Content>
                                 </Box>
                             </Tabs.Root>
@@ -145,14 +129,14 @@ const AISettings = () => {
         </PageContainer>
     )
 }
+const OpenAISection = () => {
 
-interface SectionProps {
-    control: any
-    register: any
-    errors: any
-}
+    const { data: openaiVersion } = useFrappeGetCall<{ message: string }>('raven.api.ai_features.get_open_ai_version')
 
-const OpenAISection = ({ control, register, errors, enableOpenAI, openaiVersion }: SectionProps & { enableOpenAI?: 0 | 1, openaiVersion?: any }) => {
+    const { watch, control, register, formState: { errors } } = useFormContext<RavenSettings>()
+
+    const enableOpenAI = watch('enable_openai_services')
+
     return (
         <Flex direction="column" gap="4">
             <Flex direction={'column'} gap='2'>
@@ -243,11 +227,14 @@ const OpenAISection = ({ control, register, errors, enableOpenAI, openaiVersion 
     )
 }
 
-const LocalLLMSection = ({ control, register, errors, enableLocalLLM, localLLMProvider, localLLMUrl }: SectionProps & { 
-    enableLocalLLM?: 0 | 1, 
-    localLLMProvider?: string,
-    localLLMUrl?: string 
-}) => {
+const LocalLLMSection = () => {
+
+    const { watch, control, register, formState: { errors } } = useFormContext<RavenSettings>()
+
+    const enableLocalLLM = watch('enable_local_llm')
+    const localLLMProvider = watch('local_llm_provider')
+    const localLLMUrl = watch('local_llm_api_url')
+
     const { call: testConnection, loading: testing } = useFrappePostCall<{
         message: {
             success: boolean
@@ -269,7 +256,7 @@ const LocalLLMSection = ({ control, register, errors, enableLocalLLM, localLLMPr
                 provider: 'Local LLM',
                 api_url: localLLMUrl
             })
-            
+
             setTestResult({
                 success: result.message.success,
                 message: result.message.message
@@ -312,7 +299,7 @@ const LocalLLMSection = ({ control, register, errors, enableLocalLLM, localLLMPr
 
             {enableLocalLLM ? (
                 <>
-                    <Box>
+                    <Stack gap='1'>
                         <Label htmlFor='local_llm_provider'>Local LLM Provider</Label>
                         <Controller
                             control={control}
@@ -334,7 +321,7 @@ const LocalLLMSection = ({ control, register, errors, enableLocalLLM, localLLMPr
                         <HelperText>
                             Select your local LLM provider
                         </HelperText>
-                    </Box>
+                    </Stack>
 
                     <Box>
                         <Label htmlFor='local_llm_api_url' isRequired>Local LLM API URL</Label>
@@ -350,9 +337,10 @@ const LocalLLMSection = ({ control, register, errors, enableLocalLLM, localLLMPr
                                 })}
                                 aria-invalid={errors.local_llm_api_url ? 'true' : 'false'}
                             />
-                            <Button 
+                            <Button
                                 type="button"
                                 variant="soft"
+                                className='not-cal'
                                 onClick={handleTestConnection}
                                 disabled={testing || !localLLMUrl}
                             >
