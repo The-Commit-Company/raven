@@ -181,7 +181,7 @@ export const useFetchUnreadMessageCount = () => {
         if (channelID) {
             const channel = channels.find(c => c.name === channelID)
             if (channel) {
-                app_name = channel.name + " - " + app_name
+                app_name = channel.channel_name + " - " + app_name
             }
         }
         if (unread_count) {
