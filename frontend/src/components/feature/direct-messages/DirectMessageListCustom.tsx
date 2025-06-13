@@ -169,16 +169,14 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
     clearManualMark(channel.name)
   }
 
-
-  // const bgClass = isSelectedChannel && !isTablet
-  // ? 'bg-gray-300 dark:bg-gray-700'
-  // : !isTablet && !isMobile
-  //   ? ''
-  //   : ''
+  const bgClass = `
+  ${isSelectedChannel ? 'bg-gray-300 dark:bg-gray-700' : ''}
+  hover:bg-gray-100 dark:hover:bg-gray-600
+`
 
   // 5. Render
   return (
-    <div onClick={handleNavigate} className={clsx('group relative cursor-pointer flex items-center p-1 mb-2 hover:bg-gray-100 dark:hover:bg-gray-600')}>
+    <div onClick={handleNavigate} className={`group relative cursor-pointer flex items-center p-1 mb-2 ${bgClass}`}>
       <SidebarIcon>
         <Box className='relative'>
           {peerUser ? (
