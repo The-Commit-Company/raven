@@ -13,7 +13,7 @@ from frappe.query_builder import DocType
 def get_all_channels(hide_archived=True):
     """
     Trả về danh sách channel (gồm group và DMs) mà user hiện tại là thành viên.
-    Trạng thái is_done lấy từ Raven Channel Member.
+    Bao gồm trạng thái is_done và user_labels (các nhãn do user gán vào channel).
     """
 
     if hide_archived == "false":
@@ -43,7 +43,7 @@ def get_all_channels(hide_archived=True):
 def get_channel_list(hide_archived=False):
     """
     Lấy tất cả các channel mà user hiện tại là thành viên.
-    Enrich thêm is_done từ Raven Channel Member.
+    Enrich thêm is_done từ Raven Channel Member và user_labels từ User Channel Label.
     """
 
     channel = frappe.qb.DocType("Raven Channel")
@@ -90,12 +90,28 @@ def get_channel_list(hide_archived=False):
 
     results = query.run(as_dict=True)
 
-    # Chuẩn hóa kết quả: đảm bảo có is_done
+    # Lấy danh sách nhãn người dùng đã gán cho các channel này
+    channel_ids = [row["name"] for row in results]
+
+    user_labels = frappe.get_all("User Channel Label",
+        filters={
+            "user": frappe.session.user,
+            "channel_id": ["in", channel_ids]
+        },
+        fields=["channel_id", "label"]
+    )
+
+    # Gom nhãn theo channel_id
+    label_map = {}
+    for row in user_labels:
+        label_map.setdefault(row["channel_id"], []).append(row["label"])
+
+    # Gắn nhãn và is_done vào từng channel
     for row in results:
         row["is_done"] = int(row.get("is_done") or 0)
+        row["user_labels"] = label_map.get(row["name"], [])
 
     return results
-
 
 def get_peer_user_id(channel_id: str, is_direct_message: int, is_self_message: bool = False) -> str:
     """

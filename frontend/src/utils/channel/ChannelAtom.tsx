@@ -20,10 +20,10 @@ export const doneListAtom = atom<string[]>([])
 // Action để cập nhật sortedChannelsAtom một cách an toàn
 export const setSortedChannelsAtom = atom(
   null,
-  (get, set, updater: (prev: ChannelWithGroupType[]) => ChannelWithGroupType[]) => {
+  (get, set, next: ChannelWithGroupType[] | ((prev: ChannelWithGroupType[]) => ChannelWithGroupType[])) => {
     const prev = get(sortedChannelsAtom)
-    const next = updater(prev)
-    set(sortedChannelsAtom, next)
+    const resolved = typeof next === 'function' ? (next as Function)(prev) : next
+    set(sortedChannelsAtom, resolved)
   }
 )
 

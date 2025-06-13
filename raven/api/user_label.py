@@ -16,15 +16,31 @@ def create_label(label):
     return {"status": "success"}
 
 @frappe.whitelist()
-def assign_label_to_user(label_name, target_user):
+def assign_label_to_channel(label_name, channel_id):
+    """Gán nhãn của user hiện tại cho 1 channel cụ thể"""
     user = frappe.session.user
 
-    doc = frappe.get_doc("User Label", label_name)
-    if doc.owner != user:
+    # Kiểm tra nhãn thuộc về user
+    label_doc = frappe.get_doc("User Label", label_name)
+    if label_doc.owner != user:
         frappe.throw(_("Bạn không có quyền gán nhãn này"))
 
-    doc.target_user = target_user
-    doc.save(ignore_permissions=True)
+    # Kiểm tra đã tồn tại chưa
+    exists = frappe.db.exists("User Channel Label", {
+        "user": user,
+        "channel_id": channel_id,
+        "label": label_name
+    })
+
+    if exists:
+        return {"status": "already_assigned"}
+
+    frappe.get_doc({
+        "doctype": "User Channel Label",
+        "user": user,
+        "channel_id": channel_id,
+        "label": label_name
+    }).insert(ignore_permissions=True)
 
     return {"status": "assigned"}
 

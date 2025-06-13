@@ -6,7 +6,7 @@ import CircleUserList from './CircleUserList'
 import { useIsTablet } from '@/hooks/useMediaQuery'
 import IsTabletSidebarNav from './IsTabletSidebarNav'
 import { useSetAtom } from 'jotai'
-import { prepareSortedChannels, sortedChannelsAtom } from '@/utils/channel/ChannelAtom'
+import { prepareSortedChannels, setSortedChannelsAtom } from '@/utils/channel/ChannelAtom'
 
 export type SidebarBodyProps = {
   size: number
@@ -14,9 +14,10 @@ export type SidebarBodyProps = {
 
 export const SidebarBody = ({ size }: SidebarBodyProps) => {
   const { channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
-  const setSortedChannels = useSetAtom(sortedChannelsAtom)
+  const setSortedChannels = useSetAtom(setSortedChannelsAtom)
   useEffect(() => {
-    setSortedChannels(prepareSortedChannels(channels, dm_channels))
+    setSortedChannels((prev) => prepareSortedChannels(channels, dm_channels))
+
   }, [channels, dm_channels, setSortedChannels])
 
   const isTablet = useIsTablet()

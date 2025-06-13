@@ -1,11 +1,13 @@
-import React, { useEffect, useState, forwardRef } from 'react'
+import React, { useEffect, useState, forwardRef, useMemo } from 'react'
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { MdLabelOutline } from 'react-icons/md'
 import { HiOutlineDotsHorizontal } from 'react-icons/hi'
-import { Button, ContextMenu, Dialog, Flex, Popover, Tooltip } from '@radix-ui/themes'
+import { Button, Checkbox, ContextMenu, Dialog, Flex, Popover, Tooltip } from '@radix-ui/themes'
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/layout/Drawer'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { IoMdClose } from 'react-icons/io'
+import { useAtomValue } from 'jotai'
+import { sortedChannelsAtom } from '@/utils/channel/ChannelAtom'
 
 // ==== Common button style ====
 const commonButtonStyle = {
@@ -27,14 +29,14 @@ IconButton.displayName = 'IconButton'
 const LabelByUserList = () => {
   const { data, error, isLoading, mutate } = useFrappeGetCall('raven.api.user_label.get_my_labels')
 
-useEffect(() => {
-  mutate()
+  useEffect(() => {
+    mutate()
 
-  const handler = () => mutate()
-  window.addEventListener('label_created', handler)
+    const handler = () => mutate()
+    window.addEventListener('label_created', handler)
 
-  return () => window.removeEventListener('label_created', handler)
-}, [])
+    return () => window.removeEventListener('label_created', handler)
+  }, [])
 
   if (isLoading) return <div>Đang tải...</div>
   if (error) return <div className='text-red-500'>Lỗi: {error.message}</div>
@@ -67,13 +69,13 @@ const LabelItem: React.FC<LabelItemProps> = ({ label, onEdit, onDelete }) => {
         <MdLabelOutline className='w-4 h-4 text-gray-11 shrink-0' />
         <span>{label}</span>
       </div>
-      <LabelItemMenu onEdit={onEdit} onDelete={onDelete} />
+      <LabelItemMenu label={label} onEdit={onEdit} onDelete={onDelete} />
     </div>
   )
 }
 
 // ==== LabelItem Menu ====
-const LabelItemMenu = ({ onEdit, onDelete }: { onEdit?: () => void; onDelete?: () => void }) => (
+const LabelItemMenu = ({ label, onEdit, onDelete }: { label: string; onEdit?: () => void; onDelete?: () => void }) => (
   <Popover.Root>
     <Tooltip content='Tuỳ chọn nhãn' delayDuration={300}>
       <Popover.Trigger>
@@ -86,7 +88,7 @@ const LabelItemMenu = ({ onEdit, onDelete }: { onEdit?: () => void; onDelete?: (
       </Popover.Trigger>
     </Tooltip>
     <Popover.Content className='min-w-[120px] space-y-1'>
-      <CreateConversationButton />
+      <CreateConversationButton label={label} />
       <Button
         className='block w-full text-left justify-start text-black font-light dark:text-white cursor-pointer hover:bg-indigo-500 dark:hover:bg-gray-700 bg-transparent hover:text-white transition-colors'
         style={commonButtonStyle}
@@ -106,7 +108,7 @@ const LabelItemMenu = ({ onEdit, onDelete }: { onEdit?: () => void; onDelete?: (
 )
 
 // ==== CreateConversationButton ====
-const CreateConversationButton = () => {
+const CreateConversationButton = ({ label }: { label: string }) => {
   const [isOpen, setIsOpen] = useState(false)
   const isDesktop = useIsDesktop()
 
@@ -122,8 +124,8 @@ const CreateConversationButton = () => {
   return isDesktop ? (
     <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
       <Dialog.Trigger asChild>{button}</Dialog.Trigger>
-      <Dialog.Content className='z-[300] bg-white dark:bg-gray-900 rounded-xl p-6 shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto'>
-        <CreateConversationContent setIsOpen={setIsOpen} />
+      <Dialog.Content className='z-[300] bg-white dark:bg-gray-900 rounded-xl p-6 shadow-xl w-[900px] max-w-full max-h-[90vh] overflow-y-auto'>
+        <CreateConversationContent setIsOpen={setIsOpen} label={label} />
       </Dialog.Content>
     </Dialog.Root>
   ) : (
@@ -131,20 +133,41 @@ const CreateConversationButton = () => {
       <DrawerTrigger asChild>{button}</DrawerTrigger>
       <DrawerContent>
         <div className='pb-16 overflow-y-scroll min-h-96'>
-          <CreateConversationContent setIsOpen={setIsOpen} />
+          <CreateConversationContent setIsOpen={setIsOpen} label={label} />
         </div>
       </DrawerContent>
     </Drawer>
   )
 }
 
+type Props = {
+  setIsOpen: (v: boolean) => void
+  label: string
+}
 // ==== CreateConversationContent ====
-const CreateConversationContent = ({ setIsOpen }: { setIsOpen: (v: boolean) => void }) => {
+export const CreateConversationContent = ({ setIsOpen, label }: Props) => {
+  const channels = useAtomValue(sortedChannelsAtom)
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+
+  const handleToggle = (channelID: string) => {
+    setSelected((prev) => {
+      const newSet = new Set(prev)
+      if (newSet.has(channelID)) {
+        newSet.delete(channelID)
+      } else {
+        newSet.add(channelID)
+      }
+      return newSet
+    })
+  }
+
+  const selectedChannels = useMemo(() => channels.filter((c) => selected.has(c.name)), [selected, channels])
+
   return (
     <form className='space-y-4'>
-      <Dialog.Title className='text-lg font-semibold flex'>
+      <Dialog.Title className='text-lg font-semibold flex w-full items-center justify-between'>
         <Flex align='center' gap='2'>
-          Tạo cuộc trò chuyện mới
+          Thêm cuộc trò chuyện vào <span className='italic ml-1'>"{label}"</span>
         </Flex>
         <Dialog.Close>
           <IoMdClose
@@ -154,22 +177,56 @@ const CreateConversationContent = ({ setIsOpen }: { setIsOpen: (v: boolean) => v
           />
         </Dialog.Close>
       </Dialog.Title>
-      <Dialog.Description className='text-sm text-gray-500'>
-        Nhập thông tin để bắt đầu cuộc trò chuyện với người khác.
-      </Dialog.Description>
 
-      {/* Form nội dung */}
+      <div className='flex gap-4 max-h-[400px] overflow-y-auto border rounded'>
+        {/* Cột trái: danh sách channel */}
+        <div className='w-1/2 border-r p-2 space-y-1'>
+          <input type='text' placeholder='Tìm kiếm' className=' p-2 border rounded text-sm mb-2' />
+          {channels.map((channel) => (
+            <label
+              key={channel.name}
+              className='flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-2 dark:hover:bg-gray-7 cursor-pointer'
+            >
+              <Checkbox checked={selected.has(channel.name)} onCheckedChange={() => handleToggle(channel.name)} />
+              <div className='flex items-center gap-2 text-sm truncate'>
+                {/* Avatar giả lập */}
+                <div className='w-6 h-6 rounded-full bg-gray-5 shrink-0 flex items-center justify-center text-xs font-bold uppercase'>
+                  {channel.channel_name?.[0] || '?'}
+                </div>
+                <div className='truncate'>
+                  {channel.channel_name || channel.name}
+                  {channel.is_external && (
+                    <span className='ml-1 text-[10px] bg-blue-100 text-blue-700 px-1 rounded'>Bên ngoài</span>
+                  )}
+                </div>
+              </div>
+            </label>
+          ))}
+        </div>
+
+        {/* Cột phải: đã chọn */}
+        <div className='w-1/2 p-2 text-sm'>
+          <div className='mb-2 font-medium'>Đã chọn: {selected.size} cuộc trò chuyện</div>
+          <div className='space-y-1'>
+            {selectedChannels.map((channel) => (
+              <div key={channel.name} className='truncate text-gray-12'>
+                {channel.channel_name || channel.name}
+              </div>
+            ))}
+            {selectedChannels.length === 0 && <div className='text-gray-500 italic'>Chưa chọn cuộc trò chuyện nào</div>}
+          </div>
+        </div>
+      </div>
+
       <Flex justify='between' align='center' pt='2'>
-        <Flex gap='3' align='center'>
-          <Button type='submit' size='2'>
-            Tạo
+        <Dialog.Close>
+          <Button variant='ghost' type='button' size='2'>
+            Hủy bỏ
           </Button>
-          <Dialog.Close>
-            <Button variant='ghost' type='button' size='2'>
-              Hủy bỏ
-            </Button>
-          </Dialog.Close>
-        </Flex>
+        </Dialog.Close>
+        <Button type='submit' size='2' disabled={selected.size === 0}>
+          Thêm
+        </Button>
       </Flex>
     </form>
   )
