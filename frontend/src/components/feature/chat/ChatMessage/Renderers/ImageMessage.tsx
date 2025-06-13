@@ -60,6 +60,11 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
         }, 200);
     }
 
+    const [isImageLoaded, setIsImageLoaded] = useState(false)
+    const onLoad = () => {
+        setIsImageLoaded(true)
+    }
+
     return (
         <Flex direction='column' gap='1'>
             <Flex className='py-1 items-center'>
@@ -97,7 +102,7 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
                     height: height + 'px',
                     width: width + 'px',
                 }}>
-                    {message.blurhash ? <Blurhash hash={message.blurhash} width={width + 'px'} height={height + 'px'} /> :
+                    {message.blurhash && message.blurhash.length === 28 && !isImageLoaded ? <Blurhash hash={message.blurhash} width={width + 'px'} height={height + 'px'} /> :
                         <Box style={{
                             height: height + 'px',
                             width: width + 'px',
@@ -119,6 +124,7 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
                         minHeight: height + 'px',
                         minWidth: width + 'px',
                     }}
+                    onLoad={onLoad}
                     width={width}
                     alt={`Image file sent by ${message.owner} at ${message.creation}`}
                     onContextMenu={(e) => {
