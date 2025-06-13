@@ -1,9 +1,9 @@
 import { useContext, useMemo } from 'react'
-import useTypingIndicator from './useTypingIndicator'
 import { useGetUserRecords } from '@/hooks/useGetUserRecords'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { Text } from '@radix-ui/themes'
 import { HStack } from '@/components/layout/Stack'
+import { useTypingIndicator } from './useTypingIndicator'
 
 type Props = {
   channel: string
