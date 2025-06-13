@@ -24,7 +24,6 @@ import { FiChevronDown, FiChevronRight } from 'react-icons/fi'
 import { MdLabelOutline } from 'react-icons/md'
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 
-
 export const useMentionUnreadCount = () => {
   const { data: mentionsCount, mutate } = useFrappeGetCall<{ message: number }>(
     'raven.api.mentions.get_unread_mention_count',
@@ -150,8 +149,8 @@ export function FilterList({ onClose }: FilterListProps) {
             <div className='group relative'>
               <li
                 className={clsx(
-                  'flex items-center justify-between gap-2',
-                  !isIconOnly && 'pl-1',
+                  'flex items-center gap-2 justify-center',
+                  !isIconOnly && 'pl-1 justify-between',
                   'py-1.5 px-2 rounded-md cursor-pointer hover:bg-gray-3',
                   isLabelOpen && 'bg-gray-4 font-semibold'
                 )}
@@ -166,7 +165,9 @@ export function FilterList({ onClose }: FilterListProps) {
 
                 {!isIconOnly && (
                   <div className='flex items-center gap-2'>
-                    <CreateLabelButton />
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <CreateLabelButton />
+                    </div>
                     <div onClick={() => setIsLabelOpen((prev) => !prev)}>
                       {isLabelOpen ? <FiChevronDown size={14} /> : <FiChevronRight size={14} />}
                     </div>
