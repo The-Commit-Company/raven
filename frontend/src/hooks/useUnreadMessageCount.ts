@@ -176,7 +176,14 @@ export const useFetchUnreadMessageCount = () => {
 
     useEffect(() => {
         // @ts-expect-error
-        const app_name = window.app_name || "Raven"
+        let app_name = window.app_name || "Raven"
+
+        if (channelID) {
+            const channel = channels.find(c => c.name === channelID)
+            if (channel) {
+                app_name = channel.channel_name + " - " + app_name
+            }
+        }
         if (unread_count) {
             const total_count = unread_count.message.reduce((acc: number, c) => {
                 return acc + c.unread_count
@@ -191,7 +198,7 @@ export const useFetchUnreadMessageCount = () => {
         } else {
             document.title = app_name
         }
-    }, [unread_count])
+    }, [unread_count, channelID, channels])
 
     return unread_count
 }
