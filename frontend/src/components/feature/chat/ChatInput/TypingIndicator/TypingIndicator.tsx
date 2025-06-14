@@ -1,8 +1,8 @@
-import { useContext, useMemo } from 'react'
+import { HStack } from '@/components/layout/Stack'
 import { useGetUserRecords } from '@/hooks/useGetUserRecords'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { Text } from '@radix-ui/themes'
-import { HStack } from '@/components/layout/Stack'
+import { useContext, useMemo } from 'react'
 import { useTypingIndicator } from './useTypingIndicator'
 
 type Props = {
@@ -11,9 +11,7 @@ type Props = {
 
 const TypingIndicator = ({ channel }: Props) => {
   const typingUsers = useTypingIndicator(channel)
-
   const userRecords = useGetUserRecords()
-
   const { currentUser } = useContext(UserContext)
 
   const typingString = useMemo(() => {
@@ -21,23 +19,12 @@ const TypingIndicator = ({ channel }: Props) => {
       .filter((user) => user !== currentUser)
       .map((user) => userRecords[user]?.first_name ?? userRecords[user]?.full_name ?? user)
 
+    const maxDisplay = 3
     if (validTypingUsers.length === 0) return ''
 
-    if (validTypingUsers.length === 1) return validTypingUsers[0] + ' is typing...'
+    if (validTypingUsers.length <= maxDisplay) return `${validTypingUsers.join(' và ')}  đang nhập...`
 
-    if (validTypingUsers.length === 2) return validTypingUsers[0] + ' and ' + validTypingUsers[1] + ' are typing...'
-
-    if (validTypingUsers.length === 3)
-      return validTypingUsers[0] + ', ' + validTypingUsers[1] + ' and 1 other are typing...'
-
-    return (
-      validTypingUsers[0] +
-      ', ' +
-      validTypingUsers[1] +
-      ' and ' +
-      (validTypingUsers.length - 2) +
-      ' others are typing...'
-    )
+    return `${validTypingUsers.slice(0, maxDisplay).join(', ')} and ${validTypingUsers.length - maxDisplay} người khác đang nhập...`
   }, [typingUsers, userRecords, currentUser])
 
   if (typingString === '') return null
