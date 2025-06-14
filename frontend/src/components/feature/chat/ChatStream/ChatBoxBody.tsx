@@ -45,7 +45,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
   const { channelMembers, isLoading } = useFetchChannelMembers(channelData.name)
 
   // Hook để xử lý trạng thái typing (người dùng đang gõ)
-  const { onUserType } = useTyping(channelData.name)
+  const { onUserType, onStopTyping } = useTyping(channelData.name)
 
   // State để lưu thông tin message được chọn để reply
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
@@ -117,6 +117,8 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
       },
       { revalidate: false }
     )
+    // Stop the typing indicator
+    onStopTyping()
     // Reset tin nhắn được chọn
     clearSelectedMessage()
   }
@@ -263,7 +265,6 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
               clearReplyMessage={clearSelectedMessage}
               channelMembers={channelMembers}
               onUserType={onUserType}
-              // placeholder={randomPlaceholder}
               replyMessage={selectedMessage}
               sessionStorageKey={`tiptap-${channelData.name}`}
               onMessageSend={sendMessage}

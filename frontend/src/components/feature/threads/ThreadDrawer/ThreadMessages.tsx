@@ -31,7 +31,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
 
   const { channelMembers } = useFetchChannelMembers(channelID ?? '')
 
-  const { onUserType } = useTyping(threadID ?? '')
+  const { onUserType, onStopTyping } = useTyping(threadID ?? '')
 
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
 
@@ -96,6 +96,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
       },
       { revalidate: false }
     )
+    onStopTyping()
     // Clear the selected message
     clearSelectedMessage()
   }
