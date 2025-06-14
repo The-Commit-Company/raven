@@ -1,7 +1,7 @@
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { useCallback, useEffect, useRef } from 'react'
 
-const TYPING_DEBOUNCE_TIME = 3000
+const TYPING_DEBOUNCE_TIME = 2000
 
 export const useTyping = (channel: string) => {
   const { call: setTyping } = useFrappePostCall('raven.api.realtime_typing.set_typing')
@@ -55,7 +55,7 @@ export const useTyping = (channel: string) => {
 
     stopTypingTimeoutRef.current = setTimeout(() => {
       sendStopTyping()
-    }, 10000)
+    }, 5000)
   }, [sendTypingEvent, sendStopTyping])
 
   const stopTypingManually = useCallback(() => {

@@ -4,7 +4,7 @@ from frappe import cache
 import time
 
 # Constants
-TYPING_DEBOUNCE_TIME = 3000
+TYPING_DEBOUNCE_TIME = 2000
 TYPING_CACHE_TTL = 300
 
 def get_typing_cache_key(user: str, channel: str) -> str:

@@ -31,7 +31,7 @@ export const useTypingIndicator = (channel: string) => {
 
       const newTimeout = setTimeout(() => {
         removeUserFromTyping(user)
-      }, 10000)
+      }, 5000)
 
       timeoutsRef.current.set(user, newTimeout)
     },
