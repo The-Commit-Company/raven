@@ -1,7 +1,7 @@
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { useCallback, useEffect, useRef } from 'react'
 
-const TYPING_DEBOUNCE_TIME = 1000
+const TYPING_DEBOUNCE_TIME = 3000
 
 export const useTyping = (channel: string) => {
   const { call: setTyping } = useFrappePostCall('raven.api.realtime_typing.set_typing')
@@ -53,13 +53,11 @@ export const useTyping = (channel: string) => {
       sendTypingEvent()
     }, 300)
 
-    // Auto stop typing after 5 seconds
     stopTypingTimeoutRef.current = setTimeout(() => {
       sendStopTyping()
-    }, 5000)
+    }, 10000)
   }, [sendTypingEvent, sendStopTyping])
 
-  // Manual stop typing (khi user rời khỏi input, gửi tin nhắn, etc.)
   const stopTypingManually = useCallback(() => {
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current)
@@ -70,7 +68,6 @@ export const useTyping = (channel: string) => {
     sendStopTyping()
   }, [sendStopTyping])
 
-  // Cleanup khi component unmount
   useEffect(() => {
     return () => {
       if (debounceTimeoutRef.current) {
@@ -88,7 +85,7 @@ export const useTyping = (channel: string) => {
 
   return {
     onUserType: sendTyping,
-    onStopTyping: stopTypingManually, // NEW - để gọi manual
+    onStopTyping: stopTypingManually,
     isTyping: isTypingRef.current
   }
 }

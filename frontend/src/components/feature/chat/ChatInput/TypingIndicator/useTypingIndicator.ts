@@ -8,7 +8,6 @@ export const useTypingIndicator = (channel: string) => {
   const removeUserFromTyping = useCallback((user: string) => {
     setTypingUsers((prev) => prev.filter((u) => u !== user))
 
-    // Clear timeout for this user
     const timeout = timeoutsRef.current.get(user)
     if (timeout) {
       clearTimeout(timeout)
@@ -25,16 +24,14 @@ export const useTypingIndicator = (channel: string) => {
         return prev
       })
 
-      // Clear existing timeout for this user
       const existingTimeout = timeoutsRef.current.get(user)
       if (existingTimeout) {
         clearTimeout(existingTimeout)
       }
 
-      // Set new timeout
       const newTimeout = setTimeout(() => {
         removeUserFromTyping(user)
-      }, 5000)
+      }, 10000)
 
       timeoutsRef.current.set(user, newTimeout)
     },
@@ -46,13 +43,11 @@ export const useTypingIndicator = (channel: string) => {
     addUserToTyping(data.user)
   })
 
-  // Listen for stop typing events
   useFrappeEventListener('raven_stop_typing', (data: { user: string; channel: string }) => {
     if (data.channel !== channel) return
     removeUserFromTyping(data.user)
   })
 
-  // Cleanup all timeouts on unmount
   useEffect(() => {
     return () => {
       timeoutsRef.current.forEach((timeout) => clearTimeout(timeout))

@@ -4,8 +4,8 @@ from frappe import cache
 import time
 
 # Constants
-TYPING_DEBOUNCE_TIME = 1  # seconds
-TYPING_CACHE_TTL = 300    # 5 minutes TTL for cache cleanup
+TYPING_DEBOUNCE_TIME = 3000
+TYPING_CACHE_TTL = 300
 
 def get_typing_cache_key(user: str, channel: str) -> str:
     """Generate cache key for typing event"""
@@ -16,7 +16,7 @@ def get_channel_typing_users_key(channel: str) -> str:
     return f"typing_users:{channel}"
 
 @frappe.whitelist()
-@rate_limit(limit=1, seconds=1)
+@rate_limit(limit=1, seconds=3)
 def set_typing(channel):
     """Set user as typing in channel with improved caching and cleanup"""
     user = frappe.session.user
