@@ -4,7 +4,6 @@ import LabelItem from './LabelItem'
 
 const LabelByUserList = () => {
   const { data, error, isLoading, mutate } = useFrappeGetCall('raven.api.user_label.get_my_labels')
-
   useEffect(() => {
     mutate()
     const handler = () => mutate()
@@ -17,11 +16,14 @@ const LabelByUserList = () => {
 
   const labels = data?.message || []
 
+  console.log(data);
+  
+
   return (
     <div className='space-y-2'>
-      {labels.length === 0 && <div className='text-gray-500'>Chưa có nhãn nào</div>}
-      {labels.map((labelItem: { name: string; label: string }) => (
-        <LabelItem key={labelItem.name} label={labelItem.label} />
+      {labels?.length === 0 && <div className='text-gray-500'>Chưa có nhãn nào</div>}
+      {labels?.map((labelItem: { name: string; label: string }) => (
+        <LabelItem key={labelItem.name} label={labelItem.label} name={labelItem.name}/>
       ))}
     </div>
   )

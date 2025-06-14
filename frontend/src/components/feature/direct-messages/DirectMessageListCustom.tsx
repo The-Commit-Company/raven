@@ -21,7 +21,7 @@ import { DoneChannelList } from '../channels/DoneChannelList'
 import MentionList from '../chat/ChatInput/MentionListCustom'
 import { MessageSaved } from './DirectMessageSaved'
 import clsx from 'clsx'
-import { useIsMobile, useIsTablet } from '@/hooks/useMediaQuery'
+import { useIsDesktop, useIsMobile, useIsTablet } from '@/hooks/useMediaQuery'
 import UserChannelList from '../channels/UserChannelList'
 import { useEnrichedChannels } from '@/utils/channel/ChannelAtom'
 import ThreadsCustom from '../threads/ThreadsCustom'
@@ -117,7 +117,7 @@ const isDMChannel = (c: UnifiedChannel): c is DMChannelWithUnreadCount => {
 export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel }) => {
   // 1. Gọi tất cả hooks ngay từ đầu
   const isTablet = useIsTablet()
-  const isMobile = useIsMobile()
+  const isDesktop = useIsDesktop()
   const { currentUser } = useContext(UserContext)
   const navigate = useNavigate()
   const { workspaceID, channelID } = useParams<{ workspaceID: string; channelID: string }>()
@@ -214,9 +214,12 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
         <Tooltip content={channel.is_done ? 'Đánh dấu chưa xong' : 'Đánh dấu đã xong'} side='bottom'>
           <button
             onClick={(e) => {
+              if(isDesktop){
+                e.stopPropagation() 
+              }
               channel.is_done ? markAsNotDone(channel.name) : markAsDone(channel.name)
             }}
-            className='absolute right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded-full bg-gray-200 hover:bg-gray-300 h-[20px] w-[20px] flex items-center justify-center cursor-pointer'
+            className='absolute z-99 right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded-full bg-gray-200 hover:bg-gray-300 h-[20px] w-[20px] flex items-center justify-center cursor-pointer'
             title={channel.is_done ? 'Chưa xong' : 'Đã xong'}
           >
             <HiCheck

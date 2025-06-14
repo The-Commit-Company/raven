@@ -1,62 +1,75 @@
 import { Checkbox } from '@radix-ui/themes'
 import { FaUsers } from 'react-icons/fa'
-import { useGetUser } from '@/hooks/useGetUser'
+import { HiOutlineInformationCircle } from 'react-icons/hi'
 import clsx from 'clsx'
+import { useChannelDisplayInfo } from '@/utils/channel/getChannelInfo'
 
-const ChannelItem = ({
-  channel,
-  selected,
-  handleToggle,
-  label
-}: {
+type Props = {
+  name: string // label_id
   channel: any
   selected: Set<string>
   handleToggle: (id: string) => void
   label: string
-}) => {
+  onOpenModal?: (channel: any) => void
+}
+
+const ChannelItem = ({ name, channel, selected, handleToggle, label, onOpenModal }: Props) => {
   if (channel.is_self_message === 1) return null
 
-  const isDM = channel.is_direct_message === 1
-  const user = isDM ? useGetUser(channel.peer_user_id) : null
+  const { isDM, displayName, avatarChar } = useChannelDisplayInfo(channel)
 
-  const displayName = isDM ? user?.full_name || 'Người dùng' : channel.channel_name || channel.name
-  const avatarChar = (displayName?.[0] || '?').toUpperCase()
-
-  const isDisabled = channel.user_labels?.includes(label)
+  const isAlreadyLabeled = channel.user_labels?.includes(name)
+  const isSelected = selected.has(channel.name)
+  const isChecked = isSelected || isAlreadyLabeled
 
   return (
-    <label
+    <div
       className={clsx(
-        'flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-2 dark:hover:bg-gray-7',
-        isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+        'group flex items-center gap-2 px-2 py-1 rounded',
+        isAlreadyLabeled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
+        'hover:bg-gray-2 dark:hover:bg-gray-7'
       )}
     >
-      <Checkbox
-        checked={selected.has(channel.name)}
-        onCheckedChange={() => {
-          if (!isDisabled) handleToggle(channel.name)
-        }}
-        readOnly={isDisabled} // giữ cho checkbox không thay đổi được
-        className={clsx(isDisabled && 'pointer-events-none opacity-50')}
-      />
-      <div className='flex items-center gap-2 text-sm truncate'>
+      <label className='flex items-center gap-2 flex-1'>
+        <Checkbox
+          checked={isChecked}
+          disabled={isAlreadyLabeled}
+          onCheckedChange={() => {
+            if (!isAlreadyLabeled) handleToggle(channel.name)
+          }}
+          className={clsx(isAlreadyLabeled && 'opacity-50 cursor-not-allowed')}
+        />
+
         {isDM ? (
-          <div
-            className={clsx(
-              'rounded-full flex items-center justify-center',
-              'w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-500 text-white text-xs font-bold uppercase'
-            )}
-          >
+          <div className='rounded-full w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-500 text-white flex items-center justify-center text-xs font-bold uppercase'>
             {avatarChar}
           </div>
         ) : (
-          <div className='rounded-full flex items-center justify-center border-2 border-teal-400 text-teal-600 w-7 h-7'>
+          <div className='rounded-full w-7 h-7 border-2 border-teal-400 text-teal-600 flex items-center justify-center'>
             <FaUsers className='w-4 h-4' />
           </div>
         )}
-        <div className='truncate'>{displayName}</div>
+
+        <div className='truncate text-sm'>{displayName}</div>
+      </label>
+
+      <div
+        onClick={(e) => {
+          e.stopPropagation()
+          onOpenModal?.(channel)
+        }}
+        className={clsx(
+          'w-6 h-6 shrink-0 ml-auto flex items-center justify-center rounded-md',
+          'opacity-0 group-hover:opacity-100',
+          'hover:bg-gray-3 dark:hover:bg-gray-6',
+          'text-gray-500 hover:text-black dark:hover:text-white',
+          'transition duration-150 cursor-pointer'
+        )}
+        title='Thông tin kênh channel'
+      >
+        <HiOutlineInformationCircle className='w-4 h-4' />
       </div>
-    </label>
+    </div>
   )
 }
 

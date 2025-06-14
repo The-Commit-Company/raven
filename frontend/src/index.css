@@ -82,6 +82,26 @@ html header button {
 .select-none {
   -webkit-tap-highlight-color: transparent;
 }
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #fff;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 /*
   Adds Utility to hide scrollbar to tailwind
     https://github.com/tailwindlabs/tailwindcss/discussions/2394
@@ -133,7 +153,6 @@ html header button {
     animation: slideOutLeft 0.2s ease-in forwards;
   }
 }
-
 
 /* animations */
 .slideInBottom {
