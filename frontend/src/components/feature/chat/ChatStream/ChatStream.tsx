@@ -467,7 +467,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
         willChange: 'transform',
         opacity: renderState.initialRenderComplete ? 1 : 0,
         transform: renderState.initialRenderComplete ? 'translateY(0)' : 'translateY(8px)',
-        transition: 'opacity 0.2s ease-out, transform 0.2s ease-out',
+        transition: 'opacity 0.3s ease-out, transform 0.3s ease-out',
         scrollbarWidth: renderState.initialRenderComplete ? 'thin' : 'none',
         scrollbarColor: renderState.initialRenderComplete
           ? 'rgba(155, 155, 155, 0.5) transparent'
@@ -497,9 +497,12 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
             atBottomStateChange={handleAtBottomStateChange}
             rangeChanged={handleRangeChanged}
             computeItemKey={computeItemKey}
-            components={virtuosoComponents}
             style={virtuosoStyles as any}
             {...virtuosoSettings}
+            components={{
+              ...virtuosoComponents,
+              ScrollSeekPlaceholder: () => <ChatStreamLoader />
+            }}
             useWindowScroll={false}
             totalListHeightChanged={() => {
               if (!renderState.isContentMeasured) {
