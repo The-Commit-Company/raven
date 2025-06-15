@@ -13,6 +13,7 @@ import EditMessageAction from './EditMessageAction'
 import PinMessage from './PinMessage'
 import CopyFileMessageLink from './CopyFileMessageLink'
 import ShareMessageFile from './ShareMessageFile'
+import RemindMeAction from './RemindMeAction'
 
 interface MessageActionsProps {
     message: Message
@@ -45,6 +46,8 @@ const MessageActions = ({ message, onClose, quickReactionEmojis, isThread = fals
                 {(!isThread && message && !message.is_thread) && <CreateThread message={message} onClose={onClose} />}
 
                 {(message && message.message_type === 'Text') && <CopyMessage message={message} onClose={onClose} />}
+
+                {message && <RemindMeAction message={message} onClose={onClose} />}
 
                 {message && <PinMessage message={message} onClose={onClose} />}
 
