@@ -22,7 +22,7 @@ function debounce<F extends (...args: any[]) => void>(func: F, delay: number) {
   }
 }
 
-export const useChannelSeenUsers = ({ channelId, messages }: { channelId: string; messages: any }) => {
+export const useChannelSeenUsers = ({ channelId }: { channelId: string }) => {
   const { currentUser } = useContext(UserContext)
   const { call: getSeenCall } = useFrappePostCall('raven.api.raven_channel_member.get_seen_info')
   const { call: trackSeenCall } = useFrappePostCall('raven.api.raven_channel_member.track_seen')
@@ -101,11 +101,11 @@ export const useChannelSeenUsers = ({ channelId, messages }: { channelId: string
 
   // INIT
   useEffect(() => {
-    if (channelId && messages && messages.length > 0) {
+    if (channelId) {
       fetchSeenUsers()
       trackSeen()
     }
-  }, [channelId, messages, fetchSeenUsers, trackSeen])
+  }, [channelId, fetchSeenUsers, trackSeen])
 
   // SOCKET: update khi có người seen
   useFrappeEventListener('raven:channel_seen_updated', updateSeenUserFromSocket)
