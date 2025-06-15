@@ -16,7 +16,7 @@ def get_channel_typing_users_key(channel: str) -> str:
     return f"typing_users:{channel}"
 
 @frappe.whitelist()
-@rate_limit(limit=1, seconds=3)
+@rate_limit(limit=1, seconds=2)
 def set_typing(channel):
     """Set user as typing in channel with improved caching and cleanup"""
     user = frappe.session.user
