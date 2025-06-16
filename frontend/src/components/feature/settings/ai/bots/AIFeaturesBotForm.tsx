@@ -182,6 +182,10 @@ const AIFeaturesBotForm = (props: Props) => {
                     <Controller control={control} name='temperature' render={({ field }) => (
                         <Slider
                             {...field}
+                            color='gray'
+                            variant='soft'
+                            defaultValue={[1]}
+                            className='w-full'
                             value={[field.value ?? 1]}
                             onValueChange={(value) => field.onChange(value[0])}
                             max={2}
@@ -201,6 +205,10 @@ const AIFeaturesBotForm = (props: Props) => {
                     <Controller control={control} name='top_p' render={({ field }) => (
                         <Slider
                             {...field}
+                            color='gray'
+                            variant='soft'
+                            className='w-full'
+                            defaultValue={[1]}
                             value={[field.value ?? 1]}
                             onValueChange={(value) => field.onChange(value[0])}
                             max={1}
