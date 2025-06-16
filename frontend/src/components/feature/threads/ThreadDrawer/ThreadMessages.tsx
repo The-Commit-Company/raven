@@ -14,7 +14,7 @@ import AIEvent from '../../ai/AIEvent'
 import useFileUpload from '../../chat/ChatInput/FileInput/useFileUpload'
 import Tiptap from '../../chat/ChatInput/Tiptap'
 import TypingIndicator from '../../chat/ChatInput/TypingIndicator/TypingIndicator'
-import { useTyping } from '../../chat/ChatInput/TypingIndicator/useTypingIndicator'
+import { useTyping } from '../../chat/ChatInput/TypingIndicator/useTyping'
 import { useSendMessage } from '../../chat/ChatInput/useSendMessage'
 import { ReplyMessageBox } from '../../chat/ChatMessage/ReplyMessageBox/ReplyMessageBox'
 import ChatStream from '../../chat/ChatStream/ChatStream'
@@ -31,7 +31,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
 
   const { channelMembers } = useFetchChannelMembers(channelID ?? '')
 
-  const { stopTyping, onUserType } = useTyping(threadID ?? '')
+  const { onUserType, onStopTyping } = useTyping(threadID ?? '')
 
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
 
@@ -96,8 +96,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
       },
       { revalidate: false }
     )
-    // Stop the typing indicator
-    stopTyping()
+    onStopTyping()
     // Clear the selected message
     clearSelectedMessage()
   }

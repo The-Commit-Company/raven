@@ -169,16 +169,14 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
     clearManualMark(channel.name)
   }
 
-
-  const bgClass = isSelectedChannel && !isTablet
-  ? 'bg-gray-300 dark:bg-gray-700'
-  : !isTablet && !isMobile
-    ? 'hover:bg-gray-100 dark:hover:bg-gray-600'
-    : ''
+  const bgClass = `
+  ${isSelectedChannel ? 'bg-gray-300 dark:bg-gray-700' : ''}
+  hover:bg-gray-100 dark:hover:bg-gray-600
+`
 
   // 5. Render
   return (
-    <div onClick={handleNavigate} className={clsx('group relative cursor-pointer flex items-center p-1 mb-2', bgClass)}>
+    <div onClick={handleNavigate} className={`group relative cursor-pointer flex items-center p-1 mb-2 ${bgClass}`}>
       <SidebarIcon>
         <Box className='relative'>
           {peerUser ? (
@@ -216,7 +214,6 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
         <Tooltip content={channel.is_done ? 'Đánh dấu chưa xong' : 'Đánh dấu đã xong'} side='bottom'>
           <button
             onClick={(e) => {
-              e.stopPropagation()
               channel.is_done ? markAsNotDone(channel.name) : markAsDone(channel.name)
             }}
             className='absolute right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded-full bg-gray-200 hover:bg-gray-300 h-[20px] w-[20px] flex items-center justify-center cursor-pointer'

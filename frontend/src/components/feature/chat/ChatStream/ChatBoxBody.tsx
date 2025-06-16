@@ -21,7 +21,7 @@ import { JoinChannelBox } from '../chat-footer/JoinChannelBox'
 import useFileUpload from '../ChatInput/FileInput/useFileUpload'
 import Tiptap from '../ChatInput/Tiptap'
 import TypingIndicator from '../ChatInput/TypingIndicator/TypingIndicator'
-import { useTyping } from '../ChatInput/TypingIndicator/useTypingIndicator'
+import { useTyping } from '../ChatInput/TypingIndicator/useTyping'
 import { useSendMessage } from '../ChatInput/useSendMessage'
 import { ReplyMessageBox } from '../ChatMessage/ReplyMessageBox/ReplyMessageBox'
 import ChatStream from './ChatStream'
@@ -45,7 +45,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
   const { channelMembers, isLoading } = useFetchChannelMembers(channelData.name)
 
   // Hook để xử lý trạng thái typing (người dùng đang gõ)
-  const { onUserType, stopTyping } = useTyping(channelData.name)
+  const { onUserType, onStopTyping } = useTyping(channelData.name)
 
   // State để lưu thông tin message được chọn để reply
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
@@ -117,9 +117,8 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
       },
       { revalidate: false }
     )
-
-    // Dừng indicator typing
-    stopTyping()
+    // Stop the typing indicator
+    onStopTyping()
     // Reset tin nhắn được chọn
     clearSelectedMessage()
   }
@@ -266,7 +265,6 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
               clearReplyMessage={clearSelectedMessage}
               channelMembers={channelMembers}
               onUserType={onUserType}
-              // placeholder={randomPlaceholder}
               replyMessage={selectedMessage}
               sessionStorageKey={`tiptap-${channelData.name}`}
               onMessageSend={sendMessage}
