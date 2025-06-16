@@ -2,7 +2,7 @@ import { useChatbotConversations, useCreateChatbotConversation } from '@/hooks/u
 import { ConversationData } from '@/types/ChatBot/types'
 import { normalizeConversations } from '@/utils/chatBot-options'
 import { useFrappeEventListener } from 'frappe-react-sdk'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import ChatbotAIContainer, { ChatSession } from './ChatbotAIContainer'
 
 const ChatbotAIStream = () => {
@@ -22,23 +22,29 @@ const ChatbotAIStream = () => {
   }, [conversations])
 
   // Hàm tạo session mới
-  const handleNewSession = async () => {
+  const handleNewSession = useCallback(async () => {
     const title = `Đoạn chat mới ${sessions.length + 1}`
-    const res = await createConversation({ title })
-    await mutateConversations()
-    setSelectedAISessionId(res.message.name)
-  }
+    try {
+      const res = await createConversation({ title })
+      await mutateConversations()
+      setSelectedAISessionId(res.message.name)
+    } catch (error) {
+      console.error('Error creating new session:', error)
+    }
+  }, [createConversation, mutateConversations, sessions.length])
 
   // Hàm update tiêu đề session
-  const handleUpdateAISessions = (updatedSessions: ChatSession[]) => {
-    // Cập nhật state local
-    const newConversations = updatedSessions.map((s) => ({
-      name: s.id,
-      title: s.title,
-      creation: s.creation
-    }))
-    mutateConversations(newConversations, false)
-  }
+  const handleUpdateAISessions = useCallback(
+    (updatedSessions: ChatSession[]) => {
+      const newConversations = updatedSessions.map((s) => ({
+        name: s.id,
+        title: s.title,
+        creation: s.creation
+      }))
+      mutateConversations(newConversations, false)
+    },
+    [mutateConversations]
+  )
 
   // Nếu selectedAISessionId không còn trong danh sách backend, tự động bỏ chọn hoặc chọn session đầu tiên
   useEffect(() => {
@@ -46,13 +52,6 @@ const ChatbotAIStream = () => {
       setSelectedAISessionId(sessions.length > 0 ? sessions[0].id : null)
     }
   }, [sessions, selectedAISessionId])
-
-  // Lắng nghe realtime event new_message cho Chatbot AI
-  useFrappeEventListener('new_message', (data) => {
-    if (data.channel_id === selectedAISessionId) {
-      // mutateMessages()
-    }
-  })
 
   // Lắng nghe realtime event update_conversation_title
   useFrappeEventListener('raven:update_conversation_title', (data) => {
