@@ -20,7 +20,7 @@ def handle_bot_dm(message, bot):
 	"""
 
 	# Check if bot uses new Agents SDK
-	if hasattr(bot, "model_provider") and bot.model_provider in ["OpenAI", "Local LLM"]:
+	if bot.model_provider in ["OpenAI", "Local LLM"] and not bot.openai_assistant_id:
 		return handle_bot_dm_with_agents(message, bot)
 	else:
 		# Use old Assistants API for legacy bots
@@ -192,10 +192,10 @@ def handle_ai_thread_message(message, channel):
 	Routes to Agents SDK for bots with model_provider, falls back to Assistants API for legacy bots.
 	"""
 
-	bot = frappe.get_doc("Raven Bot", channel.thread_bot)
+	bot = frappe.get_cached_doc("Raven Bot", channel.thread_bot)
 
 	# Check if bot uses new Agents SDK
-	if hasattr(bot, "model_provider") and bot.model_provider in ["OpenAI", "Local LLM"]:
+	if bot.model_provider in ["OpenAI", "Local LLM"] and not bot.openai_assistant_id:
 		return handle_ai_thread_message_with_agents(message, channel, bot)
 	else:
 		# Use old Assistants API for legacy bots
