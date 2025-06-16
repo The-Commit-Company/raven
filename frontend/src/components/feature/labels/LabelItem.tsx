@@ -7,6 +7,10 @@ interface LabelItemProps {
   name: string
   onEdit?: () => void
   onDelete?: () => void
+  channelList: {
+    channel_id: string
+    channel_name: string
+  }
 }
 
 const LabelItem: React.FC<LabelItemProps> = ({ label,name, onEdit, onDelete }) => (

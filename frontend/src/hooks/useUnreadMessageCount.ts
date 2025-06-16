@@ -103,7 +103,10 @@ export const useFetchUnreadMessageCount = () => {
   useFrappeEventListener('raven:unread_channel_count_updated', (event) => {
     if (event.sent_by !== currentUser) {
       if (channelID === event.channel_id) {
-        trackVisit({ channel_id: channelID })
+        // trackVisit({ channel_id: channelID })
+
+        console.log(event);
+        
 
         const currentUnread = unread_count?.message.find((c) => c.name === event.channel_id)?.unread_count || 0
         const isManuallyMarked = manuallyMarked.has(event.channel_id)
@@ -145,15 +148,6 @@ export const useFetchUnreadMessageCount = () => {
       { revalidate: false }
     )
   }
-
-  const dmWithUnread = useMemo(() => {
-    return unread_count?.message.filter((c) => c.unread_count > 0 && c.is_direct_message === 1) || []
-  }, [unread_count])
-
-  const dmChannel = useMemo(() => {
-    return dm_channels.find((c) => c.name === dmWithUnread?.name)
-  }, [dmWithUnread, dm_channels])
-  const lastPlayedMessageIdRef = useRef<string | null>(null)
 
   useEffect(() => {
     const app_name = window.app_name || 'Raven'

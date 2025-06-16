@@ -119,4 +119,4 @@ def get_my_labels():
             "channels": label_map[l["name"]]  # list of object
         })
 
-    return {"message": result}
+    return result
