@@ -1,10 +1,8 @@
+import re
+
 """
 Response formatter for AI messages to handle special formatting like <think> tags and LaTeX
 """
-
-import re
-
-import frappe
 
 
 def format_ai_response(response_text: str) -> str:
