@@ -1,12 +1,7 @@
-import asyncio
-import json
-from typing import Dict, Optional
-
 import frappe
-from agents import Runner
 
 # Import agents integration - no fallback needed
-from raven.ai.agents_integration import RavenAgentManager, handle_ai_request_sync
+from raven.ai.agents_integration import handle_ai_request_sync
 
 # Keep old handler import for fallback
 from raven.ai.handler import stream_response
