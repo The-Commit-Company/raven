@@ -4,6 +4,7 @@ import { UserContext } from '@/utils/auth/UserProvider'
 import { Box, Button, Flex, IconButton, Text, TextArea } from '@radix-ui/themes'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { FiMoreVertical, FiPaperclip, FiX } from 'react-icons/fi'
+import { BiSolidSend } from 'react-icons/bi'
 import { useFrappeEventListener } from 'frappe-react-sdk'
 
 // Thêm type cho message để có thuộc tính pending
@@ -194,7 +195,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading, on
       </div>
       {/* Messages */}
       <div 
-        className='flex-1 overflow-y-auto p-4 text-sm text-gray-12 bg-gray-1 dark:bg-[#18191b]'
+        className='flex-1 overflow-y-auto custom-scrollbar p-4 text-sm text-gray-12 bg-gray-1 dark:bg-[#18191b]'
         onDrop={handleDrop}
         onDragOver={handleDragOver}
       >
@@ -268,7 +269,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading, on
             e.preventDefault()
             handleSend()
           }}
-          style={{ display: 'flex', gap: '8px' }}
+          className='flex flex-col gap-0'
         >
           <input
             type='file'
@@ -277,32 +278,40 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading, on
             className='hidden'
             accept='image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx'
           />
-          <IconButton 
-            type='button'
-            variant='ghost' 
-            color='gray'
-            onClick={handleFileClick}
-            className='self-end mb-2'
-          >
-            <FiPaperclip />
-          </IconButton>
-          <TextArea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder='Nhập tin nhắn... (Shift + Enter để xuống dòng)'
-            className='flex-1 text-sm text-gray-12 bg-gray-1 dark:bg-[#18191b] border border-gray-5 rounded-md px-3 py-2'
-            rows={1}
-            style={{ resize: 'none' }}
-            disabled={loading}
-          />
-          <Button 
-            type='submit' 
-            disabled={(!input.trim() && !selectedFile) || loading} 
-            className='text-sm'
-          >
-            Gửi
-          </Button>
+          {/* Khung nhập tin nhắn */}
+          <div className='rounded-t-md border border-gray-5 dark:border-gray-6 bg-gray-2 dark:bg-[#232428] focus-within:border-accent-8'>
+            <TextArea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder='Nhập tin nhắn... (Shift + Enter để xuống dòng)'
+              className='w-full text-sm text-gray-12 bg-transparent border-none outline-none resize-none min-h-[60px] max-h-[150px] shadow-none p-0 align-top'
+              rows={1}
+              style={{ resize: 'none' }}
+              disabled={loading}
+            />
+          </div>
+          {/* Footer chức năng */}
+          <div className='rounded-b-md border-x border-b border-gray-5 dark:border-gray-6 bg-gray-3 dark:bg-[#18191b] flex items-center justify-end px-2 py-1 gap-1'>
+            <IconButton 
+              type='button'
+              variant='ghost' 
+              color='gray'
+              onClick={handleFileClick}
+              className='hover:bg-gray-3 dark:hover:bg-gray-4 text-gray-11'
+              title='Đính kèm file'
+            >
+              <FiPaperclip />
+            </IconButton>
+            <IconButton 
+              type='submit' 
+              disabled={(!input.trim() && !selectedFile) || loading} 
+              className='hover:bg-accent-9 dark:hover:bg-accent-8 text-white'
+              title='Gửi tin nhắn'
+            >
+              <BiSolidSend />
+            </IconButton>
+          </div>
         </form>
       </div>
     </div>
