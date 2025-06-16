@@ -2,7 +2,8 @@ import ChatbotAIChatBox from '@/components/feature/chatbot-ai/ChatbotAIChatBox'
 import { ChatSession } from '@/components/feature/chatbot-ai/ChatbotAIContainer'
 import { useChatbotConversations, useChatbotMessages, useSendChatbotMessage } from '@/hooks/useChatbotAPI'
 import { normalizeConversations, normalizeMessages } from '@/utils/chatBot-options'
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
+import ChatStreamLoader from '../chat/ChatStream/ChatStreamLoader'
 
 const ChatbotAIBody = ({ botID }: { botID?: string }) => {
   const { data: conversations } = useChatbotConversations()
@@ -26,11 +27,31 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
   }, [sessions])
 
   // Hàm gửi tin nhắn Chatbot AI
-  const handleSendMessage = async (content: string) => {
-    if (!botID) return
-    await sendMessage({ conversation_id: botID, message: content })
-    await mutateMessages()
+  // Memoized send message handler
+  const handleSendMessage = useCallback(
+    async (content: string, file?: File, context?: { role: 'user' | 'ai'; content: string }[]) => {
+      if (!botID) return
+
+      try {
+        await sendMessage({
+          conversation_id: botID,
+          message: content,
+          file,
+          context
+        })
+        await mutateMessages()
+      } catch (error) {
+        console.error('Error sending message:', error)
+      }
+    },
+    [botID, sendMessage, mutateMessages]
+  )
+
+  // Early return if no session is selected
+  if (!selectedSession || !botID) {
+    return <ChatStreamLoader />
   }
+
   return (
     <ChatbotAIChatBox
       session={{
