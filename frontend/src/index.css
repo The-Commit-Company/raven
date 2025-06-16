@@ -192,3 +192,32 @@ html header button {
     opacity: 1;
   }
 }
+
+/* Custom scrollbar cho Chatbot AI và đồng bộ với Trò chuyện, hỗ trợ sáng/tối */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db #f3f4f6;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  background: #f3f4f6;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #a1a1aa;
+}
+.dark .custom-scrollbar {
+  scrollbar-color: #232428 #18191b;
+}
+.dark .custom-scrollbar::-webkit-scrollbar {
+  background: #18191b;
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #232428;
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #35363a;
+}

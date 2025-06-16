@@ -30,7 +30,6 @@ import { ChatSession } from '@/components/feature/chatbot-ai/ChatbotAIContainer'
 import { useChatbotConversations, useCreateChatbotConversation, useChatbotMessages, useSendChatbotMessage } from '@/hooks/useChatbotAPI'
 
 const AddRavenUsersPage = lazy(() => import('@/pages/AddRavenUsersPage'))
-const ChatbotAIPage = lazy(() => import('@/components/feature/chatbot-ai/ChatbotAIPage'))
 
 export const MainPageCustom = () => {
   const isRavenUser = hasRavenUserRole()
@@ -165,8 +164,8 @@ const MainPageContent = () => {
       // Cập nhật conversations trong cache
       mutateConversations((oldData: any[] | undefined) => {
         const oldConversations = oldData || []
-        return oldConversations.map((c: any) => 
-          c.name === data.conversation_id 
+        return oldConversations.map((c: any) =>
+          c.name === data.conversation_id
             ? { ...c, title: data.new_title, creation: data.creation }
             : c
         )
@@ -328,14 +327,14 @@ const MainPageContent = () => {
               >
                 {title === 'Chatbot AI' ? (
                   <div className='h-full w-full bg-gray-1 dark:bg-[#18191b]'>
-                  <ChatbotAIContainer
-                    sessions={sessions}
-                    selectedId={selectedAISessionId}
-                    onSelectSession={setSelectedAISessionId}
-                    onUpdateSessions={handleUpdateAISessions}
-                    onNewSession={handleNewSession}
-                    mutateConversations={mutateConversations}
-                  />
+                    <ChatbotAIContainer
+                      sessions={sessions}
+                      selectedId={selectedAISessionId}
+                      onSelectSession={setSelectedAISessionId}
+                      onUpdateSessions={handleUpdateAISessions}
+                      onNewSession={handleNewSession}
+                      mutateConversations={mutateConversations}
+                    />
                   </div>
                 ) : (
                   <div className='flex flex-col gap-1 w-full h-full bg-gray-1 dark:bg-[#18191b]'>
@@ -367,8 +366,8 @@ const MainPageContent = () => {
                         messages: (Array.isArray(messages)
                           ? messages
                           : Array.isArray((messages as any)?.message)
-                          ? (messages as any).message
-                          : []
+                            ? (messages as any).message
+                            : []
                         ).map((m: any) => ({
                           role: m.is_user ? 'user' as const : 'ai' as const,
                           content: m.message as string
