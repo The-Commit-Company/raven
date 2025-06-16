@@ -3,25 +3,31 @@ import { useGetUser } from '@/hooks/useGetUser'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { Box, Button, Flex, IconButton, Text, TextArea } from '@radix-ui/themes'
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { FiMoreVertical } from 'react-icons/fi'
+import { FiMoreVertical, FiPaperclip, FiX } from 'react-icons/fi'
+import { useFrappeEventListener } from 'frappe-react-sdk'
 
 // Thêm type cho message để có thuộc tính pending
 interface Message {
   role: 'user' | 'ai'
   content: string
+  id?: number
+  parent_message_id?: number
   pending?: boolean
 }
 
 interface Props {
   session: { id: string; title: string; messages: Message[] }
-  onSendMessage: (content: string) => void
+  onSendMessage: (content: string, file?: File, context?: { role: 'user' | 'ai'; content: string }[]) => void
   loading?: boolean
+  onUpdateMessages?: (messages: Message[]) => void
 }
 
 const MESSAGES_PER_PAGE = 15
 
-const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading }) => {
+const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading, onUpdateMessages }) => {
   const [input, setInput] = useState('')
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesTopRef = useRef<HTMLDivElement>(null)
   const { currentUser } = useContext(UserContext)
@@ -29,6 +35,22 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading }) 
   const [isThinking, setIsThinking] = useState(false)
   const [lastUserMessageId, setLastUserMessageId] = useState<number>(-1)
   const [visibleCount, setVisibleCount] = useState(MESSAGES_PER_PAGE)
+  const [localMessages, setLocalMessages] = useState<Message[]>([])
+
+  // Cập nhật localMessages khi session thay đổi
+  useEffect(() => {
+    setLocalMessages(session.messages)
+    // Kiểm tra tin nhắn cuối cùng để cập nhật trạng thái
+    if (session.messages.length > 0) {
+      const lastMessage = session.messages[session.messages.length - 1]
+      if (lastMessage.role === 'user') {
+        setIsThinking(true)
+        setLastUserMessageId(session.messages.length - 1)
+      } else if (lastMessage.role === 'ai') {
+        setIsThinking(false)
+      }
+    }
+  }, [session.messages])
 
   // Khi đổi session thì reset visibleCount
   useEffect(() => {
@@ -38,7 +60,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading }) 
   // Tự động cuộn xuống cuối khi vào đoạn chat hoặc có tin nhắn mới
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [session.messages])
+  }, [localMessages])
 
   // Tự động cuộn xuống khi trạng thái "AI đang suy nghĩ" xuất hiện
   useEffect(() => {
@@ -47,53 +69,112 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading }) 
     }
   }, [isThinking])
 
-  // Theo dõi tin nhắn để quản lý trạng thái "AI đang suy nghĩ"
-  useEffect(() => {
-    if (session.messages.length > 0) {
-      const lastMessage = session.messages[session.messages.length - 1]
-
-      // Nếu tin nhắn cuối cùng là của người dùng
-      if (lastMessage.role === 'user') {
-        setIsThinking(true)
-        setLastUserMessageId(session.messages.length - 1)
-      }
-      // Nếu tin nhắn cuối cùng là của AI và trước đó có tin nhắn người dùng
-      else if (lastMessage.role === 'ai' && lastUserMessageId !== -1) {
-        setIsThinking(false)
-      }
+  // Thêm xử lý realtime cho tin nhắn AI
+  useFrappeEventListener('raven:new_ai_message', (data) => {
+    if (data.conversation_id === session.id) {
+      // Cập nhật tin nhắn mới vào local state
+      const updatedMessages = [...localMessages, {
+        role: 'ai' as const,
+        content: data.message
+      }]
+      setLocalMessages(updatedMessages)
+      // Gọi callback để cập nhật parent component
+      onUpdateMessages?.(updatedMessages)
+      setIsThinking(false)
     }
-  }, [session.messages, lastUserMessageId])
+  })
+
+  // Thêm xử lý lỗi và reconnect
+  useFrappeEventListener('raven:error', (error) => {
+    console.error('Socket error:', error)
+    // Implement reconnection logic here if needed
+  })
+
+  // Cập nhật tin nhắn khi session thay đổi
+  useEffect(() => {
+    if (session) {
+      setLocalMessages(session.messages)
+      // Không tự động cập nhật trạng thái khi chuyển tab
+      // Chỉ cập nhật khi có tin nhắn mới
+    }
+  }, [session])
 
   const handleSend = () => {
-    if (!input.trim() || loading) return
-    onSendMessage(input)
+    if (!input.trim() && !selectedFile) return
+
+    // Lấy toàn bộ tin nhắn trong cuộc trò chuyện làm context
+    const context = localMessages.map(msg => ({
+      role: msg.role,
+      content: msg.content
+    }))
+
+    const newMessage: Message = {
+      role: 'user',
+      content: input.trim(),
+      pending: true
+    }
+
+    setLocalMessages(prev => [...prev, newMessage])
     setInput('')
+    setSelectedFile(null)
+    setIsThinking(true)
+
+    // Gửi tin nhắn kèm toàn bộ context
+    onSendMessage(input.trim(), selectedFile || undefined, context)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Nếu nhấn Enter mà không có Shift
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault() // Ngăn chặn hành vi mặc định của textarea
+      e.preventDefault()
       handleSend()
     }
   }
 
-  // Lấy ra các tin nhắn cần hiển thị
-  const totalMessages = session.messages.length
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setSelectedFile(file)
+    }
+  }
+
+  const handleFileClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleRemoveFile = () => {
+    setSelectedFile(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    const file = e.dataTransfer.files?.[0]
+    if (file) {
+      setSelectedFile(file)
+    }
+  }
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+  }
+
+  // Tính toán các tin nhắn hiển thị
+  const totalMessages = localMessages.length
   const startIdx = Math.max(0, totalMessages - visibleCount)
-  const visibleMessages = session.messages.slice(startIdx, totalMessages)
+  const visibleMessages = localMessages.slice(startIdx)
   const hasMore = startIdx > 0
 
-  // Khi nhấn nút hiện thêm tin nhắn cũ
   const handleShowMore = () => {
     setVisibleCount((prev) => prev + MESSAGES_PER_PAGE)
     setTimeout(() => {
       messagesTopRef.current?.scrollIntoView({ behavior: 'auto' })
-    }, 100) // Đảm bảo scroll tới đúng vị trí sau khi render thêm
+    }, 100)
   }
 
   return (
-    <div className='h-full w-full bg-[#18191b] flex flex-col'>
+    <div className='h-full w-full bg-gray-1 dark:bg-[#18191b] flex flex-col'>
       {/* Header */}
       <div className='border-b border-gray-4 dark:border-gray-6 px-3 py-3 flex justify-between items-center'>
         <span className='font-medium text-base text-gray-12'>Chatbot AI</span>
@@ -112,7 +193,11 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading }) 
         </Flex>
       </div>
       {/* Messages */}
-      <div className='flex-1 overflow-y-auto p-4 text-sm text-gray-12'>
+      <div 
+        className='flex-1 overflow-y-auto p-4 text-sm text-gray-12 bg-gray-1 dark:bg-[#18191b]'
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+      >
         <div ref={messagesTopRef} />
         {hasMore && (
           <div className='flex justify-center mb-2'>
@@ -125,7 +210,11 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading }) 
         {visibleMessages.map((msg, idx) => (
           <Flex key={startIdx + idx} justify={msg.role === 'user' ? 'end' : 'start'} className='mb-2'>
             <Box
-              className={`rounded-lg px-4 py-2 max-w-[70%] ${msg.role === 'user' ? 'bg-accent-3 text-right' : 'bg-gray-3'}`}
+              className={`rounded-lg px-4 py-2 max-w-[70%] ${
+                msg.role === 'user' 
+                  ? 'bg-accent-3 text-right' 
+                  : 'bg-gray-3 dark:bg-gray-4'
+              }`}
               style={{ fontSize: '15px', lineHeight: '1.6' }}
             >
               {msg.pending ? (
@@ -143,7 +232,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading }) 
         {/* Hiển thị trạng thái "AI đang suy nghĩ" */}
         {isThinking && (
           <Flex justify='start' className='mb-2'>
-            <Box className='rounded-lg px-4 py-2 max-w-[70%] bg-gray-3' style={{ fontSize: '15px', lineHeight: '1.6' }}>
+            <Box className='rounded-lg px-4 py-2 max-w-[70%] bg-gray-3 dark:bg-gray-4' style={{ fontSize: '15px', lineHeight: '1.6' }}>
               <div className='flex items-center gap-2'>
                 <div className='w-2 h-2 bg-gray-10 rounded-full animate-bounce' style={{ animationDelay: '0ms' }}></div>
                 <div
@@ -162,7 +251,18 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading }) 
         <div ref={messagesEndRef} />
       </div>
       {/* Input */}
-      <div className='p-4 border-t border-gray-4 dark:border-gray-6 bg-[#18191b]'>
+      <div className='p-4 border-t border-gray-4 dark:border-gray-6 bg-gray-1 dark:bg-[#18191b]'>
+        {/* File preview */}
+        {selectedFile && (
+          <div className='mb-2 p-2 bg-gray-3 dark:bg-gray-4 rounded-md flex items-center justify-between'>
+            <Text size='2' className='text-gray-11'>
+              {selectedFile.name}
+            </Text>
+            <IconButton variant='ghost' color='gray' onClick={handleRemoveFile}>
+              <FiX />
+            </IconButton>
+          </div>
+        )}
         <form
           onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault()
@@ -170,17 +270,37 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading }) 
           }}
           style={{ display: 'flex', gap: '8px' }}
         >
+          <input
+            type='file'
+            ref={fileInputRef}
+            onChange={handleFileSelect}
+            className='hidden'
+            accept='image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx'
+          />
+          <IconButton 
+            type='button'
+            variant='ghost' 
+            color='gray'
+            onClick={handleFileClick}
+            className='self-end mb-2'
+          >
+            <FiPaperclip />
+          </IconButton>
           <TextArea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder='Nhập tin nhắn... (Shift + Enter để xuống dòng)'
-            className='flex-1 text-sm text-gray-12 bg-[#18191b] border border-gray-5 rounded-md px-3 py-2'
+            className='flex-1 text-sm text-gray-12 bg-gray-1 dark:bg-[#18191b] border border-gray-5 rounded-md px-3 py-2'
             rows={1}
             style={{ resize: 'none' }}
             disabled={loading}
           />
-          <Button type='submit' disabled={!input.trim() || loading} className='text-sm'>
+          <Button 
+            type='submit' 
+            disabled={(!input.trim() && !selectedFile) || loading} 
+            className='text-sm'
+          >
             Gửi
           </Button>
         </form>

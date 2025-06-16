@@ -9,24 +9,26 @@
   "sender",
   "is_user",
   "message",
-  "timestamp"
+  "timestamp",
+  "message_type",
+  "file"
  ],
  "fields": [
   {
-   "description": "T\u00ean ng\u01b0\u1eddi g\u1eedi (user ho\u1eb7c bot)",
+   "description": "Tên người gửi (user hoặc bot)",
    "fieldname": "sender",
    "fieldtype": "Data",
    "label": "Sender"
   },
   {
    "default": "0",
-   "description": "\u0110\u00e1nh d\u1ea5u n\u1ebfu l\u00e0 tin c\u1ee7a ng\u01b0\u1eddi d\u00f9ng",
+   "description": "Đánh dấu nếu là tin của người dùng",
    "fieldname": "is_user",
    "fieldtype": "Check",
    "label": "User or Bot"
   },
   {
-   "description": "N\u1ed9i dung tin nh\u1eafn",
+   "description": "Nội dung tin nhắn",
    "fieldname": "message",
    "fieldtype": "Text Editor",
    "label": "Message"
@@ -36,6 +38,17 @@
    "fieldname": "timestamp",
    "fieldtype": "Datetime",
    "label": "Timestamp"
+  },
+  {
+   "fieldname": "message_type",
+   "fieldtype": "Select",
+   "label": "Message Type",
+   "options": "Text\nImage\nFile\nPoll\nSystem"
+  },
+  {
+   "fieldname": "file",
+   "fieldtype": "Attach",
+   "label": "File"
   }
  ],
  "grid_page_length": 50,

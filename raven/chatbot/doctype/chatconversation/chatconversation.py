@@ -1,7 +1,7 @@
 # Copyright (c) 2025, The Commit Company (Algocode Technologies Pvt. Ltd.) and contributors
 # For license information, please see license.txt
 
-# import frappe
+import frappe
 from frappe.model.document import Document
 
 
@@ -20,4 +20,14 @@ class ChatConversation(Document):
 		title: DF.Data | None
 		user: DF.Link | None
 	# end: auto-generated types
-	pass
+
+	def after_save(self):
+		# Gửi sự kiện realtime khi tên được cập nhật
+		frappe.publish_realtime(
+			'raven:update_conversation_title',
+			{
+				'conversation_id': self.name,
+				'new_title': self.title,
+				'creation': self.created_on
+			}
+		)

@@ -76,6 +76,7 @@ const MainPageContent = () => {
   const sessions: ChatSession[] = (Array.isArray(conversations) ? conversations : Array.isArray((conversations as any)?.message) ? (conversations as any).message : []).map((c: any) => ({
     id: c.name,
     title: c.title,
+    creation: c.creation,
     messages: []
   }))
 
@@ -88,7 +89,15 @@ const MainPageContent = () => {
   }
 
   // Hàm update tiêu đề session
-  const handleUpdateAISessions = () => {}
+  const handleUpdateAISessions = (updatedSessions: ChatSession[]) => {
+    // Cập nhật state local
+    const newConversations = updatedSessions.map(s => ({
+      name: s.id,
+      title: s.title,
+      creation: s.creation
+    }))
+    mutateConversations(newConversations, false)
+  }
 
   // Hàm gửi tin nhắn Chatbot AI
   const handleSendMessage = async (content: string) => {
@@ -147,6 +156,21 @@ const MainPageContent = () => {
   useFrappeEventListener('new_message', (data) => {
     if (data.channel_id === selectedAISessionId) {
       mutateMessages()
+    }
+  })
+
+  // Lắng nghe realtime event update_conversation_title
+  useFrappeEventListener('raven:update_conversation_title', (data) => {
+    if (data.conversation_id) {
+      // Cập nhật conversations trong cache
+      mutateConversations((oldData: any[] | undefined) => {
+        const oldConversations = oldData || []
+        return oldConversations.map((c: any) => 
+          c.name === data.conversation_id 
+            ? { ...c, title: data.new_title, creation: data.creation }
+            : c
+        )
+      }, false) // false để không revalidate với server
     }
   })
 
@@ -303,6 +327,7 @@ const MainPageContent = () => {
                 {...(!initialLayout ? { defaultSize: isSmallScreen ? 30 : 40 } : {})}
               >
                 {title === 'Chatbot AI' ? (
+                  <div className='h-full w-full bg-gray-1 dark:bg-[#18191b]'>
                   <ChatbotAIContainer
                     sessions={sessions}
                     selectedId={selectedAISessionId}
@@ -311,8 +336,9 @@ const MainPageContent = () => {
                     onNewSession={handleNewSession}
                     mutateConversations={mutateConversations}
                   />
+                  </div>
                 ) : (
-                  <div className='flex flex-col gap-1 w-full h-full'>
+                  <div className='flex flex-col gap-1 w-full h-full bg-gray-1 dark:bg-[#18191b]'>
                     <SidebarHeader />
                     <div className='px-2'>
                       <div className='h-px bg-gray-400 dark:bg-gray-600' />
@@ -332,7 +358,7 @@ const MainPageContent = () => {
                 maxSize={isSmallScreen ? 80 : 90}
                 {...(!initialLayout ? { defaultSize: isSmallScreen ? 70 : 60 } : {})}
               >
-                <div className='h-full w-full dark:bg-gray-2 overflow-hidden'>
+                <div className='h-full w-full bg-gray-1 dark:bg-gray-2 overflow-hidden'>
                   {title === 'Chatbot AI' && selectedAISessionId && selectedSession ? (
                     <ChatbotAIChatBox
                       session={{

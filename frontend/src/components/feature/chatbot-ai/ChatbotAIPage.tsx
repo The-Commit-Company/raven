@@ -1,3 +1,7 @@
+import React, { useEffect, useState, useRef } from 'react'
+import ChatbotAIChatBox from './ChatbotAIChatBox'
+import { ChatSession } from './ChatbotAIContainer'
+import ChatbotAIContainer from './ChatbotAIContainer'
 import {
   useChatbotConversations,
   useChatbotMessages,
@@ -6,9 +10,22 @@ import {
   useSendChatbotMessage
 } from '@/hooks/useChatbotAPI'
 import { useFrappeEventListener } from 'frappe-react-sdk'
-import React, { useEffect, useState } from 'react'
-import ChatbotAIChatBox from './ChatbotAIChatBox'
-import ChatbotAIContainer, { ChatSession } from './ChatbotAIContainer'
+
+interface Message {
+  role: 'user' | 'ai'
+  content: string
+  pending?: boolean
+}
+
+// Hàm chuyển đổi file sang base64
+const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = error => reject(error)
+  })
+}
 
 const ChatbotAIPage: React.FC = () => {
   // State quản lý session được chọn
@@ -20,10 +37,8 @@ const ChatbotAIPage: React.FC = () => {
   const [displaySessions, setDisplaySessions] = useState<ChatSession[]>([]) // State quản lý danh sách đoạn chat hiển thị
   const [pendingRenames, setPendingRenames] = useState<{ [id: string]: string }>({})
   const [isWaitingAI, setIsWaitingAI] = useState(false)
-  // const lastUserMessageRef = useRef<string | null>(null)
-  // const [pendingMessages, setPendingMessages] = useState<{ role: 'user' | 'ai'; content: string; pending?: boolean }[]>(
-  //   []
-  // )
+  const lastUserMessageRef = useRef<string | null>(null)
+  const [isSending, setIsSending] = useState(false)
 
   // Lấy danh sách conversation từ backend
   const { data: conversations, mutate: mutateConversations } = useChatbotConversations()
@@ -45,17 +60,9 @@ const ChatbotAIPage: React.FC = () => {
         role: m.is_user ? ('user' as const) : ('ai' as const),
         content: m.message as string
       }))
-      // Nếu message cuối cùng từ backend khác message cuối cùng trên displayMessages (không tính pending)
-      const lastBackendMsg = mapped[mapped.length - 1]?.content
-      const nonPendingDisplay = displayMessages.filter((m) => !m.pending)
-      const lastDisplayMsg = nonPendingDisplay[nonPendingDisplay.length - 1]?.content
-      if (lastBackendMsg !== lastDisplayMsg || mapped.length !== nonPendingDisplay.length) {
         setDisplayMessages(mapped)
         setIsWaitingAI(false)
       }
-      // Nếu giống, không update (giữ nguyên displayMessages)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages, selectedId])
 
   // Khi conversations thay đổi, đồng bộ lại displaySessions và kiểm tra pendingRenames
@@ -65,6 +72,7 @@ const ChatbotAIPage: React.FC = () => {
         conversations.map((c: any) => ({
           id: c.name,
           title: c.title,
+          creation: c.creation,
           messages: []
         }))
       )
@@ -81,10 +89,31 @@ const ChatbotAIPage: React.FC = () => {
     }
   }, [conversations])
 
-  // Lắng nghe realtime event new_message để tự động cập nhật khi có tin nhắn mới (user hoặc AI)
+  // Lắng nghe realtime event new_message
   useFrappeEventListener('new_message', (data) => {
-    console.log('Realtime event new_message:', data)
     if (data.channel_id === selectedId) {
+      // Cập nhật tin nhắn ngay lập tức
+      setDisplayMessages(prev => {
+        const newMessage = {
+          role: data.is_user ? 'user' as const : 'ai' as const,
+          content: data.message as string
+        }
+        
+        // Nếu là tin nhắn AI và đang có tin nhắn pending, thay thế nó
+        if (!data.is_user && prev.length > 0 && prev[prev.length - 1].pending) {
+          return [...prev.slice(0, -1), newMessage]
+        }
+        
+        // Nếu là tin nhắn mới, thêm vào cuối
+        return [...prev, newMessage]
+      })
+      
+      // Nếu là tin nhắn AI, tắt trạng thái đang chờ
+      if (!data.is_user) {
+        setIsWaitingAI(false)
+      }
+      
+      // Cập nhật lại danh sách tin nhắn từ backend
       mutateMessages()
     }
   })
@@ -124,26 +153,75 @@ const ChatbotAIPage: React.FC = () => {
   }
 
   // Hàm gửi tin nhắn
-  const handleSendMessage = async (content: string) => {
+  const handleSendMessage = async (content: string, file?: File, context?: { role: 'user' | 'ai'; content: string }[]) => {
     if (!selectedId) return
-    setDisplayMessages((prev) => [
-      ...prev,
-      { role: 'user', content },
-      { role: 'ai', content: 'AI đang suy nghĩ...', pending: true }
-    ])
-    setIsWaitingAI(true)
+
     try {
-      await sendMessage({ conversation_id: selectedId, message: content })
-      // Không cần mutateMessages ngay, sẽ tự động fetch lại khi nhận realtime event
+      setIsSending(true)
+      const response = await fetch('/api/method/raven.api.chatbot_ai.send_message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          session_id: selectedId,
+          message: content,
+          file: file ? await fileToBase64(file) : undefined,
+          context: context || [] // Đảm bảo context luôn là một mảng
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to send message')
+      }
+
+      const data = await response.json()
+      if (data.message) {
+        // Cập nhật tin nhắn trong session hiện tại
+        const updatedSessions = sessionsForUI.map(s => {
+          if (s.id === selectedId) {
+            return {
+              ...s,
+              messages: [...s.messages, {
+                role: 'user' as const,
+                content: content
+              }, {
+                role: 'ai' as const,
+                content: data.message
+              }],
+              isThinking: false
+            }
+          }
+          return s
+        })
+        setDisplaySessions(updatedSessions)
+      }
     } catch (error) {
-      setIsWaitingAI(false)
-      // Có thể show lỗi ở đây nếu muốn
       console.error('Error sending message:', error)
+    } finally {
+      setIsSending(false)
     }
   }
 
   // Render sessions: nếu có trong pendingRenames thì hiển thị Đang xử lý...
   const sessionsForUI = displaySessions.map((s) => (pendingRenames[s.id] ? { ...s, title: 'Đang xử lý...' } : s))
+
+  const handleUpdateMessages = (messages: Message[]) => {
+    // Cập nhật tin nhắn trong session hiện tại
+    const updatedSessions = sessionsForUI.map(s => {
+      if (s.id === selectedId) {
+        const lastMessage = messages[messages.length - 1]
+        return {
+          ...s,
+          messages,
+          // Chỉ hiển thị trạng thái AI đang suy nghĩ khi tin nhắn cuối là của user
+          isThinking: lastMessage?.role === 'user'
+        }
+      }
+      return s
+    })
+    setDisplaySessions(updatedSessions)
+  }
 
   return (
     <div className='flex h-full w-full'>
@@ -155,19 +233,17 @@ const ChatbotAIPage: React.FC = () => {
           onSelectSession={setSelectedId}
           onUpdateSessions={handleUpdateSessions}
           onNewSession={handleNewSession}
+          mutateConversations={mutateConversations}
         />
       </div>
       {/* Chatbox */}
       <div className='flex-1 h-full'>
         {selectedId ? (
           <ChatbotAIChatBox
-            session={{
-              id: selectedId,
-              title: displaySessions.find((s) => s.id === selectedId)?.title || '',
-              messages: displayMessages
-            }}
+            session={sessionsForUI.find(s => s.id === selectedId)!}
             onSendMessage={handleSendMessage}
             loading={sending || loadingMessages}
+            onUpdateMessages={handleUpdateMessages}
           />
         ) : (
           <div className='flex items-center justify-center h-full text-gray-6'>Chọn một đoạn chat để bắt đầu</div>

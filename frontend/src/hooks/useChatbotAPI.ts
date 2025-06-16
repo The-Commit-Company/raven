@@ -36,7 +36,7 @@ export function useChatbotTopics() {
 
 // Đổi tên cuộc trò chuyện
 export function useRenameChatbotConversation() {
-  return useFrappePostCall<any>('frappe.client.set_value')
+  return useFrappePostCall<any>('raven.api.chatbot.rename_conversation')
 }
 
 // Xóa cuộc trò chuyện

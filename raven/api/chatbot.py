@@ -12,8 +12,8 @@ def get_conversations():
     conversations = frappe.get_all(
         "ChatConversation",
         filters={"user": frappe.session.user},
-        fields=["name", "title", "created_on"],
-        order_by="created_on desc"
+        fields=["name", "title", "creation"],
+        order_by="creation desc"
     )
     return conversations
 
@@ -65,12 +65,14 @@ def analyze_topic(message):
         return None
 
 @frappe.whitelist()
-def send_message(conversation_id, message, is_user=True):
+def send_message(conversation_id, message, is_user=True, message_type="Text", file=None, context=None):
     try:
         print("=== BẮT ĐẦU GỬI TIN NHẮN ===")
         print(f"Conversation ID: {conversation_id}")
         print(f"Message: {message}")
         print(f"Is User: {is_user}")
+        print(f"Message Type: {message_type}")
+        print(f"File: {file}")
         
         # Kiểm tra conversation có tồn tại không
         if not frappe.db.exists("ChatConversation", conversation_id):
@@ -80,27 +82,8 @@ def send_message(conversation_id, message, is_user=True):
         conversation = frappe.get_doc("ChatConversation", conversation_id)
         print(f"Đã tìm thấy conversation: {conversation.name}")
         
-        # Kiểm tra nếu là tin nhắn đầu tiên của người dùng
-        if is_user:
-            # Lấy số lượng tin nhắn hiện tại
-            message_count = frappe.db.count("ChatMessage", {
-                "parent": conversation_id,
-                "parentfield": "messages",
-                "parenttype": "ChatConversation"
-            })
-            
-            if message_count == 0:
-                # Phân tích chủ đề từ tin nhắn đầu tiên
-                topic = analyze_topic(message)
-                if topic:
-                    # Đổi tên conversation
-                    conversation.title = topic
-                    conversation.save(ignore_permissions=True)
-                    frappe.db.commit()
-                    print(f"Đã đổi tên conversation thành: {topic}")
-        
         # Tạo tin nhắn mới
-        new_message = frappe.get_doc({
+        chat_message = frappe.get_doc({
             "doctype": "ChatMessage",
             "parent": conversation_id,
             "parentfield": "messages",
@@ -108,46 +91,35 @@ def send_message(conversation_id, message, is_user=True):
             "sender": frappe.session.user if is_user else "AI Assistant",
             "is_user": is_user,
             "message": message,
+            "message_type": message_type,
+            "file": file,
             "timestamp": frappe.utils.now()
         })
-        new_message.insert(ignore_permissions=True)
-        frappe.db.commit()
-        print(f"Đã lưu tin nhắn vào conversation thành công")
+        chat_message.insert()
         
-        # Gửi realtime update
-        frappe.publish_realtime(
-            "new_message",
-            {
-                "channel_id": conversation_id,
-                "user": frappe.session.user if is_user else "AI Assistant",
-                "message": message,
-                "is_user": is_user,
-                "timestamp": frappe.utils.now(),
-                "message_type": "Text",
-                "content": message
-            },
-            user=conversation.user
-        )
-        
-        # Nếu là tin nhắn từ người dùng, gọi AI trả lời ở background
+        # Nếu là tin nhắn của người dùng, gửi cho AI xử lý
         if is_user:
+            # Gửi tin nhắn cho AI xử lý trong background
             frappe.enqueue(
                 "raven.api.chatbot.handle_ai_reply",
-                queue='long',
-                conversation_id=conversation_id
+                conversation_id=conversation_id,
+                now=False
             )
             
-        # Trả về conversation
-        return {
-            "conversation": conversation
-        }
+        return chat_message.name
+        
     except Exception as e:
-        error_message = f"{str(e)}\n{frappe.get_traceback()}"
-        frappe.log_error(error_message, "Lỗi tổng thể khi gửi tin nhắn")
+        error_message = (
+            f"User: {frappe.session.user}\n"
+            f"Conversation ID: {conversation_id}\n"
+            f"Error: {str(e)}\n"
+            f"Traceback: {traceback.format_exc()}"
+        )
+        frappe.log_error(error_message, "AI Handler Error")
+        print("[LOG] Ghi lỗi vào Error Log:", error_message)
         frappe.throw(_("Có lỗi xảy ra khi gửi tin nhắn"))
 
 def handle_ai_reply(conversation_id):
-    import traceback
     try:
         # Lấy tất cả tin nhắn của conversation
         messages = frappe.get_all(
@@ -171,60 +143,30 @@ def handle_ai_reply(conversation_id):
         
         # Kiểm tra cấu hình AI
         raven_settings = frappe.get_cached_doc("Raven Settings")
-        print("[LOG] Raven Settings:", raven_settings.as_dict())
         if not raven_settings.enable_ai_integration:
-            print("[LOG] AI integration chưa bật!")
-            return
+            return "AI integration chưa được bật. Vui lòng liên hệ admin để bật tính năng này."
             
-        print("[LOG] Trước khi gọi get_open_ai_client()")
         client = get_open_ai_client()
-        print(f"[LOG] Client OpenAI: {client}")
         if not client:
-            print("[LOG] Không thể kết nối OpenAI!")
-            return
+            return "Không thể kết nối với OpenAI. Vui lòng kiểm tra cấu hình API key."
             
-        print("[LOG] Gọi OpenAI...")
+        # Gọi OpenAI API
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=chat_messages,
             temperature=0.7,
             max_tokens=1000
         )
-        print(f"[LOG] Phản hồi OpenAI: {response}")
-        ai_response = response.choices[0].message.content
-        print(f"[LOG] Nội dung phản hồi AI: {ai_response}")
-        if not ai_response:
-            print("[LOG] Không nhận được phản hồi từ AI!")
-            return
-            
-        # Tạo tin nhắn AI mới
-        new_message = frappe.get_doc({
-            "doctype": "ChatMessage",
-            "parent": conversation_id,
-            "parentfield": "messages",
-            "parenttype": "ChatConversation",
-            "sender": "AI Assistant",
-            "is_user": False,
-            "message": ai_response,
-            "timestamp": frappe.utils.now()
-        })
-        new_message.insert(ignore_permissions=True)
-        frappe.db.commit()
         
-        # Gửi realtime update
-        frappe.publish_realtime(
-            "new_message",
-            {
-                "channel_id": conversation_id,
-                "user": "AI Assistant",
-                "message": ai_response,
-                "is_user": False,
-                "timestamp": frappe.utils.now(),
-                "message_type": "Text",
-                "content": ai_response
-            },
-            user=frappe.get_doc("ChatConversation", conversation_id).user
+        ai_response = response.choices[0].message.content
+        
+        # Gửi phản hồi từ AI
+        send_message(
+            conversation_id=conversation_id,
+            message=ai_response,
+            is_user=False
         )
+        
     except Exception as e:
         error_message = (
             f"User: {frappe.session.user}\n"
@@ -244,3 +186,38 @@ def get_topics():
         order_by="title asc"
     )
     return topics 
+
+@frappe.whitelist()
+def rename_conversation(conversation_id, title):
+    """Đổi tên cuộc trò chuyện"""
+    try:
+        # Kiểm tra conversation có tồn tại không
+        if not frappe.db.exists("ChatConversation", conversation_id):
+            frappe.throw(_("Cuộc trò chuyện không tồn tại"))
+            
+        conversation = frappe.get_doc("ChatConversation", conversation_id)
+        old_title = conversation.title
+        
+        # Cập nhật tên
+        conversation.title = title
+        conversation.save(ignore_permissions=True)
+        frappe.db.commit()
+        
+        # Gửi realtime update cho tất cả user đang online
+        frappe.publish_realtime(
+            event='raven:update_conversation_title',
+            message={
+                'conversation_id': conversation_id,
+                'old_title': old_title,
+                'new_title': title,
+                'creation': conversation.creation
+            },
+            after_commit=True,
+            doctype="ChatConversation"
+        )
+        
+        return conversation
+    except Exception as e:
+        error_message = f"{str(e)}\n{frappe.get_traceback()}"
+        frappe.log_error(error_message, "Lỗi khi đổi tên conversation")
+        frappe.throw(_("Có lỗi xảy ra khi đổi tên cuộc trò chuyện")) 
