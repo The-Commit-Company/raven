@@ -37,11 +37,13 @@ class RavenBot(Document):
 		enable_code_interpreter: DF.Check
 		enable_file_search: DF.Check
 		file_sources: DF.Table[RavenAIBotFiles]
+		google_document_processor_id: DF.Data | None
 		image: DF.AttachImage | None
 		instruction: DF.LongText | None
 		is_ai_bot: DF.Check
 		is_standard: DF.Check
 		model: DF.Data | None
+		model_provider: DF.Literal["OpenAI", "Local LLM"]
 		module: DF.Link | None
 		openai_assistant_id: DF.Data | None
 		openai_vector_store_id: DF.Data | None
@@ -49,11 +51,15 @@ class RavenBot(Document):
 		reasoning_effort: DF.Literal["low", "medium", "high"]
 		temperature: DF.Float
 		top_p: DF.Float
+		use_google_document_parser: DF.Check
 	# end: auto-generated types
 
 	def validate(self):
 		if self.is_ai_bot and not self.instruction:
 			frappe.throw(_("Please provide an instruction for this AI Agent."))
+
+		if self.use_google_document_parser and not self.google_document_processor_id:
+			frappe.throw(_("Please select a Document Processor for this bot."))
 
 		self.validate_functions()
 

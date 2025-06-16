@@ -2,6 +2,7 @@ import frappe
 
 # Import agents integration - no fallback needed
 from raven.ai.agents_integration import handle_ai_request_sync
+from raven.ai.google_ai import run_document_ai_processor
 
 # Keep old handler import for fallback
 from raven.ai.handler import stream_response
@@ -112,7 +113,9 @@ def handle_bot_dm_with_assistants(message, bot):
 		# Upload the file to OpenAI
 		file = create_file_in_openai(file_url, message.message_type, client)
 
-		content, attachments = get_content_attachment_for_file(message.message_type, file.id, file_url)
+		content, attachments = get_content_attachment_for_file(
+			message.message_type, file.id, file_url, bot
+		)
 
 		ai_thread = client.beta.threads.create(
 			messages=[
@@ -259,7 +262,9 @@ def handle_ai_thread_message_with_assistants(message, channel, bot):
 			)
 			return
 
-		content, attachments = get_content_attachment_for_file(message.message_type, file.id, file_url)
+		content, attachments = get_content_attachment_for_file(
+			message.message_type, file.id, file_url, bot
+		)
 
 		try:
 			client.beta.threads.messages.create(
@@ -516,7 +521,7 @@ def create_file_in_openai(file_url: str, message_type: str, client):
 	return file
 
 
-def get_content_attachment_for_file(message_type: str, file_id: str, file_url: str):
+def get_content_attachment_for_file(message_type: str, file_id: str, file_url: str, bot):
 
 	attachments = None
 
@@ -525,7 +530,17 @@ def get_content_attachment_for_file(message_type: str, file_id: str, file_url: s
 
 		file_extension = file_url.split(".")[-1].lower()
 
-		if file_extension == "pdf":
+		extracted_content = ""
+
+		if bot.use_google_document_parser:
+			extracted_content = run_document_ai_processor(
+				bot.google_document_processor_id, file_url, file_extension
+			)
+
+			if extracted_content:
+				content += f"\n\nThe document was parsed and the following content was extracted from it:\n {extracted_content}"
+
+		if not extracted_content and file_extension == "pdf":
 			content += (
 				" The file is a PDF. If it's not machine readable, you can extract the text via images."
 			)

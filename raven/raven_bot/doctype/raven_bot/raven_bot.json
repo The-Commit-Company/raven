@@ -36,7 +36,10 @@
   "dynamic_instructions",
   "bot_functions",
   "openai_vector_store_id",
-  "file_sources"
+  "file_sources",
+  "document_parsing_tab",
+  "use_google_document_parser",
+  "google_document_processor_id"
  ],
  "fields": [
   {
@@ -221,13 +224,31 @@
    "fieldname": "top_p",
    "fieldtype": "Float",
    "label": "Top P"
+  },
+  {
+   "fieldname": "document_parsing_tab",
+   "fieldtype": "Tab Break",
+   "label": "Document Parsing"
+  },
+  {
+   "default": "0",
+   "description": "When images or PDFs are uploaded to the agent, Raven will automatically call Google Cloud APIs to parse the document and send it's results to the agent.",
+   "fieldname": "use_google_document_parser",
+   "fieldtype": "Check",
+   "label": "Use Google Document/Vision AI to parse documents"
+  },
+  {
+   "fieldname": "google_document_processor_id",
+   "fieldtype": "Data",
+   "label": "Google Document Processor ID",
+   "length": 400
   }
  ],
  "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-23 10:54:59.313559",
+ "modified": "2025-06-17 00:04:29.764884",
  "modified_by": "Administrator",
  "module": "Raven Bot",
  "name": "Raven Bot",

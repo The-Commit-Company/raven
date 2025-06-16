@@ -22,6 +22,11 @@
   "enable_local_llm",
   "local_llm_provider",
   "local_llm_api_url",
+  "google_vision_and_document_ai_section",
+  "enable_google_apis",
+  "google_processor_location",
+  "google_project_id",
+  "google_service_account_json_key",
   "frappe_hr_tab",
   "auto_create_department_channel",
   "department_channel_type",
@@ -275,13 +280,43 @@
    "label": "VAPID Public Key",
    "length": 300,
    "read_only": 1
+  },
+  {
+   "fieldname": "google_vision_and_document_ai_section",
+   "fieldtype": "Section Break",
+   "label": "Google Vision and Document AI"
+  },
+  {
+   "default": "0",
+   "description": "Useful for extracting information from documents before sending it to agents",
+   "fieldname": "enable_google_apis",
+   "fieldtype": "Check",
+   "label": "Enable Google APIs"
+  },
+  {
+   "default": "us",
+   "fieldname": "google_processor_location",
+   "fieldtype": "Select",
+   "label": "Google Processor Location",
+   "options": "us\neu"
+  },
+  {
+   "fieldname": "google_project_id",
+   "fieldtype": "Data",
+   "label": "Google Project ID"
+  },
+  {
+   "fieldname": "google_service_account_json_key",
+   "fieldtype": "Password",
+   "label": "Google Service Account JSON Key",
+   "length": 800
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-04-25 20:17:56.336393",
+ "modified": "2025-06-16 23:33:58.243626",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven Settings",
