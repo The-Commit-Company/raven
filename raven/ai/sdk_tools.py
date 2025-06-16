@@ -1,11 +1,12 @@
 import inspect
 import json
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable
 
 import frappe
 
 # Import the SDK directly - no fallback needed
 from agents import FunctionTool
+from frappe import client
 
 
 def create_raven_tools(bot) -> list[FunctionTool]:
@@ -330,7 +331,7 @@ def create_get_function(doctype: str) -> Callable:
 		Returns:
 		    dict: Document data
 		"""
-		doc = frappe.get_doc(doctype, name)
+		doc = client.get(doctype, name)
 		return doc
 
 	get_doc.__name__ = f"get_{doctype.lower().replace(' ', '_')}"
@@ -467,7 +468,7 @@ def create_list_function(doctype: str) -> Callable:
 		if not fields:
 			fields = ["name", "modified"]
 
-		result = frappe.get_all(
+		result = frappe.get_list(
 			doctype, filters=filters, fields=fields, limit_page_length=limit, order_by=order_by
 		)
 
@@ -728,6 +729,8 @@ def handle_get_document(document_id, reference_doctype=None):
 		try:
 			# Get document
 			doc = frappe.get_doc(reference_doctype, document_id)
+			doc.check_permission()
+			doc.apply_fieldlevel_read_permissions()
 
 			# Convert to dict
 			if hasattr(doc, "as_dict"):
