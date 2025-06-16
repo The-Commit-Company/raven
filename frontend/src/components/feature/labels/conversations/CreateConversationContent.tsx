@@ -6,7 +6,7 @@ import { Dialog, Flex, Button } from '@radix-ui/themes'
 import { IoMdClose } from 'react-icons/io'
 
 import { sortedChannelsAtom } from '@/utils/channel/ChannelAtom'
-import ChannelItem from './ChannelItem'
+import ChannelModalConversationItem from './ChannelModalConversationItem'
 import SelectedChannelItem from './SelectedChannelItem'
 import { UnifiedChannel } from '../../direct-messages/useUnifiedChannelList'
 import ChannelDetailDialog from './ChannelDetailDialog'
@@ -34,6 +34,7 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
   const handleToggle = (channelID: string) => {
     setSelected((prev) => {
       const newSet = new Set(prev)
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       newSet.has(channelID) ? newSet.delete(channelID) : newSet.add(channelID)
       return newSet
     })
@@ -64,8 +65,10 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
       toast.success('Gán nhãn thành công')
     } catch (err) {
       console.error('Error adding label:', err)
-      toast.error(err?.message?.message)
-      // TODO: show toast lỗi nếu cần
+
+      const errorMessage = (err as any)?.message?.message || 'Đã có lỗi xảy ra'
+
+      toast.error(errorMessage)
     }
   }
 
@@ -100,12 +103,11 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
 
             <div className='flex-1 overflow-y-auto space-y-1'>
               {filteredChannels.map((channel) => (
-                <ChannelItem
+                <ChannelModalConversationItem
                   key={channel.name}
                   channel={channel}
                   selected={selected}
                   handleToggle={handleToggle}
-                  label={label}
                   name={name}
                   onOpenModal={handleOpenModal}
                 />

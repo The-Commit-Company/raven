@@ -10,7 +10,7 @@ interface CreateConversationModalProps {
   setIsOpen: (value: boolean) => void
 }
 
-const CreateConversationModal = ({name, label, isOpen, setIsOpen }: CreateConversationModalProps) => {
+const CreateConversationModal = ({ name, label, isOpen, setIsOpen }: CreateConversationModalProps) => {
   const isDesktop = useIsDesktop()
 
   return isDesktop ? (

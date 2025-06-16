@@ -73,13 +73,11 @@ def delete_label(label_id):
 
 from collections import defaultdict
 import frappe
-from frappe import _
 
 @frappe.whitelist()
 def get_my_labels():
     user = frappe.session.user
-
-    # Lấy tất cả label của user
+    # 2. Truy vấn như bình thường nếu không có cache
     labels = frappe.get_all(
         "User Label",
         filters={"owner": user},
@@ -87,36 +85,33 @@ def get_my_labels():
     )
 
     label_ids = [l["name"] for l in labels]
-
     if not label_ids:
-        return {"message": []}
+        return []
 
-    # Lấy toàn bộ channel đã gán nhãn này bởi chính user
     rows = frappe.db.sql("""
         SELECT
             ucl.label,
             ucl.channel_id,
-            rc.channel_name
+            rc.channel_name,
+            rc.is_direct_message
         FROM `tabUser Channel Label` ucl
         LEFT JOIN `tabRaven Channel` rc ON ucl.channel_id = rc.name
         WHERE ucl.label IN %s AND ucl.user = %s
     """, (tuple(label_ids), user), as_dict=True)
 
-    # Gom theo label → list of {channel_id, channel_name}
     label_map = defaultdict(list)
     for row in rows:
         label_map[row["label"]].append({
             "channel_id": row["channel_id"],
-            "channel_name": row["channel_name"]
+            "channel_name": row["channel_name"],
+            "is_direct_message": bool(row.get("is_direct_message"))
         })
 
-    # Trả kết quả đầy đủ
     result = []
-    for l in labels:
+    for label in labels:
         result.append({
-            "label_id": l["name"],
-            "label": l["label"],
-            "channels": label_map[l["name"]]  # list of object
+            "label_id": label["name"],
+            "label": label["label"],
+            "channels": label_map[label["name"]]
         })
-
     return result

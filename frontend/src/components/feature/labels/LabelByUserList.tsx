@@ -20,7 +20,7 @@ const LabelByUserList = () => {
     <div className='space-y-2'>
       {labels?.length === 0 && <div className='text-gray-500'>Chưa có nhãn nào</div>}
       {labels?.map(
-        (labelItem: { channels: { channel_id: string; channel_name: string }; label_id: string; label: string }) => (
+        (labelItem: { channels: { channel_id: string; channel_name: string }[]; label_id: string; label: string }) => (
           <LabelItem
             key={labelItem.label_id}
             label={labelItem.label}

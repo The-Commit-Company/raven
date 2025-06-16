@@ -9,24 +9,25 @@ type Props = {
   channel: any
   selected: Set<string>
   handleToggle: (id: string) => void
-  label: string
   onOpenModal?: (channel: any) => void
 }
 
-const ChannelItem = ({ name, channel, selected, handleToggle, label, onOpenModal }: Props) => {
-  if (channel.is_self_message === 1) return null
-
+const ChannelModalConversationItem = ({ name, channel, selected, handleToggle, onOpenModal }: Props) => {
   const { isDM, displayName, avatarChar } = useChannelDisplayInfo(channel)
 
-  const isAlreadyLabeled = channel.user_labels?.includes(name)
-  const isSelected = selected.has(channel.name)
+  if (channel?.is_self_message === 1) return null
+
+  const isAlreadyLabeled = channel?.user_labels?.includes(name)
+  const isSelected = selected.has(channel?.name)
   const isChecked = isSelected || isAlreadyLabeled
+
+  const disabledStyle = isAlreadyLabeled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
 
   return (
     <div
       className={clsx(
-        'group flex items-center gap-2 px-2 py-1 rounded',
-        isAlreadyLabeled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
+        'flex items-center gap-2 px-2 py-1 rounded relative',
+        disabledStyle,
         'hover:bg-gray-2 dark:hover:bg-gray-7'
       )}
     >
@@ -37,7 +38,7 @@ const ChannelItem = ({ name, channel, selected, handleToggle, label, onOpenModal
           onCheckedChange={() => {
             if (!isAlreadyLabeled) handleToggle(channel.name)
           }}
-          className={clsx(isAlreadyLabeled && 'opacity-50 cursor-not-allowed')}
+          className={clsx(disabledStyle)}
         />
 
         {isDM ? (
@@ -50,7 +51,7 @@ const ChannelItem = ({ name, channel, selected, handleToggle, label, onOpenModal
           </div>
         )}
 
-        <div className='truncate text-sm'>{displayName}</div>
+        <div className={clsx('truncate text-sm', disabledStyle)}>{displayName}</div>
       </label>
 
       <div
@@ -59,8 +60,8 @@ const ChannelItem = ({ name, channel, selected, handleToggle, label, onOpenModal
           onOpenModal?.(channel)
         }}
         className={clsx(
-          'w-6 h-6 shrink-0 ml-auto flex items-center justify-center rounded-md',
-          'opacity-0 group-hover:opacity-100',
+          'w-6 h-6 absolute right-2 top-1/2 -translate-y-1/2',
+          'flex items-center justify-center rounded-md',
           'hover:bg-gray-3 dark:hover:bg-gray-6',
           'text-gray-500 hover:text-black dark:hover:text-white',
           'transition duration-150 cursor-pointer'
@@ -73,4 +74,4 @@ const ChannelItem = ({ name, channel, selected, handleToggle, label, onOpenModal
   )
 }
 
-export default ChannelItem
+export default ChannelModalConversationItem

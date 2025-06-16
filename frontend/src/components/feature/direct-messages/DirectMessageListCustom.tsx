@@ -214,8 +214,8 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
         <Tooltip content={channel.is_done ? 'Đánh dấu chưa xong' : 'Đánh dấu đã xong'} side='bottom'>
           <button
             onClick={(e) => {
-              if(isDesktop){
-                e.stopPropagation() 
+              if (isDesktop) {
+                e.stopPropagation()
               }
               channel.is_done ? markAsNotDone(channel.name) : markAsDone(channel.name)
             }}

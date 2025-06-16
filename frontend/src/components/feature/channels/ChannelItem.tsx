@@ -18,7 +18,7 @@ const ChannelItem = ({
   peer_user_id: string
 }) => {
   const { currentUser } = useContext(UserContext)
-  const { workspaceID, channelID: currentChannelID   } = useParams() // lấy segment sau workspaceID
+  const { workspaceID, channelID: currentChannelID } = useParams() // lấy segment sau workspaceID
   const user = useGetUser(peer_user_id)
   const navigate = useNavigate()
 
@@ -32,29 +32,20 @@ const ChannelItem = ({
 
   const isActive = currentChannelID === channelID
 
-  const userName =
-    user?.full_name ?? peer_user_id ?? replaceCurrentUserFromDMChannelName(channelName, currentUser)
+  const userName = user?.full_name ?? peer_user_id ?? replaceCurrentUserFromDMChannelName(channelName, currentUser)
 
   return (
     <Box
       onClick={handleClick}
       className={clsx(
         'py-1.5 px-2.5 group relative cursor-pointer flex items-center space-x-2 touch-manipulation',
-        isActive
-          ? 'bg-gray-200 dark:bg-gray-600 font-semibold'
-          : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+        isActive ? 'bg-gray-200 dark:bg-gray-600 font-semibold' : 'hover:bg-gray-100 dark:hover:bg-gray-700'
       )}
     >
       <Flex gap='2' align='center' justify='between' width='100%'>
         <Flex gap='2' align='center'>
           <UserAvatar src={user?.user_image} alt={userName} isBot={user?.type === 'Bot'} />
-          <Text
-            as='span'
-            className={clsx(
-              'line-clamp-1 text-ellipsis',
-              'text-base md:text-sm xs:text-xs',
-            )}
-          >
+          <Text as='span' className={clsx('line-clamp-1 text-ellipsis', 'text-base md:text-sm xs:text-xs')}>
             {userName}
           </Text>
         </Flex>

@@ -1,4 +1,3 @@
-// utils/channel/getChannelDisplayInfo.ts
 import { useGetUser } from '@/hooks/useGetUser'
 import { useMemo } from 'react'
 
@@ -11,7 +10,8 @@ interface Channel {
 
 export const useChannelDisplayInfo = (channel: Channel | null) => {
   const isDM = channel?.is_direct_message === 1
-  const user = isDM ? useGetUser(channel.peer_user_id || '') : null
+  const peerUserId = isDM ? channel?.peer_user_id || '' : ''
+  const user = useGetUser(peerUserId)
 
   const displayName = useMemo(() => {
     if (isDM) return user?.full_name ?? 'Người dùng'

@@ -60,3 +60,15 @@ def add_label_to_multiple_channels(label_id, channel_ids):
         }).insert(ignore_permissions=True)
 
     return {"status": "success"}
+
+@frappe.whitelist()
+def remove_channel_from_label(label_id: str, channel_id: str):
+    user = frappe.session.user
+
+    frappe.db.delete('User Channel Label', {
+        'user': user,
+        'label': label_id,
+        'channel_id': channel_id
+    })
+
+    return {'message': 'Đã xoá channel khỏi nhãn'}

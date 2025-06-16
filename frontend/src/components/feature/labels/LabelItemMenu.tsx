@@ -1,7 +1,10 @@
 import { Popover, Tooltip, Button } from '@radix-ui/themes'
 import { HiOutlineDotsHorizontal } from 'react-icons/hi'
 import { forwardRef, useEffect, useState } from 'react'
-import CreateConversationModal from './conversations/CreateConversationModal'
+
+import { lazy, Suspense } from 'react'
+
+const CreateConversationModal = lazy(() => import('./conversations/CreateConversationModal'))
 
 const IconButton = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(
   ({ children, ...props }, ref) => (
@@ -33,14 +36,29 @@ function useIsTouchDevice() {
   return isTouch
 }
 
-const LabelItemMenu = ({ name, label, onEdit, onDelete }: {name:string; label: string; onEdit?: () => void; onDelete?: () => void }) => {
+const LabelItemMenu = ({
+  name,
+  label,
+  onEdit,
+  onDelete
+}: {
+  name: string
+  label: string
+  onEdit?: () => void
+  onDelete?: () => void
+}) => {
   const [popoverOpen, setPopoverOpen] = useState(false)
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const isTouch = useIsTouchDevice()
 
   const triggerButton = (
     <Popover.Trigger>
-      <IconButton className='p-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-150 cursor-pointer bg-transparent'>
+      <IconButton
+        onClick={(e) => {
+          e.stopPropagation()
+        }}
+        className='p-1 rounded-md duration-150 cursor-pointer bg-transparent absolute right-3 top-1/2 -translate-y-1/2'
+      >
         <HiOutlineDotsHorizontal className='w-4 h-4 text-gray-11' />
       </IconButton>
     </Popover.Trigger>
@@ -94,7 +112,11 @@ const LabelItemMenu = ({ name, label, onEdit, onDelete }: {name:string; label: s
       </Popover.Root>
 
       {/* Modal hoặc Drawer */}
-      {<CreateConversationModal name={name} label={label} isOpen={isCreateOpen} setIsOpen={setIsCreateOpen} />}
+      <Suspense fallback={null}>
+        {isCreateOpen && (
+          <CreateConversationModal name={name} label={label} isOpen={isCreateOpen} setIsOpen={setIsCreateOpen} />
+        )}
+      </Suspense>
     </>
   )
 }
