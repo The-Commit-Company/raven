@@ -1,9 +1,6 @@
 """
 Handler for files uploaded during conversations
 """
-import json
-import os
-from typing import Any, Dict, Optional
 
 import frappe
 import pypdf
@@ -222,9 +219,9 @@ class ConversationFileHandler:
 
 		# Try to find amounts (various formats)
 		amount_patterns = [
-			r"(?:Total|Amount|Montant|Betrag)[\s:]*(?:EUR|€|\$|CHF)?\s*([\d,\']+\.?\d*)",
-			r"(?:EUR|€|\$|CHF)\s*([\d,\']+\.?\d*)",
-			r"([\d,\']+\.?\d*)\s*(?:EUR|€|\$|CHF)",
+			r"(?:Total|Amount|Montant|Betrag)[\s:]*(?:EUR|€|\$|CHF|₹|INR)?\s*([\d,\']+\.?\d*)",
+			r"(?:EUR|€|\$|CHF|₹|INR)\s*([\d,\']+\.?\d*)",
+			r"([\d,\']+\.?\d*)\s*(?:EUR|€|\$|CHF|₹|INR)",
 		]
 
 		for pattern in amount_patterns:
