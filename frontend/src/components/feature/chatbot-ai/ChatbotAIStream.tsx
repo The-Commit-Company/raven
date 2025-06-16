@@ -1,6 +1,8 @@
 import { useChatbotConversations, useCreateChatbotConversation } from '@/hooks/useChatbotAPI'
+import { ConversationData } from '@/types/ChatBot/types'
+import { normalizeConversations } from '@/utils/chatBot-options'
 import { useFrappeEventListener } from 'frappe-react-sdk'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import ChatbotAIContainer, { ChatSession } from './ChatbotAIContainer'
 
 const ChatbotAIStream = () => {
@@ -10,18 +12,14 @@ const ChatbotAIStream = () => {
   const { call: createConversation } = useCreateChatbotConversation()
 
   // Chuyển đổi dữ liệu conversation sang ChatSession cho UI
-  const sessions: ChatSession[] = (
-    Array.isArray(conversations)
-      ? conversations
-      : Array.isArray((conversations as any)?.message)
-        ? (conversations as any).message
-        : []
-  ).map((c: any) => ({
-    id: c.name,
-    title: c.title,
-    creation: c.creation,
-    messages: []
-  }))
+  const sessions: ChatSession[] = useMemo(() => {
+    return normalizeConversations(conversations).map((c: ConversationData) => ({
+      id: c.name,
+      title: c.title,
+      creation: c.creation,
+      messages: []
+    }))
+  }, [conversations])
 
   // Hàm tạo session mới
   const handleNewSession = async () => {
