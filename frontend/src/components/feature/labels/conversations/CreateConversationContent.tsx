@@ -5,19 +5,21 @@ import { useAtomValue } from 'jotai'
 import { Dialog, Flex, Button } from '@radix-ui/themes'
 import { IoMdClose } from 'react-icons/io'
 
-import { sortedChannelsAtom } from '@/utils/channel/ChannelAtom'
+import { sortedChannelsAtom, useUpdateChannelLabels } from '@/utils/channel/ChannelAtom'
 import ChannelModalConversationItem from './ChannelModalConversationItem'
 import SelectedChannelItem from './SelectedChannelItem'
 import { UnifiedChannel } from '../../direct-messages/useUnifiedChannelList'
-import ChannelDetailDialog from './ChannelDetailDialog'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { toast } from 'sonner'
+import { lazy, Suspense } from 'react'
 
 type Props = {
   setIsOpen: (v: boolean) => void
   label: string // label_id, ví dụ: 'ULB0001'
   name: string
 }
+
+const ChannelDetailDialog = lazy(() => import('./ChannelDetailDialog'))
 
 const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
   const channels = useAtomValue(sortedChannelsAtom)
@@ -51,6 +53,8 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
     )
   }, [channels, search])
 
+  const { addLabelToChannel } = useUpdateChannelLabels()
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const channel_ids = Array.from(selected)
@@ -60,14 +64,17 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
         label_id: name,
         channel_ids: JSON.stringify(channel_ids)
       })
+
+      // ✅ Cập nhật local sortedChannelsAtom
+      channel_ids.forEach((channelID) => {
+        addLabelToChannel(channelID, name)
+      })
+
       setIsOpen(false)
-      // TODO: show toast "Gán nhãn thành công"
       toast.success('Gán nhãn thành công')
     } catch (err) {
       console.error('Error adding label:', err)
-
       const errorMessage = (err as any)?.message?.message || 'Đã có lỗi xảy ra'
-
       toast.error(errorMessage)
     }
   }
@@ -77,7 +84,7 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
       <form className='space-y-4 overflow-hidden' onSubmit={handleSubmit}>
         <Dialog.Title className='text-lg font-semibold flex w-full items-center justify-between'>
           <Flex align='center' gap='2'>
-            Thêm cuộc trò chuyện vào <span className='italic'>"{label}"</span>
+            Thêm cuộc trò chuyện vào<span className='italic'>"{label}"</span>
           </Flex>
           <Dialog.Close>
             <IoMdClose
@@ -140,7 +147,9 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
           </Button>
         </Flex>
       </form>
-      <ChannelDetailDialog channel={currentChannel} onClose={() => setCurrentChannel(null)} />
+      <Suspense fallback={null}>
+        <ChannelDetailDialog channel={currentChannel} onClose={() => setCurrentChannel(null)} />
+      </Suspense>
     </>
   )
 }

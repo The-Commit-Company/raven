@@ -19,7 +19,7 @@ import {
 } from 'react-icons/hi'
 
 import clsx from 'clsx'
-import { CreateLabelButton } from '@/components/feature/channels/CreateLabelModal'
+import { CreateLabelButton } from '@/components/feature/labels/CreateLabelModal'
 import { FiChevronDown, FiChevronRight } from 'react-icons/fi'
 import { MdLabelOutline } from 'react-icons/md'
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'

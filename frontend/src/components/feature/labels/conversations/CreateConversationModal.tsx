@@ -15,7 +15,7 @@ const CreateConversationModal = ({ name, label, isOpen, setIsOpen }: CreateConve
 
   return isDesktop ? (
     <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Dialog.Content className='z-[300] bg-white dark:bg-gray-900 rounded-xl p-6 shadow-xl w-[900px] max-w-full max-h-[90vh] overflow-y-hidden'>
+      <Dialog.Content className='z-[300] bg-white dark:bg-gray-900 rounded-xl p-6 shadow-xl w-[900px] max-w-full max-h-[90vh] overflow-y-scroll'>
         <CreateConversationContent name={name} setIsOpen={setIsOpen} label={label} />
       </Dialog.Content>
     </Dialog.Root>

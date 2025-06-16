@@ -8,7 +8,7 @@ import { useSetAtom } from 'jotai'
 import { BiMoon, BiSun } from 'react-icons/bi'
 import { TbSearch } from 'react-icons/tb'
 import { CreateChannelButton } from '@/components/feature/channels/CreateChannelModal'
-import { CreateLabelButton } from '@/components/feature/channels/CreateLabelModal'
+import { CreateLabelButton } from '@/components/feature/labels/CreateLabelModal'
 
 export const SidebarHeader = () => {
   const isDesktop = useIsDesktop()

@@ -3,6 +3,8 @@ import { HiOutlineDotsHorizontal } from 'react-icons/hi'
 import { forwardRef, useEffect, useState } from 'react'
 
 import { lazy, Suspense } from 'react'
+import EditLabelModal from './EditLabelModal'
+import DeleteLabelModal from './DeleteLabelModal'
 
 const CreateConversationModal = lazy(() => import('./conversations/CreateConversationModal'))
 
@@ -49,6 +51,8 @@ const LabelItemMenu = ({
 }) => {
   const [popoverOpen, setPopoverOpen] = useState(false)
   const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const [isEditOpen, setIsEditOpen] = useState(false)
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   const isTouch = useIsTouchDevice()
 
   const triggerButton = (
@@ -90,7 +94,7 @@ const LabelItemMenu = ({
           <Button
             onClick={() => {
               setPopoverOpen(false)
-              onEdit?.()
+              setIsEditOpen(true)
             }}
             style={commonButtonStyle}
             className='block w-full text-left justify-start font-light text-black dark:text-white cursor-pointer bg-transparent hover:bg-indigo-500 hover:text-white dark:hover:bg-gray-700 transition-colors'
@@ -101,7 +105,7 @@ const LabelItemMenu = ({
           <Button
             onClick={() => {
               setPopoverOpen(false)
-              onDelete?.()
+              setIsDeleteOpen(true)
             }}
             style={commonButtonStyle}
             className='block w-full text-left justify-start font-light text-red-500 dark:text-red-500 cursor-pointer bg-transparent hover:bg-red-500 hover:text-white dark:hover:bg-red-600 dark:hover:text-white transition-colors'
@@ -113,9 +117,13 @@ const LabelItemMenu = ({
 
       {/* Modal hoặc Drawer */}
       <Suspense fallback={null}>
-        {isCreateOpen && (
-          <CreateConversationModal name={name} label={label} isOpen={isCreateOpen} setIsOpen={setIsCreateOpen} />
-        )}
+        <CreateConversationModal name={name} label={label} isOpen={isCreateOpen} setIsOpen={setIsCreateOpen} />
+      </Suspense>
+      <Suspense fallback={null}>
+        <EditLabelModal name={name} label={label} isOpen={isEditOpen} setIsOpen={setIsEditOpen} />
+      </Suspense>
+      <Suspense fallback={null}>
+        <DeleteLabelModal name={name} label={label} isOpen={isDeleteOpen} setIsOpen={setIsDeleteOpen} />
       </Suspense>
     </>
   )

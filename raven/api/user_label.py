@@ -30,7 +30,7 @@ def create_label(label):
     }
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["POST"])
 def update_label(label_id, new_label):
     user = frappe.session.user
     if not label_id or not new_label:
@@ -52,6 +52,7 @@ def update_label(label_id, new_label):
 @frappe.whitelist()
 def delete_label(label_id):
     user = frappe.session.user
+
     if not label_id:
         frappe.throw(_("Missing label id"))
 
@@ -63,12 +64,19 @@ def delete_label(label_id):
     if label_doc.owner != user:
         frappe.throw(_("You are not allowed to delete this label"))
 
-    # Xoá liên kết nếu có
-    frappe.db.delete("User Label Channel", {"user_label": label_id})
+    # Xoá các liên kết từ User Channel Label theo user và label
+    frappe.db.delete("User Channel Label", {
+        "label": label_id,
+        "user": user
+    })
 
+    # Xoá document nhãn
     label_doc.delete(ignore_permissions=True)
 
-    return {"status": "success", "message": "Label deleted"}
+    return {
+        "status": "success",
+        "message": "Label deleted"
+    }
 
 
 from collections import defaultdict

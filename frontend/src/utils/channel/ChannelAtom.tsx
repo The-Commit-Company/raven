@@ -1,5 +1,5 @@
 // atoms/sortedChannelsAtom.ts
-import { atom, useAtomValue } from 'jotai'
+import { atom, useAtomValue, useSetAtom } from 'jotai'
 import { useUnreadMessages } from '../layout/sidebar'
 
 export type ChannelWithGroupType = {
@@ -28,10 +28,7 @@ export const setSortedChannelsAtom = atom(
 )
 
 // Hàm chuẩn bị dữ liệu ban đầu (channel + dm)
-export const prepareSortedChannels = (
-  channels: any[],
-  dm_channels: any[]
-): ChannelWithGroupType[] => {
+export const prepareSortedChannels = (channels: any[], dm_channels: any[]): ChannelWithGroupType[] => {
   return [
     ...channels.map((channel) => ({ ...channel, group_type: 'channel' as const })),
     ...dm_channels.map((dm) => ({ ...dm, group_type: 'dm' as const }))
@@ -60,4 +57,38 @@ export const useEnrichedChannels = (): ChannelWithGroupType[] => {
       last_message_sender_name: unread?.last_message_sender_name ?? channel.last_message_sender_name
     }
   })
+}
+
+export const useUpdateChannelLabels = () => {
+  const setChannels = useSetAtom(setSortedChannelsAtom)
+
+  const updateChannelLabels = (channelID: string, updateFn: (prevLabels: string[]) => string[]) => {
+    setChannels((prev) =>
+      prev.map((c) =>
+        c.name === channelID
+          ? {
+              ...c,
+              user_labels: updateFn(Array.isArray(c.user_labels) ? c.user_labels : [])
+            }
+          : c
+      )
+    )
+  }
+
+  const addLabelToChannel = (channelID: string, labelID: string) => {
+    updateChannelLabels(channelID, (prevRaw) => {
+      const prev = Array.isArray(prevRaw) ? prevRaw : []
+      return prev.includes(labelID) ? prev : [...prev, labelID]
+    })
+  }
+
+  const removeLabelFromChannel = (channelID: string, labelID: string) => {
+    updateChannelLabels(channelID, (prev) => prev.filter((id) => id !== labelID))
+  }
+
+  return {
+    updateChannelLabels,
+    addLabelToChannel,
+    removeLabelFromChannel
+  }
 }

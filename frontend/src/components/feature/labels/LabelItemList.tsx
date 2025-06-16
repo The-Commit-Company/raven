@@ -10,7 +10,7 @@ import { UserContext } from '@/utils/auth/UserProvider'
 import { replaceCurrentUserFromDMChannelName } from '@/utils/operations'
 import { useRemoveChannelFromLabel } from '@/hooks/useRemoveChannelFromLabel'
 import { toast } from 'sonner'
-import { useUpdateChannelLabels } from '@/utils/channel/ChannelListProvider'
+import { useUpdateChannelLabels } from '@/utils/channel/ChannelAtom'
 
 type Props = {
   channelID: string
@@ -34,7 +34,6 @@ const LabelItemList = ({ channelID, channelName, isDirectMessage, labelID, onRem
   const isActive = channelIDParams === channelID
 
   const { removeChannel, loading: isLoading } = useRemoveChannelFromLabel()
-  const { updateChannelLabels } = useUpdateChannelLabels()
 
   const handleClick = () => {
     if (workspaceID) {
@@ -44,21 +43,24 @@ const LabelItemList = ({ channelID, channelName, isDirectMessage, labelID, onRem
     }
   }
 
-  const handleRemove = async () => {
-    try {
-      await removeChannel(labelID, channelID)
+const { updateChannelLabels } = useUpdateChannelLabels()
 
-      // Cập nhật local cache (xoá nhãn khỏi channel)
-      updateChannelLabels(channelID, (prevLabels) => prevLabels.filter((id: string) => id !== labelID))
+const handleRemove = async () => {
+  try {
+    await removeChannel(labelID, channelID)
 
-      onRemoveLocally?.(channelID)
-      toast.success(`Đã xoá khỏi nhãn "${labelID}"`)
-      setShowModal(false)
-    } catch (err) {
-      console.error('Xoá thất bại:', err)
-      toast.error('Xoá channel khỏi nhãn thất bại')
-    }
+    updateChannelLabels(channelID, (prevLabels) =>
+      prevLabels.filter((id) => id !== labelID)
+    )
+
+    onRemoveLocally?.(channelID)
+    toast.success(`Đã xóa thành công`)
+    setShowModal(false)
+  } catch (err) {
+    console.error('Xoá thất bại:', err)
+    toast.error('Xoá channel khỏi nhãn thất bại')
   }
+}
 
   return (
     <ContextMenu.Root>

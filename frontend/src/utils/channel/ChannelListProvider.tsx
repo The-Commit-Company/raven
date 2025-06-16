@@ -259,34 +259,3 @@ export const useUpdateLastMessageDetails = () => {
   return { updateLastMessageForChannel }
 }
 
-export const useUpdateChannelLabels = () => {
-  const { mutate } = useChannelList()
-
-  const updateChannelLabels = (channelID: string, labels: string[]) => {
-    mutate(
-      (prev) => {
-        if (!prev) return prev
-
-        const update = (channels: any[]) =>
-          channels.map((c) =>
-            c.name === channelID
-              ? {
-                  ...c,
-                  user_labels: labels
-                }
-              : c
-          )
-
-        return {
-          message: {
-            channels: update(prev.message.channels),
-            dm_channels: update(prev.message.dm_channels)
-          }
-        }
-      },
-      { revalidate: false }
-    )
-  }
-
-  return { updateChannelLabels }
-}
