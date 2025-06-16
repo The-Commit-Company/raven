@@ -39,7 +39,7 @@ export const CreateLabelButton = () => {
   }, [isOpen, isDesktop])
 
   const handleChangeOpen = (open: boolean) => {
-    if (!open) console.log('hello')
+    if (!open)
     setIsOpen(open)
   }
 

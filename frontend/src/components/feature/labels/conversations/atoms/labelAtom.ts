@@ -1,4 +1,4 @@
-// stores/labelAtom.ts
 import { atom } from 'jotai'
 
-export const refreshLabelListAtom = atom(0) // dùng số để dễ trigger lại
+export const labelListAtom = atom<{ label_id: string; label: string }[]>([])
+export const refreshLabelListAtom = atom(0)

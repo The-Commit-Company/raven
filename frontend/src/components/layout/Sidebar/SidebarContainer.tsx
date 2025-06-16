@@ -24,6 +24,7 @@ import { FiChevronDown, FiChevronRight } from 'react-icons/fi'
 import { MdLabelOutline } from 'react-icons/md'
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { useNavigate, useParams } from 'react-router-dom'
+import LabelList from '@/components/feature/labels/LabelListSidebar' // đường dẫn đúng
 
 export const useMentionUnreadCount = () => {
   const { data: mentionsCount, mutate } = useFrappeGetCall<{ message: number }>(
@@ -189,24 +190,7 @@ export function FilterList({ onClose }: FilterListProps) {
                 )}
               </li>
             </div>
-
-            {!isIconOnly && isLabelOpen && (
-              <ul className='mt-1 space-y-1'>
-                {['Công việc', 'Cá nhân', 'Khẩn cấp'].map((label, i) => (
-                  <li
-                    key={i}
-                    className={clsx(
-                      'flex items-center pl-5 gap-2 cursor-pointer px-2 py-1 rounded hover:bg-gray-2',
-                      title === label && 'bg-gray-3 font-semibold'
-                    )}
-                    onClick={() => handleClick(label)}
-                  >
-                    <MdLabelOutline className='w-4 h-4 text-gray-11 shrink-0' />
-                    <span className='truncate'>{label}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
+            {!isIconOnly && isLabelOpen && <LabelList visible={isLabelOpen} onClickLabel={handleClick} />}
           </div>
         ) : (
           <li
