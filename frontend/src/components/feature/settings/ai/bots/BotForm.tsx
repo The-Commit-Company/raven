@@ -3,12 +3,12 @@ import { LuSquareFunction, LuSparkles } from 'react-icons/lu'
 import InstructionField from '../InstructionField'
 import { BiBot, BiCode, BiFile } from 'react-icons/bi'
 import GeneralBotForm from './GeneralBotForm'
-import AIFeaturesBotFormEnhanced from './AIFeaturesBotFormEnhanced'
 import BotFunctionsForm from './BotFunctionsForm'
 import { useFormContext } from 'react-hook-form'
 import { RavenBot } from '@/types/RavenBot/RavenBot'
 import BotDocs from './BotDocs'
 import BotFileSources from './BotFileSources'
+import AIFeaturesBotForm from './AIFeaturesBotForm'
 
 const ICON_PROPS = {
     size: 18,
@@ -34,7 +34,7 @@ const BotForm = ({ isEdit }: { isEdit: boolean }) => {
                     <GeneralBotForm />
                 </Tabs.Content>
                 <Tabs.Content value='ai'>
-                    <AIFeaturesBotFormEnhanced />
+                    <AIFeaturesBotForm />
                 </Tabs.Content>
                 <Tabs.Content value='instructions'>
                     <InstructionField allowUsingTemplate instructionRequired={isAiBot ? true : false} />
