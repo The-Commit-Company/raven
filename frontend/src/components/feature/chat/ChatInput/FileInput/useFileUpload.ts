@@ -59,7 +59,7 @@ export default function useFileUpload(channelID: string) {
               compressImages: compressImages,
               is_reply: index === 0 ? selectedMessage ? 1 : 0 : 0,
               linked_message: index === 0 ? selectedMessage ? selectedMessage.name : null : null,
-              caption: index === 0 && caption ? caption : undefined
+              caption: index === 0 && caption ? caption : ""
             },
             fieldname: 'file',
           },
