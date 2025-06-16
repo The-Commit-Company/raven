@@ -115,6 +115,7 @@ const router = createBrowserRouter(
                 lazy={() => import('./components/feature/threads/ThreadDrawer/ThreadDrawer')}
               />
             </Route>
+            <Route path='chatbot/:botID' lazy={() => import('@/pages/ChatBotPage')} />
           </Route>
         </Route>
       </Route>

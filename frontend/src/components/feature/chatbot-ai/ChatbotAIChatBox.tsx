@@ -2,10 +2,10 @@ import { UserAvatar } from '@/components/common/UserAvatar'
 import { useGetUser } from '@/hooks/useGetUser'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { Box, Button, Flex, IconButton, Text, TextArea } from '@radix-ui/themes'
-import React, { useContext, useEffect, useRef, useState } from 'react'
-import { FiMoreVertical, FiPaperclip, FiX } from 'react-icons/fi'
-import { BiSolidSend } from 'react-icons/bi'
 import { useFrappeEventListener } from 'frappe-react-sdk'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import { BiSolidSend } from 'react-icons/bi'
+import { FiMoreVertical, FiPaperclip, FiX } from 'react-icons/fi'
 
 // Thêm type cho message để có thuộc tính pending
 interface Message {
@@ -34,7 +34,6 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading, on
   const { currentUser } = useContext(UserContext)
   const user = useGetUser(currentUser)
   const [isThinking, setIsThinking] = useState(false)
-  const [lastUserMessageId, setLastUserMessageId] = useState<number>(-1)
   const [visibleCount, setVisibleCount] = useState(MESSAGES_PER_PAGE)
   const [localMessages, setLocalMessages] = useState<Message[]>([])
 
@@ -46,7 +45,6 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading, on
       const lastMessage = session.messages[session.messages.length - 1]
       if (lastMessage.role === 'user') {
         setIsThinking(true)
-        setLastUserMessageId(session.messages.length - 1)
       } else if (lastMessage.role === 'ai') {
         setIsThinking(false)
       }
@@ -74,10 +72,13 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading, on
   useFrappeEventListener('raven:new_ai_message', (data) => {
     if (data.conversation_id === session.id) {
       // Cập nhật tin nhắn mới vào local state
-      const updatedMessages = [...localMessages, {
-        role: 'ai' as const,
-        content: data.message
-      }]
+      const updatedMessages = [
+        ...localMessages,
+        {
+          role: 'ai' as const,
+          content: data.message
+        }
+      ]
       setLocalMessages(updatedMessages)
       // Gọi callback để cập nhật parent component
       onUpdateMessages?.(updatedMessages)
@@ -104,7 +105,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading, on
     if (!input.trim() && !selectedFile) return
 
     // Lấy toàn bộ tin nhắn trong cuộc trò chuyện làm context
-    const context = localMessages.map(msg => ({
+    const context = localMessages.map((msg) => ({
       role: msg.role,
       content: msg.content
     }))
@@ -115,7 +116,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading, on
       pending: true
     }
 
-    setLocalMessages(prev => [...prev, newMessage])
+    setLocalMessages((prev) => [...prev, newMessage])
     setInput('')
     setSelectedFile(null)
     setIsThinking(true)
@@ -194,7 +195,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading, on
         </Flex>
       </div>
       {/* Messages */}
-      <div 
+      <div
         className='flex-1 overflow-y-auto custom-scrollbar p-4 text-sm text-gray-12 bg-gray-1 dark:bg-[#18191b]'
         onDrop={handleDrop}
         onDragOver={handleDragOver}
@@ -212,9 +213,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading, on
           <Flex key={startIdx + idx} justify={msg.role === 'user' ? 'end' : 'start'} className='mb-2'>
             <Box
               className={`rounded-lg px-4 py-2 max-w-[70%] ${
-                msg.role === 'user' 
-                  ? 'bg-accent-3 text-right' 
-                  : 'bg-gray-3 dark:bg-gray-4'
+                msg.role === 'user' ? 'bg-accent-3 text-right' : 'bg-gray-3 dark:bg-gray-4'
               }`}
               style={{ fontSize: '15px', lineHeight: '1.6' }}
             >
@@ -233,7 +232,10 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading, on
         {/* Hiển thị trạng thái "AI đang suy nghĩ" */}
         {isThinking && (
           <Flex justify='start' className='mb-2'>
-            <Box className='rounded-lg px-4 py-2 max-w-[70%] bg-gray-3 dark:bg-gray-4' style={{ fontSize: '15px', lineHeight: '1.6' }}>
+            <Box
+              className='rounded-lg px-4 py-2 max-w-[70%] bg-gray-3 dark:bg-gray-4'
+              style={{ fontSize: '15px', lineHeight: '1.6' }}
+            >
               <div className='flex items-center gap-2'>
                 <div className='w-2 h-2 bg-gray-10 rounded-full animate-bounce' style={{ animationDelay: '0ms' }}></div>
                 <div
@@ -293,9 +295,9 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading, on
           </div>
           {/* Footer chức năng */}
           <div className='rounded-b-md border-x border-b border-gray-5 dark:border-gray-6 bg-gray-3 dark:bg-[#18191b] flex items-center justify-end px-2 py-1 gap-1'>
-            <IconButton 
+            <IconButton
               type='button'
-              variant='ghost' 
+              variant='ghost'
               color='gray'
               onClick={handleFileClick}
               className='hover:bg-gray-3 dark:hover:bg-gray-4 text-gray-11'
@@ -303,9 +305,9 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading, on
             >
               <FiPaperclip />
             </IconButton>
-            <IconButton 
-              type='submit' 
-              disabled={(!input.trim() && !selectedFile) || loading} 
+            <IconButton
+              type='submit'
+              disabled={(!input.trim() && !selectedFile) || loading}
               className='hover:bg-accent-9 dark:hover:bg-accent-8 text-white'
               title='Gửi tin nhắn'
             >

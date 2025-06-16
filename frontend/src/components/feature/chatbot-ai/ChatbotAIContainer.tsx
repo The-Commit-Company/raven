@@ -1,8 +1,9 @@
 import { useDeleteChatbotConversation, useRenameChatbotConversation } from '@/hooks/useChatbotAPI'
-import { Box, ScrollArea, Text, Dialog, Button, Flex } from '@radix-ui/themes'
-import React, { useState, useEffect } from 'react'
-import { FiEdit2, FiTrash2 } from 'react-icons/fi'
+import { Box, Button, Dialog, Flex, ScrollArea, Text } from '@radix-ui/themes'
 import { useFrappeEventListener } from 'frappe-react-sdk'
+import React, { useEffect, useState } from 'react'
+import { FiEdit2, FiTrash2 } from 'react-icons/fi'
+import { useNavigate, useParams } from 'react-router-dom'
 
 export interface ChatSession {
   id: string
@@ -34,7 +35,9 @@ const ChatbotAIContainer: React.FC<Props> = ({
   const { call: renameConversation } = useRenameChatbotConversation()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [sessionToDelete, setSessionToDelete] = useState<string | null>(null)
-  const [pendingRename, setPendingRename] = useState<{id: string, title: string} | null>(null)
+  const [pendingRename, setPendingRename] = useState<{ id: string; title: string } | null>(null)
+  const { workspaceID } = useParams<{ workspaceID: string; channelID: string }>()
+  const navigate = useNavigate()
 
   // Hàm tự động tạo tên từ câu hỏi đầu tiên
   const generateTitleFromFirstMessage = (message: string) => {
@@ -52,7 +55,7 @@ const ChatbotAIContainer: React.FC<Props> = ({
     try {
       // Cập nhật UI tạm thời để hiển thị trạng thái đang xử lý
       setPendingRename({ id, title: 'Đang đổi tên...' })
-      
+
       // Gọi API đổi tên
       await renameConversation({
         conversation_id: id,
@@ -69,10 +72,8 @@ const ChatbotAIContainer: React.FC<Props> = ({
   useFrappeEventListener('raven:update_conversation_title', (data) => {
     if (data.conversation_id) {
       // Cập nhật UI ngay lập tức với tên mới
-      const updatedSessions = sessions.map(s => 
-        s.id === data.conversation_id 
-          ? { ...s, title: data.new_title, creation: data.creation }
-          : s
+      const updatedSessions = sessions.map((s) =>
+        s.id === data.conversation_id ? { ...s, title: data.new_title, creation: data.creation } : s
       )
       onUpdateSessions(updatedSessions)
       setPendingRename(null)
@@ -81,7 +82,7 @@ const ChatbotAIContainer: React.FC<Props> = ({
 
   // Lắng nghe sự kiện tin nhắn mới để tự động đổi tên
   useFrappeEventListener('new_message', (data) => {
-    const currentSession = sessions.find(s => s.id === data.conversation_id)
+    const currentSession = sessions.find((s) => s.id === data.conversation_id)
     if (currentSession && currentSession.title.startsWith('Đoạn chat mới') && data.is_user) {
       const newTitle = generateTitleFromFirstMessage(data.message)
       updateSessionTitle(currentSession.id, newTitle)
@@ -90,17 +91,20 @@ const ChatbotAIContainer: React.FC<Props> = ({
 
   // Thêm xử lý realtime cho tin nhắn AI
   useFrappeEventListener('raven:new_ai_message', (data) => {
-    const currentSession = sessions.find(s => s.id === data.conversation_id)
+    const currentSession = sessions.find((s) => s.id === data.conversation_id)
     if (currentSession) {
       // Cập nhật tin nhắn mới vào session
-      const updatedSessions = sessions.map(s => {
+      const updatedSessions = sessions.map((s) => {
         if (s.id === data.conversation_id) {
           return {
             ...s,
-            messages: [...s.messages, {
-              role: 'ai' as const,
-              content: data.message
-            }]
+            messages: [
+              ...s.messages,
+              {
+                role: 'ai' as const,
+                content: data.message
+              }
+            ]
           }
         }
         return s
@@ -117,9 +121,9 @@ const ChatbotAIContainer: React.FC<Props> = ({
 
   // Theo dõi thay đổi trong messages để cập nhật tên
   useEffect(() => {
-    const currentSession = sessions.find(s => s.id === selectedId)
+    const currentSession = sessions.find((s) => s.id === selectedId)
     if (currentSession && currentSession.messages && currentSession.messages.length > 0) {
-      const firstUserMessage = currentSession.messages.find(m => m.role === 'user')
+      const firstUserMessage = currentSession.messages.find((m) => m.role === 'user')
       if (firstUserMessage && currentSession.title.startsWith('Đoạn chat mới')) {
         const newTitle = generateTitleFromFirstMessage(firstUserMessage.content)
         updateSessionTitle(currentSession.id, newTitle)
@@ -158,6 +162,10 @@ const ChatbotAIContainer: React.FC<Props> = ({
     setSessionToDelete(id)
     setDeleteDialogOpen(true)
   }
+  const handleNavigate = (id: string) => {
+    onSelectSession(id)
+    navigate(`/${workspaceID}/chatbot/${id}`)
+  }
 
   return (
     <div className='h-full w-full bg-gray-1 dark:bg-[#111113] overflow-hidden flex flex-col'>
@@ -187,54 +195,54 @@ const ChatbotAIContainer: React.FC<Props> = ({
               return new Date(b.creation).getTime() - new Date(a.creation).getTime()
             })
             .map((s) => (
-            <div
-              key={s.id}
-              className={`group flex items-center px-3 py-1.5 rounded-md text-sm text-gray-12 font-normal cursor-pointer transition-all mb-1 select-none ${
-                selectedId === s.id 
-                  ? 'bg-gray-4 dark:bg-gray-5 font-semibold' 
-                  : 'hover:bg-gray-3 dark:hover:bg-gray-4'
-              }`}
-              onClick={() => onSelectSession(s.id)}
-            >
-              {editingId === s.id ? (
-                <input
-                  autoFocus
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  onBlur={() => handleEditSave(s.id)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleEditSave(s.id)
-                    if (e.key === 'Escape') setEditingId(null)
-                  }}
-                  className='flex-1 bg-transparent outline-none border-b border-gray-5 text-gray-12 px-1 mr-2 text-sm py-1'
-                  style={{ minWidth: 0 }}
-                />
-              ) : (
-                <span className='truncate flex-1 min-w-0' title={s.title}>
-                  {pendingRename?.id === s.id ? (
-                    <span className='italic text-gray-11'>{pendingRename.title}</span>
-                  ) : (
-                    s.title
-                  )}
-                </span>
-              )}
-              <span
-                className='flex gap-2 items-center ml-2 opacity-0 group-hover:opacity-100 transition-opacity'
-                onClick={(e) => e.stopPropagation()}
+              <div
+                key={s.id}
+                className={`group flex items-center px-3 py-1.5 rounded-md text-sm text-gray-12 font-normal cursor-pointer transition-all mb-1 select-none ${
+                  selectedId === s.id
+                    ? 'bg-gray-4 dark:bg-gray-5 font-semibold'
+                    : 'hover:bg-gray-3 dark:hover:bg-gray-4'
+                }`}
+                onClick={() => handleNavigate(s.id)}
               >
-                <FiEdit2
-                  className='hover:text-violet-9 cursor-pointer'
-                  size={16}
-                  onClick={() => handleEdit(s.id, s.title)}
-                />
-                <FiTrash2 
-                  className='hover:text-red-9 cursor-pointer' 
-                  size={16} 
-                  onClick={() => openDeleteDialog(s.id)} 
-                />
-              </span>
-            </div>
-          ))}
+                {editingId === s.id ? (
+                  <input
+                    autoFocus
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    onBlur={() => handleEditSave(s.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleEditSave(s.id)
+                      if (e.key === 'Escape') setEditingId(null)
+                    }}
+                    className='flex-1 bg-transparent outline-none border-b border-gray-5 text-gray-12 px-1 mr-2 text-sm py-1'
+                    style={{ minWidth: 0 }}
+                  />
+                ) : (
+                  <span className='truncate flex-1 min-w-0' title={s.title}>
+                    {pendingRename?.id === s.id ? (
+                      <span className='italic text-gray-11'>{pendingRename.title}</span>
+                    ) : (
+                      s.title
+                    )}
+                  </span>
+                )}
+                <span
+                  className='flex gap-2 items-center ml-2 opacity-0 group-hover:opacity-100 transition-opacity'
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <FiEdit2
+                    className='hover:text-violet-9 cursor-pointer'
+                    size={16}
+                    onClick={() => handleEdit(s.id, s.title)}
+                  />
+                  <FiTrash2
+                    className='hover:text-red-9 cursor-pointer'
+                    size={16}
+                    onClick={() => openDeleteDialog(s.id)}
+                  />
+                </span>
+              </div>
+            ))}
           {sessions.length === 0 && <Text className='p-3 text-gray-6'>Chưa có đoạn chat nào</Text>}
         </ScrollArea>
       </Box>
@@ -247,19 +255,15 @@ const ChatbotAIContainer: React.FC<Props> = ({
             Bạn có chắc chắn muốn xóa đoạn chat này? Hành động này không thể hoàn tác.
           </Dialog.Description>
 
-          <Flex gap="3" mt="4" justify="end">
+          <Flex gap='3' mt='4' justify='end'>
             <Dialog.Close>
-              <Button 
-                variant="soft" 
-                color="gray"
-                className='bg-gray-3 dark:bg-gray-4 text-gray-12'
-              >
+              <Button variant='soft' color='gray' className='bg-gray-3 dark:bg-gray-4 text-gray-12'>
                 Hủy
               </Button>
             </Dialog.Close>
-            <Button 
-              variant="solid" 
-              color="red" 
+            <Button
+              variant='solid'
+              color='red'
               onClick={() => sessionToDelete && handleDelete(sessionToDelete)}
               className='bg-red-9 hover:bg-red-10 text-white'
             >

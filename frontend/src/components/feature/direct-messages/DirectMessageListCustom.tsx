@@ -3,31 +3,29 @@ import { UserAvatar } from '@/components/common/UserAvatar'
 import { useGetUser } from '@/hooks/useGetUser'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { Box, ContextMenu, Flex, Text, Tooltip } from '@radix-ui/themes'
-import { useContext, useMemo } from 'react'
+import { useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { toast } from 'sonner'
 import { UserContext } from '../../../utils/auth/UserProvider'
 
 import { ChannelWithUnreadCount, DMChannelWithUnreadCount } from '@/components/layout/Sidebar/useGetChannelUnreadCounts'
 import { useChannelActions } from '@/hooks/useChannelActions'
+import { useChannelDone } from '@/hooks/useChannelDone'
+import { useIsTablet } from '@/hooks/useMediaQuery'
 import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
+import { useEnrichedChannels } from '@/utils/channel/ChannelAtom'
+import { formatLastMessage } from '@/utils/channel/useFormatLastMessage'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { useSidebarMode } from '@/utils/layout/sidebar'
-import { __ } from '@/utils/translations'
 import { useAtomValue } from 'jotai'
-import { SidebarBadge, SidebarGroup, SidebarIcon } from '../../layout/Sidebar/SidebarComp'
 import { HiCheck } from 'react-icons/hi'
+import { SidebarBadge, SidebarGroup, SidebarIcon } from '../../layout/Sidebar/SidebarComp'
 import { DoneChannelList } from '../channels/DoneChannelList'
-import MentionList from '../chat/ChatInput/MentionListCustom'
-import { MessageSaved } from './DirectMessageSaved'
-import clsx from 'clsx'
-import { useIsMobile, useIsTablet } from '@/hooks/useMediaQuery'
 import UserChannelList from '../channels/UserChannelList'
-import { useEnrichedChannels } from '@/utils/channel/ChannelAtom'
-import ThreadsCustom from '../threads/ThreadsCustom'
-import { formatLastMessage } from '@/utils/channel/useFormatLastMessage'
-import { useChannelDone } from '@/hooks/useChannelDone'
+import MentionList from '../chat/ChatInput/MentionListCustom'
+import ChatbotAIStream from '../chatbot-ai/ChatbotAIStream'
 import LabelByUserList from '../labels/LabelByUserList'
+import ThreadsCustom from '../threads/ThreadsCustom'
+import { MessageSaved } from './DirectMessageSaved'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
 
@@ -71,6 +69,7 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
   if (title === 'Xong') return <DoneChannelList />
   if (title === 'Chủ đề') return <ThreadsCustom />
   if (title === 'Thành viên') return <UserChannelList />
+  if (title === 'Chatbot AI') return <ChatbotAIStream />
   if (title === 'Nhãn') return <LabelByUserList />
 
   if (filteredChannels.length === 0 && title !== 'Trò chuyện') {
@@ -117,7 +116,6 @@ const isDMChannel = (c: UnifiedChannel): c is DMChannelWithUnreadCount => {
 export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel }) => {
   // 1. Gọi tất cả hooks ngay từ đầu
   const isTablet = useIsTablet()
-  const isMobile = useIsMobile()
   const { currentUser } = useContext(UserContext)
   const navigate = useNavigate()
   const { workspaceID, channelID } = useParams<{ workspaceID: string; channelID: string }>()
@@ -214,6 +212,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
         <Tooltip content={channel.is_done ? 'Đánh dấu chưa xong' : 'Đánh dấu đã xong'} side='bottom'>
           <button
             onClick={(e) => {
+              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
               channel.is_done ? markAsNotDone(channel.name) : markAsDone(channel.name)
             }}
             className='absolute right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded-full bg-gray-200 hover:bg-gray-300 h-[20px] w-[20px] flex items-center justify-center cursor-pointer'
