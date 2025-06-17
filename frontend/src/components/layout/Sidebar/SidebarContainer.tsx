@@ -25,6 +25,7 @@ import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { useNavigate, useParams } from 'react-router-dom'
 import LabelList from '@/components/feature/labels/LabelListSidebar' // đường dẫn đúng
 import { useEnrichedChannels } from '@/utils/channel/ChannelAtom'
+import { useIsTablet } from '@/hooks/useMediaQuery'
 
 export const useMentionUnreadCount = () => {
   const { data: mentionsCount, mutate } = useFrappeGetCall<{ message: number }>(
@@ -137,8 +138,9 @@ interface FilterListProps {
   onClose?: () => void
 }
 
-export function FilterList({ onClose }: FilterListProps) {
+export function FilterList({ onClose }: { onClose?: () => void }) {
   const [isLabelOpen, setIsLabelOpen] = useState(false)
+  const isTablet = useIsTablet()
   const navigate = useNavigate()
   const { workspaceID, channelID } = useParams()
   const { title, setTitle, tempMode, setLabelID } = useSidebarMode()
@@ -147,24 +149,23 @@ export function FilterList({ onClose }: FilterListProps) {
   const { totalUnreadCount } = useUnreadMessageCount()
   const { mentionUnreadCount, resetMentions } = useMentionUnreadCount()
 
-  // ✅ Tính số lượng unread của các channel có gắn nhãn (mỗi kênh chỉ tính 1 lần)
   const enrichedChannels = useEnrichedChannels()
+
   const labelChannelsUnreadCount = useMemo(() => {
     const seen = new Set<string>()
     let total = 0
-
     for (const ch of enrichedChannels) {
       if (Array.isArray(ch.user_labels) && ch.user_labels.length > 0 && !seen.has(ch.name)) {
         seen.add(ch.name)
         total += ch.unread_count ?? 0
       }
     }
-
     return total
   }, [enrichedChannels])
 
   const handleClick = (label: string) => {
     setTitle(label)
+    setLabelID('') // nếu không phải nhãn cụ thể thì reset
     if (label === 'Nhắc đến') resetMentions()
     if (onClose) onClose()
     if (channelID) navigate(`/${workspaceID}`)
@@ -180,56 +181,81 @@ export function FilterList({ onClose }: FilterListProps) {
         if (item.label === 'Nhắc đến') badgeCount = mentionUnreadCount
         if (item.label === 'Nhãn') badgeCount = labelChannelsUnreadCount
 
-        return item.label === 'Nhãn' ? (
-          <div key={idx}>
-            <div className='group relative'>
-              <li
-                className={clsx(
-                  'flex items-center gap-2 justify-center',
-                  !isIconOnly && 'pl-1 justify-between',
-                  'py-1.5 px-2 rounded-md cursor-pointer hover:bg-gray-3',
-                  isActive && 'bg-gray-4 font-semibold'
-                )}
-                onClick={() => {
-                  handleClick(item.label)
-                }}
-              >
-                <div className='flex items-center gap-2'>
-                  <item.icon className='w-5 h-5' />
-                  {!isIconOnly && <span className='truncate flex-1 min-w-0'>{item.label}</span>}
-                </div>
+        if (item.label === 'Nhãn') {
+          return (
+            <div key={idx}>
+              <div className='group relative'>
+                <li
+                  className={clsx(
+                    'flex items-center gap-2 justify-center',
+                    !isIconOnly && 'pl-1 justify-between',
+                    'py-1.5 px-2 rounded-md cursor-pointer hover:bg-gray-3',
+                    isActive && 'bg-gray-4 font-semibold'
+                  )}
+                  onClick={() => {
+                    // Toggle mở/đóng danh sách label
+                    setIsLabelOpen((prev) => !prev)
 
-                {!isIconOnly && (
+                    if (isTablet) {
+                      // ✅ Trên tablet: chỉ đóng sidebar
+                      if (onClose) onClose()
+                    } else {
+                      // ✅ Trên desktop: setTitle như bình thường
+                      if (title !== item.label) {
+                        setTitle(item.label)
+                        setLabelID('')
+                      }
+                    }
+                  }}
+                >
                   <div className='flex items-center gap-2'>
-                    <div onClick={(e) => e.stopPropagation()}>
-                      <CreateLabelButton />
-                    </div>
-                    <div
-                      className='relative w-4 h-4'
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setIsLabelOpen((prev) => !prev)
-                      }}
-                    >
-                      {isLabelOpen ? (
-                        <FiChevronDown className='absolute inset-0 m-auto' size={16} />
-                      ) : (
-                        <FiChevronRight className='absolute inset-0 m-auto' size={16} />
-                      )}
-                    </div>
+                    <item.icon className='w-5 h-5' />
+                    {!isIconOnly && <span className='truncate flex-1 min-w-0'>{item.label}</span>}
                   </div>
-                )}
-              </li>
-            </div>
 
-            {!isIconOnly && isLabelOpen && <LabelList visible={isLabelOpen} onClickLabel={handleClick} />}
-          </div>
-        ) : (
+                  {!isIconOnly && (
+                    <div className='flex items-center gap-2'>
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <CreateLabelButton />
+                      </div>
+                      <div
+                        className='relative w-4 h-4'
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setIsLabelOpen((prev) => !prev)
+                        }}
+                      >
+                        {isLabelOpen ? (
+                          <FiChevronDown className='absolute inset-0 m-auto' size={16} />
+                        ) : (
+                          <FiChevronRight className='absolute inset-0 m-auto' size={16} />
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </li>
+              </div>
+
+              {!isIconOnly && isLabelOpen && (
+                <LabelList
+                  visible={isLabelOpen}
+                  onClickLabel={(label) => {
+                    setTitle(label.labelName)
+                    setLabelID(label.labelId)
+                    if (onClose) onClose()
+                    if (channelID) navigate(`/${workspaceID}`)
+                  }}
+                />
+              )}
+            </div>
+          )
+        }
+
+        return (
           <li
             key={idx}
             onClick={() => {
               handleClick(item.label)
-              setLabelID('')
             }}
             className={clsx(
               `flex ${isIconOnly ? 'justify-center' : 'justify-between'} relative items-center gap-2 py-1.5 rounded-md cursor-pointer hover:bg-gray-3`,

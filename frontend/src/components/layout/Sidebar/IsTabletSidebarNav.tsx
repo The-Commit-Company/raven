@@ -3,12 +3,11 @@ import { useUnreadMessageCount } from '@/hooks/useUnreadMessageCount'
 import { filterItems, useMentionUnreadCount, FilterList } from './SidebarContainer'
 import { useSidebarMode } from '@/utils/layout/sidebar'
 import { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
 import { useIsTablet } from '@/hooks/useMediaQuery'
 import clsx from 'clsx'
 
 export default function FilterTabs() {
-  const { title, setTitle } = useSidebarMode()
+  const { title, setTitle, setLabelID } = useSidebarMode()
   const { totalUnreadCount } = useUnreadMessageCount()
   const { mentionUnreadCount, resetMentions } = useMentionUnreadCount()
 
@@ -101,6 +100,7 @@ export default function FilterTabs() {
                     <span
                       onClick={(e) => {
                         e.stopPropagation()
+                        setLabelID('')
                         handleClick('Trò chuyện')
                       }}
                       className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-[10px] cursor-pointer'
