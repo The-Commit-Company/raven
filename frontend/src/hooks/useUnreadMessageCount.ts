@@ -1,9 +1,14 @@
 import { UserContext } from '@/utils/auth/UserProvider'
 import { UnreadCountData, useChannelList, useUpdateLastMessageInChannelList } from '@/utils/channel/ChannelListProvider'
-import { FrappeConfig, FrappeContext, useFrappeEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
-import { useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
-import { useGetUser } from './useGetUser'
+import {
+  FrappeConfig,
+  FrappeContext,
+  useFrappeEventListener,
+  useFrappeGetCall,
+  useFrappePostCall
+} from 'frappe-react-sdk'
+import { useContext, useEffect, useMemo, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { useAtomValue } from 'jotai'
 import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
 import { useNotificationAudio } from './useNotificationAudio'
@@ -93,7 +98,6 @@ export const useFetchUnreadMessageCount = () => {
   }
 
   const { channelID } = useParams()
-  const { state } = useLocation()
   const { updateLastMessageInChannelList } = useUpdateLastMessageInChannelList()
 
   const { call: trackVisit } = useFrappePostCall('raven.api.raven_channel_member.track_visit')
@@ -146,21 +150,11 @@ export const useFetchUnreadMessageCount = () => {
     )
   }
 
-  const dmWithUnread = useMemo(() => {
-    return unread_count?.message.filter((c) => c.unread_count > 0 && c.is_direct_message === 1) || []
-  }, [unread_count])
-
-  const dmChannel = useMemo(() => {
-    return dm_channels.find((c) => c.name === dmWithUnread?.name)
-  }, [dmWithUnread, dm_channels])
-  const lastPlayedMessageIdRef = useRef<string | null>(null)
-
   useEffect(() => {
     const app_name = window.app_name || 'Raven'
     let blinkInterval: NodeJS.Timeout
     let blinkState = false
     let activeTitle = app_name
-
 
     const allChannelMap = new Map((unread_count?.message || []).map((c) => [c.name, c]))
     const manualOnly = Array.from(manuallyMarked).filter((id) => !allChannelMap.has(id))

@@ -9,6 +9,8 @@ import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { Label } from '@/components/common/Form'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { IoMdClose } from 'react-icons/io'
+import { useSetAtom } from 'jotai'
+import { refreshLabelListAtom } from './conversations/atoms/labelAtom'
 
 interface CreateLabelForm {
   label: string
@@ -16,8 +18,6 @@ interface CreateLabelForm {
 
 const DIALOG_CONTENT_CLASS =
   'z-[300] bg-white dark:bg-gray-900 rounded-xl p-6 shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto'
-
-
 
 export const CreateLabelButton = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -29,7 +29,6 @@ export const CreateLabelButton = () => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (dialogRef.current && !dialogRef.current.contains(e.target as Node)) {
         setIsOpen(false)
-        console.log('hello')
       }
     }
 
@@ -40,8 +39,7 @@ export const CreateLabelButton = () => {
   }, [isOpen, isDesktop])
 
   const handleChangeOpen = (open: boolean) => {
-    if (!open) console.log('hello')
-    setIsOpen(open)
+    if (!open) setIsOpen(open)
   }
 
   if (isDesktop) {
@@ -99,7 +97,7 @@ export const CreateLabelButton = () => {
   )
 }
 
-export const CreateLabelContent = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (v: boolean) => void }) => {
+export const CreateLabelContent = ({ setIsOpen }: { isOpen: boolean; setIsOpen: (v: boolean) => void }) => {
   const methods = useForm<CreateLabelForm>({
     defaultValues: { label: '' }
   })
@@ -115,13 +113,15 @@ export const CreateLabelContent = ({ isOpen, setIsOpen }: { isOpen: boolean; set
   const labelValue = watch('label') || ''
   const { call, loading } = useFrappePostCall('raven.api.user_label.create_label')
 
+  const setRefreshKey = useSetAtom(refreshLabelListAtom)
+
   const onSubmit = async (data: CreateLabelForm) => {
     try {
       await call({ label: data.label.trim() })
       toast.success('Đã tạo nhãn')
       reset()
       setIsOpen(false)
-      window.dispatchEvent(new CustomEvent('label_created'))
+      setRefreshKey((prev) => prev + 1)
     } catch (err) {
       console.error(err)
       toast.error('Không thể tạo nhãn')
@@ -175,7 +175,7 @@ export const CreateLabelContent = ({ isOpen, setIsOpen }: { isOpen: boolean; set
           {errors.label && <div className='text-red-500 text-sm pt-1'>{errors.label.message}</div>}
         </Box>
 
-        <Flex justify='between' align='center' pt='2'>
+        <Flex justify='between' align='center'>
           <Flex gap='3' align='center'>
             <Button className='cursor-pointer' type='submit' size='2' disabled={loading}>
               Tạo

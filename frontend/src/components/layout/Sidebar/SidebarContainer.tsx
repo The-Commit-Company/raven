@@ -19,10 +19,11 @@ import {
 } from 'react-icons/hi'
 
 import clsx from 'clsx'
-import { CreateLabelButton } from '@/components/feature/channels/CreateLabelModal'
+import { CreateLabelButton } from '@/components/feature/labels/CreateLabelModal'
 import { FiChevronDown, FiChevronRight } from 'react-icons/fi'
-import { MdLabelOutline } from 'react-icons/md'
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
+import { useNavigate, useParams } from 'react-router-dom'
+import LabelList from '@/components/feature/labels/LabelListSidebar' // đường dẫn đúng
 
 export const useMentionUnreadCount = () => {
   const { data: mentionsCount, mutate } = useFrappeGetCall<{ message: number }>(
@@ -122,8 +123,10 @@ interface FilterListProps {
 
 export function FilterList({ onClose }: FilterListProps) {
   const [isLabelOpen, setIsLabelOpen] = useState(false)
+  const navigate = useNavigate()
+  const { workspaceID, channelID } = useParams()
 
-  const { title, setTitle, tempMode } = useSidebarMode()
+  const { title, setTitle, tempMode, setLabelID } = useSidebarMode()
   const isIconOnly = tempMode === 'show-only-icons'
 
   const { totalUnreadCount } = useUnreadMessageCount()
@@ -133,6 +136,7 @@ export function FilterList({ onClose }: FilterListProps) {
     setTitle(label)
     if (label === 'Nhắc đến') resetMentions()
     if (onClose) onClose()
+    if (channelID) navigate(`/${workspaceID}`)
   }
 
   return (
@@ -152,7 +156,7 @@ export function FilterList({ onClose }: FilterListProps) {
                   'flex items-center gap-2 justify-center',
                   !isIconOnly && 'pl-1 justify-between',
                   'py-1.5 px-2 rounded-md cursor-pointer hover:bg-gray-3',
-                  isLabelOpen && 'bg-gray-4 font-semibold'
+                  isActive && 'bg-gray-4 font-semibold' // ✅ dùng isActive thay vì isLabelOpen
                 )}
                 onClick={() => {
                   handleClick(item.label)
@@ -169,7 +173,7 @@ export function FilterList({ onClose }: FilterListProps) {
                       <CreateLabelButton />
                     </div>
                     <div
-                      className='relative w-4 h-4' // đảm bảo có kích thước để canh giữa
+                      className='relative w-4 h-4'
                       onClick={(e) => {
                         e.stopPropagation()
                         setIsLabelOpen((prev) => !prev)
@@ -185,29 +189,19 @@ export function FilterList({ onClose }: FilterListProps) {
                 )}
               </li>
             </div>
-
-            {!isIconOnly && isLabelOpen && (
-              <ul className='mt-1 space-y-1'>
-                {['Công việc', 'Cá nhân', 'Khẩn cấp'].map((label, i) => (
-                  <li
-                    key={i}
-                    className='flex items-center pl-5 gap-2 cursor-pointer px-2 py-1 rounded hover:bg-gray-2'
-                    onClick={() => handleClick(label)}
-                  >
-                    <MdLabelOutline className='w-4 h-4 text-gray-11 shrink-0' />
-
-                    <span className='truncate'>{label}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
+            {!isIconOnly && isLabelOpen && <LabelList visible={isLabelOpen} onClickLabel={handleClick} />}
           </div>
         ) : (
           <li
             key={idx}
-            onClick={() => handleClick(item.label)}
-            className={`flex ${isIconOnly ? 'justify-center' : 'justify-between'} relative items-center gap-2 py-1.5 rounded-md cursor-pointer
-      hover:bg-gray-3 ${isActive ? 'bg-gray-4 font-semibold' : ''}`}
+            onClick={() => {
+              handleClick(item.label)
+              setLabelID('')
+            }}
+            className={clsx(
+              `flex ${isIconOnly ? 'justify-center' : 'justify-between'} relative items-center gap-2 py-1.5 rounded-md cursor-pointer hover:bg-gray-3`,
+              isActive && 'bg-gray-4 font-semibold'
+            )}
           >
             <div className='flex items-center gap-2'>
               <Tooltip content={item.label} side='right' delayDuration={300}>
