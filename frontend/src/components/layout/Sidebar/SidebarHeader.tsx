@@ -1,5 +1,7 @@
 import { useTheme } from '@/ThemeProvider'
 import { commandMenuOpenAtom } from '@/components/feature/CommandMenu/CommandMenu'
+import { CreateChannelButton } from '@/components/feature/channels/CreateChannelModal'
+import { CreateLabelButton } from '@/components/feature/channels/CreateLabelModal'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { useSidebarMode } from '@/utils/layout/sidebar'
 import { __ } from '@/utils/translations'
@@ -7,8 +9,6 @@ import { Box, Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
 import { useSetAtom } from 'jotai'
 import { BiMoon, BiSun } from 'react-icons/bi'
 import { TbSearch } from 'react-icons/tb'
-import { CreateChannelButton } from '@/components/feature/channels/CreateChannelModal'
-import { CreateLabelButton } from '@/components/feature/channels/CreateLabelModal'
 
 export const SidebarHeader = () => {
   const isDesktop = useIsDesktop()
@@ -23,7 +23,7 @@ export const SidebarHeader = () => {
           <span className='font-medium text-base'>{title}</span>
           <Box>
             {isLabelMode ? (
-              <CreateLabelButton/>
+              <CreateLabelButton />
             ) : (
               <>
                 <SearchButton />
@@ -46,7 +46,7 @@ export const SidebarHeader = () => {
           <ColorModeToggleButton />
           {isLabelMode ? (
             <button className='p-2 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 rounded'>
-              <CreateLabelButton/>
+              <CreateLabelButton />
             </button>
           ) : (
             <>

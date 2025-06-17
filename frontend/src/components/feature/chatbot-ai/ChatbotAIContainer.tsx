@@ -172,9 +172,9 @@ const ChatbotAIContainer: React.FC<Props> = ({
   }
 
   return (
-    <div className='h-full w-full bg-[#171717] overflow-hidden flex flex-col'>
+    <div className='h-full w-full overflow-hidden flex flex-col'>
       {/* Header với nút New Chat */}
-      <div className='p-4 border-b border-white/10'>
+      <div className=' border-b border-white/10'>
         <button
           onClick={handleNewSession}
           className='w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg bg-transparent border border-white/20 text-white hover:bg-white/5 transition-all duration-200 font-medium text-sm'
@@ -186,7 +186,7 @@ const ChatbotAIContainer: React.FC<Props> = ({
 
       {/* Chat Sessions List */}
       <div className='flex-1 overflow-hidden'>
-        <ScrollArea type='hover' scrollbars='vertical' className='h-full px-2'>
+        <ScrollArea type='hover' scrollbars='vertical' className='h-full'>
           <div className='py-2'>
             {sessions
               .sort((a, b) => {
@@ -199,8 +199,8 @@ const ChatbotAIContainer: React.FC<Props> = ({
               .map((s) => (
                 <div
                   key={s.id}
-                  className={`group relative flex items-center gap-2 px-3 py-2.5 mx-2 mb-1 rounded-lg text-sm transition-all duration-200 cursor-pointer select-none ${
-                    selectedId === s.id ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white'
+                  className={`group relative flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 cursor-pointer select-none ${
+                    selectedId === s.id ? 'bg-gray-4 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white'
                   }`}
                   onClick={() => handleNavigate(s.id)}
                 >
