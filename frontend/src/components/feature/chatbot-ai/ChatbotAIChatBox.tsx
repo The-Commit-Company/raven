@@ -306,13 +306,13 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading = f
                   </div>
                   <div className='flex items-center gap-1 text-gray-500 dark:text-gray-400'>
                     <div className='flex gap-1'>
-                      <div className='w-2 h-2 bg-gray-400 rounded-full animate-pulse'></div>
+                      <div className='w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-pulse'></div>
                       <div
-                        className='w-2 h-2 bg-gray-400 rounded-full animate-pulse'
+                        className='w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-pulse'
                         style={{ animationDelay: '0.2s' }}
                       ></div>
                       <div
-                        className='w-2 h-2 bg-gray-400 rounded-full animate-pulse'
+                        className='w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-pulse'
                         style={{ animationDelay: '0.4s' }}
                       ></div>
                     </div>
@@ -327,7 +327,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading = f
       </div>
 
       {/* Input Area */}
-      <div className='border-t border-black/10 dark:border-white/10 bg-white dark:bg-gray-2 px-4 py-4'>
+      <div className='border-t border-gray-200 dark:border-white/10 bg-white dark:bg-gray-2 px-4 py-4'>
         <div className='max-w-3xl mx-auto'>
           {/* File preview */}
           {selectedFile && (
@@ -358,7 +358,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading = f
               e.preventDefault()
               handleSend()
             }}
-            className='flex items-center gap-3 dark:bg-gray-3 px-4 py-3 rounded-full focus-within:ring-2 ring-white/10 transition-all'
+            className='flex items-center gap-3 bg-gray-50 dark:bg-gray-3 px-4 py-3 rounded-full border border-gray-200 dark:border-gray-600 focus-within:ring-2 focus-within:ring-gray-4 dark:focus-within:ring-white/10 transition-all'
           >
             <input
               type='file'
@@ -384,15 +384,15 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading = f
               placeholder='Message ChatGPT...'
               disabled={loading}
               rows={1}
-              className='flex-1 resize-none border-none bg-transparent text-white placeholder-gray-400 outline-none max-h-32 min-h-[24px]'
+              className='flex-1 resize-none border-none bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 outline-none max-h-32 min-h-[24px]'
             />
             <button
               type='submit'
               disabled={(!input.trim() && !selectedFile) || loading}
               className={`p-2 rounded-full transition-colors ${
                 (!input.trim() && !selectedFile) || loading
-                  ? 'bg-gray-600 text-gray-300 cursor-not-allowed'
-                  : 'bg-white text-black hover:bg-gray-200'
+                  ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-300 cursor-not-allowed'
+                  : 'bg-blue-600 dark:bg-white text-white dark:text-black hover:bg-blue-700 dark:hover:bg-gray-200'
               }`}
             >
               <BiSolidSend size={20} />

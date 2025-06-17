@@ -174,13 +174,13 @@ const ChatbotAIContainer: React.FC<Props> = ({
   return (
     <div className='h-full w-full overflow-hidden flex flex-col'>
       {/* Header với nút New Chat */}
-      <div className=' border-b border-white/10'>
+      <div className='border-b border-gray-200 dark:border-white/10'>
         <button
           onClick={handleNewSession}
-          className='w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg bg-transparent border border-white/20 text-white hover:bg-white/5 transition-all duration-200 font-medium text-sm'
+          className='w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-2xl bg-transparent border border-gray-300 dark:border-white/20 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-all duration-200 font-medium text-sm mb-4 cursor-pointer'
         >
           <FiPlus size={16} />
-          New chat
+          Thêm đoạn chat
         </button>
       </div>
 
@@ -199,12 +199,14 @@ const ChatbotAIContainer: React.FC<Props> = ({
               .map((s) => (
                 <div
                   key={s.id}
-                  className={`group relative flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 cursor-pointer select-none ${
-                    selectedId === s.id ? 'bg-gray-4 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white'
+                  className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all duration-200 cursor-pointer  capitalize font-normal select-none ${
+                    selectedId === s.id
+                      ? 'bg-gray-4 text-black dark:text-white'
+                      : 'bg-transparent text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/5'
                   }`}
                   onClick={() => handleNavigate(s.id)}
                 >
-                  <FiMessageSquare size={16} className='flex-shrink-0 opacity-70' />
+                  <FiMessageSquare size={16} className='flex-shrink-0' />
 
                   {editingId === s.id ? (
                     <input
@@ -216,13 +218,13 @@ const ChatbotAIContainer: React.FC<Props> = ({
                         if (e.key === 'Enter') handleEditSave(s.id)
                         if (e.key === 'Escape') setEditingId(null)
                       }}
-                      className='flex-1 bg-transparent outline-none border-b border-white/20 text-white px-1 py-1 text-sm'
+                      className='flex-1 bg-transparent outline-none border-b border-gray-300 dark:border-white/20 text-gray-900 dark:text-white px-1 py-1 text-sm'
                       style={{ minWidth: 0 }}
                     />
                   ) : (
                     <span className='truncate flex-1 min-w-0' title={s.title}>
                       {pendingRename?.id === s.id ? (
-                        <span className='italic text-white/50'>{pendingRename.title}</span>
+                        <span className='italic text-gray-400 dark:text-white/50'>{pendingRename.title}</span>
                       ) : (
                         s.title
                       )}
@@ -236,13 +238,13 @@ const ChatbotAIContainer: React.FC<Props> = ({
                   >
                     <button
                       onClick={() => handleEdit(s.id, s.title)}
-                      className='p-1.5 rounded-md hover:bg-white/10 text-white/70 hover:text-white transition-colors'
+                      className='p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-white/10 text-gray-500 dark:text-white/70 hover:text-gray-700 dark:hover:text-white transition-colors bg-gray-2 dark:bg-gray-3 cursor-pointer'
                     >
                       <FiEdit3 size={14} />
                     </button>
                     <button
                       onClick={() => openDeleteDialog(s.id)}
-                      className='p-1.5 rounded-md hover:bg-white/10 text-white/70 hover:text-red-400 transition-colors'
+                      className='p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-white/10 text-gray-500 dark:text-white/70 hover:text-red-600 dark:hover:text-red-400 transition-colors bg-gray-2 dark:bg-gray-3 cursor-pointer'
                     >
                       <FiTrash2 size={14} />
                     </button>
@@ -252,8 +254,8 @@ const ChatbotAIContainer: React.FC<Props> = ({
 
             {sessions.length === 0 && (
               <div className='px-4 py-8 text-center'>
-                <FiMessageSquare size={24} className='mx-auto mb-3 text-white/30' />
-                <Text className='text-white/50 text-sm'>No conversations yet</Text>
+                <FiMessageSquare size={24} className='mx-auto mb-3 text-gray-300 dark:text-white/30' />
+                <Text className='text-gray-500 dark:text-white/50 text-sm'>No conversations yet</Text>
               </div>
             )}
           </div>
@@ -262,9 +264,9 @@ const ChatbotAIContainer: React.FC<Props> = ({
 
       {/* Delete Confirmation Dialog */}
       <Dialog.Root open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <Dialog.Content className='bg-[#2f2f2f] border border-white/10 max-w-md'>
-          <Dialog.Title className='text-white text-lg font-semibold mb-4'>Delete chat?</Dialog.Title>
-          <Dialog.Description className='text-white/70 text-sm mb-6 leading-relaxed'>
+        <Dialog.Content className='bg-white dark:bg-[#2f2f2f] border border-gray-200 dark:border-white/10 max-w-md'>
+          <Dialog.Title className='text-gray-900 dark:text-white text-lg font-semibold mb-4'>Delete chat?</Dialog.Title>
+          <Dialog.Description className='text-gray-600 dark:text-white/70 text-sm mb-6 leading-relaxed'>
             This will delete the conversation permanently. You cannot undo this action.
           </Dialog.Description>
 
@@ -272,7 +274,7 @@ const ChatbotAIContainer: React.FC<Props> = ({
             <Dialog.Close>
               <Button
                 variant='ghost'
-                className='px-4 py-2 text-white/70 hover:text-white hover:bg-white/5 border border-white/20 rounded-lg transition-colors'
+                className='px-4 py-2 text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 border border-gray-300 dark:border-white/20 rounded-lg transition-colors'
               >
                 Cancel
               </Button>
