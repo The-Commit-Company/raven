@@ -7,9 +7,8 @@ import {
   useFrappeGetCall,
   useFrappePostCall
 } from 'frappe-react-sdk'
-import { useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
-import { useGetUser } from './useGetUser'
+import { useContext, useEffect, useMemo, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { useAtomValue } from 'jotai'
 import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
 import { useNotificationAudio } from './useNotificationAudio'
@@ -99,7 +98,6 @@ export const useFetchUnreadMessageCount = () => {
   }
 
   const { channelID } = useParams()
-  const { state } = useLocation()
   const { updateLastMessageInChannelList } = useUpdateLastMessageInChannelList()
 
   const { call: trackVisit } = useFrappePostCall('raven.api.raven_channel_member.track_visit')

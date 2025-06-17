@@ -44,6 +44,18 @@ def update_label(label_id, new_label):
     if label_doc.owner != user:
         frappe.throw(_("You are not allowed to edit this label"))
 
+    # ✅ Check trùng tên label khác của cùng người
+    duplicate = frappe.db.exists(
+        "User Label",
+        {
+            "owner": user,
+            "label": new_label,
+            "name": ["!=", label_id]
+        }
+    )
+    if duplicate:
+        frappe.throw(_("Label name already exists"))
+
     label_doc.label = new_label
     label_doc.save(ignore_permissions=True)
 

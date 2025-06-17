@@ -22,6 +22,7 @@ export const setSortedChannelsAtom = atom(
   null,
   (get, set, next: ChannelWithGroupType[] | ((prev: ChannelWithGroupType[]) => ChannelWithGroupType[])) => {
     const prev = get(sortedChannelsAtom)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     const resolved = typeof next === 'function' ? (next as Function)(prev) : next
     set(sortedChannelsAtom, resolved)
   }
@@ -52,9 +53,10 @@ export const useEnrichedChannels = (): ChannelWithGroupType[] => {
 
     return {
       ...channel,
-      unread_count: unread?.unread_count ?? 0,
+      unread_count: unread?.unread_count ?? channel.unread_count ?? 0,
       last_message_content: unread?.last_message_content ?? channel.last_message_content,
-      last_message_sender_name: unread?.last_message_sender_name ?? channel.last_message_sender_name
+      last_message_sender_name: unread?.last_message_sender_name ?? channel.last_message_sender_name,
+      user_labels: channel.user_labels ?? [] // đảm bảo không bị mất user_labels
     }
   })
 }
@@ -75,11 +77,21 @@ export const useUpdateChannelLabels = () => {
     )
   }
 
-  const addLabelToChannel = (channelID: string, labelID: string) => {
-    updateChannelLabels(channelID, (prevRaw) => {
-      const prev = Array.isArray(prevRaw) ? prevRaw : []
-      return prev.includes(labelID) ? prev : [...prev, labelID]
-    })
+  const setSortedChannels = useSetAtom(sortedChannelsAtom)
+
+  const addLabelToChannel = (channelID: string, newLabelID: string) => {
+    setSortedChannels((prev) =>
+      prev.map((channel) =>
+        channel.name === channelID
+          ? {
+              ...channel,
+              user_labels: Array.isArray(channel.user_labels)
+                ? [...new Set([...channel.user_labels, newLabelID])]
+                : [newLabelID]
+            }
+          : channel
+      )
+    )
   }
 
   const removeLabelFromChannel = (channelID: string, labelID: string) => {

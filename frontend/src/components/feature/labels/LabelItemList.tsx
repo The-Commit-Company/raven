@@ -11,16 +11,25 @@ import { replaceCurrentUserFromDMChannelName } from '@/utils/operations'
 import { useRemoveChannelFromLabel } from '@/hooks/useRemoveChannelFromLabel'
 import { toast } from 'sonner'
 import { useUpdateChannelLabels } from '@/utils/channel/ChannelAtom'
+import { useChannelActions } from '@/hooks/useChannelActions'
 
 type Props = {
   channelID: string
   channelName: string
   labelID: string
   isDirectMessage: boolean
+  unreadCount?: number
   onRemoveLocally?: (channelID: string) => void
 }
 
-const LabelItemList = ({ channelID, channelName, isDirectMessage, labelID, onRemoveLocally }: Props) => {
+const LabelItemList = ({
+  channelID,
+  channelName,
+  labelID,
+  isDirectMessage,
+  unreadCount = 0,
+  onRemoveLocally
+}: Props) => {
   const [showModal, setShowModal] = useState(false)
   const { currentUser } = useContext(UserContext)
   const { workspaceID, channelID: channelIDParams } = useParams()
@@ -34,8 +43,11 @@ const LabelItemList = ({ channelID, channelName, isDirectMessage, labelID, onRem
   const isActive = channelIDParams === channelID
 
   const { removeChannel, loading: isLoading } = useRemoveChannelFromLabel()
+  const { updateChannelLabels } = useUpdateChannelLabels()
+  const { clearManualMark } = useChannelActions()
 
   const handleClick = () => {
+    clearManualMark(channelID)
     if (workspaceID) {
       navigate(`/${workspaceID}/${channelID}`)
     } else {
@@ -43,14 +55,10 @@ const LabelItemList = ({ channelID, channelName, isDirectMessage, labelID, onRem
     }
   }
 
-  const { updateChannelLabels } = useUpdateChannelLabels()
-
   const handleRemove = async () => {
     try {
       await removeChannel(labelID, channelID)
-
       updateChannelLabels(channelID, (prevLabels) => prevLabels.filter((id) => id !== labelID))
-
       onRemoveLocally?.(channelID)
       toast.success(`Đã xóa thành công`)
       setShowModal(false)
@@ -85,6 +93,11 @@ const LabelItemList = ({ channelID, channelName, isDirectMessage, labelID, onRem
                 {displayName}
               </Text>
             </Flex>
+            {unreadCount > 0 && (
+              <div className='bg-red-500 text-white text-[10px] rounded-full w-[18px] h-[18px] flex items-center justify-center'>
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </div>
+            )}
           </Flex>
         </Box>
       </ContextMenu.Trigger>

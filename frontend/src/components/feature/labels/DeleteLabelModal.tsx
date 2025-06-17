@@ -5,8 +5,8 @@ import { refreshLabelListAtom } from './conversations/atoms/labelAtom'
 import { toast } from 'sonner'
 
 type Props = {
-  name: string        // label_id
-  label: string       // label name
+  name: string // label_id
+  label: string // label name
   isOpen: boolean
   setIsOpen: (v: boolean) => void
 }
@@ -15,24 +15,24 @@ const DeleteLabelModal = ({ name, label, isOpen, setIsOpen }: Props) => {
   const { call, loading: isLoading } = useFrappePostCall('raven.api.user_label.delete_label')
   const setRefreshKey = useSetAtom(refreshLabelListAtom)
 
-const handleDelete = async () => {
-  try {
-    const res = await call({ label_id: name })
-    const message = res?.message?.message
+  const handleDelete = async () => {
+    try {
+      const res = await call({ label_id: name })
+      const message = res?.message?.message
 
-    if (message === 'Label deleted') {
-      toast.success(`Xóa nhãn thành công`)
-      setRefreshKey(prev => prev + 1)
-      setIsOpen(false)
-    } else {
-      console.error('Lỗi không rõ:', res)
-      toast.error('Không thể xoá nhãn. Vui lòng thử lại.')
+      if (message === 'Label deleted') {
+        toast.success(`Xóa nhãn thành công`)
+        setRefreshKey((prev) => prev + 1)
+        setIsOpen(false)
+      } else {
+        console.error('Lỗi không rõ:', res)
+        toast.error('Không thể xoá nhãn. Vui lòng thử lại.')
+      }
+    } catch (err) {
+      console.error('Lỗi khi xoá nhãn:', err)
+      toast.error('Có lỗi xảy ra trong quá trình xoá nhãn.')
     }
-  } catch (err) {
-    console.error('Lỗi khi xoá nhãn:', err)
-    toast.error('Có lỗi xảy ra trong quá trình xoá nhãn.')
   }
-}
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
@@ -42,20 +42,10 @@ const handleDelete = async () => {
           Bạn có chắc muốn xoá nhãn <strong>{label}</strong> không?
         </Text>
         <Flex justify='end' align='center' gap='3'>
-          <Button
-            variant='soft'
-            onClick={() => setIsOpen(false)}
-            className='cursor-pointer'
-            disabled={isLoading}
-          >
+          <Button variant='soft' onClick={() => setIsOpen(false)} className='cursor-pointer' disabled={isLoading}>
             Huỷ
           </Button>
-          <Button
-            color='red'
-            onClick={handleDelete}
-            disabled={isLoading}
-            className='cursor-pointer'
-          >
+          <Button color='red' onClick={handleDelete} disabled={isLoading} className='cursor-pointer'>
             {isLoading ? 'Đang xoá...' : 'Xoá'}
           </Button>
         </Flex>

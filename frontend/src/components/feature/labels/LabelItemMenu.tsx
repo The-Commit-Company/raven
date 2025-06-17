@@ -38,17 +38,7 @@ function useIsTouchDevice() {
   return isTouch
 }
 
-const LabelItemMenu = ({
-  name,
-  label,
-  onEdit,
-  onDelete
-}: {
-  name: string
-  label: string
-  onEdit?: () => void
-  onDelete?: () => void
-}) => {
+const LabelItemMenu = ({ name, label }: { name: string; label: string }) => {
   const [popoverOpen, setPopoverOpen] = useState(false)
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)

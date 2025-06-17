@@ -16,10 +16,9 @@ function isLabelObject(val: unknown): val is { labelId: string; labelName: strin
 
 export const SidebarHeader = () => {
   const isDesktop = useIsDesktop()
-  const { mode, title } = useSidebarMode()
+  const { mode, title, labelID } = useSidebarMode()
 
-  const isLabelMode = title === 'Nhãn'
-
+  const isLabelMode = title === 'Nhãn' || !!labelID
   if (isDesktop) {
     return (
       <header style={{ padding: mode === 'hide-filter' ? '20px 60px' : '6px 10px' }}>
@@ -63,6 +62,7 @@ export const SidebarHeader = () => {
     </header>
   )
 }
+
 // const CommandMenuButton = () => {
 //   const setOpen = useSetAtom(commandMenuOpenAtom)
 

@@ -1,8 +1,9 @@
 import { useEffect } from 'react'
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { labelListAtom } from './conversations/atoms/labelAtom'
+import { labelListAtom, refreshLabelListAtom } from './conversations/atoms/labelAtom'
 import LabelItem from './LabelItem'
+
 interface Label {
   label_id: string
   label: string
@@ -11,24 +12,30 @@ interface Label {
 const LabelByUserList = () => {
   const labelsInAtom = useAtomValue(labelListAtom)
   const setLabels = useSetAtom(labelListAtom)
+  const refreshKey = useAtomValue(refreshLabelListAtom)
 
   const { data, error, isLoading, mutate } = useFrappeGetCall<{ message: Label[] }>(
     'raven.api.user_label.get_my_labels'
   )
 
-  // Gọi API nếu chưa có label trong atom và data chưa có
+  // Gọi lại API khi refreshKey thay đổi
+  useEffect(() => {
+    mutate()
+  }, [refreshKey])
+
+  // Nếu atom rỗng và chưa có data, gọi API
   useEffect(() => {
     if (labelsInAtom.length === 0 && !data) {
       mutate()
     }
   }, [labelsInAtom.length, data])
 
-  // Sau khi fetch thành công, nếu atom đang rỗng thì set vào
+  // Sau khi fetch xong thì gán vào atom
   useEffect(() => {
-    if (data?.message && labelsInAtom.length === 0) {
+    if (data?.message) {
       setLabels(data.message)
     }
-  }, [data, labelsInAtom.length, setLabels])
+  }, [data, setLabels])
 
   const labels: Label[] = labelsInAtom.length > 0 ? labelsInAtom : data?.message || []
 

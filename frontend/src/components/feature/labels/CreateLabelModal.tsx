@@ -39,8 +39,7 @@ export const CreateLabelButton = () => {
   }, [isOpen, isDesktop])
 
   const handleChangeOpen = (open: boolean) => {
-    if (!open)
-    setIsOpen(open)
+    if (!open) setIsOpen(open)
   }
 
   if (isDesktop) {
@@ -98,7 +97,7 @@ export const CreateLabelButton = () => {
   )
 }
 
-export const CreateLabelContent = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (v: boolean) => void }) => {
+export const CreateLabelContent = ({ setIsOpen }: { isOpen: boolean; setIsOpen: (v: boolean) => void }) => {
   const methods = useForm<CreateLabelForm>({
     defaultValues: { label: '' }
   })
@@ -176,7 +175,7 @@ export const CreateLabelContent = ({ isOpen, setIsOpen }: { isOpen: boolean; set
           {errors.label && <div className='text-red-500 text-sm pt-1'>{errors.label.message}</div>}
         </Box>
 
-        <Flex  justify='between' align='center'>
+        <Flex justify='between' align='center'>
           <Flex gap='3' align='center'>
             <Button className='cursor-pointer' type='submit' size='2' disabled={loading}>
               Tạo

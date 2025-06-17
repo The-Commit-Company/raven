@@ -81,8 +81,7 @@ const useFetchChannelList = (): ChannelListContextType => {
   const { data, mutate, ...rest } = useFrappeGetCall<{ message: ChannelList }>(
     'raven.api.raven_channel.get_all_channels',
     {
-      hide_archived: false,
-      filter_done: 'only_not_done'
+      hide_archived: false
     },
     `channel_list`,
     {
@@ -258,4 +257,3 @@ export const useUpdateLastMessageDetails = () => {
 
   return { updateLastMessageForChannel }
 }
-
