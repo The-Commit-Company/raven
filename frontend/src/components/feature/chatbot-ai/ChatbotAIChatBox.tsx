@@ -3,9 +3,11 @@ import { useGetUser } from '@/hooks/useGetUser'
 import { Message } from '@/types/ChatBot/types'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { Button, Text, Tooltip } from '@radix-ui/themes'
+import clsx from 'clsx'
 import React, { useCallback, useContext, useEffect, useRef } from 'react'
 import { BiSolidSend } from 'react-icons/bi'
 import { FiCpu, FiPaperclip, FiX } from 'react-icons/fi'
+import { commonButtonStyle } from '../labels/LabelItemMenu'
 
 interface Props {
   session: { id: string; title: string; messages: Message[] }
@@ -304,7 +306,12 @@ const ChatbotAIChatBox: React.FC<Props> = ({
               placeholder='Message ChatGPT...'
               disabled={loading}
               rows={1}
-              className='flex-1 resize-none border-none bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 outline-none max-h-32 min-h-[24px]'
+              style={{
+                fontFamily: commonButtonStyle.fontFamily
+              }}
+              className={clsx(
+                `flex-1 resize-none border-none bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 outline-none max-h-32 min-h-[24px] font-medium text-sm`
+              )}
             />
 
             <button

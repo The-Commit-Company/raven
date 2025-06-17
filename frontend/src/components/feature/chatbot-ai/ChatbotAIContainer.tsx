@@ -143,7 +143,7 @@ const ChatbotAIContainer: React.FC<Props> = ({
       <div className='border-b border-gray-200 dark:border-white/10'>
         <button
           onClick={handleNewSession}
-          className='w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-2xl bg-transparent border border-gray-300 dark:border-white/20 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-all duration-200 font-medium text-sm mb-4 cursor-pointer'
+          className='w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-2xl bg-gray-3 border border-gray-300 dark:border-white/20 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-all duration-200 font-medium text-sm mb-4 cursor-pointer'
         >
           <FiPlus size={16} />
           Thêm đoạn chat
@@ -165,7 +165,7 @@ const ChatbotAIContainer: React.FC<Props> = ({
               .map((s) => (
                 <div
                   key={s.id}
-                  className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all duration-200 cursor-pointer  capitalize font-normal select-none ${
+                  className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-2xl text-sm transition-all duration-200 cursor-pointer  capitalize font-normal select-none ${
                     selectedId === s.id
                       ? 'bg-gray-4 text-black dark:text-white'
                       : 'bg-transparent text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/5'
