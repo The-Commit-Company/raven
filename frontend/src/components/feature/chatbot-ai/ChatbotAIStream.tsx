@@ -1,4 +1,5 @@
 import { useChatbotConversations, useCreateChatbotConversation } from '@/hooks/useChatbotAPI'
+import { useThrottleAsync } from '@/hooks/useThrottleAsync'
 import { ConversationData } from '@/types/ChatBot/types'
 import { normalizeConversations } from '@/utils/chatBot-options'
 import { useFrappeEventListener } from 'frappe-react-sdk'
@@ -22,16 +23,19 @@ const ChatbotAIStream = () => {
   }, [conversations])
 
   // Hàm tạo session mới
-  const handleNewSession = useCallback(async () => {
-    const title = `Đoạn chat mới ${sessions.length + 1}`
-    try {
-      const res = await createConversation({ title })
-      await mutateConversations()
-      setSelectedAISessionId(res.message.name)
-    } catch (error) {
-      console.error('Error creating new session:', error)
-    }
-  }, [createConversation, mutateConversations, sessions.length])
+  const throttledHandleNewSession = useThrottleAsync(
+    useCallback(async () => {
+      const title = `Đoạn chat mới ${sessions.length + 1}`
+      try {
+        const res = await createConversation({ title })
+        await mutateConversations()
+        setSelectedAISessionId(res.message.name)
+      } catch (error) {
+        console.error('Error creating new session:', error)
+      }
+    }, [createConversation, mutateConversations, sessions.length]),
+    2000 // throttle 2 giây
+  )
 
   // Hàm update tiêu đề session
   const handleUpdateAISessions = useCallback(
@@ -72,7 +76,7 @@ const ChatbotAIStream = () => {
       selectedId={selectedAISessionId}
       onSelectSession={setSelectedAISessionId}
       onUpdateSessions={handleUpdateAISessions}
-      onNewSession={handleNewSession}
+      onNewSession={throttledHandleNewSession}
       mutateConversations={mutateConversations}
     />
   )

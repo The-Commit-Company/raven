@@ -1,4 +1,5 @@
 import { useDeleteChatbotConversation, useRenameChatbotConversation } from '@/hooks/useChatbotAPI'
+import throttle from '@/hooks/useThrottle'
 import { Box, Button, Dialog, Flex, ScrollArea, Text } from '@radix-ui/themes'
 import { useFrappeEventListener } from 'frappe-react-sdk'
 import React, { useEffect, useState } from 'react'
@@ -131,10 +132,13 @@ const ChatbotAIContainer: React.FC<Props> = ({
     }
   }, [sessions, selectedId])
 
-  const handleNewSession = () => {
-    if (onNewSession) return onNewSession()
-  }
+  const throttledNewSession = throttle(() => {
+    if (onNewSession) onNewSession()
+  }, 2000)
 
+  const handleNewSession = () => {
+    throttledNewSession()
+  }
   const handleEdit = (id: string, title: string) => {
     setEditingId(id)
     setEditValue(title)

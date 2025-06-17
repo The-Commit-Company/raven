@@ -47,6 +47,8 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
     [botID, sendMessage, mutateMessages]
   )
 
+  const normalizedMessages = useMemo(() => normalizeMessages(messages), [messages])
+
   // Early return if no session is selected
   if (!selectedSession || !botID) {
     return <ChatStreamLoader />
@@ -57,7 +59,7 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
       session={{
         id: botID as string,
         title: selectedSession.title,
-        messages: normalizeMessages(messages)
+        messages: normalizedMessages
       }}
       onSendMessage={handleSendMessage}
       loading={sending || loadingMessages}
