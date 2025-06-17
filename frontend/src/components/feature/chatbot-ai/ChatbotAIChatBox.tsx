@@ -3,29 +3,50 @@ import { useGetUser } from '@/hooks/useGetUser'
 import { Message } from '@/types/ChatBot/types'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { Button, Text, Tooltip } from '@radix-ui/themes'
-import { useFrappeEventListener } from 'frappe-react-sdk'
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useRef } from 'react'
 import { BiSolidSend } from 'react-icons/bi'
 import { FiCpu, FiPaperclip, FiX } from 'react-icons/fi'
 
 interface Props {
   session: { id: string; title: string; messages: Message[] }
-  onSendMessage: (content: string, file?: File, context?: { role: 'user' | 'ai'; content: string }[]) => void
+  // Input props
+  input: string
+  onInputChange: (value: string) => void
+  onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void
+  onSubmit: (e: React.FormEvent) => void
+  // File props
+  selectedFile: File | null
+  fileError: string | null
+  onFileSelect: (file: File) => void
+  onRemoveFile: () => void
+  allowedFileTypes: string[]
+  maxFileSize: number
+  // Message props
+  isThinking: boolean
+  hasMore: boolean
+  onShowMore: () => void
+  startIdx: number
+  // Loading props
   loading?: boolean
-  onUpdateMessages?: (messages: Message[]) => void
 }
 
-const MESSAGES_PER_PAGE = 15
-const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
-const ALLOWED_FILE_TYPES = ['image/*', '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx']
-
-const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading = false, onUpdateMessages }) => {
-  const [input, setInput] = useState('')
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [isThinking, setIsThinking] = useState(false)
-  const [visibleCount, setVisibleCount] = useState(MESSAGES_PER_PAGE)
-  const [fileError, setFileError] = useState<string | null>(null)
-
+const ChatbotAIChatBox: React.FC<Props> = ({
+  session,
+  input,
+  onInputChange,
+  onKeyDown,
+  onSubmit,
+  selectedFile,
+  fileError,
+  onFileSelect,
+  onRemoveFile,
+  allowedFileTypes,
+  isThinking,
+  hasMore,
+  onShowMore,
+  startIdx,
+  loading = false
+}) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesTopRef = useRef<HTMLDivElement>(null)
@@ -34,6 +55,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading = f
   const { currentUser } = useContext(UserContext)
   const user = useGetUser(currentUser)
 
+  // Auto-resize textarea
   useEffect(() => {
     if (textAreaRef.current) {
       textAreaRef.current.style.height = 'auto'
@@ -41,91 +63,32 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading = f
     }
   }, [input])
 
-  const { visibleMessages, hasMore, startIdx } = useMemo(() => {
-    const totalMessages = session.messages.length
-    const startIdx = Math.max(0, totalMessages - visibleCount)
-    return {
-      visibleMessages: session.messages.slice(startIdx),
-      hasMore: startIdx > 0,
-      startIdx
-    }
-  }, [session.messages, visibleCount])
-
+  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
-    setVisibleCount(MESSAGES_PER_PAGE)
-  }, [session.id])
-
-  useEffect(() => {
-    const container = messagesEndRef.current?.parentElement
-    if (!container) return
-
-    const shouldAutoScroll = container.scrollHeight - container.scrollTop - container.clientHeight < 100
-    if (shouldAutoScroll) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [session.messages, isThinking])
 
-  const validateFile = useCallback((file: File): string | null => {
-    if (file.size > MAX_FILE_SIZE) {
-      return 'File size must be less than 10MB'
-    }
-    return null
-  }, [])
-
-  const handleSend = useCallback(() => {
-    if ((!input.trim() && !selectedFile) || loading) return
-
-    const context = session.messages.map((msg) => ({ role: msg.role, content: msg.content }))
-
-    const newMessage: Message = { role: 'user', content: input.trim(), pending: true }
-    onUpdateMessages?.([...session.messages, newMessage])
-    setInput('')
-    setSelectedFile(null)
-    setFileError(null)
-    setIsThinking(true)
-    onSendMessage(input.trim(), selectedFile || undefined, context)
-  }, [input, selectedFile, loading, session.messages, onSendMessage, onUpdateMessages])
-
-  useFrappeEventListener('raven:new_ai_message', (data) => {
-    if (data.conversation_id === session.id) {
-      onUpdateMessages?.([...session.messages, { role: 'ai', content: data.message }])
-      setIsThinking(false)
-    }
-  })
-
-  const handleFileSelect = useCallback(
+  // File input handlers
+  const handleFileInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0]
       if (file) {
-        const error = validateFile(file)
-        if (error) setFileError(error)
-        else {
-          setSelectedFile(file)
-          setFileError(null)
-        }
+        onFileSelect(file)
       }
     },
-    [validateFile]
+    [onFileSelect]
   )
 
-  const handleFileClick = useCallback(() => fileInputRef.current?.click(), [])
-
-  const handleRemoveFile = useCallback(() => {
-    setSelectedFile(null)
-    setFileError(null)
-    if (fileInputRef.current) fileInputRef.current.value = ''
+  const handleFileClick = useCallback(() => {
+    fileInputRef.current?.click()
   }, [])
 
-  // Keyboard handler
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault()
-        handleSend()
-      }
-    },
-    [handleSend]
-  )
+  const handleRemoveFileClick = useCallback(() => {
+    onRemoveFile()
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }, [onRemoveFile])
 
   // Drag and drop handlers
   const handleDrop = useCallback(
@@ -133,27 +96,29 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading = f
       e.preventDefault()
       const file = e.dataTransfer.files?.[0]
       if (file) {
-        const error = validateFile(file)
-        if (error) {
-          setFileError(error)
-        } else {
-          setSelectedFile(file)
-          setFileError(null)
-        }
+        onFileSelect(file)
       }
     },
-    [validateFile]
+    [onFileSelect]
   )
+
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
   }, [])
 
-  const handleShowMore = useCallback(() => {
-    setVisibleCount((prev) => prev + MESSAGES_PER_PAGE)
+  const handleShowMoreClick = useCallback(() => {
+    onShowMore()
     setTimeout(() => {
       messagesTopRef.current?.scrollIntoView({ behavior: 'smooth' })
     }, 100)
-  }, [])
+  }, [onShowMore])
+
+  const handleInputChangeInternal = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      onInputChange(e.target.value)
+    },
+    [onInputChange]
+  )
 
   return (
     <div className='flex flex-col h-full w-full'>
@@ -186,7 +151,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading = f
             <Button
               size='2'
               variant='ghost'
-              onClick={handleShowMore}
+              onClick={handleShowMoreClick}
               className='text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg'
             >
               Show earlier messages
@@ -194,7 +159,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading = f
           </div>
         )}
 
-        {session.messages.length === 0 && (
+        {session.messages.length === 0 && !isThinking && (
           <div className='flex items-center justify-center h-full'>
             <div className='text-center'>
               <div className='w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center'>
@@ -206,8 +171,8 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading = f
         )}
 
         <div className='max-w-3xl mx-auto p-4'>
-          {visibleMessages.map((msg, idx) => (
-            <div key={startIdx + idx} className='group mb-8'>
+          {session.messages.map((msg, idx) => (
+            <div key={msg.id || startIdx + idx} className='group mb-8'>
               <div className='flex gap-4 items-start'>
                 {/* Avatar */}
                 <div className='flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center'>
@@ -291,7 +256,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading = f
                 <Text className='text-gray-700 dark:text-gray-300 text-sm'>{selectedFile.name}</Text>
               </div>
               <button
-                onClick={handleRemoveFile}
+                onClick={handleRemoveFileClick}
                 className='p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors'
               >
                 <FiX className='text-gray-500 dark:text-gray-400' size={16} />
@@ -308,19 +273,17 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading = f
 
           {/* Input form */}
           <form
-            onSubmit={(e) => {
-              e.preventDefault()
-              handleSend()
-            }}
+            onSubmit={onSubmit}
             className='flex items-center gap-3 bg-gray-50 dark:bg-gray-3 px-4 py-3 rounded-full border border-gray-200 dark:border-gray-600 focus-within:ring-2 focus-within:ring-gray-4 dark:focus-within:ring-white/10 transition-all'
           >
             <input
               type='file'
               ref={fileInputRef}
-              onChange={handleFileSelect}
+              onChange={handleFileInputChange}
               className='hidden'
-              accept={ALLOWED_FILE_TYPES.join(',')}
+              accept={allowedFileTypes.join(',')}
             />
+
             {/* File attachment button */}
             <Tooltip content='Đính kèm tệp tin'>
               <button
@@ -332,16 +295,18 @@ const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading = f
                 <FiPaperclip size={18} />
               </button>
             </Tooltip>
+
             <textarea
               ref={textAreaRef}
               value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
+              onChange={handleInputChangeInternal}
+              onKeyDown={onKeyDown}
               placeholder='Message ChatGPT...'
               disabled={loading}
               rows={1}
               className='flex-1 resize-none border-none bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 outline-none max-h-32 min-h-[24px]'
             />
+
             <button
               type='submit'
               disabled={(!input.trim() && !selectedFile) || loading}

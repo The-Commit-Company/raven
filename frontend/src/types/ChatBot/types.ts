@@ -1,7 +1,7 @@
 export interface Message {
   role: 'user' | 'ai'
   content: string
-  id?: number
+  id?: number | string
   parent_message_id?: number
   pending?: boolean
 }

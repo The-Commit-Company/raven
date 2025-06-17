@@ -7,14 +7,22 @@ import { useFrappeEventListener } from 'frappe-react-sdk'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import ChatStreamLoader from '../chat/ChatStream/ChatStreamLoader'
 
+const MESSAGES_PER_PAGE = 15
+const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+const ALLOWED_FILE_TYPES = ['image/*', '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx']
+
 const ChatbotAIBody = ({ botID }: { botID?: string }) => {
   const { data: conversations } = useChatbotConversations()
   // Lấy messages từ backend
   const { data: messages, mutate: mutateMessages, isLoading: loadingMessages } = useChatbotMessages(botID || undefined)
 
   const [socketConnected, setSocketConnected] = useState(true)
-
   const [localMessages, setLocalMessages] = useState<Message[]>([])
+  const [input, setInput] = useState('')
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [isThinking, setIsThinking] = useState(false)
+  const [visibleCount, setVisibleCount] = useState(MESSAGES_PER_PAGE)
+  const [fileError, setFileError] = useState<string | null>(null)
 
   const { call: sendMessage, loading: sending } = useSendChatbotMessage()
 
@@ -30,49 +38,156 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
 
   const selectedSession = useMemo(() => {
     return sessions.find((s) => s.id === botID) || sessions[0]
-  }, [sessions])
+  }, [sessions, botID])
 
-  // Hàm gửi tin nhắn Chatbot AI
-  // Memoized send message handler
-  const handleSendMessage = useCallback(
-    async (content: string, file?: File, context?: { role: 'user' | 'ai'; content: string }[]) => {
-      if (!botID) return
+  // File validation logic
+  const validateFile = useCallback((file: File): string | null => {
+    if (file.size > MAX_FILE_SIZE) {
+      return 'File size must be less than 10MB'
+    }
+    return null
+  }, [])
 
-      try {
-        await sendMessage({
-          conversation_id: botID,
-          message: content,
-          file,
-          context
-        })
-        await mutateMessages()
-      } catch (error) {
-        console.error('Error sending message:', error)
+  // File handling logic
+  const handleFileSelect = useCallback(
+    (file: File) => {
+      const error = validateFile(file)
+      if (error) {
+        setFileError(error)
+      } else {
+        setSelectedFile(file)
+        setFileError(null)
       }
     },
-    [botID, sendMessage, mutateMessages]
+    [validateFile]
   )
 
+  const handleRemoveFile = useCallback(() => {
+    setSelectedFile(null)
+    setFileError(null)
+  }, [])
+
+  // Message pagination logic
+  const { visibleMessages, hasMore, startIdx } = useMemo(() => {
+    const totalMessages = localMessages.length
+    const startIdx = Math.max(0, totalMessages - visibleCount)
+    return {
+      visibleMessages: localMessages.slice(startIdx),
+      hasMore: startIdx > 0,
+      startIdx
+    }
+  }, [localMessages, visibleCount])
+
+  const handleShowMore = useCallback(() => {
+    setVisibleCount((prev) => prev + MESSAGES_PER_PAGE)
+  }, [])
+
+  // Reset visible count when session changes
   useEffect(() => {
-    setLocalMessages(normalizeMessages(messages))
+    setVisibleCount(MESSAGES_PER_PAGE)
+  }, [botID])
+
+  // Hàm gửi tin nhắn Chatbot AI
+  const handleSendMessage = useCallback(async () => {
+    if ((!input.trim() && !selectedFile) || sending || loadingMessages) return
+
+    const context = localMessages.map((msg) => ({ role: msg.role, content: msg.content }))
+
+    // Add user message to local state immediately
+    const newMessage: Message = {
+      id: `temp-${Date.now()}`,
+      role: 'user',
+      content: input.trim(),
+      pending: true
+    }
+    setLocalMessages((prev) => [...prev, newMessage])
+
+    // Clear input and file
+    const messageContent = input.trim()
+    const fileToSend = selectedFile
+    setInput('')
+    setSelectedFile(null)
+    setFileError(null)
+    setIsThinking(true)
+
+    try {
+      await sendMessage({
+        conversation_id: botID!,
+        message: messageContent,
+        file: fileToSend || undefined,
+        context
+      })
+      await mutateMessages()
+    } catch (error) {
+      console.error('Error sending message:', error)
+      // Remove the pending message on error
+      setLocalMessages((prev) => prev.filter((msg) => msg.id !== newMessage.id))
+    } finally {
+      setIsThinking(false)
+    }
+  }, [input, selectedFile, sending, loadingMessages, localMessages, botID, sendMessage, mutateMessages])
+
+  // Input handlers
+  const handleInputChange = useCallback((value: string) => {
+    setInput(value)
+  }, [])
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault()
+        handleSendMessage()
+      }
+    },
+    [handleSendMessage]
+  )
+
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault()
+      handleSendMessage()
+    },
+    [handleSendMessage]
+  )
+
+  // Update local messages when backend messages change
+  useEffect(() => {
+    const normalizedMessages = normalizeMessages(messages)
+    setLocalMessages(normalizedMessages)
+    // Stop thinking indicator when new messages arrive
+    if (normalizedMessages.length > 0) {
+      setIsThinking(false)
+    }
   }, [messages])
 
   // Thêm xử lý realtime cho tin nhắn AI
   useFrappeEventListener('raven:new_ai_message', (data) => {
     if (data.conversation_id === botID) {
-      const updated = [...localMessages, { role: 'ai', content: data.message }]
-      setLocalMessages(updated as Message[])
+      const alreadyExists = localMessages.some((msg) => msg.id === data.message_id)
+      if (alreadyExists) return
+
+      setLocalMessages((prev) => [
+        ...prev,
+        {
+          id: data.message_id,
+          role: 'ai',
+          content: data.message
+        }
+      ])
+      setIsThinking(false)
     }
   })
 
   useFrappeEventListener('raven:error', (error) => {
     console.error('Socket error:', error)
     setSocketConnected(false)
+    setIsThinking(false)
     setTimeout(() => {
       window.location.reload()
     }, 5000)
   })
 
+  // Polling fallback when socket disconnected
   useEffect(() => {
     let pollingInterval: NodeJS.Timeout
 
@@ -83,7 +198,7 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
     }
 
     return () => clearInterval(pollingInterval)
-  }, [socketConnected])
+  }, [socketConnected, mutateMessages])
 
   // Early return if no session is selected
   if (!selectedSession || !botID) {
@@ -95,10 +210,26 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
       session={{
         id: botID,
         title: selectedSession.title,
-        messages: localMessages
+        messages: visibleMessages
       }}
-      onSendMessage={handleSendMessage}
-      onUpdateMessages={setLocalMessages} // callback cập nhật
+      // Input states
+      input={input}
+      onInputChange={handleInputChange}
+      onKeyDown={handleKeyDown}
+      onSubmit={handleSubmit}
+      // File states
+      selectedFile={selectedFile}
+      fileError={fileError}
+      onFileSelect={handleFileSelect}
+      onRemoveFile={handleRemoveFile}
+      allowedFileTypes={ALLOWED_FILE_TYPES}
+      maxFileSize={MAX_FILE_SIZE}
+      // Message states
+      isThinking={isThinking}
+      hasMore={hasMore}
+      onShowMore={handleShowMore}
+      startIdx={startIdx}
+      // Loading states
       loading={sending || loadingMessages}
     />
   )
