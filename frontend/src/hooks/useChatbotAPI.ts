@@ -27,16 +27,9 @@ export function useSendChatbotMessage() {
   return useFrappePostCall<any>('raven.api.chatbot.send_message')
 }
 
-// Lấy danh sách chủ đề
-export function useChatbotTopics() {
-  return useFrappeGetCall<any[]>('raven.api.chatbot.get_topics', undefined, 'chatbot_topics', {
-    revalidateOnFocus: false
-  })
-}
-
 // Đổi tên cuộc trò chuyện
 export function useRenameChatbotConversation() {
-  return useFrappePostCall<any>('frappe.client.set_value')
+  return useFrappePostCall<any>('raven.api.chatbot.rename_conversation')
 }
 
 // Xóa cuộc trò chuyện

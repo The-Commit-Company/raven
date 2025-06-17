@@ -9,23 +9,24 @@ import { UserContext } from '../../../utils/auth/UserProvider'
 
 import { ChannelWithUnreadCount, DMChannelWithUnreadCount } from '@/components/layout/Sidebar/useGetChannelUnreadCounts'
 import { useChannelActions } from '@/hooks/useChannelActions'
+import { useChannelDone } from '@/hooks/useChannelDone'
+import { useIsTablet } from '@/hooks/useMediaQuery'
 import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
+import { useEnrichedChannels } from '@/utils/channel/ChannelAtom'
+import { formatLastMessage } from '@/utils/channel/useFormatLastMessage'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { useSidebarMode } from '@/utils/layout/sidebar'
-import { __ } from '@/utils/translations'
 import { useAtomValue } from 'jotai'
-import { SidebarBadge, SidebarGroup, SidebarIcon } from '../../layout/Sidebar/SidebarComp'
 import { HiCheck } from 'react-icons/hi'
+import { SidebarBadge, SidebarGroup, SidebarIcon } from '../../layout/Sidebar/SidebarComp'
 import { DoneChannelList } from '../channels/DoneChannelList'
 import MentionList from '../chat/ChatInput/MentionListCustom'
-import { MessageSaved } from './DirectMessageSaved'
-import { useIsDesktop, useIsTablet } from '@/hooks/useMediaQuery'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
 import UserChannelList from '../channels/UserChannelList'
-import { useEnrichedChannels } from '@/utils/channel/ChannelAtom'
-import ThreadsCustom from '../threads/ThreadsCustom'
-import { formatLastMessage } from '@/utils/channel/useFormatLastMessage'
-import { useChannelDone } from '@/hooks/useChannelDone'
+import ChatbotAIStream from '../chatbot-ai/ChatbotAIStream'
 import LabelByUserList from '../labels/LabelByUserList'
+import ThreadsCustom from '../threads/ThreadsCustom'
+import { MessageSaved } from './DirectMessageSaved'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
 
@@ -89,6 +90,14 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
   }
 
   const filteredChannels = getFilteredChannels()
+
+  if (title === 'Đã gắn cờ') return <MessageSaved />
+  if (title === 'Nhắc đến') return <MentionList />
+  if (title === 'Xong') return <DoneChannelList />
+  if (title === 'Chủ đề') return <ThreadsCustom />
+  if (title === 'Thành viên') return <UserChannelList />
+  if (title === 'Chatbot AI') return <ChatbotAIStream />
+  if (title === 'Nhãn') return <LabelByUserList />
 
   if (filteredChannels.length === 0 && title !== 'Trò chuyện') {
     return <div className='text-gray-500 text-sm italic p-4 text-center'>Không có kết quả</div>

@@ -18,7 +18,7 @@ const ParticipatingThreads = () => {
 
   return (
     <div>
-      <div className='flex gap-2 justify-between p-2 border-b border-gray-4'>
+      <div className='flex gap-2 justify-between p-2 border-b border-gray-4 flex-wrap'>
         <SearchFilter search={search} setSearch={setSearch} />
 
         <div className='flex gap-2'>

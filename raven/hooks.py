@@ -174,6 +174,14 @@ doc_events = {
 # ],
 # }
 
+scheduler_events = {
+    "cron": {
+        "*/5 * * * *": [
+            "raven.api.realtime_typing.cleanup_expired_typing_events"
+        ]
+    }
+}
+
 # Testing
 # -------
 

@@ -1,7 +1,7 @@
-import { Link, useParams } from 'react-router-dom'
-import { Message } from '../../../../../../../types/Messaging/Message'
 import { Button, Flex, Text } from '@radix-ui/themes'
 import { useFrappeGetCall } from 'frappe-react-sdk'
+import { Link, useParams } from 'react-router-dom'
+import { Message } from '../../../../../../../types/Messaging/Message'
 
 export const ThreadMessage = ({ thread }: { thread: Message }) => {
   const { workspaceID } = useParams()
@@ -22,7 +22,7 @@ export const ThreadMessage = ({ thread }: { thread: Message }) => {
           variant={'ghost'}
           className={'not-cal w-fit hover:bg-transparent hover:underline cursor-pointer'}
         >
-          <Link to={`/${workspaceID}/threads/${thread.name}`}>Xem Thread</Link>
+          <Link to={`/${workspaceID}/${thread.channel_id}/thread/${thread.name}`}>Xem Thread</Link>
         </Button>
       </Flex>
     </div>

@@ -262,8 +262,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
 
     const { name: userID } = useUserData()
     const { seenUsers } = useChannelSeenUsers({
-      channelId: channelID,
-      messages
+      channelId: channelID
     })
     const { channel } = useCurrentChannelData(channelID)
 
@@ -466,6 +465,9 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       () => ({
         height: '100%',
         willChange: 'transform',
+        opacity: renderState.initialRenderComplete ? 1 : 0,
+        transform: renderState.initialRenderComplete ? 'translateY(0)' : 'translateY(8px)',
+        transition: 'opacity 0.3s ease-out, transform 0.3s ease-out',
         scrollbarWidth: renderState.initialRenderComplete ? 'thin' : 'none',
         scrollbarColor: renderState.initialRenderComplete
           ? 'rgba(155, 155, 155, 0.5) transparent'
@@ -476,17 +478,8 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       [renderState.initialRenderComplete]
     )
 
-    const containerStyles = useMemo(
-      () => ({
-        opacity: renderState.initialRenderComplete ? 1 : 0,
-        transform: renderState.initialRenderComplete ? 'translateY(0)' : 'translateY(8px)',
-        transition: 'opacity 0.2s ease-out, transform 0.2s ease-out'
-      }),
-      [renderState.initialRenderComplete]
-    )
-
     return (
-      <div className='relative h-full flex flex-col overflow-hidden pb-16 sm:pb-0' style={containerStyles}>
+      <div className='relative h-full flex flex-col overflow-hidden pb-16 sm:pb-0'>
         {!isLoading && !hasOlderMessages && <ChannelHistoryFirstMessage channelID={channelID ?? ''} />}
 
         {isLoading && <ChatStreamLoader />}
@@ -504,9 +497,12 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
             atBottomStateChange={handleAtBottomStateChange}
             rangeChanged={handleRangeChanged}
             computeItemKey={computeItemKey}
-            components={virtuosoComponents}
             style={virtuosoStyles as any}
             {...virtuosoSettings}
+            components={{
+              ...virtuosoComponents,
+              ScrollSeekPlaceholder: () => <ChatStreamLoader />
+            }}
             useWindowScroll={false}
             totalListHeightChanged={() => {
               if (!renderState.isContentMeasured) {

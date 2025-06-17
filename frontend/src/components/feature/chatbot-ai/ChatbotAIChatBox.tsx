@@ -1,189 +1,332 @@
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { useGetUser } from '@/hooks/useGetUser'
+import { Message } from '@/types/ChatBot/types'
 import { UserContext } from '@/utils/auth/UserProvider'
-import { Box, Button, Flex, IconButton, Text, TextArea } from '@radix-ui/themes'
-import React, { useContext, useEffect, useRef, useState } from 'react'
-import { FiMoreVertical } from 'react-icons/fi'
-
-// Thêm type cho message để có thuộc tính pending
-interface Message {
-  role: 'user' | 'ai'
-  content: string
-  pending?: boolean
-}
+import { Button, Text, Tooltip } from '@radix-ui/themes'
+import clsx from 'clsx'
+import React, { useCallback, useContext, useEffect, useRef } from 'react'
+import { BiSolidSend } from 'react-icons/bi'
+import { FiCpu, FiPaperclip, FiX } from 'react-icons/fi'
+import { commonButtonStyle } from '../labels/LabelItemMenu'
 
 interface Props {
   session: { id: string; title: string; messages: Message[] }
-  onSendMessage: (content: string) => void
+  // Input props
+  input: string
+  onInputChange: (value: string) => void
+  onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void
+  onSubmit: (e: React.FormEvent) => void
+  // File props
+  selectedFile: File | null
+  fileError: string | null
+  onFileSelect: (file: File) => void
+  onRemoveFile: () => void
+  allowedFileTypes: string[]
+  maxFileSize: number
+  // Message props
+  isThinking: boolean
+  hasMore: boolean
+  onShowMore: () => void
+  startIdx: number
+  // Loading props
   loading?: boolean
 }
 
-const MESSAGES_PER_PAGE = 15
-
-const ChatbotAIChatBox: React.FC<Props> = ({ session, onSendMessage, loading }) => {
-  const [input, setInput] = useState('')
+const ChatbotAIChatBox: React.FC<Props> = ({
+  session,
+  input,
+  onInputChange,
+  onKeyDown,
+  onSubmit,
+  selectedFile,
+  fileError,
+  onFileSelect,
+  onRemoveFile,
+  allowedFileTypes,
+  isThinking,
+  hasMore,
+  onShowMore,
+  startIdx,
+  loading = false
+}) => {
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesTopRef = useRef<HTMLDivElement>(null)
+  const textAreaRef = useRef<HTMLTextAreaElement>(null)
+
   const { currentUser } = useContext(UserContext)
   const user = useGetUser(currentUser)
-  const [isThinking, setIsThinking] = useState(false)
-  const [lastUserMessageId, setLastUserMessageId] = useState<number>(-1)
-  const [visibleCount, setVisibleCount] = useState(MESSAGES_PER_PAGE)
 
-  // Khi đổi session thì reset visibleCount
+  // Auto-resize textarea
   useEffect(() => {
-    setVisibleCount(MESSAGES_PER_PAGE)
-  }, [session.id])
+    if (textAreaRef.current) {
+      textAreaRef.current.style.height = 'auto'
+      textAreaRef.current.style.height = Math.min(textAreaRef.current.scrollHeight, 120) + 'px'
+    }
+  }, [input])
 
-  // Tự động cuộn xuống cuối khi vào đoạn chat hoặc có tin nhắn mới
+  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [session.messages])
+  }, [session.messages, isThinking])
 
-  // Tự động cuộn xuống khi trạng thái "AI đang suy nghĩ" xuất hiện
-  useEffect(() => {
-    if (isThinking) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-    }
-  }, [isThinking])
-
-  // Theo dõi tin nhắn để quản lý trạng thái "AI đang suy nghĩ"
-  useEffect(() => {
-    if (session.messages.length > 0) {
-      const lastMessage = session.messages[session.messages.length - 1]
-
-      // Nếu tin nhắn cuối cùng là của người dùng
-      if (lastMessage.role === 'user') {
-        setIsThinking(true)
-        setLastUserMessageId(session.messages.length - 1)
+  // File input handlers
+  const handleFileInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0]
+      if (file) {
+        onFileSelect(file)
       }
-      // Nếu tin nhắn cuối cùng là của AI và trước đó có tin nhắn người dùng
-      else if (lastMessage.role === 'ai' && lastUserMessageId !== -1) {
-        setIsThinking(false)
+    },
+    [onFileSelect]
+  )
+
+  const handleFileClick = useCallback(() => {
+    fileInputRef.current?.click()
+  }, [])
+
+  const handleRemoveFileClick = useCallback(() => {
+    onRemoveFile()
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }, [onRemoveFile])
+
+  // Drag and drop handlers
+  const handleDrop = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault()
+      const file = e.dataTransfer.files?.[0]
+      if (file) {
+        onFileSelect(file)
       }
-    }
-  }, [session.messages, lastUserMessageId])
+    },
+    [onFileSelect]
+  )
 
-  const handleSend = () => {
-    if (!input.trim() || loading) return
-    onSendMessage(input)
-    setInput('')
-  }
+  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+  }, [])
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Nếu nhấn Enter mà không có Shift
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault() // Ngăn chặn hành vi mặc định của textarea
-      handleSend()
-    }
-  }
-
-  // Lấy ra các tin nhắn cần hiển thị
-  const totalMessages = session.messages.length
-  const startIdx = Math.max(0, totalMessages - visibleCount)
-  const visibleMessages = session.messages.slice(startIdx, totalMessages)
-  const hasMore = startIdx > 0
-
-  // Khi nhấn nút hiện thêm tin nhắn cũ
-  const handleShowMore = () => {
-    setVisibleCount((prev) => prev + MESSAGES_PER_PAGE)
+  const handleShowMoreClick = useCallback(() => {
+    onShowMore()
     setTimeout(() => {
-      messagesTopRef.current?.scrollIntoView({ behavior: 'auto' })
-    }, 100) // Đảm bảo scroll tới đúng vị trí sau khi render thêm
-  }
+      messagesTopRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }, 100)
+  }, [onShowMore])
+
+  const handleInputChangeInternal = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      onInputChange(e.target.value)
+    },
+    [onInputChange]
+  )
 
   return (
-    <div className='h-full w-full bg-[#18191b] flex flex-col'>
+    <div className='flex flex-col h-full w-full'>
       {/* Header */}
-      <div className='border-b border-gray-4 dark:border-gray-6 px-3 py-3 flex justify-between items-center'>
-        <span className='font-medium text-base text-gray-12'>Chatbot AI</span>
-        <Flex gap='3' align='center'>
+      <div className='border-b px-4 py-2 bg-white dark:bg-gray-2 border-gray-200 dark:border-gray-600'>
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center gap-3'>
+            <div className='w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center'>
+              <FiCpu className='text-white' size={16} />
+            </div>
+            <span className='font-semibold text-gray-800 dark:text-white'>ChatGPT</span>
+          </div>
           <UserAvatar
             src={user?.user_image}
             alt={user?.full_name ?? user?.name}
             size='2'
             variant='solid'
             radius='full'
-            className='mt-0.5'
+            className='border-2 border-gray-200 dark:border-gray-600'
           />
-          <IconButton variant='ghost' color='gray'>
-            <FiMoreVertical />
-          </IconButton>
-        </Flex>
+        </div>
       </div>
+
       {/* Messages */}
-      <div className='flex-1 overflow-y-auto p-4 text-sm text-gray-12'>
+      <div className='flex-1 overflow-y-auto bg-white dark:bg-gray-2' onDrop={handleDrop} onDragOver={handleDragOver}>
         <div ref={messagesTopRef} />
+
         {hasMore && (
-          <div className='flex justify-center mb-2'>
-            <Button size='1' variant='soft' onClick={handleShowMore}>
-              Hiện thêm tin nhắn cũ
+          <div className='flex justify-center py-4'>
+            <Button
+              size='2'
+              variant='ghost'
+              onClick={handleShowMoreClick}
+              className='text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg'
+            >
+              Show earlier messages
             </Button>
           </div>
         )}
-        {totalMessages === 0 && <Text color='gray'>Chưa có tin nhắn nào. Hãy bắt đầu cuộc trò chuyện!</Text>}
-        {visibleMessages.map((msg, idx) => (
-          <Flex key={startIdx + idx} justify={msg.role === 'user' ? 'end' : 'start'} className='mb-2'>
-            <Box
-              className={`rounded-lg px-4 py-2 max-w-[70%] ${msg.role === 'user' ? 'bg-accent-3 text-right' : 'bg-gray-3'}`}
-              style={{ fontSize: '15px', lineHeight: '1.6' }}
-            >
-              {msg.pending ? (
-                <Text className='italic text-gray-10' style={{ whiteSpace: 'pre-wrap' }}>
-                  {msg.content}
-                </Text>
-              ) : (
-                <Text className='text-sm text-gray-12' style={{ whiteSpace: 'pre-wrap' }}>
-                  {msg.content}
-                </Text>
-              )}
-            </Box>
-          </Flex>
-        ))}
-        {/* Hiển thị trạng thái "AI đang suy nghĩ" */}
-        {isThinking && (
-          <Flex justify='start' className='mb-2'>
-            <Box className='rounded-lg px-4 py-2 max-w-[70%] bg-gray-3' style={{ fontSize: '15px', lineHeight: '1.6' }}>
-              <div className='flex items-center gap-2'>
-                <div className='w-2 h-2 bg-gray-10 rounded-full animate-bounce' style={{ animationDelay: '0ms' }}></div>
-                <div
-                  className='w-2 h-2 bg-gray-10 rounded-full animate-bounce'
-                  style={{ animationDelay: '150ms' }}
-                ></div>
-                <div
-                  className='w-2 h-2 bg-gray-10 rounded-full animate-bounce'
-                  style={{ animationDelay: '300ms' }}
-                ></div>
-                <Text className='text-sm text-gray-10 ml-2'>AI đang suy nghĩ...</Text>
+
+        {session.messages.length === 0 && !isThinking && (
+          <div className='flex items-center justify-center h-full'>
+            <div className='text-center'>
+              <div className='w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center'>
+                <FiCpu className='text-white' size={32} />
               </div>
-            </Box>
-          </Flex>
+              <Text className='text-gray-500 dark:text-gray-400 text-lg'>How can I help you today?</Text>
+            </div>
+          </div>
         )}
+
+        <div className='max-w-3xl mx-auto p-4'>
+          {session.messages.map((msg, idx) => (
+            <div key={msg.id || startIdx + idx} className='group mb-8'>
+              <div className='flex gap-4 items-start'>
+                {/* Avatar */}
+                <div className='flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center'>
+                  {msg.role === 'user' ? (
+                    <UserAvatar
+                      src={user?.user_image}
+                      alt={user?.full_name ?? user?.name}
+                      size='2'
+                      variant='solid'
+                      radius='full'
+                      className='border border-gray-200 dark:border-gray-600'
+                    />
+                  ) : (
+                    <div className='w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center'>
+                      <FiCpu className='text-white' size={16} />
+                    </div>
+                  )}
+                </div>
+
+                {/* Message Content */}
+                <div className='flex-1 min-w-0'>
+                  <div className='mb-1'>
+                    <span className='font-semibold text-gray-800 dark:text-gray-200 text-sm'>
+                      {msg.role === 'user' ? user?.full_name || 'You' : 'ChatGPT'}
+                    </span>
+                  </div>
+                  <div className={`prose prose-sm max-w-none ${msg.pending ? 'opacity-70' : ''}`}>
+                    <div
+                      className='text-gray-800 dark:text-gray-200 leading-relaxed'
+                      style={{ whiteSpace: 'pre-wrap' }}
+                    >
+                      {msg.content}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* AI thinking indicator */}
+          {isThinking && (
+            <div className='group mb-8'>
+              <div className='flex gap-4 items-start'>
+                <div className='w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center'>
+                  <FiCpu className='text-white' size={16} />
+                </div>
+                <div className='flex-1 min-w-0'>
+                  <div className='mb-1'>
+                    <span className='font-semibold text-gray-800 dark:text-gray-200 text-sm'>ChatGPT</span>
+                  </div>
+                  <div className='flex items-center gap-1 text-gray-500 dark:text-gray-400'>
+                    <div className='flex gap-1'>
+                      <div className='w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-pulse'></div>
+                      <div
+                        className='w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-pulse'
+                        style={{ animationDelay: '0.2s' }}
+                      ></div>
+                      <div
+                        className='w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-pulse'
+                        style={{ animationDelay: '0.4s' }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
         <div ref={messagesEndRef} />
       </div>
-      {/* Input */}
-      <div className='p-4 border-t border-gray-4 dark:border-gray-6 bg-[#18191b]'>
-        <form
-          onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
-            e.preventDefault()
-            handleSend()
-          }}
-          style={{ display: 'flex', gap: '8px' }}
-        >
-          <TextArea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder='Nhập tin nhắn... (Shift + Enter để xuống dòng)'
-            className='flex-1 text-sm text-gray-12 bg-[#18191b] border border-gray-5 rounded-md px-3 py-2'
-            rows={1}
-            style={{ resize: 'none' }}
-            disabled={loading}
-          />
-          <Button type='submit' disabled={!input.trim() || loading} className='text-sm'>
-            Gửi
-          </Button>
-        </form>
+
+      {/* Input Area */}
+      <div className='border-t border-gray-200 dark:border-white/10 bg-white dark:bg-gray-2 px-4 py-4'>
+        <div className='max-w-3xl mx-auto'>
+          {/* File preview */}
+          {selectedFile && (
+            <div className='mb-3 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-between'>
+              <div className='flex items-center gap-2'>
+                <FiPaperclip className='text-gray-500 dark:text-gray-400' size={16} />
+                <Text className='text-gray-700 dark:text-gray-300 text-sm'>{selectedFile.name}</Text>
+              </div>
+              <button
+                onClick={handleRemoveFileClick}
+                className='p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors'
+              >
+                <FiX className='text-gray-500 dark:text-gray-400' size={16} />
+              </button>
+            </div>
+          )}
+
+          {/* File error */}
+          {fileError && (
+            <div className='mb-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg'>
+              <Text className='text-red-600 dark:text-red-400 text-sm'>{fileError}</Text>
+            </div>
+          )}
+
+          {/* Input form */}
+          <form
+            onSubmit={onSubmit}
+            className='flex items-center gap-3 bg-gray-50 dark:bg-gray-3 px-4 py-3 rounded-full border border-gray-200 dark:border-gray-600 focus-within:ring-2 focus-within:ring-gray-4 dark:focus-within:ring-white/10 transition-all'
+          >
+            <input
+              type='file'
+              ref={fileInputRef}
+              onChange={handleFileInputChange}
+              className='hidden'
+              accept={allowedFileTypes.join(',')}
+            />
+
+            {/* File attachment button */}
+            <Tooltip content='Đính kèm tệp tin'>
+              <button
+                type='button'
+                onClick={handleFileClick}
+                className='flex-shrink-0 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors'
+                disabled={loading}
+              >
+                <FiPaperclip size={18} />
+              </button>
+            </Tooltip>
+
+            <textarea
+              ref={textAreaRef}
+              value={input}
+              onChange={handleInputChangeInternal}
+              onKeyDown={onKeyDown}
+              placeholder='Message ChatGPT...'
+              disabled={loading}
+              rows={1}
+              style={{
+                fontFamily: commonButtonStyle.fontFamily
+              }}
+              className={clsx(
+                `flex-1 resize-none border-none bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 outline-none max-h-32 min-h-[24px] font-medium text-sm`
+              )}
+            />
+
+            <button
+              type='submit'
+              disabled={(!input.trim() && !selectedFile) || loading}
+              className={`p-2 rounded-full transition-colors ${
+                (!input.trim() && !selectedFile) || loading
+                  ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-300 cursor-not-allowed'
+                  : 'bg-blue-600 dark:bg-white text-white dark:text-black hover:bg-blue-700 dark:hover:bg-gray-200'
+              }`}
+            >
+              <BiSolidSend size={20} />
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   )
