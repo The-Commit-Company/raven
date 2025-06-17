@@ -14,8 +14,8 @@ const LabelItem: React.FC<LabelItemProps> = ({ label, name }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   const allChannels = useEnrichedChannels()
 
-  const labeledChannels = useMemo(() => {
-    return allChannels
+  const { labeledChannels, totalCount } = useMemo(() => {
+    const channels = allChannels
       .filter((ch) => Array.isArray(ch.user_labels) && ch.user_labels.includes(name))
       .map((ch) => ({
         channel_id: ch.name,
@@ -23,6 +23,10 @@ const LabelItem: React.FC<LabelItemProps> = ({ label, name }) => {
         is_direct_message: ch.group_type === 'dm',
         unread_count: ch.unread_count ?? 0
       }))
+
+    const total = channels.reduce((sum, ch) => sum + ch.unread_count, 0)
+
+    return { labeledChannels: channels, totalCount: total }
   }, [allChannels, name])
 
   const toggle = () => setIsExpanded((prev) => !prev)
@@ -39,9 +43,18 @@ const LabelItem: React.FC<LabelItemProps> = ({ label, name }) => {
             )}
             <MdLabelOutline className='w-4 h-4 text-gray-11 shrink-0' />
             <span>{label}</span>
+
+            {/* ✅ Chỉ hiển thị totalUnread nếu chưa expand */}
+            {!isExpanded && totalCount > 0 && (
+              <span className='ml-auto bg-red-500 text-white text-[10px] rounded-full w-[18px] h-[18px] flex items-center justify-center'>
+                {totalCount > 10 ? '99+' : totalCount}
+              </span>
+            )}
           </div>
         </div>
-        <LabelItemMenu name={name} label={label} />
+
+        {/* ✅ Chỉ hiện menu khi đã expand hoặc không có unread */}
+        {!(totalCount > 0 && !isExpanded) && <LabelItemMenu name={name} label={label} />}
       </div>
 
       {isExpanded && labeledChannels.length > 0 && (
@@ -53,7 +66,7 @@ const LabelItem: React.FC<LabelItemProps> = ({ label, name }) => {
               channelName={channel.channel_name}
               labelID={name}
               isDirectMessage={channel.is_direct_message}
-              unreadCount={channel.unread_count} // 👈 truyền vào
+              unreadCount={channel.unread_count}
             />
           ))}
         </div>
