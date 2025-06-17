@@ -111,8 +111,11 @@ def run_document_ai_processor(processor_id: str, file_path: str, extension: str)
 	client = documentai.DocumentProcessorServiceClient(
 		credentials=credentials, client_options=client_options
 	)
+	full_processor_name = client.processor_path(
+		raven_settings.google_project_id, location, processor_id
+	)
 
-	request = documentai_v1.GetProcessorRequest(name=processor_id)
+	request = documentai_v1.GetProcessorRequest(name=full_processor_name)
 	processor = client.get_processor(request=request)
 
 	raw_document = documentai_v1.RawDocument(content=content, mime_type=mapping[extension])

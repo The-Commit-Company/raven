@@ -564,10 +564,23 @@ def get_content_attachment_for_file(message_type: str, file_id: str, file_url: s
 			)
 
 	else:
+
+		main_content = f"Uploaded an image. URL of the image is '{file_url}'. Use this URL to attach the image to any document if requested."
+
+		file_extension = file_url.split(".")[-1].lower()
+
+		if bot.use_google_document_parser:
+			extracted_content = run_document_ai_processor(
+				bot.google_document_processor_id, file_url, file_extension
+			)
+
+			if extracted_content:
+				main_content += f"\n\nThe document was parsed and the following content was extracted from it:\n {extracted_content}"
+
 		content = [
 			{
 				"type": "text",
-				"text": f"Uploaded an image. URL of the image is '{file_url}'. Use this URL to attach the image to any document if requested.",
+				"text": main_content,
 			},
 			{"type": "image_file", "image_file": {"file_id": file_id}},
 		]
