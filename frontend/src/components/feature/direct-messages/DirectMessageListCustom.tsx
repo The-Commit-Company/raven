@@ -32,6 +32,7 @@ type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
 
 export const DirectMessageList = () => {
   const enriched = useEnrichedChannels()
+
   return (
     <SidebarGroup pb='4'>
       <SidebarGroup>
@@ -142,7 +143,6 @@ const isDMChannel = (c: UnifiedChannel): c is DMChannelWithUnreadCount => {
 }
 
 export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel }) => {
-  // 1. Gọi tất cả hooks ngay từ đầu
   const isTablet = useIsTablet()
   const isDesktop = useIsDesktop()
   const { currentUser } = useContext(UserContext)
@@ -152,7 +152,6 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   const { clearManualMark } = useChannelActions()
   const { markAsDone, markAsNotDone } = useChannelDone()
 
-  // 2. Tính toán các biến phụ (không gọi hook nữa ở đây)
   const isGroupChannel = !channel.is_direct_message && !channel.is_self_message
   const isDM = isDMChannel(channel)
   const peerUserId = isDM ? channel.peer_user_id : null
@@ -161,11 +160,11 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   const isSelectedChannel = channelID === channel.name
   const isManuallyMarked = manuallyMarked.has(channel.name)
 
-  // 3. Nếu không thỏa điều kiện hiển thị thì return null (đã gọi xong hooks)
   if (!isGroupChannel && (!isDM || !peerUserId || !peerUser?.enabled)) {
     return null
   }
 
+  // Parse người gửi cuối cùng
   const lastOwner = (() => {
     try {
       const raw =
@@ -179,10 +178,8 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   })()
 
   const user = useGetUser(lastOwner)
-
   const formattedMessage = formatLastMessage(channel, currentUser, user?.full_name)
 
-  // 4. Tính hiển thị
   const displayName = peerUser
     ? peerUserId !== currentUser
       ? peerUser.full_name
@@ -197,11 +194,10 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   }
 
   const bgClass = `
-  ${isSelectedChannel ? 'bg-gray-300 dark:bg-gray-700' : ''}
-  hover:bg-gray-100 dark:hover:bg-gray-600
-`
+    ${isSelectedChannel ? 'bg-gray-300 dark:bg-gray-700' : ''}
+    hover:bg-gray-100 dark:hover:bg-gray-600
+  `
 
-  // 5. Render
   return (
     <div onClick={handleNavigate} className={`group relative cursor-pointer flex items-center p-1 mb-2 ${bgClass}`}>
       <SidebarIcon>
@@ -244,7 +240,6 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
               if (isDesktop) {
                 e.stopPropagation()
               }
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
               channel.is_done ? markAsNotDone(channel.name) : markAsDone(channel.name)
             }}
             className='absolute z-99 right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded-full bg-gray-200 hover:bg-gray-300 h-[20px] w-[20px] flex items-center justify-center cursor-pointer'

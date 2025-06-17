@@ -80,7 +80,11 @@ export const useFetchUnreadMessageCount = () => {
                 unread_count: info.unread_count,
                 channel_name: info.channel_name,
                 is_direct_message: info.is_direct_message,
-                peer_user_id: info.peer_user_id
+                peer_user_id: info.peer_user_id,
+                last_message_details: info.last_message_details,
+                last_message_timestamp: info.last_message_timestamp,
+                last_message_sender_name: info.last_message_sender_name,
+                last_message_content: info.last_message_content
               }
 
               if (index === -1) {
@@ -105,6 +109,8 @@ export const useFetchUnreadMessageCount = () => {
   const { play } = useNotificationAudio()
 
   useFrappeEventListener('raven:unread_channel_count_updated', (event) => {
+    console.log(event);
+    
     if (event.sent_by !== currentUser) {
       if (channelID === event.channel_id) {
         trackVisit({ channel_id: channelID })
@@ -132,7 +138,11 @@ export const useFetchUnreadMessageCount = () => {
       updateUnreadCountToZero(event.channel_id)
     }
 
-    updateLastMessageInChannelList(event.channel_id, event.last_message_timestamp)
+    updateLastMessageInChannelList(
+      event.channel_id,
+      event.last_message_timestamp,
+      event.last_message_details // ✅ truyền vào đây
+    )
   })
 
   const updateUnreadCountToZero = (channel_id?: string) => {
