@@ -135,3 +135,10 @@ export const useLocalChannelList = (): LocalChannelListContextValue => {
   }
   return context
 }
+
+
+export const useUnreadCount = () => {
+  const ctx = useContext(UnreadCountContext)
+  if (!ctx) throw new Error('useUnreadCount must be used within an UnreadCountProvider')
+  return ctx
+}

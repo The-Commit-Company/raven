@@ -100,7 +100,7 @@ const useFetchChannelList = (): ChannelListContextType => {
     let timeout: NodeJS.Timeout | undefined
     if (newUpdatesAvailable) {
       timeout = setTimeout(() => {
-        mutate()
+        // mutate()
         // Also update the unread channel count
         globalMutate('unread_channel_count')
         setNewUpdatesAvailable(0)
@@ -149,7 +149,11 @@ const useFetchChannelList = (): ChannelListContextType => {
 export const useUpdateLastMessageInChannelList = () => {
   const { mutate: globalMutate } = useSWRConfig()
 
-  const updateLastMessageInChannelList = async (channelID: string, lastMessageTimestamp: string) => {
+  const updateLastMessageInChannelList = async (
+    channelID: string,
+    lastMessageTimestamp: string,
+    lastMessageDetails?: any
+  ) => {
     globalMutate(
       `channel_list`,
       async (channelList?: { message: ChannelList }) => {
@@ -172,7 +176,8 @@ export const useUpdateLastMessageInChannelList = () => {
                 if (channel.name === channelID) {
                   return {
                     ...channel,
-                    last_message_timestamp: lastMessageTimestamp
+                    last_message_timestamp: lastMessageTimestamp,
+                    last_message_details: lastMessageDetails ?? channel.last_message_details // ✅
                   }
                 }
                 return channel
@@ -184,7 +189,8 @@ export const useUpdateLastMessageInChannelList = () => {
                 if (channel.name === channelID) {
                   return {
                     ...channel,
-                    last_message_timestamp: lastMessageTimestamp
+                    last_message_timestamp: lastMessageTimestamp,
+                    last_message_details: lastMessageDetails ?? channel.last_message_details // ✅
                   }
                 }
                 return channel

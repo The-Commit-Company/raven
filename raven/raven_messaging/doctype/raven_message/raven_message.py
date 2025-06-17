@@ -349,6 +349,7 @@ class RavenMessage(Document):
 					"is_dm_channel": False,
 					"is_thread": channel_doc.is_thread,
 					"last_message_timestamp": self.creation,
+					"last_message_details": last_message_details,  # ✅ THÊM DÒNG NÀY
 				},
 				after_commit=True,
 				room="all",

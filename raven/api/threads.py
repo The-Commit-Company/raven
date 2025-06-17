@@ -25,14 +25,6 @@ def get_all_threads(
 	limit=10,
 	only_show_unread=False,
 ):
-	"""
-	Get all the threads in which the user is a participant
-	(We are not fetching the messages inside a thread here, just the main thread message,
-	We will fetch the messages inside a thread when the user clicks on 'View Thread')
-	"""
-
-	# Fetch all channels in which is_thread = 1 and the current user is a member
-
 	channel = frappe.qb.DocType("Raven Channel")
 	channel_member = frappe.qb.DocType("Raven Channel Member")
 	message = frappe.qb.DocType("Raven Message").as_("message")
@@ -44,7 +36,6 @@ def get_all_threads(
 			channel.name,
 			channel.workspace,
 			channel.last_message_timestamp,
-			# channel.last_message_details,
 			channel.is_ai_thread,
 			channel.is_dm_thread,
 			message.name.as_("thread_message_id"),
@@ -76,6 +67,7 @@ def get_all_threads(
 		.where(channel_member.user_id == frappe.session.user)
 		.where(channel.is_thread == 1)
 		.where(channel.is_ai_thread == is_ai_thread)
+		.where(message.name.isnotnull())  # ✅ Chặn các thread không còn message gốc
 		.limit(limit)
 		.offset(start_after)
 		.groupby(channel.name)
@@ -97,11 +89,9 @@ def get_all_threads(
 
 	query = query.orderby(channel.last_message_timestamp, order=Order.desc)
 
-	# return
 	threads = query.run(as_dict=True)
 
 	for thread in threads:
-		# Fetch the participants of the thread if it's not an AI thread or a DM thread
 		if not thread["is_ai_thread"] and not thread["is_dm_thread"]:
 			thread_members = get_channel_members(thread["name"])
 			thread["participants"] = [{"user_id": member} for member in thread_members]
