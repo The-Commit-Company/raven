@@ -122,8 +122,6 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
       console.error('Error sending message:', error)
       // Remove the pending message on error
       setLocalMessages((prev) => prev.filter((msg) => msg.id !== newMessage.id))
-    } finally {
-      setIsThinking(false)
     }
   }, [input, selectedFile, sending, loadingMessages, localMessages, botID, sendMessage, mutateMessages])
 
@@ -154,10 +152,6 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
   useEffect(() => {
     const normalizedMessages = normalizeMessages(messages)
     setLocalMessages(normalizedMessages)
-    // Stop thinking indicator when new messages arrive
-    if (normalizedMessages.length > 0) {
-      setIsThinking(false)
-    }
   }, [messages])
 
   // Thêm xử lý realtime cho tin nhắn AI
