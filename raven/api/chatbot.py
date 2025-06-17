@@ -6,6 +6,11 @@ from raven.chatbot.doctype.chatconversation.chatconversation import ChatConversa
 from raven.chatbot.doctype.chatmessage.chatmessage import ChatMessage
 import uuid
 import traceback
+import os
+from frappe.utils import get_files_path
+from PyPDF2 import PdfReader
+import docx
+import pandas as pd
 
 # Constants
 CONTEXT_LIMIT = 20  # số tin nhắn gần nhất để gửi cho AI
@@ -29,22 +34,49 @@ def create_message(conversation_id, message, is_user=True, message_type="Text", 
     chat_message.insert()
     return chat_message
 
+def extract_text_from_file(file_url):
+    is_private = file_url.startswith("/private/")
+    base_path = get_files_path(is_private=is_private)
+    full_path = os.path.join(base_path, os.path.basename(file_url))
+
+    try:
+        if file_url.endswith(".pdf"):
+            with open(full_path, 'rb') as f:
+                reader = PdfReader(f)
+                return '\n'.join([page.extract_text() for page in reader.pages if page.extract_text()])
+        elif file_url.endswith(".docx"):
+            doc = docx.Document(full_path)
+            return '\n'.join([p.text for p in doc.paragraphs])
+        elif file_url.endswith((".xls", ".xlsx")):
+            df = pd.read_excel(full_path)
+            return df.to_string(index=False)
+    except Exception as e:
+        return f"[Không thể đọc file: {e}]"
+
+    return "[Định dạng file không hỗ trợ]"
 
 # Helper: Xây dựng context từ các tin nhắn gần nhất
 def build_context(conversation_id):
     messages = frappe.get_all(
         "ChatMessage",
         filters={"parent": conversation_id},
-        fields=["sender", "is_user", "message", "timestamp"],
+        fields=["sender", "is_user", "message", "timestamp", "file"],
         order_by="timestamp desc",
         limit_page_length=CONTEXT_LIMIT
-    )[::-1]  # đảo ngược để giữ đúng thứ tự
+    )[::-1]
 
-    return [
-        {"role": "user" if msg.is_user else "assistant", "content": msg.message}
-        for msg in messages
-    ]
+    context = []
+    for msg in messages:
+        content = msg.message or ""
+        if msg.file:
+            file_text = extract_text_from_file(msg.file)
+            content += f"\n\n[Nội dung file đính kèm:]\n{file_text}"
+        context.append({
+            "role": "user" if msg.is_user else "assistant",
+            "content": content
+        })
 
+    return context
 
 # Helper: Gọi OpenAI
 def call_openai(context):

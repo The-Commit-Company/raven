@@ -6,6 +6,8 @@ import { normalizeConversations, normalizeMessages } from '@/utils/chatBot-optio
 import { useFrappeEventListener } from 'frappe-react-sdk'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import ChatStreamLoader from '../chat/ChatStream/ChatStreamLoader'
+import { CustomFile } from '../file-upload/FileDrop'
+import useUploadChatbotFile from './useUploadChatbotFile'
 
 const MESSAGES_PER_PAGE = 15
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
@@ -23,6 +25,7 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
   const [isThinking, setIsThinking] = useState(false)
   const [visibleCount, setVisibleCount] = useState(MESSAGES_PER_PAGE)
   const [fileError, setFileError] = useState<string | null>(null)
+  const { addFile, uploadFiles } = useUploadChatbotFile(botID as string, input)
 
   const { call: sendMessage, loading: sending } = useSendChatbotMessage()
 
@@ -93,37 +96,60 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
 
     const context = localMessages.map((msg) => ({ role: msg.role, content: msg.content }))
 
-    // Add user message to local state immediately
+    // Thêm message pending vào UI nếu có nội dung
+    const hasText = input.trim() !== ''
     const newMessage: Message = {
       id: `temp-${Date.now()}`,
       role: 'user',
       content: input.trim(),
       pending: true
     }
-    setLocalMessages((prev) => [...prev, newMessage])
+    if (hasText) setLocalMessages((prev) => [...prev, newMessage])
 
-    // Clear input and file
-    const messageContent = input.trim()
-    const fileToSend = selectedFile
     setInput('')
-    setSelectedFile(null)
     setFileError(null)
     setIsThinking(true)
 
     try {
-      await sendMessage({
-        conversation_id: botID!,
-        message: messageContent,
-        file: fileToSend || undefined,
-        context
-      })
+      if (selectedFile) {
+        // Upload file riêng cho chatbot AI
+        const fileWrapper = selectedFile as CustomFile
+        fileWrapper.fileID = fileWrapper.name + Date.now()
+        await addFile(fileWrapper)
+        await uploadFiles()
+      }
+
+      // Nếu có văn bản thì gửi thêm message text
+      if (hasText) {
+        await sendMessage({
+          conversation_id: botID!,
+          message: newMessage.content,
+          context
+        })
+      }
+
       await mutateMessages()
     } catch (error) {
       console.error('Error sending message:', error)
-      // Remove the pending message on error
-      setLocalMessages((prev) => prev.filter((msg) => msg.id !== newMessage.id))
+      if (hasText) {
+        setLocalMessages((prev) => prev.filter((msg) => msg.id !== newMessage.id))
+      }
+    } finally {
+      setIsThinking(false)
+      setSelectedFile(null)
     }
-  }, [input, selectedFile, sending, loadingMessages, localMessages, botID, sendMessage, mutateMessages])
+  }, [
+    input,
+    selectedFile,
+    sending,
+    loadingMessages,
+    localMessages,
+    botID,
+    sendMessage,
+    mutateMessages,
+    addFile,
+    uploadFiles
+  ])
 
   // Input handlers
   const handleInputChange = useCallback((value: string) => {
