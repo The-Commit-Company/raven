@@ -4,6 +4,7 @@ import { ConversationData } from '@/types/ChatBot/types'
 import { normalizeConversations } from '@/utils/chatBot-options'
 import { useFrappeEventListener } from 'frappe-react-sdk'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import ChatbotAIContainer, { ChatSession } from './ChatbotAIContainer'
 
 const ChatbotAIStream = () => {
@@ -11,6 +12,8 @@ const ChatbotAIStream = () => {
   const [selectedAISessionId, setSelectedAISessionId] = useState<string | null>(null)
   const { data: conversations, mutate: mutateConversations } = useChatbotConversations()
   const { call: createConversation } = useCreateChatbotConversation()
+  const { workspaceID } = useParams<{ workspaceID: string; channelID: string }>()
+  const navigate = useNavigate()
 
   // Chuyển đổi dữ liệu conversation sang ChatSession cho UI
   const sessions: ChatSession[] = useMemo(() => {
@@ -30,11 +33,12 @@ const ChatbotAIStream = () => {
         const res = await createConversation({ title })
         await mutateConversations()
         setSelectedAISessionId(res.message.name)
+        navigate(`/${workspaceID}/chatbot/${res.message.name}`)
       } catch (error) {
         console.error('Error creating new session:', error)
       }
     }, [createConversation, mutateConversations, sessions.length]),
-    2000 // throttle 2 giây
+    3000
   )
 
   // Hàm update tiêu đề session

@@ -1,5 +1,4 @@
 import { useDeleteChatbotConversation, useRenameChatbotConversation } from '@/hooks/useChatbotAPI'
-import throttle from '@/hooks/useThrottle'
 import { Button, Dialog, Flex, ScrollArea, Text } from '@radix-ui/themes'
 import { useFrappeEventListener } from 'frappe-react-sdk'
 import React, { useEffect, useState } from 'react'
@@ -132,12 +131,8 @@ const ChatbotAIContainer: React.FC<Props> = ({
     }
   }, [sessions, selectedId])
 
-  const throttledNewSession = throttle(() => {
-    if (onNewSession) onNewSession()
-  }, 2000)
-
   const handleNewSession = () => {
-    throttledNewSession()
+    if (onNewSession) onNewSession()
   }
   const handleEdit = (id: string, title: string) => {
     setEditingId(id)
@@ -253,9 +248,9 @@ const ChatbotAIContainer: React.FC<Props> = ({
               ))}
 
             {sessions.length === 0 && (
-              <div className='px-4 py-8 text-center'>
+              <div className='px-4 py-8 flex items-center flex-col'>
                 <FiMessageSquare size={24} className='mx-auto mb-3 text-gray-300 dark:text-white/30' />
-                <Text className='text-gray-500 dark:text-white/50 text-sm'>No conversations yet</Text>
+                <Text className='text-gray-500 dark:text-white/50 text-sm'>Không có đoạn chat nào</Text>
               </div>
             )}
           </div>
