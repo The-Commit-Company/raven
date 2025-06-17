@@ -89,36 +89,6 @@ const ChatbotAIContainer: React.FC<Props> = ({
     }
   })
 
-  // Thêm xử lý realtime cho tin nhắn AI
-  useFrappeEventListener('raven:new_ai_message', (data) => {
-    const currentSession = sessions.find((s) => s.id === data.conversation_id)
-    if (currentSession) {
-      // Cập nhật tin nhắn mới vào session
-      const updatedSessions = sessions.map((s) => {
-        if (s.id === data.conversation_id) {
-          return {
-            ...s,
-            messages: [
-              ...s.messages,
-              {
-                role: 'ai' as const,
-                content: data.message
-              }
-            ]
-          }
-        }
-        return s
-      })
-      onUpdateSessions(updatedSessions)
-    }
-  })
-
-  // Thêm xử lý lỗi và reconnect
-  useFrappeEventListener('raven:error', (error) => {
-    console.error('Socket error:', error)
-    // Implement reconnection logic here if needed
-  })
-
   // Theo dõi thay đổi trong messages để cập nhật tên
   useEffect(() => {
     const currentSession = sessions.find((s) => s.id === selectedId)

@@ -1,14 +1,20 @@
 import ChatbotAIChatBox from '@/components/feature/chatbot-ai/ChatbotAIChatBox'
 import { ChatSession } from '@/components/feature/chatbot-ai/ChatbotAIContainer'
 import { useChatbotConversations, useChatbotMessages, useSendChatbotMessage } from '@/hooks/useChatbotAPI'
+import { Message } from '@/types/ChatBot/types'
 import { normalizeConversations, normalizeMessages } from '@/utils/chatBot-options'
-import { useCallback, useMemo } from 'react'
+import { useFrappeEventListener } from 'frappe-react-sdk'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import ChatStreamLoader from '../chat/ChatStream/ChatStreamLoader'
 
 const ChatbotAIBody = ({ botID }: { botID?: string }) => {
   const { data: conversations } = useChatbotConversations()
   // Lấy messages từ backend
   const { data: messages, mutate: mutateMessages, isLoading: loadingMessages } = useChatbotMessages(botID || undefined)
+
+  const [socketConnected, setSocketConnected] = useState(true)
+
+  const [localMessages, setLocalMessages] = useState<Message[]>([])
 
   const { call: sendMessage, loading: sending } = useSendChatbotMessage()
 
@@ -47,7 +53,37 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
     [botID, sendMessage, mutateMessages]
   )
 
-  const normalizedMessages = useMemo(() => normalizeMessages(messages), [messages])
+  useEffect(() => {
+    setLocalMessages(normalizeMessages(messages))
+  }, [messages])
+
+  // Thêm xử lý realtime cho tin nhắn AI
+  useFrappeEventListener('raven:new_ai_message', (data) => {
+    if (data.conversation_id === botID) {
+      const updated = [...localMessages, { role: 'ai', content: data.message }]
+      setLocalMessages(updated as Message[])
+    }
+  })
+
+  useFrappeEventListener('raven:error', (error) => {
+    console.error('Socket error:', error)
+    setSocketConnected(false)
+    setTimeout(() => {
+      window.location.reload()
+    }, 5000)
+  })
+
+  useEffect(() => {
+    let pollingInterval: NodeJS.Timeout
+
+    if (!socketConnected) {
+      pollingInterval = setInterval(() => {
+        mutateMessages()
+      }, 3000)
+    }
+
+    return () => clearInterval(pollingInterval)
+  }, [socketConnected])
 
   // Early return if no session is selected
   if (!selectedSession || !botID) {
@@ -57,11 +93,12 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
   return (
     <ChatbotAIChatBox
       session={{
-        id: botID as string,
+        id: botID,
         title: selectedSession.title,
-        messages: normalizedMessages
+        messages: localMessages
       }}
       onSendMessage={handleSendMessage}
+      onUpdateMessages={setLocalMessages} // callback cập nhật
       loading={sending || loadingMessages}
     />
   )
