@@ -195,16 +195,11 @@ export function FilterList({ onClose }: { onClose?: () => void }) {
                   onClick={() => {
                     // Toggle mở/đóng danh sách label
                     setIsLabelOpen((prev) => !prev)
-
-                    if (isTablet) {
-                      // ✅ Trên tablet: chỉ đóng sidebar
-                      if (onClose) onClose()
-                    } else {
-                      // ✅ Trên desktop: setTitle như bình thường
-                      if (title !== item.label) {
-                        setTitle(item.label)
-                        setLabelID('')
-                      }
+                    handleClick(item.label)
+                    // Nếu đang không chọn "Nhãn", thì set
+                    if (title !== item.label) {
+                      setTitle(item.label)
+                      setLabelID('') // reset nhãn cụ thể
                     }
                   }}
                 >
