@@ -43,6 +43,7 @@ export const useUnreadContext = (): UnreadContextValue => {
 }
 
 export type SidebarMode = 'default' | 'hide-filter' | 'show-only-icons'
+type TitleType = string | { labelId: string; labelName: string }
 
 interface SidebarModeContextValue {
   // trạng thái chính thức
@@ -54,8 +55,11 @@ interface SidebarModeContextValue {
   setTempMode: (mode: SidebarMode) => void
 
   // tiêu đề bộ lọc được chọn
-  title: string
-  setTitle: (title: string) => void
+  title: TitleType
+  setTitle: (title: TitleType) => void
+
+  labelID: string
+  setLabelID: (labelID: string) => void
 }
 
 const SidebarModeContext = createContext<SidebarModeContextValue | undefined>(undefined)
@@ -71,7 +75,8 @@ export const SidebarModeProvider = ({ children }: { children: ReactNode }) => {
     return 'default'
   })
   const [tempMode, setTempMode] = useState<SidebarMode>('default')
-  const [title, setTitle] = useState('Trò chuyện')
+  const [title, setTitle] = useState<TitleType>('Trò chuyện')
+  const [labelID, setLabelID] = useState('')
 
   useEffect(() => {
     setTempMode(mode)
@@ -82,9 +87,9 @@ export const SidebarModeProvider = ({ children }: { children: ReactNode }) => {
     setModeRaw(newMode)
   }
 
-  const contextValue = useMemo(
-    () => ({ mode, setMode, tempMode, setTempMode, title, setTitle }),
-    [mode, tempMode, title]
+  const contextValue = useMemo<SidebarModeContextValue>(
+    () => ({ mode, setMode, tempMode, setTempMode, title, setTitle, labelID, setLabelID }),
+    [mode, tempMode, title, labelID]
   )
 
   return (

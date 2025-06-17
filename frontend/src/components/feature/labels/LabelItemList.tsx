@@ -43,24 +43,22 @@ const LabelItemList = ({ channelID, channelName, isDirectMessage, labelID, onRem
     }
   }
 
-const { updateChannelLabels } = useUpdateChannelLabels()
+  const { updateChannelLabels } = useUpdateChannelLabels()
 
-const handleRemove = async () => {
-  try {
-    await removeChannel(labelID, channelID)
+  const handleRemove = async () => {
+    try {
+      await removeChannel(labelID, channelID)
 
-    updateChannelLabels(channelID, (prevLabels) =>
-      prevLabels.filter((id) => id !== labelID)
-    )
+      updateChannelLabels(channelID, (prevLabels) => prevLabels.filter((id) => id !== labelID))
 
-    onRemoveLocally?.(channelID)
-    toast.success(`Đã xóa thành công`)
-    setShowModal(false)
-  } catch (err) {
-    console.error('Xoá thất bại:', err)
-    toast.error('Xoá channel khỏi nhãn thất bại')
+      onRemoveLocally?.(channelID)
+      toast.success(`Đã xóa thành công`)
+      setShowModal(false)
+    } catch (err) {
+      console.error('Xoá thất bại:', err)
+      toast.error('Xoá channel khỏi nhãn thất bại')
+    }
   }
-}
 
   return (
     <ContextMenu.Root>

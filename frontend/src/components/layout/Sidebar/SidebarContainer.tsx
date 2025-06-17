@@ -21,7 +21,6 @@ import {
 import clsx from 'clsx'
 import { CreateLabelButton } from '@/components/feature/labels/CreateLabelModal'
 import { FiChevronDown, FiChevronRight } from 'react-icons/fi'
-import { MdLabelOutline } from 'react-icons/md'
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { useNavigate, useParams } from 'react-router-dom'
 import LabelList from '@/components/feature/labels/LabelListSidebar' // đường dẫn đúng
@@ -127,7 +126,7 @@ export function FilterList({ onClose }: FilterListProps) {
   const navigate = useNavigate()
   const { workspaceID, channelID } = useParams()
 
-  const { title, setTitle, tempMode } = useSidebarMode()
+  const { title, setTitle, tempMode, setLabelID } = useSidebarMode()
   const isIconOnly = tempMode === 'show-only-icons'
 
   const { totalUnreadCount } = useUnreadMessageCount()
@@ -195,7 +194,10 @@ export function FilterList({ onClose }: FilterListProps) {
         ) : (
           <li
             key={idx}
-            onClick={() => handleClick(item.label)}
+            onClick={() => {
+              handleClick(item.label)
+              setLabelID('')
+            }}
             className={clsx(
               `flex ${isIconOnly ? 'justify-center' : 'justify-between'} relative items-center gap-2 py-1.5 rounded-md cursor-pointer hover:bg-gray-3`,
               isActive && 'bg-gray-4 font-semibold'

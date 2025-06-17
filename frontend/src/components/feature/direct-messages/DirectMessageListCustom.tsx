@@ -3,9 +3,8 @@ import { UserAvatar } from '@/components/common/UserAvatar'
 import { useGetUser } from '@/hooks/useGetUser'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { Box, ContextMenu, Flex, Text, Tooltip } from '@radix-ui/themes'
-import { useContext, useMemo } from 'react'
+import { useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { toast } from 'sonner'
 import { UserContext } from '../../../utils/auth/UserProvider'
 
 import { ChannelWithUnreadCount, DMChannelWithUnreadCount } from '@/components/layout/Sidebar/useGetChannelUnreadCounts'
@@ -20,8 +19,7 @@ import { HiCheck } from 'react-icons/hi'
 import { DoneChannelList } from '../channels/DoneChannelList'
 import MentionList from '../chat/ChatInput/MentionListCustom'
 import { MessageSaved } from './DirectMessageSaved'
-import clsx from 'clsx'
-import { useIsDesktop, useIsMobile, useIsTablet } from '@/hooks/useMediaQuery'
+import { useIsDesktop, useIsTablet } from '@/hooks/useMediaQuery'
 import UserChannelList from '../channels/UserChannelList'
 import { useEnrichedChannels } from '@/utils/channel/ChannelAtom'
 import ThreadsCustom from '../threads/ThreadsCustom'
@@ -43,8 +41,34 @@ export const DirectMessageList = () => {
 }
 
 export const DirectMessageItemList = ({ channel_list }: any) => {
-  const { title } = useSidebarMode()
+  const { title, labelID } = useSidebarMode()
 
+  // Ưu tiên các component đặc biệt trước
+  if (title === 'Đã gắn cờ') return <MessageSaved />
+  if (title === 'Nhắc đến') return <MentionList />
+  if (title === 'Xong') return <DoneChannelList />
+  if (title === 'Chủ đề') return <ThreadsCustom />
+  if (title === 'Thành viên') return <UserChannelList />
+  if (title === 'Nhãn') return <LabelByUserList />
+
+  // Nếu có nhãn ID thì lọc theo nhãn
+  if (labelID) {
+    const filtered = channel_list.filter((c: { user_labels?: string[] }) => c.user_labels?.includes(labelID))
+
+    if (filtered.length === 0) {
+      return <div className='text-gray-500 text-sm italic p-4 text-center'>Không có kênh nào gắn nhãn này</div>
+    }
+
+    return (
+      <>
+        {filtered.map((channel: DMChannelWithUnreadCount) => (
+          <DirectMessageItem key={channel.name} dm_channel={channel} />
+        ))}
+      </>
+    )
+  }
+
+  // Trường hợp không có nhãn → lọc theo các filter thông thường
   const getFilteredChannels = (): DMChannelWithUnreadCount[] => {
     switch (title) {
       case 'Trò chuyện nhóm':
@@ -66,13 +90,6 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
 
   const filteredChannels = getFilteredChannels()
 
-  if (title === 'Đã gắn cờ') return <MessageSaved />
-  if (title === 'Nhắc đến') return <MentionList />
-  if (title === 'Xong') return <DoneChannelList />
-  if (title === 'Chủ đề') return <ThreadsCustom />
-  if (title === 'Thành viên') return <UserChannelList />
-  if (title === 'Nhãn') return <LabelByUserList />
-
   if (filteredChannels.length === 0 && title !== 'Trò chuyện') {
     return <div className='text-gray-500 text-sm italic p-4 text-center'>Không có kết quả</div>
   }
@@ -85,6 +102,7 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
     </>
   )
 }
+
 export const DirectMessageItem = ({ dm_channel }: { dm_channel: DMChannelWithUnreadCount }) => {
   const { isPinned, togglePin, markAsUnread, isManuallyMarked } = useChannelActions()
 
@@ -217,6 +235,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
               if (isDesktop) {
                 e.stopPropagation()
               }
+              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
               channel.is_done ? markAsNotDone(channel.name) : markAsDone(channel.name)
             }}
             className='absolute z-99 right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded-full bg-gray-200 hover:bg-gray-300 h-[20px] w-[20px] flex items-center justify-center cursor-pointer'

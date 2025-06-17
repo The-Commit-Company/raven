@@ -1,6 +1,12 @@
 import { UserContext } from '@/utils/auth/UserProvider'
 import { UnreadCountData, useChannelList, useUpdateLastMessageInChannelList } from '@/utils/channel/ChannelListProvider'
-import { FrappeConfig, FrappeContext, useFrappeEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
+import {
+  FrappeConfig,
+  FrappeContext,
+  useFrappeEventListener,
+  useFrappeGetCall,
+  useFrappePostCall
+} from 'frappe-react-sdk'
 import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import { useGetUser } from './useGetUser'
@@ -103,10 +109,7 @@ export const useFetchUnreadMessageCount = () => {
   useFrappeEventListener('raven:unread_channel_count_updated', (event) => {
     if (event.sent_by !== currentUser) {
       if (channelID === event.channel_id) {
-        // trackVisit({ channel_id: channelID })
-
-        console.log(event);
-        
+        trackVisit({ channel_id: channelID })
 
         const currentUnread = unread_count?.message.find((c) => c.name === event.channel_id)?.unread_count || 0
         const isManuallyMarked = manuallyMarked.has(event.channel_id)
@@ -154,7 +157,6 @@ export const useFetchUnreadMessageCount = () => {
     let blinkInterval: NodeJS.Timeout
     let blinkState = false
     let activeTitle = app_name
-
 
     const allChannelMap = new Map((unread_count?.message || []).map((c) => [c.name, c]))
     const manualOnly = Array.from(manuallyMarked).filter((id) => !allChannelMap.has(id))

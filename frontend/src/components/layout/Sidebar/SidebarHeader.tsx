@@ -10,6 +10,10 @@ import { TbSearch } from 'react-icons/tb'
 import { CreateChannelButton } from '@/components/feature/channels/CreateChannelModal'
 import { CreateLabelButton } from '@/components/feature/labels/CreateLabelModal'
 
+function isLabelObject(val: unknown): val is { labelId: string; labelName: string } {
+  return typeof val === 'object' && val !== null && 'labelId' in val && 'labelName' in val
+}
+
 export const SidebarHeader = () => {
   const isDesktop = useIsDesktop()
   const { mode, title } = useSidebarMode()
@@ -20,10 +24,10 @@ export const SidebarHeader = () => {
     return (
       <header style={{ padding: mode === 'hide-filter' ? '20px 60px' : '6px 10px' }}>
         <Flex justify='between' px='2' align='center' pt='2'>
-          <span className='font-medium text-base'>{title}</span>
+          <span className='font-medium text-base'>{isLabelObject(title) ? title.labelName : title}</span>
           <Box>
             {isLabelMode ? (
-              <CreateLabelButton/>
+              <CreateLabelButton />
             ) : (
               <>
                 <SearchButton />
@@ -46,7 +50,7 @@ export const SidebarHeader = () => {
           <ColorModeToggleButton />
           {isLabelMode ? (
             <button className='p-2 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 rounded'>
-              <CreateLabelButton/>
+              <CreateLabelButton />
             </button>
           ) : (
             <>
