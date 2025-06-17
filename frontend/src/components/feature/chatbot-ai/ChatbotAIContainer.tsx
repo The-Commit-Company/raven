@@ -169,15 +169,11 @@ const ChatbotAIContainer: React.FC<Props> = ({
 
   return (
     <div className='h-full w-full bg-gray-1 dark:bg-[#111113] overflow-hidden flex flex-col'>
-      {/* Header */}
-      <div className='border-b border-gray-4 dark:border-gray-6 px-3 py-3'>
-        <span className='font-medium text-base text-gray-12'>Chatbot AI</span>
-      </div>
       {/* Danh sách đoạn chat + nút tạo mới */}
       <Box className='flex flex-col gap-2 p-4 bg-gray-1 dark:bg-[#111113]'>
         <button
           onClick={handleNewSession}
-          className='text-sm font-semibold rounded-md bg-violet-10 hover:bg-violet-11 text-gray-12 dark:text-white transition-all mb-2 px-3 py-2 w-full'
+          className='text-sm font-semibold rounded-md bg-violet-10 hover:bg-violet-11 text-gray-12 dark:text-white transition-all mb-2 px-3 py-2 w-full cursor-pointer'
         >
           + Đoạn chat mới
         </button>
