@@ -1,9 +1,9 @@
 import { useDeleteChatbotConversation, useRenameChatbotConversation } from '@/hooks/useChatbotAPI'
 import throttle from '@/hooks/useThrottle'
-import { Box, Button, Dialog, Flex, ScrollArea, Text } from '@radix-ui/themes'
+import { Button, Dialog, Flex, ScrollArea, Text } from '@radix-ui/themes'
 import { useFrappeEventListener } from 'frappe-react-sdk'
 import React, { useEffect, useState } from 'react'
-import { FiEdit2, FiTrash2 } from 'react-icons/fi'
+import { FiEdit3, FiMessageSquare, FiPlus, FiTrash2 } from 'react-icons/fi'
 import { useNavigate, useParams } from 'react-router-dom'
 
 export interface ChatSession {
@@ -172,102 +172,116 @@ const ChatbotAIContainer: React.FC<Props> = ({
   }
 
   return (
-    <div className='h-full w-full bg-gray-1 dark:bg-[#111113] overflow-hidden flex flex-col'>
-      {/* Danh sách đoạn chat + nút tạo mới */}
-      <Box className='flex flex-col gap-2 p-4 bg-gray-1 dark:bg-[#111113]'>
+    <div className='h-full w-full bg-[#171717] overflow-hidden flex flex-col'>
+      {/* Header với nút New Chat */}
+      <div className='p-4 border-b border-white/10'>
         <button
           onClick={handleNewSession}
-          className='text-sm font-semibold rounded-md bg-violet-10 hover:bg-violet-11 text-gray-12 dark:text-white transition-all mb-2 px-3 py-2 w-full cursor-pointer'
+          className='w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg bg-transparent border border-white/20 text-white hover:bg-white/5 transition-all duration-200 font-medium text-sm'
         >
-          + Đoạn chat mới
+          <FiPlus size={16} />
+          New chat
         </button>
-        <ScrollArea
-          type='hover'
-          scrollbars='vertical'
-          className='max-h-[60vh] rounded-md border border-gray-4 dark:border-gray-6 bg-gray-1 dark:bg-[#111113]'
-        >
-          {sessions
-            .sort((a, b) => {
-              // Đoạn chat mới luôn ở trên cùng
-              if (a.title.startsWith('Đoạn chat mới') && !b.title.startsWith('Đoạn chat mới')) return -1
-              if (!a.title.startsWith('Đoạn chat mới') && b.title.startsWith('Đoạn chat mới')) return 1
-              // Sắp xếp theo thời gian tạo (mới nhất lên trên)
-              return new Date(b.creation).getTime() - new Date(a.creation).getTime()
-            })
-            .map((s) => (
-              <div
-                key={s.id}
-                className={`group flex items-center px-3 py-1.5 rounded-md text-sm text-gray-12 font-normal cursor-pointer transition-all mb-1 select-none ${
-                  selectedId === s.id
-                    ? 'bg-gray-4 dark:bg-gray-5 font-semibold'
-                    : 'hover:bg-gray-3 dark:hover:bg-gray-4'
-                }`}
-                onClick={() => handleNavigate(s.id)}
-              >
-                {editingId === s.id ? (
-                  <input
-                    autoFocus
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    onBlur={() => handleEditSave(s.id)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleEditSave(s.id)
-                      if (e.key === 'Escape') setEditingId(null)
-                    }}
-                    className='flex-1 bg-transparent outline-none border-b border-gray-5 text-gray-12 px-1 mr-2 text-sm py-1'
-                    style={{ minWidth: 0 }}
-                  />
-                ) : (
-                  <span className='truncate flex-1 min-w-0' title={s.title}>
-                    {pendingRename?.id === s.id ? (
-                      <span className='italic text-gray-11'>{pendingRename.title}</span>
-                    ) : (
-                      s.title
-                    )}
-                  </span>
-                )}
-                <span
-                  className='flex gap-2 items-center ml-2 opacity-0 group-hover:opacity-100 transition-opacity'
-                  onClick={(e) => e.stopPropagation()}
+      </div>
+
+      {/* Chat Sessions List */}
+      <div className='flex-1 overflow-hidden'>
+        <ScrollArea type='hover' scrollbars='vertical' className='h-full px-2'>
+          <div className='py-2'>
+            {sessions
+              .sort((a, b) => {
+                // Đoạn chat mới luôn ở trên cùng
+                if (a.title.startsWith('Đoạn chat mới') && !b.title.startsWith('Đoạn chat mới')) return -1
+                if (!a.title.startsWith('Đoạn chat mới') && b.title.startsWith('Đoạn chat mới')) return 1
+                // Sắp xếp theo thời gian tạo (mới nhất lên trên)
+                return new Date(b.creation).getTime() - new Date(a.creation).getTime()
+              })
+              .map((s) => (
+                <div
+                  key={s.id}
+                  className={`group relative flex items-center gap-2 px-3 py-2.5 mx-2 mb-1 rounded-lg text-sm transition-all duration-200 cursor-pointer select-none ${
+                    selectedId === s.id ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white'
+                  }`}
+                  onClick={() => handleNavigate(s.id)}
                 >
-                  <FiEdit2
-                    className='hover:text-violet-9 cursor-pointer'
-                    size={16}
-                    onClick={() => handleEdit(s.id, s.title)}
-                  />
-                  <FiTrash2
-                    className='hover:text-red-9 cursor-pointer'
-                    size={16}
-                    onClick={() => openDeleteDialog(s.id)}
-                  />
-                </span>
+                  <FiMessageSquare size={16} className='flex-shrink-0 opacity-70' />
+
+                  {editingId === s.id ? (
+                    <input
+                      autoFocus
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      onBlur={() => handleEditSave(s.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleEditSave(s.id)
+                        if (e.key === 'Escape') setEditingId(null)
+                      }}
+                      className='flex-1 bg-transparent outline-none border-b border-white/20 text-white px-1 py-1 text-sm'
+                      style={{ minWidth: 0 }}
+                    />
+                  ) : (
+                    <span className='truncate flex-1 min-w-0' title={s.title}>
+                      {pendingRename?.id === s.id ? (
+                        <span className='italic text-white/50'>{pendingRename.title}</span>
+                      ) : (
+                        s.title
+                      )}
+                    </span>
+                  )}
+
+                  {/* Action buttons */}
+                  <div
+                    className='flex gap-1 items-center opacity-0 group-hover:opacity-100 transition-opacity duration-200'
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      onClick={() => handleEdit(s.id, s.title)}
+                      className='p-1.5 rounded-md hover:bg-white/10 text-white/70 hover:text-white transition-colors'
+                    >
+                      <FiEdit3 size={14} />
+                    </button>
+                    <button
+                      onClick={() => openDeleteDialog(s.id)}
+                      className='p-1.5 rounded-md hover:bg-white/10 text-white/70 hover:text-red-400 transition-colors'
+                    >
+                      <FiTrash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+            {sessions.length === 0 && (
+              <div className='px-4 py-8 text-center'>
+                <FiMessageSquare size={24} className='mx-auto mb-3 text-white/30' />
+                <Text className='text-white/50 text-sm'>No conversations yet</Text>
               </div>
-            ))}
-          {sessions.length === 0 && <Text className='p-3 text-gray-6'>Chưa có đoạn chat nào</Text>}
+            )}
+          </div>
         </ScrollArea>
-      </Box>
+      </div>
 
       {/* Delete Confirmation Dialog */}
       <Dialog.Root open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <Dialog.Content className='bg-gray-1 dark:bg-[#18191b]'>
-          <Dialog.Title className='text-gray-12'>Xác nhận xóa</Dialog.Title>
-          <Dialog.Description className='text-gray-11 mt-4'>
-            Bạn có chắc chắn muốn xóa đoạn chat này? Hành động này không thể hoàn tác.
+        <Dialog.Content className='bg-[#2f2f2f] border border-white/10 max-w-md'>
+          <Dialog.Title className='text-white text-lg font-semibold mb-4'>Delete chat?</Dialog.Title>
+          <Dialog.Description className='text-white/70 text-sm mb-6 leading-relaxed'>
+            This will delete the conversation permanently. You cannot undo this action.
           </Dialog.Description>
 
-          <Flex gap='3' mt='4' justify='end'>
+          <Flex gap='3' justify='end'>
             <Dialog.Close>
-              <Button variant='soft' color='gray' className='bg-gray-3 dark:bg-gray-4 text-gray-12'>
-                Hủy
+              <Button
+                variant='ghost'
+                className='px-4 py-2 text-white/70 hover:text-white hover:bg-white/5 border border-white/20 rounded-lg transition-colors'
+              >
+                Cancel
               </Button>
             </Dialog.Close>
             <Button
-              variant='solid'
-              color='red'
               onClick={() => sessionToDelete && handleDelete(sessionToDelete)}
-              className='bg-red-9 hover:bg-red-10 text-white'
+              className='px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors border-0'
             >
-              Xóa
+              Delete
             </Button>
           </Flex>
         </Dialog.Content>
