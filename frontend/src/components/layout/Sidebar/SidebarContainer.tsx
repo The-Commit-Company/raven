@@ -1,7 +1,7 @@
 import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
 import { useSidebarMode } from '@/utils/layout/sidebar'
 import { Tooltip } from '@radix-ui/themes'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   HiOutlineChatAlt2,
   HiMenuAlt2,
@@ -24,6 +24,7 @@ import { FiChevronDown, FiChevronRight } from 'react-icons/fi'
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { useNavigate, useParams } from 'react-router-dom'
 import LabelList from '@/components/feature/labels/LabelListSidebar' // đường dẫn đúng
+import { useEnrichedChannels } from '@/utils/channel/ChannelAtom'
 
 export const useMentionUnreadCount = () => {
   const { data: mentionsCount, mutate } = useFrappeGetCall<{ message: number }>(
@@ -63,6 +64,21 @@ export const filterItems = [
 ]
 
 export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.RefObject<any> }) {
+  const enrichedChannels = useEnrichedChannels()
+
+  const labelChannelsUnreadCount = useMemo(() => {
+    const seen = new Set<string>()
+    let total = 0
+
+    for (const ch of enrichedChannels) {
+      if (Array.isArray(ch.user_labels) && ch.user_labels.length > 0 && !seen.has(ch.name)) {
+        seen.add(ch.name)
+        total += ch.unread_count ?? 0
+      }
+    }
+
+    return total
+  }, [enrichedChannels])
   const { mode, setMode, tempMode } = useSidebarMode()
 
   const isCollapsed = false
@@ -125,12 +141,27 @@ export function FilterList({ onClose }: FilterListProps) {
   const [isLabelOpen, setIsLabelOpen] = useState(false)
   const navigate = useNavigate()
   const { workspaceID, channelID } = useParams()
-
   const { title, setTitle, tempMode, setLabelID } = useSidebarMode()
   const isIconOnly = tempMode === 'show-only-icons'
 
   const { totalUnreadCount } = useUnreadMessageCount()
   const { mentionUnreadCount, resetMentions } = useMentionUnreadCount()
+
+  // ✅ Tính số lượng unread của các channel có gắn nhãn (mỗi kênh chỉ tính 1 lần)
+  const enrichedChannels = useEnrichedChannels()
+  const labelChannelsUnreadCount = useMemo(() => {
+    const seen = new Set<string>()
+    let total = 0
+
+    for (const ch of enrichedChannels) {
+      if (Array.isArray(ch.user_labels) && ch.user_labels.length > 0 && !seen.has(ch.name)) {
+        seen.add(ch.name)
+        total += ch.unread_count ?? 0
+      }
+    }
+
+    return total
+  }, [enrichedChannels])
 
   const handleClick = (label: string) => {
     setTitle(label)
@@ -147,6 +178,7 @@ export function FilterList({ onClose }: FilterListProps) {
 
         if (['Trò chuyện', 'Chưa đọc'].includes(item.label)) badgeCount = totalUnreadCount
         if (item.label === 'Nhắc đến') badgeCount = mentionUnreadCount
+        if (item.label === 'Nhãn') badgeCount = labelChannelsUnreadCount
 
         return item.label === 'Nhãn' ? (
           <div key={idx}>
@@ -156,7 +188,7 @@ export function FilterList({ onClose }: FilterListProps) {
                   'flex items-center gap-2 justify-center',
                   !isIconOnly && 'pl-1 justify-between',
                   'py-1.5 px-2 rounded-md cursor-pointer hover:bg-gray-3',
-                  isActive && 'bg-gray-4 font-semibold' // ✅ dùng isActive thay vì isLabelOpen
+                  isActive && 'bg-gray-4 font-semibold'
                 )}
                 onClick={() => {
                   handleClick(item.label)
@@ -189,6 +221,7 @@ export function FilterList({ onClose }: FilterListProps) {
                 )}
               </li>
             </div>
+
             {!isIconOnly && isLabelOpen && <LabelList visible={isLabelOpen} onClickLabel={handleClick} />}
           </div>
         ) : (

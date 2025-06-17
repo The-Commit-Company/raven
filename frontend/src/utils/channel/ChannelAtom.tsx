@@ -60,38 +60,24 @@ export const useEnrichedChannels = (): ChannelWithGroupType[] => {
     }
   })
 }
-
 export const useUpdateChannelLabels = () => {
-  const setChannels = useSetAtom(setSortedChannelsAtom)
-
-  const updateChannelLabels = (channelID: string, updateFn: (prevLabels: string[]) => string[]) => {
-    setChannels((prev) =>
-      prev.map((c) =>
-        c.name === channelID
-          ? {
-              ...c,
-              user_labels: updateFn(Array.isArray(c.user_labels) ? c.user_labels : [])
-            }
-          : c
-      )
-    )
-  }
-
   const setSortedChannels = useSetAtom(sortedChannelsAtom)
 
-  const addLabelToChannel = (channelID: string, newLabelID: string) => {
+  const updateChannelLabels = (channelID: string, updateFn: (prevLabels: string[]) => string[]) => {
     setSortedChannels((prev) =>
       prev.map((channel) =>
         channel.name === channelID
           ? {
               ...channel,
-              user_labels: Array.isArray(channel.user_labels)
-                ? [...new Set([...channel.user_labels, newLabelID])]
-                : [newLabelID]
+              user_labels: updateFn(Array.isArray(channel.user_labels) ? channel.user_labels : [])
             }
           : channel
       )
     )
+  }
+
+  const addLabelToChannel = (channelID: string, newLabelID: string) => {
+    updateChannelLabels(channelID, (prev) => [...new Set([...prev, newLabelID])])
   }
 
   const removeLabelFromChannel = (channelID: string, labelID: string) => {
