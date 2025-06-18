@@ -20,8 +20,9 @@ import { useAtomValue } from 'jotai'
 import { HiCheck } from 'react-icons/hi'
 import { SidebarBadge, SidebarGroup, SidebarIcon } from '../../layout/Sidebar/SidebarComp'
 import { DoneChannelList } from '../channels/DoneChannelList'
-import UserChannelList from '../channels/UserChannelList'
 import MentionList from '../chat/ChatInput/MentionListCustom'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
+import UserChannelList from '../channels/UserChannelList'
 import ChatbotAIStream from '../chatbot-ai/ChatbotAIStream'
 import LabelByUserList from '../labels/LabelByUserList'
 import ThreadsCustom from '../threads/ThreadsCustom'
@@ -31,6 +32,7 @@ type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
 
 export const DirectMessageList = () => {
   const enriched = useEnrichedChannels()
+
   return (
     <SidebarGroup pb='4'>
       <SidebarGroup>
@@ -41,8 +43,34 @@ export const DirectMessageList = () => {
 }
 
 export const DirectMessageItemList = ({ channel_list }: any) => {
-  const { title } = useSidebarMode()
+  const { title, labelID } = useSidebarMode()
 
+  // Ưu tiên các component đặc biệt trước
+  if (title === 'Đã gắn cờ') return <MessageSaved />
+  if (title === 'Nhắc đến') return <MentionList />
+  if (title === 'Xong') return <DoneChannelList />
+  if (title === 'Chủ đề') return <ThreadsCustom />
+  if (title === 'Thành viên') return <UserChannelList />
+  if (title === 'Nhãn') return <LabelByUserList />
+
+  // Nếu có nhãn ID thì lọc theo nhãn
+  if (labelID) {
+    const filtered = channel_list.filter((c: { user_labels?: string[] }) => c.user_labels?.includes(labelID))
+
+    if (filtered.length === 0) {
+      return <div className='text-gray-500 text-sm italic p-4 text-center'>Không có kênh nào gắn nhãn này</div>
+    }
+
+    return (
+      <>
+        {filtered.map((channel: DMChannelWithUnreadCount) => (
+          <DirectMessageItem key={channel.name} dm_channel={channel} />
+        ))}
+      </>
+    )
+  }
+
+  // Trường hợp không có nhãn → lọc theo các filter thông thường
   const getFilteredChannels = (): DMChannelWithUnreadCount[] => {
     switch (title) {
       case 'Trò chuyện nhóm':
@@ -84,6 +112,7 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
     </>
   )
 }
+
 export const DirectMessageItem = ({ dm_channel }: { dm_channel: DMChannelWithUnreadCount }) => {
   const { isPinned, togglePin, markAsUnread, isManuallyMarked } = useChannelActions()
 
@@ -114,8 +143,8 @@ const isDMChannel = (c: UnifiedChannel): c is DMChannelWithUnreadCount => {
 }
 
 export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel }) => {
-  // 1. Gọi tất cả hooks ngay từ đầu
   const isTablet = useIsTablet()
+  const isDesktop = useIsDesktop()
   const { currentUser } = useContext(UserContext)
   const navigate = useNavigate()
   const { workspaceID, channelID } = useParams<{ workspaceID: string; channelID: string }>()
@@ -123,7 +152,6 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   const { clearManualMark } = useChannelActions()
   const { markAsDone, markAsNotDone } = useChannelDone()
 
-  // 2. Tính toán các biến phụ (không gọi hook nữa ở đây)
   const isGroupChannel = !channel.is_direct_message && !channel.is_self_message
   const isDM = isDMChannel(channel)
   const peerUserId = isDM ? channel.peer_user_id : null
@@ -132,11 +160,11 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   const isSelectedChannel = channelID === channel.name
   const isManuallyMarked = manuallyMarked.has(channel.name)
 
-  // 3. Nếu không thỏa điều kiện hiển thị thì return null (đã gọi xong hooks)
   if (!isGroupChannel && (!isDM || !peerUserId || !peerUser?.enabled)) {
     return null
   }
 
+  // Parse người gửi cuối cùng
   const lastOwner = (() => {
     try {
       const raw =
@@ -150,10 +178,8 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   })()
 
   const user = useGetUser(lastOwner)
-
   const formattedMessage = formatLastMessage(channel, currentUser, user?.full_name)
 
-  // 4. Tính hiển thị
   const displayName = peerUser
     ? peerUserId !== currentUser
       ? peerUser.full_name
@@ -168,11 +194,10 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   }
 
   const bgClass = `
-  ${isSelectedChannel ? 'bg-gray-300 dark:bg-gray-700' : ''}
-  hover:bg-gray-100 dark:hover:bg-gray-600
-`
+    ${isSelectedChannel ? 'bg-gray-300 dark:bg-gray-700' : ''}
+    hover:bg-gray-100 dark:hover:bg-gray-600
+  `
 
-  // 5. Render
   return (
     <div onClick={handleNavigate} className={`group relative cursor-pointer flex items-center p-1 mb-2 ${bgClass}`}>
       <SidebarIcon>
@@ -212,10 +237,12 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
         <Tooltip content={channel.is_done ? 'Đánh dấu chưa xong' : 'Đánh dấu đã xong'} side='bottom'>
           <button
             onClick={(e) => {
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+              if (isDesktop) {
+                e.stopPropagation()
+              }
               channel.is_done ? markAsNotDone(channel.name) : markAsDone(channel.name)
             }}
-            className='absolute right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded-full bg-gray-200 hover:bg-gray-300 h-[20px] w-[20px] flex items-center justify-center cursor-pointer'
+            className='absolute z-99 right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded-full bg-gray-200 hover:bg-gray-300 h-[20px] w-[20px] flex items-center justify-center cursor-pointer'
             title={channel.is_done ? 'Chưa xong' : 'Đã xong'}
           >
             <HiCheck

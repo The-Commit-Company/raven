@@ -1,7 +1,7 @@
 import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
 import { useSidebarMode } from '@/utils/layout/sidebar'
 import { Tooltip } from '@radix-ui/themes'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   HiOutlineChatAlt2,
   HiMenuAlt2,
@@ -19,10 +19,13 @@ import {
 } from 'react-icons/hi'
 
 import clsx from 'clsx'
-import { CreateLabelButton } from '@/components/feature/channels/CreateLabelModal'
+import { CreateLabelButton } from '@/components/feature/labels/CreateLabelModal'
 import { FiChevronDown, FiChevronRight } from 'react-icons/fi'
-import { MdLabelOutline } from 'react-icons/md'
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
+import { useNavigate, useParams } from 'react-router-dom'
+import LabelList from '@/components/feature/labels/LabelListSidebar' // đường dẫn đúng
+import { useEnrichedChannels } from '@/utils/channel/ChannelAtom'
+import { useIsTablet } from '@/hooks/useMediaQuery'
 
 export const useMentionUnreadCount = () => {
   const { data: mentionsCount, mutate } = useFrappeGetCall<{ message: number }>(
@@ -62,6 +65,21 @@ export const filterItems = [
 ]
 
 export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.RefObject<any> }) {
+  const enrichedChannels = useEnrichedChannels()
+
+  const labelChannelsUnreadCount = useMemo(() => {
+    const seen = new Set<string>()
+    let total = 0
+
+    for (const ch of enrichedChannels) {
+      if (Array.isArray(ch.user_labels) && ch.user_labels.length > 0 && !seen.has(ch.name)) {
+        seen.add(ch.name)
+        total += ch.unread_count ?? 0
+      }
+    }
+
+    return total
+  }, [enrichedChannels])
   const { mode, setMode, tempMode } = useSidebarMode()
 
   const isCollapsed = false
@@ -120,19 +138,37 @@ interface FilterListProps {
   onClose?: () => void
 }
 
-export function FilterList({ onClose }: FilterListProps) {
+export function FilterList({ onClose }: { onClose?: () => void }) {
   const [isLabelOpen, setIsLabelOpen] = useState(false)
-
-  const { title, setTitle, tempMode } = useSidebarMode()
+  const isTablet = useIsTablet()
+  const navigate = useNavigate()
+  const { workspaceID, channelID } = useParams()
+  const { title, setTitle, tempMode, setLabelID } = useSidebarMode()
   const isIconOnly = tempMode === 'show-only-icons'
 
   const { totalUnreadCount } = useUnreadMessageCount()
   const { mentionUnreadCount, resetMentions } = useMentionUnreadCount()
 
+  const enrichedChannels = useEnrichedChannels()
+
+  const labelChannelsUnreadCount = useMemo(() => {
+    const seen = new Set<string>()
+    let total = 0
+    for (const ch of enrichedChannels) {
+      if (Array.isArray(ch.user_labels) && ch.user_labels.length > 0 && !seen.has(ch.name)) {
+        seen.add(ch.name)
+        total += ch.unread_count ?? 0
+      }
+    }
+    return total
+  }, [enrichedChannels])
+
   const handleClick = (label: string) => {
     setTitle(label)
+    setLabelID('') // nếu không phải nhãn cụ thể thì reset
     if (label === 'Nhắc đến') resetMentions()
     if (onClose) onClose()
+    if (channelID) navigate(`/${workspaceID}`)
   }
 
   return (
@@ -143,71 +179,83 @@ export function FilterList({ onClose }: FilterListProps) {
 
         if (['Trò chuyện', 'Chưa đọc'].includes(item.label)) badgeCount = totalUnreadCount
         if (item.label === 'Nhắc đến') badgeCount = mentionUnreadCount
+        if (item.label === 'Nhãn') badgeCount = labelChannelsUnreadCount
 
-        return item.label === 'Nhãn' ? (
-          <div key={idx}>
-            <div className='group relative'>
-              <li
-                className={clsx(
-                  'flex items-center gap-2 justify-center',
-                  !isIconOnly && 'pl-1 justify-between',
-                  'py-1.5 px-2 rounded-md cursor-pointer hover:bg-gray-3',
-                  isLabelOpen && 'bg-gray-4 font-semibold'
-                )}
-                onClick={() => {
-                  handleClick(item.label)
-                }}
-              >
-                <div className='flex items-center gap-2'>
-                  <item.icon className='w-5 h-5' />
-                  {!isIconOnly && <span className='truncate flex-1 min-w-0'>{item.label}</span>}
-                </div>
-
-                {!isIconOnly && (
+        if (item.label === 'Nhãn') {
+          return (
+            <div key={idx}>
+              <div className='group relative'>
+                <li
+                  className={clsx(
+                    'flex items-center gap-2 justify-center',
+                    !isIconOnly && 'pl-1 justify-between',
+                    'py-1.5 px-2 rounded-md cursor-pointer hover:bg-gray-3',
+                    isActive && 'bg-gray-4 font-semibold'
+                  )}
+                  onClick={() => {
+                    // Toggle mở/đóng danh sách label
+                    setIsLabelOpen((prev) => !prev)
+                    handleClick(item.label)
+                    // Nếu đang không chọn "Nhãn", thì set
+                    if (title !== item.label) {
+                      setTitle(item.label)
+                      setLabelID('') // reset nhãn cụ thể
+                    }
+                  }}
+                >
                   <div className='flex items-center gap-2'>
-                    <div onClick={(e) => e.stopPropagation()}>
-                      <CreateLabelButton />
-                    </div>
-                    <div
-                      className='relative w-4 h-4' // đảm bảo có kích thước để canh giữa
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setIsLabelOpen((prev) => !prev)
-                      }}
-                    >
-                      {isLabelOpen ? (
-                        <FiChevronDown className='absolute inset-0 m-auto' size={16} />
-                      ) : (
-                        <FiChevronRight className='absolute inset-0 m-auto' size={16} />
-                      )}
-                    </div>
+                    <item.icon className='w-5 h-5' />
+                    {!isIconOnly && <span className='truncate flex-1 min-w-0'>{item.label}</span>}
                   </div>
-                )}
-              </li>
+
+                  {!isIconOnly && (
+                    <div className='flex items-center gap-2'>
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <CreateLabelButton />
+                      </div>
+                      <div
+                        className='relative w-4 h-4'
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setIsLabelOpen((prev) => !prev)
+                        }}
+                      >
+                        {isLabelOpen ? (
+                          <FiChevronDown className='absolute inset-0 m-auto' size={16} />
+                        ) : (
+                          <FiChevronRight className='absolute inset-0 m-auto' size={16} />
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </li>
+              </div>
+
+              {!isIconOnly && isLabelOpen && (
+                <LabelList
+                  visible={isLabelOpen}
+                  onClickLabel={(label) => {
+                    setTitle(label.labelName)
+                    setLabelID(label.labelId)
+                    if (onClose) onClose()
+                    if (channelID) navigate(`/${workspaceID}`)
+                  }}
+                />
+              )}
             </div>
+          )
+        }
 
-            {!isIconOnly && isLabelOpen && (
-              <ul className='mt-1 space-y-1'>
-                {['Công việc', 'Cá nhân', 'Khẩn cấp'].map((label, i) => (
-                  <li
-                    key={i}
-                    className='flex items-center pl-5 gap-2 cursor-pointer px-2 py-1 rounded hover:bg-gray-2'
-                    onClick={() => handleClick(label)}
-                  >
-                    <MdLabelOutline className='w-4 h-4 text-gray-11 shrink-0' />
-
-                    <span className='truncate'>{label}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        ) : (
+        return (
           <li
             key={idx}
-            onClick={() => handleClick(item.label)}
-            className={`flex ${isIconOnly ? 'justify-center' : 'justify-between'} relative items-center gap-2 py-1.5 rounded-md cursor-pointer
-      hover:bg-gray-3 ${isActive ? 'bg-gray-4 font-semibold' : ''}`}
+            onClick={() => {
+              handleClick(item.label)
+            }}
+            className={clsx(
+              `flex ${isIconOnly ? 'justify-center' : 'justify-between'} relative items-center gap-2 py-1.5 rounded-md cursor-pointer hover:bg-gray-3`,
+              isActive && 'bg-gray-4 font-semibold'
+            )}
           >
             <div className='flex items-center gap-2'>
               <Tooltip content={item.label} side='right' delayDuration={300}>

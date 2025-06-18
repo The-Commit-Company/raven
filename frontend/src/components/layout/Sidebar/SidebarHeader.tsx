@@ -1,7 +1,5 @@
 import { useTheme } from '@/ThemeProvider'
 import { commandMenuOpenAtom } from '@/components/feature/CommandMenu/CommandMenu'
-import { CreateChannelButton } from '@/components/feature/channels/CreateChannelModal'
-import { CreateLabelButton } from '@/components/feature/channels/CreateLabelModal'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { useSidebarMode } from '@/utils/layout/sidebar'
 import { __ } from '@/utils/translations'
@@ -9,18 +7,23 @@ import { Box, Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
 import { useSetAtom } from 'jotai'
 import { BiMoon, BiSun } from 'react-icons/bi'
 import { TbSearch } from 'react-icons/tb'
+import { CreateChannelButton } from '@/components/feature/channels/CreateChannelModal'
+import { CreateLabelButton } from '@/components/feature/labels/CreateLabelModal'
+
+function isLabelObject(val: unknown): val is { labelId: string; labelName: string } {
+  return typeof val === 'object' && val !== null && 'labelId' in val && 'labelName' in val
+}
 
 export const SidebarHeader = () => {
   const isDesktop = useIsDesktop()
-  const { mode, title } = useSidebarMode()
+  const { mode, title, labelID } = useSidebarMode()
 
-  const isLabelMode = title === 'Nhãn'
-
+  const isLabelMode = title === 'Nhãn' || !!labelID
   if (isDesktop) {
     return (
       <header style={{ padding: mode === 'hide-filter' ? '20px 60px' : '6px 10px' }}>
         <Flex justify='between' px='2' align='center' pt='2'>
-          <span className='font-medium text-base'>{title}</span>
+          <span className='font-medium text-base'>{isLabelObject(title) ? title.labelName : title}</span>
           <Box>
             {isLabelMode ? (
               <CreateLabelButton />
@@ -59,6 +62,7 @@ export const SidebarHeader = () => {
     </header>
   )
 }
+
 // const CommandMenuButton = () => {
 //   const setOpen = useSetAtom(commandMenuOpenAtom)
 

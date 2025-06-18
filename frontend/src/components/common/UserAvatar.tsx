@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Avatar, Theme } from '@radix-ui/themes'
 import { AvatarProps } from '@radix-ui/themes/dist/cjs/components/avatar'
 import { BoxProps } from '@radix-ui/themes/dist/cjs/components/box'

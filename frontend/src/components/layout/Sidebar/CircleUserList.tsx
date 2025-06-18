@@ -3,7 +3,6 @@ import { useGetUser } from '@/hooks/useGetUser'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { ChannelWithGroupType, sortedChannelsAtom } from '@/utils/channel/ChannelAtom'
 import { useUnreadMessages } from '@/utils/layout/sidebar'
-import { ChannelInfo, useCircleUserList } from '@/utils/users/CircleUserListProvider'
 import { closestCenter, DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { arrayMove, rectSortingStrategy, SortableContext, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -17,7 +16,7 @@ import { IoTriangle } from 'react-icons/io5'
 import { useNavigate, useParams } from 'react-router-dom'
 
 interface Props {
-  channel: ChannelInfo
+  channel: ChannelWithGroupType
   isActive?: boolean
   onActivate?: () => void
 }
@@ -54,7 +53,7 @@ const CircleUserItem = ({ channel, isActive, onActivate }: Props) => {
   const [dragging, setDragging] = useState(false)
 
   const handleClick = (e: React.MouseEvent) => {
-    if (e.button !== 0 || dragging) return // Chỉ điều hướng nếu là chuột trái và không đang kéo
+    if (e.button !== 0 || dragging) return
     clearManualMark(channel.name)
     onActivate?.()
     navigate(`/${workspaceID}/${channel.name}`)
@@ -108,203 +107,80 @@ const CircleUserItem = ({ channel, isActive, onActivate }: Props) => {
   )
 }
 
-const ChannelItemWithContext = ({
-  channel,
-  isActive,
-  markAsUnread,
-  togglePin,
-  isPinned,
-  isManuallyMarked,
-  refresh
-}: {
-  channel: any
-  isActive: boolean
-  markAsUnread: (channel: any) => void
-  togglePin: (channel: any) => void
-  isPinned: (id: string) => boolean
-  isManuallyMarked: (id: string) => boolean
-  refresh: () => void
-}) => (
-  <ContextMenu.Root>
-    <ContextMenu.Trigger asChild>
-      <div className='select-none'>
-        <SortableCircleUserItem channel={channel} isActive={isActive} onActivate={() => {}} />
-      </div>
-    </ContextMenu.Trigger>
-    <ContextMenu.Portal>
-      <ContextMenu.Content className='z-50 bg-white dark:bg-gray-800 text-black dark:text-white rounded shadow-md p-1'>
-        <ContextMenu.Item
-          className='px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer'
-          onClick={() => {
-            markAsUnread(channel)
-            refresh()
-          }}
-        >
-          {channel.unread_count > 0 || isManuallyMarked(channel.name)
-            ? 'Đánh dấu đã đọc'
-            : 'Đánh dấu chưa đọc'}
-        </ContextMenu.Item>
-        <ContextMenu.Item
-          className='px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer'
-          onClick={() => togglePin(channel)}
-        >
-          {isPinned(channel.name) ? 'Bỏ ghim khỏi danh sách' : 'Ghim lên đầu'}
-        </ContextMenu.Item>
-      </ContextMenu.Content>
-    </ContextMenu.Portal>
-  </ContextMenu.Root>
-)
-
-
-export const CircleUserList = () => {
+const CircleUserList = () => {
   const { channelID = '' } = useParams()
-  const channels = useAtomValue(sortedChannelsAtom)
+  const allChannels = useAtomValue(sortedChannelsAtom)
   const setChannels = useSetAtom(sortedChannelsAtom)
-
-  const unread_count = useUnreadMessages()
-
-
   const isMobile = useIsMobile()
-  const [rows, setRows] = useState<string[][]>([])
-  const [showExtraList, setShowExtraList] = useState(false)
-  const [showAll, setShowAll] = useState(false)
-
   const { isPinned, togglePin, markAsUnread, isManuallyMarked } = useChannelActions()
 
-  const itemsPerRow = 5
-  // const hasMoreRows = isMobile && Math.ceil(items.length / itemsPerRow) > 1
-
-  // useEffect(() => {
-  //   if (!isMobile) return
-
-  //   const tempRows: string[][] = []
-  //   for (let i = 0; i < items.length; i += itemsPerRow) {
-  //     tempRows.push(items.slice(i, i + itemsPerRow))
-  //   }
-
-  //   if (tempRows.length > 1 && tempRows[0]) {
-  //     tempRows[0].push('__TOGGLE__')
-  //   }
-
-  //   setRows(tempRows)
-  // }, [items, isMobile])
-
+  const items = useMemo(() => allChannels.map((c) => c.name), [allChannels])
   const sensors = useSensors(useSensor(PointerSensor))
 
-  // const handleDragEnd = (event: any) => {
-  //   const { active, over } = event
-  //   if (!over || active.id === over.id) return
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
 
-  //   const oldIndex = items.indexOf(active.id)
-  //   const newIndex = items.indexOf(over.id)
-  //   const newItems = arrayMove(items, oldIndex, newIndex)
-  //   setItems(newItems)
+    const oldIndex = items.indexOf(active.id)
+    const newIndex = items.indexOf(over.id)
+    const newItems = arrayMove(items, oldIndex, newIndex)
 
-  //   const reordered = newItems
-  //     .map((name) => enrichedChannels.find((c) => c.name === name))
-  //     .filter(Boolean) as ChannelWithGroupType[]
+    const reordered = newItems
+      .map((name) => allChannels.find((c) => c.name === name))
+      .filter(Boolean) as ChannelWithGroupType[]
 
-  //   setChannels(reordered)
+    setChannels(reordered)
 
-  //   if (saveTimeout) clearTimeout(saveTimeout)
-  //   saveTimeout = setTimeout(() => {
-  //     localStorage.setItem('circle_user_list', JSON.stringify(reordered))
-  //   }, 1000)
-  // }
-
-  // if (!enrichedChannels.length) return null
+    if (saveTimeout) clearTimeout(saveTimeout)
+    saveTimeout = setTimeout(() => {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newItems))
+    }, 1000)
+  }
 
   return (
     <div className='w-full overflow-hidden'>
-      {/* <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={items} strategy={rectSortingStrategy}>
-          {isMobile ? (
-            <div className='flex flex-col gap-5 w-full'>
-              {rows.map((row, rowIndex) => {
-                if (rowIndex > 0 && !showExtraList) return null
-
-                return (
-                  <div key={rowIndex} className='flex gap-3 w-full items-start'>
-                    {row.map((channelName) => {
-                      if (channelName === '__TOGGLE__') {
-                        return (
-                          <div key='__TOGGLE__' className='flex flex-col items-center ml-auto space-y-1'>
-                            <button onClick={() => setShowExtraList((prev) => !prev)}>
-                              <div className='w-8 h-8 border-2 rounded-full flex items-center justify-center'>
-                                <IoTriangle
-                                  className={clsx(
-                                    'w-3 h-3 transition-transform duration-200 dark:text-gray-200',
-                                    !showExtraList && '-rotate-180'
-                                  )}
-                                />
-                              </div>
-                              <span className='text-xs mt-1 dark:text-gray-200'>
-                                {showExtraList ? 'Ẩn' : 'Hiển t..'}
-                              </span>
-                            </button>
-                          </div>
-                        )
-                      }
-
-                      const channel = enrichedChannels.find((c) => c.name === channelName)
-                      if (!channel) return null
-
-                      return (
-                        <ChannelItemWithContext
-                          key={channel.name}
-                          channel={channel}
-                          isActive={channel.name === channelID}
-                          markAsUnread={markAsUnread}
-                          togglePin={togglePin}
-                          isPinned={isPinned}
-                          isManuallyMarked={isManuallyMarked}
-                          refresh={() => setChannels((prev) => [...prev])}
-                        />
-                      )
-                    })}
-                  </div>
-                )
-              })}
-            </div>
-          ) : (
-            <div>
-              <div
-                className={clsx(
-                  'flex flex-wrap gap-3 p-2 mb-5 transition-all duration-300 ease-in-out',
-                  showAll ? 'max-h-[1000px]' : 'max-h-[120px]'
-                )}
-              >
-                {items.map((channelName) => {
-                  const channel = enrichedChannels.find((c) => c.name === channelName)
-                  if (!channel) return null
-
-                  return (
-                    <ChannelItemWithContext
-                      key={channel.name}
+          <div className='flex flex-wrap gap-3 p-2'>
+            {items.map((channelName) => {
+              const channel = allChannels.find((c) => c.name === channelName)
+              if (!channel) return null
+              return (
+                <ContextMenu.Root key={channel.name}>
+                  <ContextMenu.Trigger asChild>
+                    <SortableCircleUserItem
                       channel={channel}
                       isActive={channel.name === channelID}
-                      markAsUnread={markAsUnread}
-                      togglePin={togglePin}
-                      isPinned={isPinned}
-                      isManuallyMarked={isManuallyMarked}
-                      refresh={() => setChannels((prev) => [...prev])}
+                      onActivate={() => {}}
                     />
-                  )
-                })}
-              </div>
-
-              {items.length > 10 && (
-                <button
-                  onClick={() => setShowAll((prev) => !prev)}
-                  className='text-xs mt-2 text-blue-500 hover:underline'
-                >
-                  {showAll ? 'Ẩn bớt' : 'Hiện thêm'}
-                </button>
-              )}
-            </div>
-          )}
+                  </ContextMenu.Trigger>
+                  <ContextMenu.Portal>
+                    <ContextMenu.Content className='z-50 bg-white dark:bg-gray-800 text-black dark:text-white rounded shadow-md p-1'>
+                      <ContextMenu.Item
+                        className='px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer'
+                        onClick={() => {
+                          markAsUnread(channel)
+                          setChannels((prev) => [...prev])
+                        }}
+                      >
+                        {channel.unread_count > 0 || isManuallyMarked(channel.name)
+                          ? 'Đánh dấu đã đọc'
+                          : 'Đánh dấu chưa đọc'}
+                      </ContextMenu.Item>
+                      <ContextMenu.Item
+                        className='px-3 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded cursor-pointer'
+                        onClick={() => togglePin(channel)}
+                      >
+                        {isPinned(channel.name) ? 'Bỏ ghim khỏi danh sách' : 'Ghim lên đầu'}
+                      </ContextMenu.Item>
+                    </ContextMenu.Content>
+                  </ContextMenu.Portal>
+                </ContextMenu.Root>
+              )
+            })}
+          </div>
         </SortableContext>
-      </DndContext> */}
+      </DndContext>
     </div>
   )
 }
