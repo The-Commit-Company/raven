@@ -228,15 +228,10 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
     return () => clearInterval(pollingInterval)
   }, [socketConnected, mutateMessages])
 
-  useEffect(() => {
-    if (isThinking) {
-      const timeout = setTimeout(() => {
-        setIsThinking(false)
-      }, 10000)
-
-      return () => clearTimeout(timeout)
-    }
-  }, [isThinking])
+  const handleReloadThinking = useCallback(() => {
+    mutateMessages()
+    setIsThinking(false)
+  }, [mutateMessages])
 
   // Early return if no session is selected
   if (!selectedSession || !botID) {
@@ -264,6 +259,8 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
       maxFileSize={MAX_FILE_SIZE}
       // Message states
       isThinking={isThinking}
+      onReload={handleReloadThinking}
+      thinkingTimeout={10000}
       hasMore={hasMore}
       onShowMore={handleShowMore}
       startIdx={startIdx}

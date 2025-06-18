@@ -4,9 +4,9 @@ import { Message } from '@/types/ChatBot/types'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { Button, Text, Tooltip } from '@radix-ui/themes'
 import clsx from 'clsx'
-import React, { useCallback, useContext, useEffect, useRef } from 'react'
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { BiSolidSend } from 'react-icons/bi'
-import { FiCpu, FiPaperclip } from 'react-icons/fi'
+import { FiCpu, FiPaperclip, FiRefreshCw } from 'react-icons/fi'
 import { commonButtonStyle } from '../labels/LabelItemMenu'
 import ChatbotFileMessage from './ChatbotFileMessage'
 
@@ -31,6 +31,9 @@ interface Props {
   startIdx: number
   // Loading props
   loading?: boolean
+  // Reload props
+  onReload?: () => void
+  thinkingTimeout?: number // milliseconds, default 30000 (30s)
 }
 
 const formatFileSize = (bytes: number) => {
@@ -60,15 +63,54 @@ const ChatbotAIChatBox: React.FC<Props> = ({
   hasMore,
   onShowMore,
   startIdx,
-  loading = false
+  loading = false,
+  onReload,
+  thinkingTimeout = 30000 // 30 seconds default
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesTopRef = useRef<HTMLDivElement>(null)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
+  const thinkingTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   const { currentUser } = useContext(UserContext)
   const user = useGetUser(currentUser)
+
+  const [showReloadButton, setShowReloadButton] = useState(false)
+  const [thinkingDuration, setThinkingDuration] = useState(0)
+
+  // Timer for thinking duration
+  useEffect(() => {
+    if (isThinking) {
+      setThinkingDuration(0)
+      setShowReloadButton(false)
+
+      // Start timer to show reload button after timeout
+      thinkingTimerRef.current = setTimeout(() => {
+        setShowReloadButton(true)
+      }, thinkingTimeout)
+
+      // Update thinking duration every second
+      const durationTimer = setInterval(() => {
+        setThinkingDuration((prev) => prev + 1)
+      }, 1000)
+
+      return () => {
+        if (thinkingTimerRef.current) {
+          clearTimeout(thinkingTimerRef.current)
+        }
+        clearInterval(durationTimer)
+      }
+    } else {
+      // Reset when not thinking
+      setShowReloadButton(false)
+      setThinkingDuration(0)
+      if (thinkingTimerRef.current) {
+        clearTimeout(thinkingTimerRef.current)
+        thinkingTimerRef.current = null
+      }
+    }
+  }, [isThinking, thinkingTimeout])
 
   // Auto-resize textarea
   useEffect(() => {
@@ -134,6 +176,21 @@ const ChatbotAIChatBox: React.FC<Props> = ({
     },
     [onInputChange]
   )
+
+  const handleReload = useCallback(() => {
+    if (onReload) {
+      onReload()
+    }
+  }, [onReload])
+
+  const formatThinkingTime = (seconds: number) => {
+    if (seconds < 60) {
+      return `${seconds}s`
+    }
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = seconds % 60
+    return `${minutes}m ${remainingSeconds}s`
+  }
 
   return (
     <div className='flex flex-col h-full w-full'>
@@ -263,21 +320,41 @@ const ChatbotAIChatBox: React.FC<Props> = ({
                   <FiCpu className='text-white' size={16} />
                 </div>
                 <div className='flex-1 min-w-0'>
-                  <div className='mb-1'>
+                  <div className='mb-1 flex items-center justify-between'>
                     <span className='font-semibold text-gray-800 dark:text-gray-200 text-sm'>ChatGPT</span>
+                    {thinkingDuration > 0 && (
+                      <span className='text-xs text-gray-500 dark:text-gray-400'>
+                        {formatThinkingTime(thinkingDuration)}
+                      </span>
+                    )}
                   </div>
-                  <div className='flex items-center gap-1 text-gray-500 dark:text-gray-400'>
-                    <div className='flex gap-1'>
-                      <div className='w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-pulse'></div>
-                      <div
-                        className='w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-pulse'
-                        style={{ animationDelay: '0.2s' }}
-                      ></div>
-                      <div
-                        className='w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-pulse'
-                        style={{ animationDelay: '0.4s' }}
-                      ></div>
+                  <div className='flex items-center gap-3'>
+                    <div className='flex items-center gap-1 text-gray-500 dark:text-gray-400'>
+                      <div className='flex gap-1'>
+                        <div className='w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-pulse'></div>
+                        <div
+                          className='w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-pulse'
+                          style={{ animationDelay: '0.2s' }}
+                        ></div>
+                        <div
+                          className='w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-pulse'
+                          style={{ animationDelay: '0.4s' }}
+                        ></div>
+                      </div>
                     </div>
+
+                    {/* Reload button - shows after timeout */}
+                    {showReloadButton && onReload && (
+                      <Tooltip content='Reload nếu phản hồi quá lâu'>
+                        <button
+                          onClick={handleReload}
+                          className='flex items-center gap-1 px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-md transition-colors'
+                        >
+                          <FiRefreshCw size={12} />
+                          <span>Reload</span>
+                        </button>
+                      </Tooltip>
+                    )}
                   </div>
                 </div>
               </div>
