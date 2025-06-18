@@ -7,6 +7,7 @@ from raven.chatbot.doctype.chatmessage.chatmessage import ChatMessage
 import uuid
 import traceback
 import os
+import time
 from frappe.utils import get_files_path
 from PyPDF2 import PdfReader
 import docx
@@ -60,6 +61,9 @@ def extract_text_from_file(file_url):
 
 # Helper: Xây dựng context từ các tin nhắn gần nhất
 def build_context(conversation_id):
+    # Đảm bảo database được commit trước khi query
+    frappe.db.commit()
+
     messages = frappe.get_all(
         "ChatMessage",
         filters={"parent": conversation_id},
@@ -67,6 +71,13 @@ def build_context(conversation_id):
         order_by="timestamp desc",
         limit_page_length=CONTEXT_LIMIT
     )[::-1]
+
+    if not messages:
+        frappe.log_error(
+            f"[BUILD_CONTEXT] Không tìm thấy messages cho conversation_id={conversation_id}",
+            "Build Context - No Messages"
+        )
+        return []
 
     context = []
     for msg in messages:
@@ -81,6 +92,11 @@ def build_context(conversation_id):
                 "role": "user" if msg.is_user else "assistant",
                 "content": content
             })
+
+    frappe.log_error(
+        f"[BUILD_CONTEXT] conversation_id={conversation_id}, messages_count={len(messages)}, context_count={len(context)}",
+        "Build Context - Debug Info"
+    )
 
     return context
 
@@ -145,8 +161,17 @@ def send_message(conversation_id, message, is_user=True, message_type="Text", fi
 
         chat_message = create_message(conversation_id, message, is_user, message_type, file)
 
+        # Commit message trước khi enqueue AI reply
+        frappe.db.commit()
+
         if is_user:
-            frappe.enqueue("raven.api.chatbot.handle_ai_reply", conversation_id=conversation_id, now=False)
+            # Delay nhỏ để đảm bảo message đã được commit
+            frappe.enqueue(
+                "raven.api.chatbot.handle_ai_reply",
+                conversation_id=conversation_id,
+                now=False,
+                timeout=300  # 5 phút timeout
+            )
 
         return chat_message.name
 
@@ -160,12 +185,27 @@ def send_message(conversation_id, message, is_user=True, message_type="Text", fi
 
 def handle_ai_reply(conversation_id):
     try:
-        context = build_context(conversation_id)
+        # Retry mechanism cho build_context
+        max_retries = 3
+        context = []
+
+        for attempt in range(max_retries):
+            context = build_context(conversation_id)
+
+            if context:
+                break
+
+            if attempt < max_retries - 1:
+                frappe.log_error(
+                    f"[AI RETRY] Attempt {attempt + 1}/{max_retries} - context rỗng, đang retry...",
+                    "AI Handler - Retry Context"
+                )
+                time.sleep(1)  # Chờ 1 giây trước khi retry
 
         if not context:
             frappe.log_error(
-                f"[AI SKIPPED] context rỗng tại conversation_id={conversation_id}",
-                "AI Handler - empty context"
+                f"[AI SKIPPED] Context vẫn rỗng sau {max_retries} lần thử tại conversation_id={conversation_id}",
+                "AI Handler - Final Skip"
             )
             return
 
@@ -190,32 +230,85 @@ def handle_ai_reply(conversation_id):
         )
 
 
-
 @frappe.whitelist()
 def rename_conversation(conversation_id, title):
-    try:
-        if not frappe.db.exists("ChatConversation", conversation_id):
-            frappe.throw(_("Cuộc trò chuyện không tồn tại"))
+    max_retries = 3
+    retry_delay = 0.5  # 500ms
 
-        conversation = frappe.get_doc("ChatConversation", conversation_id)
-        old_title = conversation.title
-        conversation.title = title
-        conversation.save(ignore_permissions=True, ignore_version=True)
-        frappe.db.commit()
+    for attempt in range(max_retries):
+        try:
+            if not frappe.db.exists("ChatConversation", conversation_id):
+                frappe.throw(_("Cuộc trò chuyện không tồn tại"))
 
-        frappe.publish_realtime(
-            event='raven:update_conversation_title',
-            message={
-                'conversation_id': conversation_id,
-                'old_title': old_title,
-                'new_title': title,
-                'creation': conversation.creation
-            },
-            after_commit=True,
-            doctype="ChatConversation"
-        )
+            # Lấy document mới nhất từ database
+            conversation = frappe.get_doc("ChatConversation", conversation_id)
+            old_title = conversation.title
+            conversation.title = title
 
-        return conversation
-    except Exception as e:
-        frappe.log_error(f"{str(e)}\n{traceback.format_exc()}", "Lỗi khi đổi tên conversation")
-        frappe.throw(_("Có lỗi xảy ra khi đổi tên cuộc trò chuyện"))
+            # Sử dụng ignore_version=True để bỏ qua timestamp check
+            conversation.save(ignore_permissions=True, ignore_version=True)
+            frappe.db.commit()
+
+            frappe.publish_realtime(
+                event='raven:update_conversation_title',
+                message={
+                    'conversation_id': conversation_id,
+                    'old_title': old_title,
+                    'new_title': title,
+                    'creation': conversation.creation
+                },
+                after_commit=True,
+                doctype="ChatConversation"
+            )
+
+            return conversation
+
+        except frappe.exceptions.TimestampMismatchError as e:
+            if attempt < max_retries - 1:
+                frappe.log_error(
+                    f"[RENAME RETRY] Attempt {attempt + 1}/{max_retries} - TimestampMismatchError, đang retry...",
+                    "Rename Conversation - Retry"
+                )
+                time.sleep(retry_delay)
+                retry_delay *= 2  # Exponential backoff
+                continue
+            else:
+                # Nếu vẫn lỗi sau max_retries, thử cách khác
+                try:
+                    # Sử dụng frappe.db.set_value để update trực tiếp
+                    frappe.db.set_value("ChatConversation", conversation_id, "title", title)
+                    frappe.db.commit()
+
+                    # Lấy lại conversation sau khi update
+                    conversation = frappe.get_doc("ChatConversation", conversation_id)
+
+                    frappe.publish_realtime(
+                        event='raven:update_conversation_title',
+                        message={
+                            'conversation_id': conversation_id,
+                            'old_title': old_title if 'old_title' in locals() else '',
+                            'new_title': title,
+                            'creation': conversation.creation
+                        },
+                        after_commit=True,
+                        doctype="ChatConversation"
+                    )
+
+                    return conversation
+
+                except Exception as fallback_error:
+                    frappe.log_error(
+                        f"[RENAME FALLBACK ERROR] {str(fallback_error)}\n{traceback.format_exc()}",
+                        "Rename Conversation - Fallback Failed"
+                    )
+                    frappe.throw(_("Không thể đổi tên cuộc trò chuyện sau nhiều lần thử"))
+
+        except Exception as e:
+            frappe.log_error(
+                f"[RENAME ERROR] Attempt {attempt + 1}: {str(e)}\n{traceback.format_exc()}",
+                "Rename Conversation - General Error"
+            )
+            if attempt == max_retries - 1:
+                frappe.throw(_("Có lỗi xảy ra khi đổi tên cuộc trò chuyện"))
+
+    frappe.throw(_("Không thể đổi tên cuộc trò chuyện sau nhiều lần thử"))

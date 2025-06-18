@@ -262,7 +262,7 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
       // Message states
       isThinking={isThinking}
       onReload={handleReloadThinking}
-      thinkingTimeout={10000}
+      thinkingTimeout={20000}
       hasMore={hasMore}
       onShowMore={handleShowMore}
       startIdx={startIdx}

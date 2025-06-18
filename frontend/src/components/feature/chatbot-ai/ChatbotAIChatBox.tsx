@@ -193,7 +193,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({
   }
 
   return (
-    <div className='flex flex-col h-full w-full'>
+    <div className='flex flex-col w-full h-screen'>
       {/* Header */}
       <div className='border-b px-4 py-2 bg-white dark:bg-gray-2 border-gray-200 dark:border-gray-600'>
         <div className='flex items-center justify-between'>
