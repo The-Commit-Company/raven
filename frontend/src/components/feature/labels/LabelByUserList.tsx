@@ -3,6 +3,7 @@ import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { labelListAtom, refreshLabelListAtom } from './conversations/atoms/labelAtom'
 import LabelItem from './LabelItem'
+import BeatLoader from '@/components/layout/Loaders/BeatLoader'
 
 interface Label {
   label_id: string
@@ -39,7 +40,7 @@ const LabelByUserList = () => {
 
   const labels: Label[] = labelsInAtom.length > 0 ? labelsInAtom : data?.message || []
 
-  if (isLoading && labels.length === 0) return <div>Đang tải...</div>
+  if (isLoading && labels.length === 0) return <BeatLoader text='Đang tải label...' />
   if (error && labels.length === 0) return <div className='text-red-500'>Lỗi: {error.message}</div>
 
   return (

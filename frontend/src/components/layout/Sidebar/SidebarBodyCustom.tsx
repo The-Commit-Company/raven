@@ -13,14 +13,11 @@ export const SidebarBody = () => {
   const setSortedChannels = useSetAtom(setSortedChannelsAtom)
   useEffect(() => {
     setSortedChannels((prev) => {
-      const prevMap = new Map(prev.map((c) => [c.name, { is_done: c.is_done, user_labels: c.user_labels }]))
-
+      const prevMap = new Map(prev.map((c) => [c.name, c.is_done]))
       const nextList = prepareSortedChannels(channels, dm_channels).map((channel) => ({
         ...channel,
-        is_done: prevMap.get(channel.name)?.is_done ?? channel.is_done ?? 0,
-        user_labels: prevMap.get(channel.name)?.user_labels ?? channel.user_labels ?? []
+        is_done: prevMap.get(channel.name) ?? channel.is_done ?? 0
       }))
-
       return nextList
     })
   }, [channels, dm_channels, setSortedChannels])

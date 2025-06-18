@@ -191,7 +191,7 @@ const MainPageContent = () => {
 
               {/* Resize Handle */}
               <PanelResizeHandle
-                className='cursor-col-resize bg-gray-300 dark:bg-gray-600 w-px panel-1 '
+                className='cursor-col-resize bg-gray-4 dark:bg-gray-6 w-px panel-1 '
                 onPointerUp={handleSidebarPointerUp}
               />
 
@@ -225,7 +225,7 @@ const MainPageContent = () => {
 
               {/* Resize Handle 1 */}
               <PanelResizeHandle
-                className='cursor-col-resize bg-gray-300 dark:bg-gray-600 w-px panel-1'
+                className='cursor-col-resize bg-gray-4 dark:bg-gray-6 w-px panel-1 '
                 onPointerUp={handleSidebarPointerUp}
               />
 
@@ -239,7 +239,7 @@ const MainPageContent = () => {
                 <div className='flex flex-col gap-1 w-full h-full'>
                   <SidebarHeader />
                   <div className='px-2'>
-                    <div className='h-px bg-gray-400 dark:bg-gray-600' />
+                    <div className='h-px bg-gray-4 dark:bg-gray-6' />
                   </div>
                   <SidebarBody size={panelSize} />
                 </div>
@@ -247,7 +247,7 @@ const MainPageContent = () => {
 
               {/* Resize Handle 2 */}
               <PanelResizeHandle
-                className='cursor-col-resize bg-gray-300 dark:bg-gray-600 w-px handle-2'
+                className='cursor-col-resize bg-gray-4 dark:bg-gray-6 w-px handle-2'
                 onPointerUp={handleSidebarPointerUp}
               />
 

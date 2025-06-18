@@ -38,8 +38,12 @@ const ThreadsCustom = () => {
         {/* Show only regular threads now since this needs pagination */}
         <Tabs.Root defaultValue='Participating'>
           <Tabs.List>
-            <Tabs.Trigger className='cursor-pointer' value='Participating'>Đang tham gia</Tabs.Trigger>
-            <Tabs.Trigger className='cursor-pointer' value='Other'>Khác</Tabs.Trigger>
+            <Tabs.Trigger className='cursor-pointer' value='Participating'>
+              Đang tham gia
+            </Tabs.Trigger>
+            <Tabs.Trigger className='cursor-pointer' value='Other'>
+              Khác
+            </Tabs.Trigger>
             {/* <Tabs.Trigger className='cursor-pointer' value='AI Threads'>AI Agents</Tabs.Trigger> */}
           </Tabs.List>
           <Tabs.Content value='Participating'>
