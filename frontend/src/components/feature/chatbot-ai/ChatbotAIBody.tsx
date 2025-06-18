@@ -92,38 +92,46 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
 
   // Hàm gửi tin nhắn Chatbot AI
   const handleSendMessage = useCallback(async () => {
-    if ((!input.trim() && !selectedFile) || sending || loadingMessages) return
-
-    const context = localMessages.map((msg) => ({ role: msg.role, content: msg.content }))
-
-    // Thêm message pending vào UI nếu có nội dung
     const hasText = input.trim() !== ''
-    const newMessage: Message = {
+    const hasFile = !!selectedFile
+
+    // Nếu không có gì để gửi hoặc đang loading thì thoát
+    if ((!hasText && !hasFile) || sending || loadingMessages) return
+
+    const context = localMessages.map((msg) => ({
+      role: msg.role,
+      content: msg.content
+    }))
+
+    // Tạo message tạm nếu có nội dung
+    const tempMessage: Message = {
       id: `temp-${Date.now()}`,
       role: 'user',
       content: input.trim(),
       pending: true
     }
-    if (hasText) setLocalMessages((prev) => [...prev, newMessage])
 
+    if (hasText) {
+      setLocalMessages((prev) => [...prev, tempMessage])
+    }
+
+    // Reset input và trạng thái file
     setInput('')
     setFileError(null)
     setIsThinking(true)
 
     try {
-      if (selectedFile) {
-        // Upload file riêng cho chatbot AI
+      if (hasFile) {
+        // Gửi file kèm message nếu có
         const fileWrapper = selectedFile as CustomFile
         fileWrapper.fileID = fileWrapper.name + Date.now()
         await addFile(fileWrapper)
-        await uploadFiles()
-      }
-
-      // Nếu có văn bản thì gửi thêm message text
-      if (hasText) {
+        await uploadFiles() // Đã bao gồm input.trim() làm message nếu có
+      } else if (hasText) {
+        // Gửi riêng message nếu không có file
         await sendMessage({
           conversation_id: botID!,
-          message: newMessage.content,
+          message: tempMessage.content,
           context
         })
       }
@@ -132,10 +140,10 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
     } catch (error) {
       console.error('Error sending message:', error)
       if (hasText) {
-        setLocalMessages((prev) => prev.filter((msg) => msg.id !== newMessage.id))
+        // Nếu gửi lỗi thì xoá message tạm khỏi UI
+        setLocalMessages((prev) => prev.filter((msg) => msg.id !== tempMessage.id))
       }
     } finally {
-      setIsThinking(false)
       setSelectedFile(null)
     }
   }, [
