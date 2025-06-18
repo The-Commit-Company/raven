@@ -191,7 +191,7 @@ const MainPageContent = () => {
 
               {/* Resize Handle */}
               <PanelResizeHandle
-                className='cursor-col-resize bg-gray-300 dark:bg-gray-600 w-px panel-1'
+                className='cursor-col-resize bg-gray-300 dark:bg-gray-600 w-px panel-1 '
                 onPointerUp={handleSidebarPointerUp}
               />
 

@@ -48,9 +48,10 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
   // Ưu tiên các component đặc biệt trước
   if (title === 'Đã gắn cờ') return <MessageSaved />
   if (title === 'Nhắc đến') return <MentionList />
-  if (title === 'Xong') return <DoneChannelList />
+  if (title === 'Xong') return <DoneChannelList key='done-list' />
   if (title === 'Chủ đề') return <ThreadsCustom />
   if (title === 'Thành viên') return <UserChannelList />
+  if (title === 'Chatbot AI') return <ChatbotAIStream />
   if (title === 'Nhãn') return <LabelByUserList />
 
   // Nếu có nhãn ID thì lọc theo nhãn
@@ -74,31 +75,17 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
   const getFilteredChannels = (): DMChannelWithUnreadCount[] => {
     switch (title) {
       case 'Trò chuyện nhóm':
-        return channel_list.filter(
-          (c: { group_type: string; is_done: number }) => c.group_type === 'channel' && c.is_done === 0
-        )
+        return channel_list.filter((c) => c.group_type === 'channel')
       case 'Cuộc trò chuyện riêng tư':
-        return channel_list.filter(
-          (c: { group_type: string; is_done: number }) => c.group_type === 'dm' && c.is_done === 0
-        )
+        return channel_list.filter((c) => c.group_type === 'dm')
       case 'Chưa đọc':
-        return channel_list.filter(
-          (c: { unread_count: number; is_done: number }) => c.unread_count > 0 && c.is_done === 0
-        )
+        return channel_list.filter((c) => c.unread_count > 0)
       default:
-        return channel_list.filter((c: { is_done: number }) => c.is_done === 0)
+        return channel_list
     }
   }
 
   const filteredChannels = getFilteredChannels()
-
-  if (title === 'Đã gắn cờ') return <MessageSaved />
-  if (title === 'Nhắc đến') return <MentionList />
-  if (title === 'Xong') return <DoneChannelList />
-  if (title === 'Chủ đề') return <ThreadsCustom />
-  if (title === 'Thành viên') return <UserChannelList />
-  if (title === 'Chatbot AI') return <ChatbotAIStream />
-  if (title === 'Nhãn') return <LabelByUserList />
 
   if (filteredChannels.length === 0 && title !== 'Trò chuyện') {
     return <div className='text-gray-500 text-sm italic p-4 text-center'>Không có kết quả</div>
@@ -151,6 +138,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   const manuallyMarked = useAtomValue(manuallyMarkedAtom)
   const { clearManualMark } = useChannelActions()
   const { markAsDone, markAsNotDone } = useChannelDone()
+  const isChannelDone = channel.is_done === 1
 
   const isGroupChannel = !channel.is_direct_message && !channel.is_self_message
   const isDM = isDMChannel(channel)
@@ -234,21 +222,20 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
       </Flex>
 
       {channel.last_message_details && (
-        <Tooltip content={channel.is_done ? 'Đánh dấu chưa xong' : 'Đánh dấu đã xong'} side='bottom'>
+        <Tooltip content={isChannelDone ? 'Đánh dấu chưa xong' : 'Đánh dấu đã xong'} side='bottom'>
           <button
             onClick={(e) => {
+              e.preventDefault()
               if (isDesktop) {
                 e.stopPropagation()
               }
-              channel.is_done ? markAsNotDone(channel.name) : markAsDone(channel.name)
+              isChannelDone ? markAsNotDone(channel.name) : markAsDone(channel.name)
             }}
             className='absolute z-99 right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded-full bg-gray-200 hover:bg-gray-300 h-[20px] w-[20px] flex items-center justify-center cursor-pointer'
-            title={channel.is_done ? 'Chưa xong' : 'Đã xong'}
+            title={isChannelDone ? 'Chưa xong' : 'Đã xong'}
           >
             <HiCheck
-              className={`h-3 w-3 transition-colors duration-150 ${
-                channel.is_done ? 'text-green-600' : 'text-gray-800'
-              }`}
+              className={`h-3 w-3 transition-colors duration-150 ${isChannelDone ? 'text-green-600' : 'text-gray-800'}`}
             />
           </button>
         </Tooltip>

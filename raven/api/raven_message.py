@@ -8,7 +8,6 @@ from frappe.query_builder.functions import Coalesce, Count, Max, Coalesce
 from raven.api.raven_channel import create_direct_message_channel, get_peer_user_id
 from raven.utils import get_channel_member, is_channel_member, track_channel_visit
 
-
 @frappe.whitelist(methods=["POST"])
 def send_message(
     channel_id,
@@ -40,7 +39,30 @@ def send_message(
 
     doc.insert()
 
-    # Cập nhật nội dung cuối cùng của channel
+    # ✅ RESET lại is_done = 0 cho các user đã từng đánh dấu là xong
+    done_members = frappe.get_all(
+        "Raven Channel Member",
+        filters={"channel_id": channel_id, "is_done": 1},
+        fields=["name", "user_id"]
+    )
+
+    if done_members:
+        for member in done_members:
+            # Cập nhật is_done = 0
+            frappe.db.set_value("Raven Channel Member", member.name, "is_done", 0)
+
+            # Emit realtime event cho user bị reset done
+            frappe.publish_realtime(
+                event="channel_done_updated",
+                message={
+                    "channel_id": channel_id,
+                    "is_done": 0
+                },
+                user=member.user_id,
+                after_commit=True
+            )
+
+    # ✅ Cập nhật nội dung cuối cùng của channel
     message_type = doc.message_type or "Text"
     content = text
 
@@ -62,34 +84,12 @@ def send_message(
         "last_message_timestamp": doc.creation
     })
 
-    # ✅ RESET lại is_done = 0 cho các user đã từng đánh dấu là xong
-    done_members = frappe.get_all(
-        "Raven Channel Member",
-        filters={"channel_id": channel_id, "is_done": 1},
-        fields=["name", "user_id"]
-    )
-
-    for member in done_members:
-        # Cập nhật is_done về 0
-        frappe.db.set_value("Raven Channel Member", member.name, "is_done", 0)
-
-        # Gửi realtime chỉ cho đúng user bị reset
-        frappe.publish_realtime(
-            event="channel_done_updated",
-            message={
-                "channel_id": channel_id,
-                "is_done": 0
-            },
-            user=member.user_id,
-            after_commit=True
-        )
-
-    # ✅ Gửi sự kiện realtime tới các user khác trong channel
+    # ✅ Gửi sự kiện realtime tới các user khác trong channel (không gửi cho người gửi)
     members = frappe.get_all("Raven Channel Member", filters={"channel_id": channel_id}, pluck="user_id")
 
     for member in members:
         if member != frappe.session.user:
-            # Thông báo có tin nhắn mới
+            # Gửi event new_message cho user khác
             frappe.publish_realtime(
                 event="new_message",
                 message={
@@ -97,13 +97,6 @@ def send_message(
                     "user": frappe.session.user,
                     "seen_at": frappe.utils.now_datetime(),
                 },
-                user=member
-            )
-
-            # Thông báo danh sách channel có update
-            frappe.publish_realtime(
-                event="channel_list_updated",
-                message={"channel_id": channel_id},
                 user=member
             )
 

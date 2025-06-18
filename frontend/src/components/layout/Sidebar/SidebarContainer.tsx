@@ -80,6 +80,7 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
 
     return total
   }, [enrichedChannels])
+
   const { mode, setMode, tempMode } = useSidebarMode()
 
   const isCollapsed = false
@@ -134,13 +135,8 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
   )
 }
 
-interface FilterListProps {
-  onClose?: () => void
-}
-
 export function FilterList({ onClose }: { onClose?: () => void }) {
   const [isLabelOpen, setIsLabelOpen] = useState(false)
-  const isTablet = useIsTablet()
   const navigate = useNavigate()
   const { workspaceID, channelID } = useParams()
   const { title, setTitle, tempMode, setLabelID } = useSidebarMode()
