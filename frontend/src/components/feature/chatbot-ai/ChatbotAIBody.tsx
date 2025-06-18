@@ -5,6 +5,7 @@ import { Message } from '@/types/ChatBot/types'
 import { normalizeConversations, normalizeMessages } from '@/utils/chatBot-options'
 import { useFrappeEventListener } from 'frappe-react-sdk'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { toast } from 'sonner'
 import ChatStreamLoader from '../chat/ChatStream/ChatStreamLoader'
 import { CustomFile } from '../file-upload/FileDrop'
 import useUploadChatbotFile from './useUploadChatbotFile'
@@ -137,8 +138,9 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
       }
 
       await mutateMessages()
-    } catch (error) {
-      console.error('Error sending message:', error)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err: any) {
+      toast.error('Đã xảy ra lỗi khi gửi tin nhắn. Vui lòng thử lại.')
       if (hasText) {
         // Nếu gửi lỗi thì xoá message tạm khỏi UI
         setLocalMessages((prev) => prev.filter((msg) => msg.id !== tempMessage.id))
