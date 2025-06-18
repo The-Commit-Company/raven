@@ -8,16 +8,21 @@ import IsTabletSidebarNav from './IsTabletSidebarNav'
 import { useSetAtom } from 'jotai'
 import { prepareSortedChannels, setSortedChannelsAtom } from '@/utils/channel/ChannelAtom'
 
-export type SidebarBodyProps = {
-  size: number
-}
-
-export const SidebarBody = ({ size }: SidebarBodyProps) => {
+export const SidebarBody = () => {
   const { channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
   const setSortedChannels = useSetAtom(setSortedChannelsAtom)
   useEffect(() => {
-    setSortedChannels((prev) => prepareSortedChannels(channels, dm_channels))
+    setSortedChannels((prev) => {
+      const prevMap = new Map(prev.map((c) => [c.name, { is_done: c.is_done, user_labels: c.user_labels }]))
 
+      const nextList = prepareSortedChannels(channels, dm_channels).map((channel) => ({
+        ...channel,
+        is_done: prevMap.get(channel.name)?.is_done ?? channel.is_done ?? 0,
+        user_labels: prevMap.get(channel.name)?.user_labels ?? channel.user_labels ?? []
+      }))
+
+      return nextList
+    })
   }, [channels, dm_channels, setSortedChannels])
 
   const isTablet = useIsTablet()

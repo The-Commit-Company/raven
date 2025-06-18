@@ -109,8 +109,8 @@ export const useFetchUnreadMessageCount = () => {
   const { play } = useNotificationAudio()
 
   useFrappeEventListener('raven:unread_channel_count_updated', (event) => {
-    console.log(event);
-    
+    console.log(event)
+
     if (event.sent_by !== currentUser) {
       if (channelID === event.channel_id) {
         trackVisit({ channel_id: channelID })

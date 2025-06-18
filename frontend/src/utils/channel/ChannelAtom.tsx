@@ -1,6 +1,6 @@
 // atoms/sortedChannelsAtom.ts
 import { atom, useAtomValue, useSetAtom } from 'jotai'
-import { useUnreadCount, useUnreadMessages } from '../layout/sidebar'
+import { useUnreadCount } from '../layout/sidebar'
 
 export type ChannelWithGroupType = {
   name: string
@@ -43,10 +43,8 @@ export const prepareSortedChannels = (channels: any[], dm_channels: any[]): Chan
 // Hook để lấy danh sách channel đã loại bỏ những cái đã "done"
 export const useEnrichedChannels = (): ChannelWithGroupType[] => {
   const channels = useAtomValue(sortedChannelsAtom)
-  const doneList = useAtomValue(doneListAtom)
   const unreadList = useUnreadCount().message || []
-
-  const filteredChannels = channels.filter((channel) => !doneList.includes(channel.name))
+  const filteredChannels = channels.filter((channel) => channel.is_done === 0)
 
   return filteredChannels.map((channel) => {
     const unread = unreadList.find((u) => u.name === channel.name)

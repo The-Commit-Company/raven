@@ -9,7 +9,7 @@ import { Box, Dialog, Flex, Tabs, Text } from '@radix-ui/themes'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import useFetchChannelMembers from '@/hooks/fetchers/useFetchChannelMembers'
 import useFetchActiveUsers from '@/hooks/fetchers/useFetchActiveUsers'
-import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { useIsDesktop, useIsMobile } from '@/hooks/useMediaQuery'
 import { Drawer, DrawerContent } from '@/components/layout/Drawer'
 
 interface ViewChannelDetailsModalContentProps {
@@ -21,20 +21,31 @@ interface ViewChannelDetailsModalContentProps {
 
 const ViewChannelDetailsModal = ({ open, setOpen, channelData, defaultTab }: ViewChannelDetailsModalContentProps) => {
   const isDesktop = useIsDesktop()
+  const isMobile = useIsMobile()
 
   if (isDesktop) {
     return (
       <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Content className={DIALOG_CONTENT_CLASS}>
-          <ViewChannelDetailsModalContent open={open} setOpen={setOpen} channelData={channelData} defaultTab={defaultTab} />
+          <ViewChannelDetailsModalContent
+            open={open}
+            setOpen={setOpen}
+            channelData={channelData}
+            defaultTab={defaultTab}
+          />
         </Dialog.Content>
       </Dialog.Root>
     )
-  } else {
+  } else if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerContent>
-          <ViewChannelDetailsModalContent open={open} setOpen={setOpen} channelData={channelData} defaultTab={defaultTab} />
+          <ViewChannelDetailsModalContent
+            open={open}
+            setOpen={setOpen}
+            channelData={channelData}
+            defaultTab={defaultTab}
+          />
         </DrawerContent>
       </Drawer>
     )
@@ -43,7 +54,11 @@ const ViewChannelDetailsModal = ({ open, setOpen, channelData, defaultTab }: Vie
 
 export default ViewChannelDetailsModal
 
-const ViewChannelDetailsModalContent = ({ setOpen, channelData, defaultTab = 'About' }: ViewChannelDetailsModalContentProps) => {
+const ViewChannelDetailsModalContent = ({
+  setOpen,
+  channelData,
+  defaultTab = 'About'
+}: ViewChannelDetailsModalContentProps) => {
   const { data } = useFetchActiveUsers()
 
   const activeUsers = data?.message ?? []

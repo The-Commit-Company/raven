@@ -17,7 +17,7 @@ interface ChannelHeaderProps {
 
 export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
   // The channel header has the channel name, the channel type icon, edit channel name button, and the view or add members button
-  
+
   const lastWorkspace = localStorage.getItem('ravenLastWorkspace')
   const [open, setOpen] = useState(false)
 
@@ -61,12 +61,7 @@ export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
         <ChannelHeaderMenu channelData={channelData} />
       </Flex>
 
-      <ViewChannelDetailsModal
-        open={open}
-        setOpen={setOpen}
-        channelData={channelData}
-        defaultTab='Members'
-      />
+      <ViewChannelDetailsModal open={open} setOpen={setOpen} channelData={channelData} defaultTab='Members' />
     </PageHeader>
   )
 }
