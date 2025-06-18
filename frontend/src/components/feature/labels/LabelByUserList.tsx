@@ -3,10 +3,15 @@ import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { labelListAtom, refreshLabelListAtom } from './conversations/atoms/labelAtom'
 import LabelItem from './LabelItem'
-
+import BeatLoader from '@/components/layout/Loaders/BeatLoader'
 interface Label {
   label_id: string
   label: string
+  channels: {
+    channel_id: string
+    channel_name: string
+    is_direct_message: boolean
+  }[]
 }
 
 const LabelByUserList = () => {
@@ -39,7 +44,7 @@ const LabelByUserList = () => {
 
   const labels: Label[] = labelsInAtom.length > 0 ? labelsInAtom : data?.message || []
 
-  if (isLoading && labels.length === 0) return <div>Đang tải...</div>
+  if (isLoading && labels.length === 0) return <BeatLoader text='Đang tải label...' />
   if (error && labels.length === 0) return <div className='text-red-500'>Lỗi: {error.message}</div>
 
   return (
@@ -48,7 +53,7 @@ const LabelByUserList = () => {
         <div className='text-gray-500'>Chưa có nhãn nào</div>
       ) : (
         labels.map((labelItem) => (
-          <LabelItem key={labelItem.label_id} label={labelItem.label} name={labelItem.label_id} />
+          <LabelItem channels={labelItem.channels} key={labelItem.label_id} label={labelItem.label} name={labelItem.label_id} />
         ))
       )}
     </div>

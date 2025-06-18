@@ -1,5 +1,5 @@
 import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
-import { useSidebarMode } from '@/utils/layout/sidebar'
+import { useSidebarMode, useUnreadContext } from '@/utils/layout/sidebar'
 import { Tooltip } from '@radix-ui/themes'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
@@ -24,8 +24,8 @@ import { FiChevronDown, FiChevronRight } from 'react-icons/fi'
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { useNavigate, useParams } from 'react-router-dom'
 import LabelList from '@/components/feature/labels/LabelListSidebar' // đường dẫn đúng
-import { useEnrichedChannels } from '@/utils/channel/ChannelAtom'
-import { useIsTablet } from '@/hooks/useMediaQuery'
+import { sortedChannelsAtom, useEnrichedChannels } from '@/utils/channel/ChannelAtom'
+import { useAtomValue } from 'jotai'
 
 export const useMentionUnreadCount = () => {
   const { data: mentionsCount, mutate } = useFrappeGetCall<{ message: number }>(
@@ -142,10 +142,21 @@ export function FilterList({ onClose }: { onClose?: () => void }) {
   const { title, setTitle, tempMode, setLabelID } = useSidebarMode()
   const isIconOnly = tempMode === 'show-only-icons'
 
-  const { totalUnreadCount } = useUnreadMessageCount()
   const { mentionUnreadCount, resetMentions } = useMentionUnreadCount()
-
   const enrichedChannels = useEnrichedChannels()
+
+  const sortedChannels = useAtomValue(sortedChannelsAtom)
+  const unreadContext = useUnreadContext()
+
+  const totalUnreadCountFiltered = useMemo(() => {
+    return unreadContext.message.reduce((sum, c) => {
+      const isDone = sortedChannels.find((ch) => ch.name === c.name)?.is_done === 1
+      if (!isDone) {
+        return sum + (c.unread_count ?? 0)
+      }
+      return sum
+    }, 0)
+  }, [unreadContext, sortedChannels])
 
   const labelChannelsUnreadCount = useMemo(() => {
     const seen = new Set<string>()
@@ -173,7 +184,7 @@ export function FilterList({ onClose }: { onClose?: () => void }) {
         const isActive = item.label === title
         let badgeCount = 0
 
-        if (['Trò chuyện', 'Chưa đọc'].includes(item.label)) badgeCount = totalUnreadCount
+        if (['Trò chuyện', 'Chưa đọc'].includes(item.label)) badgeCount = totalUnreadCountFiltered
         if (item.label === 'Nhắc đến') badgeCount = mentionUnreadCount
         if (item.label === 'Nhãn') badgeCount = labelChannelsUnreadCount
 
@@ -189,13 +200,11 @@ export function FilterList({ onClose }: { onClose?: () => void }) {
                     isActive && 'bg-gray-4 font-semibold'
                   )}
                   onClick={() => {
-                    // Toggle mở/đóng danh sách label
                     setIsLabelOpen((prev) => !prev)
                     handleClick(item.label)
-                    // Nếu đang không chọn "Nhãn", thì set
                     if (title !== item.label) {
                       setTitle(item.label)
-                      setLabelID('') // reset nhãn cụ thể
+                      setLabelID('')
                     }
                   }}
                 >

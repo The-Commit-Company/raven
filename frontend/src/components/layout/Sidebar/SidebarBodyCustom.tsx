@@ -11,17 +11,18 @@ import { prepareSortedChannels, setSortedChannelsAtom } from '@/utils/channel/Ch
 export const SidebarBody = () => {
   const { channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
   const setSortedChannels = useSetAtom(setSortedChannelsAtom)
-  useEffect(() => {
-    setSortedChannels((prev) => {
-      const prevMap = new Map(prev.map((c) => [c.name, { is_done: c.is_done, user_labels: c.user_labels }]))
 
-      const nextList = prepareSortedChannels(channels, dm_channels).map((channel) => ({
+  useEffect(() => {
+    if (channels.length === 0 && dm_channels.length === 0) return
+
+    setSortedChannels((prev) => {
+      const prevMap = new Map(prev.map((c) => [c.name, c.is_done]))
+
+      return prepareSortedChannels(channels, dm_channels).map((channel) => ({
         ...channel,
-        is_done: prevMap.get(channel.name)?.is_done ?? channel.is_done ?? 0,
+        is_done: prevMap.get(channel.name) ?? channel.is_done ?? 0,
         user_labels: prevMap.get(channel.name)?.user_labels ?? channel.user_labels ?? []
       }))
-
-      return nextList
     })
   }, [channels, dm_channels, setSortedChannels])
 

@@ -481,6 +481,12 @@ def mark_channel_as_done(channel_id):
         "is_done",
         1
     )
+    frappe.publish_realtime(
+        event="raven:channel_done_updated",
+        message={"channel_id": channel_id, "is_done": 1},
+        user=user,
+        after_commit=True
+    )    
     return {"status": "success", "channel_id": channel_id, "is_done": 1}
 
 
@@ -496,7 +502,7 @@ def mark_channel_as_not_done(channel_id):
     )
 
     frappe.publish_realtime(
-        event="channel_done_updated",
+        event="raven:channel_done_updated",
         message={"channel_id": channel_id, "is_done": 0},
         user=user,
         after_commit=True
