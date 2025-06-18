@@ -50,6 +50,9 @@ def extract_text_from_file(file_url):
         elif file_url.endswith((".xls", ".xlsx")):
             df = pd.read_excel(full_path)
             return df.to_string(index=False)
+        elif file_url.endswith(".txt"):
+            with open(full_path, 'r', encoding='utf-8') as f:
+                return f.read()
     except Exception as e:
         return f"[Không thể đọc file: {e}]"
 
