@@ -71,13 +71,16 @@ def build_context(conversation_id):
     context = []
     for msg in messages:
         content = msg.message or ""
+
         if msg.file:
             file_text = extract_text_from_file(msg.file)
-            content += f"\n\n[Nội dung file đính kèm:]\n{file_text}"
-        context.append({
-            "role": "user" if msg.is_user else "assistant",
-            "content": content
-        })
+            content += f"\n\n[Nội dung file đính kèm:]\n{file_text or '[Không có nội dung từ file]'}"
+
+        if content.strip():
+            context.append({
+                "role": "user" if msg.is_user else "assistant",
+                "content": content
+            })
 
     return context
 
@@ -158,9 +161,17 @@ def send_message(conversation_id, message, is_user=True, message_type="Text", fi
 def handle_ai_reply(conversation_id):
     try:
         context = build_context(conversation_id)
-        ai_reply = call_openai(context)
 
+        if not context:
+            frappe.log_error(
+                f"[AI SKIPPED] context rỗng tại conversation_id={conversation_id}",
+                "AI Handler - empty context"
+            )
+            return
+
+        ai_reply = call_openai(context)
         chat_message = create_message(conversation_id, ai_reply, is_user=False)
+        frappe.db.commit()
 
         frappe.publish_realtime(
             event='raven:new_ai_message',
@@ -177,6 +188,7 @@ def handle_ai_reply(conversation_id):
             f"Error handling AI reply:\n{str(e)}\n{traceback.format_exc()}",
             "AI Handler Error"
         )
+
 
 
 @frappe.whitelist()
