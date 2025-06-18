@@ -34,7 +34,7 @@ def create_message(conversation_id, message, is_user=True, message_type="Text", 
     chat_message.insert()
     return chat_message
 
-def extract_text_from_file(file_url, max_length=2000):
+def extract_text_from_file(file_url):
     is_private = file_url.startswith("/private/")
     base_path = get_files_path(is_private=is_private)
     full_path = os.path.join(base_path, os.path.basename(file_url))
@@ -43,33 +43,16 @@ def extract_text_from_file(file_url, max_length=2000):
         if file_url.endswith(".pdf"):
             with open(full_path, 'rb') as f:
                 reader = PdfReader(f)
-                all_text = ''
-                for i, page in enumerate(reader.pages[:5]):
-                    text = page.extract_text()
-                    if text:
-                        all_text += f"\n--- Trang {i+1} ---\n{text}"
-                if not all_text:
-                    return "[Không thể trích xuất nội dung từ file PDF]"
-                return all_text[:max_length] + ("\n...\n[Trích đoạn PDF]" if len(all_text) > max_length else "")
-
+                return '\n'.join([page.extract_text() for page in reader.pages if page.extract_text()])
         elif file_url.endswith(".docx"):
             doc = docx.Document(full_path)
-            paragraphs = [p.text for p in doc.paragraphs if p.text.strip()]
-            content = "\n".join(paragraphs[:30])
-            return content[:max_length] + ("\n...\n[Trích đoạn Word]" if len(content) > max_length else "")
-
+            return '\n'.join([p.text for p in doc.paragraphs])
         elif file_url.endswith((".xls", ".xlsx")):
             df = pd.read_excel(full_path)
-            if df.empty:
-                return "[Không có dữ liệu trong file Excel]"
-            preview = df.head(5).to_string(index=False)
-            return f"[Xem trước bảng dữ liệu]\n{preview}\n\n(Số dòng: {len(df)}, Cột: {len(df.columns)})"
-
+            return df.to_string(index=False)
         elif file_url.endswith(".txt"):
             with open(full_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-                return content[:max_length] + ("\n...\n[Trích đoạn Text]" if len(content) > max_length else "")
-
+                return f.read()
     except Exception as e:
         return f"[Không thể đọc file: {e}]"
 
@@ -89,7 +72,7 @@ def build_context(conversation_id):
     for msg in messages:
         content = msg.message or ""
         if msg.file:
-            file_text = extract_text_from_file(msg.file, max_length=2000)
+            file_text = extract_text_from_file(msg.file)
             content += f"\n\n[Nội dung file đính kèm:]\n{file_text}"
         context.append({
             "role": "user" if msg.is_user else "assistant",
