@@ -228,6 +228,16 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
     return () => clearInterval(pollingInterval)
   }, [socketConnected, mutateMessages])
 
+  useEffect(() => {
+    if (isThinking) {
+      const timeout = setTimeout(() => {
+        setIsThinking(false)
+      }, 10000)
+
+      return () => clearTimeout(timeout)
+    }
+  }, [isThinking])
+
   // Early return if no session is selected
   if (!selectedSession || !botID) {
     return <ChatStreamLoader />
