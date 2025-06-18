@@ -6,7 +6,7 @@ import { Button, Text, Tooltip } from '@radix-ui/themes'
 import clsx from 'clsx'
 import React, { useCallback, useContext, useEffect, useRef } from 'react'
 import { BiSolidSend } from 'react-icons/bi'
-import { FiCpu, FiPaperclip, FiX } from 'react-icons/fi'
+import { FiCpu, FiPaperclip } from 'react-icons/fi'
 import { commonButtonStyle } from '../labels/LabelItemMenu'
 import ChatbotFileMessage from './ChatbotFileMessage'
 
@@ -293,21 +293,19 @@ const ChatbotAIChatBox: React.FC<Props> = ({
         <div className='max-w-3xl mx-auto'>
           {/* File preview */}
           {selectedFile && (
-            <div className='mb-3 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-between'>
-              <div className='flex items-center gap-2'>
-                <FiPaperclip className='text-gray-500 dark:text-gray-400' size={16} />
-                <Text className='text-gray-700 dark:text-gray-300 text-sm'>{selectedFile.name}</Text>
-                <Text className='text-gray-500 dark:text-gray-400 text-xs'>({formatFileSize(selectedFile.size)})</Text>
+            <div className='mb-3'>
+              <ChatbotFileMessage fileUrl={URL.createObjectURL(selectedFile)} fileName={selectedFile.name} />
+              <div className='mt-2 text-xs text-gray-500 dark:text-gray-400'>
+                Dung lượng: {formatFileSize(selectedFile.size)}
+                <button
+                  onClick={handleRemoveFileClick}
+                  className='ml-4 text-red-500 hover:underline text-xs cursor-pointer'
+                >
+                  Xoá tệp
+                </button>
               </div>
-              <button
-                onClick={handleRemoveFileClick}
-                className='p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors'
-              >
-                <FiX className='text-gray-500 dark:text-gray-400' size={16} />
-              </button>
             </div>
           )}
-
           {/* File error */}
           {fileError && (
             <div className='mb-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg'>
