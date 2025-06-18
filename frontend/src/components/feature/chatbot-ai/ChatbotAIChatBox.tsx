@@ -6,7 +6,18 @@ import { Button, Text, Tooltip } from '@radix-ui/themes'
 import clsx from 'clsx'
 import React, { useCallback, useContext, useEffect, useRef } from 'react'
 import { BiSolidSend } from 'react-icons/bi'
-import { FiCpu, FiPaperclip, FiX } from 'react-icons/fi'
+import {
+  FiCpu,
+  FiDownload,
+  FiExternalLink,
+  FiFile,
+  FiFileText,
+  FiImage,
+  FiMusic,
+  FiPaperclip,
+  FiVideo,
+  FiX
+} from 'react-icons/fi'
 import { commonButtonStyle } from '../labels/LabelItemMenu'
 
 interface Props {
@@ -30,6 +41,121 @@ interface Props {
   startIdx: number
   // Loading props
   loading?: boolean
+}
+
+// Helper function to get file icon based on extension
+const getFileIcon = (fileName: string) => {
+  const extension = fileName.split('.').pop()?.toLowerCase()
+
+  switch (extension) {
+    case 'pdf':
+    case 'doc':
+    case 'docx':
+    case 'txt':
+    case 'rtf':
+      return <FiFileText className='text-blue-500' size={20} />
+    case 'jpg':
+    case 'jpeg':
+    case 'png':
+    case 'gif':
+    case 'webp':
+    case 'svg':
+      return <FiImage className='text-green-500' size={20} />
+    case 'mp4':
+    case 'avi':
+    case 'mov':
+    case 'wmv':
+    case 'flv':
+      return <FiVideo className='text-purple-500' size={20} />
+    case 'mp3':
+    case 'wav':
+    case 'aac':
+    case 'flac':
+      return <FiMusic className='text-orange-500' size={20} />
+    default:
+      return <FiFile className='text-gray-500' size={20} />
+  }
+}
+
+// Helper function to format file size
+const formatFileSize = (bytes: number) => {
+  if (bytes === 0) return '0 Bytes'
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
+
+// Helper function to get file name from path
+const getFileName = (filePath: string) => {
+  return filePath.split('/').pop() || filePath
+}
+
+// File attachment component
+const FileAttachment: React.FC<{
+  filePath: string
+  isUserMessage?: boolean
+  onDownload?: (filePath: string) => void
+}> = ({ filePath, isUserMessage = false, onDownload }) => {
+  const fileName = getFileName(filePath)
+  const fileIcon = getFileIcon(fileName)
+
+  const handleDownload = useCallback(() => {
+    if (onDownload) {
+      onDownload(filePath)
+    } else {
+      // Default download behavior
+      const link = document.createElement('a')
+      link.href = filePath
+      link.download = fileName
+      link.click()
+    }
+  }, [filePath, fileName, onDownload])
+
+  const handleView = useCallback(() => {
+    window.open(filePath, '_blank')
+  }, [filePath])
+
+  return (
+    <div
+      className={clsx(
+        'inline-flex items-center gap-3 p-3 rounded-lg border transition-all hover:shadow-md',
+        isUserMessage
+          ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
+          : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+      )}
+    >
+      {/* File Icon */}
+      <div className='flex-shrink-0'>{fileIcon}</div>
+
+      {/* File Info */}
+      <div className='flex-1 min-w-0'>
+        <div className='font-medium text-gray-900 dark:text-white text-sm truncate'>{fileName}</div>
+        <div className='text-xs text-gray-500 dark:text-gray-400 mt-1'>Tệp đính kèm</div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className='flex items-center gap-1'>
+        <Tooltip content='Xem tệp'>
+          <button
+            onClick={handleView}
+            className='p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors'
+          >
+            <FiExternalLink className='text-gray-500 dark:text-gray-400' size={14} />
+          </button>
+        </Tooltip>
+
+        <Tooltip content='Tải xuống'>
+          <button
+            onClick={handleDownload}
+            className='p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors'
+          >
+            <FiDownload className='text-gray-500 dark:text-gray-400' size={14} />
+          </button>
+        </Tooltip>
+      </div>
+    </div>
+  )
 }
 
 const ChatbotAIChatBox: React.FC<Props> = ({
@@ -122,6 +248,11 @@ const ChatbotAIChatBox: React.FC<Props> = ({
     [onInputChange]
   )
 
+  // File download handler
+  const handleFileDownload = useCallback((filePath: string) => {
+    console.log('Downloading file:', filePath)
+  }, [])
+
   return (
     <div className='flex flex-col h-full w-full'>
       {/* Header */}
@@ -201,14 +332,46 @@ const ChatbotAIChatBox: React.FC<Props> = ({
                       {msg.role === 'user' ? user?.full_name || 'You' : 'ChatGPT'}
                     </span>
                   </div>
-                  <div className={`prose prose-sm max-w-none ${msg.pending ? 'opacity-70' : ''}`}>
-                    <div
-                      className='text-gray-800 dark:text-gray-200 leading-relaxed'
-                      style={{ whiteSpace: 'pre-wrap' }}
-                    >
-                      {msg.content}
+
+                  {/* Regular message content */}
+                  {msg.message_type !== 'File' && (
+                    <div className={`prose prose-sm max-w-none ${msg.pending ? 'opacity-70' : ''}`}>
+                      <div
+                        className='text-gray-800 dark:text-gray-200 leading-relaxed'
+                        style={{ whiteSpace: 'pre-wrap' }}
+                      >
+                        {msg.content}
+                      </div>
                     </div>
-                  </div>
+                  )}
+
+                  {/* File message content */}
+                  {msg.message_type === 'File' && (
+                    <div className={`${msg.pending ? 'opacity-70' : ''}`}>
+                      {/* Text content if any */}
+                      {msg.content && (
+                        <div className='mb-3'>
+                          <div
+                            className='text-gray-800 dark:text-gray-200 leading-relaxed'
+                            style={{ whiteSpace: 'pre-wrap' }}
+                          >
+                            {msg.content}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* File attachment */}
+                      {msg.file && (
+                        <div className='mb-2'>
+                          <FileAttachment
+                            filePath={msg.file}
+                            isUserMessage={msg.role === 'user'}
+                            onDownload={handleFileDownload}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -256,6 +419,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({
               <div className='flex items-center gap-2'>
                 <FiPaperclip className='text-gray-500 dark:text-gray-400' size={16} />
                 <Text className='text-gray-700 dark:text-gray-300 text-sm'>{selectedFile.name}</Text>
+                <Text className='text-gray-500 dark:text-gray-400 text-xs'>({formatFileSize(selectedFile.size)})</Text>
               </div>
               <button
                 onClick={handleRemoveFileClick}

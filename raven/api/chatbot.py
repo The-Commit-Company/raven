@@ -126,7 +126,7 @@ def get_messages(conversation_id=None):
     return frappe.get_all(
         "ChatMessage",
         filters={"parent": conversation_id},
-        fields=["name", "sender", "is_user", "message", "timestamp"],
+        fields=["name", "sender", "is_user", "message", "timestamp" ,"message_type" ,"file"],
         order_by="timestamp asc"
     )
 

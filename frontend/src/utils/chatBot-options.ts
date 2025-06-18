@@ -19,6 +19,8 @@ export const normalizeMessages = (messages: any): Message[] => {
     role: m.is_user ? ('user' as const) : ('ai' as const),
     content: m.message as string,
     id: m.id,
-    parent_message_id: m.parent_message_id
+    parent_message_id: m.parent_message_id,
+    message_type: m.message_type,
+    file: m.file
   }))
 }
