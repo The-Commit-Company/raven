@@ -188,7 +188,7 @@ def rename_conversation(conversation_id, title):
         conversation = frappe.get_doc("ChatConversation", conversation_id)
         old_title = conversation.title
         conversation.title = title
-        conversation.save(ignore_permissions=True)
+        conversation.save(ignore_permissions=True, ignore_version=True)
         frappe.db.commit()
 
         frappe.publish_realtime(
