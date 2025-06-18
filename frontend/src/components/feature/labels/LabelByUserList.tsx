@@ -4,10 +4,14 @@ import { useAtomValue, useSetAtom } from 'jotai'
 import { labelListAtom, refreshLabelListAtom } from './conversations/atoms/labelAtom'
 import LabelItem from './LabelItem'
 import BeatLoader from '@/components/layout/Loaders/BeatLoader'
-
 interface Label {
   label_id: string
   label: string
+  channels: {
+    channel_id: string
+    channel_name: string
+    is_direct_message: boolean
+  }[]
 }
 
 const LabelByUserList = () => {
@@ -49,7 +53,7 @@ const LabelByUserList = () => {
         <div className='text-gray-500'>Chưa có nhãn nào</div>
       ) : (
         labels.map((labelItem) => (
-          <LabelItem key={labelItem.label_id} label={labelItem.label} name={labelItem.label_id} />
+          <LabelItem channels={labelItem.channels} key={labelItem.label_id} label={labelItem.label} name={labelItem.label_id} />
         ))
       )}
     </div>

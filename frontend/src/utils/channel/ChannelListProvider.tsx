@@ -33,7 +33,11 @@ export type ChannelListItem = Pick<
   | 'workspace'
   | 'pinned_messages_string'
   | 'group_type'
-> & { member_id: string }
+> & {
+  member_id: string
+  is_done: number // <== thêm dòng này
+  user_labels?: string[]
+}
 
 export interface DMChannelListItem extends ChannelListItem {
   peer_user_id: string

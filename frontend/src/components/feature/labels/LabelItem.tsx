@@ -3,7 +3,7 @@ import { HiChevronRight, HiChevronDown } from 'react-icons/hi'
 import LabelItemMenu from './LabelItemMenu'
 import LabelItemList from './LabelItemList'
 import { useState, useMemo } from 'react'
-import { useEnrichedChannels } from '@/utils/channel/ChannelAtom'
+import { useEnrichedLabelChannels } from '@/utils/channel/ChannelAtom'
 
 interface LabelItemProps {
   label: string
@@ -12,7 +12,7 @@ interface LabelItemProps {
 
 const LabelItem: React.FC<LabelItemProps> = ({ label, name }) => {
   const [isExpanded, setIsExpanded] = useState(false)
-  const allChannels = useEnrichedChannels()
+  const allChannels = useEnrichedLabelChannels()
 
   const { labeledChannels, totalCount } = useMemo(() => {
     const channels = allChannels

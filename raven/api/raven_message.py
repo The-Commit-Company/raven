@@ -53,7 +53,7 @@ def send_message(
 
             # Emit realtime event cho user bị reset done
             frappe.publish_realtime(
-                event="channel_done_updated",
+                event="raven:channel_done_updated",
                 message={
                     "channel_id": channel_id,
                     "is_done": 0
