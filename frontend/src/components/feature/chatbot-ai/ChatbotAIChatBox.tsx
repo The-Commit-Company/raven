@@ -4,10 +4,11 @@ import { Message } from '@/types/ChatBot/types'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { Button, Text, Tooltip } from '@radix-ui/themes'
 import clsx from 'clsx'
-import React, { useCallback, useContext, useEffect, useRef } from 'react'
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { BiSolidSend } from 'react-icons/bi'
-import { FiCpu, FiPaperclip, FiX } from 'react-icons/fi'
+import { FiCpu, FiPaperclip, FiRefreshCw } from 'react-icons/fi'
 import { commonButtonStyle } from '../labels/LabelItemMenu'
+import ChatbotFileMessage from './ChatbotFileMessage'
 
 interface Props {
   session: { id: string; title: string; messages: Message[] }
@@ -30,6 +31,21 @@ interface Props {
   startIdx: number
   // Loading props
   loading?: boolean
+  // Reload props
+  onReload?: () => void
+  thinkingTimeout?: number // milliseconds, default 30000 (30s)
+}
+
+const formatFileSize = (bytes: number) => {
+  if (bytes === 0) return '0 Bytes'
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
+
+const getFileName = (filePath: string) => {
+  return filePath.split('/').pop() || filePath
 }
 
 const ChatbotAIChatBox: React.FC<Props> = ({
@@ -47,15 +63,54 @@ const ChatbotAIChatBox: React.FC<Props> = ({
   hasMore,
   onShowMore,
   startIdx,
-  loading = false
+  loading = false,
+  onReload,
+  thinkingTimeout = 30000 // 30 seconds default
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesTopRef = useRef<HTMLDivElement>(null)
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
+  const thinkingTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   const { currentUser } = useContext(UserContext)
   const user = useGetUser(currentUser)
+
+  const [showReloadButton, setShowReloadButton] = useState(false)
+  const [thinkingDuration, setThinkingDuration] = useState(0)
+
+  // Timer for thinking duration
+  useEffect(() => {
+    if (isThinking) {
+      setThinkingDuration(0)
+      setShowReloadButton(false)
+
+      // Start timer to show reload button after timeout
+      thinkingTimerRef.current = setTimeout(() => {
+        setShowReloadButton(true)
+      }, thinkingTimeout)
+
+      // Update thinking duration every second
+      const durationTimer = setInterval(() => {
+        setThinkingDuration((prev) => prev + 1)
+      }, 1000)
+
+      return () => {
+        if (thinkingTimerRef.current) {
+          clearTimeout(thinkingTimerRef.current)
+        }
+        clearInterval(durationTimer)
+      }
+    } else {
+      // Reset when not thinking
+      setShowReloadButton(false)
+      setThinkingDuration(0)
+      if (thinkingTimerRef.current) {
+        clearTimeout(thinkingTimerRef.current)
+        thinkingTimerRef.current = null
+      }
+    }
+  }, [isThinking, thinkingTimeout])
 
   // Auto-resize textarea
   useEffect(() => {
@@ -121,6 +176,21 @@ const ChatbotAIChatBox: React.FC<Props> = ({
     },
     [onInputChange]
   )
+
+  const handleReload = useCallback(() => {
+    if (onReload) {
+      onReload()
+    }
+  }, [onReload])
+
+  const formatThinkingTime = (seconds: number) => {
+    if (seconds < 60) {
+      return `${seconds}s`
+    }
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = seconds % 60
+    return `${minutes}m ${remainingSeconds}s`
+  }
 
   return (
     <div className='flex flex-col h-full w-full'>
@@ -201,14 +271,42 @@ const ChatbotAIChatBox: React.FC<Props> = ({
                       {msg.role === 'user' ? user?.full_name || 'You' : 'ChatGPT'}
                     </span>
                   </div>
-                  <div className={`prose prose-sm max-w-none ${msg.pending ? 'opacity-70' : ''}`}>
-                    <div
-                      className='text-gray-800 dark:text-gray-200 leading-relaxed'
-                      style={{ whiteSpace: 'pre-wrap' }}
-                    >
-                      {msg.content}
+
+                  {/* Regular message content */}
+                  {msg.message_type !== 'File' && (
+                    <div className={`prose prose-sm max-w-none ${msg.pending ? 'opacity-70' : ''}`}>
+                      <div
+                        className='text-gray-800 dark:text-gray-200 leading-relaxed'
+                        style={{ whiteSpace: 'pre-wrap' }}
+                      >
+                        {msg.content}
+                      </div>
                     </div>
-                  </div>
+                  )}
+
+                  {/* File message content */}
+                  {msg.message_type === 'File' && (
+                    <div className={`${msg.pending ? 'opacity-70' : ''}`}>
+                      {/* Text content if any */}
+                      {msg.content && (
+                        <div className='mb-3'>
+                          <div
+                            className='text-gray-800 dark:text-gray-200 leading-relaxed'
+                            style={{ whiteSpace: 'pre-wrap' }}
+                          >
+                            {msg.content}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* File attachment */}
+                      {msg.file && (
+                        <div className={`${msg.pending ? 'opacity-70' : ''} mt-2`}>
+                          <ChatbotFileMessage fileUrl={msg.file} fileName={getFileName(msg.file)} />
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -222,21 +320,41 @@ const ChatbotAIChatBox: React.FC<Props> = ({
                   <FiCpu className='text-white' size={16} />
                 </div>
                 <div className='flex-1 min-w-0'>
-                  <div className='mb-1'>
+                  <div className='mb-1 flex items-center justify-between'>
                     <span className='font-semibold text-gray-800 dark:text-gray-200 text-sm'>ChatGPT</span>
+                    {thinkingDuration > 0 && (
+                      <span className='text-xs text-gray-500 dark:text-gray-400'>
+                        {formatThinkingTime(thinkingDuration)}
+                      </span>
+                    )}
                   </div>
-                  <div className='flex items-center gap-1 text-gray-500 dark:text-gray-400'>
-                    <div className='flex gap-1'>
-                      <div className='w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-pulse'></div>
-                      <div
-                        className='w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-pulse'
-                        style={{ animationDelay: '0.2s' }}
-                      ></div>
-                      <div
-                        className='w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-pulse'
-                        style={{ animationDelay: '0.4s' }}
-                      ></div>
+                  <div className='flex items-center gap-3'>
+                    <div className='flex items-center gap-1 text-gray-500 dark:text-gray-400'>
+                      <div className='flex gap-1'>
+                        <div className='w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-pulse'></div>
+                        <div
+                          className='w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-pulse'
+                          style={{ animationDelay: '0.2s' }}
+                        ></div>
+                        <div
+                          className='w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-pulse'
+                          style={{ animationDelay: '0.4s' }}
+                        ></div>
+                      </div>
                     </div>
+
+                    {/* Reload button - shows after timeout */}
+                    {showReloadButton && onReload && (
+                      <Tooltip content='Reload nếu phản hồi quá lâu'>
+                        <button
+                          onClick={handleReload}
+                          className='flex items-center gap-1 px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-md transition-colors'
+                        >
+                          <FiRefreshCw size={12} />
+                          <span>Reload</span>
+                        </button>
+                      </Tooltip>
+                    )}
                   </div>
                 </div>
               </div>
@@ -252,24 +370,25 @@ const ChatbotAIChatBox: React.FC<Props> = ({
         <div className='max-w-3xl mx-auto'>
           {/* File preview */}
           {selectedFile && (
-            <div className='mb-3 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-between'>
-              <div className='flex items-center gap-2'>
-                <FiPaperclip className='text-gray-500 dark:text-gray-400' size={16} />
-                <Text className='text-gray-700 dark:text-gray-300 text-sm'>{selectedFile.name}</Text>
+            <div className='mb-3'>
+              <ChatbotFileMessage fileUrl={URL.createObjectURL(selectedFile)} fileName={selectedFile.name} />
+              <div className='mt-2 text-xs text-gray-500 dark:text-gray-400'>
+                Dung lượng: {formatFileSize(selectedFile.size)}
+                <button
+                  onClick={handleRemoveFileClick}
+                  className='ml-4 text-red-500 hover:underline text-xs cursor-pointer'
+                >
+                  Xoá tệp
+                </button>
               </div>
-              <button
-                onClick={handleRemoveFileClick}
-                className='p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md transition-colors'
-              >
-                <FiX className='text-gray-500 dark:text-gray-400' size={16} />
-              </button>
             </div>
           )}
-
           {/* File error */}
           {fileError && (
             <div className='mb-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg'>
-              <Text className='text-red-600 dark:text-red-400 text-sm'>{fileError}</Text>
+              <Text className='text-red-600 dark:text-red-400 text-sm'>
+                {fileError || 'Lỗi không xác định xin vui lòng thử lại !'}
+              </Text>
             </div>
           )}
 

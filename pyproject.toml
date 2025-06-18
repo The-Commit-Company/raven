@@ -10,7 +10,14 @@ dynamic = ["version"]
 dependencies = [
  "linkpreview~=0.9.0",
  "openai",
- "blurhash-python"
+ "blurhash-python",
+ "blurhash-python",
+ "python-docx",
+ "PyPDF2",
+ "pandas",
+ "openpyxl",
+ "xlrd",
+ "python-pptx"
 ]
 
 [build-system]

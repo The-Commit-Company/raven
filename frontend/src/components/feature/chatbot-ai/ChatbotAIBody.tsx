@@ -5,7 +5,10 @@ import { Message } from '@/types/ChatBot/types'
 import { normalizeConversations, normalizeMessages } from '@/utils/chatBot-options'
 import { useFrappeEventListener } from 'frappe-react-sdk'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { toast } from 'sonner'
 import ChatStreamLoader from '../chat/ChatStream/ChatStreamLoader'
+import { CustomFile } from '../file-upload/FileDrop'
+import useUploadChatbotFile from './useUploadChatbotFile'
 
 const MESSAGES_PER_PAGE = 15
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
@@ -23,6 +26,7 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
   const [isThinking, setIsThinking] = useState(false)
   const [visibleCount, setVisibleCount] = useState(MESSAGES_PER_PAGE)
   const [fileError, setFileError] = useState<string | null>(null)
+  const { addFile, uploadFiles } = useUploadChatbotFile(botID as string, input)
 
   const { call: sendMessage, loading: sending } = useSendChatbotMessage()
 
@@ -89,41 +93,73 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
 
   // Hàm gửi tin nhắn Chatbot AI
   const handleSendMessage = useCallback(async () => {
-    if ((!input.trim() && !selectedFile) || sending || loadingMessages) return
+    const hasText = input.trim() !== ''
+    const hasFile = !!selectedFile
 
-    const context = localMessages.map((msg) => ({ role: msg.role, content: msg.content }))
+    // Nếu không có gì để gửi hoặc đang loading thì thoát
+    if ((!hasText && !hasFile) || sending || loadingMessages) return
 
-    // Add user message to local state immediately
-    const newMessage: Message = {
+    const context = localMessages.map((msg) => ({
+      role: msg.role,
+      content: msg.content
+    }))
+
+    // Tạo message tạm nếu có nội dung
+    const tempMessage: Message = {
       id: `temp-${Date.now()}`,
       role: 'user',
       content: input.trim(),
       pending: true
     }
-    setLocalMessages((prev) => [...prev, newMessage])
 
-    // Clear input and file
-    const messageContent = input.trim()
-    const fileToSend = selectedFile
+    if (hasText) {
+      setLocalMessages((prev) => [...prev, tempMessage])
+    }
+
+    // Reset input và trạng thái file
     setInput('')
-    setSelectedFile(null)
     setFileError(null)
     setIsThinking(true)
 
     try {
-      await sendMessage({
-        conversation_id: botID!,
-        message: messageContent,
-        file: fileToSend || undefined,
-        context
-      })
+      if (hasFile) {
+        // Gửi file kèm message nếu có
+        const fileWrapper = selectedFile as CustomFile
+        fileWrapper.fileID = fileWrapper.name + Date.now()
+        await addFile(fileWrapper)
+        await uploadFiles() // Đã bao gồm input.trim() làm message nếu có
+      } else if (hasText) {
+        // Gửi riêng message nếu không có file
+        await sendMessage({
+          conversation_id: botID!,
+          message: tempMessage.content,
+          context
+        })
+      }
+
       await mutateMessages()
-    } catch (error) {
-      console.error('Error sending message:', error)
-      // Remove the pending message on error
-      setLocalMessages((prev) => prev.filter((msg) => msg.id !== newMessage.id))
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err: any) {
+      toast.error('Đã xảy ra lỗi khi gửi tin nhắn. Vui lòng thử lại.')
+      if (hasText) {
+        // Nếu gửi lỗi thì xoá message tạm khỏi UI
+        setLocalMessages((prev) => prev.filter((msg) => msg.id !== tempMessage.id))
+      }
+    } finally {
+      setSelectedFile(null)
     }
-  }, [input, selectedFile, sending, loadingMessages, localMessages, botID, sendMessage, mutateMessages])
+  }, [
+    input,
+    selectedFile,
+    sending,
+    loadingMessages,
+    localMessages,
+    botID,
+    sendMessage,
+    mutateMessages,
+    addFile,
+    uploadFiles
+  ])
 
   // Input handlers
   const handleInputChange = useCallback((value: string) => {
@@ -194,6 +230,11 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
     return () => clearInterval(pollingInterval)
   }, [socketConnected, mutateMessages])
 
+  const handleReloadThinking = useCallback(() => {
+    mutateMessages()
+    setIsThinking(false)
+  }, [mutateMessages])
+
   // Early return if no session is selected
   if (!selectedSession || !botID) {
     return <ChatStreamLoader />
@@ -220,6 +261,8 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
       maxFileSize={MAX_FILE_SIZE}
       // Message states
       isThinking={isThinking}
+      onReload={handleReloadThinking}
+      thinkingTimeout={10000}
       hasMore={hasMore}
       onShowMore={handleShowMore}
       startIdx={startIdx}

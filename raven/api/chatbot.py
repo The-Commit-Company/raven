@@ -6,6 +6,11 @@ from raven.chatbot.doctype.chatconversation.chatconversation import ChatConversa
 from raven.chatbot.doctype.chatmessage.chatmessage import ChatMessage
 import uuid
 import traceback
+import os
+from frappe.utils import get_files_path
+from PyPDF2 import PdfReader
+import docx
+import pandas as pd
 
 # Constants
 CONTEXT_LIMIT = 20  # số tin nhắn gần nhất để gửi cho AI
@@ -29,22 +34,55 @@ def create_message(conversation_id, message, is_user=True, message_type="Text", 
     chat_message.insert()
     return chat_message
 
+def extract_text_from_file(file_url):
+    is_private = file_url.startswith("/private/")
+    base_path = get_files_path(is_private=is_private)
+    full_path = os.path.join(base_path, os.path.basename(file_url))
+
+    try:
+        if file_url.endswith(".pdf"):
+            with open(full_path, 'rb') as f:
+                reader = PdfReader(f)
+                return '\n'.join([page.extract_text() for page in reader.pages if page.extract_text()])
+        elif file_url.endswith(".docx"):
+            doc = docx.Document(full_path)
+            return '\n'.join([p.text for p in doc.paragraphs])
+        elif file_url.endswith((".xls", ".xlsx")):
+            df = pd.read_excel(full_path)
+            return df.to_string(index=False)
+        elif file_url.endswith(".txt"):
+            with open(full_path, 'r', encoding='utf-8') as f:
+                return f.read()
+    except Exception as e:
+        return f"[Không thể đọc file: {e}]"
+
+    return "[Định dạng file không hỗ trợ]"
 
 # Helper: Xây dựng context từ các tin nhắn gần nhất
 def build_context(conversation_id):
     messages = frappe.get_all(
         "ChatMessage",
         filters={"parent": conversation_id},
-        fields=["sender", "is_user", "message", "timestamp"],
+        fields=["sender", "is_user", "message", "timestamp", "file"],
         order_by="timestamp desc",
         limit_page_length=CONTEXT_LIMIT
-    )[::-1]  # đảo ngược để giữ đúng thứ tự
+    )[::-1]
 
-    return [
-        {"role": "user" if msg.is_user else "assistant", "content": msg.message}
-        for msg in messages
-    ]
+    context = []
+    for msg in messages:
+        content = msg.message or ""
 
+        if msg.file:
+            file_text = extract_text_from_file(msg.file)
+            content += f"\n\n[Nội dung file đính kèm:]\n{file_text or '[Không có nội dung từ file]'}"
+
+        if content.strip():
+            context.append({
+                "role": "user" if msg.is_user else "assistant",
+                "content": content
+            })
+
+    return context
 
 # Helper: Gọi OpenAI
 def call_openai(context):
@@ -60,7 +98,7 @@ def call_openai(context):
         model="gpt-3.5-turbo",
         messages=context,
         temperature=0.7,
-        max_tokens=1000
+        max_tokens=2000
     )
     return response.choices[0].message.content
 
@@ -94,7 +132,7 @@ def get_messages(conversation_id=None):
     return frappe.get_all(
         "ChatMessage",
         filters={"parent": conversation_id},
-        fields=["name", "sender", "is_user", "message", "timestamp"],
+        fields=["name", "sender", "is_user", "message", "timestamp" ,"message_type" ,"file"],
         order_by="timestamp asc"
     )
 
@@ -123,9 +161,17 @@ def send_message(conversation_id, message, is_user=True, message_type="Text", fi
 def handle_ai_reply(conversation_id):
     try:
         context = build_context(conversation_id)
-        ai_reply = call_openai(context)
 
+        if not context:
+            frappe.log_error(
+                f"[AI SKIPPED] context rỗng tại conversation_id={conversation_id}",
+                "AI Handler - empty context"
+            )
+            return
+
+        ai_reply = call_openai(context)
         chat_message = create_message(conversation_id, ai_reply, is_user=False)
+        frappe.db.commit()
 
         frappe.publish_realtime(
             event='raven:new_ai_message',
@@ -144,6 +190,7 @@ def handle_ai_reply(conversation_id):
         )
 
 
+
 @frappe.whitelist()
 def rename_conversation(conversation_id, title):
     try:
@@ -153,7 +200,7 @@ def rename_conversation(conversation_id, title):
         conversation = frappe.get_doc("ChatConversation", conversation_id)
         old_title = conversation.title
         conversation.title = title
-        conversation.save(ignore_permissions=True)
+        conversation.save(ignore_permissions=True, ignore_version=True)
         frappe.db.commit()
 
         frappe.publish_realtime(

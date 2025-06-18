@@ -4,6 +4,8 @@ export interface Message {
   id?: number | string
   parent_message_id?: number
   pending?: boolean
+  message_type?: string
+  file?: string
 }
 
 export interface ChatSession {

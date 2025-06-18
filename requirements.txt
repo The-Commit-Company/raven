@@ -2,3 +2,9 @@
 linkpreview
 openai
 blurhash-python
+python-docx
+PyPDF2
+pandas
+openpyxl
+xlrd
+python-pptx
