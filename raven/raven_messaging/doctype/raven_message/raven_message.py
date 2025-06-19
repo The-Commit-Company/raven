@@ -22,15 +22,12 @@ from raven.utils import get_raven_room, refresh_thread_reply_count, track_channe
 
 class RavenMessage(Document):
 	# begin: auto-generated types
-	# ruff: noqa
-
 	# This code is auto-generated. Do not modify anything in this block.
 
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
-
 		from raven.raven_messaging.doctype.raven_mention.raven_mention import RavenMention
 
 		blurhash: DF.SmallText | None
@@ -46,6 +43,7 @@ class RavenMessage(Document):
 		is_edited: DF.Check
 		is_forwarded: DF.Check
 		is_reply: DF.Check
+		is_retracted: DF.Check
 		is_thread: DF.Check
 		json: DF.JSON | None
 		link_doctype: DF.Link | None
@@ -60,7 +58,6 @@ class RavenMessage(Document):
 		text: DF.LongText | None
 		thumbnail_height: DF.Data | None
 		thumbnail_width: DF.Data | None
-	# ruff: noqa
 	# end: auto-generated types
 
 	def before_validate(self):
@@ -352,6 +349,7 @@ class RavenMessage(Document):
 					"is_dm_channel": False,
 					"is_thread": channel_doc.is_thread,
 					"last_message_timestamp": self.creation,
+					"last_message_details": last_message_details,  # ✅ THÊM DÒNG NÀY
 				},
 				after_commit=True,
 				room=get_raven_room(),

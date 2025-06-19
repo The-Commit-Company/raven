@@ -1,21 +1,19 @@
-import { Box } from '@radix-ui/themes'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { ChatBoxBody } from '../ChatStream/ChatBoxBody'
+import { Box } from '@radix-ui/themes'
 import { ChannelHeader } from '../../chat-header/ChannelHeader'
-import { useParams } from 'react-router-dom'
+import { ChatBoxBody } from '../ChatStream/ChatBoxBody'
 
 interface ChannelSpaceProps {
-    channelData: ChannelListItem
+  channelData: ChannelListItem
 }
 
 export const ChannelSpace = ({ channelData }: ChannelSpaceProps) => {
+  // const { threadID } = useParams()
 
-    // const { threadID } = useParams()
-
-    return (
-        <Box>
-            <ChannelHeader channelData={channelData} />
-            <ChatBoxBody channelData={channelData} />
-        </Box>
-    )
+  return (
+    <Box>
+      <ChannelHeader channelData={channelData} />
+      <ChatBoxBody channelData={channelData} />
+    </Box>
+  )
 }

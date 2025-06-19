@@ -9,26 +9,29 @@ import { Message } from '../../../../../../types/Messaging/Message'
 import useThreadPageActive from '@/hooks/useThreadPageActive'
 
 const ThreadDrawer = () => {
+  const { threadID } = useParams()
+  const { data, error, isLoading } = useFrappeGetDoc<Message>('Raven Message', threadID, threadID, {
+    revalidateOnFocus: false,
+    shouldRetryOnError: false,
+    keepPreviousData: false
+  })
 
-    const { threadID } = useParams()
-    const { data, error, isLoading } = useFrappeGetDoc<Message>('Raven Message', threadID, threadID, {
-        revalidateOnFocus: false,
-        shouldRetryOnError: false,
-        keepPreviousData: false
-    })
+  useThreadPageActive(threadID)
 
-    useThreadPageActive(threadID)
-
-    return (
-        <div>
-            <Flex direction='column' gap='0' className='w-full h-[100vh] border-l border-gray-4 sm:dark:border-gray-6'>
-                <ThreadHeader />
-                {isLoading && <FullPageLoader />}
-                {error && <Box p='4'><ErrorBanner error={error} /></Box>}
-                {data && <ThreadMessages threadMessage={data} key={threadID} />}
-            </Flex>
-        </div>
-    )
+  return (
+    <div>
+      <Flex direction='column' gap='0' className='relative h-[100vh] border-l border-gray-4 sm:dark:border-gray-6'>
+        <ThreadHeader />
+        {isLoading && <FullPageLoader />}
+        {error && (
+          <Box p='4'>
+            <ErrorBanner error={error} />
+          </Box>
+        )}
+        {data && <ThreadMessages threadMessage={data} key={threadID} />}
+      </Flex>
+    </div>
+  )
 }
 
 export const Component = ThreadDrawer

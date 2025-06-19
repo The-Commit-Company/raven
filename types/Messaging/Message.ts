@@ -24,6 +24,8 @@ export interface BaseMessage {
     hide_link_preview?: 1 | 0,
     is_thread: 1 | 0,
     is_pinned: 1 | 0,
+    content?: string
+    is_retracted?: 1 | 0
 }
 
 export interface FileMessage extends BaseMessage {

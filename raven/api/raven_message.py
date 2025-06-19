@@ -4,45 +4,103 @@ from datetime import timedelta
 import frappe
 from frappe import _
 from frappe.query_builder import JoinType, Order
-from frappe.query_builder.functions import Coalesce, Count
-
+from frappe.query_builder.functions import Coalesce, Count, Max, Coalesce
 from raven.api.raven_channel import create_direct_message_channel, get_peer_user_id
 from raven.utils import get_channel_member, is_channel_member, track_channel_visit
 
-
 @frappe.whitelist(methods=["POST"])
 def send_message(
-	channel_id, text, is_reply=False, linked_message=None, json_content=None, send_silently=False
+    channel_id,
+    text,
+    is_reply=False,
+    linked_message=None,
+    json_content=None,
+    send_silently=False
 ):
-	if is_reply:
-		doc = frappe.get_doc(
-			{
-				"doctype": "Raven Message",
-				"channel_id": channel_id,
-				"text": text,
-				"message_type": "Text",
-				"is_reply": is_reply,
-				"linked_message": linked_message,
-				"json": json_content,
-			}
-		)
-	else:
-		doc = frappe.get_doc(
-			{
-				"doctype": "Raven Message",
-				"channel_id": channel_id,
-				"text": text,
-				"message_type": "Text",
-				"json": json_content,
-			}
-		)
+    # Tạo tin nhắn mới
+    doc_fields = {
+        "doctype": "Raven Message",
+        "channel_id": channel_id,
+        "text": text,
+        "message_type": "Text",
+        "json": json_content,
+    }
 
-	if send_silently:
-		doc.flags.send_silently = True
+    if is_reply:
+        doc_fields.update({
+            "is_reply": True,
+            "linked_message": linked_message
+        })
 
-	doc.insert()
-	return doc
+    doc = frappe.get_doc(doc_fields)
 
+    if send_silently:
+        doc.flags.send_silently = True
+
+    doc.insert()
+
+    # ✅ RESET lại is_done = 0 cho các user đã từng đánh dấu là xong
+    done_members = frappe.get_all(
+        "Raven Channel Member",
+        filters={"channel_id": channel_id, "is_done": 1},
+        fields=["name", "user_id"]
+    )
+
+    if done_members:
+        for member in done_members:
+            # Cập nhật is_done = 0
+            frappe.db.set_value("Raven Channel Member", member.name, "is_done", 0)
+
+            # Emit realtime event cho user bị reset done
+            frappe.publish_realtime(
+                event="raven:channel_done_updated",
+                message={
+                    "channel_id": channel_id,
+                    "is_done": 0
+                },
+                user=member.user_id,
+                after_commit=True
+            )
+
+    # ✅ Cập nhật nội dung cuối cùng của channel
+    message_type = doc.message_type or "Text"
+    content = text
+
+    if message_type in ["File", "Image"] and json_content:
+        filename = json_content.get("filename") or json_content.get("name") or "Tập tin"
+        content = filename
+
+    last_message = {
+        "message_id": doc.name,
+        "content": content,
+        "owner": doc.owner,
+        "message_type": message_type,
+        "is_bot_message": 0,
+        "bot": None,
+    }
+
+    frappe.db.set_value("Raven Channel", channel_id, {
+        "last_message_details": frappe.as_json(last_message),
+        "last_message_timestamp": doc.creation
+    })
+
+    # ✅ Gửi sự kiện realtime tới các user khác trong channel (không gửi cho người gửi)
+    members = frappe.get_all("Raven Channel Member", filters={"channel_id": channel_id}, pluck="user_id")
+
+    for member in members:
+        if member != frappe.session.user:
+            # Gửi event new_message cho user khác
+            frappe.publish_realtime(
+                event="new_message",
+                message={
+                    "channel_id": channel_id,
+                    "user": frappe.session.user,
+                    "seen_at": frappe.utils.now_datetime(),
+                },
+                user=member
+            )
+
+    return doc
 
 @frappe.whitelist()
 def fetch_recent_files(channel_id):
@@ -118,7 +176,33 @@ def save_message(message_id, add=False):
 		user=frappe.session.user,
 	)
 
-	return "message saved"
+	message = frappe.db.get_value(
+		"Raven Message",
+		message_id,
+		[
+			"name",
+			"owner",
+			"creation",
+			"text",
+			"channel_id",
+			"file",
+			"message_type",
+			"message_reactions",
+			"_liked_by",
+			"thumbnail_width",
+			"thumbnail_height",
+			"is_bot_message",
+			"bot",
+			"content",
+		],
+		as_dict=True,
+	)
+
+	if message and message.get("channel_id"):
+		workspace = frappe.db.get_value("Raven Channel", message["channel_id"], "workspace")
+		message["workspace"] = workspace
+
+	return message
 
 
 @frappe.whitelist()
@@ -159,19 +243,21 @@ def get_pinned_messages(channel_id):
 		],
 		order_by="creation asc",
 	)
-
+import frappe
+from pypika.enums import JoinType
 
 @frappe.whitelist()
 def get_saved_messages():
 	"""
-	Fetches list of all messages liked by the user
-	Check if the user has permission to view the message
+	Lấy danh sách tất cả các tin nhắn được đánh dấu (liked/flagged) bởi người dùng hiện tại.
+	Không sắp xếp để giữ đúng thứ tự lưu trong hệ thống (nếu cần thứ tự khác, xử lý tại frontend).
 	"""
 
 	raven_message = frappe.qb.DocType("Raven Message")
 	raven_channel = frappe.qb.DocType("Raven Channel")
 	raven_channel_member = frappe.qb.DocType("Raven Channel Member")
 
+	# Xây dựng truy vấn
 	query = (
 		frappe.qb.from_(raven_message)
 		.join(raven_channel, JoinType.left)
@@ -193,20 +279,21 @@ def get_saved_messages():
 			raven_message.thumbnail_height,
 			raven_message.is_bot_message,
 			raven_message.bot,
+			raven_message.content,
+			raven_message.is_retracted
 		)
-		.where(raven_message._liked_by.like("%" + frappe.session.user + "%"))
+		.where(raven_message._liked_by.like(f"%{frappe.session.user}%"))
+		.where(raven_message.is_retracted == 0)
 		.where(
 			(raven_channel.type.isin(["Open", "Public"]))
 			| (raven_channel_member.user_id == frappe.session.user)
 		)
-		.orderby(raven_message.creation, order=Order.asc)
-		.distinct()
-	)  # Add DISTINCT keyword to retrieve only unique messages
+		.distinct()  # Tránh trùng lặp nếu join trả về nhiều dòng cho 1 message
+	)
 
 	messages = query.run(as_dict=True)
 
 	return messages
-
 
 def parse_messages(messages):
 
@@ -252,66 +339,282 @@ def get_messages_with_dates(channel_id):
 
 @frappe.whitelist()
 def get_unread_count_for_channels():
-	"""
-	Fetch all channels where the user has unread messages > 0
-	"""
+    """
+    Trả về danh sách các channel mà user đang tham gia,
+    kèm theo số lượng tin nhắn chưa đọc và nội dung message mới nhất.
+    """
+    user = frappe.session.user
 
-	channel = frappe.qb.DocType("Raven Channel")
-	channel_member = frappe.qb.DocType("Raven Channel Member")
-	message = frappe.qb.DocType("Raven Message")
-	query = (
-		frappe.qb.from_(channel)
-		.left_join(channel_member)
-		.on(
-			(channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user)
-		)
-		.where(channel_member.user_id == frappe.session.user)
-		.where(channel.is_archived == 0)
-		.where(channel.is_thread == 0)
-		.where(message.message_type != "System")
-		.where(
-			message.creation > Coalesce(channel_member.last_visit, "2000-11-11")
-		)  # Only count messages after the last visit for performance
-		.left_join(message)
-		.on(channel.name == message.channel_id)
-	)
+    # Define DocTypes
+    channel = frappe.qb.DocType("Raven Channel")
+    channel_member = frappe.qb.DocType("Raven Channel Member")
+    message = frappe.qb.DocType("Raven Message")
 
-	channels_query = (
-		query.select(channel.name, channel.is_direct_message, Count(message.name).as_("unread_count"))
-		.groupby(channel.name, channel.is_direct_message)
-		.run(as_dict=True)
-	)
+    # --- Query 1: Lấy số lượng tin nhắn chưa đọc ---
+    unread_query = (
+        frappe.qb.from_(channel)
+        .left_join(channel_member).on(
+            (channel.name == channel_member.channel_id) & (channel_member.user_id == user)
+        )
+        .left_join(message).on(
+            (channel.name == message.channel_id)
+            & (message.message_type != "System")
+            & (message.creation > Coalesce(channel_member.last_visit, "2000-11-11"))
+        )
+        .where(channel_member.user_id == user)
+        .where(channel.is_archived == 0)
+        .where(channel.is_thread == 0)
+        .select(
+            channel.name.as_("channel"),
+            channel.is_direct_message,
+            Count(message.name).as_("unread_count")
+        )
+        .groupby(channel.name, channel.is_direct_message)
+    ).run(as_dict=True)
 
-	return channels_query
+    # --- Query 2: Lấy message mới nhất (chỉ content) cho mỗi channel ---
+    latest_messages = (
+        frappe.qb.from_(message)
+        .select(
+            message.channel_id,
+            message.content,
+            Max(message.creation).as_("latest_time")
+        )
+        .where(message.message_type != "System")
+        .groupby(message.channel_id, message.content)
+    ).run(as_dict=True)
 
+    # Convert to dict: {channel_id: content}
+    latest_content_map = {}
+    for msg in latest_messages:
+        cid = msg["channel_id"]
+        if cid not in latest_content_map or msg["latest_time"] > latest_content_map[cid]["latest_time"]:
+            latest_content_map[cid] = {
+                "content": msg["content"],
+                "latest_time": msg["latest_time"]
+            }
+
+    # Gộp kết quả
+    for row in unread_query:
+        row["name"] = row.pop("channel")
+        row["last_message_content"] = latest_content_map.get(row["name"], {}).get("content", "")
+    # Lọc chỉ lấy những channel có unread_count > 0
+    filtered_result = [row for row in unread_query if row["unread_count"] > 0]
+
+    return filtered_result
+
+# @frappe.whitelist()
+# def get_unread_count_for_channels():
+#     """
+#     Trả về danh sách các channel mà user đang tham gia,
+#     kèm theo:
+#       - số lượng tin nhắn chưa đọc
+#       - nội dung tin nhắn mới nhất
+#       - thời gian gửi tin nhắn mới nhất (last_message_timestamp)
+#       - peer_user_id nếu là tin nhắn riêng (DM)
+#       - tên channel (channel_name)
+#     """
+#     user = frappe.session.user
+
+#     # Define DocTypes
+#     channel = frappe.qb.DocType("Raven Channel")
+#     channel_member = frappe.qb.DocType("Raven Channel Member")
+#     message = frappe.qb.DocType("Raven Message")
+
+#     # --- Query 1: Lấy số lượng tin nhắn chưa đọc ---
+#     unread_query = (
+#         frappe.qb.from_(channel)
+#         .left_join(channel_member).on(
+#             (channel.name == channel_member.channel_id) & (channel_member.user_id == user)
+#         )
+#         .left_join(message).on(
+#             (channel.name == message.channel_id)
+#             & (message.message_type != "System")
+#             & (message.creation > Coalesce(channel_member.last_visit, "2000-11-11"))
+#         )
+#         .where(channel_member.user_id == user)
+#         .where(channel.is_archived == 0)
+#         .where(channel.is_thread == 0)
+#         .select(
+#             channel.name.as_("channel"),
+#             channel.channel_name.as_("channel_name"),
+#             channel.is_direct_message,
+#             Count(message.name).as_("unread_count")
+#         )
+#         .groupby(channel.name, channel.channel_name, channel.is_direct_message)
+#     ).run(as_dict=True)
+
+#     # --- Query 2: Lấy nội dung và thời gian của tin nhắn mới nhất mỗi channel ---
+#     latest_messages = (
+#         frappe.qb.from_(message)
+#         .select(
+#             message.channel_id,
+#             message.content,
+#             Max(message.creation).as_("latest_time")
+#         )
+#         .where(message.message_type != "System")
+#         .groupby(message.channel_id, message.content)
+#     ).run(as_dict=True)
+
+#     # Dựng map: channel_id -> { content, latest_time }
+#     latest_content_map = {}
+#     for msg in latest_messages:
+#         cid = msg["channel_id"]
+#         if cid not in latest_content_map or msg["latest_time"] > latest_content_map[cid]["latest_time"]:
+#             latest_content_map[cid] = {
+#                 "content": msg["content"],
+#                 "latest_time": msg["latest_time"]
+#             }
+
+#     # --- Tổng hợp kết quả ---
+#     result = []
+#     for row in unread_query:
+#         row["name"] = row.pop("channel")
+
+#         latest_info = latest_content_map.get(row["name"], {})
+#         row["last_message_content"] = latest_info.get("content", "")
+#         row["last_message_timestamp"] = latest_info.get("latest_time", None)
+
+#         # Nếu là direct message, lấy peer_user_id
+#         if row["is_direct_message"] == 1:
+#             peer_user = frappe.db.get_value(
+#                 "Raven Channel Member",
+#                 {
+#                     "channel_id": row["name"],
+#                     "user_id": ["!=", user]
+#                 },
+#                 "user_id"
+#             )
+#             row["peer_user_id"] = peer_user
+#         else:
+#             row["peer_user_id"] = None
+
+#         if row["unread_count"] > 0:
+#             result.append(row)
+
+#     # Sort the result by last_message_timestamp (newest first)
+#     result.sort(key=lambda x: x["last_message_timestamp"], reverse=True)
+
+#     return result
+
+
+# @frappe.whitelist()
+# def get_unread_count_for_channel(channel_id):
+# 	channel_member = get_channel_member(channel_id=channel_id)
+# 	if channel_member:
+# 		last_timestamp = frappe.get_cached_value(
+# 			"Raven Channel Member", channel_member["name"], "last_visit"
+# 		)
+
+# 		return frappe.db.count(
+# 			"Raven Message",
+# 			filters={
+# 				"channel_id": channel_id,
+# 				"creation": (">", last_timestamp),
+# 				"message_type": ["!=", "System"],
+# 			},
+# 		)
+# 	else:
+# 		if frappe.get_cached_value("Raven Channel", channel_id, "type") == "Open":
+# 			return frappe.db.count(
+# 				"Raven Message",
+# 				filters={
+# 					"channel_id": channel_id,
+# 					"message_type": ["!=", "System"],
+# 				},
+# 			)
+# 		else:
+# 			return 0
 
 @frappe.whitelist()
 def get_unread_count_for_channel(channel_id):
-	channel_member = get_channel_member(channel_id=channel_id)
-	if channel_member:
-		last_timestamp = frappe.get_cached_value(
-			"Raven Channel Member", channel_member["name"], "last_visit"
-		)
+    user = frappe.session.user
 
-		return frappe.db.count(
-			"Raven Message",
-			filters={
-				"channel_id": channel_id,
-				"creation": (">", last_timestamp),
-				"message_type": ["!=", "System"],
-			},
-		)
-	else:
-		if frappe.get_cached_value("Raven Channel", channel_id, "type") == "Open":
-			return frappe.db.count(
-				"Raven Message",
-				filters={
-					"channel_id": channel_id,
-					"message_type": ["!=", "System"],
-				},
-			)
-		else:
-			return 0
+    # Lấy thông tin channel
+    channel_doc = frappe.get_cached_doc("Raven Channel", channel_id)
+
+    # Lấy thời gian last_visit
+    last_visit = frappe.db.get_value(
+        "Raven Channel Member",
+        {"channel_id": channel_id, "user_id": user},
+        "last_visit"
+    ) or "2000-11-11"
+
+    # Tính số tin chưa đọc
+    if channel_doc.is_direct_message or frappe.db.exists("Raven Channel Member", {"channel_id": channel_id, "user_id": user}):
+        unread_count = frappe.db.count(
+            "Raven Message",
+            filters={
+                "channel_id": channel_id,
+                "creation": (">", last_visit),
+                "message_type": ["!=", "System"],
+            },
+        )
+    elif channel_doc.type == "Open":
+        unread_count = frappe.db.count(
+            "Raven Message",
+            filters={
+                "channel_id": channel_id,
+                "message_type": ["!=", "System"],
+            },
+        )
+    else:
+        unread_count = 0
+
+    # Lấy message mới nhất
+    latest_msg = frappe.db.sql(
+        """
+        SELECT content, creation, owner
+        FROM `tabRaven Message`
+        WHERE channel_id = %s AND message_type != 'System'
+        ORDER BY creation DESC
+        LIMIT 1
+        """,
+        (channel_id,),
+        as_dict=True,
+    )
+    latest = latest_msg[0] if latest_msg else {}
+    content = latest.get("content", "")
+    timestamp = latest.get("creation")
+    sender_id = latest.get("owner")
+
+    sender_name = None
+    sender_image = None
+    if sender_id:
+        user_doc = frappe.get_cached_doc("Raven User", sender_id)
+        sender_name = user_doc.full_name
+        sender_image = user_doc.user_image
+
+    # Xây dựng kết quả
+    result = {
+        "name": channel_id,
+        "channel_name": channel_doc.channel_name,
+        "unread_count": unread_count,
+        "last_message_content": content,
+        "last_message_timestamp": timestamp,
+        "last_message_sender_id": sender_id,
+        "last_message_sender_name": sender_name,
+        "last_message_sender_image": sender_image,
+        "is_direct_message": 1 if channel_doc.is_direct_message else 0,
+    }
+
+    # Nếu là DM thì lấy peer_user_id, nếu là group thì lấy danh sách peer_user_ids
+    if channel_doc.is_direct_message:
+        peer_user_id = frappe.db.get_value(
+            "Raven Channel Member",
+            filters={"channel_id": channel_id, "user_id": ["!=", user]},
+            fieldname="user_id"
+        )
+        result["peer_user_id"] = peer_user_id
+    else:
+        peer_user_ids = frappe.get_all(
+            "Raven Channel Member",
+            filters={"channel_id": channel_id, "user_id": ["!=", user]},
+            pluck="user_id"
+        )
+        result["peer_user_ids"] = peer_user_ids
+
+    return result
 
 
 @frappe.whitelist()
@@ -571,3 +874,82 @@ def add_forwarded_message_to_channel(channel_id, forwarded_message):
 	)
 	doc.insert()
 	return "message forwarded"
+
+@frappe.whitelist()
+def retract_message(message_id: str):
+    """
+    Đánh dấu tin nhắn là đã thu hồi nếu người hiện tại là người gửi.
+    Nếu là tin nhắn cuối cùng trong channel thì update lại last_message.
+    """
+    user = frappe.session.user
+    message = frappe.get_doc("Raven Message", message_id)
+
+    if message.is_retracted:
+        frappe.throw(_("Tin nhắn đã được thu hồi trước đó."))
+
+    # Thu hồi message
+    message.db_set("is_retracted", 1)
+    frappe.db.commit()
+
+    # Kiểm tra nếu message này đang là tin cuối cùng
+    latest_msg = frappe.get_list(
+        "Raven Message",
+        filters={
+            "channel_id": message.channel_id,
+            "message_type": ["!=", "System"],
+            "is_retracted": 0,
+        },
+        fields=["name"],
+        order_by="creation desc",
+        limit_page_length=1,
+    )
+
+    latest_msg_id = latest_msg[0]["name"] if latest_msg else None
+
+    # Nếu message bị retract chính là tin cuối
+    if latest_msg_id == message.name:
+        # Tìm message mới nhất kế tiếp (nếu có)
+        next_msg = frappe.get_list(
+            "Raven Message",
+            filters={
+                "channel_id": message.channel_id,
+                "message_type": ["!=", "System"],
+                "is_retracted": 0,
+                "name": ["!=", message.name],
+            },
+            fields=["content", "creation", "owner"],
+            order_by="creation desc",
+            limit_page_length=1,
+        )
+
+        next = next_msg[0] if next_msg else {}
+        content = next.get("content", "")
+        timestamp = next.get("creation")
+        sender_id = next.get("owner")
+
+        # Gửi realtime event để frontend cập nhật lại sidebar / last_message
+        frappe.publish_realtime(
+            event="raven_channel_last_message_updated",
+            message={
+                "channel_id": message.channel_id,
+                "last_message_content": content,
+                "last_message_timestamp": timestamp,
+                "last_message_sender_id": sender_id,
+            },
+            doctype="Raven Channel",
+            docname=message.channel_id
+        )
+
+    # Gửi event retract message bình thường
+    frappe.publish_realtime(
+        event="raven_message_retracted",
+        message={
+            "message_id": message.name,
+            "channel_id": message.channel_id,
+            "is_thread": message.is_thread
+        },
+        doctype="Raven Channel",
+        docname=message.channel_id
+    )
+
+    return {"message": "Đã thu hồi tin nhắn"}

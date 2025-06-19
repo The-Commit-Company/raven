@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState } from 'react'
 
 /**
  * Simple hook to manage boolean (on - off) states
@@ -6,14 +6,13 @@ import { useCallback, useState } from "react";
  * @returns
  */
 export function useBoolean(initialState: boolean = false) {
+  const [value, setValue] = useState(initialState)
 
-    const [value, setValue] = useState(initialState);
+  const on = useCallback(() => setValue(true), [])
 
-    const on = useCallback(() => setValue(true), []);
+  const off = useCallback(() => setValue(false), [])
 
-    const off = useCallback(() => setValue(false), []);
+  const toggle = useCallback(() => setValue((value) => !value), [])
 
-    const toggle = useCallback(() => setValue(value => !value), []);
-
-    return [value, { on, off, toggle }, setValue] as const;
+  return [value, { on, off, toggle }, setValue] as const
 }

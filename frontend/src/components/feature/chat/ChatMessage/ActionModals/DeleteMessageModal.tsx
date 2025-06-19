@@ -1,66 +1,72 @@
-import { useFrappeDeleteDoc } from "frappe-react-sdk"
-import { ErrorBanner } from "../../../../layout/AlertBanner/ErrorBanner"
-import { AlertDialog, Button, Callout, Flex, Text } from "@radix-ui/themes"
-import { Loader } from "@/components/common/Loader"
-import { FiAlertTriangle } from "react-icons/fi"
-import { Message } from "../../../../../../../types/Messaging/Message"
-import { toast } from "sonner"
-import { useNavigate } from "react-router-dom"
+import { Loader } from '@/components/common/Loader'
+import { AlertDialog, Button, Callout, Flex, Text } from '@radix-ui/themes'
+import { useFrappePostCall } from 'frappe-react-sdk'
+import { FiAlertTriangle } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
+import { Message } from '../../../../../../../types/Messaging/Message'
+import { ErrorBanner } from '../../../../layout/AlertBanner/ErrorBanner'
 
 interface DeleteMessageModalProps {
-    onClose: (refresh?: boolean) => void,
-    message: Message
+  onClose: (refresh?: boolean) => void
+  message: Message
 }
 
 export const DeleteMessageModal = ({ onClose, message }: DeleteMessageModalProps) => {
+  const navigate = useNavigate()
+  const { call, error, loading: isCalling } = useFrappePostCall('raven.api.raven_message.retract_message')
 
-    const { deleteDoc, error, loading: deletingDoc } = useFrappeDeleteDoc()
-    const navigate = useNavigate()
-
-    const onSubmit = async () => {
-        return deleteDoc('Raven Message', message.name).then(() => {
-            toast('Message deleted', {
-                duration: 800
-            })
-            message.is_thread && navigate(`/channel/${message.channel_id}`)
-            onClose()
-        })
+  const onSubmit = async () => {
+    try {
+      await call({ message_id: message.name })
+      toast.success('Đã thu hồi tin nhắn', { duration: 800 })
+      if (message.is_thread) {
+        navigate(`/channel/${message.channel_id}`)
+      }
+      onClose(true)
+    } catch (err: any) {
+      toast.error(err?.message ?? 'Lỗi khi thu hồi tin nhắn')
     }
+  }
 
-    return (
-        <>
-            <AlertDialog.Title>
-                Delete {message.is_thread ? 'Thread' : 'Message'}
-            </AlertDialog.Title>
+  return (
+    <>
+      <AlertDialog.Title>{message.is_thread ? 'Thu hồi Chủ đề' : 'Thu hồi Tin nhắn'}</AlertDialog.Title>
 
-            <Flex direction={'column'} gap='2'>
-                <Callout.Root color="red" size='1'>
-                    <Callout.Icon>
-                        <FiAlertTriangle size='18' />
-                    </Callout.Icon>
-                    <Callout.Text size='2'>
-                        This action is permanent and cannot be undone.
-                    </Callout.Text>
-                </Callout.Root>
+      <Flex direction='column' gap='2'>
+        <Callout.Root color='red' size='1'>
+          <Callout.Icon>
+            <FiAlertTriangle size='18' />
+          </Callout.Icon>
+          <Callout.Text size='2'>
+            Tin nhắn sẽ được thu hồi đối với tất cả người dùng. Nội dung sẽ không còn hiển thị.
+          </Callout.Text>
+        </Callout.Root>
 
-                <ErrorBanner error={error} />
-                {message.is_thread ? <Text size='2'>This message is a thread, deleting it will delete all messages in the thread.</Text> :
-                    <Text size='2'>Are you sure you want to delete this message? It will be deleted for all users.</Text>}
-            </Flex>
+        <ErrorBanner error={error} />
 
-            <Flex gap="3" mt="4" justify="end">
-                <AlertDialog.Cancel>
-                    <Button variant="soft" color="gray">
-                        Cancel
-                    </Button>
-                </AlertDialog.Cancel>
-                <AlertDialog.Action>
-                    <Button variant="solid" color="red" onClick={onSubmit} disabled={deletingDoc}>
-                        {deletingDoc && <Loader className="text-white" />}
-                        {deletingDoc ? "Deleting" : "Delete"}
-                    </Button>
-                </AlertDialog.Action>
-            </Flex>
-        </>
-    )
+        {message.is_thread ? (
+          <Text size='2'>
+            Đây là một chủ đề. Nếu bạn thu hồi, tất cả nội dung trong chủ đề này sẽ bị ẩn đi đối với mọi người.
+          </Text>
+        ) : (
+          <Text size='2'>Bạn có chắc chắn muốn thu hồi tin nhắn này không? Hành động này không thể hoàn tác.</Text>
+        )}
+      </Flex>
+
+      <Flex gap='3' mt='4' justify='end'>
+        <AlertDialog.Cancel>
+          <Button variant='soft' color='gray'>
+            Hủy
+          </Button>
+        </AlertDialog.Cancel>
+        <AlertDialog.Action>
+          <Button variant='solid' color='red' onClick={onSubmit} disabled={isCalling}>
+            {isCalling && <Loader className='text-white' />}
+            {isCalling ? 'Đang thu hồi' : 'Thu hồi'}
+          </Button>
+        </AlertDialog.Action>
+      </Flex>
+    </>
+  )
 }

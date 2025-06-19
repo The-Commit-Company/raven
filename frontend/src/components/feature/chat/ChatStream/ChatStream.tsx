@@ -1,218 +1,538 @@
-import { Message } from '../../../../../../types/Messaging/Message'
-import { DeleteMessageDialog, useDeleteMessage } from '../ChatMessage/MessageActions/DeleteMessage'
-import { EditMessageDialog, useEditMessage } from '../ChatMessage/MessageActions/EditMessage'
-import { MessageItem } from '../ChatMessage/MessageItem'
-import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState/EmptyState'
-import useChatStream from './useChatStream'
-import { forwardRef, MutableRefObject, useEffect, useImperativeHandle } from 'react'
 import { Loader } from '@/components/common/Loader'
-import ChatStreamLoader from './ChatStreamLoader'
-import clsx from 'clsx'
-import { DateSeparator } from '@/components/layout/Divider/DateSeparator'
-import { useInView } from 'react-intersection-observer'
-import { Button } from '@radix-ui/themes'
-import { FiArrowDown } from 'react-icons/fi'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
-import { ForwardMessageDialog, useForwardMessage } from '../ChatMessage/MessageActions/ForwardMessage'
-import AttachFileToDocumentDialog, { useAttachFileToDocument } from '../ChatMessage/MessageActions/AttachFileToDocument'
-import { ReactionAnalyticsDialog, useMessageReactionAnalytics } from '../ChatMessage/MessageActions/MessageReactionAnalytics'
-import SystemMessageBlock from '../ChatMessage/SystemMessageBlock'
+import { ChannelHistoryFirstMessage } from '@/components/layout/EmptyState/EmptyState'
+import { useChannelSeenUsers } from '@/hooks/useChannelSeenUsers'
+import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
+import { useDebounceDynamic } from '@/hooks/useDebounce'
 import { useUserData } from '@/hooks/useUserData'
-
-/**
- * Anatomy of a message
- *
- * A message "stream" is a list of messages separated by dates
- *
- * A date block is a simple divider with a date. Any message below the divider was sent on this date.
- * Two date blocks can never be adjacent to each other.
- *
- * A message block can be of multiple types depending on the message type + who sent it and when.
- *
- * If two messages are sent by the same person within 2 minutes of each other, they are grouped together.
- * The first message in such a group will have a User Avatar, Name and timestamp, and the rest will not.
- * Subsequent message blocks in this 'mini-block' will only show a timestamp on hover.
- *
- * The message block can be of the following types:
- * 1. Image - this will show a preview of the image. Clicking on it will open the image in a modal.
- * 2. File - this will show a small box with the file name with actions to copy the link or download the file.
- *      PDF - PDF files will also have an action to open the file in a modal.
- *      Video - A video file will have a preview of the video.
- * 3. Text - this will show the text message in a tiptap renderer. A text block can have multiple elements
- *     1. Text - this will show the text as is (p, h1, h2, h3, h4, h5, h6, blockquote, li, ul, ol)
- *     2. Code - this will show in a container with a quick action button to copy it
- *     3. Mention - this will show the mentioned user's name (highlighted) and hovering over them should show a card with their details
- *
- * A message can also be a reply to another message. In this case, the message will have a small box at the top with the message content and a click will jump to the message.
- *
- * Every message has reactions at the very bottom. Every reaction has a count and a list of users who reacted to it.
- *
- * Every message will have a context menu (right click) with the following options:
- * 1. Reply - this will open the reply box with the message quoted
- * 2. Edit - this will open the edit box with the message content
- * 3. Delete - this will delete the message
- * 4. Copy - this will copy the message content
- * 5. Copy Link - this will copy the message link (if file)
- * 6. Send in an email
- * 7. Link with document
- * 8. Bookmark
- *
- * Every message will have a hover menu with the following options:
- * 1. Reaction emojis with the frequently used emojis for that user on this channel
- * 2. Reply/Edit depending on the user
- * 3. Ellipsis to open the context menu
- *
- */
+import { virtuosoSettings } from '@/utils/VirtuosoSettings'
+import {
+  forwardRef,
+  memo,
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useReducer,
+  useRef
+} from 'react'
+import { useLocation } from 'react-router-dom'
+import { Virtuoso, VirtuosoHandle } from 'react-virtuoso'
+import { Message } from '../../../../../../types/Messaging/Message'
+import ChatDialogs from './ChatDialogs'
+import ChatStreamLoader from './ChatStreamLoader'
+import { MessageItemRenderer } from './MessageListRenderer'
+import ScrollToBottomButtons from './ScrollToBottomButtons'
+import useChatStream from './useChatStream'
+import { useChatStreamActions } from './useChatStreamActions'
 
 type Props = {
-    channelID: string,
-    replyToMessage: (message: Message) => void,
-    showThreadButton?: boolean,
-    scrollRef: MutableRefObject<HTMLDivElement | null>,
-    pinnedMessagesString?: string,
-    onModalClose?: () => void
+  channelID: string
+  replyToMessage: (message: Message) => void
+  showThreadButton?: boolean
+  pinnedMessagesString?: string
+  onModalClose?: () => void
+  virtuosoRef: MutableRefObject<VirtuosoHandle>
 }
 
-const ChatStream = forwardRef(({ channelID, replyToMessage, showThreadButton = true, pinnedMessagesString, scrollRef, onModalClose }: Props, ref) => {
+interface ScrollState {
+  isAtBottom: boolean
+  hasScrolledToTarget: boolean
+  isScrolling: boolean
+  lastScrollTop: number
+}
 
-    const { messages, hasOlderMessages, loadOlderMessages, goToLatestMessages, hasNewMessages, error, loadNewerMessages, isLoading, highlightedMessage, scrollToMessage } = useChatStream(channelID, scrollRef, pinnedMessagesString)
-    const { setDeleteMessage, ...deleteProps } = useDeleteMessage(onModalClose)
+interface RenderState {
+  isVirtuosoReady: boolean
+  isContentMeasured: boolean
+  initialRenderComplete: boolean
+  isInitialLoadComplete: boolean
+}
 
-    const { setEditMessage, ...editProps } = useEditMessage(onModalClose)
-    const { setForwardMessage, ...forwardProps } = useForwardMessage(onModalClose)
-    const { setAttachDocument, ...attachDocProps } = useAttachFileToDocument(onModalClose)
+interface LoadingState {
+  isLoadingMessages: boolean
+  hasInitialLoadedWithMessageId: boolean
+}
 
-    const { setReactionMessage, ...reactionProps } = useMessageReactionAnalytics(onModalClose)
+const scrollStateReducer = (state: ScrollState, action: any): ScrollState => {
+  switch (action.type) {
+    case 'SET_AT_BOTTOM':
+      return { ...state, isAtBottom: action.payload }
+    case 'SET_SCROLLED_TO_TARGET':
+      return { ...state, hasScrolledToTarget: action.payload }
+    case 'SET_SCROLLING':
+      return { ...state, isScrolling: action.payload }
+    case 'SET_LAST_SCROLL_TOP':
+      return { ...state, lastScrollTop: action.payload }
+    case 'RESET':
+      return {
+        isAtBottom: false,
+        hasScrolledToTarget: false,
+        isScrolling: false,
+        lastScrollTop: 0
+      }
+    default:
+      return state
+  }
+}
 
-    const onReplyMessageClick = (messageID: string) => {
-        scrollToMessage(messageID)
+const renderStateReducer = (state: RenderState, action: any): RenderState => {
+  switch (action.type) {
+    case 'SET_VIRTUOSO_READY':
+      return { ...state, isVirtuosoReady: action.payload }
+    case 'SET_CONTENT_MEASURED':
+      return { ...state, isContentMeasured: action.payload }
+    case 'SET_INITIAL_RENDER_COMPLETE':
+      return { ...state, initialRenderComplete: action.payload }
+    case 'SET_INITIAL_LOAD_COMPLETE':
+      return { ...state, isInitialLoadComplete: action.payload }
+    case 'RESET':
+      return {
+        isVirtuosoReady: false,
+        isContentMeasured: false,
+        initialRenderComplete: false,
+        isInitialLoadComplete: false
+      }
+    default:
+      return state
+  }
+}
+
+const loadingStateReducer = (state: LoadingState, action: any): LoadingState => {
+  switch (action.type) {
+    case 'SET_LOADING_MESSAGES':
+      return { ...state, isLoadingMessages: action.payload }
+    case 'SET_INITIAL_LOADED_WITH_MESSAGE_ID':
+      return { ...state, hasInitialLoadedWithMessageId: action.payload }
+    case 'RESET':
+      return {
+        isLoadingMessages: false,
+        hasInitialLoadedWithMessageId: false
+      }
+    default:
+      return state
+  }
+}
+
+const useAnimationFrame = () => {
+  const rafRef = useRef<number>()
+
+  const schedule = useCallback((callback: () => void) => {
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current)
     }
+    rafRef.current = requestAnimationFrame(callback)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current)
+      }
+    }
+  }, [])
+
+  return schedule
+}
+
+const ChatStream = forwardRef<VirtuosoHandle, Props>(
+  ({ channelID, replyToMessage, showThreadButton = true, pinnedMessagesString, onModalClose, virtuosoRef }, ref) => {
+    const location = useLocation()
+    const searchParams = new URLSearchParams(location.search)
+    const isSavedMessage = searchParams.has('message_id')
+    const messageId = searchParams.get('message_id')
+
+    const [scrollState, dispatchScrollState] = useReducer(scrollStateReducer, {
+      isAtBottom: false,
+      hasScrolledToTarget: false,
+      isScrolling: false,
+      lastScrollTop: 0
+    })
+
+    const [renderState, dispatchRenderState] = useReducer(renderStateReducer, {
+      isVirtuosoReady: false,
+      isContentMeasured: false,
+      initialRenderComplete: false,
+      isInitialLoadComplete: false
+    })
+
+    const [loadingState, dispatchLoadingState] = useReducer(loadingStateReducer, {
+      isLoadingMessages: false,
+      hasInitialLoadedWithMessageId: false
+    })
+
+    const scrollTimeoutRef = useRef<NodeJS.Timeout>()
+    const initialRenderRef = useRef(true)
+    const measureTimeoutRef = useRef<NodeJS.Timeout>()
+
+    const scheduleFrame = useAnimationFrame()
+
+    useEffect(() => {
+      dispatchScrollState({ type: 'RESET' })
+      dispatchRenderState({ type: 'RESET' })
+      dispatchLoadingState({ type: 'RESET' })
+
+      initialRenderRef.current = true
+
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current)
+      if (measureTimeoutRef.current) clearTimeout(measureTimeoutRef.current)
+    }, [channelID, messageId])
+
+    const {
+      messages,
+      hasOlderMessages,
+      loadOlderMessages,
+      goToLatestMessages,
+      hasNewMessages,
+      error,
+      loadNewerMessages,
+      isLoading,
+      highlightedMessage,
+      scrollToMessage,
+      newMessageCount,
+      newMessageIds,
+      markMessageAsSeen,
+      clearAllNewMessages
+    } = useChatStream(channelID, virtuosoRef, pinnedMessagesString, scrollState.isAtBottom)
+
+    useEffect(() => {
+      if (messages && messages.length > 0 && !renderState.isInitialLoadComplete) {
+        setTimeout(() => {
+          dispatchRenderState({ type: 'SET_INITIAL_LOAD_COMPLETE', payload: true })
+        }, 100)
+        setTimeout(() => dispatchRenderState({ type: 'SET_VIRTUOSO_READY', payload: true }), 200)
+        setTimeout(() => dispatchRenderState({ type: 'SET_CONTENT_MEASURED', payload: true }), 300)
+        setTimeout(() => dispatchRenderState({ type: 'SET_INITIAL_RENDER_COMPLETE', payload: true }), 500)
+      }
+    }, [messages, renderState.isInitialLoadComplete])
+
+    const debouncedRangeChanged = useDebounceDynamic(
+      useCallback(
+        (range: any) => {
+          if (
+            !messages ||
+            !renderState.isInitialLoadComplete ||
+            !renderState.isVirtuosoReady ||
+            scrollState.isScrolling
+          )
+            return
+
+          const shouldLoadNewer =
+            hasNewMessages &&
+            range &&
+            range.endIndex >= messages.length - 5 &&
+            !loadingState.isLoadingMessages &&
+            !loadingState.hasInitialLoadedWithMessageId
+
+          if (shouldLoadNewer) {
+            dispatchLoadingState({ type: 'SET_LOADING_MESSAGES', payload: true })
+            loadNewerMessages().finally(() => {
+              setTimeout(() => dispatchLoadingState({ type: 'SET_LOADING_MESSAGES', payload: false }), 300)
+            })
+          }
+
+          if (range && newMessageIds.size > 0) {
+            const visibleMessages = messages.slice(range.startIndex, range.endIndex + 1)
+            visibleMessages.forEach((message: any) => {
+              if (message.name && newMessageIds.has(message.name)) {
+                setTimeout(() => markMessageAsSeen(message.name), 2000)
+              }
+            })
+          }
+        },
+        [
+          hasNewMessages,
+          loadNewerMessages,
+          messages,
+          renderState.isInitialLoadComplete,
+          renderState.isVirtuosoReady,
+          scrollState.isScrolling,
+          loadingState.isLoadingMessages,
+          loadingState.hasInitialLoadedWithMessageId,
+          newMessageIds,
+          markMessageAsSeen
+        ]
+      ),
+      300
+    )
+
+    const { deleteActions, editActions, forwardActions, attachDocActions, reactionActions } =
+      useChatStreamActions(onModalClose)
 
     const { name: userID } = useUserData()
+    const { seenUsers } = useChannelSeenUsers({
+      channelId: channelID
+    })
+    const { channel } = useCurrentChannelData(channelID)
 
-    // When the user presses the up arrow, we need to check if the last message is a message sent by the user and is a text message (not system or file)
-    // If so, we need to open the edit modal for that message
-    // This function needs to be called from the parent component
-    useImperativeHandle(ref, () => ({
-        onUpArrow: () => {
-            if (messages && messages.length > 0) {
-                const lastMessage = messages[messages.length - 1]
-                if (lastMessage.message_type === 'Text' && lastMessage.owner === userID && !lastMessage.is_bot_message) {
-                    setEditMessage(lastMessage)
-                }
-            }
-        }
-    }))
+    const onReplyMessageClick = useCallback(
+      (messageID: string) => {
+        scheduleFrame(() => scrollToMessage(messageID))
+      },
+      [scrollToMessage, scheduleFrame]
+    )
 
-    const { ref: oldLoaderRef } = useInView({
-        fallbackInView: true,
-        initialInView: false,
-        skip: !hasOlderMessages,
-        onChange: (async (inView) => {
-            if (inView && hasOlderMessages) {
-                await loadOlderMessages()
-            }
-        })
-    });
+    const targetIndex = useMemo(() => {
+      if (!messageId || !messages) return undefined
+      return messages.findIndex((msg) => msg.name === messageId)
+    }, [messageId, messages])
 
-    const { ref: newLoaderRef } = useInView({
-        fallbackInView: true,
-        skip: !hasNewMessages,
-        initialInView: false,
-        onChange: (inView) => {
-            if (inView && hasNewMessages) {
-                loadNewerMessages()
-            }
-        }
-    });
-
-    // Add a resize observer so that if the user is near the bottom of the chat, we can scroll to the bottom when the user resizes the window + any link previews are loaded
     useEffect(() => {
-        if (!scrollRef.current) return
-
-        const observer = new ResizeObserver(() => {
-            const scrollContainer = scrollRef.current
-            if (!scrollContainer) return
-
-            // Check if we're near bottom before adjusting scroll
-            if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 100) {
-                requestAnimationFrame(() => {
-                    scrollContainer.scrollTo({
-                        top: scrollContainer.scrollHeight,
-                        behavior: 'instant'
-                    })
-                })
-            }
+      if (
+        renderState.isInitialLoadComplete &&
+        messageId &&
+        messages &&
+        targetIndex !== undefined &&
+        targetIndex >= 0 &&
+        !scrollState.hasScrolledToTarget &&
+        !loadingState.isLoadingMessages &&
+        virtuosoRef.current &&
+        renderState.isVirtuosoReady
+      ) {
+        scheduleFrame(() => {
+          if (virtuosoRef.current) {
+            virtuosoRef.current.scrollToIndex({
+              index: targetIndex,
+              behavior: 'auto',
+              align: 'center'
+            })
+            dispatchScrollState({ type: 'SET_SCROLLED_TO_TARGET', payload: true })
+          }
         })
+      }
+    }, [
+      renderState.isInitialLoadComplete,
+      renderState.isVirtuosoReady,
+      scrollState.hasScrolledToTarget,
+      loadingState.isLoadingMessages,
+      messageId,
+      messages,
+      targetIndex,
+      virtuosoRef,
+      scheduleFrame
+    ])
 
-        observer.observe(scrollRef.current)
+    useImperativeHandle(ref, () => {
+      if (!virtuosoRef.current) {
+        return {} as VirtuosoHandle
+      }
 
-        return () => {
-            observer.disconnect()
+      return {
+        ...virtuosoRef.current,
+        onUpArrow: () => {
+          if (messages?.length) {
+            const lastMessage = messages[messages.length - 1]
+            if (lastMessage.message_type === 'Text' && lastMessage.owner === userID && !lastMessage.is_bot_message) {
+              editActions.setEditMessage(lastMessage)
+            }
+          }
         }
-    }, []) // Only run once on mount since we're just observing the container
+      }
+    }, [messages, userID, editActions.setEditMessage])
+
+    const itemRenderer = useCallback(
+      (index: number) => {
+        const message = messages?.[index]
+        if (!message) return null
+
+        return (
+          <MessageItemRenderer
+            message={message}
+            isHighlighted={highlightedMessage === message?.name}
+            onReplyMessageClick={onReplyMessageClick}
+            setEditMessage={editActions.setEditMessage}
+            replyToMessage={replyToMessage}
+            setForwardMessage={forwardActions.setForwardMessage}
+            showThreadButton={showThreadButton}
+            setAttachDocument={attachDocActions.setAttachDocument}
+            setDeleteMessage={deleteActions.setDeleteMessage}
+            setReactionMessage={reactionActions.setReactionMessage}
+            seenUsers={seenUsers}
+            channel={channel}
+          />
+        )
+      },
+      [
+        messages,
+        highlightedMessage,
+        onReplyMessageClick,
+        editActions.setEditMessage,
+        replyToMessage,
+        forwardActions.setForwardMessage,
+        showThreadButton,
+        attachDocActions.setAttachDocument,
+        deleteActions.setDeleteMessage,
+        reactionActions.setReactionMessage,
+        seenUsers,
+        channel
+      ]
+    )
+
+    const Header = useMemo(() => {
+      return hasOlderMessages && !isLoading
+        ? () => (
+            <div className='flex w-full min-h-8 pb-4 justify-center items-center'>
+              <Loader />
+            </div>
+          )
+        : undefined
+    }, [hasOlderMessages, isLoading])
+
+    const Footer = useMemo(() => {
+      return hasNewMessages
+        ? () => (
+            <div className='flex w-full min-h-8 pb-4 justify-center items-center'>
+              <Loader />
+            </div>
+          )
+        : undefined
+    }, [hasNewMessages])
+
+    const handleAtTopStateChange = useCallback(
+      (atTop: boolean) => {
+        if (atTop && hasOlderMessages && renderState.isInitialLoadComplete && !loadingState.isLoadingMessages) {
+          dispatchScrollState({ type: 'SET_SCROLLING', payload: true })
+          dispatchLoadingState({ type: 'SET_LOADING_MESSAGES', payload: true })
+
+          loadOlderMessages().finally(() => {
+            setTimeout(() => {
+              dispatchLoadingState({ type: 'SET_LOADING_MESSAGES', payload: false })
+              dispatchScrollState({ type: 'SET_SCROLLING', payload: false })
+            }, 300)
+          })
+        }
+      },
+      [hasOlderMessages, loadOlderMessages, renderState.isInitialLoadComplete, loadingState.isLoadingMessages]
+    )
+
+    const handleAtBottomStateChange = useCallback(
+      (atBottom: boolean) => {
+        dispatchScrollState({ type: 'SET_AT_BOTTOM', payload: atBottom })
+        if (atBottom) {
+          scheduleFrame(() => clearAllNewMessages())
+        }
+      },
+      [clearAllNewMessages, scheduleFrame]
+    )
+
+    const handleRangeChanged = useCallback(
+      (range: any) => {
+        if (!messages || !renderState.isInitialLoadComplete || !renderState.isVirtuosoReady) return
+
+        if (initialRenderRef.current) {
+          initialRenderRef.current = false
+          return
+        }
+
+        debouncedRangeChanged(range)
+      },
+      [messages, renderState.isInitialLoadComplete, renderState.isVirtuosoReady, debouncedRangeChanged]
+    )
+
+    const handleGoToLatestMessages = useCallback(() => {
+      scheduleFrame(() => {
+        clearAllNewMessages()
+        goToLatestMessages()
+      })
+    }, [clearAllNewMessages, goToLatestMessages, scheduleFrame])
+
+    const virtuosoComponents = useMemo(
+      () => ({
+        Header: renderState.isInitialLoadComplete && hasOlderMessages ? Header : undefined,
+        Footer: hasNewMessages ? Footer : undefined
+      }),
+      [renderState.isInitialLoadComplete, hasOlderMessages, hasNewMessages, Header, Footer]
+    )
+
+    const scrollActionToBottom = useCallback(() => {
+      if (virtuosoRef.current && messages && messages.length > 0) {
+        scheduleFrame(() => {
+          virtuosoRef.current?.scrollToIndex({
+            index: messages.length - 1,
+            behavior: 'auto',
+            align: 'end'
+          })
+        })
+      }
+    }, [messages, virtuosoRef, scheduleFrame])
+
+    const computeItemKey = useCallback((index: number, item: any) => {
+      return item?.name ?? `fallback-${index}`
+    }, [])
+
+    const virtuosoStyles = useMemo(
+      () => ({
+        height: '100%',
+        willChange: 'transform',
+        opacity: renderState.initialRenderComplete ? 1 : 0,
+        transform: renderState.initialRenderComplete ? 'translateY(0)' : 'translateY(8px)',
+        transition: 'opacity 0.3s ease-out, transform 0.3s ease-out',
+        scrollbarWidth: renderState.initialRenderComplete ? 'thin' : 'none',
+        scrollbarColor: renderState.initialRenderComplete
+          ? 'rgba(155, 155, 155, 0.5) transparent'
+          : 'transparent transparent',
+        '--scrollbar-width': renderState.initialRenderComplete ? '6px' : '0px',
+        '--scrollbar-opacity': renderState.initialRenderComplete ? '0.5' : '0'
+      }),
+      [renderState.initialRenderComplete]
+    )
 
     return (
-        <div className='relative h-full flex flex-col overflow-y-auto pb-16 sm:pb-0' ref={scrollRef}>
-            <div ref={oldLoaderRef}>
-                {hasOlderMessages && !isLoading && <div className='flex w-full min-h-8 pb-4 justify-center items-center'>
-                    <Loader />
-                </div>}
-            </div>
-            {!isLoading && !hasOlderMessages && <ChannelHistoryFirstMessage channelID={channelID ?? ''} />}
-            {isLoading && <ChatStreamLoader />}
-            {error && <ErrorBanner error={error} />}
-            <div className={clsx('flex flex-col pb-4 z-50 transition-opacity duration-400 ease-ease-out-cubic', isLoading ? 'opacity-0' : 'opacity-100')}>
-                {messages?.map(message => {
-                    if (message.message_type === 'date') {
-                        return <DateSeparator key={`date-${message.creation}`} id={`date-${message.creation}`} className='p-2 z-10 relative'>
-                            {message.creation}
-                        </DateSeparator>
-                    } else if (message.message_type === 'System') {
-                        return <SystemMessageBlock key={`${message.name}_${message.modified}`} message={message} />
-                    } else {
-                        return <div key={`${message.name}_${message.modified}`} id={`message-${message.name}`}>
-                            <div className="w-full overflow-x-clip overflow-y-visible text-ellipsis">
-                                <MessageItem
-                                    message={message}
-                                    isHighlighted={highlightedMessage === message.name}
-                                    onReplyMessageClick={onReplyMessageClick}
-                                    setEditMessage={setEditMessage}
-                                    replyToMessage={replyToMessage}
-                                    forwardMessage={setForwardMessage}
-                                    showThreadButton={showThreadButton}
-                                    onAttachDocument={setAttachDocument}
-                                    setDeleteMessage={setDeleteMessage}
-                                    setReactionMessage={setReactionMessage}
-                                />
-                            </div>
-                        </div>
-                    }
-                }
-                )}
-            </div>
-            {hasNewMessages && <div ref={newLoaderRef}>
-                <div className='flex w-full min-h-8 pb-4 justify-center items-center'>
-                    <Loader />
-                </div>
-            </div>}
+      <div className='relative h-full flex flex-col overflow-hidden pb-16 sm:pb-0'>
+        {!isLoading && !hasOlderMessages && <ChannelHistoryFirstMessage channelID={channelID ?? ''} />}
 
-            {hasNewMessages && <div className='fixed bottom-36 z-50 right-5'>
-                <Button
-                    className='shadow-lg'
-                    onClick={goToLatestMessages}>
-                    Scroll to new messages
-                    <FiArrowDown size={18} />
-                </Button>
-            </div>}
-            <DeleteMessageDialog {...deleteProps} />
-            <EditMessageDialog {...editProps} />
-            <ForwardMessageDialog {...forwardProps} />
-            <AttachFileToDocumentDialog {...attachDocProps} />
-            <ReactionAnalyticsDialog {...reactionProps} />
-        </div>
+        {isLoading && <ChatStreamLoader />}
 
+        {error && <ErrorBanner error={error} />}
+
+        {messages && messages.length > 0 && (
+          <Virtuoso
+            ref={virtuosoRef}
+            data={messages}
+            itemContent={itemRenderer}
+            followOutput={scrollState.isAtBottom ? 'auto' : false}
+            initialTopMostItemIndex={!isSavedMessage ? messages.length - 1 : targetIndex}
+            atTopStateChange={handleAtTopStateChange}
+            atBottomStateChange={handleAtBottomStateChange}
+            rangeChanged={handleRangeChanged}
+            computeItemKey={computeItemKey}
+            style={virtuosoStyles as any}
+            {...virtuosoSettings}
+            components={{
+              ...virtuosoComponents,
+              ScrollSeekPlaceholder: () => <ChatStreamLoader />
+            }}
+            useWindowScroll={false}
+            totalListHeightChanged={() => {
+              if (!renderState.isContentMeasured) {
+                measureTimeoutRef.current = setTimeout(() => {
+                  dispatchRenderState({ type: 'SET_CONTENT_MEASURED', payload: true })
+                }, 100)
+              }
+            }}
+          />
+        )}
+
+        <ScrollToBottomButtons
+          hasNewMessages={hasNewMessages}
+          newMessageCount={newMessageCount}
+          onGoToLatestMessages={handleGoToLatestMessages}
+          onScrollToBottom={scrollActionToBottom}
+          isAtBottom={scrollState.isAtBottom}
+          hasMessageId={!!messageId}
+        />
+
+        <ChatDialogs
+          deleteProps={deleteActions}
+          editProps={editActions}
+          forwardProps={forwardActions}
+          attachDocProps={attachDocActions}
+          reactionProps={reactionActions}
+        />
+      </div>
     )
-})
+  }
+)
 
-export default ChatStream
+export default memo(ChatStream)

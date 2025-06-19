@@ -12,6 +12,6 @@ export const useUserData = () => {
   return {
     name,
     full_name,
-    user_image,
+    user_image
   }
 }

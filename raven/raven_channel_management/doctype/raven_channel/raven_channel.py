@@ -16,7 +16,6 @@ class RavenChannel(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
-
 		from raven.raven.doctype.raven_pinned_messages.raven_pinned_messages import RavenPinnedMessages
 
 		channel_description: DF.SmallText | None
@@ -25,6 +24,7 @@ class RavenChannel(Document):
 		is_archived: DF.Check
 		is_direct_message: DF.Check
 		is_dm_thread: DF.Check
+		is_done: DF.Check
 		is_self_message: DF.Check
 		is_synced: DF.Check
 		is_thread: DF.Check
