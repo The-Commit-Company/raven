@@ -4,13 +4,14 @@ import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { useGetUser } from '@/hooks/useGetUser'
 import { useChannelList } from '@/utils/channel/ChannelListProvider'
 import { UserListContext } from '@/utils/users/UserListProvider'
-import { Badge, Box, Flex } from '@radix-ui/themes'
+import { Badge, Box, Flex, Text } from '@radix-ui/themes'
 import clsx from 'clsx'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import ChannelItem from './ChannelItem'
+
 
 const UserChannelList = () => {
   const { dm_channels } = useChannelList()
