@@ -92,6 +92,11 @@ const SettingsList = () => {
         <PiOpenAiLogo size={ICON_SIZE} />
         OpenAI Settings
       </Command.Item>
+
+      <Command.Item value='push-notifications' onSelect={onSelect}>
+        <PiOpenAiLogo size={ICON_SIZE} />
+        Push Notification
+      </Command.Item>
     </Command.Group>
   )
 }

@@ -2,9 +2,10 @@ import { HiMenu } from 'react-icons/hi'
 import { useUnreadMessageCount } from '@/hooks/useUnreadMessageCount'
 import { filterItems, useMentionUnreadCount, FilterList } from './SidebarContainer'
 import { useSidebarMode } from '@/utils/layout/sidebar'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useIsTablet } from '@/hooks/useMediaQuery'
 import clsx from 'clsx'
+import { UserContext } from '@/utils/auth/UserProvider'
 
 export default function FilterTabs() {
   const { title, setTitle, setLabelID } = useSidebarMode()
@@ -45,6 +46,8 @@ export default function FilterTabs() {
       return () => clearTimeout(timeout)
     }
   }, [showFilterList])
+
+  const { logout } = useContext(UserContext)
 
   return (
     <>
@@ -141,6 +144,7 @@ export default function FilterTabs() {
             </button>
             <div className='mt-14'>
               <FilterList onClose={() => setShowFilterList(false)} />
+              <button onClick={logout}>Logout </button>
             </div>
           </div>
         </>
