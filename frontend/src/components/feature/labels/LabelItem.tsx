@@ -78,7 +78,7 @@ const LabelItem: React.FC<LabelItemProps> = ({ label, name, channels }) => {
         </div>
 
         {/* ✅ Chỉ hiện menu khi đã expand hoặc không có unread */}
-        {!(totalCount > 0 && !isExpanded) && <LabelItemMenu name={name} label={label} />}
+        {!(totalCount > 0 && !isExpanded) && <LabelItemMenu channels={channels} name={name} label={label} />}
       </div>
 
       {isExpanded && mergedChannels.length > 0 && (
