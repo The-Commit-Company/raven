@@ -96,14 +96,14 @@ const HelpAndSupport = () => {
             {/* @ts-expect-error */}
             <Text size='3' color='gray'>
               <Text size='5' className='cal-sans text-gray-12 dark:text-white'>
-                raven
+                NextConnect
               </Text>{' '}
               <Code size='2' variant='ghost'>
-                v{frappe?.boot.versions.raven}
+                v1.0.0 beta
               </Code>
             </Text>
             <Text size='2' color='gray'>
-              Crafted by The Commit Company
+              Created by HaiNamTech
             </Text>
           </Stack>
         </Stack>

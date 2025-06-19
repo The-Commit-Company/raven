@@ -12,6 +12,7 @@ import { useParams } from 'react-router-dom'
 import { useAtomValue } from 'jotai'
 import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
 import { useNotificationAudio } from './useNotificationAudio'
+import { useGetUser } from './useGetUser'
 
 export const useUnreadMessageCount = () => {
   const manuallyMarked = useAtomValue(manuallyMarkedAtom)
@@ -108,39 +109,39 @@ export const useFetchUnreadMessageCount = () => {
 
   const { play } = useNotificationAudio()
 
-  useFrappeEventListener('raven:unread_channel_count_updated', (event) => {
+  useFrappeEventListener('raven:unread_channel_count_updated', async (event) => {
     if (event.sent_by !== currentUser) {
-      if (channelID === event.channel_id) {
+      const isCurrentChannel = channelID === event.channel_id
+
+      if (isCurrentChannel && !document.hidden) {
+        // Chỉ trackVisit khi tab active
         trackVisit({ channel_id: channelID })
-
-        const currentUnread = unread_count?.message.find((c) => c.name === event.channel_id)?.unread_count || 0
-        const isManuallyMarked = manuallyMarked.has(event.channel_id)
-
-        const shouldPlay = !isManuallyMarked || (isManuallyMarked && currentUnread > 1)
-
-        setLatestUnreadData({
-          name: event.channel_id,
-          last_message_sender_name: event.last_message_sender_name,
-          is_direct_message: event.is_direct_message,
-          channel_name: event.channel_name,
-          last_message_timestamp: event.last_message_timestamp
-        })
-
-        if (shouldPlay) {
-          play(event.last_message_timestamp)
-        }
-      } else {
-        fetchUnreadCountForChannel(event.channel_id)
       }
+
+      const currentUnread = unread_count?.message.find((c) => c.name === event.channel_id)?.unread_count || 0
+      const isManuallyMarked = manuallyMarked.has(event.channel_id)
+
+      const shouldPlay = !isManuallyMarked || (isManuallyMarked && currentUnread > 1)
+
+      setLatestUnreadData({
+        name: event.channel_id,
+        last_message_sender_name: event.last_message_sender_name,
+        is_direct_message: event.is_direct_message,
+        channel_name: event.channel_name,
+        last_message_timestamp: event.last_message_timestamp
+      })
+
+      if (shouldPlay) {
+        play(event.last_message_timestamp)
+      }
+
+      // 🚀 Luôn gọi fetch để cập nhật updatedChannel
+      fetchUnreadCountForChannel(event.channel_id)
     } else {
       updateUnreadCountToZero(event.channel_id)
     }
 
-    updateLastMessageInChannelList(
-      event.channel_id,
-      event.last_message_timestamp,
-      event.last_message_details // ✅ truyền vào đây
-    )
+    updateLastMessageInChannelList(event.channel_id, event.last_message_timestamp, event.last_message_details)
   })
 
   const updateUnreadCountToZero = (channel_id?: string) => {
