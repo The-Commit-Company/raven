@@ -62,6 +62,9 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
     )
   }, [channels, search])
 
+  console.log(filteredChannels);
+  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const channel_ids = Array.from(selected)
