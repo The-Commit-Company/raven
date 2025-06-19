@@ -137,17 +137,19 @@ export const MessageSeenStatus = React.memo(
               <Popover.Content
                 side='top'
                 align={position}
-                className='z-50 bg-neutral-800 text-white p-4 rounded shadow-md min-w-[250px] max-w-sm border border-neutral-700 focus:outline-none focus:ring-0'
+                className='z-50 bg-neutral-800 text-white p-4 rounded shadow-md min-w-[350px] max-w-md border border-neutral-700 focus:outline-none focus:ring-0'
                 sideOffset={6}
                 collisionPadding={8}
               >
-                <div className='flex divide-x divide-neutral-700 text-sm'>
+                <div className='flex divide-x divide-neutral-700 text-sm max-h-[400px]'>
                   {/* Cột Read */}
                   <div className='pr-4 w-1/2'>
-                    <div className='font-semibold mb-1'>{seenByOthers.length} Đã xem</div>
-                    <div className='space-y-2'>
+                    <div className='font-semibold mb-2 sticky top-0 bg-neutral-800 pb-1'>
+                      {seenByOthers.length} Đã xem
+                    </div>
+                    <div className='space-y-2 overflow-y-auto max-h-[350px] pr-2'>
                       {seenByOthers.map((user, index) => (
-                        <div key={index} className='flex items-center gap-2'>
+                        <div key={`seen-${index}`} className='flex items-center gap-2'>
                           <UserAvatar src={user.user_image} alt={user.full_name} size='1' />
                           <span className='text-xs max-w-[120px] truncate block' title={user.full_name}>
                             {user.full_name}
@@ -159,10 +161,12 @@ export const MessageSeenStatus = React.memo(
 
                   {/* Cột Unread */}
                   <div className='pl-4 w-1/2'>
-                    <div className='font-semibold mb-1'>{unseenByOthers.length} Chưa xem</div>
-                    <div className='space-y-2'>
+                    <div className='font-semibold mb-2 sticky top-0 bg-neutral-800 pb-1'>
+                      {unseenByOthers.length} Chưa xem
+                    </div>
+                    <div className='space-y-2 overflow-y-auto max-h-[350px] pr-2'>
                       {unseenByOthers.map((user, index) => (
-                        <div key={index} className='flex items-center gap-2'>
+                        <div key={`unseen-${index}`} className='flex items-center gap-2'>
                           <UserAvatar src={user.user_image} alt={user.full_name} size='1' />
                           <span className='text-xs max-w-[120px] truncate block' title={user.full_name}>
                             {user.full_name}
