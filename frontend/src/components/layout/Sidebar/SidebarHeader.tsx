@@ -9,6 +9,8 @@ import { BiMoon, BiSun } from 'react-icons/bi'
 import { TbSearch } from 'react-icons/tb'
 import { CreateChannelButton } from '@/components/feature/channels/CreateChannelModal'
 import { CreateLabelButton } from '@/components/feature/labels/CreateLabelModal'
+import { LuSettings } from 'react-icons/lu'
+import { useNavigate } from 'react-router-dom'
 
 function isLabelObject(val: unknown): val is { labelId: string; labelName: string } {
   return typeof val === 'object' && val !== null && 'labelId' in val && 'labelName' in val
@@ -17,6 +19,7 @@ function isLabelObject(val: unknown): val is { labelId: string; labelName: strin
 export const SidebarHeader = () => {
   const isDesktop = useIsDesktop()
   const { mode, title, labelID } = useSidebarMode()
+  const navigate = useNavigate()
 
   const isLabelMode = title === 'Nhãn' || !!labelID
   if (isDesktop) {
@@ -46,6 +49,15 @@ export const SidebarHeader = () => {
           raven
         </Text>
         <Flex align='center' gap='4' className='pr-1 sm:pr-0'>
+          <IconButton
+            aria-label='Settings'
+            size='2'
+            color='gray'
+            variant='ghost'
+            onClick={() => navigate('/settings/profile')}
+          >
+            <LuSettings size='14' />
+          </IconButton>
           <ColorModeToggleButton />
           {isLabelMode ? (
             <button className='p-2 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 rounded'>
