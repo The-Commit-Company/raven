@@ -188,7 +188,7 @@ const ChatbotAIContainer: React.FC<Props> = ({
                       style={{ minWidth: 0 }}
                     />
                   ) : (
-                    <span className='truncate flex-1 min-w-0' title={s.title}>
+                    <span className='truncate flex-1 min-w-0 font-medium text-[13px]' title={s.title}>
                       {pendingRename?.id === s.id ? (
                         <span className='italic text-gray-400 dark:text-white/50'>{pendingRename.title}</span>
                       ) : (
