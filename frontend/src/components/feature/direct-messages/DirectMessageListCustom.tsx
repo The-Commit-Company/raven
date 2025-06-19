@@ -56,7 +56,11 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
 
   // Nếu có nhãn ID thì lọc theo nhãn
   if (labelID) {
-    const filtered = channel_list.filter((c: { user_labels?: string[] }) => c.user_labels?.includes(labelID))
+    console.log(labelID)
+
+    const filtered = channel_list.filter((c) => {
+      return c.user_labels?.some((label: { label_id: string; label: string }) => label.label_id === labelID)
+    })
 
     if (filtered.length === 0) {
       return <div className='text-gray-500 text-sm italic p-4 text-center'>Không có kênh nào gắn nhãn này</div>
@@ -129,6 +133,11 @@ const isDMChannel = (c: UnifiedChannel): c is DMChannelWithUnreadCount => {
   return 'peer_user_id' in c && typeof c.peer_user_id === 'string'
 }
 
+const truncateText = (text, maxLength) => {
+  if (!text) return ''
+  return text.length > maxLength ? text.slice(0, maxLength) + '...' : text
+}
+
 export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel }) => {
   const isTablet = useIsTablet()
   const isDesktop = useIsDesktop()
@@ -168,11 +177,13 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   const user = useGetUser(lastOwner)
   const formattedMessage = formatLastMessage(channel, currentUser, user?.full_name)
 
-  const displayName = peerUser
+  const rawName = peerUser
     ? peerUserId !== currentUser
       ? peerUser.full_name
       : `${peerUser.full_name} (You)`
     : channel.channel_name || channel.name
+
+  const displayName = truncateText(rawName, 35)
 
   const shouldShowBadge = channel.unread_count > 0 || isManuallyMarked
 
@@ -204,7 +215,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
           )}
           {shouldShowBadge && (
             <SidebarBadge className='absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-[14px] h-[14px] text-[8px] rounded-full bg-red-500 text-white flex items-center justify-center'>
-              {channel.unread_count > 9 ? '9+' : channel.unread_count || 1}
+              {channel.unread_count}
             </SidebarBadge>
           )}
         </Box>

@@ -12,7 +12,6 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import ChannelItem from './ChannelItem'
 
-
 const UserChannelList = () => {
   const { dm_channels } = useChannelList()
   const { users } = useContext(UserListContext)
