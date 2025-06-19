@@ -5,8 +5,7 @@ import { __ } from '@/utils/translations'
 import { UserListProvider } from '@/utils/users/UserListProvider'
 import { Box, Flex, Heading } from '@radix-ui/themes'
 import { BiChevronLeft } from 'react-icons/bi'
-import { Link } from 'react-router-dom'
-import { Outlet } from 'react-router-dom'
+import { Link, Outlet } from 'react-router-dom'
 
 const Settings = () => {
   const isDesktop = useIsDesktop()
@@ -32,7 +31,7 @@ const Settings = () => {
                 <Link to={path} className='block bg-transparent hover:bg-transparent active:bg-transparent'>
                   <BiChevronLeft size='24' className='block text-gray-12' />
                 </Link>
-                <Heading size='5'>{__('Settings')}</Heading>
+                <Heading size='5'>{__('Cài đặt')}</Heading>
               </Flex>
             </Flex>
           </Box>

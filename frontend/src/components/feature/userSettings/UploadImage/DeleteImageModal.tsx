@@ -30,13 +30,13 @@ export const DeleteImageModal = ({ onClose }: DeleteImageModalProps) => {
 
       <Flex direction={'column'} gap='2'>
         <ErrorBanner error={error} />
-        <Text>{__('Are you sure you want to remove this image?')}</Text>
+        <Text>{__('Bạn có chắc muốn xóa ảnh này không?')}</Text>
       </Flex>
 
       <Flex gap='3' mt='4' justify='end'>
         <AlertDialog.Cancel>
           <Button variant='soft' color='gray'>
-            {__('Cancel')}
+            {__('Hủy')}
           </Button>
         </AlertDialog.Cancel>
         <AlertDialog.Action>

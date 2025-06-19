@@ -83,7 +83,7 @@ const ViewBotContent = ({ data, mutate }: { data: RavenBotInstructionTemplate; m
                 />
                 <Button type='submit' disabled={loading}>
                   {loading && <Loader className='text-white' />}
-                  {loading ? 'Saving' : 'Save'}
+                  {loading ? 'Đang lưu' : 'Lưu'}
                 </Button>
               </HStack>
             }

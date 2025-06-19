@@ -1,14 +1,13 @@
-import { useState } from 'react'
-import { AlertDialog, Box, Button, Dialog, Flex, IconButton, Tooltip } from '@radix-ui/themes'
-import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
-import { FiCamera } from 'react-icons/fi'
-import { BiSolidTrash } from 'react-icons/bi'
 import { UserAvatar, getInitials } from '@/components/common/UserAvatar'
-import { __ } from '@/utils/translations'
-import { useController, useFormContext } from 'react-hook-form'
-import { RavenWorkspace } from '@/types/Raven/RavenWorkspace'
-import { UploadImageModal } from '../userSettings/UploadImage/UploadImageModal'
 import { HStack } from '@/components/layout/Stack'
+import { RavenWorkspace } from '@/types/Raven/RavenWorkspace'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
+import { AlertDialog, Box, Button, Dialog, Flex, IconButton, Tooltip } from '@radix-ui/themes'
+import { useState } from 'react'
+import { useController, useFormContext } from 'react-hook-form'
+import { BiSolidTrash } from 'react-icons/bi'
+import { FiCamera } from 'react-icons/fi'
+import { UploadImageModal } from '../userSettings/UploadImage/UploadImageModal'
 
 export const WorkspaceLogoField = () => {
   const { control, watch } = useFormContext<RavenWorkspace>()
@@ -109,12 +108,12 @@ export const DeleteImage = ({ onDelete }: { onDelete: () => void }) => {
         </AlertDialog.Trigger>
       </Tooltip>
       <AlertDialog.Content className={DIALOG_CONTENT_CLASS} maxWidth='450px'>
-        <AlertDialog.Title>Remove logo</AlertDialog.Title>
-        <AlertDialog.Description size='2'>Are you sure you want to remove the logo?</AlertDialog.Description>
+        <AlertDialog.Title>Xóa Logo</AlertDialog.Title>
+        <AlertDialog.Description size='2'>Bạn có chắc muốn xóa logo này không?</AlertDialog.Description>
         <HStack gap='2' justify='end' mt='4'>
           <AlertDialog.Cancel>
             <Button variant='soft' color='gray'>
-              Cancel
+              Hủy
             </Button>
           </AlertDialog.Cancel>
           <AlertDialog.Action>

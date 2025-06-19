@@ -10,8 +10,8 @@ import { useFrappeCreateDoc, useFrappeFileUpload, useFrappeUpdateDoc, useSWRConf
 import { useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { FileUploadBox } from '../userSettings/UploadImage/FileUploadBox'
 import { CustomFile } from '../file-upload/FileDrop'
+import { FileUploadBox } from '../userSettings/UploadImage/FileUploadBox'
 
 const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void }) => {
   const { mutate } = useSWRConfig()
@@ -82,7 +82,7 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
           <Stack>
             <Box>
               <Label htmlFor='workspace_name' isRequired>
-                Workspace Name
+                Tên Workspace
               </Label>
               <TextField.Root
                 id='workspace_name'
@@ -99,7 +99,7 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
 
           <Stack>
             <Box>
-              <Label htmlFor='description'>Description</Label>
+              <Label htmlFor='description'>Mô tả</Label>
               <TextArea
                 id='description'
                 {...register('description')}
@@ -113,7 +113,7 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
           </Stack>
 
           <Stack>
-            <Label htmlFor='channel_type'>Workspace Type</Label>
+            <Label htmlFor='channel_type'>Loại Workspace</Label>
             <Controller
               name='type'
               control={control}
@@ -164,11 +164,11 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
                   />
                 )}
               />
-              &nbsp; Only admins can create channels in this workspace?
+              &nbsp; Chỉ quản trị viên mới có thể tạo kênh trong không gian làm việc này?
             </Text>
           </Stack>
           <Stack gap='0'>
-            <Label htmlFor='workspace_image'>Workspace Logo</Label>
+            <Label htmlFor='workspace_image'>Logo Workspace</Label>
             <FileUploadBox
               file={image}
               onFileChange={setImage}
@@ -181,12 +181,12 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
         <Flex gap='3' mt='4' justify='end'>
           <Dialog.Close disabled={loading}>
             <Button variant='soft' color='gray'>
-              {__('Cancel')}
+              {__('Hủy')}
             </Button>
           </Dialog.Close>
           <Button type='submit' disabled={loading}>
             {loading && <Loader />}
-            {loading ? __('Saving') : __('Save')}
+            {loading ? __('Đang lưu') : __('Lưu')}
           </Button>
         </Flex>
       </form>
@@ -195,7 +195,7 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
 }
 
 const helperText = __(
-  "When a workspace is set to private, it can only be viewed or joined by invitation.\nWhen a workspace is set to public, anyone can join the workspace and view it's channels."
+  'Khi một không gian làm việc được đặt ở chế độ riêng tư, chỉ những người được mời mới có thể xem hoặc tham gia. Khi không gian làm việc được đặt ở chế độ công khai, bất kỳ ai cũng có thể tham gia và xem các kênh trong đó.'
 )
 
 export default AddWorkspaceForm

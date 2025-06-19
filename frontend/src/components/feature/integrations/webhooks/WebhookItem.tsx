@@ -115,12 +115,12 @@ const DeleteWebhookAlertContent = ({
       </AlertDialog.Title>
       <Flex direction={'column'} gap='2'>
         <ErrorBanner error={error} />
-        <Text size='2'>Are you sure you want to delete this webhook?</Text>
+        <Text size='2'>Bạn có chắc muốn xóa webhook này không?</Text>
       </Flex>
       <Flex gap='3' mt='4' justify='end'>
         <AlertDialog.Cancel>
           <Button variant='soft' color='gray' onClick={onClose}>
-            Cancel
+            Hủy
           </Button>
         </AlertDialog.Cancel>
         <AlertDialog.Action>

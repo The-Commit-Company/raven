@@ -1,10 +1,10 @@
+import { Dialog, Flex, IconButton, Text, VisuallyHidden } from '@radix-ui/themes'
 import { useFrappeUpdateDoc } from 'frappe-react-sdk'
 import { useEffect } from 'react'
-import { ErrorBanner } from '../../../../layout/AlertBanner/ErrorBanner'
-import { IconButton, Dialog, Flex, Text, VisuallyHidden } from '@radix-ui/themes'
 import { BiX } from 'react-icons/bi'
-import { TextMessage } from '../../../../../../../types/Messaging/Message'
 import { toast } from 'sonner'
+import { TextMessage } from '../../../../../../../types/Messaging/Message'
+import { ErrorBanner } from '../../../../layout/AlertBanner/ErrorBanner'
 import Tiptap from '../../ChatInput/Tiptap'
 
 interface EditMessageModalProps {
@@ -29,9 +29,9 @@ export const EditMessageModal = ({ onClose, message }: EditMessageModalProps) =>
   return (
     <>
       <Flex justify={'between'}>
-        <Dialog.Title>Edit Message</Dialog.Title>
+        <Dialog.Title>Chỉnh sửa tin nhắn</Dialog.Title>
         <VisuallyHidden>
-          <Dialog.Description>Type in the new message text</Dialog.Description>
+          <Dialog.Description>Nhập nội dung tin nhắn mới</Dialog.Description>
         </VisuallyHidden>
         <Dialog.Close disabled={updatingDoc} className='invisible sm:visible'>
           <IconButton size='1' variant='soft' color='gray'>
@@ -51,7 +51,7 @@ export const EditMessageModal = ({ onClose, message }: EditMessageModalProps) =>
         />
         <Flex justify='end' className='hidden sm:block'>
           <Text size='1' color='gray'>
-            Press <b>Enter</b> to save
+            Nhấn <b>Enter</b> để lưu
           </Text>
         </Flex>
       </Flex>

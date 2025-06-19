@@ -211,7 +211,7 @@ const CreatePollContent = ({ channelID, setIsOpen }: { channelID: string; setIsO
           <Flex gap='3' mt='4' justify='end'>
             <Dialog.Close>
               <Button variant='soft' color='gray' onClick={onClose}>
-                Cancel
+                Hủy
               </Button>
             </Dialog.Close>
             <Button type='submit'>Create</Button>

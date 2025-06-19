@@ -16,9 +16,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 
-type Props = {}
-
-const ViewFunction = (props: Props) => {
+const ViewFunction = () => {
   const { ID } = useParams<{ ID: string }>()
 
   const { data, isLoading, error, mutate } = useFrappeGetDoc<RavenAIFunction>('Raven AI Function', ID)
@@ -77,7 +75,7 @@ const ViewFunctionContent = ({ data, mutate }: { data: RavenAIFunction; mutate: 
                 <CommonSettingsMenu doctype='Raven AI Function' docname={data.name} label={'Function'} />
                 <Button type='submit' disabled={loading}>
                   {loading && <Loader className='text-white' />}
-                  {loading ? 'Saving' : 'Save'}
+                  {loading ? 'Đang lưu' : 'Lưu'}
                 </Button>
               </HStack>
             }

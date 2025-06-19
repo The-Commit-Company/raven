@@ -158,12 +158,12 @@ const AddEmojiForm = ({ onClose }: { onClose: (refresh?: boolean) => void }) => 
         <Flex gap='3' mt='4' justify='end'>
           <Dialog.Close disabled={loading || uploading}>
             <Button variant='soft' color='gray'>
-              {__('Cancel')}
+              {__('Hủy')}
             </Button>
           </Dialog.Close>
           <Button type='submit' disabled={loading || uploading}>
             {loading || (uploading && <Loader />)}
-            {loading || uploading ? __('Saving') : __('Save')}
+            {loading || uploading ? __('Saving') : __('Lưu')}
           </Button>
         </Flex>
       </Stack>

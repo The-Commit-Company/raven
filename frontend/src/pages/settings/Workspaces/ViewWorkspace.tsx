@@ -73,7 +73,7 @@ const ViewWorkspaceContent = ({ data, mutate }: { data: RavenWorkspace; mutate: 
                 <WorkspaceActionMenu workspaceID={data.name} workspaceName={data.workspace_name} />
                 <Button type='submit' disabled={loading}>
                   {loading && <Loader className='text-white' />}
-                  {loading ? 'Saving' : 'Save'}
+                  {loading ? 'Đang lưu' : 'Lưu'}
                 </Button>
               </HStack>
             }

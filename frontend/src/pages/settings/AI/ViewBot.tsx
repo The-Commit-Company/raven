@@ -17,9 +17,7 @@ import { FiExternalLink } from 'react-icons/fi'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 
-type Props = {}
-
-const ViewBot = (props: Props) => {
+const ViewBot = () => {
   const { ID } = useParams<{ ID: string }>()
 
   const { data, isLoading, error, mutate } = useFrappeGetDoc<RavenBot>('Raven Bot', ID)
@@ -80,7 +78,7 @@ const ViewBotContent = ({ data, mutate }: { data: RavenBot; mutate: SWRResponse[
                 <OpenChatButton bot={data} />
                 <Button type='submit' disabled={loading}>
                   {loading && <Loader className='text-white' />}
-                  {loading ? 'Saving' : 'Save'}
+                  {loading ? 'Đang lưu' : 'Lưu'}
                 </Button>
               </HStack>
             }

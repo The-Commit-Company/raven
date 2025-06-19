@@ -146,7 +146,7 @@ const ViewSchedulerEventPage = ({ data, onUpdate }: { data: RavenSchedulerEvent;
                 </DropdownMenu.Root>
                 <Button type='submit' disabled={loading}>
                   {loading && <Loader className='text-white' />}
-                  {loading ? 'Saving' : 'Save'}
+                  {loading ? 'Đang lưu' : 'Lưu'}
                 </Button>
               </HStack>
             }

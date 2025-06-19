@@ -110,12 +110,12 @@ export const AddChannelMembersModalContent = ({ onClose }: AddChannelMemberModal
             <Flex gap='3' mt='6' justify='end' align='center'>
               <Dialog.Close disabled={loading}>
                 <Button variant='soft' color='gray'>
-                  Cancel
+                  Hủy
                 </Button>
               </Dialog.Close>
               <Button type='submit' disabled={loading}>
                 {loading && <Loader className='text-white' />}
-                {loading ? 'Saving' : 'Save'}
+                {loading ? 'Đang lưu' : 'Lưu'}
               </Button>
             </Flex>
           </form>

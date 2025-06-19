@@ -1,16 +1,16 @@
+import { Drawer, DrawerContent } from '@/components/layout/Drawer'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { Dialog, VisuallyHidden } from '@radix-ui/themes'
-import { Command, defaultFilter } from 'cmdk'
-import { useEffect } from 'react'
-import './commandMenu.styles.css'
-import ChannelList from './ChannelList'
-import UserList from './UserList'
 import clsx from 'clsx'
+import { Command, defaultFilter } from 'cmdk'
 import { atom, useAtom } from 'jotai'
-import { useIsDesktop } from '@/hooks/useMediaQuery'
-import { Drawer, DrawerContent } from '@/components/layout/Drawer'
+import { useEffect } from 'react'
+import ChannelList from './ChannelList'
+import './commandMenu.styles.css'
 import SettingsList from './SettingsList'
 import ToggleThemeCommand from './ToggleThemeCommand'
+import UserList from './UserList'
 
 export const commandMenuOpenAtom = atom(false)
 
@@ -38,7 +38,7 @@ const CommandMenu = () => {
         <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'p-4 rounded-md')}>
           <VisuallyHidden>
             <Dialog.Title>Command Menu</Dialog.Title>
-            <Dialog.Description>Search or type a command</Dialog.Description>
+            <Dialog.Description>Tìm kiếm hoặc gõ lệnh...</Dialog.Description>
           </VisuallyHidden>
           <CommandList />
         </Dialog.Content>
@@ -72,7 +72,7 @@ export const CommandList = () => {
 
   return (
     <Command label='Global Command Menu' className='command-menu' filter={customFilter}>
-      <Command.Input autoFocus={isDesktop} placeholder='Search or type a command' />
+      <Command.Input autoFocus={isDesktop} placeholder='Tìm kiếm hoặc gõ lệnh...' />
       <Command.List>
         <Command.Empty>No results found.</Command.Empty>
         <ChannelList />

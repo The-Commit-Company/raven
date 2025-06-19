@@ -219,7 +219,7 @@ const SupportRequestForm = ({ onClose }: SupportRequestFormProps) => {
           <Flex gap='2'>
             <Dialog.Close>
               <Button color='gray' variant={'soft'} disabled={loading && !error}>
-                Cancel
+                Hủy
               </Button>
             </Dialog.Close>
             <Button type='submit' disabled={loading}>

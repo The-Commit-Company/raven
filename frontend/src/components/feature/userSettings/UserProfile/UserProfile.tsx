@@ -98,7 +98,7 @@ const UserProfileForm = ({ myProfile }: { myProfile: RavenUser }) => {
               actions={
                 <Button type='submit' disabled={updatingDoc}>
                   {updatingDoc && <Loader />}
-                  {updatingDoc ? __('Saving') : __('Save')}
+                  {updatingDoc ? __('Đang lưu') : __('Lưu')}
                 </Button>
               }
             />

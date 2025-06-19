@@ -79,8 +79,8 @@ const DeleteThreadButton = () => {
     })
 
     toast.promise(promise, {
-      success: 'You have deleted the thread',
-      error: (e) => `Could not delete thread - ${getErrorMessage(e)}`
+      success: 'Bạn đã xóa chủ đề',
+      error: (e) => `Không thể xóa chủ đề - ${getErrorMessage(e)}`
     })
   }
 
@@ -88,7 +88,7 @@ const DeleteThreadButton = () => {
     <DropdownMenu.Item color='red' onClick={onDeleteThread}>
       <Flex gap='2' align='center'>
         <BiTrash size={'16'} />
-        Delete Thread
+        Xóa chủ đề
       </Flex>
     </DropdownMenu.Item>
   )
@@ -110,8 +110,8 @@ const LeaveThreadButton = () => {
     })
 
     toast.promise(promise, {
-      success: 'You have left the thread',
-      error: (e) => `Could not leave thread - ${getErrorMessage(e)}`
+      success: 'Bạn đã rời khỏi chủ đề',
+      error: (e) => `Không thể rời khỏi chủ đề - ${getErrorMessage(e)}`
     })
   }
 
@@ -119,7 +119,7 @@ const LeaveThreadButton = () => {
     <DropdownMenu.Item onClick={onLeaveThread} color='red'>
       <Flex gap='2' align='center'>
         <BiExit size={'16'} />
-        Leave Thread
+        Rời chủ đề
       </Flex>
     </DropdownMenu.Item>
   )

@@ -346,12 +346,12 @@ const ManageMembersDialogContent = ({
         <HStack>
           <Dialog.Close>
             <Button size='2' variant='soft' type='button' color='gray' disabled={loading}>
-              Cancel
+              Hủy
             </Button>
           </Dialog.Close>
           <Button size='2' type='button' onClick={saveMembers} disabled={!hasChanged || loading}>
             {loading ? <Loader className='text-white' /> : null}
-            {loading ? __('Saving') : __('Save')}
+            {loading ? __('Đang lưu') : __('Lưu')}
           </Button>
         </HStack>
       </HStack>

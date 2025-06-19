@@ -120,7 +120,7 @@ const Tiptap = forwardRef(
       channelID,
       replyMessage,
       clearReplyMessage,
-      placeholder = 'Type a message...',
+      placeholder = 'Nhập tin nhắn...',
       messageSending,
       sessionStorageKey = 'tiptap-editor',
       disableSessionStorage = false,

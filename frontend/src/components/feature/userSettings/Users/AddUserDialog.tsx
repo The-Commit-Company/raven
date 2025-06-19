@@ -173,7 +173,7 @@ const UserForm = ({ onClose }: { onClose: VoidFunction }) => {
         <HStack justify={'end'} pt='4'>
           <Dialog.Close>
             <Button color='gray' variant={'soft'} disabled={loading}>
-              Cancel
+              Hủy
             </Button>
           </Dialog.Close>
           <Button disabled={ravenUserExists || loading} onClick={handleSubmit(onSubmit)}>

@@ -182,7 +182,7 @@ const CreateMeetingForm = ({ onClose, channelData }: CreateMeetingFormProps) => 
         <Flex gap='3' mt='6' justify='end' align='center'>
           <Dialog.Close disabled={loading}>
             <Button variant='soft' color='gray'>
-              Cancel
+              Hủy
             </Button>
           </Dialog.Close>
           <Button type='submit' disabled={loading}>

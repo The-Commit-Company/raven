@@ -112,7 +112,7 @@ const MessageActionForm = ({
           <HStack justify='end'>
             <Dialog.Close>
               <Button color='gray' variant='soft' disabled={loading}>
-                Cancel
+                Hủy
               </Button>
             </Dialog.Close>
             <Button type='submit' disabled={loading}>

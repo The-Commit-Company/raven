@@ -74,12 +74,12 @@ export const EditChannelDescriptionModalContent = ({ channelData, onClose }: Ren
         <Flex gap='3' mt='6' justify='end' align='center'>
           <Dialog.Close disabled={updatingDoc}>
             <Button variant='soft' color='gray'>
-              {__('Cancel')}
+              {__('Hủy')}
             </Button>
           </Dialog.Close>
           <Button type='submit' disabled={updatingDoc}>
             {updatingDoc && <Loader className='text-white' />}
-            {updatingDoc ? __('Saving') : __('Save')}
+            {updatingDoc ? __('Saving') : __('Lưu')}
           </Button>
         </Flex>
       </form>
