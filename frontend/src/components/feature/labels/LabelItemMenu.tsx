@@ -38,7 +38,7 @@ function useIsTouchDevice() {
   return isTouch
 }
 
-const LabelItemMenu = ({ name, label }: { name: string; label: string }) => {
+const LabelItemMenu = ({ name, label, channels }: { name: string; label: string; channels: any[] }) => {
   const [popoverOpen, setPopoverOpen] = useState(false)
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
@@ -107,7 +107,13 @@ const LabelItemMenu = ({ name, label }: { name: string; label: string }) => {
 
       {/* Modal hoặc Drawer */}
       <Suspense fallback={null}>
-        <CreateConversationModal name={name} label={label} isOpen={isCreateOpen} setIsOpen={setIsCreateOpen} />
+        <CreateConversationModal
+          channels={channels}
+          name={name}
+          label={label}
+          isOpen={isCreateOpen}
+          setIsOpen={setIsCreateOpen}
+        />
       </Suspense>
       <Suspense fallback={null}>
         <EditLabelModal name={name} label={label} isOpen={isEditOpen} setIsOpen={setIsEditOpen} />

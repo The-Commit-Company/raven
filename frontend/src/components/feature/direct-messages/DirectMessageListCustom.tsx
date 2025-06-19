@@ -56,11 +56,12 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
 
   // Nếu có nhãn ID thì lọc theo nhãn
   if (labelID) {
-    console.log(labelID)
-
     const filtered = channel_list.filter((c) => {
       return c.user_labels?.some((label: { label_id: string; label: string }) => label.label_id === labelID)
     })
+
+    console.log(channel_list);
+    
 
     if (filtered.length === 0) {
       return <div className='text-gray-500 text-sm italic p-4 text-center'>Không có kênh nào gắn nhãn này</div>
@@ -68,7 +69,7 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
 
     return (
       <>
-        {filtered.map((channel: DMChannelWithUnreadCount) => (
+        {channel_list.map((channel: DMChannelWithUnreadCount) => (
           <DirectMessageItem key={channel.name} dm_channel={channel} />
         ))}
       </>
@@ -183,7 +184,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
       : `${peerUser.full_name} (You)`
     : channel.channel_name || channel.name
 
-  const displayName = truncateText(rawName, 35)
+  const displayName = truncateText(rawName, 30)
 
   const shouldShowBadge = channel.unread_count > 0 || isManuallyMarked
 
