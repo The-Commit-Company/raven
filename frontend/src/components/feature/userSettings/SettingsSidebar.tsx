@@ -40,10 +40,10 @@ export const SettingsSidebar = () => {
         <SettingsGroup title='AI' icon={BiBot}>
           <SettingsSidebarItem title='Agents' to='bots' />
           <SettingsSidebarItem title='Functions' to='functions' />
-          <SettingsSidebarItem title='File Sources' to='file-sources' />
+          {/* <SettingsSidebarItem title='File Sources' to='file-sources' /> */}
           <SettingsSidebarItem title='Instructions' to='instructions' />
           <SettingsSidebarItem title='Commands' to='commands' />
-          <SettingsSidebarItem title='AI Settings' to='ai-settings' />
+          <SettingsSidebarItem title='AI Settings' to='openai-settings' />
         </SettingsGroup>
         <SettingsSeparator />
         <div className='flex flex-col gap-1 -mx-1'>
