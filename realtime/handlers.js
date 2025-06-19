@@ -2,9 +2,6 @@
 
 function raven_handlers(socket) {
 
-    console.log('🔥 raven/realtime/handler.js loaded')
-
-
     socket.on("fire", () => {
         socket.emit("ice");
     });

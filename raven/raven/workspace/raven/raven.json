@@ -1,4 +1,5 @@
 {
+ "app": "raven",
  "charts": [],
  "content": "[{\"id\":\"MKitHAnT4f\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><a href=\\\"/raven\\\">Raven</a></span>\",\"col\":12}},{\"id\":\"gBy2HFBNf4\",\"type\":\"onboarding\",\"data\":{\"onboarding_name\":\"Raven\",\"col\":12}},{\"id\":\"ZcawYU5brv\",\"type\":\"card\",\"data\":{\"card_name\":\"DocTypes\",\"col\":4}},{\"id\":\"Uox8EFjnuM\",\"type\":\"card\",\"data\":{\"card_name\":\"AI\",\"col\":4}},{\"id\":\"F85-QVSjIb\",\"type\":\"card\",\"data\":{\"card_name\":\"Integrations\",\"col\":4}}]",
  "creation": "2023-06-22 20:12:29.687295",
@@ -181,7 +182,7 @@
    "type": "Link"
   }
  ],
- "modified": "2025-06-14 08:51:53.388950",
+ "modified": "2024-12-15 19:43:38.989720",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven",
@@ -193,5 +194,6 @@
  "roles": [],
  "sequence_id": 30.0,
  "shortcuts": [],
- "title": "Raven"
+ "title": "Raven",
+ "type": "Workspace"
 }
