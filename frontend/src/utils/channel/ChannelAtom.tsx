@@ -1,7 +1,6 @@
 // atoms/sortedChannelsAtom.ts
 import { atom, useAtomValue, useSetAtom } from 'jotai'
 import { useUnreadCount } from '../layout/sidebar'
-import { channelDoneVersionAtom } from '@/hooks/useChannelDone'
 import { useMemo } from 'react'
 
 export type ChannelWithGroupType = {
@@ -76,14 +75,11 @@ export const useEnrichedChannels = (): ChannelWithGroupType[] => {
   return enriched
 }
 
-
 export const useEnrichedLabelChannels = (): ChannelWithGroupType[] => {
   const channels = useAtomValue(sortedChannelsAtom)
   const unreadList = useUnreadCount().message || []
 
   const enriched = useMemo(() => {
-    // Chỉ lọc theo is_done
-
     return channels.map((channel) => {
       const unread = unreadList.find((u) => u.name === channel.name)
 
@@ -99,7 +95,6 @@ export const useEnrichedLabelChannels = (): ChannelWithGroupType[] => {
 
   return enriched
 }
-
 
 // Hook update label
 export const useUpdateChannelLabels = () => {

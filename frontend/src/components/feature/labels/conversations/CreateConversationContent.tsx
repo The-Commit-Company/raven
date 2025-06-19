@@ -7,7 +7,7 @@ import { IoMdClose } from 'react-icons/io'
 import { toast } from 'sonner'
 
 import { sortedChannelsAtom, useUpdateChannelLabels } from '@/utils/channel/ChannelAtom'
-import { useFrappePostCall } from 'frappe-react-sdk'
+import { useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
 import { refreshLabelListAtom } from './atoms/labelAtom'
 
 import ChannelModalConversationItem from './ChannelModalConversationItem'
@@ -38,6 +38,8 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
   const handleOpenModal = (channel: UnifiedChannel) => {
     setCurrentChannel(channel)
   }
+
+  const { mutate } = useSWRConfig()
 
   const handleToggle = (channelID: string) => {
     setSelected((prev) => {
@@ -77,6 +79,8 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
 
       // ✅ Cập nhật key để trigger re-render các nơi khác
       setRefreshKey((prev) => prev + 1)
+
+      mutate('channel_list')
 
       setIsOpen(false)
       toast.success('Gán nhãn thành công')

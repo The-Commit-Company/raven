@@ -1,3 +1,4 @@
+import json
 import frappe
 
 
@@ -9,6 +10,19 @@ def get_raven_room():
 	# We are just using the doctype room to send events to them
 	# If we use "all" instead, then the events are only sent to System Users and not users who do not have Desk access.
 	return "doctype:Raven User"
+
+def _rebuild_user_channel_label_cache(user):
+    user_labels = frappe.get_all("User Channel Label",
+        filters={ "user": user },
+        fields=["channel_id", "label"]
+    )
+
+    label_map = {}
+    for row in user_labels:
+        label_map.setdefault(row["channel_id"], []).append(row["label"])
+
+    cache_key = f"user_channel_labels:{user}"
+    frappe.cache().set_value(cache_key, json.dumps(label_map))
 
 
 def track_channel_visit(channel_id, user=None, commit=False, publish_event_for_user=False):

@@ -24,6 +24,7 @@ import { UserListProvider } from '@/utils/users/UserListProvider'
 import { useFrappeEventListener, useSWRConfig } from 'frappe-react-sdk'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { ChannelListProvider } from '../utils/channel/ChannelListProvider'
+import { useLastMessageUpdatedListener } from '@/hooks/useLastMessageUpdatedListener'
 
 const AddRavenUsersPage = lazy(() => import('@/pages/AddRavenUsersPage'))
 
@@ -60,6 +61,8 @@ const MainPageContent = () => {
 
   useFetchActiveUsersRealtime()
   useActiveSocketConnection()
+
+  useLastMessageUpdatedListener()
 
   const { mutate } = useSWRConfig()
   const onThreadReplyEvent = useUnreadThreadsCountEventListener()
@@ -233,8 +236,8 @@ const MainPageContent = () => {
               <Panel
                 onResize={(size) => setPanelSize(size)}
                 minSize={20}
-                maxSize={isSmallScreen ? 40 : 60}
-                {...(!initialLayout ? { defaultSize: isSmallScreen ? 30 : 40 } : {})}
+                maxSize={isSmallScreen ? 20 : 20}
+                {...(!initialLayout ? { defaultSize: isSmallScreen ? 20 : 20 } : {})}
               >
                 <div className='flex flex-col gap-1 w-full h-full'>
                   <SidebarHeader />

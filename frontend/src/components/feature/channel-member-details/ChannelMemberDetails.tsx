@@ -96,7 +96,7 @@ const MemberList = ({ channelData, channelMembers, activeUsers, updateMembers, i
                     />
                     <Flex gap='2' align={'center'}>
                       <Text size='2' weight='medium'>
-                        {member.first_name}
+                        {member.full_name}
                       </Text>
                       <Flex gap='1'>
                         {member.name === currentUser && (

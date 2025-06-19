@@ -112,10 +112,10 @@ export const useFetchUnreadMessageCount = () => {
     if (event.sent_by !== currentUser) {
       const isCurrentChannel = channelID === event.channel_id
 
-      if (isCurrentChannel && !document.hidden) {
-        // Chỉ trackVisit khi tab active
-        trackVisit({ channel_id: channelID })
-      }
+      // if (isCurrentChannel && !document.hidden) {
+      //   // Chỉ trackVisit khi tab active
+      //   trackVisit({ channel_id: channelID })
+      // }
 
       const currentUnread = unread_count?.message.find((c) => c.name === event.channel_id)?.unread_count || 0
       const isManuallyMarked = manuallyMarked.has(event.channel_id)
@@ -237,4 +237,21 @@ export const useFetchUnreadMessageCount = () => {
   }, [unread_count, channels, latestUnreadData, manuallyMarked])
 
   return unread_count
+}
+
+export const useUpdateUnreadCountToZero = () => {
+  const { updateCount } = useUnreadMessageCount()
+
+  const updateUnreadCountToZero = (channel_id?: string) => {
+    updateCount(
+      (d) => {
+        const currentList = d?.message ?? []
+        const newList = currentList.map((c) => (c.name === channel_id ? { ...c, unread_count: 0 } : c))
+        return { message: newList }
+      },
+      { revalidate: false }
+    )
+  }
+
+  return updateUnreadCountToZero
 }

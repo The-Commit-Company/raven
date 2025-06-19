@@ -10,19 +10,27 @@ import { prepareSortedChannels, setSortedChannelsAtom } from '@/utils/channel/Ch
 
 export const SidebarBody = () => {
   const { channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
-  const setSortedChannels = useSetAtom(setSortedChannelsAtom)
 
+  // console.log(channels, dm_channels);
+
+  const setSortedChannels = useSetAtom(setSortedChannelsAtom)
   useEffect(() => {
     if (channels.length === 0 && dm_channels.length === 0) return
 
     setSortedChannels((prev) => {
-      const prevMap = new Map(prev.map((c) => [c.name, c.is_done]))
+      const prevMap = new Map(prev.map((c) => [c.name, c]))
 
-      return prepareSortedChannels(channels, dm_channels).map((channel) => ({
-        ...channel,
-        is_done: prevMap.get(channel.name) ?? channel.is_done ?? 0,
-        user_labels: prevMap.get(channel.name)?.user_labels ?? channel.user_labels ?? []
-      }))
+      return prepareSortedChannels(channels, dm_channels).map((channel) => {
+        const old = prevMap.get(channel.name)
+        return {
+          ...channel,
+          is_done: old?.is_done ?? channel.is_done ?? 0,
+          user_labels: old?.user_labels?.length ? old.user_labels : (channel.user_labels ?? []),
+          last_message_content: old?.last_message_content ?? channel.last_message_content,
+          last_message_sender_name: old?.last_message_sender_name ?? channel.last_message_sender_name,
+          last_message_timestamp: old?.last_message_timestamp ?? channel.last_message_timestamp
+        }
+      })
     })
   }, [channels, dm_channels, setSortedChannels])
 

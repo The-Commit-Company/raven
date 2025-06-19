@@ -78,7 +78,7 @@ export const useChannelList = (): ChannelListContextType => {
  * Hook to fetch the channel list - all channels + DM's + other users if any
  * Also listens to the channel_list_updated event to update the channel list
  */
-const useFetchChannelList = (): ChannelListContextType => {
+export const useFetchChannelList = (): ChannelListContextType => {
   const isMobile = useIsMobile()
 
   const { mutate: globalMutate } = useSWRConfig()

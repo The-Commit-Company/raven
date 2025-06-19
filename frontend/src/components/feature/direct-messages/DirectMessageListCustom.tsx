@@ -75,11 +75,11 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
   const getFilteredChannels = (): DMChannelWithUnreadCount[] => {
     switch (title) {
       case 'Trò chuyện nhóm':
-        return channel_list.filter((c) => c.group_type === 'channel')
+        return channel_list.filter((c: { group_type: string }) => c.group_type === 'channel')
       case 'Cuộc trò chuyện riêng tư':
-        return channel_list.filter((c) => c.group_type === 'dm')
+        return channel_list.filter((c: { group_type: string }) => c.group_type === 'dm')
       case 'Chưa đọc':
-        return channel_list.filter((c) => c.unread_count > 0)
+        return channel_list.filter((c: { unread_count: number }) => c.unread_count > 0)
       default:
         return channel_list
     }
@@ -174,7 +174,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
       : `${peerUser.full_name} (You)`
     : channel.channel_name || channel.name
 
-  const shouldShowBadge = (channel.unread_count > 0 && channel.name !== channelID) || isManuallyMarked
+  const shouldShowBadge = channel.unread_count > 0 || isManuallyMarked
 
   const handleNavigate = () => {
     navigate(`/${workspaceID}/${channel.name}`)

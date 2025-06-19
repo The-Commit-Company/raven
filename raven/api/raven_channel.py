@@ -44,6 +44,7 @@ def get_channel_list(hide_archived=False):
     """
     Lấy tất cả các channel mà user hiện tại là thành viên.
     Enrich thêm is_done từ Raven Channel Member và user_labels từ User Channel Label.
+    user_labels trả về dạng array object: { label_id, label }
     """
 
     channel = frappe.qb.DocType("Raven Channel")
@@ -66,7 +67,6 @@ def get_channel_list(hide_archived=False):
             channel.last_message_details,
             channel.pinned_messages_string,
             channel.workspace,
-
             member.name.as_("member_id"),
             member.is_done.as_("is_done")
         )
@@ -93,7 +93,11 @@ def get_channel_list(hide_archived=False):
     # Lấy danh sách nhãn người dùng đã gán cho các channel này
     channel_ids = [row["name"] for row in results]
 
-    user_labels = frappe.get_all("User Channel Label",
+    if not channel_ids:
+        return results
+
+    user_labels = frappe.get_all(
+        "User Channel Label",
         filters={
             "user": frappe.session.user,
             "channel_id": ["in", channel_ids]
@@ -101,10 +105,27 @@ def get_channel_list(hide_archived=False):
         fields=["channel_id", "label"]
     )
 
-    # Gom nhãn theo channel_id
+    # Lấy thêm tên label
+    label_ids = list({ row["label"] for row in user_labels })
+    if label_ids:
+        label_names = frappe.get_all(
+            "User Label",
+            filters={ "name": ["in", label_ids] },
+            fields=["name", "label"]
+        )
+        label_name_map = { row["name"]: row["label"] for row in label_names }
+    else:
+        label_name_map = {}
+
+    # Gom nhãn theo channel_id → thành array of object
     label_map = {}
     for row in user_labels:
-        label_map.setdefault(row["channel_id"], []).append(row["label"])
+        label_id = row["label"]
+        label_name = label_name_map.get(label_id, "")
+        label_map.setdefault(row["channel_id"], []).append({
+            "label_id": label_id,
+            "label": label_name
+        })
 
     # Gắn nhãn và is_done vào từng channel
     for row in results:
@@ -112,6 +133,7 @@ def get_channel_list(hide_archived=False):
         row["user_labels"] = label_map.get(row["name"], [])
 
     return results
+
 
 def get_peer_user_id(channel_id: str, is_direct_message: int, is_self_message: bool = False) -> str:
     """
