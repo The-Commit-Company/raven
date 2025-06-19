@@ -17,8 +17,8 @@ const UserList = () => {
     <PageContainer>
       <SettingsContentContainer>
         <SettingsPageHeader
-          title='Users'
-          description='Manage users added to Raven.'
+          title='Người dùng'
+          description='Quản lý người dùng đã được thêm vào Raven.'
           actions={canAddRavenUsers ? <AddUserDialog /> : null}
         />
         <UserTable />
@@ -44,9 +44,9 @@ const UserTable = () => {
       }}
       fixedHeaderContent={() => (
         <Table.Row>
-          <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>Tên</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Status</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>Trạng thái</Table.ColumnHeaderCell>
         </Table.Row>
       )}
       itemContent={(index, user) => {

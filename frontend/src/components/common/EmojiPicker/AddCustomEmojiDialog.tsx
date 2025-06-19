@@ -1,15 +1,14 @@
 import { CustomFile } from '@/components/feature/file-upload/FileDrop'
+import { FileUploadBox } from '@/components/feature/userSettings/UploadImage/FileUploadBox'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { Stack } from '@/components/layout/Stack'
 import { RavenCustomEmoji } from '@/types/RavenMessaging/RavenCustomEmoji'
+import { __ } from '@/utils/translations'
 import { Box, Button, Dialog, Flex, TextField, VisuallyHidden } from '@radix-ui/themes'
 import { FrappeConfig, FrappeContext, useFrappeCreateDoc, useFrappeFileUpload } from 'frappe-react-sdk'
-import { ErrorText, HelperText } from '../Form'
-import { Label } from '../Form'
 import { useContext, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { FileUploadBox } from '@/components/feature/userSettings/UploadImage/FileUploadBox'
-import { __ } from '@/utils/translations'
+import { ErrorText, HelperText, Label } from '../Form'
 import { Loader } from '../Loader'
 
 type Props = {
@@ -21,9 +20,9 @@ const AddCustomEmojiDialog = ({ open, onClose }: Props) => {
   return (
     <Dialog.Root open={open} onOpenChange={onClose}>
       <Dialog.Content>
-        <Dialog.Title>Add Emoji</Dialog.Title>
+        <Dialog.Title>Thêm Emoji</Dialog.Title>
         <VisuallyHidden>
-          <Dialog.Description size='2'>Add a custom emoji to your chat.</Dialog.Description>
+          <Dialog.Description size='2'>Thêm emoji tùy chỉnh vào cuộc trò chuyện.</Dialog.Description>
         </VisuallyHidden>
         <AddEmojiForm onClose={onClose} />
       </Dialog.Content>
@@ -108,7 +107,7 @@ const AddEmojiForm = ({ onClose }: { onClose: (refresh?: boolean) => void }) => 
         <ErrorBanner error={uploadError} />
         <Stack gap='0'>
           <Label htmlFor='emoji_image'>Emoji</Label>
-          <HelperText>An image of 128px by 128px works best.</HelperText>
+          <HelperText>Ảnh có kích thước 128x128 pixel là phù hợp nhất.</HelperText>
           <FileUploadBox
             file={image}
             onFileChange={onImageChange}
@@ -152,7 +151,7 @@ const AddEmojiForm = ({ onClose }: { onClose: (refresh?: boolean) => void }) => 
               aria-invalid={errors.keywords ? 'true' : 'false'}
             />
           </Box>
-          <HelperText>You will be able to search for this emoji by these keywords. (Optional)</HelperText>
+          <HelperText>Bạn có thể tìm kiếm emoji này bằng các từ khóa trên. (Không bắt buộc)</HelperText>
           {errors.keywords && <ErrorText>{errors.keywords?.message}</ErrorText>}
         </Stack>
         <Flex gap='3' mt='4' justify='end'>

@@ -1,14 +1,14 @@
+import { HelperText, Label } from '@/components/common/Form'
+import { Loader } from '@/components/common/Loader'
 import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
-import { __ } from '@/utils/translations'
 import { HStack, Stack } from '@/components/layout/Stack'
-import { Box, Select, IconButton, Popover } from '@radix-ui/themes'
-import { HelperText, Label } from '@/components/common/Form'
-import { useAtom } from 'jotai'
 import { EnterKeyBehaviourAtom, QuickEmojisAtom } from '@/utils/preferences'
+import { __ } from '@/utils/translations'
+import { Box, IconButton, Popover, Select } from '@radix-ui/themes'
+import { useAtom } from 'jotai'
 import { lazy, Suspense } from 'react'
-import { Loader } from '@/components/common/Loader'
 
 const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
 
@@ -19,13 +19,13 @@ const Preferences = () => {
   return (
     <PageContainer>
       <SettingsContentContainer>
-        <SettingsPageHeader title={__('Preferences')} description={__('Configure your preferences.')} />
+        <SettingsPageHeader title={__('Tùy chọn')} description={__('Cấu hình các tùy chọn của bạn.')} />
 
         <Stack gap='6' pt='2'>
           <Stack className='max-w-[480px]'>
             <Box>
               <Label htmlFor='EnterKeyBehaviour' isRequired>
-                When writing a message, press <strong>Enter</strong> to:
+                Khi soạn tin nhắn, nhấn <strong>Enter</strong> để:
               </Label>
               <Select.Root
                 value={enterKeyBehaviour}
@@ -34,20 +34,20 @@ const Preferences = () => {
               >
                 <Select.Trigger className='w-full' autoFocus />
                 <Select.Content>
-                  <Select.Item value='send-message'>Send Message</Select.Item>
-                  <Select.Item value='new-line'>Start a new line</Select.Item>
+                  <Select.Item value='send-message'>Gửi tin nhắn</Select.Item>
+                  <Select.Item value='new-line'>Xuống dòng mới</Select.Item>
                 </Select.Content>
               </Select.Root>
             </Box>
             <HelperText>
               {enterKeyBehaviour === 'send-message'
-                ? 'Pressing Enter will immediately send your message. Use Shift+Enter to add a new line.'
-                : 'Pressing Enter will add a new line. Use Ctrl/Cmd+Enter to send your message.'}
+                ? 'Nhấn Enter để gửi tin nhắn ngay. Dùng Shift+Enter để xuống dòng.'
+                : 'Nhấn Enter để xuống dòng. Dùng Ctrl/Cmd+Enter để gửi tin nhắn.'}
             </HelperText>
           </Stack>
 
           <Stack className='max-w-[480px]'>
-            <Label htmlFor='QuickEmojis'>Set Favourite Emojis for Reactions</Label>
+            <Label htmlFor='QuickEmojis'>Chọn emoji yêu thích để phản hồi nhanh</Label>
             <HStack gap='2'>
               {quickEmojis.map((emoji, index) => (
                 <Popover.Root key={index}>
@@ -72,8 +72,8 @@ const Preferences = () => {
               ))}
             </HStack>
             <HelperText>
-              Click on any button to set your favorite emoji for quick reactions. These emojis will be available as
-              quick reactions in chat messages.
+              Nhấn vào bất kỳ nút nào để chọn emoji yêu thích. Các emoji này sẽ hiển thị dưới dạng phản hồi nhanh trong
+              tin nhắn trò chuyện.
             </HelperText>
           </Stack>
         </Stack>

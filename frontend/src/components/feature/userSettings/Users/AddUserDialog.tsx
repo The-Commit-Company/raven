@@ -15,11 +15,11 @@ const AddUserDialog = () => {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger>
-        <Button>Add User</Button>
+        <Button>Thêm người dùng</Button>
       </Dialog.Trigger>
       <Dialog.Content width={'480px'} className={DIALOG_CONTENT_CLASS}>
-        <Dialog.Title mb={'1'}>Add User</Dialog.Title>
-        <Dialog.Description size={'2'}>Invite a new user to Raven.</Dialog.Description>
+        <Dialog.Title mb={'1'}>Thêm người dùng</Dialog.Title>
+        <Dialog.Description size={'2'}>Mời một người dùng mới vào Raven.</Dialog.Description>
         <UserForm onClose={() => setOpen(false)} />
       </Dialog.Content>
     </Dialog.Root>
@@ -167,8 +167,8 @@ const UserForm = ({ onClose }: { onClose: VoidFunction }) => {
         )}
         <Text size={'2'} color='gray'>
           {userExists
-            ? 'This user already exists in Frappe. Add them to Raven?'
-            : 'An invite will be sent on their email.'}
+            ? 'Người dùng này đã tồn tại trong Frappe. Bạn có muốn thêm họ vào Raven không?'
+            : 'Một lời mời sẽ được gửi đến email của họ.'}
         </Text>
         <HStack justify={'end'} pt='4'>
           <Dialog.Close>

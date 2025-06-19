@@ -1,35 +1,35 @@
+import EmojiPicker from '@/components/common/EmojiPicker/EmojiPicker'
 import { ErrorText, Label } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
+import PageContainer from '@/components/layout/Settings/PageContainer'
+import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
+import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
+import { Stack } from '@/components/layout/Stack'
+import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { RavenUser } from '@/types/Raven/RavenUser'
+import { __ } from '@/utils/translations'
 import {
   Box,
   Button,
-  Flex,
-  TextField,
-  Text,
-  DropdownMenu,
   Card,
+  DropdownMenu,
+  Flex,
   IconButton,
+  Popover,
   Separator,
-  Popover
+  Text,
+  TextField
 } from '@radix-ui/themes'
 import { useFrappeUpdateDoc } from 'frappe-react-sdk'
-import { FormProvider, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
-import { ImageUploader } from '../UploadImage/ImageUploader'
-import { getStatusText } from '../AvailabilityStatus/SetUserAvailabilityMenu'
-import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
 import { useState } from 'react'
-import { GrPowerReset } from 'react-icons/gr'
+import { FormProvider, useForm } from 'react-hook-form'
 import { BiSmile } from 'react-icons/bi'
-import EmojiPicker from '@/components/common/EmojiPicker/EmojiPicker'
-import { useIsDesktop } from '@/hooks/useMediaQuery'
-import PageContainer from '@/components/layout/Settings/PageContainer'
-import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
-import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
-import { __ } from '@/utils/translations'
-import { Stack } from '@/components/layout/Stack'
-import { RavenUser } from '@/types/Raven/RavenUser'
+import { GrPowerReset } from 'react-icons/gr'
+import { toast } from 'sonner'
+import { getStatusText } from '../AvailabilityStatus/SetUserAvailabilityMenu'
+import { ImageUploader } from '../UploadImage/ImageUploader'
 
 type UserProfileType = {
   full_name?: string
@@ -39,7 +39,7 @@ type UserProfileType = {
 }
 
 const UserProfile = () => {
-  const { myProfile, mutate } = useCurrentRavenUser()
+  const { myProfile } = useCurrentRavenUser()
 
   if (myProfile) return <UserProfileForm myProfile={myProfile} />
 
@@ -93,8 +93,8 @@ const UserProfileForm = ({ myProfile }: { myProfile: RavenUser }) => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <SettingsContentContainer>
             <SettingsPageHeader
-              title={__('Profile')}
-              description={__('Manage your Raven profile')}
+              title={__('Hồ sơ cá nhân')}
+              description={__('Quản lý hồ sơ Raven của bạn')}
               actions={
                 <Button type='submit' disabled={updatingDoc}>
                   {updatingDoc && <Loader />}
@@ -114,7 +114,7 @@ const UserProfileForm = ({ myProfile }: { myProfile: RavenUser }) => {
                 <Flex gap='4' direction='column' className={'py-4 px-6 dark:bg-slate-2'}>
                   <Flex justify={'between'} align={'center'}>
                     <Label htmlFor='full_name' isRequired>
-                      {__('Full Name')}
+                      {__('Họ và tên')}
                     </Label>
                     <Stack gap='1'>
                       <TextField.Root
@@ -122,13 +122,13 @@ const UserProfileForm = ({ myProfile }: { myProfile: RavenUser }) => {
                         maxLength={140}
                         className={'w-48 sm:w-96'}
                         id='full_name'
-                        placeholder='Full Name'
+                        placeholder='Họ và tên'
                         {...register('full_name', {
                           maxLength: {
                             value: 140,
-                            message: __('Name cannot be more than {0} characters.', [140])
+                            message: __('Tên không được vượt quá {0} ký tự.', [140])
                           },
-                          required: __('Name is required')
+                          required: __('Vui lòng nhập tên')
                         })}
                         aria-invalid={errors.full_name ? 'true' : 'false'}
                       />
@@ -139,7 +139,7 @@ const UserProfileForm = ({ myProfile }: { myProfile: RavenUser }) => {
                   <Separator className={'w-full bg-slate-4'} />
 
                   <Flex justify={'between'} align={'center'}>
-                    <Label htmlFor='availability_status'>{__('Availability Status')}</Label>
+                    <Label htmlFor='availability_status'>{__('Trạng thái hoạt động')}</Label>
                     <DropdownMenu.Root>
                       <DropdownMenu.Trigger>
                         <Flex
@@ -198,10 +198,10 @@ const UserProfileForm = ({ myProfile }: { myProfile: RavenUser }) => {
 
                   <Flex justify={'between'} align={'center'}>
                     <Flex direction={'column'} gap='0'>
-                      <Label htmlFor='custom_status'>{__('Custom Status')}</Label>
+                      <Label htmlFor='custom_status'>{__('Trạng thái tùy chỉnh')}</Label>
                       {isDesktop && (
                         <Text size={'1'} color={'gray'} style={{ lineHeight: '0.8' }}>
-                          {__('Share what you are up to')}
+                          {__('Chia sẻ bạn đang làm gì')}
                         </Text>
                       )}
                     </Flex>

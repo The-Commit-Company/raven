@@ -41,26 +41,26 @@ const SocketIOHealth = () => {
   return (
     <Stack>
       <Heading as='h3' size='3' className='not-cal font-semibold'>
-        Realtime Connection Test
+        Kiểm Tra Kết Nối Thời Gian Thực
       </Heading>
       <Text size='2' color='gray'>
-        If messages on Raven do not appear in realtime, you can inspect your network connection here.
+        Nếu tin nhắn trên Raven không hiển thị theo thời gian thực, bạn có thể kiểm tra kết nối mạng tại đây.
       </Text>
       {!loading && socketPingTest === 'Fail' && (
-        <ErrorCallout message="Realtime connections are not working on your site. Messages won't be refreshed in real-time." />
+        <ErrorCallout message='Kết nối thời gian thực đang không hoạt động. Tin nhắn sẽ không được cập nhật tự động.' />
       )}
       <Flex gap='3' align='center' pt='2'>
         <Text size='2' color='gray' as='span'>
-          Real-time Ping Check:
+          Kiểm tra Ping thời gian thực:
         </Text>
         <Flex align='center' gap='2'>
           <Badge color={loading ? 'gray' : socketPingTest === 'Pass' ? 'green' : 'red'}>
-            {loading ? 'Loading...' : socketPingTest}
+            {loading ? 'Đang tải...' : socketPingTest}
           </Badge>
           {!loading && (
             <IconButton
-              title='Send a ping'
-              aria-label='send a ping'
+              title='Gửi ping'
+              aria-label='gửi ping'
               color='gray'
               size='1'
               variant='ghost'
@@ -75,15 +75,22 @@ const SocketIOHealth = () => {
       {socketTransportMode && (
         <Flex gap='2' align='center'>
           <Text size='2' color='gray' as='span'>
-            SocketIO Transport Mode:
+            Giao Thức Kết Nối SocketIO:
           </Text>
           <Badge color='orange'>{socketTransportMode}</Badge>
         </Flex>
       )}
+
       <div className='pt-2'>
-        <Link underline='always' size='2' target='_blank' title='System Health Report' href='/app/system-health-report'>
+        <Link
+          underline='always'
+          size='2'
+          target='_blank'
+          title='Báo cáo tình trạng hệ thống'
+          href='/app/system-health-report'
+        >
           <TbReportAnalytics size='16' className='-mb-0.5 pr-1' />
-          View Full System Health Report
+          Xem Báo Cáo Tình Trạng Hệ Thống
         </Link>
       </div>
     </Stack>

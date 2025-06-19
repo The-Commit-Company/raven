@@ -1,19 +1,19 @@
-import { ChannelListItem, DMChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
-import { useContext, useMemo } from 'react'
+import { UserAvatar } from '@/components/common/UserAvatar'
 import { EditDescriptionButton } from '@/components/feature/channel-details/edit-channel-description/EditDescriptionButton'
 import { AddMembersButton } from '@/components/feature/channel-member-details/add-members/AddMembersButton'
-import { UserContext } from '@/utils/auth/UserProvider'
-import { useGetUserRecords } from '@/hooks/useGetUserRecords'
-import { Badge, Box, Flex, Heading, Link, Text } from '@radix-ui/themes'
-import { UserAvatar } from '@/components/common/UserAvatar'
-import { ChannelIcon } from '@/utils/layout/channelIcon'
-import { BiBookmark } from 'react-icons/bi'
-import { DateMonthYear } from '@/utils/dateConversions'
-import { useGetUser } from '@/hooks/useGetUser'
 import useFetchChannelMembers from '@/hooks/fetchers/useFetchChannelMembers'
+import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
+import { useGetUser } from '@/hooks/useGetUser'
+import { useGetUserRecords } from '@/hooks/useGetUserRecords'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
+import { UserContext } from '@/utils/auth/UserProvider'
+import { ChannelListItem, DMChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { DateMonthYear } from '@/utils/dateConversions'
+import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { replaceCurrentUserFromDMChannelName } from '@/utils/operations'
+import { Badge, Box, Flex, Heading, Link, Text } from '@radix-ui/themes'
+import { useContext, useMemo } from 'react'
+import { BiBookmark } from 'react-icons/bi'
 
 export const EmptyStateForSearch = () => {
   return (
@@ -64,8 +64,8 @@ const EmptyStateForChannel = ({ channelData }: EmptyStateForChannelProps) => {
           <Heading size='4'>{channelData?.channel_name}</Heading>
         </Flex>
         <Text size='2'>
-          {users[channelData.owner]?.full_name} created this channel on <DateMonthYear date={channelData?.creation} />.
-          This is the very beginning of the <strong>{channelData?.channel_name}</strong> channel.
+          {users[channelData.owner]?.full_name} đã tạo kênh này vào ngày <DateMonthYear date={channelData?.creation} />.
+          Đây là khởi đầu của kênh <strong>{channelData?.channel_name}</strong>.
         </Text>
         {channelData?.channel_description && (
           <Text size={'1'} color='gray'>
@@ -151,11 +151,11 @@ const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
             <Flex gap='2' align='center'>
               {peer || fullName ? (
                 <Text size='2'>
-                  This is a Direct Message channel between you and <strong>{fullName ?? peer}</strong>.
+                  Đây là kênh Tin Nhắn Trực Tiếp giữa bạn và <strong>{fullName ?? peer}</strong>.
                 </Text>
               ) : (
                 <Text size='2'>
-                  We could not find the user for this DM channel (
+                  Chúng tôi không thể tìm thấy người dùng cho kênh Tin Nhắn Trực Tiếp này (
                   {replaceCurrentUserFromDMChannelName(channelData.channel_name, currentUser)}).
                 </Text>
               )}

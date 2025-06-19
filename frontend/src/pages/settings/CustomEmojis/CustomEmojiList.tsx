@@ -14,7 +14,7 @@ import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import { HStack } from '@/components/layout/Stack'
 import { RavenCustomEmoji } from '@/types/RavenMessaging/RavenCustomEmoji'
 import { getDateObject } from '@/utils/dateConversions/utils'
-import { Button, Table, Text, Link } from '@radix-ui/themes'
+import { Button, Link, Table, Text } from '@radix-ui/themes'
 import { useFrappeGetDocList, useSWRConfig } from 'frappe-react-sdk'
 import { useState } from 'react'
 import { LuSmilePlus } from 'react-icons/lu'
@@ -59,8 +59,8 @@ const CustomEmojiList = () => {
           title='Emojis'
           description={
             <>
-              Add custom emojis to use for your reactions. PNG, SVG and GIFs supported. <br />
-              Need help finding one? Download from{' '}
+              Thêm emoji tùy chỉnh để sử dụng trong phản hồi của bạn. Hỗ trợ các định dạng PNG, SVG và GIF. <br />
+              Cần tìm emoji? Tải xuống từ{' '}
               <Link href='https://emoji.gg' target='_blank'>
                 Emoji.gg
               </Link>
@@ -77,18 +77,18 @@ const CustomEmojiList = () => {
             <EmptyStateIcon>
               <LuSmilePlus />
             </EmptyStateIcon>
-            <EmptyStateTitle>Emojis</EmptyStateTitle>
+            <EmptyStateTitle>Emoji</EmptyStateTitle>
             <EmptyStateDescription>
-              Personalize your chats with custom emojis.
+              Cá nhân hóa cuộc trò chuyện của bạn bằng các emoji tùy chỉnh.
               <br />
-              Upload your own or download from{' '}
+              Tải lên emoji riêng của bạn hoặc tải xuống từ{' '}
               <Link href='https://emoji.gg' target='_blank'>
                 Emoji.gg
               </Link>
               .
             </EmptyStateDescription>
             <Button className='not-cal' onClick={() => setOpen(true)}>
-              Upload
+              Tải lên
             </Button>
           </EmptyState>
         )}

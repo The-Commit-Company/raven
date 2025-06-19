@@ -1,4 +1,5 @@
 import { UserAvatar } from '@/components/common/UserAvatar'
+import AddWorkspaceForm from '@/components/feature/workspaces/AddWorkspaceForm'
 import WorkspaceActions from '@/components/feature/workspaces/WorkspaceActions'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { TableLoader } from '@/components/layout/Loaders/TableLoader'
@@ -7,13 +8,12 @@ import SettingsContentContainer from '@/components/layout/Settings/SettingsConte
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import { HStack, Stack } from '@/components/layout/Stack'
 import useFetchWorkspaces, { WorkspaceFields } from '@/hooks/fetchers/useFetchWorkspaces'
+import { useBoolean } from '@/hooks/useBoolean'
+import { ChannelIcon } from '@/utils/layout/channelIcon'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { hasRavenAdminRole } from '@/utils/roles'
 import { Badge, Button, Dialog, Table, Text } from '@radix-ui/themes'
-import { useBoolean } from '@/hooks/useBoolean'
-import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
-import AddWorkspaceForm from '@/components/feature/workspaces/AddWorkspaceForm'
 import { Link, useNavigate } from 'react-router-dom'
-import { ChannelIcon } from '@/utils/layout/channelIcon'
 
 const WorkspaceList = () => {
   const { data: myWorkspaces, isLoading, error } = useFetchWorkspaces()
@@ -23,7 +23,7 @@ const WorkspaceList = () => {
       <SettingsContentContainer>
         <SettingsPageHeader
           title='Workspaces'
-          description='Workspaces allow you to organize your channels and teams.'
+          description='Không gian làm việc cho phép bạn sắp xếp các kênh và nhóm của mình'
           actions={<AddWorkspaceButton />}
         />
         {isLoading && !error && <TableLoader columns={4} />}
@@ -39,10 +39,10 @@ const MyWorkspacesTable = ({ workspaces }: { workspaces: WorkspaceFields[] }) =>
     <Table.Root variant='surface' className='rounded-sm'>
       <Table.Header>
         <Table.Row>
-          <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Type</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Membership</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Description</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>Tên</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>Loại</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>Thành viên</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>Mô tả</Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
         </Table.Row>
       </Table.Header>
@@ -111,11 +111,13 @@ const AddWorkspaceButton = () => {
   return (
     <Dialog.Root open={isOpen} onOpenChange={setValue}>
       <Dialog.Trigger>
-        <Button disabled={!isRavenAdmin}>Create</Button>
+        <Button disabled={!isRavenAdmin}>Tạo mới</Button>
       </Dialog.Trigger>
       <Dialog.Content className={DIALOG_CONTENT_CLASS}>
-        <Dialog.Title>Create Workspace</Dialog.Title>
-        <Dialog.Description size='2'>Workspaces allow you to organize your channels and teams.</Dialog.Description>
+        <Dialog.Title>Tạo Không Gian Làm Việc</Dialog.Title>
+        <Dialog.Description size='2'>
+          Không gian làm việc cho phép bạn sắp xếp các kênh và nhóm của mình.
+        </Dialog.Description>
         <Stack>
           <AddWorkspaceForm onClose={onClose} />
         </Stack>
