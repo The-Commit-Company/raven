@@ -17,7 +17,7 @@ const MobileTabsPage = () => {
             <ChannelIcon type='Private' size='32' />
           </HStack>
           <Text size='3' weight='medium' color='gray'>
-            Select a channel from the sidebar to view it's messages
+            Chọn một kênh từ thanh bên để xem các tin nhắn trong đó.
           </Text>
         </Stack>
       </Flex>
