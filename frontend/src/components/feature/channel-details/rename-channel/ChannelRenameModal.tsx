@@ -116,12 +116,12 @@ export const RenameChannelModalContent = ({
         <Flex gap='3' mt='6' justify='end' align='center'>
           <Dialog.Close disabled={updatingDoc}>
             <Button variant='soft' color='gray'>
-              Cancel
+              Hủy
             </Button>
           </Dialog.Close>
           <Button type='submit' disabled={updatingDoc}>
             {updatingDoc && <Loader className='text-white' />}
-            {updatingDoc ? 'Saving' : 'Save'}
+            {updatingDoc ? 'Saving' : 'Lưu'}
           </Button>
         </Flex>
       </form>

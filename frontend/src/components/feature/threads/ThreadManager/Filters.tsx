@@ -30,7 +30,7 @@ export const ChannelFilter = ({ channel, setChannel }: { channel: string; setCha
       <Select.Root value={channel} onValueChange={setChannel}>
         <Select.Trigger placeholder='Channel / DM' className='sm:min-w-48' />
         <Select.Content className='z-50'>
-          <Select.Item value='all'>Any Channel</Select.Item>
+          <Select.Item value='all'>Bất kỳ kênh nào</Select.Item>
           {channels.map((channel) => (
             <Select.Item key={channel.name} value={channel.name}>
               <div className='gap-1 items-center flex overflow-hidden'>

@@ -48,7 +48,7 @@ export const ThreadReplyCount = ({ thread }: { thread: Message }) => {
         {data?.message ?? 0}
       </Text>
       <Text size='1' className={'font-semibold text-accent-a11'}>
-        {data?.message === 1 ? 'Reply' : 'Replies'}
+        {data?.message === 1 ? 'Phản hồi' : 'Các phản hồi'}
       </Text>
     </Flex>
   )

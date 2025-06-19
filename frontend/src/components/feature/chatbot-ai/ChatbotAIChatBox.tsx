@@ -276,7 +276,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({
                   {msg.message_type !== 'File' && (
                     <div className={`prose prose-sm max-w-none ${msg.pending ? 'opacity-70' : ''}`}>
                       <div
-                        className='text-gray-800 dark:text-gray-200 leading-relaxed'
+                        className='text-gray-800 dark:text-gray-200 text-[15px] font-normal leading-relaxed'
                         style={{ whiteSpace: 'pre-wrap' }}
                       >
                         {msg.content}
@@ -291,7 +291,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({
                       {msg.content && (
                         <div className='mb-3'>
                           <div
-                            className='text-gray-800 dark:text-gray-200 leading-relaxed'
+                            className='text-gray-800 dark:text-gray-200 text-[15px] font-normal leading-relaxed'
                             style={{ whiteSpace: 'pre-wrap' }}
                           >
                             {msg.content}

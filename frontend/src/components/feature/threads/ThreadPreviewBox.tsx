@@ -171,7 +171,7 @@ export const ThreadPreviewBox = ({ thread, unreadCount }: { thread: ThreadMessag
             <Flex align={'center'} gap='2' className='pl-11'>
               <ViewThreadParticipants participants={thread.participants ?? []} />
               <Text as='div' size='1' className={'font-medium text-accent-a11'}>
-                {thread.reply_count ?? 0} {thread.reply_count && thread.reply_count === 1 ? 'Reply' : 'Replies'}
+                {thread.reply_count ?? 0} {thread.reply_count && thread.reply_count === 1 ? 'Phản hồi' : 'Các phản hồi'}
               </Text>
             </Flex>
             {/* {lastMessageDetails && <LastMessagePreview

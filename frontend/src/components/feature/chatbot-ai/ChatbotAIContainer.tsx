@@ -188,7 +188,7 @@ const ChatbotAIContainer: React.FC<Props> = ({
                       style={{ minWidth: 0 }}
                     />
                   ) : (
-                    <span className='truncate flex-1 min-w-0' title={s.title}>
+                    <span className='truncate flex-1 min-w-0 font-medium text-[13px]' title={s.title}>
                       {pendingRename?.id === s.id ? (
                         <span className='italic text-gray-400 dark:text-white/50'>{pendingRename.title}</span>
                       ) : (
@@ -242,7 +242,7 @@ const ChatbotAIContainer: React.FC<Props> = ({
                 variant='ghost'
                 className='px-4 py-2 text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 border border-gray-300 dark:border-white/20 rounded-lg transition-colors'
               >
-                Cancel
+                Hủy
               </Button>
             </Dialog.Close>
             <Button

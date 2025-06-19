@@ -1,14 +1,14 @@
-import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
-import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
-import { Loader } from '@/components/common/Loader'
-import { Box, Button, Dialog, Flex } from '@radix-ui/themes'
-import { useCallback, useContext, useMemo } from 'react'
-import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
 import { ErrorText } from '@/components/common/Form'
+import { Loader } from '@/components/common/Loader'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
+import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
+import { Box, Button, Dialog, Flex } from '@radix-ui/themes'
+import { useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
+import { useCallback, useContext, useMemo } from 'react'
+import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { useFetchWorkspaceMembers } from './WorkspaceMemberManagement'
 import MultipleUserComboBox from '../selectDropdowns/MultipleUserCombobox'
+import { useFetchWorkspaceMembers } from './WorkspaceMemberManagement'
 
 interface AddWorkspaceMemberForm {
   add_members: UserFields[] | null
@@ -81,12 +81,12 @@ const AddWorkspaceMembersModalContent = ({ workspaceID, onClose }: { workspaceID
         <Flex gap='3' mt='6' justify='end' align='center'>
           <Dialog.Close disabled={loading}>
             <Button variant='soft' color='gray'>
-              Cancel
+              Hủy
             </Button>
           </Dialog.Close>
           <Button type='button' disabled={loading} onClick={handleSubmit(onSubmit)}>
             {loading && <Loader className='text-white' />}
-            {loading ? 'Saving' : 'Save'}
+            {loading ? 'Đang lưu' : 'Lưu'}
           </Button>
         </Flex>
       </form>

@@ -1,18 +1,18 @@
-import { Flex, Box, Text, RadioCards, Heading, Separator } from '@radix-ui/themes'
 import { useTheme } from '@/ThemeProvider'
-import lightModeImg from '@/images/theme_light_mode.png'
-import darkModeImg from '@/images/theme_dark_mode.png'
-import systemModeImg from '@/images/theme_system_mode.png'
-import lightModeLeftRightImg from '@/images/light_mode_left_right.png'
-import darkModeLeftRightImg from '@/images/dark_mode_left_right.png'
-import { useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
-import { toast } from 'sonner'
-import { useUserData } from '@/hooks/useUserData'
 import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
-import { __ } from '@/utils/translations'
 import { Stack } from '@/components/layout/Stack'
+import { useUserData } from '@/hooks/useUserData'
+import darkModeLeftRightImg from '@/images/dark_mode_left_right.png'
+import lightModeLeftRightImg from '@/images/light_mode_left_right.png'
+import darkModeImg from '@/images/theme_dark_mode.png'
+import lightModeImg from '@/images/theme_light_mode.png'
+import systemModeImg from '@/images/theme_system_mode.png'
+import { __ } from '@/utils/translations'
+import { Box, Flex, Heading, RadioCards, Separator, Text } from '@radix-ui/themes'
+import { useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
+import { toast } from 'sonner'
 
 const Appearance = () => {
   const { appearance, setAppearance } = useTheme()
@@ -55,7 +55,10 @@ const Appearance = () => {
   return (
     <PageContainer>
       <SettingsContentContainer>
-        <SettingsPageHeader title={__('Appearance')} description={__('Configure how you want the app to look.')} />
+        <SettingsPageHeader
+          title={__('Giao diện')}
+          description={__('Cấu hình giao diện ứng dụng theo cách bạn muốn.')}
+        />
 
         <Stack gap='6' pt='2'>
           <Themes appearance={appearance} setAppearance={setAppearance} />
@@ -85,7 +88,7 @@ const Themes = ({
   return (
     <Stack gap='3'>
       <Heading as='h3' className='not-cal' size='2' weight='bold'>
-        Theme
+        Chủ đề
       </Heading>
       <Box maxWidth='910px'>
         <RadioCards.Root value={appearance} defaultValue={appearance} columns={{ initial: '1', sm: '3' }}>
@@ -93,19 +96,19 @@ const Themes = ({
             <RadioCards.Item value='light' className='p-0 cursor-pointer' onClick={() => setAppearance('light')}>
               <img src={lightModeImg} className='w-full h-auto object-cover' />
             </RadioCards.Item>
-            <Text weight='medium'>Light</Text>
+            <Text weight='medium'>Sáng</Text>
           </Flex>
           <Flex direction='column' align='center' gap='3'>
             <RadioCards.Item value='dark' className='p-0 cursor-pointer' onClick={() => setAppearance('dark')}>
               <img src={darkModeImg} className='w-full h-auto object-cover' />
             </RadioCards.Item>
-            <Text weight='medium'>Dark</Text>
+            <Text weight='medium'>Tối</Text>
           </Flex>
           <Flex direction='column' align='center' gap='3'>
             <RadioCards.Item value='inherit' className='p-0 cursor-pointer' onClick={() => setAppearance('inherit')}>
               <img src={systemModeImg} className='w-full h-auto object-cover' />
             </RadioCards.Item>
-            <Text weight='medium'>System</Text>
+            <Text weight='medium'>Hệ thống</Text>
           </Flex>
         </RadioCards.Root>
       </Box>
@@ -165,13 +168,13 @@ const ChatLayouts = ({
               <RadioCards.Item value='Simple' className='p-0 cursor-pointer'>
                 <img src={getImageSrc('Simple')} className='w-full h-auto object-cover' />
               </RadioCards.Item>
-              <Text weight='medium'>Simple</Text>
+              <Text weight='medium'>Mặc định</Text>
             </Flex>
             <Flex direction='column' align='center' gap='3'>
               <RadioCards.Item value='Left-Right' className='p-0 cursor-pointer'>
                 <img src={getImageSrc('Left-Right')} className='w-full h-auto object-cover' />
               </RadioCards.Item>
-              <Text weight='medium'>Left-Right</Text>
+              <Text weight='medium'>Trái-Phải</Text>
             </Flex>
           </RadioCards.Root>
         )}

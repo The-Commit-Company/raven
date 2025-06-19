@@ -85,7 +85,7 @@ const FrappeHR = () => {
               actions={
                 <Button type='submit' disabled={updatingDoc || !isRavenAdmin}>
                   {updatingDoc && <Loader className='text-white' />}
-                  {updatingDoc ? __('Saving') : __('Save')}
+                  {updatingDoc ? __('Đang lưu') : __('Lưu')}
                 </Button>
               }
             />

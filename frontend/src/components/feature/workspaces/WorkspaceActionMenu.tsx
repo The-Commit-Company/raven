@@ -155,15 +155,15 @@ const DeleteWorkspaceDialog = ({
 
   return (
     <>
-      <AlertDialog.Title>Delete {workspaceName}?</AlertDialog.Title>
+      <AlertDialog.Title>Xóa {workspaceName}?</AlertDialog.Title>
       <AlertDialog.Description size='2'>
-        Are you sure you want to delete this workspace? If you proceed, all channels, threads and messages within the
-        workspace will be deleted. This action cannot be undone.
+        Bạn có chắc chắn muốn xóa không gian làm việc này không? Nếu tiếp tục, tất cả các kênh, chuỗi thảo luận và tin
+        nhắn trong không gian làm việc sẽ bị xóa. Hành động này không thể hoàn tác.
       </AlertDialog.Description>
       <Stack pt='2'>
         <ErrorBanner error={error} />
         <Box>
-          <Label htmlFor='delete-workspace-name'>Enter the workspace name to confirm deletion</Label>
+          <Label htmlFor='delete-workspace-name'>Nhập workspace làm việc để xác nhận việc xóa.</Label>
           <TextField.Root
             id='delete-workspace-name'
             value={typedName}
@@ -174,7 +174,7 @@ const DeleteWorkspaceDialog = ({
         <HStack pt='2' justify='end'>
           <AlertDialog.Cancel>
             <Button color='gray' variant='soft' disabled={loading}>
-              Cancel
+              Hủy
             </Button>
           </AlertDialog.Cancel>
           <Button color='red' disabled={loading || !isNameTyped} onClick={handleDelete}>

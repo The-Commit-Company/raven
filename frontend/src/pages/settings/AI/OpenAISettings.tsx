@@ -85,7 +85,7 @@ const OpenAISettings = () => {
               actions={
                 <Button type='submit' disabled={updatingDoc || !isRavenAdmin}>
                   {updatingDoc && <Loader className='text-white' />}
-                  {updatingDoc ? 'Saving' : 'Save'}
+                  {updatingDoc ? 'Đang lưu' : 'Lưu'}
                 </Button>
               }
             />

@@ -93,7 +93,7 @@ export const ChangeChannelTypeModal = ({ onClose, channelData, newChannelType }:
       <Flex gap='3' mt='6' justify='end' align='center'>
         <Dialog.Close disabled={updatingDoc}>
           <Button variant='soft' color='gray'>
-            Cancel
+            Hủy
           </Button>
         </Dialog.Close>
         <Button onClick={() => changeChannelType(newChannelType)} disabled={updatingDoc}>

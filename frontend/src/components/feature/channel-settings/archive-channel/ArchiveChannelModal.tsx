@@ -65,7 +65,7 @@ export const ArchiveChannelModal = ({
       <Flex gap='3' mt='4' justify='end'>
         <DialogCancel>
           <Button variant='soft' color='gray'>
-            Cancel
+            Hủy
           </Button>
         </DialogCancel>
         <DialogAction>

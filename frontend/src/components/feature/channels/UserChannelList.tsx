@@ -1,16 +1,16 @@
+import { Loader } from '@/components/common/Loader'
 import { UserAvatar } from '@/components/common/UserAvatar'
+import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { useGetUser } from '@/hooks/useGetUser'
 import { useChannelList } from '@/utils/channel/ChannelListProvider'
 import { UserListContext } from '@/utils/users/UserListProvider'
+import { Badge, Box, Flex } from '@radix-ui/themes'
+import clsx from 'clsx'
+import { useFrappePostCall } from 'frappe-react-sdk'
 import { useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useFrappePostCall } from 'frappe-react-sdk'
-import { Badge, Box, Flex, Text } from '@radix-ui/themes'
-import { Loader } from '@/components/common/Loader'
 import { toast } from 'sonner'
-import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import ChannelItem from './ChannelItem'
-import clsx from 'clsx'
 
 const UserChannelList = () => {
   const { dm_channels } = useChannelList()

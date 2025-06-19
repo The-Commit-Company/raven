@@ -36,7 +36,7 @@ const AddWorkspaceModal = () => {
   if (isDesktop) {
     return (
       <Dialog.Root open={isOpen} onOpenChange={setValue}>
-        <Tooltip content='Create Workspace' side='right'>
+        <Tooltip content='Tạo Workspaces' side='right'>
           <Dialog.Trigger>
             <IconButton color='gray' size='3' variant='soft'>
               <FiPlus size='20' />
@@ -44,8 +44,10 @@ const AddWorkspaceModal = () => {
           </Dialog.Trigger>
         </Tooltip>
         <Dialog.Content className={DIALOG_CONTENT_CLASS}>
-          <Dialog.Title>Create Workspace</Dialog.Title>
-          <Dialog.Description size='2'>Workspaces allow you to organize your channels and teams.</Dialog.Description>
+          <Dialog.Title>Tạo Workspaces</Dialog.Title>
+          <Dialog.Description size='2'>
+            Không gian làm việc cho phép bạn tổ chức các kênh và nhóm của mình một cách hiệu quả.
+          </Dialog.Description>
           <Stack>
             <AddWorkspaceForm onClose={onClose} />
           </Stack>
@@ -63,8 +65,10 @@ const AddWorkspaceModal = () => {
       </DrawerTrigger>
       <DrawerContent>
         <div className='pb-16 overflow-y-scroll min-h-96'>
-          <DrawerTitle>Create Workspace</DrawerTitle>
-          <DrawerDescription>Workspaces allow you to organize your channels and teams.</DrawerDescription>
+          <DrawerTitle>Tạo Workspaces</DrawerTitle>
+          <DrawerDescription>
+            Không gian làm việc cho phép bạn sắp xếp các kênh và nhóm của mình một cách có tổ chức.
+          </DrawerDescription>
           <AddWorkspaceForm onClose={onClose} />
         </div>
       </DrawerContent>

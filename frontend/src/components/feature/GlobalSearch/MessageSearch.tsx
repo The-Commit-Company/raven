@@ -139,7 +139,7 @@ export const MessageSearch = ({
           <Select.Root value={channelFilter} onValueChange={setChannelFilter}>
             <Select.Trigger placeholder='Channel / DM' />
             <Select.Content className='z-50'>
-              <Select.Item value='any'>Any channel</Select.Item>
+              <Select.Item value='any'>Bất kỳ kênh nào</Select.Item>
               <Select.Group>
                 <Select.Label>Channels</Select.Label>
                 {channels.map((option) => (

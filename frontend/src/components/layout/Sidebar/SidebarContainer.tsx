@@ -1,11 +1,10 @@
-import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
 import { useSidebarMode, useUnreadContext } from '@/utils/layout/sidebar'
 import { Tooltip } from '@radix-ui/themes'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
-  HiOutlineChatAlt2,
   HiMenuAlt2,
   HiOutlineAtSymbol,
+  HiOutlineChatAlt2,
   HiOutlineCheckCircle,
   HiOutlineChip,
   HiOutlineCog,
@@ -18,14 +17,14 @@ import {
   HiOutlineUsers
 } from 'react-icons/hi'
 
-import clsx from 'clsx'
 import { CreateLabelButton } from '@/components/feature/labels/CreateLabelModal'
-import { FiChevronDown, FiChevronRight } from 'react-icons/fi'
-import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
-import { useNavigate, useParams } from 'react-router-dom'
 import LabelList from '@/components/feature/labels/LabelListSidebar' // đường dẫn đúng
 import { sortedChannelsAtom, useEnrichedChannels } from '@/utils/channel/ChannelAtom'
+import clsx from 'clsx'
+import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { useAtomValue } from 'jotai'
+import { FiChevronDown, FiChevronRight } from 'react-icons/fi'
+import { useNavigate, useParams } from 'react-router-dom'
 
 export const useMentionUnreadCount = () => {
   const { data: mentionsCount, mutate } = useFrappeGetCall<{ message: number }>(
@@ -210,7 +209,9 @@ export function FilterList({ onClose }: { onClose?: () => void }) {
                 >
                   <div className='flex items-center gap-2'>
                     <item.icon className='w-5 h-5' />
-                    {!isIconOnly && <span className='truncate flex-1 min-w-0'>{item.label}</span>}
+                    {!isIconOnly && (
+                      <span className='truncate flex-1 min-w-0 font-medium text-[13px]'>{item.label}</span>
+                    )}
                   </div>
 
                   {!isIconOnly && (
@@ -268,7 +269,7 @@ export function FilterList({ onClose }: { onClose?: () => void }) {
                   <item.icon className='w-5 h-5' />
                 </div>
               </Tooltip>
-              {!isIconOnly && <span className='truncate flex-1 min-w-0'>{item.label}</span>}
+              {!isIconOnly && <span className='truncate flex-1 min-w-0 font-medium text-[13px]'>{item.label}</span>}
             </div>
 
             {badgeCount > 0 && (

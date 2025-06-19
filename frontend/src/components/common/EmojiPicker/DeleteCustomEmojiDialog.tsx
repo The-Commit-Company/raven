@@ -26,12 +26,12 @@ const DeleteCustomEmojiDialog = ({ emojiID, onDelete }: Props) => {
       </AlertDialog.Trigger>
       <AlertDialog.Content>
         <AlertDialog.Title>Delete Emoji</AlertDialog.Title>
-        <AlertDialog.Description>Are you sure you want to delete this emoji?</AlertDialog.Description>
+        <AlertDialog.Description>Bạn có chắc muốn xóa emoji này không?</AlertDialog.Description>
         {error && <ErrorBanner error={error} />}
         <HStack justify='end' gap='2' pt='2'>
           <AlertDialog.Cancel>
             <Button disabled={loading} color='gray' variant='soft'>
-              Cancel
+              Hủy
             </Button>
           </AlertDialog.Cancel>
           <AlertDialog.Action onClick={handleDelete} disabled={loading}>

@@ -15,9 +15,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 
-type Props = {}
-
-const ViewMessageAction = (props: Props) => {
+const ViewMessageAction = () => {
   const { ID } = useParams<{ ID: string }>()
 
   const { data, isLoading, error, mutate } = useFrappeGetDoc<RavenMessageAction>('Raven Message Action', ID)
@@ -75,7 +73,7 @@ const ViewMessageActionContent = ({ data, mutate }: { data: RavenMessageAction; 
                 <CommonSettingsMenu doctype='Raven Message Action' docname={data.name} label={'Message Action'} />
                 <Button type='submit' disabled={loading}>
                   {loading && <Loader className='text-white' />}
-                  {loading ? 'Saving' : 'Save'}
+                  {loading ? 'Đang lưu' : 'Lưu'}
                 </Button>
               </HStack>
             }

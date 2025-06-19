@@ -1,19 +1,19 @@
+/* eslint-disable no-constant-binary-expression */
+import { ErrorText, HelperText, Label } from '@/components/common/Form'
+import { Loader } from '@/components/common/Loader'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
+import { Drawer, DrawerContent, DrawerTrigger } from '@/components/layout/Drawer'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
+import { __ } from '@/utils/translations'
+import { Box, Button, Dialog, Flex, IconButton, RadioGroup, Text, TextArea, TextField } from '@radix-ui/themes'
 import { useFrappeCreateDoc, useFrappeGetCall, useSWRConfig } from 'frappe-react-sdk'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { BiGlobe, BiHash, BiInfoCircle, BiLockAlt } from 'react-icons/bi'
-import { useNavigate, useParams } from 'react-router-dom'
-import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
-import { Box, Button, Dialog, Flex, IconButton, RadioGroup, Text, TextArea, TextField } from '@radix-ui/themes'
-import { ErrorText, HelperText, Label } from '@/components/common/Form'
-import { Loader } from '@/components/common/Loader'
-import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
-import { toast } from 'sonner'
+import { BiLockAlt } from 'react-icons/bi'
 import { FiPlus } from 'react-icons/fi'
-import { useIsDesktop } from '@/hooks/useMediaQuery'
-import { Drawer, DrawerContent, DrawerTrigger } from '@/components/layout/Drawer'
-import { __ } from '@/utils/translations'
-import { CustomCallout } from '@/components/common/Callouts/CustomCallout'
+import { useNavigate, useParams } from 'react-router-dom'
+import { toast } from 'sonner'
 
 interface ChannelCreationForm {
   channel_name: string
@@ -170,8 +170,10 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
       case 'Private':
         return {
           channelIcon: <BiLockAlt />,
-          header: __('Create a channel'),
-          helperText: __('When a channel is created, it can only be viewed or joined by invitation.')
+          header: __('Tạo nhóm'),
+          helperText: __(
+            'Kênh là nơi nhóm của bạn trao đổi và giao tiếp. Việc tổ chức các kênh theo chủ đề — ví dụ như #Development — sẽ mang lại hiệu quả tốt nhất.'
+          )
         }
     }
   }, [channelType])
@@ -183,7 +185,7 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
       <Dialog.Title>{header}</Dialog.Title>
       <Dialog.Description size='2'>
         {__(
-          'Channels are where your team communicates. They are best when organized around a topic - #development, for example.'
+          'Kênh là nơi nhóm của bạn trao đổi và giao tiếp. Việc tổ chức các kênh theo chủ đề — ví dụ như #Development — sẽ mang lại hiệu quả tốt nhất.'
         )}
       </Dialog.Description>
       <FormProvider {...methods}>
@@ -204,7 +206,7 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
             <ErrorBanner error={channelCreationError} />
             <Box>
               <Label htmlFor='channel_name' isRequired>
-                {__('Name')}
+                {__('Tiêu đề')}
               </Label>
               <Controller
                 name='channel_name'
@@ -230,7 +232,7 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
                     maxLength={50}
                     required
                     autoFocus={isDesktop}
-                    placeholder='e.g. red-wedding-planning, joffrey-memes'
+                    placeholder='e.g. NextConnect, NextGrp'
                     color={error ? 'red' : undefined}
                     {...field}
                     aria-invalid={error ? 'true' : 'false'}
@@ -250,15 +252,15 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
 
             <Box>
               <Label htmlFor='channel_description'>
-                {__('Description')}{' '}
+                {__('Mô tả')}{' '}
                 <Text as='span' weight='light'>
-                  ({__('optional')})
+                  ({__('Tùy chọn')})
                 </Text>
               </Label>
               <TextArea
                 maxLength={140}
                 id='channel_description'
-                placeholder='Great wine and food. What could go wrong?'
+                placeholder='Kênh để thảo luận công việc'
                 {...register('channel_description', {
                   maxLength: {
                     value: 140,
@@ -267,7 +269,7 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
                 })}
                 aria-invalid={errors.channel_description ? 'true' : 'false'}
               />
-              <HelperText>What is this channel about?</HelperText>
+              <HelperText>Kênh này nói về nội dung gì?</HelperText>
               {errors?.channel_description && <ErrorText>{errors.channel_description?.message}</ErrorText>}
             </Box>
             {/* Ẩn phần chọn Channel Type, chỉ comment lại để dùng sau */}
@@ -313,12 +315,12 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
           <Flex gap='3' mt='4' justify='end'>
             <Dialog.Close disabled={creatingChannel}>
               <Button variant='soft' color='gray'>
-                {__('Cancel')}
+                {__('Hủy')}
               </Button>
             </Dialog.Close>
             <Button type='submit' disabled={creatingChannel || !canCreateChannel?.message}>
               {creatingChannel && <Loader className='text-white' />}
-              {creatingChannel ? __('Saving') : __('Save')}
+              {creatingChannel ? __('Đang lưu') : __('Lưu')}
             </Button>
           </Flex>
         </form>

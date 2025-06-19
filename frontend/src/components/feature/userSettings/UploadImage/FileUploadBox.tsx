@@ -78,8 +78,8 @@ export const FileUploadBox = forwardRef((props: FileUploadBoxProps, ref) => {
   const toHide = hideIfLimitReached && file
 
   const supportedFormats = accept
-    ? `Supported formats: ${Object.values(accept).flat().join(', ')}`
-    : __('Supported formats: {0}, {1}, {2}', ['.jpeg', '.jpg', '.png'])
+    ? `Định dạng được hỗ trợ: ${Object.values(accept).flat().join(', ')}`
+    : __('Định dạng được hỗ trợ: {0}, {1}, {2}', ['.jpeg', '.jpg', '.png'])
 
   return (
     <Flex direction='column' pt='2' gap='2' {...getRootProps()} {...compProps}>
@@ -95,7 +95,7 @@ export const FileUploadBox = forwardRef((props: FileUploadBoxProps, ref) => {
       >
         <Flex gap={'1'}>
           <Text as='span' size='2' color='gray'>
-            {__('Drag and drop your file here or')}
+            {__('Kéo và thả tệp của bạn vào đây hoặc')}
           </Text>
           <Button
             variant={'ghost'}
@@ -103,7 +103,7 @@ export const FileUploadBox = forwardRef((props: FileUploadBoxProps, ref) => {
             onClick={open}
             className={'underline not-cal hover:bg-transparent cursor-pointer'}
           >
-            {__('choose file')}
+            {__('Chọn file')}
           </Button>
         </Flex>
         <input type='file' style={{ display: 'none' }} {...getInputProps()} />
