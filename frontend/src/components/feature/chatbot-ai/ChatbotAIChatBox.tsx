@@ -201,7 +201,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({
             <div className='w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center'>
               <FiCpu className='text-white' size={16} />
             </div>
-            <span className='font-semibold text-gray-800 dark:text-white'>ChatGPT</span>
+            <span className='font-semibold text-gray-800 dark:text-white'>Trợ lý ảo</span>
           </div>
           <UserAvatar
             src={user?.user_image}
@@ -268,7 +268,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({
                 <div className='flex-1 min-w-0'>
                   <div className='mb-1'>
                     <span className='font-semibold text-gray-800 dark:text-gray-200 text-sm'>
-                      {msg.role === 'user' ? user?.full_name || 'You' : 'ChatGPT'}
+                      {msg.role === 'user' ? user?.full_name || 'Bạn' : 'Trợ lý ảo'}
                     </span>
                   </div>
 
@@ -321,7 +321,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({
                 </div>
                 <div className='flex-1 min-w-0'>
                   <div className='mb-1 flex items-center justify-between'>
-                    <span className='font-semibold text-gray-800 dark:text-gray-200 text-sm'>ChatGPT</span>
+                    <span className='font-semibold text-gray-800 dark:text-gray-200 text-sm'>Trợ lý ảo</span>
                     {thinkingDuration > 0 && (
                       <span className='text-xs text-gray-500 dark:text-gray-400'>
                         {formatThinkingTime(thinkingDuration)}
@@ -422,7 +422,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({
               value={input}
               onChange={handleInputChangeInternal}
               onKeyDown={onKeyDown}
-              placeholder='Message ChatGPT...'
+              placeholder='Nhắn tin cho ChatBot...'
               disabled={loading}
               rows={1}
               style={{
