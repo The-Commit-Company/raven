@@ -16,9 +16,7 @@ const SelectedChannelItem = ({ channel, handleToggle }: { channel: any; handleTo
     <div
       className={clsx(
         'relative',
-        isMobile
-          ? 'w-10 h-10'
-          : 'flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-2 dark:hover:bg-gray-7'
+        isMobile ? 'w-10 h-10' : 'flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-2 dark:hover:bg-gray-7'
       )}
     >
       <div className='flex items-center gap-2 truncate'>

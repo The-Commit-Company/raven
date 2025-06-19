@@ -17,6 +17,6 @@ export const useRemoveChannelFromLabel = () => {
   return {
     removeChannel,
     loading,
-    error,
+    error
   }
 }

@@ -1,11 +1,11 @@
-import React, { ReactNode } from 'react'
-import { NavLink } from 'react-router-dom'
-import { Flex, FlexProps, IconButton, Text, TextProps, Theme } from '@radix-ui/themes'
-import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button'
-import { BadgeProps } from '@radix-ui/themes/dist/cjs/components/badge'
-import { clsx } from 'clsx'
-import { FiChevronDown, FiChevronRight } from 'react-icons/fi'
 import { __ } from '@/utils/translations'
+import { Flex, FlexProps, IconButton, Text, TextProps, Theme } from '@radix-ui/themes'
+import { BadgeProps } from '@radix-ui/themes/dist/cjs/components/badge'
+import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button'
+import { clsx } from 'clsx'
+import React, { ReactNode } from 'react'
+import { FiChevronDown, FiChevronRight } from 'react-icons/fi'
+import { NavLink } from 'react-router-dom'
 
 type SidebarGroupProps = FlexProps & {
   children: ReactNode
@@ -185,7 +185,11 @@ export const SidebarBadge = ({ children, className, ...props }: BadgeSidebar) =>
   return (
     <Theme accentColor='gray'>
       <div
-        className={className ? className : 'absolute top-1/2 right-0 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center min-w-2 bg-red-500 text-xs py-0.5 px-2 rounded-radius2 whitespace-nowrap font-medium text-[10px] text-white'}
+        className={
+          className
+            ? className
+            : 'absolute top-1/2 right-0 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center min-w-2 bg-red-500 text-xs py-0.5 px-2 rounded-radius2 whitespace-nowrap font-medium text-[10px] text-white'
+        }
       >
         {children}
       </div>

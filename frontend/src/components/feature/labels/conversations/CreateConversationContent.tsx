@@ -1,8 +1,8 @@
 // ==== labels/conversation/CreateConversationContent.tsx ====
 
-import { useMemo, useState, lazy, Suspense } from 'react'
+import { Button, Dialog, Flex } from '@radix-ui/themes'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { Dialog, Flex, Button } from '@radix-ui/themes'
+import { lazy, Suspense, useMemo, useState } from 'react'
 import { IoMdClose } from 'react-icons/io'
 import { toast } from 'sonner'
 
@@ -10,11 +10,11 @@ import { sortedChannelsAtom, useUpdateChannelLabels } from '@/utils/channel/Chan
 import { useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
 import { refreshLabelListAtom } from './atoms/labelAtom'
 
-import ChannelModalConversationItem from './ChannelModalConversationItem'
-import SelectedChannelItem from './SelectedChannelItem'
-import { UnifiedChannel } from '../../direct-messages/useUnifiedChannelList'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import clsx from 'clsx'
+import { UnifiedChannel } from '../../direct-messages/useUnifiedChannelList'
+import ChannelModalConversationItem from './ChannelModalConversationItem'
+import SelectedChannelItem from './SelectedChannelItem'
 
 type Props = {
   setIsOpen: (v: boolean) => void
@@ -61,9 +61,6 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
         (channel.channel_name?.toLowerCase().includes(keyword) || channel.name.toLowerCase().includes(keyword))
     )
   }, [channels, search])
-
-  console.log(filteredChannels);
-  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -125,7 +122,7 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
               type='text'
               placeholder='Tìm kiếm'
               className='w-80 p-2 border rounded text-sm mb-2
-        border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary 
+        border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary
         dark:bg-gray-900 dark:text-white dark:border-gray-700 dark:placeholder-gray-500'
               value={search}
               onChange={(e) => setSearch(e.target.value)}

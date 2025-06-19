@@ -1,9 +1,11 @@
-import { useEffect } from 'react'
+import BeatLoader from '@/components/layout/Loaders/BeatLoader'
+import { Flex, Text } from '@radix-ui/themes'
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useAtomValue } from 'jotai'
+import { useEffect } from 'react'
+import { LuAtSign } from 'react-icons/lu'
 import { refreshLabelListAtom } from './conversations/atoms/labelAtom'
 import LabelItem from './LabelItem'
-import BeatLoader from '@/components/layout/Loaders/BeatLoader'
 
 interface Label {
   label_id: string
@@ -35,7 +37,15 @@ const LabelByUserList = () => {
   return (
     <div className='space-y-2'>
       {labels?.length === 0 ? (
-        <div className='text-gray-500'>Chưa có nhãn nào</div>
+        <Flex direction='column' align='center' justify='center' className='h-[320px] px-6 text-center'>
+          <LuAtSign size={48} className='text-gray-8 mb-4' />
+          <Text size='5' weight='medium' className='mb-2'>
+            Chưa có nhãn nào
+          </Text>
+          <Text size='2' color='gray'>
+            Bạn có thể tạo nhãn tại đây
+          </Text>
+        </Flex>
       ) : (
         labels?.map((labelItem) => (
           <LabelItem

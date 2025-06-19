@@ -179,14 +179,14 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       messages,
       hasOlderMessages,
       loadOlderMessages,
-      goToLatestMessages,
+      // goToLatestMessages,
       hasNewMessages,
       error,
       loadNewerMessages,
       isLoading,
       highlightedMessage,
       scrollToMessage,
-      newMessageCount,
+      // newMessageCount,
       newMessageIds,
       markMessageAsSeen,
       clearAllNewMessages
@@ -430,7 +430,6 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       }),
       [renderState.isInitialLoadComplete, hasOlderMessages, hasNewMessages, Header, Footer]
     )
-
 
     const computeItemKey = useCallback((index: number, item: any) => {
       return item?.name ?? `fallback-${index}`

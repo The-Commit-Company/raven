@@ -19,7 +19,6 @@ export const ModalChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
   const chatStreamRef = useRef<{ onUpArrow: () => void } | null>(null)
 
-
   const tiptapRef = useRef<{ focusEditor: () => void } | null>(null)
 
   const isMobile = useIsMobile()
@@ -35,13 +34,8 @@ export const ModalChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
   }, [isMobile])
 
   // Quản lý toàn bộ quá trình upload file đính kèm
-  const {
-    fileInputRef,
-    files,
-    setFiles,
-  } = useFileUpload(channelData.name)
+  const { fileInputRef, files, setFiles } = useFileUpload(channelData.name)
 
- 
   const { threadID } = useParams()
 
   return (

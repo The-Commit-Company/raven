@@ -81,7 +81,6 @@
 //   return isActive
 // }
 
-
 import { useContext, useEffect, useRef } from 'react'
 import { useIdleTimer, PresenceType } from 'react-idle-timer'
 import { FrappeContext, FrappeConfig } from 'frappe-react-sdk'

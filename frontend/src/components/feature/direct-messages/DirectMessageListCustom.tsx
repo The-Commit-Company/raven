@@ -10,7 +10,7 @@ import { UserContext } from '../../../utils/auth/UserProvider'
 import { ChannelWithUnreadCount, DMChannelWithUnreadCount } from '@/components/layout/Sidebar/useGetChannelUnreadCounts'
 import { useChannelActions } from '@/hooks/useChannelActions'
 import { useChannelDone } from '@/hooks/useChannelDone'
-import { useIsTablet } from '@/hooks/useMediaQuery'
+import { useIsDesktop, useIsTablet } from '@/hooks/useMediaQuery'
 import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
 import { useEnrichedChannels } from '@/utils/channel/ChannelAtom'
 import { formatLastMessage } from '@/utils/channel/useFormatLastMessage'
@@ -20,9 +20,8 @@ import { useAtomValue } from 'jotai'
 import { HiCheck } from 'react-icons/hi'
 import { SidebarBadge, SidebarGroup, SidebarIcon } from '../../layout/Sidebar/SidebarComp'
 import { DoneChannelList } from '../channels/DoneChannelList'
-import MentionList from '../chat/ChatInput/MentionListCustom'
-import { useIsDesktop } from '@/hooks/useMediaQuery'
 import UserChannelList from '../channels/UserChannelList'
+import MentionList from '../chat/ChatInput/MentionListCustom'
 import ChatbotAIStream from '../chatbot-ai/ChatbotAIStream'
 import LabelByUserList from '../labels/LabelByUserList'
 import ThreadsCustom from '../threads/ThreadsCustom'
@@ -56,12 +55,9 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
 
   // Nếu có nhãn ID thì lọc theo nhãn
   if (labelID) {
-    const filtered = channel_list.filter((c) => {
+    const filtered = channel_list.filter((c: { user_labels: { label_id: string; label: string }[] }) => {
       return c.user_labels?.some((label: { label_id: string; label: string }) => label.label_id === labelID)
     })
-
-    console.log(channel_list);
-    
 
     if (filtered.length === 0) {
       return <div className='text-gray-500 text-sm italic p-4 text-center'>Không có kênh nào gắn nhãn này</div>
@@ -134,7 +130,7 @@ const isDMChannel = (c: UnifiedChannel): c is DMChannelWithUnreadCount => {
   return 'peer_user_id' in c && typeof c.peer_user_id === 'string'
 }
 
-const truncateText = (text, maxLength) => {
+const truncateText = (text: string, maxLength: number) => {
   if (!text) return ''
   return text.length > maxLength ? text.slice(0, maxLength) + '...' : text
 }
@@ -241,6 +237,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
               if (isDesktop) {
                 e.stopPropagation()
               }
+              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
               isChannelDone ? markAsNotDone(channel.name) : markAsDone(channel.name)
             }}
             className='absolute z-99 right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded-full bg-gray-200 hover:bg-gray-300 h-[20px] w-[20px] flex items-center justify-center cursor-pointer'

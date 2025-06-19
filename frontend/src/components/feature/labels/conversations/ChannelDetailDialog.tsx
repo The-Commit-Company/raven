@@ -1,15 +1,15 @@
 import { Dialog, IconButton } from '@radix-ui/themes'
+import { useSetAtom } from 'jotai'
 import { useEffect, useRef, useState } from 'react'
 import { HiX } from 'react-icons/hi'
-import { useSetAtom } from 'jotai'
 
 import { Drawer, DrawerContent } from '@/components/layout/Drawer'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 
-import { disableMessageAtom, openInModalAtom } from './atoms/statusModalAtom'
-import { UnifiedChannel } from '../../direct-messages/useUnifiedChannelList'
-import { ModalChatBoxBody } from '../../chat/ChatStream/ModalChatBoxBody'
 import { useGetUser } from '@/hooks/useGetUser'
+import { ModalChatBoxBody } from '../../chat/ChatStream/ModalChatBoxBody'
+import { UnifiedChannel } from '../../direct-messages/useUnifiedChannelList'
+import { disableMessageAtom, openInModalAtom } from './atoms/statusModalAtom'
 
 type Props = {
   channel: UnifiedChannel | null
@@ -70,8 +70,8 @@ const ChannelDetailDialog = ({ channel, onClose }: Props) => {
 
       {/* Scrollable */}
       <div ref={scrollRef} className='flex-1 overflow-hidden'>
-          {channel && <ModalChatBoxBody channelData={channel} />}
-            <div ref={bottomRef} />
+        {channel && <ModalChatBoxBody channelData={channel} />}
+        <div ref={bottomRef} />
       </div>
     </div>
   )
