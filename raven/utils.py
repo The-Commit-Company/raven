@@ -1,6 +1,14 @@
 import frappe
 
-from raven.notification import clear_push_tokens_for_channel_cache
+
+def get_raven_room():
+	"""
+	Room which any user with the role "Raven User" is subscribed to.
+	"""
+	# When they open the app, the will be subscribed to the users list.
+	# We are just using the doctype room to send events to them
+	# If we use "all" instead, then the events are only sent to System Users and not users who do not have Desk access.
+	return "doctype:Raven User"
 
 
 def track_channel_visit(channel_id, user=None, commit=False, publish_event_for_user=False):
@@ -167,7 +175,7 @@ def get_channel_members(channel_id: str):
 	return data
 
 
-def delete_channel_members_cache(channel_id: str, clear_push_tokens=True):
+def delete_channel_members_cache(channel_id: str):
 	"""
 	Delete the channel members cache and clear the push tokens for the channel if the flag is set to True
 
@@ -176,13 +184,10 @@ def delete_channel_members_cache(channel_id: str, clear_push_tokens=True):
 	cache_key = f"raven:channel_members:{channel_id}"
 	frappe.cache().delete_value(cache_key)
 
-	if clear_push_tokens:
-		clear_push_tokens_for_channel_cache(channel_id)
-
 	frappe.publish_realtime(
 		"channel_members_updated",
 		{"channel_id": channel_id},
-		room="all",
+		room=get_raven_room(),
 		after_commit=True,
 	)
 

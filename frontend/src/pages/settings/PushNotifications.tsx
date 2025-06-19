@@ -11,8 +11,8 @@ import { RavenSettings } from '@/types/Raven/RavenSettings'
 import { isSystemManager } from '@/utils/roles'
 import { __ } from '@/utils/translations'
 import { Box, Button, Link, Select, Strong, Text, TextField } from '@radix-ui/themes'
-import { useFrappePostCall, useFrappeUpdateDoc } from 'frappe-react-sdk'
-import { useEffect } from 'react'
+import { FrappeConfig, FrappeContext, useFrappePostCall, useFrappeUpdateDoc } from 'frappe-react-sdk'
+import { useContext, useEffect } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { FiAlertTriangle, FiExternalLink } from 'react-icons/fi'
 import { toast } from 'sonner'
@@ -21,6 +21,8 @@ const PushNotifications = () => {
   const isRavenAdmin = isSystemManager()
 
   const { ravenSettings, mutate, error } = useRavenSettings()
+
+  const { call } = useContext(FrappeContext) as FrappeConfig
 
   const methods = useForm<RavenSettings>({
     disabled: !isRavenAdmin
@@ -238,6 +240,24 @@ const PushNotifications = () => {
                   <RegisterSiteButton mutate={mutate} ravenSettings={ravenSettings} />
                 )}
 
+              {isRavenCloud &&
+                ravenSettings?.push_notification_service === 'Raven' &&
+                ravenSettings?.push_notification_server_url &&
+                ravenSettings?.vapid_public_key && (
+                  <Button
+                    onClick={() =>
+                      call.post('raven.api.notification.sync_user_tokens_to_raven_cloud').then(() => {
+                        toast.success('Data syncing to Raven Cloud...')
+                      })
+                    }
+                    type='button'
+                    variant='soft'
+                    className='not-cal'
+                  >
+                    Sync Data to Raven Cloud
+                  </Button>
+                )}
+
               {!isRavenCloud && (
                 <Button asChild color='gray' variant='outline' className='not-cal'>
                   <Link color='gray' target='_blank' underline='none' href={`/app/push-notification-settings`}>
@@ -269,7 +289,7 @@ const RegisterSiteButton = ({ mutate, ravenSettings }: { mutate: VoidFunction; r
   }
 
   return (
-    <Button onClick={registerSite} disabled={loading} type='button' className='not-cal'>
+    <Button onClick={registerSite} disabled={loading} variant='soft' type='button' className='not-cal'>
       {ravenSettings.vapid_public_key ? 'Re-Register Site on Raven Cloud' : 'Register Site on Raven Cloud'}
     </Button>
   )

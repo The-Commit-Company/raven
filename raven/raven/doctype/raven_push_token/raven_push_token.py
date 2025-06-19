@@ -5,10 +5,7 @@ import frappe
 from frappe.model.document import Document
 
 from raven.api.notification import are_push_notifications_enabled
-from raven.notification import (
-	clear_push_tokens_for_channel_cache,
-	clear_push_tokens_for_user_cache,
-)
+from raven.raven_cloud_notifications import add_token_to_raven_cloud, delete_token_from_raven_cloud
 
 
 class RavenPushToken(Document):
@@ -30,7 +27,6 @@ class RavenPushToken(Document):
 		"""
 		If the push service is Frappe Cloud and is enabled, then send the token to the Frappe Cloud API
 		"""
-		self.invalidate_cache()
 
 		push_service = self.get_push_service()
 
@@ -44,18 +40,13 @@ class RavenPushToken(Document):
 				pass
 			except Exception:
 				frappe.log_error("Failed to subscribe to Frappe Cloud push notifications")
-
-	def on_update(self):
-		"""
-		Invalidate the cache when the push token is updated
-		"""
-		self.invalidate_cache()
+		else:
+			add_token_to_raven_cloud(self.user, self.fcm_token)
 
 	def on_trash(self):
 		"""
 		If the push service is Frappe Cloud and is enabled, then delete the token from the Frappe Cloud API
 		"""
-		self.invalidate_cache()
 
 		push_service = self.get_push_service()
 
@@ -69,28 +60,8 @@ class RavenPushToken(Document):
 				pass
 			except Exception:
 				frappe.log_error("Failed to unsubscribe from Frappe Cloud push notifications")
-
-	def invalidate_cache(self):
-		"""
-		We need to invalidate the cache for the user and channels where the user is a member
-		"""
-		clear_push_tokens_for_user_cache(self.user)
-		# Clear the cache for the channel if the user is a member of the channel
-		channel_member = frappe.qb.DocType("Raven Channel Member")
-		raven_user = frappe.qb.DocType("Raven User")
-
-		query = (
-			frappe.qb.from_(channel_member)
-			.left_join(raven_user)
-			.on(channel_member.user_id == raven_user.name)
-			.where(raven_user.user == self.user)
-			.select(channel_member.channel_id)
-		)
-
-		channel_ids = query.run(as_list=True)
-
-		for channel_id in channel_ids:
-			clear_push_tokens_for_channel_cache(channel_id)
+		else:
+			delete_token_from_raven_cloud(self.user, self.fcm_token)
 
 	def get_push_service(self) -> str:
 		"""
