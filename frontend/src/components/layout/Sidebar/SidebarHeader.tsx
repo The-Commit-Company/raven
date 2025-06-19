@@ -49,17 +49,15 @@ export const SidebarHeader = () => {
           raven
         </Text>
         <Flex align='center' gap='4' className='pr-1 sm:pr-0'>
-          <Box>
-            <IconButton
-              aria-label='Settings'
-              size='2'
-              color='gray'
-              variant='ghost'
-              onClick={() => navigate('/settings/profile')}
-            >
-              <LuSettings size='14' />
-            </IconButton>
-          </Box>
+          <IconButton
+            aria-label='Settings'
+            size='2'
+            color='gray'
+            variant='ghost'
+            onClick={() => navigate('/settings/profile')}
+          >
+            <LuSettings size='14' />
+          </IconButton>
           <ColorModeToggleButton />
           {isLabelMode ? (
             <button className='p-2 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 rounded'>
