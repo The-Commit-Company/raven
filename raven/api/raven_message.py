@@ -877,70 +877,15 @@ def add_forwarded_message_to_channel(channel_id, forwarded_message):
 
 @frappe.whitelist()
 def retract_message(message_id: str):
-    """
-    Đánh dấu tin nhắn là đã thu hồi nếu người hiện tại là người gửi.
-    Nếu là tin nhắn cuối cùng trong channel thì update lại last_message.
-    """
     user = frappe.session.user
     message = frappe.get_doc("Raven Message", message_id)
 
     if message.is_retracted:
         frappe.throw(_("Tin nhắn đã được thu hồi trước đó."))
 
-    # Thu hồi message
     message.db_set("is_retracted", 1)
     frappe.db.commit()
 
-    # Kiểm tra nếu message này đang là tin cuối cùng
-    latest_msg = frappe.get_list(
-        "Raven Message",
-        filters={
-            "channel_id": message.channel_id,
-            "message_type": ["!=", "System"],
-            "is_retracted": 0,
-        },
-        fields=["name"],
-        order_by="creation desc",
-        limit_page_length=1,
-    )
-
-    latest_msg_id = latest_msg[0]["name"] if latest_msg else None
-
-    # Nếu message bị retract chính là tin cuối
-    if latest_msg_id == message.name:
-        # Tìm message mới nhất kế tiếp (nếu có)
-        next_msg = frappe.get_list(
-            "Raven Message",
-            filters={
-                "channel_id": message.channel_id,
-                "message_type": ["!=", "System"],
-                "is_retracted": 0,
-                "name": ["!=", message.name],
-            },
-            fields=["content", "creation", "owner"],
-            order_by="creation desc",
-            limit_page_length=1,
-        )
-
-        next = next_msg[0] if next_msg else {}
-        content = next.get("content", "")
-        timestamp = next.get("creation")
-        sender_id = next.get("owner")
-
-        # Gửi realtime event để frontend cập nhật lại sidebar / last_message
-        frappe.publish_realtime(
-            event="raven_channel_last_message_updated",
-            message={
-                "channel_id": message.channel_id,
-                "last_message_content": content,
-                "last_message_timestamp": timestamp,
-                "last_message_sender_id": sender_id,
-            },
-            doctype="Raven Channel",
-            docname=message.channel_id
-        )
-
-    # Gửi event retract message bình thường
     frappe.publish_realtime(
         event="raven_message_retracted",
         message={
@@ -949,7 +894,8 @@ def retract_message(message_id: str):
             "is_thread": message.is_thread
         },
         doctype="Raven Channel",
-        docname=message.channel_id
+        docname=message.channel_id,
+        after_commit=True
     )
 
     return {"message": "Đã thu hồi tin nhắn"}

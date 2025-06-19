@@ -38,6 +38,9 @@ import TimestampRenderer from '../ChatMessage/Renderers/TiptapRenderer/Timestamp
 import { useParams } from 'react-router-dom'
 import { useAtom } from 'jotai'
 import { EnterKeyBehaviourAtom } from '@/utils/preferences'
+import { useFrappePostCall } from 'frappe-react-sdk'
+import { useUnreadContext } from '@/utils/layout/sidebar'
+import { useUpdateUnreadCountToZero } from '@/hooks/useUnreadMessageCount'
 const MobileInputActions = lazy(() => import('./MobileActions/MobileInputActions'))
 
 const lowlight = createLowlight(common)
@@ -131,6 +134,17 @@ const Tiptap = forwardRef(
     const { enabledUsers } = useContext(UserListContext)
 
     const channelMembersRef = useRef<MemberSuggestions[]>([])
+    const { call: trackVisit } = useFrappePostCall('raven.api.raven_channel_member.track_visit')
+    const updateUnreadCountToZero = useUpdateUnreadCountToZero()
+
+    const handleClick = async () => {
+      try {
+        await trackVisit({ channel_id: channelID })
+        updateUnreadCountToZero(channelID)
+      } catch (err) {
+        console.error('trackVisit failed', err)
+      }
+    }
 
     useEffect(() => {
       if (channelMembers) {
@@ -632,7 +646,7 @@ const Tiptap = forwardRef(
     }
 
     return (
-      <Box className='border rounded-radius2 border-gray-300 dark:border-gray-500 dark:bg-gray-3'>
+      <Box onClick={handleClick} className='border rounded-radius2 border-gray-300 dark:border-gray-500 dark:bg-gray-3'>
         <EditorContext.Provider value={{ editor }}>
           {slotBefore}
           <EditorContent editor={editor} />

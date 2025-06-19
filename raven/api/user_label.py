@@ -1,5 +1,6 @@
 import frappe
 from frappe import _
+from collections import defaultdict
 
 @frappe.whitelist()
 def create_label(label):
@@ -29,10 +30,10 @@ def create_label(label):
         "label_id": new_label.name
     }
 
-
 @frappe.whitelist(methods=["POST"])
 def update_label(label_id, new_label):
     user = frappe.session.user
+
     if not label_id or not new_label:
         frappe.throw(_("Missing label id or new label"))
 
@@ -44,7 +45,7 @@ def update_label(label_id, new_label):
     if label_doc.owner != user:
         frappe.throw(_("You are not allowed to edit this label"))
 
-    # ✅ Check trùng tên label khác của cùng người
+    # Kiểm tra trùng tên label khác của cùng user
     duplicate = frappe.db.exists(
         "User Label",
         {
@@ -59,7 +60,10 @@ def update_label(label_id, new_label):
     label_doc.label = new_label
     label_doc.save(ignore_permissions=True)
 
-    return {"status": "success", "message": "Label updated"}
+    return {
+        "status": "success",
+        "message": "Label updated"
+    }
 
 @frappe.whitelist()
 def delete_label(label_id):
@@ -85,19 +89,19 @@ def delete_label(label_id):
     # Xoá document nhãn
     label_doc.delete(ignore_permissions=True)
 
+    # ✅ Commit để đảm bảo thay đổi được ghi nhận ngay
+    frappe.db.commit()
+
     return {
         "status": "success",
         "message": "Label deleted"
     }
 
-
-from collections import defaultdict
-import frappe
-
 @frappe.whitelist()
 def get_my_labels():
     user = frappe.session.user
-    # 2. Truy vấn như bình thường nếu không có cache
+
+    # Lấy tất cả nhãn của user
     labels = frappe.get_all(
         "User Label",
         filters={"owner": user},
@@ -108,6 +112,7 @@ def get_my_labels():
     if not label_ids:
         return []
 
+    # Lấy các channel liên kết với từng label
     rows = frappe.db.sql("""
         SELECT
             ucl.label,
@@ -119,6 +124,7 @@ def get_my_labels():
         WHERE ucl.label IN %s AND ucl.user = %s
     """, (tuple(label_ids), user), as_dict=True)
 
+    # Gom nhãn theo label_id
     label_map = defaultdict(list)
     for row in rows:
         label_map[row["label"]].append({
@@ -127,6 +133,7 @@ def get_my_labels():
             "is_direct_message": bool(row.get("is_direct_message"))
         })
 
+    # Build kết quả trả về
     result = []
     for label in labels:
         result.append({
@@ -134,4 +141,5 @@ def get_my_labels():
             "label": label["label"],
             "channels": label_map[label["name"]]
         })
+
     return result

@@ -32,7 +32,7 @@ const UserChannelList = () => {
           />
         ))}
         <br />
-       <h5 className="text-sm mt-0 font-medium">Những người chưa từng nhắn</h5>
+        <h5 className='text-sm mt-0 font-medium'>Những người chưa từng nhắn</h5>
         {usersWithoutChannels.map((user) => (
           <UserWithoutDMItem key={user.name} userID={user.name} />
         ))}
@@ -74,7 +74,9 @@ const UserWithoutDMItem = ({ userID }: { userID: string }) => {
       <Flex width='100%' justify='between' align='center'>
         <Flex gap='2' align='center'>
           <UserAvatar src={user?.user_image} isBot={user?.type === 'Bot'} alt={user?.full_name ?? userID} />
-          <span>{user?.full_name ?? userID}</span>
+          <Text as='span' className={clsx('line-clamp-1 text-ellipsis', 'text-base md:text-sm xs:text-xs')}>
+            {user?.full_name ?? userID}
+          </Text>
         </Flex>
 
         {loading ? <Loader /> : null}

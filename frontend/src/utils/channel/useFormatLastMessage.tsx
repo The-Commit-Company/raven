@@ -4,28 +4,20 @@ const truncateText = (text: string, maxLength: number = MAX_PREVIEW_LENGTH): str
   return text.length > maxLength ? text.slice(0, maxLength) + '...' : text
 }
 
-const isImageFile = (filename: string = ''): boolean =>
-  /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(filename)
+const isImageFile = (filename: string = ''): boolean => /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(filename)
 
-const isVideoFile = (filename: string = ''): boolean =>
-  /\.(mp4|mov|avi|wmv|flv|webm|mkv)$/i.test(filename)
+const isVideoFile = (filename: string = ''): boolean => /\.(mp4|mov|avi|wmv|flv|webm|mkv)$/i.test(filename)
 
-const isAudioFile = (filename: string = ''): boolean =>
-  /\.(mp3|wav|ogg|m4a|aac)$/i.test(filename)
+const isAudioFile = (filename: string = ''): boolean => /\.(mp3|wav|ogg|m4a|aac)$/i.test(filename)
 
-const stripHtmlTags = (html: string): string =>
-  html.replace(/<\/?[^>]+(>|$)/g, '')
+const stripHtmlTags = (html: string): string => html.replace(/<\/?[^>]+(>|$)/g, '')
 
 interface Channel {
   is_direct_message: boolean
   last_message_details: any
 }
 
-export function formatLastMessage(
-  channel: Channel,
-  currentUser: string,
-  senderName?: string
-): string {
+export function formatLastMessage(channel: Channel, currentUser: string, senderName?: string): string {
   if (!channel?.last_message_details) return ''
 
   let raw: any
@@ -69,6 +61,7 @@ export function formatLastMessage(
         }
         break
       case 'Text':
+        // eslint-disable-next-line no-case-declarations
         const text = stripHtmlTags(filename)
         contentLabel = truncateText(text)
         break

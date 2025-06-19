@@ -1,3 +1,4 @@
+import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { UnreadCountData, useChannelList, useUpdateLastMessageInChannelList } from '@/utils/channel/ChannelListProvider'
 import {
@@ -7,12 +8,10 @@ import {
   useFrappeGetCall,
   useFrappePostCall
 } from 'frappe-react-sdk'
+import { useAtomValue } from 'jotai'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useAtomValue } from 'jotai'
-import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
 import { useNotificationAudio } from './useNotificationAudio'
-import { useGetUser } from './useGetUser'
 
 export const useUnreadMessageCount = () => {
   const manuallyMarked = useAtomValue(manuallyMarkedAtom)
@@ -113,10 +112,10 @@ export const useFetchUnreadMessageCount = () => {
     if (event.sent_by !== currentUser) {
       const isCurrentChannel = channelID === event.channel_id
 
-      if (isCurrentChannel && !document.hidden) {
-        // Chỉ trackVisit khi tab active
-        trackVisit({ channel_id: channelID })
-      }
+      // if (isCurrentChannel && !document.hidden) {
+      //   // Chỉ trackVisit khi tab active
+      //   trackVisit({ channel_id: channelID })
+      // }
 
       const currentUnread = unread_count?.message.find((c) => c.name === event.channel_id)?.unread_count || 0
       const isManuallyMarked = manuallyMarked.has(event.channel_id)
@@ -238,4 +237,21 @@ export const useFetchUnreadMessageCount = () => {
   }, [unread_count, channels, latestUnreadData, manuallyMarked])
 
   return unread_count
+}
+
+export const useUpdateUnreadCountToZero = () => {
+  const { updateCount } = useUnreadMessageCount()
+
+  const updateUnreadCountToZero = (channel_id?: string) => {
+    updateCount(
+      (d) => {
+        const currentList = d?.message ?? []
+        const newList = currentList.map((c) => (c.name === channel_id ? { ...c, unread_count: 0 } : c))
+        return { message: newList }
+      },
+      { revalidate: false }
+    )
+  }
+
+  return updateUnreadCountToZero
 }

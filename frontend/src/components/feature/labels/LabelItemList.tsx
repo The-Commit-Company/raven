@@ -12,6 +12,7 @@ import { useRemoveChannelFromLabel } from '@/hooks/useRemoveChannelFromLabel'
 import { toast } from 'sonner'
 import { useUpdateChannelLabels } from '@/utils/channel/ChannelAtom'
 import { useChannelActions } from '@/hooks/useChannelActions'
+import { useSWRConfig } from 'frappe-react-sdk'
 
 type Props = {
   channelID: string
@@ -34,6 +35,8 @@ const LabelItemList = ({
   const { currentUser } = useContext(UserContext)
   const { workspaceID, channelID: channelIDParams } = useParams()
   const isDM = isDirectMessage === true
+
+  const { mutate } = useSWRConfig()
 
   const peer_user_id = isDM ? replaceCurrentUserFromDMChannelName(channelName, currentUser) : ''
   const user = useGetUser(peer_user_id)
@@ -62,6 +65,7 @@ const LabelItemList = ({
       onRemoveLocally?.(channelID)
       toast.success(`Đã xóa thành công`)
       setShowModal(false)
+      mutate('channel_list')
     } catch (err) {
       console.error('Xoá thất bại:', err)
       toast.error('Xoá channel khỏi nhãn thất bại')
@@ -95,7 +99,7 @@ const LabelItemList = ({
             </Flex>
             {unreadCount > 0 && (
               <div className='bg-red-500 text-white text-[10px] rounded-full w-[18px] h-[18px] flex items-center justify-center'>
-                {unreadCount > 99 ? '99+' : unreadCount}
+                {unreadCount > 9 ? '9+' : unreadCount}
               </div>
             )}
           </Flex>
