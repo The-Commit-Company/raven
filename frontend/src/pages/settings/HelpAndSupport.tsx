@@ -1,13 +1,13 @@
-import { Button, Code, Flex, Link, Separator, Text } from '@radix-ui/themes'
-import { FiExternalLink, FiMail } from 'react-icons/fi'
-import { useBoolean } from '@/hooks/useBoolean'
+import SocketIOHealth from '@/components/feature/settings/help/SocketIOHealth'
 import PageContainer from '@/components/layout/Settings/PageContainer'
 import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
 import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import { Stack } from '@/components/layout/Stack'
-import CreateSupportTicketDialog from '../../components/feature/settings/help/SupportRequest'
-import SocketIOHealth from '@/components/feature/settings/help/SocketIOHealth'
+import { useBoolean } from '@/hooks/useBoolean'
+import { Button, Code, Link, Separator, Text } from '@radix-ui/themes'
+import { FiExternalLink } from 'react-icons/fi'
 import { LuMessageSquareWarning } from 'react-icons/lu'
+import CreateSupportTicketDialog from '../../components/feature/settings/help/SupportRequest'
 
 const HelpAndSupport = () => {
   const [open, { on, off }] = useBoolean()
@@ -15,12 +15,12 @@ const HelpAndSupport = () => {
   return (
     <PageContainer>
       <SettingsContentContainer>
-        <SettingsPageHeader title='Help and Support' />
+        <SettingsPageHeader title='Trợ giúp & Hỗ trợ' />
 
         <Stack gap='5'>
           <Stack>
             <Text color='gray' size='2' as='span' className='font-medium'>
-              Have ideas or ran into an issue?
+              Bạn có ý tưởng hoặc gặp sự cố?
             </Text>
             <div>
               <Button
@@ -29,10 +29,10 @@ const HelpAndSupport = () => {
                 variant='outline'
                 color='gray'
                 className='not-cal cursor-pointer'
-                title='Click here to send us feedback or file an issue'
-                aria-label='click here to send us feedback or file an issue'
+                title='Nhấn vào đây để gửi phản hồi hoặc báo lỗi'
+                aria-label='Nhấn vào đây để gửi phản hồi hoặc báo lỗi'
               >
-                <LuMessageSquareWarning /> Contact Us
+                <LuMessageSquareWarning /> Liên hệ với chúng tôi
               </Button>
             </div>
           </Stack>
@@ -63,7 +63,7 @@ const HelpAndSupport = () => {
                 title='https://community.ravenapp.cloud'
                 href='https://community.ravenapp.cloud'
               >
-                Community <FiExternalLink size='12' />
+                Cộng đồng <FiExternalLink size='12' />
               </Link>
             </li>
             <li>
@@ -87,13 +87,12 @@ const HelpAndSupport = () => {
                 title='support@thecommit.company'
                 href='mailto:support@thecommit.company'
               >
-                Support Email
+                Email hỗ trợ
               </Link>
             </li>
           </ul>
 
           <Stack gap='0'>
-            {/* @ts-expect-error */}
             <Text size='3' color='gray'>
               <Text size='5' className='cal-sans text-gray-12 dark:text-white'>
                 NextConnect
@@ -103,7 +102,7 @@ const HelpAndSupport = () => {
               </Code>
             </Text>
             <Text size='2' color='gray'>
-              Created by HaiNamTech
+              Được phát triển bởi HaiNamTech
             </Text>
           </Stack>
         </Stack>
