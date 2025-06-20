@@ -243,6 +243,8 @@ export const useUpdateUnreadCountToZero = () => {
   const { updateCount } = useUnreadMessageCount()
 
   const updateUnreadCountToZero = (channel_id?: string) => {
+    if (!channel_id) return
+
     updateCount(
       (d) => {
         const currentList = d?.message ?? []
