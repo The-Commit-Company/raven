@@ -57,6 +57,7 @@ export interface ChannelListContextType extends ChannelList {
   mutate: KeyedMutator<{ message: ChannelList }>
   error?: FrappeError
   isLoading: boolean
+  isValidating: boolean
 }
 export const ChannelListContext = createContext<ChannelListContextType | null>(null)
 
@@ -82,7 +83,7 @@ export const useFetchChannelList = (): ChannelListContextType => {
   const isMobile = useIsMobile()
 
   const { mutate: globalMutate } = useSWRConfig()
-  const { data, mutate, ...rest } = useFrappeGetCall<{ message: ChannelList }>(
+  const { data, mutate, isLoading, isValidating, ...rest } = useFrappeGetCall<{ message: ChannelList }>(
     'raven.api.raven_channel.get_all_channels',
     {
       hide_archived: false
@@ -97,7 +98,6 @@ export const useFetchChannelList = (): ChannelListContextType => {
       }
     }
   )
-
   const [newUpdatesAvailable, setNewUpdatesAvailable] = useState(0)
 
   useEffect(() => {
@@ -145,6 +145,8 @@ export const useFetchChannelList = (): ChannelListContextType => {
   return {
     channels: sortedChannels,
     dm_channels: sortedDMChannels,
+    isLoading,
+    isValidating,
     mutate,
     ...rest
   }

@@ -7,9 +7,10 @@ import { useIsTablet } from '@/hooks/useMediaQuery'
 import IsTabletSidebarNav from './IsTabletSidebarNav'
 import { useSetAtom } from 'jotai'
 import { prepareSortedChannels, setSortedChannelsAtom, sortedChannelsLoadingAtom } from '@/utils/channel/ChannelAtom'
+import BeatLoader from '../Loaders/BeatLoader'
 
 export const SidebarBody = () => {
-  const { channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
+  const { isLoading, isValidating, channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
 
   const setSortedChannels = useSetAtom(setSortedChannelsAtom)
 
@@ -23,10 +24,11 @@ export const SidebarBody = () => {
     Promise.resolve().then(() => {
       const sorted = prepareSortedChannels(channels, dm_channels)
       setSortedChannels(sorted)
-      setSortedChannelsLoading(false)
     })
   }, [channels, dm_channels, setSortedChannels, setSortedChannelsLoading])
   const isTablet = useIsTablet()
+
+  if (isLoading || isValidating) return <BeatLoader text='Đang tải danh sách tin nhắn...' />
 
   return (
     <ScrollArea type='hover' scrollbars='vertical' className='h-[calc(100vh-4rem)] sidebar-scroll'>
