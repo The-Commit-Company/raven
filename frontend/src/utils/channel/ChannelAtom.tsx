@@ -33,18 +33,30 @@ export const setSortedChannelsLoadingAtom = atom(null, (get, set, next: boolean)
   set(sortedChannelsLoadingAtom, next)
 })
 
-export const prepareSortedChannels = (channels: any[], dm_channels: any[]): ChannelWithGroupType[] => {
+export const prepareSortedChannels = (
+  channels: any[],
+  dm_channels: any[],
+  currentChannelIsDone: Record<string, number> = {}
+): ChannelWithGroupType[] => {
   return [
     ...channels.map((channel) => ({
       ...channel,
       group_type: 'channel' as const,
-      is_done: typeof channel.is_done === 'number' ? channel.is_done : 0,
+      is_done: Object.prototype.hasOwnProperty.call(currentChannelIsDone, channel.name)
+        ? currentChannelIsDone[channel.name]
+        : typeof channel.is_done === 'number'
+        ? channel.is_done
+        : 0,
       user_labels: channel.user_labels ?? []
     })),
     ...dm_channels.map((dm) => ({
       ...dm,
       group_type: 'dm' as const,
-      is_done: typeof dm.is_done === 'number' ? dm.is_done : 0,
+      is_done: Object.prototype.hasOwnProperty.call(currentChannelIsDone, dm.name)
+        ? currentChannelIsDone[dm.name]
+        : typeof dm.is_done === 'number'
+        ? dm.is_done
+        : 0,
       user_labels: dm.user_labels ?? []
     }))
   ].sort((a, b) => {
@@ -53,6 +65,7 @@ export const prepareSortedChannels = (channels: any[], dm_channels: any[]): Chan
     return timeB - timeA
   })
 }
+
 
 // Hook để lấy danh sách channel chưa done
 export const useEnrichedSortedChannels = (isDoneFilter?: 0 | 1) => {
