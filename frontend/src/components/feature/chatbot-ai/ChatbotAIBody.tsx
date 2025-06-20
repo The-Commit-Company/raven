@@ -236,7 +236,7 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
   }, [mutateMessages])
 
   // Early return if no session is selected
-  if (!selectedSession || !botID) {
+  if (!selectedSession || !botID || loadingMessages) {
     return <ChatStreamLoader />
   }
 
