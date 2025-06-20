@@ -8,8 +8,6 @@ from frappe.model.document import Document
 
 class RavenSettings(Document):
 	# begin: auto-generated types
-	# ruff: noqa
-
 	# This code is auto-generated. Do not modify anything in this block.
 
 	from typing import TYPE_CHECKING
@@ -27,10 +25,18 @@ class RavenSettings(Document):
 		config: DF.SmallText | None
 		department_channel_type: DF.Literal["Public", "Private"]
 		enable_ai_integration: DF.Check
+		enable_google_apis: DF.Check
+		enable_local_llm: DF.Check
+		enable_openai_services: DF.Check
 		enable_video_calling_via_livekit: DF.Check
+		google_processor_location: DF.Literal["us", "eu"]
+		google_project_id: DF.Data | None
+		google_service_account_json_key: DF.Password | None
 		livekit_api_key: DF.Data | None
 		livekit_api_secret: DF.Password | None
 		livekit_url: DF.Data | None
+		local_llm_api_url: DF.Data | None
+		local_llm_provider: DF.Literal["LM Studio", "Ollama", "LocalAI"]
 		oauth_client: DF.Link | None
 		openai_api_key: DF.Password | None
 		openai_organisation_id: DF.Data | None
@@ -43,7 +49,6 @@ class RavenSettings(Document):
 		show_raven_on_desk: DF.Check
 		tenor_api_key: DF.Data | None
 		vapid_public_key: DF.Data | None
-	# ruff: noqa
 	# end: auto-generated types
 
 	def validate(self):
@@ -68,3 +73,11 @@ class RavenSettings(Document):
 
 		if self.openai_project_id:
 			self.openai_project_id = self.openai_project_id.strip()
+
+		if self.enable_google_apis:
+			if not self.google_project_id:
+				frappe.throw(_("Please enter the Google Project ID"))
+			if not self.google_service_account_json_key:
+				frappe.throw(_("Please add the Google Service Account JSON Key"))
+			if not self.google_processor_location:
+				frappe.throw(_("Please select the Google Processor Location"))
