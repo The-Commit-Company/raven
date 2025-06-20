@@ -20,198 +20,178 @@ interface UsersOrChannelsDropdownProps {
 const UsersOrChannelsDropdown = ({
   selectedOptions,
   setSelectedOptions,
-  label = 'Select Users / Channels',
-  ...props
+  label = 'Select Users / Channels'
 }: UsersOrChannelsDropdownProps) => {
-  // All users
   const users = useContext(UserListContext)
-
-  // All channels
   const channels = useContext(ChannelListContext) as ChannelListContextType
-
-  //Options for dropdown
   const options: (UserFields | ChannelListItem)[] = [...users.enabledUsers, ...channels.channels]
-
   const isDesktop = useIsDesktop()
 
-  /** Function to filter options */
-  function getFilteredOptions(selectedOptions: (UserFields | ChannelListItem)[], inputValue: string) {
+  function getFilteredOptions(inputValue: string) {
     const lowerCasedInputValue = inputValue.toLowerCase()
-
-    return options.filter((option: UserFields | ChannelListItem) => {
-      const isOptionSelected = selectedOptions.find((selectedOption) => selectedOption.name === option.name)
-      if ('full_name' in option)
+    return options.filter((option) => {
+      if ('full_name' in option) {
         return (
-          !isOptionSelected &&
-          (option.full_name.toLowerCase().includes(lowerCasedInputValue) ||
-            option.name.toLowerCase().includes(lowerCasedInputValue))
+          option.full_name.toLowerCase().includes(lowerCasedInputValue) ||
+          option.name.toLowerCase().includes(lowerCasedInputValue)
         )
+      }
       return (
-        !isOptionSelected &&
-        (option.channel_name.toLowerCase().includes(lowerCasedInputValue) ||
-          option.name.toLowerCase().includes(lowerCasedInputValue))
+        option.channel_name.toLowerCase().includes(lowerCasedInputValue) ||
+        option.name.toLowerCase().includes(lowerCasedInputValue)
       )
     })
   }
 
-  function MultipleComboBox({
-    selectedOptions,
-    setSelectedOptions
-  }: {
-    selectedOptions: (UserFields | ChannelListItem)[]
-    setSelectedOptions: (options: (UserFields | ChannelListItem)[]) => void
-  }) {
-    const [inputValue, setInputValue] = useState('')
+  const [inputValue, setInputValue] = useState('')
+  const [isComposing, setIsComposing] = useState(false)
 
-    const items = useMemo(() => getFilteredOptions(selectedOptions, inputValue), [selectedOptions, inputValue])
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    if (!isComposing) {
+      setInputValue(value)
+    }
+  }
 
-    const { getSelectedItemProps, getDropdownProps, removeSelectedItem } = useMultipleSelection({
-      selectedItems: selectedOptions,
-      onStateChange({ selectedItems: newSelectedItems, type }) {
-        switch (type) {
-          case useMultipleSelection.stateChangeTypes.SelectedItemKeyDownBackspace:
-          case useMultipleSelection.stateChangeTypes.SelectedItemKeyDownDelete:
-          case useMultipleSelection.stateChangeTypes.DropdownKeyDownBackspace:
-          case useMultipleSelection.stateChangeTypes.FunctionRemoveSelectedItem:
-            setSelectedOptions(newSelectedItems ?? [])
-            break
-          default:
-            break
-        }
+  const items = useMemo(() => getFilteredOptions(inputValue), [inputValue])
+
+  const { getSelectedItemProps, removeSelectedItem } = useMultipleSelection({
+    selectedItems: selectedOptions,
+    onStateChange({ selectedItems: newSelectedItems, type }) {
+      switch (type) {
+        case useMultipleSelection.stateChangeTypes.SelectedItemKeyDownBackspace:
+        case useMultipleSelection.stateChangeTypes.SelectedItemKeyDownDelete:
+        case useMultipleSelection.stateChangeTypes.DropdownKeyDownBackspace:
+        case useMultipleSelection.stateChangeTypes.FunctionRemoveSelectedItem:
+          setSelectedOptions(newSelectedItems ?? [])
+          break
+        default:
+          break
       }
-    })
-    const { isOpen, getLabelProps, getMenuProps, getInputProps, highlightedIndex, getItemProps, selectedItem } =
-      useCombobox({
-        items,
-        itemToString(item) {
-          return item ? item.name : ''
-        },
-        defaultHighlightedIndex: 0, // after selection, highlight the first item.
-        selectedItem: null,
-        inputValue,
-        stateReducer(state, actionAndChanges) {
-          const { changes, type } = actionAndChanges
+    }
+  })
 
-          switch (type) {
-            case useCombobox.stateChangeTypes.InputKeyDownEnter:
-            case useCombobox.stateChangeTypes.ItemClick:
-              return {
-                ...changes,
-                isOpen: true, // keep the menu open after selection.
-                highlightedIndex: 0 // with the first option highlighted.
-              }
-            default:
-              return changes
-          }
-        },
-        onStateChange({ inputValue: newInputValue, type, selectedItem: newSelectedItem }) {
-          switch (type) {
-            case useCombobox.stateChangeTypes.InputKeyDownEnter:
-            case useCombobox.stateChangeTypes.ItemClick:
-            case useCombobox.stateChangeTypes.InputBlur:
-              if (newSelectedItem) {
-                setSelectedOptions([...selectedOptions, newSelectedItem])
-                setInputValue('')
-              }
-              break
+  const { isOpen, getLabelProps, getMenuProps, highlightedIndex, getItemProps, getInputProps } = useCombobox({
+    items,
+    itemToString(item) {
+      return item ? item.name : ''
+    },
+    defaultHighlightedIndex: 0,
+    selectedItem: null,
+    inputValue,
+    onStateChange({ type }) {
+      switch (type) {
+        default:
+          break
+      }
+    }
+  })
 
-            case useCombobox.stateChangeTypes.InputChange:
-              setInputValue(newInputValue ?? '')
+  const inputProps = getInputProps({
+    value: inputValue,
+    onChange: handleInputChange,
+    onCompositionStart: () => setIsComposing(true),
+    onCompositionEnd: () => {
+      setIsComposing(false)
+      setInputValue((prev) => prev)
+    }
+  })
 
-              break
-            default:
-              break
-          }
-        }
-      })
+  return (
+    <div className='w-full'>
+      <div className='flex flex-col gap-1'>
+        <Label className='w-fit' {...getLabelProps()}>
+          {label}
+        </Label>
 
-    return (
-      <div className='w-full'>
-        <div className='flex flex-col gap-1'>
-          <Label className='w-fit' {...getLabelProps()}>
-            {label}
-          </Label>
-          <TextField.Root
-            placeholder='Type a name...'
-            className='w-full'
-            autoFocus={isDesktop}
-            {...getInputProps(getDropdownProps())}
-          ></TextField.Root>
+        <input
+          type='text'
+          placeholder='Nhập để tìm...'
+          autoFocus={isDesktop}
+          className='w-90 border border-gray-300 focus:outline-none focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 px-3 py-2 rounded-md text-sm transition duration-150 ease-in-out'
+          {...inputProps}
+        />
 
-          <div className='inline-flex gap-1 p-1 items-center flex-wrap'>
-            {selectedOptions.map(function renderSelectedItem(selectedItemForRender, index) {
-              if ('channel_name' in selectedItemForRender) {
-                return (
-                  <span
-                    className='rt-Button rt-BaseButton rt-variant-surface rt-r-size-2 flex items-center'
-                    key={`selected-item-${index}`}
-                    {...getSelectedItemProps({
-                      selectedItem: selectedItemForRender,
-                      index
-                    })}
-                  >
+        <div className='inline-flex gap-1 p-1 items-center flex-wrap'>
+          {selectedOptions.map((selectedItemForRender, index) => {
+            const isChannel = 'channel_name' in selectedItemForRender
+            return (
+              <span
+                className='rt-Button rt-BaseButton rt-variant-surface rt-r-size-2 flex items-center'
+                key={`selected-item-${index}`}
+              >
+                {isChannel ? (
+                  <>
                     <ChannelIcon type={selectedItemForRender.type} size='14' />
                     <Text size='2'>{selectedItemForRender.channel_name}</Text>
-                    <span
-                      className='cursor-pointer'
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        removeSelectedItem(selectedItemForRender)
-                      }}
-                    >
-                      &#10005;
-                    </span>
-                  </span>
-                )
-              }
-              return (
+                  </>
+                ) : (
+                  <>
+                    <UserAvatar
+                      src={selectedItemForRender.user_image ?? ''}
+                      alt={selectedItemForRender.full_name}
+                      size='1'
+                      variant='solid'
+                      color='gray'
+                    />
+                    <Text size='2'>{selectedItemForRender.full_name}</Text>
+                  </>
+                )}
                 <span
-                  className='rt-Button rt-BaseButton rt-variant-surface rt-r-size-2 flex items-center'
-                  key={`selected-item-${index}`}
-                  {...getSelectedItemProps({
-                    selectedItem: selectedItemForRender,
-                    index
-                  })}
+                  className='cursor-pointer ml-1'
+                  onClick={(e) => {
+                    setSelectedOptions(selectedOptions.filter((o) => o.name !== selectedItemForRender.name))
+                  }}
                 >
-                  <UserAvatar
-                    src={selectedItemForRender.user_image ?? ''}
-                    alt={selectedItemForRender.full_name}
-                    size='1'
-                    variant='solid'
-                    color='gray'
-                  />
-                  <Text size='2'>{selectedItemForRender.full_name}</Text>
-                  <span
-                    className='cursor-pointer'
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      removeSelectedItem(selectedItemForRender)
-                    }}
-                  >
-                    &#10005;
-                  </span>
+                  &#10005;
                 </span>
-              )
-            })}
-          </div>
+              </span>
+            )
+          })}
         </div>
-        <ul
-          className={`sm:w-[550px] w-[24rem] absolute bg-background rounded-b-md mt-1 shadow-md z-[9999] max-h-96 overflow-scroll p-0 ${
-            !(isOpen && items.length) && 'hidden'
-          }`}
-          {...getMenuProps()}
-        >
-          {isOpen &&
-            items.map((item, index) => (
+      </div>
+
+      <ul
+        className={`sm:w-[550px] w-[24rem] absolute bg-background rounded-b-md mt-1 shadow-md z-[999] max-h-96 overflow-scroll p-0 ${
+          !(isOpen && items.length) && 'hidden'
+        }`}
+        {...getMenuProps()}
+      >
+        {isOpen &&
+          items.map((item, index) => {
+            const isChecked = selectedOptions.some((o) => o.name === item.name)
+            return (
               <li
                 className={clsx(
                   highlightedIndex === index && 'bg-accent-4',
-                  selectedItem === item && 'font-bold',
-                  'py-2 px-3 shadow-sm flex gap-2 items-center'
+                  'py-2 px-3 shadow-sm flex gap-2 items-center cursor-pointer'
                 )}
                 key={`${item.name}`}
                 {...getItemProps({ item, index })}
+                onClick={(e) => {
+                  e.preventDefault()
+                  const isChecked = selectedOptions.some((o) => o.name === item.name)
+                  if (isChecked) {
+                    setSelectedOptions(selectedOptions.filter((o) => o.name !== item.name))
+                  } else {
+                    setSelectedOptions([...selectedOptions, item])
+                  }
+                }}
               >
+                <input
+                  type='checkbox'
+                  checked={selectedOptions.some((o) => o.name === item.name)}
+                  onChange={(e) => {
+                    const checked = e.target.checked
+                    if (checked) {
+                      setSelectedOptions([...selectedOptions, item])
+                    } else {
+                      setSelectedOptions(selectedOptions.filter((o) => o.name !== item.name))
+                    }
+                  }}
+                  onClick={(e) => e.stopPropagation()} // để không bị duplicate toggle khi click input
+                />
+
                 {'channel_name' in item ? (
                   <HStack justify='between' width='100%'>
                     <HStack gap='1' align='center'>
@@ -241,13 +221,11 @@ const UsersOrChannelsDropdown = ({
                   </>
                 )}
               </li>
-            ))}
-        </ul>
-      </div>
-    )
-  }
-
-  return <MultipleComboBox selectedOptions={selectedOptions} setSelectedOptions={setSelectedOptions} />
+            )
+          })}
+      </ul>
+    </div>
+  )
 }
 
 export default UsersOrChannelsDropdown

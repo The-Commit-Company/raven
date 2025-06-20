@@ -68,7 +68,7 @@ export const MessageContextMenu = ({
 
           {message && !message.is_thread && showThreadButton && <CreateThreadContextItem messageID={message.name} />}
 
-          <CopyMessageLink message={message} />
+          {/* <CopyMessageLink message={message} /> */}
 
           <ContextMenu.Separator />
           <ContextMenu.Group>
