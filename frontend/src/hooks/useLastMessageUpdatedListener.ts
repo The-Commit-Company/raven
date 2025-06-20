@@ -5,7 +5,7 @@ import { useSetAtom } from 'jotai'
 export const useLastMessageUpdatedListener = () => {
   const setSortedChannels = useSetAtom(setSortedChannelsAtom)
 
-  useFrappeEventListener('raven:new_message', (event) => {
+  useFrappeEventListener('new_message', (event) => {
     const { channel_id } = event
 
     setSortedChannels((prev) =>
