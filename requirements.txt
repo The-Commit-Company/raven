@@ -8,3 +8,4 @@ pandas
 openpyxl
 xlrd
 python-pptx
+tiktoken

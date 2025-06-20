@@ -54,10 +54,10 @@ def upload_file_with_message():
 
         # Gọi AI trả lời
         frappe.enqueue(
-        "raven.api.chatbot.handle_ai_reply",
-        conversation_id=conversation_id,
-        now=False,
-        enqueue_after_commit=True  # đảm bảo chỉ chạy sau khi commit hoàn tất
+            "raven.api.chatbot.handle_ai_reply",
+            conversation_id=conversation_id,
+            now=False,
+            enqueue_after_commit=True
         )
 
         return {
