@@ -1,7 +1,9 @@
 import { ChannelMembers } from '@/hooks/fetchers/useFetchChannelMembers'
+import { useChannelSeenUsers } from '@/hooks/useChannelSeenUsers'
 import { useIsDesktop, useIsMobile } from '@/hooks/useMediaQuery'
 import { useStickyState } from '@/hooks/useStickyState'
 import { useUpdateUnreadCountToZero } from '@/hooks/useUnreadMessageCount'
+import { UserContext } from '@/utils/auth/UserProvider'
 import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
 import { EnterKeyBehaviourAtom } from '@/utils/preferences'
 import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
@@ -17,6 +19,7 @@ import { PluginKey } from '@tiptap/pm/state'
 import { BubbleMenu, EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import clsx from 'clsx'
+import { useFrappeEventListener } from 'frappe-react-sdk'
 import css from 'highlight.js/lib/languages/css'
 import js from 'highlight.js/lib/languages/javascript'
 import json from 'highlight.js/lib/languages/json'
@@ -131,17 +134,33 @@ const Tiptap = forwardRef(
   ) => {
     const { enabledUsers } = useContext(UserListContext)
 
+    const { currentUser } = useContext(UserContext)
+
     const channelMembersRef = useRef<MemberSuggestions[]>([])
+
+    const { refetchWithTrackSeen } = useChannelSeenUsers({
+      channelId: channelID || ''
+    })
 
     const updateUnreadCountToZero = useUpdateUnreadCountToZero()
 
-    const handleClick = async () => {
+    const handleClickFocus = () => {
+      if (!hasUnreadAndAwaitingClickRef.current) return
       try {
+        refetchWithTrackSeen()
         updateUnreadCountToZero(channelID)
-      } catch (err) {
-        console.error('trackVisit failed', err)
+        hasUnreadAndAwaitingClickRef.current = false
+      } catch (error) {
+        console.error('Error updating seen info', error)
       }
     }
+
+    const hasUnreadAndAwaitingClickRef = useRef(false)
+    useFrappeEventListener('raven:new_message', (data: any) => {
+      if (data.channel_id === channelID && data.user !== currentUser) {
+        hasUnreadAndAwaitingClickRef.current = true
+      }
+    })
 
     useEffect(() => {
       if (channelMembers) {
@@ -643,7 +662,10 @@ const Tiptap = forwardRef(
     }
 
     return (
-      <Box onClick={handleClick} className='border rounded-radius2 border-gray-300 dark:border-gray-500 dark:bg-gray-3'>
+      <Box
+        onClick={handleClickFocus}
+        className='border rounded-radius2 border-gray-300 dark:border-gray-500 dark:bg-gray-3'
+      >
         <EditorContext.Provider value={{ editor }}>
           {slotBefore}
           <EditorContent editor={editor} />
