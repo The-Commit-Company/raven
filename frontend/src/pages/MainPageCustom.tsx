@@ -25,6 +25,7 @@ import { useFrappeEventListener, useSWRConfig } from 'frappe-react-sdk'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { ChannelListProvider } from '../utils/channel/ChannelListProvider'
 import { useLastMessageUpdatedListener } from '@/hooks/useLastMessageUpdatedListener'
+import { useChannelDoneListener } from '@/hooks/useChannelDoneListener'
 
 const AddRavenUsersPage = lazy(() => import('@/pages/AddRavenUsersPage'))
 
@@ -55,12 +56,13 @@ const MainPageContent = () => {
   const sidebarRef = useRef<any>(null)
   const { handleSidebarResize, handleSidebarPointerUp } = useSidebarResizeLogic(sidebarRef)
   const { mode, setMode } = useSidebarMode()
-  const [panelSize, setPanelSize] = useState(30)
+  const [, setPanelSize] = useState(30)
   const [initialLayoutLoaded, setInitialLayoutLoaded] = useState(false)
   const [initialLayout, setInitialLayout] = useState<string | null>(null)
 
   useFetchActiveUsersRealtime()
   useActiveSocketConnection()
+  useChannelDoneListener()
 
   useLastMessageUpdatedListener()
 
@@ -160,7 +162,7 @@ const MainPageContent = () => {
                 <Box className='px-2'>
                   <Box className='h-px bg-gray-400 dark:bg-gray-600' />
                 </Box>
-                <SidebarBody size={panelSize} />
+                <SidebarBody />
               </Box>
               <Box className='w-full absolute dark:bg-gray-2'>
                 <Outlet />
@@ -188,7 +190,7 @@ const MainPageContent = () => {
                   <div className='px-2'>
                     <div className='h-px bg-gray-400 dark:bg-gray-600' />
                   </div>
-                  <SidebarBody size={panelSize} />
+                  <SidebarBody />
                 </div>
               </Panel>
 
@@ -244,7 +246,7 @@ const MainPageContent = () => {
                   <div className='px-2'>
                     <div className='h-px bg-gray-4 dark:bg-gray-6' />
                   </div>
-                  <SidebarBody size={panelSize} />
+                  <SidebarBody />
                 </div>
               </Panel>
 

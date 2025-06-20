@@ -25,19 +25,48 @@ def get_active_users():
 	return user_ids
 
 
-@frappe.whitelist()
+# @frappe.whitelist()
+# def refresh_user_active_state(deactivate=False):
+# 	if isinstance(deactivate, str):
+# 		deactivate = True if deactivate.lower() == "true" else False
+# 	if deactivate:
+# 		set_user_inactive()
+# 	else:
+# 		set_user_active()
+
+# 	# // nosemgrep This has to be published to all the users
+# 	frappe.publish_realtime(
+# 		"raven:user_active_state_updated",
+# 		{"user": frappe.session.user, "active": not deactivate},
+# 	)  # nosemgrep
+
+# 	return "ok"
+
+import json
+
+@frappe.whitelist(methods=["POST", "GET"])
 def refresh_user_active_state(deactivate=False):
-	if isinstance(deactivate, str):
-		deactivate = True if deactivate.lower() == "true" else False
-	if deactivate:
-		set_user_inactive()
-	else:
-		set_user_active()
+    if frappe.request.method == "POST":
+        try:
+            raw_data = frappe.request.get_data(as_text=True)
+            data = json.loads(raw_data or '{}')
+            deactivate = data.get("deactivate", False)
+        except Exception:
+            deactivate = False  # fallback nếu lỗi
 
-	# // nosemgrep This has to be published to all the users
-	frappe.publish_realtime(
-		"raven:user_active_state_updated",
-		{"user": frappe.session.user, "active": not deactivate},
-	)  # nosemgrep
+    if isinstance(deactivate, str):
+        deactivate = True if deactivate.lower() == "true" else False
+    else:
+        deactivate = bool(deactivate)
 
-	return "ok"
+    if deactivate:
+        set_user_inactive()
+    else:
+        set_user_active()
+
+    frappe.publish_realtime(
+        "raven:user_active_state_updated",
+        {"user": frappe.session.user, "active": not deactivate},
+    )
+
+    return "ok"

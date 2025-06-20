@@ -6,35 +6,29 @@ import CircleUserList from './CircleUserList'
 import { useIsTablet } from '@/hooks/useMediaQuery'
 import IsTabletSidebarNav from './IsTabletSidebarNav'
 import { useSetAtom } from 'jotai'
-import { prepareSortedChannels, setSortedChannelsAtom } from '@/utils/channel/ChannelAtom'
+import { prepareSortedChannels, setSortedChannelsAtom, sortedChannelsLoadingAtom } from '@/utils/channel/ChannelAtom'
+import BeatLoader from '../Loaders/BeatLoader'
 
 export const SidebarBody = () => {
-  const { channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
-
-  // console.log(channels, dm_channels);
+  const { isLoading, isValidating, channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
 
   const setSortedChannels = useSetAtom(setSortedChannelsAtom)
+
+  const setSortedChannelsLoading = useSetAtom(sortedChannelsLoadingAtom)
+
   useEffect(() => {
     if (channels.length === 0 && dm_channels.length === 0) return
 
-    setSortedChannels((prev) => {
-      const prevMap = new Map(prev.map((c) => [c.name, c]))
+    setSortedChannelsLoading(true)
 
-      return prepareSortedChannels(channels, dm_channels).map((channel) => {
-        const old = prevMap.get(channel.name)
-        return {
-          ...channel,
-          is_done: old?.is_done ?? channel.is_done ?? 0,
-          user_labels: old?.user_labels?.length ? old.user_labels : (channel.user_labels ?? []),
-          last_message_content: old?.last_message_content ?? channel.last_message_content,
-          last_message_sender_name: old?.last_message_sender_name ?? channel.last_message_sender_name,
-          last_message_timestamp: old?.last_message_timestamp ?? channel.last_message_timestamp
-        }
-      })
+    Promise.resolve().then(() => {
+      const sorted = prepareSortedChannels(channels, dm_channels)
+      setSortedChannels(sorted)
     })
-  }, [channels, dm_channels, setSortedChannels])
-
+  }, [channels, dm_channels, setSortedChannels, setSortedChannelsLoading])
   const isTablet = useIsTablet()
+
+  if (isLoading || isValidating) return <BeatLoader text='Đang tải danh sách tin nhắn...' />
 
   return (
     <ScrollArea type='hover' scrollbars='vertical' className='h-[calc(100vh-4rem)] sidebar-scroll'>

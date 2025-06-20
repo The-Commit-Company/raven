@@ -37,3 +37,9 @@ export const useIsTablet = () => {
 
   return isTablet
 }
+
+export const useIsLaptop = () => {
+  const isLaptop = useMediaQuery('(max-width: 1400px)')
+
+  return isLaptop
+}

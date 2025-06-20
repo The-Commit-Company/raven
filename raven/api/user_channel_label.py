@@ -37,6 +37,8 @@ def add_label_to_multiple_channels(label_id, channel_ids):
             message=_("channel_ids phải là danh sách (list).")
         )
 
+    duplicated_channels = []
+
     for channel_id in channel_ids:
         exists = frappe.db.exists("User Channel Label", {
             "label": label_id,
@@ -45,11 +47,14 @@ def add_label_to_multiple_channels(label_id, channel_ids):
         })
         if exists:
             channel_name = frappe.db.get_value("Raven Channel", channel_id, "channel_name") or channel_id
-            return _fail(
-                title=_("Không thể gán nhãn"),
-                message=_("Kênh đã được gán nhãn trước đó.").format(channel_name),
-                code=409
-            )
+            duplicated_channels.append(channel_name)
+
+    if duplicated_channels:
+        return _fail(
+            title=_("Không thể gán nhãn"),
+            message=_("Các kênh sau đã được gán nhãn trước đó: {0}").format(", ".join(duplicated_channels)),
+            code=409
+        )
 
     for channel_id in channel_ids:
         frappe.get_doc({

@@ -59,9 +59,9 @@ const ForwardMessageModal = ({ onClose, message }: ForwardMessageModalProps) => 
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Flex justify={'between'}>
-          <Dialog.Title>Forward Message</Dialog.Title>
+          <Dialog.Title>Chuyển tiếp tin nhắn</Dialog.Title>
           <VisuallyHidden>
-            <Dialog.Description>Forward message to a user or channel</Dialog.Description>
+            <Dialog.Description>Chuyển tiếp tin nhắn đến người dùng hoặc nhóm chat</Dialog.Description>
           </VisuallyHidden>
           <Dialog.Close onClick={handleClose}>
             <IconButton size='1' variant='soft' color='gray'>
@@ -75,7 +75,7 @@ const ForwardMessageModal = ({ onClose, message }: ForwardMessageModalProps) => 
           <Box width='100%'>
             <Flex direction='column' gap='2'>
               <Suspense fallback={<Loader />}>
-                <Controller
+                <Controller 
                   control={control}
                   name='selected_options'
                   rules={{
@@ -104,7 +104,7 @@ const ForwardMessageModal = ({ onClose, message }: ForwardMessageModalProps) => 
           </Dialog.Close>
           <Button type='submit' disabled={loading}>
             {loading && <Loader className='text-white' />}
-            {loading ? 'Sending' : 'Send'}
+            {loading ? 'Đang gửi' : 'Gửi'}
           </Button>
         </Flex>
       </form>
