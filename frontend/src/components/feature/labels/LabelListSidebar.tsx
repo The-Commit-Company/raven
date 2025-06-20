@@ -6,7 +6,7 @@ import { useAtomValue, useSetAtom } from 'jotai'
 import { useSidebarMode } from '@/utils/layout/sidebar'
 import { labelListAtom, refreshLabelListAtom } from './conversations/atoms/labelAtom'
 import { useFrappeGetCall } from 'frappe-react-sdk'
-import { useEnrichedChannels } from '@/utils/channel/ChannelAtom'
+import { useEnrichedSortedChannels } from '@/utils/channel/ChannelAtom'
 
 type Props = {
   visible: boolean
@@ -21,7 +21,7 @@ export default function LabelList({ visible, onClickLabel }: Props) {
 
   const { data, isLoading, error, mutate } = useFrappeGetCall('raven.api.user_label.get_my_labels')
 
-  const enrichedChannels = useEnrichedChannels()
+  const enrichedChannels = useEnrichedSortedChannels()
 
   const labelUnreadMap = useMemo(() => {
     const map = new Map<string, number>()

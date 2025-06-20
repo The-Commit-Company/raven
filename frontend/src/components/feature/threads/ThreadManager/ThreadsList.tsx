@@ -233,8 +233,7 @@ const EmptyStateForThreads = ({ isFiltered = false }: { isFiltered?: boolean }) 
           }
         : {
             title: 'Chưa có chủ đề nào',
-            description:
-              'Chủ đề giúp cuộc trò chuyện trở nên rõ ràng hơn'
+            description: 'Chủ đề giúp cuộc trò chuyện trở nên rõ ràng hơn'
           },
     [isFiltered]
   )

@@ -104,13 +104,13 @@ export const useFetchUnreadMessageCount = () => {
   const { channelID } = useParams()
   const { updateLastMessageInChannelList } = useUpdateLastMessageInChannelList()
 
-  const { call: trackVisit } = useFrappePostCall('raven.api.raven_channel_member.track_visit')
+  // const { call: trackVisit } = useFrappePostCall('raven.api.raven_channel_member.track_visit')
 
   const { play } = useNotificationAudio()
 
   useFrappeEventListener('raven:unread_channel_count_updated', async (event) => {
     if (event.sent_by !== currentUser) {
-      const isCurrentChannel = channelID === event.channel_id
+      // const isCurrentChannel = channelID === event.channel_id
 
       // if (isCurrentChannel && !document.hidden) {
       //   // Chỉ trackVisit khi tab active
@@ -120,7 +120,7 @@ export const useFetchUnreadMessageCount = () => {
       const currentUnread = unread_count?.message.find((c) => c.name === event.channel_id)?.unread_count || 0
       const isManuallyMarked = manuallyMarked.has(event.channel_id)
 
-      const shouldPlay = !isManuallyMarked || (isManuallyMarked && currentUnread > 1)
+      const shouldPlay = !isManuallyMarked || (isManuallyMarked && currentUnread > 1) || event.play_sound
 
       setLatestUnreadData({
         name: event.channel_id,
@@ -243,6 +243,8 @@ export const useUpdateUnreadCountToZero = () => {
   const { updateCount } = useUnreadMessageCount()
 
   const updateUnreadCountToZero = (channel_id?: string) => {
+    if (!channel_id) return
+
     updateCount(
       (d) => {
         const currentList = d?.message ?? []

@@ -1,10 +1,10 @@
-import { HiMenu } from 'react-icons/hi'
-import { useUnreadMessageCount } from '@/hooks/useUnreadMessageCount'
-import { filterItems, useMentionUnreadCount, FilterList } from './SidebarContainer'
-import { useSidebarMode } from '@/utils/layout/sidebar'
-import { useEffect, useState } from 'react'
 import { useIsTablet } from '@/hooks/useMediaQuery'
+import { useUnreadMessageCount } from '@/hooks/useUnreadMessageCount'
+import { useSidebarMode } from '@/utils/layout/sidebar'
 import clsx from 'clsx'
+import { useEffect, useState } from 'react'
+import { HiMenu } from 'react-icons/hi'
+import { filterItems, FilterList, useMentionUnreadCount } from './SidebarContainer'
 
 export default function FilterTabs() {
   const { title, setTitle, setLabelID } = useSidebarMode()
@@ -21,7 +21,7 @@ export default function FilterTabs() {
   const limitedLabels = limitedTabs.map((tab) => tab.label)
 
   // Nếu title không nằm trong limitedTabs, render riêng
-  const tabsToRender = limitedLabels.includes(title) ? limitedTabs : [{ label: title, icon: null }]
+  const tabsToRender = limitedLabels.includes(title as string) ? limitedTabs : [{ label: title, icon: null }]
 
   const getBadgeCount = (label: string) => {
     if (['Trò chuyện', 'Chưa đọc'].includes(label)) return totalUnreadCount
@@ -73,17 +73,17 @@ export default function FilterTabs() {
         >
           {tabsToRender.map((tab) => {
             const isActive = tab.label === title
-            const badgeCount = getBadgeCount(tab.label)
+            const badgeCount = getBadgeCount(tab.label as string)
 
             const isSingleTab = tabsToRender.length === 1
 
             return (
               <div
-                key={tab.label}
+                key={tab.label as string}
                 className={clsx('relative flex items-center justify-center', isSingleTab ? 'w-1/3' : 'flex-1')}
               >
                 <button
-                  onClick={() => handleClick(tab.label)}
+                  onClick={() => handleClick(tab.label as string)}
                   className={clsx(
                     'relative truncate px-2 py-0.5 rounded-full text-xs font-medium text-center w-full pr-5',
                     isActive
@@ -92,7 +92,7 @@ export default function FilterTabs() {
                     isSingleTab && isActive && 'border border-gray-300 dark:border-gray-600'
                   )}
                 >
-                  <span>{tab.label}</span>
+                  <span>{tab.label as string}</span>
                   {badgeCount > 0 && <span className='text-[10px] px-1 rounded-full leading-none'>{badgeCount}</span>}
 
                   {/* ❌ Nút X nằm bên trong button */}

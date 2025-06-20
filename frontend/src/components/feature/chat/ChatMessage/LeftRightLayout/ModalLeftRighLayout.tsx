@@ -1,5 +1,4 @@
 import { Stack } from '@/components/layout/Stack'
-import { useDebounce } from '@/hooks/useDebounce'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import useOutsideClick from '@/hooks/useOutsideClick'
 import { UserContext } from '@/utils/auth/UserProvider'
@@ -10,7 +9,6 @@ import { useContext, useMemo, useState } from 'react'
 import { RiPushpinFill, RiShareForwardFill } from 'react-icons/ri'
 import { useDoubleTap } from 'use-double-tap'
 import { Message, MessageBlock } from '../../../../../../../types/Messaging/Message'
-import { MessageContextMenu } from '../MessageActions/MessageActions'
 import { MessageContent, MessageSenderAvatar, UserHoverCard } from '../MessageItem'
 import { DateTooltip } from '../Renderers/DateTooltip'
 import { DoctypeLinkRenderer } from '../Renderers/DoctypeLinkRenderer'
@@ -217,16 +215,11 @@ export const ModalLeftRightLayout = ({
                   </Text>
                 )}
 
-            
-
                 {message.is_thread === 1 ? <ThreadMessage thread={message} /> : null}
-
               </Flex>
             </ContextMenu.Trigger>
-           
           </ContextMenu.Root>
         </Stack>
-
       </Flex>
     </div>
   )

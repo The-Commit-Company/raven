@@ -91,7 +91,7 @@ def send_message(
         if member != frappe.session.user:
             # Gửi event new_message cho user khác
             frappe.publish_realtime(
-                event="new_message",
+                event="raven:new_message",
                 message={
                     "channel_id": channel_id,
                     "user": frappe.session.user,

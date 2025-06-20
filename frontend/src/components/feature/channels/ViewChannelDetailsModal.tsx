@@ -1,16 +1,16 @@
+import { Drawer, DrawerContent } from '@/components/layout/Drawer'
+import useFetchActiveUsers from '@/hooks/fetchers/useFetchActiveUsers'
+import useFetchChannelMembers from '@/hooks/fetchers/useFetchChannelMembers'
+import { useIsDesktop, useIsMobile } from '@/hooks/useMediaQuery'
+import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { ChannelIcon } from '@/utils/layout/channelIcon'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
+import { Box, Dialog, Flex, Tabs, Text } from '@radix-ui/themes'
 import { useCallback, useContext } from 'react'
+import { UserContext } from '../../../utils/auth/UserProvider'
 import { ChannelDetails } from '../channel-details/ChannelDetails'
 import { ChannelMemberDetails } from '../channel-member-details/ChannelMemberDetails'
 import { ChannelSettings } from '../channel-settings/ChannelSettings'
-import { UserContext } from '../../../utils/auth/UserProvider'
-import { ChannelIcon } from '@/utils/layout/channelIcon'
-import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { Box, Dialog, Flex, Tabs, Text } from '@radix-ui/themes'
-import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
-import useFetchChannelMembers from '@/hooks/fetchers/useFetchChannelMembers'
-import useFetchActiveUsers from '@/hooks/fetchers/useFetchActiveUsers'
-import { useIsDesktop, useIsMobile } from '@/hooks/useMediaQuery'
-import { Drawer, DrawerContent } from '@/components/layout/Drawer'
 
 interface ViewChannelDetailsModalContentProps {
   open: boolean
@@ -64,9 +64,6 @@ const ViewChannelDetailsModalContent = ({
   const activeUsers = data?.message ?? []
 
   const { channelMembers, mutate: updateMembers } = useFetchChannelMembers(channelData.name)
-
-  console.log(channelMembers);
-  
 
   const memberCount = Object.keys(channelMembers).length
   const { currentUser } = useContext(UserContext)

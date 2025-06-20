@@ -17,7 +17,9 @@ const ChannelModalConversationItem = ({ name, channel, selected, handleToggle, o
 
   if (channel?.is_self_message === 1) return null
 
-  const isAlreadyLabeled = Array.isArray(channel?.user_labels) && channel.user_labels.includes(name)
+  const isAlreadyLabeled =
+    Array.isArray(channel?.user_labels) &&
+    channel.user_labels.some((label: { label_id: string }) => label.label_id === name)
 
   const isSelected = selected.has(channel?.name)
   const isChecked = isSelected || isAlreadyLabeled

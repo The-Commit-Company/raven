@@ -4,11 +4,10 @@ import { useState } from 'react'
 import { ChannelFilter, SearchFilter, UnreadFilter } from './Filters'
 import ThreadsList from './ThreadsList'
 
-type Props = {}
 /**
  * Component for displaying participating threads - where the user is a member of the thread
  */
-const ParticipatingThreads = (props: Props) => {
+const ParticipatingThreads = () => {
   const [search, setSearch] = useState('')
 
   const debouncedSearch = useDebounce(search, 250)
@@ -19,13 +18,12 @@ const ParticipatingThreads = (props: Props) => {
 
   return (
     <div>
-      <div className='flex gap-2 flex-wrap justify-between p-2 border-b border-gray-4'>
-        <SearchFilter search={search} setSearch={setSearch} />
-
-        <div className='flex gap-2'>
+      <div className='flex flex-col gap-2 justify-between p-2 border-b border-gray-4'>
+        <div className='flex gap-2 w-full'>
           <ChannelFilter channel={channel} setChannel={setChannel} />
           <UnreadFilter onlyShowUnread={onlyShowUnread} setOnlyShowUnread={setOnlyShowUnread} />
         </div>
+        <SearchFilter search={search} setSearch={setSearch} />
       </div>
       <div className='h-[calc(100vh-10rem)] overflow-y-auto'>
         <ThreadsList content={debouncedSearch} channel={channel} onlyShowUnread={onlyShowUnread} />

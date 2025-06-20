@@ -1,19 +1,14 @@
-import { ChannelListItem, DMChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
-import { useContext, useMemo } from 'react'
-import { EditDescriptionButton } from '@/components/feature/channel-details/edit-channel-description/EditDescriptionButton'
-import { AddMembersButton } from '@/components/feature/channel-member-details/add-members/AddMembersButton'
-import { UserContext } from '@/utils/auth/UserProvider'
-import { useGetUserRecords } from '@/hooks/useGetUserRecords'
-import { Badge, Box, Flex, Heading, Link, Text } from '@radix-ui/themes'
-import { UserAvatar } from '@/components/common/UserAvatar'
-import { ChannelIcon } from '@/utils/layout/channelIcon'
-import { BiBookmark } from 'react-icons/bi'
-import { DateMonthYear } from '@/utils/dateConversions'
-import { useGetUser } from '@/hooks/useGetUser'
 import useFetchChannelMembers from '@/hooks/fetchers/useFetchChannelMembers'
+import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
+import { useGetUser } from '@/hooks/useGetUser'
+import { useGetUserRecords } from '@/hooks/useGetUserRecords'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
+import { UserContext } from '@/utils/auth/UserProvider'
+import { ChannelListItem, DMChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { replaceCurrentUserFromDMChannelName } from '@/utils/operations'
+import { Badge, Box, Flex, Link, Text } from '@radix-ui/themes'
+import { useContext, useMemo } from 'react'
+import { BiBookmark } from 'react-icons/bi'
 
 export const EmptyStateForSearch = () => {
   return (
@@ -56,10 +51,7 @@ const EmptyStateForChannel = ({ channelData }: EmptyStateForChannelProps) => {
     }
   }, [channelMembers, currentUser])
 
-  return (
-    <Flex direction='column' className={'p-2'} gap='2'>
-    </Flex>
-  )
+  return <Flex direction='column' className={'p-2'} gap='2'></Flex>
 }
 
 interface EmptyStateForDMProps {

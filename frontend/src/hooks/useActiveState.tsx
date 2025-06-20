@@ -81,7 +81,6 @@
 //   return isActive
 // }
 
-
 import { useContext, useEffect, useRef } from 'react'
 import { useIdleTimer, PresenceType } from 'react-idle-timer'
 import { FrappeContext, FrappeConfig } from 'frappe-react-sdk'
@@ -91,16 +90,17 @@ import { toast } from 'sonner'
 export const useActiveState = () => {
   const { call } = useContext(FrappeContext) as FrappeConfig
   const [isActive, { on: activate, off: deactivate }] = useBoolean(true)
+
   const didCallWhenVisible = useRef(false)
   const debounceTimer = useRef<NodeJS.Timeout | null>(null)
 
-  const updateUserActiveState = async (deactivate = false) => {
+  const updateUserActiveState = async (deactivateFlag = false) => {
     return call
       .get('raven.api.user_availability.refresh_user_active_state', {
-        deactivate
+        deactivate: deactivateFlag
       })
       .catch(() => {
-        if (!deactivate) {
+        if (!deactivateFlag) {
           showToast()
         }
       })
@@ -112,30 +112,31 @@ export const useActiveState = () => {
 
   const onPresenceChange = (presence: PresenceType) => {
     if (presence.type === 'active' && !isActive) {
-      updateUserActiveState().then(activate)
+      updateUserActiveState(false).then(activate)
     } else if (presence.type === 'idle' && isActive) {
       updateUserActiveState(true).then(deactivate)
     }
   }
 
-  useIdleTimer({ onPresenceChange, timeout: 1000 * 60 * 10 })
+  useIdleTimer({
+    onPresenceChange,
+    timeout: 1000 * 60 * 10 // 10 phút
+  })
 
   useEffect(() => {
-    // Update user availability when the app is opened
+    // Lần đầu vào app → set active
     updateUserActiveState(false)
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
-        // Nếu chưa gọi, set debounce
         if (!didCallWhenVisible.current && !debounceTimer.current) {
           debounceTimer.current = setTimeout(() => {
-            updateUserActiveState().then(activate)
+            updateUserActiveState(false).then(activate)
             didCallWhenVisible.current = true
             debounceTimer.current = null
-          }, 300) // 300ms debounce khi tab visible
+          }, 300)
         }
       } else {
-        // Khi hidden → set flag lại + clear debounce nếu có
         updateUserActiveState(true).then(deactivate)
         didCallWhenVisible.current = false
         if (debounceTimer.current) {
@@ -145,11 +146,22 @@ export const useActiveState = () => {
       }
     }
 
+    const handleBeforeUnload = () => {
+      // Dùng sendBeacon vì browser sẽ không chờ API promise khi đóng tab
+      navigator.sendBeacon(
+        '/api/method/raven.api.user_availability.refresh_user_active_state',
+        JSON.stringify({ deactivate: true })
+      )
+    }
+
     document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('beforeunload', handleBeforeUnload)
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
-      updateUserActiveState(true)
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+
+      updateUserActiveState(true) // khi component unmount (ví dụ hot reload)
       if (debounceTimer.current) {
         clearTimeout(debounceTimer.current)
         debounceTimer.current = null

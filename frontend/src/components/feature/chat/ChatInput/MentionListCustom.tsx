@@ -1,19 +1,19 @@
-import React, { useContext, useMemo, useCallback, useEffect, useRef } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import useSWRInfinite from 'swr/infinite'
-import { RavenChannel } from '@/types/RavenChannelManagement/RavenChannel'
-import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
-import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
-import { Box, Text, Flex } from '@radix-ui/themes'
-import BeatLoader from '@/components/layout/Loaders/BeatLoader'
-import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { UserAvatar } from '@/components/common/UserAvatar'
-import { BiMessageAltDetail } from 'react-icons/bi'
-import { LuAtSign } from 'react-icons/lu'
-import parse from 'html-react-parser'
-import { getTimePassed } from '@/utils/dateConversions'
+import BeatLoader from '@/components/layout/Loaders/BeatLoader'
 import { HStack } from '@/components/layout/Stack'
 import { useGetUser } from '@/hooks/useGetUser'
+import { RavenChannel } from '@/types/RavenChannelManagement/RavenChannel'
+import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
+import { getTimePassed } from '@/utils/dateConversions'
+import { ChannelIcon } from '@/utils/layout/channelIcon'
+import { Box, Flex, Text } from '@radix-ui/themes'
+import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
+import parse from 'html-react-parser'
+import React, { useCallback, useContext, useEffect, useMemo, useRef } from 'react'
+import { BiMessageAltDetail } from 'react-icons/bi'
+import { LuAtSign } from 'react-icons/lu'
+import { Link, useParams } from 'react-router-dom'
+import useSWRInfinite from 'swr/infinite'
 
 interface MentionObject {
   name: string
@@ -88,7 +88,7 @@ const MentionsList: React.FC = () => {
   }
 
   return (
-    <ul role='list' className='list-none h-[380px] overflow-y-auto'>
+    <ul role='list' className='list-none h-full overflow-y-auto scrollbar-hide'>
       {mentions.map((mention) => (
         <li key={mention.name} className='border-b border-gray-4 last:border-0'>
           <MentionItem mention={mention} workspaceID={workspaceID} />
@@ -148,7 +148,10 @@ const ChannelContext: React.FC<{ mention: MentionObject }> = ({ mention }) => {
             </HStack>
           ) : mention.is_direct_message ? null : (
             <HStack className='ml-auto' gap='0.5' align='center'>
-              <ChannelIcon type={mention.channel_type} size={14} /> {mention.channel_name}
+              <ChannelIcon type={mention.channel_type} size={14} />
+              <Text size='1' weight='medium'>
+                {mention.channel_name}
+              </Text>
             </HStack>
           )}
         </HStack>

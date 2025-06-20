@@ -1,15 +1,24 @@
 import { useTheme } from '@/ThemeProvider'
+import { UserAvatar } from '@/components/common/UserAvatar'
 import { commandMenuOpenAtom } from '@/components/feature/CommandMenu/CommandMenu'
-import { useIsDesktop } from '@/hooks/useMediaQuery'
-import { useSidebarMode } from '@/utils/layout/sidebar'
-import { __ } from '@/utils/translations'
-import { Box, Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
-import { useSetAtom } from 'jotai'
-import { BiMoon, BiSun } from 'react-icons/bi'
-import { TbSearch } from 'react-icons/tb'
 import { CreateChannelButton } from '@/components/feature/channels/CreateChannelModal'
 import { CreateLabelButton } from '@/components/feature/labels/CreateLabelModal'
+import { SetUserAvailabilityMenu } from '@/components/feature/userSettings/AvailabilityStatus/SetUserAvailabilityMenu'
+import PushNotificationToggle from '@/components/feature/userSettings/PushNotifications/PushNotificationToggle'
+import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
+import { useIsUserActive } from '@/hooks/useIsUserActive'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { useUserData } from '@/hooks/useUserData'
+import { UserContext } from '@/utils/auth/UserProvider'
+import { useSidebarMode } from '@/utils/layout/sidebar'
+import { __ } from '@/utils/translations'
+import { Box, DropdownMenu, Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
+import { useSetAtom } from 'jotai'
+import { useContext } from 'react'
+import { BiMoon, BiSun } from 'react-icons/bi'
 import { LuSettings } from 'react-icons/lu'
+import { MdOutlineExitToApp } from 'react-icons/md'
+import { TbSearch } from 'react-icons/tb'
 import { useNavigate } from 'react-router-dom'
 
 function isLabelObject(val: unknown): val is { labelId: string; labelName: string } {
@@ -20,6 +29,10 @@ export const SidebarHeader = () => {
   const isDesktop = useIsDesktop()
   const { mode, title, labelID } = useSidebarMode()
   const navigate = useNavigate()
+  const userData = useUserData()
+  const { logout } = useContext(UserContext)
+  const { myProfile } = useCurrentRavenUser()
+  const isActive = useIsUserActive(userData.name)
 
   const isLabelMode = title === 'Nhãn' || !!labelID
   if (isDesktop) {
@@ -49,6 +62,37 @@ export const SidebarHeader = () => {
           raven
         </Text>
         <Flex align='center' gap='4' className='pr-1 sm:pr-0'>
+          <Box className='mt-2'>
+            <DropdownMenu.Root>
+              <Tooltip content='Options' side='right'>
+                <DropdownMenu.Trigger>
+                  <IconButton
+                    aria-label='Options'
+                    color='gray'
+                    variant='ghost'
+                    className='p-0 bg-transparent hover:bg-transparent'
+                  >
+                    <UserAvatar
+                      src={myProfile?.user_image}
+                      alt={myProfile?.full_name}
+                      size='1'
+                      className='hover:shadow-sm transition-all duration-200'
+                      availabilityStatus={myProfile?.availability_status}
+                      isActive={isActive}
+                    />
+                  </IconButton>
+                </DropdownMenu.Trigger>
+              </Tooltip>
+              <DropdownMenu.Content variant='soft'>
+                <SetUserAvailabilityMenu />
+                <PushNotificationToggle />
+                <DropdownMenu.Separator />
+                <DropdownMenu.Item color='red' className={'flex justify-normal gap-2'} onClick={logout}>
+                  <MdOutlineExitToApp size='14' /> {__('Log Out')}
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
+          </Box>
           <IconButton
             aria-label='Settings'
             size='2'

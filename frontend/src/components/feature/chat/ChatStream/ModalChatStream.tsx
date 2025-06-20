@@ -179,14 +179,14 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       messages,
       hasOlderMessages,
       loadOlderMessages,
-      goToLatestMessages,
+      // goToLatestMessages,
       hasNewMessages,
       error,
       loadNewerMessages,
       isLoading,
       highlightedMessage,
       scrollToMessage,
-      newMessageCount,
+      // newMessageCount,
       newMessageIds,
       markMessageAsSeen,
       clearAllNewMessages
@@ -258,8 +258,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
 
     const { name: userID } = useUserData()
     const { seenUsers } = useChannelSeenUsers({
-      channelId: channelID,
-      messages
+      channelId: channelID
     })
     const { channel } = useCurrentChannelData(channelID)
 
@@ -430,7 +429,6 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
       }),
       [renderState.isInitialLoadComplete, hasOlderMessages, hasNewMessages, Header, Footer]
     )
-
 
     const computeItemKey = useCallback((index: number, item: any) => {
       return item?.name ?? `fallback-${index}`
