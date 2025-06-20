@@ -14,7 +14,7 @@ import ChannelItem from './ChannelItem'
 
 const UserChannelList = () => {
   const { dm_channels } = useChannelList()
-  const { users } = useContext(UserListContext)
+  const { enabledUsers: users } = useContext(UserListContext)
 
   const usersWithoutChannels = users?.filter(
     (user) => !dm_channels.find((channel) => channel.peer_user_id === user.name)

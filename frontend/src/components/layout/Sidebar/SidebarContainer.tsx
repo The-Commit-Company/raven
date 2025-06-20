@@ -1,4 +1,4 @@
-import { useSidebarMode, useUnreadContext } from '@/utils/layout/sidebar'
+import { useSidebarMode } from '@/utils/layout/sidebar'
 import { Tooltip } from '@radix-ui/themes'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
@@ -18,11 +18,10 @@ import {
 } from 'react-icons/hi'
 
 import { CreateLabelButton } from '@/components/feature/labels/CreateLabelModal'
-import LabelList from '@/components/feature/labels/LabelListSidebar' // đường dẫn đúng
-import { sortedChannelsAtom, useEnrichedChannels } from '@/utils/channel/ChannelAtom'
+import LabelList from '@/components/feature/labels/LabelListSidebar'
+import { useEnrichedSortedChannels } from '@/utils/channel/ChannelAtom'
 import clsx from 'clsx'
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
-import { useAtomValue } from 'jotai'
 import { FiChevronDown, FiChevronRight } from 'react-icons/fi'
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -64,7 +63,7 @@ export const filterItems = [
 ]
 
 export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.RefObject<any> }) {
-  const enrichedChannels = useEnrichedChannels()
+  const enrichedChannels = useEnrichedSortedChannels()
 
   const labelChannelsUnreadCount = useMemo(() => {
     const seen = new Set<string>()
@@ -122,10 +121,10 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
           </span>
           {!isCollapsed && !isIconOnly && <span className='text-base'>Bộ lọc</span>}
         </div>
-
+        {/* 
         {tempMode === 'default' && (
           <HiOutlineCog className='w-5 h-5 pr-3 cursor-pointer hover:text-gray-900 dark:hover:text-white' />
-        )}
+        )} */}
       </div>
 
       {tempMode === 'default' && <FilterList />}
@@ -142,20 +141,16 @@ export function FilterList({ onClose }: { onClose?: () => void }) {
   const isIconOnly = tempMode === 'show-only-icons'
 
   const { mentionUnreadCount, resetMentions } = useMentionUnreadCount()
-  const enrichedChannels = useEnrichedChannels()
-
-  const sortedChannels = useAtomValue(sortedChannelsAtom)
-  const unreadContext = useUnreadContext()
+  const enrichedChannels = useEnrichedSortedChannels()
 
   const totalUnreadCountFiltered = useMemo(() => {
-    return unreadContext.message.reduce((sum, c) => {
-      const isDone = sortedChannels.find((ch) => ch.name === c.name)?.is_done === 1
-      if (!isDone) {
+    return enrichedChannels.reduce((sum, c) => {
+      if (c.is_done === 0) {
         return sum + (c.unread_count ?? 0)
       }
       return sum
     }, 0)
-  }, [unreadContext, sortedChannels])
+  }, [enrichedChannels])
 
   const labelChannelsUnreadCount = useMemo(() => {
     const seen = new Set<string>()
@@ -290,7 +285,7 @@ export function FilterList({ onClose }: { onClose?: () => void }) {
                   marginRight: isIconOnly ? '0px' : '1rem'
                 }}
               >
-                {badgeCount > 9 ? '9+' : badgeCount}
+                {badgeCount > 99 ? '99+' : badgeCount}
               </span>
             )}
           </li>

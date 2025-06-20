@@ -3,16 +3,16 @@ import { UserAvatar } from '@/components/common/UserAvatar'
 import { useGetUser } from '@/hooks/useGetUser'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { Box, ContextMenu, Flex, Text, Tooltip } from '@radix-ui/themes'
-import { useContext } from 'react'
+import { useCallback, useContext, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { UserContext } from '../../../utils/auth/UserProvider'
 
 import { ChannelWithUnreadCount, DMChannelWithUnreadCount } from '@/components/layout/Sidebar/useGetChannelUnreadCounts'
 import { useChannelActions } from '@/hooks/useChannelActions'
 import { useChannelDone } from '@/hooks/useChannelDone'
-import { useIsDesktop, useIsTablet } from '@/hooks/useMediaQuery'
+import { useIsDesktop, useIsLaptop, useIsTablet } from '@/hooks/useMediaQuery'
 import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
-import { useEnrichedChannels } from '@/utils/channel/ChannelAtom'
+import { useEnrichedSortedChannels } from '@/utils/channel/ChannelAtom'
 import { formatLastMessage } from '@/utils/channel/useFormatLastMessage'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { useSidebarMode } from '@/utils/layout/sidebar'
@@ -30,7 +30,7 @@ import { MessageSaved } from './DirectMessageSaved'
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
 
 export const DirectMessageList = () => {
-  const enriched = useEnrichedChannels()
+  const enriched = useEnrichedSortedChannels(0)
 
   return (
     <SidebarGroup pb='4'>
@@ -65,7 +65,7 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
 
     return (
       <>
-        {channel_list.map((channel: DMChannelWithUnreadCount) => (
+        {filtered.map((channel: DMChannelWithUnreadCount) => (
           <DirectMessageItem key={channel.name} dm_channel={channel} />
         ))}
       </>
@@ -136,6 +136,7 @@ const truncateText = (text: string, maxLength: number) => {
 }
 
 export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel }) => {
+  const isLaptop = useIsLaptop()
   const isTablet = useIsTablet()
   const isDesktop = useIsDesktop()
   const { currentUser } = useContext(UserContext)
@@ -144,6 +145,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   const manuallyMarked = useAtomValue(manuallyMarkedAtom)
   const { clearManualMark } = useChannelActions()
   const { markAsDone, markAsNotDone } = useChannelDone()
+
   const isChannelDone = channel.is_done === 1
 
   const isGroupChannel = !channel.is_direct_message && !channel.is_self_message
@@ -158,8 +160,8 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
     return null
   }
 
-  // Parse người gửi cuối cùng
-  const lastOwner = (() => {
+  // Parse người gửi cuối cùng — dùng useMemo để tránh parse lại nhiều lần
+  const lastOwner = useMemo(() => {
     try {
       const raw =
         typeof channel.last_message_details === 'string'
@@ -169,7 +171,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
     } catch {
       return ''
     }
-  })()
+  }, [channel.last_message_details])
 
   const user = useGetUser(lastOwner)
   const formattedMessage = formatLastMessage(channel, currentUser, user?.full_name)
@@ -180,14 +182,15 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
       : `${peerUser.full_name} (You)`
     : channel.channel_name || channel.name
 
-  const displayName = truncateText(rawName, 30)
+  const truncateLength = isLaptop ? 20 : 28
+  const displayName = truncateText(rawName, truncateLength)
 
   const shouldShowBadge = channel.unread_count > 0 || isManuallyMarked
 
-  const handleNavigate = () => {
+  const handleNavigate = useCallback(() => {
     navigate(`/${workspaceID}/${channel.name}`)
     clearManualMark(channel.name)
-  }
+  }, [workspaceID, channel.name, clearManualMark, navigate])
 
   const bgClass = `
     ${isSelectedChannel ? 'bg-gray-300 dark:bg-gray-700' : ''}
@@ -212,7 +215,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
           )}
           {shouldShowBadge && (
             <SidebarBadge className='absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-[14px] h-[14px] text-[8px] rounded-full bg-red-500 text-white flex items-center justify-center'>
-              {channel.unread_count}
+              {channel.unread_count > 99 ? '99+' : channel.unread_count}
             </SidebarBadge>
           )}
         </Box>
