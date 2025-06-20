@@ -31,6 +31,7 @@ export const useChannelSeenUsers = ({ channelId }: { channelId: string }) => {
 
   const seenUsersRef = useRef<any[]>([])
   const pendingSeenUpdate = useRef(false)
+  const hasUnreadWhileHidden = useRef(false)
 
   const fetchSeenUsers = useCallback(async () => {
     if (!channelId || pendingSeenUpdate.current) return
@@ -63,6 +64,8 @@ export const useChannelSeenUsers = ({ channelId }: { channelId: string }) => {
     }, 1500),
     [channelId, trackSeenCall]
   )
+
+  const isTabActive = () => !document.hidden && document.visibilityState === 'visible'
 
   const updateSeenUserFromSocket = useCallback(
     (data: any) => {
@@ -106,6 +109,34 @@ export const useChannelSeenUsers = ({ channelId }: { channelId: string }) => {
 
   // SOCKET: update khi có người seen
   useFrappeEventListener('raven:channel_seen_updated', updateSeenUserFromSocket)
+
+  // SOCKET: khi có tin nhắn mới
+  useFrappeEventListener('new_message', (data: any) => {
+    if (data.channel_id === channelId && data.user !== currentUser) {
+      if (isTabActive()) {
+        trackSeen()
+      } else {
+        hasUnreadWhileHidden.current = true
+      }
+    }
+  })
+
+  // HANDLE visibility change
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (isTabActive() && hasUnreadWhileHidden.current) {
+        hasUnreadWhileHidden.current = false
+        trackSeen()
+        fetchSeenUsers()
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('focus', handleVisibilityChange)
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', handleVisibilityChange)
+    }
+  }, [trackSeen, fetchSeenUsers])
 
   return {
     seenUsers,
