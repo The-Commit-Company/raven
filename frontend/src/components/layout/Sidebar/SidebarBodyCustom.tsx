@@ -11,7 +11,7 @@ import { prepareSortedChannels, setSortedChannelsAtom } from '@/utils/channel/Ch
 export const SidebarBody = () => {
   const { channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
 
-  // console.log(channels, dm_channels);
+  console.log(channels, dm_channels);
 
   const setSortedChannels = useSetAtom(setSortedChannelsAtom)
   useEffect(() => {
@@ -24,7 +24,7 @@ export const SidebarBody = () => {
         const old = prevMap.get(channel.name)
         return {
           ...channel,
-          is_done: old?.is_done ?? channel.is_done ?? 0,
+          is_done: channel.is_done ?? old?.is_done ?? 0,
           user_labels: old?.user_labels?.length ? old.user_labels : (channel.user_labels ?? []),
           last_message_content: old?.last_message_content ?? channel.last_message_content,
           last_message_sender_name: old?.last_message_sender_name ?? channel.last_message_sender_name,
