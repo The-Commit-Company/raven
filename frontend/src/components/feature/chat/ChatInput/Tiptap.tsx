@@ -1,46 +1,47 @@
-import { BubbleMenu, Editor, EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
-import Underline from '@tiptap/extension-underline'
-import React, { Suspense, forwardRef, lazy, useContext, useEffect, useImperativeHandle, useMemo, useRef } from 'react'
-import { TextFormattingMenu } from './TextFormattingMenu'
-import Highlight from '@tiptap/extension-highlight'
-import Link from '@tiptap/extension-link'
-import Placeholder from '@tiptap/extension-placeholder'
-import './tiptap.styles.css'
-import Mention from '@tiptap/extension-mention'
-import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
-import MentionList from './MentionList'
-import tippy from 'tippy.js'
-import { PluginKey } from '@tiptap/pm/state'
+import { ChannelMembers } from '@/hooks/fetchers/useFetchChannelMembers'
+import { useChannelSeenUsers } from '@/hooks/useChannelSeenUsers'
+import { useIsDesktop, useIsMobile } from '@/hooks/useMediaQuery'
+import { useStickyState } from '@/hooks/useStickyState'
+import { useUpdateUnreadCountToZero } from '@/hooks/useUnreadMessageCount'
+import { UserContext } from '@/utils/auth/UserProvider'
 import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
-import ChannelMentionList from './ChannelMentionList'
-import { ToolPanel } from './ToolPanel'
-import { RightToolbarButtons, SendButton } from './RightToolbarButtons'
-import { common, createLowlight } from 'lowlight'
+import { EnterKeyBehaviourAtom } from '@/utils/preferences'
+import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
+import { Box, Flex, IconButton } from '@radix-ui/themes'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import Highlight from '@tiptap/extension-highlight'
+import Image from '@tiptap/extension-image'
+import Link from '@tiptap/extension-link'
+import Mention from '@tiptap/extension-mention'
+import Placeholder from '@tiptap/extension-placeholder'
+import Underline from '@tiptap/extension-underline'
+import { PluginKey } from '@tiptap/pm/state'
+import { BubbleMenu, EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import clsx from 'clsx'
+import { useFrappeEventListener, useFrappePostCall } from 'frappe-react-sdk'
 import css from 'highlight.js/lib/languages/css'
 import js from 'highlight.js/lib/languages/javascript'
-import ts from 'highlight.js/lib/languages/typescript'
-import html from 'highlight.js/lib/languages/xml'
 import json from 'highlight.js/lib/languages/json'
 import python from 'highlight.js/lib/languages/python'
-import { Plugin } from 'prosemirror-state'
-import { Box, Flex, IconButton } from '@radix-ui/themes'
-import { useStickyState } from '@/hooks/useStickyState'
-import { Message } from '../../../../../../types/Messaging/Message'
-import Image from '@tiptap/extension-image'
-import { EmojiSuggestion } from './EmojiSuggestion'
-import { useIsDesktop, useIsMobile } from '@/hooks/useMediaQuery'
-import { BiPlus } from 'react-icons/bi'
-import clsx from 'clsx'
-import { ChannelMembers } from '@/hooks/fetchers/useFetchChannelMembers'
-import TimestampRenderer from '../ChatMessage/Renderers/TiptapRenderer/TimestampRenderer'
-import { useParams } from 'react-router-dom'
+import ts from 'highlight.js/lib/languages/typescript'
+import html from 'highlight.js/lib/languages/xml'
 import { useAtom } from 'jotai'
-import { EnterKeyBehaviourAtom } from '@/utils/preferences'
-import { useFrappePostCall } from 'frappe-react-sdk'
-import { useUnreadContext } from '@/utils/layout/sidebar'
-import { useUpdateUnreadCountToZero } from '@/hooks/useUnreadMessageCount'
+import { common, createLowlight } from 'lowlight'
+import { Plugin } from 'prosemirror-state'
+import React, { Suspense, forwardRef, lazy, useContext, useEffect, useImperativeHandle, useRef } from 'react'
+import { BiPlus } from 'react-icons/bi'
+import { useParams } from 'react-router-dom'
+import tippy from 'tippy.js'
+import { Message } from '../../../../../../types/Messaging/Message'
+import TimestampRenderer from '../ChatMessage/Renderers/TiptapRenderer/TimestampRenderer'
+import ChannelMentionList from './ChannelMentionList'
+import { EmojiSuggestion } from './EmojiSuggestion'
+import MentionList from './MentionList'
+import { RightToolbarButtons, SendButton } from './RightToolbarButtons'
+import { TextFormattingMenu } from './TextFormattingMenu'
+import './tiptap.styles.css'
+import { ToolPanel } from './ToolPanel'
 const MobileInputActions = lazy(() => import('./MobileActions/MobileInputActions'))
 
 const lowlight = createLowlight(common)
@@ -133,18 +134,35 @@ const Tiptap = forwardRef(
   ) => {
     const { enabledUsers } = useContext(UserListContext)
 
+    const { currentUser } = useContext(UserContext)
+
     const channelMembersRef = useRef<MemberSuggestions[]>([])
+
+    const { refetchWithTrackSeen } = useChannelSeenUsers({
+      channelId: channelID || ''
+    })
     const { call: trackVisit } = useFrappePostCall('raven.api.raven_channel_member.track_visit')
+
     const updateUnreadCountToZero = useUpdateUnreadCountToZero()
 
-    const handleClick = async () => {
+    const handleClickFocus = async () => {
+      if (!hasUnreadAndAwaitingClickRef.current) return
       try {
+        await refetchWithTrackSeen()
         await trackVisit({ channel_id: channelID })
         updateUnreadCountToZero(channelID)
-      } catch (err) {
-        console.error('trackVisit failed', err)
+        hasUnreadAndAwaitingClickRef.current = false
+      } catch (error) {
+        console.error('Error updating seen info', error)
       }
     }
+
+    const hasUnreadAndAwaitingClickRef = useRef(false)
+    useFrappeEventListener('raven:new_message', (data: any) => {
+      if (data.channel_id === channelID && data.user !== currentUser) {
+        hasUnreadAndAwaitingClickRef.current = true
+      }
+    })
 
     useEffect(() => {
       if (channelMembers) {
@@ -646,7 +664,10 @@ const Tiptap = forwardRef(
     }
 
     return (
-      <Box onClick={handleClick} className='border rounded-radius2 border-gray-300 dark:border-gray-500 dark:bg-gray-3'>
+      <Box
+        onClick={handleClickFocus}
+        className='border rounded-radius2 border-gray-300 dark:border-gray-500 dark:bg-gray-3'
+      >
         <EditorContext.Provider value={{ editor }}>
           {slotBefore}
           <EditorContent editor={editor} />

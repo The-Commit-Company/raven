@@ -17,7 +17,8 @@ dependencies = [
  "pandas",
  "openpyxl",
  "xlrd",
- "python-pptx"
+ "python-pptx",
+ "tiktoken"
 ]
 
 [build-system]

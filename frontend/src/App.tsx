@@ -57,9 +57,9 @@ function App() {
       socketPort={import.meta.env.VITE_SOCKET_PORT ? import.meta.env.VITE_SOCKET_PORT : undefined}
       //@ts-ignore
       swrConfig={{
-        dedupingInterval: 10000, // 10s không fetch lại cùng key
+        dedupingInterval: 60000,
         revalidateOnFocus: false,
-        keepPreviousData: true, // giữ dữ liệu cũ khi chuyển channel
+        keepPreviousData: true,
         provider: localStorageProvider
       }}
       siteName={getSiteName()}

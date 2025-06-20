@@ -19,6 +19,8 @@ def upload_file_with_message():
         frappe.throw(_("Không có file đính kèm"))
 
     try:
+        # Đặt savepoint để rollback nếu lỗi
+        frappe.db.savepoint("before_upload")
         # Tạo bản ghi ChatMessage (tạm thời chưa có file_url)
         message_doc = frappe.get_doc({
             "doctype": "ChatMessage",
@@ -51,7 +53,12 @@ def upload_file_with_message():
         frappe.logger().info(f"[UPLOAD_WITH_MESSAGE] ChatMessage đã tạo: {message_doc.name}, File: {file_doc.file_url}")
 
         # Gọi AI trả lời
-        frappe.enqueue("raven.api.chatbot.handle_ai_reply", conversation_id=conversation_id, now=False)
+        frappe.enqueue(
+            "raven.api.chatbot.handle_ai_reply",
+            conversation_id=conversation_id,
+            now=False,
+            enqueue_after_commit=True
+        )
 
         return {
             "message": message_doc.name,
@@ -59,5 +66,7 @@ def upload_file_with_message():
         }
 
     except Exception as e:
+        # Rollback lại bản ghi ChatMessage
+        frappe.db.rollback(save_point="before_upload")
         frappe.log_error(f"{str(e)}", "upload_file_with_message FAILED")
         frappe.throw(_("Có lỗi xảy ra khi gửi file đính kèm"))

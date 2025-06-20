@@ -12,9 +12,7 @@ from frappe.utils import get_files_path
 from PyPDF2 import PdfReader
 import docx
 import pandas as pd
-
-# Constants
-CONTEXT_LIMIT = 20  # số tin nhắn gần nhất để gửi cho AI
+import tiktoken
 
 # Helper: Tạo tin nhắn
 def create_message(conversation_id, message, is_user=True, message_type="Text", file=None):
@@ -60,42 +58,61 @@ def extract_text_from_file(file_url):
     return "[Định dạng file không hỗ trợ]"
 
 # Helper: Xây dựng context từ các tin nhắn gần nhất
-def build_context(conversation_id):
-    # Đảm bảo database được commit trước khi query
+def build_context(conversation_id, model="gpt-3.5-turbo"):
+    MAX_TOTAL_TOKENS = 3000
+    MAX_FILE_TOKENS = 1000
+    MAX_MESSAGE_COUNT = 50
+
+    try:
+        encoding = tiktoken.encoding_for_model(model)
+    except:
+        encoding = tiktoken.get_encoding("cl100k_base")
+
+    def token_len(text):
+        return len(encoding.encode(text or ""))
+
     frappe.db.commit()
 
     messages = frappe.get_all(
         "ChatMessage",
         filters={"parent": conversation_id},
-        fields=["sender", "is_user", "message", "timestamp", "file"],
+        fields=["sender", "is_user", "message", "timestamp", "file", "message_type"],
         order_by="timestamp desc",
-        limit_page_length=CONTEXT_LIMIT
+        limit_page_length=MAX_MESSAGE_COUNT
     )[::-1]
 
-    if not messages:
-        frappe.log_error(
-            f"[BUILD_CONTEXT] Không tìm thấy messages cho conversation_id={conversation_id}",
-            "Build Context - No Messages"
-        )
-        return []
-
     context = []
+    total_tokens = 0
+
     for msg in messages:
         content = msg.message or ""
 
+        # Nếu có file → trích nội dung
         if msg.file:
-            file_text = extract_text_from_file(msg.file)
-            content += f"\n\n[Nội dung file đính kèm:]\n{file_text or '[Không có nội dung từ file]'}"
+            file_text = extract_text_from_file(msg.file) or ""
+            file_tokens = token_len(file_text)
 
-        if content.strip():
-            context.append({
-                "role": "user" if msg.is_user else "assistant",
-                "content": content
-            })
+            if file_tokens == 0:
+                continue
+            elif file_tokens > MAX_FILE_TOKENS:
+                content += "\n\n[Nội dung file quá dài, đã bị lược bỏ]"
+            else:
+                content += f"\n\n[Nội dung file đính kèm:]\n{file_text.strip()}"
+
+        msg_tokens = token_len(content)
+
+        if total_tokens + msg_tokens > MAX_TOTAL_TOKENS:
+            continue
+
+        total_tokens += msg_tokens
+        context.append({
+            "role": "user" if msg.is_user else "assistant",
+            "content": content.strip()
+        })
 
     frappe.log_error(
-        f"[BUILD_CONTEXT] conversation_id={conversation_id}, messages_count={len(messages)}, context_count={len(context)}",
-        "Build Context - Debug Info"
+        f"[BUILD_CONTEXT] conversation_id={conversation_id}, messages={len(messages)}, context={len(context)}, tokens={total_tokens}",
+        "Build Context - Token Accurate"
     )
 
     return context
@@ -185,22 +202,23 @@ def send_message(conversation_id, message, is_user=True, message_type="Text", fi
 
 def handle_ai_reply(conversation_id):
     try:
-        # Retry mechanism cho build_context
-        max_retries = 3
+        max_retries = 5
+        delay_base = 1
         context = []
 
         for attempt in range(max_retries):
+            if attempt > 0:
+                time.sleep(delay_base * attempt)
+
             context = build_context(conversation_id)
 
             if context:
                 break
 
-            if attempt < max_retries - 1:
-                frappe.log_error(
-                    f"[AI RETRY] Attempt {attempt + 1}/{max_retries} - context rỗng, đang retry...",
-                    "AI Handler - Retry Context"
-                )
-                time.sleep(1)  # Chờ 1 giây trước khi retry
+            frappe.log_error(
+                f"[AI RETRY] Attempt {attempt + 1}/{max_retries} - context rỗng",
+                "AI Handler - Retry Context"
+            )
 
         if not context:
             frappe.log_error(
@@ -228,6 +246,7 @@ def handle_ai_reply(conversation_id):
             f"Error handling AI reply:\n{str(e)}\n{traceback.format_exc()}",
             "AI Handler Error"
         )
+
 
 
 @frappe.whitelist()

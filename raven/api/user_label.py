@@ -9,6 +9,9 @@ def create_label(label):
     if not label:
         frappe.throw(_("Missing label"))
 
+    if len(label) > 60:
+        frappe.throw(_("Label must not exceed 60 characters"))
+
     # Kiểm tra xem user đã có nhãn này chưa
     existing = frappe.db.exists("User Label", {
         "label": label,

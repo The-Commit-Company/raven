@@ -17,7 +17,7 @@ interface CreateLabelForm {
 }
 
 const DIALOG_CONTENT_CLASS =
-  'z-[300] bg-white dark:bg-gray-900 rounded-xl p-6 shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto'
+  'z-[300] bg-white dark:bg-gray-900 rounded-xl p-6 shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto'
 
 export const CreateLabelButton = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -160,19 +160,29 @@ export const CreateLabelContent = ({ setIsOpen }: { isOpen: boolean; setIsOpen: 
             control={control}
             rules={{
               required: 'Vui lòng nhập tên nhãn',
-              maxLength: { value: 50, message: 'Tên nhãn không quá 50 ký tự' }
+              maxLength: { value: 60, message: 'Tên nhãn không quá 60 ký tự' }
             }}
             render={({ field, fieldState: { error } }) => (
-              <TextField.Root
-                id='label'
-                placeholder='Vui lòng nhập tên nhãn'
-                required
-                color={error ? 'red' : undefined}
-                {...field}
-              />
+              <>
+                <TextField.Root
+                  id='label'
+                  placeholder='Vui lòng nhập tên nhãn'
+                  required
+                  color={error ? 'red' : undefined}
+                  maxLength={60} // ✅ Giới hạn nhập tối đa 60 ký tự
+                  {...field}
+                />
+                <Flex justify='between' mt='1'>
+                  {errors.label ? (
+                    <div className='text-red-500 text-sm'>{errors.label.message}</div>
+                  ) : (
+                    <div className='text-transparent text-sm'>Ẩn</div>
+                  )}
+                  <div className='text-sm text-gray-500'>{labelValue.length}/60</div>
+                </Flex>
+              </>
             )}
           />
-          {errors.label && <div className='text-red-500 text-sm pt-1'>{errors.label.message}</div>}
         </Box>
 
         <Flex justify='between' align='center'>

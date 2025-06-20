@@ -65,7 +65,6 @@ html header {
 html header button {
   -webkit-app-region: no-drag;
 }
-
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
@@ -108,17 +107,6 @@ html header button {
     https://github.com/tailwindlabs/tailwindcss/pull/5732
 */
 @layer utilities {
-  /* Chrome, Safari and Opera */
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    /* IE and Edge */
-    scrollbar-width: none;
-    /* Firefox */
-  }
   @keyframes slideInLeft {
     from {
       z-index: -1;
@@ -210,4 +198,25 @@ html header button {
   to {
     opacity: 1;
   }
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar:horizontal {
+  display: none;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }

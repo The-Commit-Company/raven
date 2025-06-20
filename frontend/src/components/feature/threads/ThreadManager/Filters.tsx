@@ -13,7 +13,7 @@ export const SearchFilter = ({ search, setSearch }: { search: string; setSearch:
         placeholder='Search threads...'
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className='sm:min-w-64'
+        className='w-full'
       >
         <TextField.Slot>
           <BiSearch size={16} />
@@ -26,11 +26,11 @@ export const SearchFilter = ({ search, setSearch }: { search: string; setSearch:
 export const ChannelFilter = ({ channel, setChannel }: { channel: string; setChannel: (channel: string) => void }) => {
   const { channels } = useChannelList()
   return (
-    <div>
+    <div className='w-full'>
       <Select.Root value={channel} onValueChange={setChannel}>
-        <Select.Trigger placeholder='Channel / DM' className='sm:min-w-48' />
+        <Select.Trigger placeholder='Channel / DM' className='w-full' />
         <Select.Content className='z-50'>
-          <Select.Item value='all'>Bất kỳ kênh nào</Select.Item>
+          <Select.Item value='all'>Tất cả</Select.Item>
           {channels.map((channel) => (
             <Select.Item key={channel.name} value={channel.name}>
               <div className='gap-1 items-center flex overflow-hidden'>
