@@ -13,9 +13,6 @@ from PyPDF2 import PdfReader
 import docx
 import pandas as pd
 
-# Constants
-CONTEXT_LIMIT = 20  # số tin nhắn gần nhất để gửi cho AI
-
 # Helper: Tạo tin nhắn
 def create_message(conversation_id, message, is_user=True, message_type="Text", file=None):
     message_id = str(uuid.uuid4())
@@ -61,15 +58,21 @@ def extract_text_from_file(file_url):
 
 # Helper: Xây dựng context từ các tin nhắn gần nhất
 def build_context(conversation_id):
+    # Cấu hình
+    MAX_CONTEXT_TOKENS = 3000
+    MAX_FILE_TOKENS = 1000
+    MAX_MESSAGE_COUNT = 50
+
     # Đảm bảo database được commit trước khi query
     frappe.db.commit()
 
+    # Lấy tin nhắn mới nhất
     messages = frappe.get_all(
         "ChatMessage",
         filters={"parent": conversation_id},
-        fields=["sender", "is_user", "message", "timestamp", "file"],
+        fields=["sender", "is_user", "message", "timestamp", "file", "message_type"],
         order_by="timestamp desc",
-        limit_page_length=CONTEXT_LIMIT
+        limit_page_length=MAX_MESSAGE_COUNT
     )[::-1]
 
     if not messages:
@@ -80,21 +83,34 @@ def build_context(conversation_id):
         return []
 
     context = []
+    total_tokens = 0
+
     for msg in messages:
         content = msg.message or ""
 
         if msg.file:
-            file_text = extract_text_from_file(msg.file)
-            content += f"\n\n[Nội dung file đính kèm:]\n{file_text or '[Không có nội dung từ file]'}"
+            file_text = extract_text_from_file(msg.file) or ""
 
-        if content.strip():
-            context.append({
-                "role": "user" if msg.is_user else "assistant",
-                "content": content
-            })
+            file_tokens = len(file_text) // 4
+            if file_tokens == 0:
+                continue
+            elif file_tokens > MAX_FILE_TOKENS:
+                file_text = f"[Nội dung file quá dài, đã bị lược bỏ]"
+            else:
+                content += f"\n\n[Nội dung file đính kèm:]\n{file_text.strip()}"
+
+        msg_tokens = len(content) // 4
+        if total_tokens + msg_tokens > MAX_CONTEXT_TOKENS:
+            continue
+        total_tokens += msg_tokens
+
+        context.append({
+            "role": "user" if msg.is_user else "assistant",
+            "content": content.strip()
+        })
 
     frappe.log_error(
-        f"[BUILD_CONTEXT] conversation_id={conversation_id}, messages_count={len(messages)}, context_count={len(context)}",
+        f"[BUILD_CONTEXT] conversation_id={conversation_id}, context_count={len(context)}, total_tokens~{total_tokens}",
         "Build Context - Debug Info"
     )
 
@@ -186,21 +202,25 @@ def send_message(conversation_id, message, is_user=True, message_type="Text", fi
 def handle_ai_reply(conversation_id):
     try:
         # Retry mechanism cho build_context
-        max_retries = 3
+        max_retries = 5
+        initial_delay = 1  # giây
         context = []
 
         for attempt in range(max_retries):
+            # Delay tăng dần: 0s, 1s, 2s, 3s,...
+            delay = initial_delay * attempt
+            if delay > 0:
+                time.sleep(delay)
+
             context = build_context(conversation_id)
 
             if context:
                 break
 
-            if attempt < max_retries - 1:
-                frappe.log_error(
-                    f"[AI RETRY] Attempt {attempt + 1}/{max_retries} - context rỗng, đang retry...",
-                    "AI Handler - Retry Context"
-                )
-                time.sleep(1)  # Chờ 1 giây trước khi retry
+            frappe.log_error(
+                f"[AI RETRY] Attempt {attempt + 1}/{max_retries} - context rỗng, retry sau {delay}s...",
+                "AI Handler - Retry Context"
+            )
 
         if not context:
             frappe.log_error(
@@ -209,10 +229,14 @@ def handle_ai_reply(conversation_id):
             )
             return
 
+        # Gọi OpenAI
         ai_reply = call_openai(context)
+
+        # Lưu phản hồi
         chat_message = create_message(conversation_id, ai_reply, is_user=False)
         frappe.db.commit()
 
+        # Gửi realtime về frontend
         frappe.publish_realtime(
             event='raven:new_ai_message',
             message={
@@ -228,6 +252,7 @@ def handle_ai_reply(conversation_id):
             f"Error handling AI reply:\n{str(e)}\n{traceback.format_exc()}",
             "AI Handler Error"
         )
+
 
 
 @frappe.whitelist()
