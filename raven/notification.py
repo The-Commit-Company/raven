@@ -119,6 +119,7 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 
 		data = {
 			"base_url": frappe.utils.get_url(),
+			"message_url": url,
 			"sitename": frappe.local.site,
 			"message_id": message.name,
 			"channel_id": message.channel_id,
@@ -129,6 +130,7 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 			"type": "New message",
 			"is_thread": "1" if channel_doc.is_thread else "0",
 			"creation": get_milliseconds_since_epoch(message.creation),
+			"image": image if image else "",
 		}
 
 		if replied_users:

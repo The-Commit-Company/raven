@@ -46,7 +46,7 @@ export default function useFileUpload(channelID: string) {
     })
   }
 
-  const uploadFiles = async (selectedMessage?: Message | null): Promise<RavenMessage[]> => {
+  const uploadFiles = async (selectedMessage?: Message | null, caption?: string): Promise<RavenMessage[]> => {
     const newFiles = [...filesStateRef.current]
     if (newFiles.length > 0) {
       const promises: Promise<RavenMessage | null>[] = newFiles.map(async (f: CustomFile, index: number) => {
@@ -58,7 +58,8 @@ export default function useFileUpload(channelID: string) {
               channelID: channelID,
               compressImages: compressImages,
               is_reply: index === 0 ? selectedMessage ? 1 : 0 : 0,
-              linked_message: index === 0 ? selectedMessage ? selectedMessage.name : null : null
+              linked_message: index === 0 ? selectedMessage ? selectedMessage.name : null : null,
+              caption: index === 0 && caption ? caption : ""
             },
             fieldname: 'file',
           },

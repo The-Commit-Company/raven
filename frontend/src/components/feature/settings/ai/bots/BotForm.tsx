@@ -3,12 +3,12 @@ import { LuSquareFunction, LuSparkles } from 'react-icons/lu'
 import InstructionField from '../InstructionField'
 import { BiBot, BiCode, BiFile } from 'react-icons/bi'
 import GeneralBotForm from './GeneralBotForm'
-import AIFeaturesBotForm from './AIFeaturesBotForm'
 import BotFunctionsForm from './BotFunctionsForm'
 import { useFormContext } from 'react-hook-form'
 import { RavenBot } from '@/types/RavenBot/RavenBot'
 import BotDocs from './BotDocs'
 import BotFileSources from './BotFileSources'
+import AIFeaturesBotForm from './AIFeaturesBotForm'
 
 const ICON_PROPS = {
     size: 18,
