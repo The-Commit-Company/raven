@@ -19,7 +19,7 @@ import { PluginKey } from '@tiptap/pm/state'
 import { BubbleMenu, EditorContent, EditorContext, Extension, ReactRenderer, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import clsx from 'clsx'
-import { useFrappeEventListener } from 'frappe-react-sdk'
+import { useFrappeEventListener, useFrappePostCall } from 'frappe-react-sdk'
 import css from 'highlight.js/lib/languages/css'
 import js from 'highlight.js/lib/languages/javascript'
 import json from 'highlight.js/lib/languages/json'
@@ -141,13 +141,15 @@ const Tiptap = forwardRef(
     const { refetchWithTrackSeen } = useChannelSeenUsers({
       channelId: channelID || ''
     })
+    const { call: trackVisit } = useFrappePostCall('raven.api.raven_channel_member.track_visit')
 
     const updateUnreadCountToZero = useUpdateUnreadCountToZero()
 
-    const handleClickFocus = () => {
+    const handleClickFocus = async () => {
       if (!hasUnreadAndAwaitingClickRef.current) return
       try {
-        refetchWithTrackSeen()
+        await refetchWithTrackSeen()
+        await trackVisit({ channel_id: channelID })
         updateUnreadCountToZero(channelID)
         hasUnreadAndAwaitingClickRef.current = false
       } catch (error) {
