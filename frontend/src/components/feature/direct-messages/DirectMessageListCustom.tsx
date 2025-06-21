@@ -75,9 +75,6 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
     )
   }
 
-  console.log(channel_list);
-  
-
   // Trường hợp không có nhãn → lọc theo các filter thông thường
   const getFilteredChannels = (): DMChannelWithUnreadCount[] => {
     switch (title) {
