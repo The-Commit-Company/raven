@@ -18,7 +18,7 @@ interface UploadImageModalProps {
 
 export const UploadImageModal = ({
   uploadImage,
-  label = 'Upload Image',
+  label = 'Thay đổi ảnh đại diện',
   doctype,
   docname,
   fieldname,
@@ -74,7 +74,7 @@ export const UploadImageModal = ({
         </Dialog.Close>
         <Button type='button' onClick={uploadFiles} disabled={loading}>
           {loading && <Loader />}
-          {loading ? __('Uploading') : __('Upload')}
+          {loading ? __('Đang tải lên...') : __('Tải lên')}
         </Button>
       </Flex>
     </>

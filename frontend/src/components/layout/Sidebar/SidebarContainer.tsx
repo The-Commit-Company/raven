@@ -1,6 +1,6 @@
 import { useSidebarMode } from '@/utils/layout/sidebar'
 import { Tooltip } from '@radix-ui/themes'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   HiMenuAlt2,
   HiOutlineAtSymbol,
@@ -53,7 +53,7 @@ export const filterItems = [
   { label: 'Đã gắn cờ', icon: HiOutlineFlag },
   { label: 'Nhắc đến', icon: HiOutlineAtSymbol },
   { label: 'Nhãn', icon: HiOutlineTag },
-  { label: 'Cuộc trò chuyện riêng tư', icon: HiOutlineUser },
+  { label: 'Trò chuyện 1-1', icon: HiOutlineUser },
   { label: 'Trò chuyện nhóm', icon: HiOutlineUsers },
   { label: 'Chatbot AI', icon: HiOutlineChip },
   // { label: 'Docs', icon: HiOutlineDocumentText },
@@ -63,21 +63,21 @@ export const filterItems = [
 ]
 
 export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.RefObject<any> }) {
-  const enrichedChannels = useEnrichedSortedChannels()
+  // const enrichedChannels = useEnrichedSortedChannels()
 
-  const labelChannelsUnreadCount = useMemo(() => {
-    const seen = new Set<string>()
-    let total = 0
+  // const labelChannelsUnreadCount = useMemo(() => {
+  //   const seen = new Set<string>()
+  //   let total = 0
 
-    for (const ch of enrichedChannels) {
-      if (Array.isArray(ch.user_labels) && ch.user_labels.length > 0 && !seen.has(ch.name)) {
-        seen.add(ch.name)
-        total += ch.unread_count ?? 0
-      }
-    }
+  //   for (const ch of enrichedChannels) {
+  //     if (Array.isArray(ch.user_labels) && ch.user_labels.length > 0 && !seen.has(ch.name)) {
+  //       seen.add(ch.name)
+  //       total += ch.unread_count ?? 0
+  //     }
+  //   }
 
-    return total
-  }, [enrichedChannels])
+  //   return total
+  // }, [enrichedChannels])
 
   const { mode, setMode, tempMode } = useSidebarMode()
 
@@ -133,7 +133,7 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
   )
 }
 
-export function FilterList({ onClose }: { onClose?: () => void }) {
+export const FilterList = React.memo(({ onClose }: { onClose?: () => void }) => {
   const [isLabelOpen, setIsLabelOpen] = useState(false)
   const navigate = useNavigate()
   const { workspaceID, channelID } = useParams()
@@ -141,16 +141,17 @@ export function FilterList({ onClose }: { onClose?: () => void }) {
   const isIconOnly = tempMode === 'show-only-icons'
 
   const { mentionUnreadCount, resetMentions } = useMentionUnreadCount()
-  const enrichedChannels = useEnrichedSortedChannels()
+
+  const enrichedChannels = useEnrichedSortedChannels(0) // chỉ lấy channel chưa xong
+  const enrichedDoneChannels = useEnrichedSortedChannels(1) // lấy channel đã xong
 
   const totalUnreadCountFiltered = useMemo(() => {
-    return enrichedChannels.reduce((sum, c) => {
-      if (c.is_done === 0) {
-        return sum + (c.unread_count ?? 0)
-      }
-      return sum
-    }, 0)
+    return enrichedChannels.reduce((sum, c) => sum + (c.unread_count ?? 0), 0)
   }, [enrichedChannels])
+
+  const totalDoneCount = useMemo(() => {
+    return enrichedDoneChannels.reduce((sum, c) => sum + (c.unread_count ?? 0), 0)
+  }, [enrichedDoneChannels])
 
   const labelChannelsUnreadCount = useMemo(() => {
     const seen = new Set<string>()
@@ -164,133 +165,155 @@ export function FilterList({ onClose }: { onClose?: () => void }) {
     return total
   }, [enrichedChannels])
 
-  const handleClick = (label: string) => {
-    setTitle(label)
-    setLabelID('') // nếu không phải nhãn cụ thể thì reset
-    if (label === 'Nhắc đến') resetMentions()
-    if (onClose) onClose()
-    if (channelID) navigate(`/${workspaceID}`)
-  }
+  const handleClick = useCallback(
+    (label: string) => {
+      setTitle(label)
+      setLabelID('')
+      if (label === 'Nhắc đến') resetMentions()
+      if (onClose) onClose()
+      if (channelID) navigate(`/${workspaceID}`)
+    },
+    [setTitle, setLabelID, resetMentions, onClose, channelID, workspaceID, navigate]
+  )
 
-  return (
-    <ul className={clsx('space-y-1 text-sm text-gray-12', isIconOnly ? 'px-1' : 'px-3 py-2')}>
-      {filterItems.map((item, idx) => {
-        const isActive = item.label === title
-        let badgeCount = 0
+  const renderedFilterItems = useMemo(() => {
+    return filterItems.map((item, idx) => {
+      const isActive = item.label === title
+      let badgeCount = 0
 
-        if (['Trò chuyện', 'Chưa đọc'].includes(item.label)) badgeCount = totalUnreadCountFiltered
-        if (item.label === 'Nhắc đến') badgeCount = mentionUnreadCount
-        if (item.label === 'Nhãn') badgeCount = labelChannelsUnreadCount
+      if (['Trò chuyện', 'Chưa đọc'].includes(item.label)) badgeCount = totalUnreadCountFiltered
+      if (item.label === 'Nhắc đến') badgeCount = mentionUnreadCount
+      if (item.label === 'Nhãn') badgeCount = labelChannelsUnreadCount
+      if (item.label === 'Xong') badgeCount = totalDoneCount
 
-        if (item.label === 'Nhãn') {
-          return (
-            <div key={idx}>
-              <div className='group relative'>
-                <li
-                  className={clsx(
-                    'flex items-center gap-2 justify-center',
-                    !isIconOnly && 'pl-1 justify-between',
-                    'py-1.5 px-2 rounded-md cursor-pointer hover:bg-gray-3',
-                    isActive && 'bg-gray-4 font-semibold'
-                  )}
-                  onClick={() => {
-                    setIsLabelOpen((prev) => !prev)
-                    handleClick(item.label)
-                    if (title !== item.label) {
-                      setTitle(item.label)
-                      setLabelID('')
-                    }
-                  }}
-                >
-                  <div className='flex items-center gap-2'>
-                    <item.icon className='w-5 h-5' />
-                    {!isIconOnly && (
-                      <span className='truncate flex-1 min-w-0 font-medium text-[13px]'>{item.label}</span>
-                    )}
-                  </div>
-
-                  {!isIconOnly && (
-                    <div className='flex items-center gap-2'>
-                      <div onClick={(e) => e.stopPropagation()}>
-                        <CreateLabelButton />
-                      </div>
-                      <div
-                        className='relative w-4 h-4'
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setIsLabelOpen((prev) => !prev)
-                        }}
-                      >
-                        {isLabelOpen ? (
-                          <FiChevronDown className='absolute inset-0 m-auto' size={16} />
-                        ) : (
-                          <FiChevronRight className='absolute inset-0 m-auto' size={16} />
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </li>
-              </div>
-
-              {!isIconOnly && isLabelOpen && (
-                <LabelList
-                  visible={isLabelOpen}
-                  onClickLabel={(label) => {
-                    setTitle(label.labelName)
-                    setLabelID(label.labelId)
-                    if (onClose) onClose()
-                    if (channelID) navigate(`/${workspaceID}`)
-                  }}
-                />
-              )}
-            </div>
-          )
-        }
-
+      if (item.label === 'Nhãn') {
         return (
-          <li
-            key={idx}
-            onClick={() => {
-              handleClick(item.label)
-            }}
-            className={clsx(
-              `flex ${isIconOnly ? 'justify-center' : 'justify-between'} relative items-center gap-2 py-1.5 rounded-md cursor-pointer hover:bg-gray-3`,
-              isActive && 'bg-gray-4 font-semibold'
-            )}
-          >
-            <div className='flex items-center gap-2'>
-              <Tooltip content={item.label} side='right' delayDuration={300}>
-                <div className='w-6 h-6 flex items-center justify-center shrink-0'>
-                  <item.icon className='w-5 h-5' />
-                </div>
-              </Tooltip>
-              {!isIconOnly && <span className='truncate flex-1 min-w-0 font-medium text-[13px]'>{item.label}</span>}
-            </div>
-
-            {badgeCount > 0 && (
-              <span
-                style={{
-                  position: isIconOnly ? 'absolute' : 'static',
-                  right: isIconOnly ? '3%' : undefined,
-                  fontSize: isIconOnly ? '0.5rem' : '0.8rem',
-                  backgroundColor: isIconOnly ? 'red' : undefined,
-                  color: isIconOnly ? 'white' : undefined,
-                  borderRadius: isIconOnly ? '50%' : undefined,
-                  width: isIconOnly ? '14px' : undefined,
-                  height: isIconOnly ? '14px' : undefined,
-                  display: isIconOnly ? 'flex' : undefined,
-                  alignItems: isIconOnly ? 'center' : undefined,
-                  justifyContent: isIconOnly ? 'center' : undefined,
-                  fontWeight: 500,
-                  marginRight: isIconOnly ? '0px' : '1rem'
+          <div key={idx}>
+            <div className='group relative'>
+              <li
+                className={clsx(
+                  'flex items-center gap-2 justify-center',
+                  !isIconOnly && 'pl-1 justify-between',
+                  'py-1.5 px-2 rounded-md cursor-pointer hover:bg-gray-3',
+                  isActive && 'bg-gray-4 font-semibold'
+                )}
+                onClick={() => {
+                  setIsLabelOpen((prev) => !prev)
+                  handleClick(item.label)
+                  if (title !== item.label) {
+                    setTitle(item.label)
+                    setLabelID('')
+                  }
                 }}
               >
-                {badgeCount > 99 ? '99+' : badgeCount}
-              </span>
+                <div className='flex items-center gap-2'>
+                  <item.icon className='w-5 h-5' />
+                  {!isIconOnly && <span className='truncate flex-1 min-w-0 font-medium text-[13px]'>{item.label}</span>}
+                </div>
+
+                {!isIconOnly && (
+                  <div className='flex items-center gap-2'>
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <CreateLabelButton />
+                    </div>
+                    <div
+                      className='relative w-4 h-4'
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setIsLabelOpen((prev) => !prev)
+                      }}
+                    >
+                      {isLabelOpen ? (
+                        <FiChevronDown className='absolute inset-0 m-auto' size={16} />
+                      ) : (
+                        <FiChevronRight className='absolute inset-0 m-auto' size={16} />
+                      )}
+                    </div>
+                  </div>
+                )}
+              </li>
+            </div>
+
+            {!isIconOnly && isLabelOpen && (
+              <LabelList
+                visible={isLabelOpen}
+                onClickLabel={(label) => {
+                  setTitle(label.labelName)
+                  setLabelID(label.labelId)
+                  if (onClose) onClose()
+                  if (channelID) navigate(`/${workspaceID}`)
+                }}
+              />
             )}
-          </li>
+          </div>
         )
-      })}
-    </ul>
+      }
+
+      return (
+        <li
+          key={idx}
+          onClick={() => {
+            handleClick(item.label)
+          }}
+          className={clsx(
+            `flex ${isIconOnly ? 'justify-center' : 'justify-between'} relative items-center gap-2 py-1.5 rounded-md cursor-pointer hover:bg-gray-3`,
+            isActive && 'bg-gray-4 font-semibold'
+          )}
+        >
+          <div className='flex items-center gap-2'>
+            <Tooltip content={item.label} side='right' delayDuration={300}>
+              <div className='w-6 h-6 flex items-center justify-center shrink-0'>
+                <item.icon className='w-5 h-5' />
+              </div>
+            </Tooltip>
+            {!isIconOnly && <span className='truncate flex-1 min-w-0 font-medium text-[13px]'>{item.label}</span>}
+          </div>
+
+          {badgeCount > 0 && (
+            <span
+              style={{
+                position: isIconOnly ? 'absolute' : 'static',
+                right: isIconOnly ? '3%' : undefined,
+                fontSize: isIconOnly ? '0.5rem' : '0.8rem',
+                backgroundColor: isIconOnly ? 'red' : undefined,
+                color: isIconOnly ? 'white' : undefined,
+                borderRadius: isIconOnly ? '50%' : undefined,
+                width: isIconOnly ? '14px' : undefined,
+                height: isIconOnly ? '14px' : undefined,
+                display: isIconOnly ? 'flex' : undefined,
+                alignItems: isIconOnly ? 'center' : undefined,
+                justifyContent: isIconOnly ? 'center' : undefined,
+                fontWeight: 500,
+                marginRight: isIconOnly ? '0px' : '1rem'
+              }}
+            >
+              {badgeCount > 99 ? '99+' : badgeCount}
+            </span>
+          )}
+        </li>
+      )
+    })
+  }, [
+    filterItems,
+    enrichedChannels,
+    enrichedDoneChannels,
+    totalUnreadCountFiltered,
+    totalDoneCount,
+    labelChannelsUnreadCount,
+    mentionUnreadCount,
+    isIconOnly,
+    title,
+    isLabelOpen,
+    handleClick,
+    setTitle,
+    setLabelID,
+    onClose,
+    channelID,
+    workspaceID,
+    navigate
+  ])
+
+  return (
+    <ul className={clsx('space-y-1 text-sm text-gray-12', isIconOnly ? 'px-1' : 'px-3 py-2')}>{renderedFilterItems}</ul>
   )
-}
+})

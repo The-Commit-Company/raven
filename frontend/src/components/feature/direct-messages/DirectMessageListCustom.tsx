@@ -26,6 +26,7 @@ import ChatbotAIStream from '../chatbot-ai/ChatbotAIStream'
 import LabelByUserList from '../labels/LabelByUserList'
 import ThreadsCustom from '../threads/ThreadsCustom'
 import { MessageSaved } from './DirectMessageSaved'
+import { truncateText } from '@/utils/textUtils/truncateText'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
 
@@ -130,11 +131,6 @@ const isDMChannel = (c: UnifiedChannel): c is DMChannelWithUnreadCount => {
   return 'peer_user_id' in c && typeof c.peer_user_id === 'string'
 }
 
-const truncateText = (text: string, maxLength: number) => {
-  if (!text) return ''
-  return text.length > maxLength ? text.slice(0, maxLength) + '...' : text
-}
-
 export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel }) => {
   const isLaptop = useIsLaptop()
   const isTablet = useIsTablet()
@@ -146,11 +142,14 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   const { clearManualMark } = useChannelActions()
   const { markAsDone, markAsNotDone } = useChannelDone()
 
-  const isChannelDone = channel.is_done === 1
+  const { isDM, peerUserId, isGroupChannel } = useMemo(() => {
+    const isDM = isDMChannel(channel)
+    const peerUserId = isDM ? channel.peer_user_id : null
+    const isGroupChannel = !channel.is_direct_message && !channel.is_self_message
+    return { isDM, peerUserId, isGroupChannel }
+  }, [channel])
 
-  const isGroupChannel = !channel.is_direct_message && !channel.is_self_message
-  const isDM = isDMChannel(channel)
-  const peerUserId = isDM ? channel.peer_user_id : null
+  const isChannelDone = channel.is_done === 1
   const peerUser = useGetUser(peerUserId || '')
   const isActive = peerUserId ? useIsUserActive(peerUserId) : false
   const isSelectedChannel = channelID === channel.name
@@ -174,8 +173,10 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   }, [channel.last_message_details])
 
   const user = useGetUser(lastOwner)
-  const formattedMessage = formatLastMessage(channel, currentUser, user?.full_name)
-
+  const formattedMessage = useMemo(
+    () => formatLastMessage(channel, currentUser, user?.full_name),
+    [channel.last_message_details, currentUser, user?.full_name]
+  )
   const rawName = peerUser
     ? peerUserId !== currentUser
       ? peerUser.full_name
@@ -183,7 +184,7 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
     : channel.channel_name || channel.name
 
   const truncateLength = isLaptop ? 20 : 28
-  const displayName = truncateText(rawName, truncateLength)
+  const displayName = useMemo(() => truncateText(rawName, truncateLength), [rawName, truncateLength])
 
   const shouldShowBadge = channel.unread_count > 0 || isManuallyMarked
 

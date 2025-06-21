@@ -48,7 +48,7 @@ export const AddChannelMembersModalContent = ({ onClose }: AddChannelMemberModal
         channel_id: channelID,
         members: data.add_members.map((member) => member.name)
       }).then(() => {
-        toast.success('Members added')
+        toast.success('Thành viên đã được thêm vào')
         mutate(['channel_members', channelID])
         onClose()
       })
@@ -62,19 +62,19 @@ export const AddChannelMembersModalContent = ({ onClose }: AddChannelMemberModal
           <form onSubmit={handleSubmit(onSubmit)}>
             <Dialog.Title>
               <Text as='span'>
-                Add members to{' '}
+                Thêm thành viên vào
                 <ChannelIcon type={channel?.channelData.type} size='18' className='inline-block -mb-0.5' />
                 {channel?.channelData.channel_name}
               </Text>
             </Dialog.Title>
             <Dialog.Description size='2'>
-              New members will be able to see all of <strong>{channel?.channelData.channel_name}</strong>'s history,
-              including any files that have been shared in the channel.
+              Thành viên mới sẽ có thể xem toàn bộ lịch sử của <strong>{channel?.channelData.channel_name}</strong>, bao
+              gồm cả các tệp đã được chia sẻ trong kênh.
             </Dialog.Description>
 
             <Flex gap='2' pt='2' direction='column' width='100%'>
               <ErrorBanner error={error} />
-              <Text size='2'>You can only add members from your workspace to this channel.</Text>
+              <Text size='2'>Bạn chỉ có thể thêm thành viên từ workspace của mình vào kênh này.</Text>
               <Box width='100%'>
                 <Flex direction='column' gap='2'>
                   <Flex direction='column' gap='2'>
@@ -87,7 +87,7 @@ export const AddChannelMembersModalContent = ({ onClose }: AddChannelMemberModal
                             if (value && value.length > 0) {
                               return true
                             }
-                            return 'Please select at least one member'
+                            return 'Vui lòng chọn ít nhất một thành viên'
                           }
                         }}
                         render={({ field: { onChange, value } }) => (

@@ -67,11 +67,11 @@ export const UploadImage = ({
 }) => {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Tooltip content='Upload Image' side='right'>
+      <Tooltip content='Tải logo lên' side='right'>
         <Dialog.Trigger>
           <IconButton
             type='button'
-            aria-label='upload image'
+            aria-label='tải logo lên'
             size={'1'}
             className={'absolute -right-2 -bottom-1 rounded-md shadow-md'}
           >
@@ -95,11 +95,11 @@ export const UploadImage = ({
 export const DeleteImage = ({ onDelete }: { onDelete: () => void }) => {
   return (
     <AlertDialog.Root>
-      <Tooltip content='Remove Image' side='right'>
+      <Tooltip content='Xóa logo' side='right'>
         <AlertDialog.Trigger>
           <IconButton
             type='button'
-            aria-label='remove image'
+            aria-label='xóa logo'
             size={'1'}
             className={'absolute -right-2 bottom-6 rounded-md bg-white dark:bg-slate-4 shadow-md'}
           >
@@ -108,8 +108,8 @@ export const DeleteImage = ({ onDelete }: { onDelete: () => void }) => {
         </AlertDialog.Trigger>
       </Tooltip>
       <AlertDialog.Content className={DIALOG_CONTENT_CLASS} maxWidth='450px'>
-        <AlertDialog.Title>Xóa Logo</AlertDialog.Title>
-        <AlertDialog.Description size='2'>Bạn có chắc muốn xóa logo này không?</AlertDialog.Description>
+        <AlertDialog.Title>Xóa logo</AlertDialog.Title>
+        <AlertDialog.Description size='2'>Bạn có chắc chắn muốn xóa logo này không?</AlertDialog.Description>
         <HStack gap='2' justify='end' mt='4'>
           <AlertDialog.Cancel>
             <Button variant='soft' color='gray'>
@@ -118,7 +118,7 @@ export const DeleteImage = ({ onDelete }: { onDelete: () => void }) => {
           </AlertDialog.Cancel>
           <AlertDialog.Action>
             <Button variant='solid' color='red' onClick={onDelete}>
-              Delete
+              Xóa
             </Button>
           </AlertDialog.Action>
         </HStack>
@@ -126,3 +126,4 @@ export const DeleteImage = ({ onDelete }: { onDelete: () => void }) => {
     </AlertDialog.Root>
   )
 }
+
