@@ -40,7 +40,7 @@ export const FileUploadBox = forwardRef((props: FileUploadBoxProps, ref) => {
 
   const { getRootProps, getInputProps, open } = useDropzone({
     onDrop: (receivedFiles: File[]) => {
-      if (receivedFiles.length > 0) {
+      if (receivedFiles?.length > 0) {
         const f: CustomFile = receivedFiles[0] as CustomFile
         f.uploadProgress = 0
         f.fileID = f.name + Date.now()

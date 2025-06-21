@@ -45,6 +45,7 @@ def get_mentions(limit: int = 10, start: int = 0):
 		.where(mention.user == frappe.session.user)
 		.where(message.owner != frappe.session.user)
 		.where(channel_member.user_id == frappe.session.user)
+		.where(message.is_retracted != 1)
 		.orderby(message.creation, order=Order.desc)
 		.limit(limit)
 		.offset(start)

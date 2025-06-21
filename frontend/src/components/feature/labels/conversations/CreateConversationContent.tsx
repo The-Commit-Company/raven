@@ -73,7 +73,7 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
       })
 
       // ✅ Cập nhật local sortedChannelsAtom
-      channel_ids.forEach((channelID) => {
+      channel_ids?.forEach((channelID) => {
         addLabelToChannel(channelID, name)
       })
 
@@ -148,7 +148,7 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
               {selectedChannels.map((channel) => (
                 <SelectedChannelItem key={channel.name} channel={channel} handleToggle={handleToggle} />
               ))}
-              {selectedChannels.length === 0 && (
+              {selectedChannels?.length === 0 && (
                 <div className='text-gray-500 italic'>Chưa chọn cuộc trò chuyện nào</div>
               )}
             </div>

@@ -27,9 +27,9 @@ export const useMessageLoading = (
     return mutate(
       (d: any) => {
         let oldestMessage: Message | null = null
-        if (d && d.message.messages.length > 0) {
+        if (d && d.message.messages?.length > 0) {
           if (d.message.has_old_messages) {
-            oldestMessage = d.message.messages[d.message.messages.length - 1]
+            oldestMessage = d.message.messages[d.message.messages?.length - 1]
 
             if (oldestMessage) {
               return fetchOlderMessages({
@@ -78,7 +78,7 @@ export const useMessageLoading = (
     return mutate(
       (d: any) => {
         let newestMessage: Message | null = null
-        if (d && d.message.messages.length > 0) {
+        if (d && d.message.messages?.length > 0) {
           if (d.message.has_new_messages) {
             newestMessage = d.message.messages[0]
 

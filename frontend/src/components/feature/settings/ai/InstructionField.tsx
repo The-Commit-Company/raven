@@ -131,7 +131,7 @@ const DynamicInstructionField = ({ allowUsingTemplate, instructionRequired, auto
   //     let hasCharacterBefore = false
 
   //     for (let i = start - 1; i >= 0; i--) {
-  //         console.log("text", textAreaText[i], start, textAreaText.length)
+  //         console.log("text", textAreaText[i], start, textAreaText?.length)
   //         if (textAreaText[i] !== ' ' && textAreaText[i] !== '\n' && textAreaText[i] !== '\t' && textAreaText[i] !== '\r') {
   //             hasCharacterBefore = true
   //             break
@@ -153,18 +153,18 @@ const DynamicInstructionField = ({ allowUsingTemplate, instructionRequired, auto
 
   //     let hasCharacterAfter = false
 
-  //     for (let i = end; i < textAreaText.length; i++) {
+  //     for (let i = end; i < textAreaText?.length; i++) {
   //         if (textAreaText[i] !== ' ' && textAreaText[i] !== '\n' && textAreaText[i] !== '\t' && textAreaText[i] !== '\r') {
   //             hasCharacterAfter = true
   //             break
   //         }
-  //         if (textAreaText[i] === '}' && i < textAreaText.length - 1 && textAreaText[i + 1] === '}') {
+  //         if (textAreaText[i] === '}' && i < textAreaText?.length - 1 && textAreaText[i + 1] === '}') {
   //             hasCharacterAfter = false
   //             break
   //         }
   //     }
 
-  //     if (end === textAreaText.length) {
+  //     if (end === textAreaText?.length) {
   //         hasCharacterAfter = true
   //     }
 
@@ -180,7 +180,7 @@ const DynamicInstructionField = ({ allowUsingTemplate, instructionRequired, auto
 
   //     // Set the cursor to the end of the pasted text for better user experience
   //     setTimeout(() => {
-  //         ref.current?.setSelectionRange(start + copiedText.length, start + copiedText.length)
+  //         ref.current?.setSelectionRange(start + copiedText?.length, start + copiedText?.length)
   //     }, 50)
   // }
 
@@ -385,7 +385,7 @@ const ImportTemplate = () => {
           <ErrorBanner error={error} />
           <Box>
             <Label htmlFor='template'>Select a template</Label>
-            {data && data.length === 0 && (
+            {data && data?.length === 0 && (
               <Text size='2' color='gray'>
                 No templates found
               </Text>

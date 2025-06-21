@@ -1,12 +1,12 @@
-import { MdLabelOutline } from 'react-icons/md'
-import { HiChevronRight, HiChevronDown } from 'react-icons/hi'
-import LabelItemMenu from './LabelItemMenu'
-import LabelItemList from './LabelItemList'
-import { useState, useMemo } from 'react'
-import { useEnrichedLabelChannels } from '@/utils/channel/ChannelAtom'
 import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
 import { truncateText } from '@/utils/textUtils/truncateText'
 import { useIsMobile, useIsTablet } from '@/hooks/useMediaQuery'
+import { useMemo, useState } from 'react'
+import { HiChevronDown, HiChevronRight } from 'react-icons/hi'
+import { MdLabelOutline } from 'react-icons/md'
+import LabelItemList from './LabelItemList'
+import LabelItemMenu from './LabelItemMenu'
+
 
 interface LabelItemProps {
   label: string
@@ -85,7 +85,7 @@ const LabelItem: React.FC<LabelItemProps> = ({ label, name, channels }) => {
         {!(totalCount > 0 && !isExpanded) && <LabelItemMenu channels={channels} name={name} label={label} />}
       </div>
 
-      {isExpanded && mergedChannels.length > 0 && (
+      {isExpanded && mergedChannels?.length > 0 && (
         <div className='ml-4 space-y-1'>
           {mergedChannels.map((channel) => (
             <LabelItemList

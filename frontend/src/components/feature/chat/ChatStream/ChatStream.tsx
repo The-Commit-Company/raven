@@ -197,7 +197,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
     } = useChatStream(channelID, virtuosoRef, pinnedMessagesString, scrollState.isAtBottom)
 
     useEffect(() => {
-      if (messages && messages.length > 0 && !renderState.isInitialLoadComplete) {
+      if (messages && messages?.length > 0 && !renderState.isInitialLoadComplete) {
         setTimeout(() => {
           dispatchRenderState({ type: 'SET_INITIAL_LOAD_COMPLETE', payload: true })
         }, 100)
@@ -221,7 +221,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
           const shouldLoadNewer =
             hasNewMessages &&
             range &&
-            range.endIndex >= messages.length - 5 &&
+            range.endIndex >= messages?.length - 5 &&
             !loadingState.isLoadingMessages &&
             !loadingState.hasInitialLoadedWithMessageId
 
@@ -234,7 +234,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
 
           if (range && newMessageIds.size > 0) {
             const visibleMessages = messages.slice(range.startIndex, range.endIndex + 1)
-            visibleMessages.forEach((message: any) => {
+            visibleMessages?.forEach((message: any) => {
               if (message.name && newMessageIds.has(message.name)) {
                 setTimeout(() => markMessageAsSeen(message.name), 2000)
               }
@@ -322,7 +322,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
         ...virtuosoRef.current,
         onUpArrow: () => {
           if (messages?.length) {
-            const lastMessage = messages[messages.length - 1]
+            const lastMessage = messages[messages?.length - 1]
             if (lastMessage.message_type === 'Text' && lastMessage.owner === userID && !lastMessage.is_bot_message) {
               editActions.setEditMessage(lastMessage)
             }
@@ -446,10 +446,10 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
     )
 
     const scrollActionToBottom = useCallback(() => {
-      if (virtuosoRef.current && messages && messages.length > 0) {
+      if (virtuosoRef.current && messages && messages?.length > 0) {
         scheduleFrame(() => {
           virtuosoRef.current?.scrollToIndex({
-            index: messages.length - 1,
+            index: messages?.length - 1,
             behavior: 'auto',
             align: 'end'
           })
@@ -486,13 +486,13 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
 
         {error && <ErrorBanner error={error} />}
 
-        {messages && messages.length > 0 && (
+        {messages && messages?.length > 0 && (
           <Virtuoso
             ref={virtuosoRef}
             data={messages}
             itemContent={itemRenderer}
             followOutput={scrollState.isAtBottom ? 'auto' : false}
-            initialTopMostItemIndex={!isSavedMessage ? messages.length - 1 : targetIndex}
+            initialTopMostItemIndex={!isSavedMessage ? messages?.length - 1 : targetIndex}
             atTopStateChange={handleAtTopStateChange}
             atBottomStateChange={handleAtBottomStateChange}
             rangeChanged={handleRangeChanged}

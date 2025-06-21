@@ -1,11 +1,11 @@
 // components/DoneChannelList.tsx
-import { DirectMessageItem } from '../direct-messages/DirectMessageListCustom'
 import { useEnrichedSortedChannels } from '@/utils/channel/ChannelAtom'
+import { DirectMessageItem } from '../direct-messages/DirectMessageListCustom'
 
 export const DoneChannelList = () => {
   const doneChannels = useEnrichedSortedChannels(1)
 
-  if (doneChannels.length === 0) {
+  if (doneChannels?.length === 0) {
     return <div className='text-sm italic text-gray-500 p-4 text-center'>Không có cuộc trò chuyện nào đã xong</div>
   }
 

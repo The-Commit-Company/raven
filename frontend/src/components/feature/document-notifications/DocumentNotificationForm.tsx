@@ -1,8 +1,11 @@
 import { ErrorText, HelperText, Label } from '@/components/common/Form'
+import LinkField from '@/components/common/LinkField/LinkField'
 import LinkFormField from '@/components/common/LinkField/LinkFormField'
 import { HStack, Stack } from '@/components/layout/Stack'
 import useDoctypeMeta from '@/hooks/useDoctypeMeta'
+import { DocField } from '@/types/Core/DocField'
 import { RavenDocumentNotification } from '@/types/RavenIntegrations/RavenDocumentNotification'
+import { in_list } from '@/utils/validations'
 import {
   Badge,
   Box,
@@ -16,24 +19,21 @@ import {
   Select,
   Separator,
   Table,
+  Tabs,
   Text,
   TextArea,
   TextField,
   Tooltip,
   VisuallyHidden
 } from '@radix-ui/themes'
-import { Tabs } from '@radix-ui/themes'
-import { Controller, ControllerFieldState, useFieldArray, useFormContext, useWatch } from 'react-hook-form'
-import { LuBell, LuUsers, LuWorkflow } from 'react-icons/lu'
-import { VariableRow } from '../settings/ai/InstructionField'
+import clsx from 'clsx'
 import { Fragment, useMemo, useState } from 'react'
-import { in_list } from '@/utils/validations'
-import { VALID_DOCTYPE_FIELD_TYPES } from '../settings/ai/functions/DoctypeVariableDialogForm'
+import { Controller, ControllerFieldState, useFieldArray, useFormContext, useWatch } from 'react-hook-form'
 import { BiSearch } from 'react-icons/bi'
 import { FiInfo, FiTrash2 } from 'react-icons/fi'
-import clsx from 'clsx'
-import { DocField } from '@/types/Core/DocField'
-import LinkField from '@/components/common/LinkField/LinkField'
+import { LuBell, LuUsers, LuWorkflow } from 'react-icons/lu'
+import { VALID_DOCTYPE_FIELD_TYPES } from '../settings/ai/functions/DoctypeVariableDialogForm'
+import { VariableRow } from '../settings/ai/InstructionField'
 
 const ICON_PROPS = {
   size: 18,
@@ -361,7 +361,7 @@ const RecipientsTab = () => {
 
         {fields.map((row, index) => (
           <Fragment key={index}>
-            <div className={clsx('col-span-3 p-2', index !== fields.length - 1 ? 'border-b border-gray-4' : '')}>
+            <div className={clsx('col-span-3 p-2', index !== fields?.length - 1 ? 'border-b border-gray-4' : '')}>
               <Box>
                 <VisuallyHidden>
                   <Label htmlFor={`recipients.${index}.channel_type`}>Channel Type for Row {index + 1}</Label>
@@ -391,7 +391,7 @@ const RecipientsTab = () => {
                 />
               </Box>
             </div>
-            <div className={clsx('col-span-3 p-2', index !== fields.length - 1 ? 'border-b border-gray-4' : '')}>
+            <div className={clsx('col-span-3 p-2', index !== fields?.length - 1 ? 'border-b border-gray-4' : '')}>
               <Box>
                 <VisuallyHidden>
                   <Label htmlFor={`recipients.${index}.variable_type`}>Variable Type for Row {index + 1}</Label>
@@ -419,7 +419,7 @@ const RecipientsTab = () => {
                 />
               </Box>
             </div>
-            <div className={clsx('col-span-4 p-2', index !== fields.length - 1 ? 'border-b border-gray-4' : '')}>
+            <div className={clsx('col-span-4 p-2', index !== fields?.length - 1 ? 'border-b border-gray-4' : '')}>
               <Box>
                 <VisuallyHidden>
                   <Label htmlFor={`recipients.${index}.value`}>Value for Row {index + 1}</Label>
@@ -447,7 +447,7 @@ const RecipientsTab = () => {
             <div
               className={clsx(
                 'col-span-1 p-2 flex justify-center',
-                index !== fields.length - 1 ? 'border-b border-gray-4' : ''
+                index !== fields?.length - 1 ? 'border-b border-gray-4' : ''
               )}
             >
               <IconButton variant='surface' color='red' onClick={() => remove(index)}>
@@ -653,7 +653,7 @@ const DoctypeVariableField = ({
         aria-invalid={fieldState?.error ? 'true' : 'false'}
       />
       <Select.Content>
-        {suggestedFields.length > 0 && (
+        {suggestedFields?.length > 0 && (
           <Select.Group>
             <Select.Label>Suggested</Select.Label>
             {suggestedFields.map((field) => (

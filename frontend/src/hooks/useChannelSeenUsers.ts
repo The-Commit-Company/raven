@@ -4,10 +4,10 @@ import { useFrappeEventListener, useFrappePostCall } from 'frappe-react-sdk'
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 
 const arraysAreEqual = (arr1: any[], arr2: any[]) => {
-  if (arr1.length !== arr2.length) return false
+  if (arr1?.length !== arr2?.length) return false
   const sorted1 = [...arr1].sort((a, b) => a.user.localeCompare(b.user))
   const sorted2 = [...arr2].sort((a, b) => a.user.localeCompare(b.user))
-  for (let i = 0; i < sorted1.length; i++) {
+  for (let i = 0; i < sorted1?.length; i++) {
     if (sorted1[i].user !== sorted2[i].user || sorted1[i].seen_at !== sorted2[i].seen_at) {
       return false
     }
@@ -62,6 +62,7 @@ export const useChannelSeenUsers = ({ channelId }: { channelId: string }) => {
         console.error('Track seen failed:', err)
       } finally {
         pendingSeenUpdate.current = false
+        hasInteractedRef.current = false
       }
     }, 1500),
     [channelId, trackSeenCall]
@@ -130,9 +131,6 @@ export const useChannelSeenUsers = ({ channelId }: { channelId: string }) => {
     const onUserInteracted = () => {
       hasInteractedRef.current = true
       trackSeen()
-      setTimeout(() => {
-        hasInteractedRef.current = false
-      }, 0)
     }
 
     eventBus.on('user:interacted', onUserInteracted)

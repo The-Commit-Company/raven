@@ -31,8 +31,8 @@ const LabelByUserList = () => {
 
   const labels: Label[] = data?.message || []
 
-  if (isLoading && labels.length === 0) return <BeatLoader text='Đang tải label...' />
-  if (error && labels.length === 0) return <div className='text-red-500'>Lỗi: {error.message}</div>
+  if (isLoading && labels?.length === 0) return <BeatLoader text='Đang tải label...' />
+  if (error && labels?.length === 0) return <div className='text-red-500'>Lỗi: {error.message}</div>
 
   return (
     <div className='space-y-2'>

@@ -36,7 +36,7 @@ const MentionsList: React.FC = () => {
   const { workspaceID } = useParams<{ workspaceID: string }>()
 
   const getKey = useCallback((pageIndex: number, prev: { message: MentionObject[] } | null) => {
-    if (prev && !prev.message.length) return null
+    if (prev && !prev.message?.length) return null
     return ['raven.api.mentions.get_mentions', { limit: PAGE_SIZE, start: pageIndex * PAGE_SIZE }] as const
   }, [])
 
@@ -53,9 +53,9 @@ const MentionsList: React.FC = () => {
   const pages = data ?? []
   const mentions = useMemo(() => pages.flatMap((page) => page.message), [pages])
 
-  const isEmpty = pages[0]?.message.length === 0
+  const isEmpty = pages[0]?.message?.length === 0
   const isLoadingMore = isLoading || (size > 0 && !pages[size - 1])
-  const isReachingEnd = isEmpty || (pages[size - 1]?.message.length ?? 0) < PAGE_SIZE
+  const isReachingEnd = isEmpty || (pages[size - 1]?.message?.length ?? 0) < PAGE_SIZE
 
   const observerRef = useRef<HTMLDivElement>(null)
   const loadMore = useCallback(() => {

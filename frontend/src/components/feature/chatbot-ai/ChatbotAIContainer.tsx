@@ -47,7 +47,7 @@ const ChatbotAIContainer: React.FC<Props> = ({
     const words = cleanMessage.split(/\s+/).slice(0, 6)
     // Nối lại thành câu và thêm dấu ... nếu bị cắt
     const title = words.join(' ')
-    return words.length < cleanMessage.split(/\s+/).length ? `${title}...` : title
+    return words?.length < cleanMessage.split(/\s+/)?.length ? `${title}...` : title
   }
 
   // Hàm cập nhật tên đoạn chat
@@ -92,7 +92,7 @@ const ChatbotAIContainer: React.FC<Props> = ({
   // Theo dõi thay đổi trong messages để cập nhật tên
   useEffect(() => {
     const currentSession = sessions.find((s) => s.id === selectedId)
-    if (currentSession && currentSession.messages && currentSession.messages.length > 0) {
+    if (currentSession && currentSession.messages && currentSession.messages?.length > 0) {
       const firstUserMessage = currentSession.messages.find((m) => m.role === 'user')
       if (firstUserMessage && currentSession.title.startsWith('Đoạn chat mới')) {
         const newTitle = generateTitleFromFirstMessage(firstUserMessage.content)
@@ -121,8 +121,8 @@ const ChatbotAIContainer: React.FC<Props> = ({
     await deleteConversation({ doctype: 'ChatConversation', name: id })
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     mutateConversations && mutateConversations()
-    if (selectedId === id && sessions.length > 1) onSelectSession(sessions.find((s) => s.id !== id)!.id)
-    if (sessions.length <= 1) onSelectSession('')
+    if (selectedId === id && sessions?.length > 1) onSelectSession(sessions.find((s) => s.id !== id)!.id)
+    if (sessions?.length <= 1) onSelectSession('')
     setDeleteDialogOpen(false)
     setSessionToDelete(null)
     navigate(`/${workspaceID}/chatbot`)
@@ -218,7 +218,7 @@ const ChatbotAIContainer: React.FC<Props> = ({
                 </div>
               ))}
 
-            {sessions.length === 0 && (
+            {sessions?.length === 0 && (
               <div className='px-4 py-8 flex items-center flex-col'>
                 <FiMessageSquare size={24} className='mx-auto mb-3 text-gray-300 dark:text-white/30' />
                 <Text className='text-gray-500 dark:text-white/50 text-sm'>Không có đoạn chat nào</Text>

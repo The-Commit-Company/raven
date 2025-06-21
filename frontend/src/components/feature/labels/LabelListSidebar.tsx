@@ -1,13 +1,12 @@
-import { MdLabelOutline } from 'react-icons/md'
 import clsx from 'clsx'
-import { useEffect, useMemo } from 'react'
 import { useAtomValue, useSetAtom } from 'jotai'
-
-import { useSidebarMode } from '@/utils/layout/sidebar'
-import { labelListAtom, refreshLabelListAtom } from './conversations/atoms/labelAtom'
-import { useFrappeGetCall } from 'frappe-react-sdk'
+import { useEffect, useMemo } from 'react'
+import { MdLabelOutline } from 'react-icons/md'
 import { useEnrichedSortedChannels } from '@/utils/channel/ChannelAtom'
 import { truncateText } from '@/utils/textUtils/truncateText'
+import { useSidebarMode } from '@/utils/layout/sidebar'
+import { useFrappeGetCall } from 'frappe-react-sdk'
+import { labelListAtom, refreshLabelListAtom } from './conversations/atoms/labelAtom'
 
 type Props = {
   visible: boolean
@@ -29,7 +28,7 @@ export default function LabelList({ visible, onClickLabel }: Props) {
 
     for (const ch of enrichedChannels) {
       if (Array.isArray(ch.user_labels)) {
-        ch.user_labels.forEach((labelId) => {
+        ch.user_labels?.forEach((labelId) => {
           const prev = map.get(labelId) ?? 0
           map.set(labelId, prev + (ch.unread_count ?? 0))
         })
@@ -41,10 +40,10 @@ export default function LabelList({ visible, onClickLabel }: Props) {
 
   // Luôn gọi mutate mỗi khi sidebar mở ra
   useEffect(() => {
-    if (visible && labelList.length === 0) {
+    if (visible && labelList?.length === 0) {
       mutate()
     }
-  }, [visible, labelList.length])
+  }, [visible, labelList?.length])
 
   // Gọi lại API nếu có thay đổi từ nơi khác (refreshKey tăng)
   useEffect(() => {
@@ -61,8 +60,8 @@ export default function LabelList({ visible, onClickLabel }: Props) {
   }, [data])
 
   if (!visible) return null
-  if (isLoading && labelList.length === 0) return <div className='text-sm text-gray-500 px-3'>Đang tải...</div>
-  if (error && labelList.length === 0) return <div className='text-sm text-red-500 px-3'>Lỗi tải nhãn</div>
+  if (isLoading && labelList?.length === 0) return <div className='text-sm text-gray-500 px-3'>Đang tải...</div>
+  if (error && labelList?.length === 0) return <div className='text-sm text-red-500 px-3'>Lỗi tải nhãn</div>
 
   return (
     <ul className='mt-1 space-y-1'>

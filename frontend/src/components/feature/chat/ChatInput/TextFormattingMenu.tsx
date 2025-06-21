@@ -1,21 +1,18 @@
+import { getKeyboardMetaKeyString } from '@/utils/layout/keyboardKey'
+import { Box, Flex, IconButton, Separator, Tooltip } from '@radix-ui/themes'
 import { useCurrentEditor } from '@tiptap/react'
+import { memo } from 'react'
 import {
   BiBold,
-  BiCodeAlt,
-  BiCodeBlock,
   BiHighlight,
   BiItalic,
   BiListOl,
   BiListUl,
-  BiStrikethrough,
-  BiUnderline,
   BiSolidQuoteAltRight,
-  BiTime
+  BiTime,
+  BiUnderline
 } from 'react-icons/bi'
 import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
-import { Box, Flex, IconButton, Separator, Tooltip } from '@radix-ui/themes'
-import { getKeyboardMetaKeyString } from '@/utils/layout/keyboardKey'
-import { memo } from 'react'
 
 export const TextFormattingMenu = memo(() => {
   const { editor } = useCurrentEditor()
@@ -159,7 +156,7 @@ const TimestampButton = () => {
     // Sort parsedDates in reverse order based on their index. This is to ensure that we replace from the end to preserve the indices of the replaced strings.
     parsedDates.sort((a, b) => b.index - a.index)
 
-    parsedDates.forEach((date) => {
+    parsedDates?.forEach((date) => {
       // Ignore if neither hour, minute, or date is certain
       if (!date.start.isCertain('hour') && !date.start.isCertain('minute') && !date.start.isCertain('day')) {
         return
@@ -193,7 +190,7 @@ const TimestampButton = () => {
       parsedContent =
         parsedContent.slice(0, index) +
         `<span class="timestamp" ${attributes}">${text}</span>` +
-        parsedContent.slice(index + text.length)
+        parsedContent.slice(index + text?.length)
     })
     return parsedContent
   }

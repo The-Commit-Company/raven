@@ -66,7 +66,7 @@ const ThreadsList = ({
 
   const { data, size, isLoading, setSize, error, mutate } = useSWRInfinite<GetThreadsReturnType, FrappeError>(
     (pageIndex, previousPageData) => {
-      if (previousPageData && !previousPageData.message.length) return null
+      if (previousPageData && !previousPageData.message?.length) return null
       const startAfter = pageIndex * PAGE_SIZE
       return [
         endpoint,
@@ -101,7 +101,7 @@ const ThreadsList = ({
 
   const isLoadingMore = isLoading || (size > 0 && data && typeof data[size - 1] === 'undefined')
 
-  const isReachingEnd = isEmpty || (data && data[data.length - 1]?.message?.length < PAGE_SIZE)
+  const isReachingEnd = isEmpty || (data && data[data?.length - 1]?.message?.length < PAGE_SIZE)
 
   const threads = useMemo(
     () =>

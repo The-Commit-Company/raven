@@ -65,7 +65,7 @@ const ViewChannelDetailsModalContent = ({
 
   const { channelMembers, mutate: updateMembers } = useFetchChannelMembers(channelData.name)
 
-  const memberCount = Object.keys(channelMembers).length
+  const memberCount = Object.keys(channelMembers)?.length
   const { currentUser } = useContext(UserContext)
   const type = channelData.type
 

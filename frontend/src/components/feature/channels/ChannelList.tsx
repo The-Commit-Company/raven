@@ -1,27 +1,28 @@
+import { showOnlyMyChannelsAtom } from '@/components/layout/Sidebar/SidebarBody'
+import { ChannelWithUnreadCount } from '@/components/layout/Sidebar/useGetChannelUnreadCounts'
+import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
+import { useStickyState } from '@/hooks/useStickyState'
+import { RavenUser } from '@/types/Raven/RavenUser'
+import { ChannelIcon } from '@/utils/layout/channelIcon'
+import { __ } from '@/utils/translations'
+import { ContextMenu, DropdownMenu, Flex, IconButton, Text } from '@radix-ui/themes'
+import clsx from 'clsx'
+import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
+import { useAtom } from 'jotai'
+import { useCallback, useContext, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { BiDotsVerticalRounded } from 'react-icons/bi'
+import { RiPushpinLine, RiUnpinLine } from 'react-icons/ri'
+import { useParams, useSearchParams } from 'react-router-dom'
 import {
+  SidebarBadge,
   SidebarGroup,
   SidebarGroupItem,
   SidebarGroupLabel,
   SidebarGroupList,
-  SidebarItem
+  SidebarItem,
+  SidebarViewMoreButton
 } from '../../layout/Sidebar/SidebarComp'
-import { SidebarBadge, SidebarViewMoreButton } from '../../layout/Sidebar/SidebarComp'
 import { CreateChannelButton } from './CreateChannelModal'
-import { useCallback, useContext, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { ChannelIcon } from '@/utils/layout/channelIcon'
-import { ContextMenu, DropdownMenu, Flex, IconButton, Text } from '@radix-ui/themes'
-import { useParams, useSearchParams } from 'react-router-dom'
-import { useStickyState } from '@/hooks/useStickyState'
-import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
-import { RiPushpinLine, RiUnpinLine } from 'react-icons/ri'
-import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
-import { RavenUser } from '@/types/Raven/RavenUser'
-import { __ } from '@/utils/translations'
-import { ChannelWithUnreadCount } from '@/components/layout/Sidebar/useGetChannelUnreadCounts'
-import { useAtom } from 'jotai'
-import { showOnlyMyChannelsAtom } from '@/components/layout/Sidebar/SidebarBody'
-import clsx from 'clsx'
-import { BiDotsVerticalRounded } from 'react-icons/bi'
 
 interface ChannelListProps {
   channels: ChannelWithUnreadCount[]
@@ -42,7 +43,7 @@ export const ChannelList = ({ channels }: ChannelListProps) => {
   }, [channels, pinnedChannelIDs])
 
   const ref = useRef<HTMLDivElement>(null)
-  const [height, setHeight] = useState((ref?.current?.clientHeight ?? showData) ? filteredChannels.length * 36 - 4 : 0)
+  const [height, setHeight] = useState((ref?.current?.clientHeight ?? showData) ? filteredChannels?.length * 36 - 4 : 0)
 
   useLayoutEffect(() => {
     setHeight(ref.current?.clientHeight ?? 0)
@@ -69,7 +70,7 @@ export const ChannelList = ({ channels }: ChannelListProps) => {
           }}
         >
           <div ref={ref} className='flex gap-0.5 flex-col'>
-            {filteredChannels.length === 0 ? (
+            {filteredChannels?.length === 0 ? (
               <Text size='1' className='pl-1' color='gray'>
                 {__('No channels in this workspace.')}
               </Text>

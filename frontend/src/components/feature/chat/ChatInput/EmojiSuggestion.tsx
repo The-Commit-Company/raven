@@ -1,10 +1,10 @@
 import { Node } from '@tiptap/core'
-import Suggestion from '@tiptap/suggestion'
-import { ReactRenderer } from '@tiptap/react'
-import EmojiList from './EmojiList'
-import tippy from 'tippy.js'
 import { PluginKey } from '@tiptap/pm/state'
-import { SearchIndex, FrequentlyUsed } from 'emoji-mart'
+import { ReactRenderer } from '@tiptap/react'
+import Suggestion from '@tiptap/suggestion'
+import { FrequentlyUsed, SearchIndex } from 'emoji-mart'
+import tippy from 'tippy.js'
+import EmojiList from './EmojiList'
 
 export type EmojiType = {
   shortcodes?: string
@@ -17,7 +17,7 @@ async function search(value: string, maxResults: number = 10): Promise<EmojiType
   const emojis = await SearchIndex.search(value, { maxResults: maxResults, caller: undefined })
 
   const results: EmojiType[] = []
-  emojis.forEach((emoji: any) => {
+  emojis?.forEach((emoji: any) => {
     if (emoji && emoji.skins[0].native) {
       results.push({
         shortcodes: emoji.skins[0].shortcodes,
@@ -39,7 +39,7 @@ export function getTopFavoriteEmojis(maxResults: number = 10): EmojiType[] {
 
   const results: EmojiType[] = []
 
-  emojis.forEach((emoji: string) => {
+  emojis?.forEach((emoji: string) => {
     // @ts-expect-error
     const e = SearchIndex.get(emoji)
 
@@ -75,7 +75,7 @@ export const EmojiSuggestion = Node.create({
         // Allow any character to be a prefix for an emoji
         allowedPrefixes: null,
         items: (query) => {
-          if (query.query.length !== 0) {
+          if (query.query?.length !== 0) {
             return search(query.query)
           } else {
             return getTopFavoriteEmojis()

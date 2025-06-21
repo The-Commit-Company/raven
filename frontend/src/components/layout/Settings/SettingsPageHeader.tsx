@@ -1,6 +1,5 @@
 import { Badge, BadgeProps, Flex, Text } from '@radix-ui/themes'
 import React from 'react'
-import { HStack } from '../Stack'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,6 +8,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from '../Breadcrumb'
+import { HStack } from '../Stack'
 
 type BreadcrumbItem = {
   label: React.ReactNode
@@ -35,7 +35,7 @@ const SettingsPageHeader = ({ title, description, actions, headerBadges, breadcr
             <BreadcrumbList>
               {breadcrumbs.map((b, index) => (
                 <React.Fragment key={b.href}>
-                  {index < breadcrumbs.length - 1 ? (
+                  {index < breadcrumbs?.length - 1 ? (
                     <>
                       <BreadcrumbItem>
                         <BreadcrumbLink href={b.href}>{b.label}</BreadcrumbLink>

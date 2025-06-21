@@ -1,15 +1,14 @@
-import { HelperText, Label } from '@/components/common/Form'
+import { Label } from '@/components/common/Form'
+import { HStack, Stack } from '@/components/layout/Stack'
 import { Webhook } from '@/types/Integrations/Webhook'
-import { Flex, Box, Heading, Table, IconButton, Button, Select, Dialog, Badge, TextField, Text } from '@radix-ui/themes'
+import { RavenWebhook } from '@/types/RavenIntegrations/RavenWebhook'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
+import { Badge, Box, Button, Dialog, Flex, Heading, IconButton, Select, Table, Text, TextField } from '@radix-ui/themes'
 import { useMemo, useState } from 'react'
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form'
 import { BiInfoCircle, BiMinusCircle } from 'react-icons/bi'
-import { FieldsData, SampleData } from './utils'
-import { DoctypeFieldList } from './utils'
-import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
-import { RavenWebhook } from '@/types/RavenIntegrations/RavenWebhook'
 import { FiEye, FiPlus } from 'react-icons/fi'
-import { HStack, Stack } from '@/components/layout/Stack'
+import { DoctypeFieldList, FieldsData, SampleData } from './utils'
 
 export const WebhookData = () => {
   const { register, control, watch, setValue } = useFormContext<RavenWebhook>()
@@ -54,7 +53,13 @@ export const WebhookData = () => {
           <HStack align={'center'}>
             <Dialog.Root open={previewOpen} onOpenChange={setPreviewOpen}>
               <Dialog.Trigger>
-                <Button type='button' variant='surface' color='gray' disabled={fields.length === 0} className='not-cal'>
+                <Button
+                  type='button'
+                  variant='surface'
+                  color='gray'
+                  disabled={fields?.length === 0}
+                  className='not-cal'
+                >
                   <FiEye />
                   Preview
                 </Button>

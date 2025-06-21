@@ -1,22 +1,22 @@
+import { Loader } from '@/components/common/Loader'
+import { PageLengthSelector } from '@/components/feature/pagination/PageLengthSelector'
+import { PageSelector } from '@/components/feature/pagination/PageSelector'
+import { Sort } from '@/components/feature/sorting/Sort'
+import { UsersTable } from '@/components/feature/userSettings/Users/UsersTable'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
+import { TableLoader } from '@/components/layout/Loaders/TableLoader'
 import { useDebounce } from '@/hooks/useDebounce'
 import { usePaginationWithDoctype } from '@/hooks/usePagination'
+import { User } from '@/types/Core/User'
+import { UserContext } from '@/utils/auth/UserProvider'
 import { isSystemManager } from '@/utils/roles'
 import { Box, Button, Card, Container, Flex, Heading, Link, Strong, Text, TextField } from '@radix-ui/themes'
 import { clsx } from 'clsx'
 import { Filter, useFrappeGetDocList, useFrappePostCall } from 'frappe-react-sdk'
 import { ChangeEvent, useContext, useState } from 'react'
-import { FaInfo } from 'react-icons/fa'
-import { PageLengthSelector } from '@/components/feature/pagination/PageLengthSelector'
-import { PageSelector } from '@/components/feature/pagination/PageSelector'
-import { Sort } from '@/components/feature/sorting/Sort'
-import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
-import { TableLoader } from '@/components/layout/Loaders/TableLoader'
 import { BiLeftArrowAlt, BiSearch } from 'react-icons/bi'
-import { UserContext } from '@/utils/auth/UserProvider'
-import { Loader } from '@/components/common/Loader'
+import { FaInfo } from 'react-icons/fa'
 import { toast } from 'sonner'
-import { User } from '@/types/Core/User'
-import { UsersTable } from '@/components/feature/userSettings/Users/UsersTable'
 
 const AddRavenUsersPage = () => {
   const canAddRavenUsers = isSystemManager()
@@ -109,7 +109,7 @@ const AddRavenUsersCard = () => {
     call({
       users: JSON.stringify([...selected, currentUser])
     }).then(() => {
-      toast.success(`You have added ${selected.length} users to Raven`)
+      toast.success(`You have added ${selected?.length} users to Raven`)
       window.location.reload()
     })
   }
@@ -140,7 +140,7 @@ const AddRavenUsersCard = () => {
                   <BiSearch />
                 </TextField.Slot>
               </TextField.Root>
-              {debouncedText.length > 0 && debouncedText.length < 2 && (
+              {debouncedText?.length > 0 && debouncedText?.length < 2 && (
                 <Text size='1' color='gray'>
                   Continue typing...
                 </Text>
@@ -166,7 +166,7 @@ const AddRavenUsersCard = () => {
           {/* <ErrorBanner error={error} /> */}
           {!data && !error && <TableLoader columns={3} />}
 
-          {data && data.length === 0 && debouncedText.length >= 2 && (
+          {data && data?.length === 0 && debouncedText?.length >= 2 && (
             <Flex align='center' justify='center' className='min-h-[32rem]'>
               <Text size='2' align='center'>
                 No results found
@@ -174,7 +174,7 @@ const AddRavenUsersCard = () => {
             </Flex>
           )}
 
-          {data && data.length !== 0 && (
+          {data && data?.length !== 0 && (
             <UsersTable data={data} defaultSelected={[currentUser]} selected={selected} setSelected={setSelected} />
           )}
         </Flex>

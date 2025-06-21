@@ -1,19 +1,25 @@
+import { ErrorBanner, getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import { HStack } from '@/components/layout/Stack'
+import useDoctypeMeta from '@/hooks/useDoctypeMeta'
 import { useDoctypePreview } from '@/hooks/useDoctypePreview'
 import {
   AspectRatio,
   Badge,
+  Box,
+  Card,
   DataList,
   DropdownMenu,
   Flex,
+  Grid,
   Heading,
   IconButton,
   Skeleton,
+  Text,
   Tooltip
 } from '@radix-ui/themes'
 import { FrappeConfig, FrappeContext, useFrappeGetCall } from 'frappe-react-sdk'
+import parse from 'html-react-parser'
 import { useContext, useMemo, useState } from 'react'
-import { Grid, Text, Box, Card } from '@radix-ui/themes'
-import { toast } from 'sonner'
 import {
   BiCopy,
   BiDotsHorizontalRounded,
@@ -22,10 +28,7 @@ import {
   BiPrinter,
   BiRightArrowAlt
 } from 'react-icons/bi'
-import useDoctypeMeta from '@/hooks/useDoctypeMeta'
-import { HStack } from '@/components/layout/Stack'
-import { ErrorBanner, getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
-import parse from 'html-react-parser'
+import { toast } from 'sonner'
 
 export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string; docname: string }) => {
   const { data, error, isLoading, mutate } = useDoctypePreview(doctype, docname)
@@ -262,7 +265,7 @@ const WorkflowSubMenu = ({ doctype, docname, mutate }: { doctype: string; docnam
 
   if (!doc) return null
 
-  if (!doc?.__workflow_docs || doc?.__workflow_docs.length === 0) return null
+  if (!doc?.__workflow_docs || doc?.__workflow_docs?.length === 0) return null
 
   return (
     <DropdownMenu.Sub open={open} onOpenChange={setOpen}>
@@ -343,7 +346,8 @@ const WorkflowTransitionOptions = ({
       })
   }
 
-  if (transitions?.message.length === 0) return <DropdownMenu.Item disabled>No transitions available</DropdownMenu.Item>
+  if (transitions?.message?.length === 0)
+    return <DropdownMenu.Item disabled>No transitions available</DropdownMenu.Item>
 
   return (
     <>

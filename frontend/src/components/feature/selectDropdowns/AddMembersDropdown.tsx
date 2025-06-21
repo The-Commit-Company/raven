@@ -1,8 +1,8 @@
-import { useCallback, useContext, useMemo } from 'react'
-import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
-import MultipleUserComboBox from './MultipleUserCombobox'
 import useFetchChannelMembers from '@/hooks/fetchers/useFetchChannelMembers'
+import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
+import { useCallback, useContext, useMemo } from 'react'
 import { useFetchWorkspaceMembers } from '../workspaces/WorkspaceMemberManagement'
+import MultipleUserComboBox from './MultipleUserCombobox'
 
 interface AddMembersDropdownProps {
   channelID: string
@@ -32,7 +32,7 @@ const AddMembersDropdown = ({
 
     // Only workspace members are eligible to be added to the channel
     const eligibleUsers: { [key: string]: string } = {}
-    workspaceMembers?.message.forEach((m) => {
+    workspaceMembers?.message?.forEach((m) => {
       eligibleUsers[m.user] = m.name
     })
 

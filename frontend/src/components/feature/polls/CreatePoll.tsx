@@ -1,11 +1,10 @@
 import { ErrorText, Label } from '@/components/common/Form'
 import { ErrorBanner, getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { RavenPoll } from '@/types/RavenMessaging/RavenPoll'
-import { Button, Checkbox, Dialog, Flex, IconButton, TextArea, TextField, Text, Box } from '@radix-ui/themes'
+import { Box, Button, Checkbox, Dialog, Flex, IconButton, Text, TextArea, TextField } from '@radix-ui/themes'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { Controller, FormProvider, useFieldArray, useForm } from 'react-hook-form'
 import { BiPlus, BiTrash } from 'react-icons/bi'
-import { useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 
 const CreatePollContent = ({ channelID, setIsOpen }: { channelID: string; setIsOpen: (open: boolean) => void }) => {
@@ -50,7 +49,7 @@ const CreatePollContent = ({ channelID, setIsOpen }: { channelID: string; setIsO
 
   const handleAddOption = () => {
     // limit the number of options to 10
-    if (fields.length >= 10) {
+    if (fields?.length >= 10) {
       return
     } else {
       append({
@@ -67,7 +66,7 @@ const CreatePollContent = ({ channelID, setIsOpen }: { channelID: string; setIsO
 
   const handleRemoveOption = (index: number) => {
     // Do not remove the last 2 options
-    if (fields.length === 2) {
+    if (fields?.length === 2) {
       return
     }
     remove(index)
@@ -145,7 +144,7 @@ const CreatePollContent = ({ channelID, setIsOpen }: { channelID: string; setIsO
                     </div>
                     <IconButton
                       mt='2'
-                      disabled={fields.length === 2}
+                      disabled={fields?.length === 2}
                       color='red'
                       aria-label='delete'
                       variant={'ghost'}
@@ -160,7 +159,7 @@ const CreatePollContent = ({ channelID, setIsOpen }: { channelID: string; setIsO
 
               <Flex justify={'between'} align={'center'}>
                 <Button
-                  disabled={fields.length >= 10}
+                  disabled={fields?.length >= 10}
                   type='button'
                   size={'1'}
                   variant='ghost'

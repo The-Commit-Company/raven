@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Loader } from '@/components/common/Loader'
 import { AlertDialog, Button, Callout, Flex, Text } from '@radix-ui/themes'
 import { useFrappePostCall } from 'frappe-react-sdk'
@@ -25,7 +26,7 @@ export const DeleteMessageModal = ({ onClose, message }: DeleteMessageModalProps
       }
       onClose(true)
     } catch (err: any) {
-      toast.error(err?.message ?? 'Lỗi khi thu hồi tin nhắn')
+      toast.error('Đã quá thời gian thu hồi tin nhắn')
     }
   }
 

@@ -37,7 +37,7 @@ export const useGetChannelUnreadCounts = ({ channels, dm_channels, unread_count 
     const allChannels: (ChannelListItem | DMChannelListItem)[] = [...channels, ...dm_channels]
 
     // Process all channels and DMs to separate unread and read
-    allChannels.forEach((channel) => {
+    allChannels?.forEach((channel) => {
       if (channel.is_archived) {
         // If the channel is archived, do not add to array
         return

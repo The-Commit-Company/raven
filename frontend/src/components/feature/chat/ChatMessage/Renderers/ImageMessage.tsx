@@ -105,7 +105,7 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
             width: width + 'px'
           }}
         >
-          {message.blurhash && message.blurhash.length === 28 && !isImageLoaded ? (
+          {message.blurhash && message.blurhash?.length === 28 && !isImageLoaded ? (
             <Blurhash hash={message.blurhash} width={width + 'px'} height={height + 'px'} />
           ) : (
             <Box

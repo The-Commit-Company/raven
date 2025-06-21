@@ -40,31 +40,33 @@ const MessageActionList = () => {
     <PageContainer>
       <SettingsContentContainer>
         <SettingsPageHeader
-          title='Message Actions'
-          description='Use these to add custom actions - like creating an issue/task from a message.'
+          title='Hành Động Tin Nhắn'
+          description='Sử dụng các hành động này để thêm thao tác tùy chỉnh – như tạo issue hoặc task từ một tin nhắn.'
           actions={
             <Button asChild disabled={!isRavenAdmin}>
-              <Link to='create'>Create</Link>
+              <Link to='create'>Thêm mới</Link>
             </Button>
           }
         />
+
         {isLoading && !error && <TableLoader columns={2} />}
         <ErrorBanner error={error} />
-        {data && data.length > 0 && <MessageActionsTable actions={data} />}
+        {data && data?.length > 0 && <MessageActionsTable actions={data} />}
         {data?.length === 0 && (
           <EmptyState>
             <EmptyStateIcon>
               <BiBoltCircle />
             </EmptyStateIcon>
-            <EmptyStateTitle>Actions</EmptyStateTitle>
+            <EmptyStateTitle>Hành Động</EmptyStateTitle>
             <EmptyStateDescription>
-              Add actions that allow you to create documents or make API calls from the contents of a message - like
-              creating a support ticket or project issue from a message sent in a channel.
+              Thêm các hành động cho phép bạn tạo tài liệu hoặc gọi API từ nội dung của một tin nhắn – ví dụ như tạo
+              phiếu hỗ trợ hoặc lỗi dự án từ tin nhắn gửi trong kênh.
               <br />
               <br />
-              Access them by right clicking any message and selecting <Strong>Actions</Strong>.
+              Truy cập các hành động này bằng cách nhấn chuột phải vào bất kỳ tin nhắn nào và chọn{' '}
+              <Strong>Hành Động</Strong>.
             </EmptyStateDescription>
-            {isRavenAdmin && <EmptyStateLinkAction to='create'>Create your first action</EmptyStateLinkAction>}
+            {isRavenAdmin && <EmptyStateLinkAction to='create'>Tạo hành động đầu tiên</EmptyStateLinkAction>}
           </EmptyState>
         )}
       </SettingsContentContainer>

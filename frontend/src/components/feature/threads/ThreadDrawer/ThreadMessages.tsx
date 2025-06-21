@@ -59,7 +59,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
 
         const newMessages = [...existingMessages]
 
-        messages.forEach((message) => {
+        messages?.forEach((message) => {
           // Check if the message is already present in the messages array
           const messageIndex = existingMessages.findIndex((m) => m.name === message.name)
 
@@ -200,9 +200,9 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
               onMessageSend={sendMessage}
               messageSending={loading}
               slotBefore={
-                <Flex direction='column' justify='center' hidden={!selectedMessage && !files.length}>
+                <Flex direction='column' justify='center' hidden={!selectedMessage && !files?.length}>
                   {selectedMessage && <PreviousMessagePreview selectedMessage={selectedMessage} />}
-                  {files && files.length > 0 && (
+                  {files && files?.length > 0 && (
                     <Flex gap='2' width='100%' align='end' px='2' p='2' wrap='wrap'>
                       {files.map((f: CustomFile) => (
                         <Box className='grow-0' key={f.fileID}>

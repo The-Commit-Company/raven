@@ -83,7 +83,7 @@ export const MessageSearch = ({
     const isUserFilterApplied = userFilter !== 'any' && userFilter !== undefined
     const isDateFilterApplied = dateFilter !== 'any' && dateFilter !== undefined
     return (
-      debouncedText.length > 2 ||
+      debouncedText?.length > 2 ||
       isChannelFilterApplied ||
       isUserFilterApplied ||
       isDateFilterApplied ||
@@ -211,7 +211,7 @@ export const MessageSearch = ({
       <ScrollArea type='always' scrollbars='vertical' className='sm:h-[420px] h-[58vh]' mt='4'>
         <ErrorBanner error={error} />
         {data?.message?.length === 0 && <EmptyStateForSearch />}
-        {data?.message?.length && data?.message.length > 0 ? (
+        {data?.message?.length && data?.message?.length > 0 ? (
           <Flex direction='column' gap='2'>
             {data.message.map((message: Message) => {
               return (

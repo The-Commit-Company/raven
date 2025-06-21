@@ -1,12 +1,12 @@
 import { UserAvatar } from '@/components/common/UserAvatar'
+import { HStack } from '@/components/layout/Stack'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { Flex, Text, Theme } from '@radix-ui/themes'
 import { ReactRendererOptions } from '@tiptap/react'
 import { clsx } from 'clsx'
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
-import { MemberSuggestions } from './Tiptap'
-import { HStack } from '@/components/layout/Stack'
 import { BiUserX } from 'react-icons/bi'
+import { MemberSuggestions } from './Tiptap'
 
 export default forwardRef((props: ReactRendererOptions['props'], ref) => {
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -20,11 +20,11 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
   }
 
   const upHandler = () => {
-    setSelectedIndex((selectedIndex + props?.items.length - 1) % props?.items.length)
+    setSelectedIndex((selectedIndex + props?.items?.length - 1) % props?.items?.length)
   }
 
   const downHandler = () => {
-    setSelectedIndex((selectedIndex + 1) % props?.items.length)
+    setSelectedIndex((selectedIndex + 1) % props?.items?.length)
   }
 
   const enterHandler = () => {
@@ -61,7 +61,7 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
         gap='0'
         className='shadow-lg dark:bg-panel-solid bg-white overflow-y-scroll max-h-96 rounded-md'
       >
-        {props?.items.length ? (
+        {props?.items?.length ? (
           props.items.map((item: MemberSuggestions, index: number) => (
             <MentionItem
               item={item}
@@ -69,7 +69,7 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
               selectItem={selectItem}
               selectedIndex={selectedIndex}
               key={item.name}
-              itemsLength={props.items.length}
+              itemsLength={props.items?.length}
             />
           ))
         ) : (

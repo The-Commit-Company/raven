@@ -1,15 +1,5 @@
-import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
-import { RavenSchedulerEvent } from '@/types/RavenIntegrations/RavenSchedulerEvent'
-import { Button } from '@radix-ui/themes'
-import { useFrappeDocTypeEventListener, useFrappeGetDocList } from 'frappe-react-sdk'
-import { Link } from 'react-router-dom'
-import { List } from './ScheduledMessageList'
-import PageContainer from '@/components/layout/Settings/PageContainer'
-import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
-import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
-import { TableLoader } from '@/components/layout/Loaders/TableLoader'
 import ServerScriptNotEnabledCallout from '@/components/feature/settings/scheduler-events/ServerScriptNotEnabledForm'
-import { isSystemManager } from '@/utils/roles'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import {
   EmptyState,
   EmptyStateDescription,
@@ -17,7 +7,17 @@ import {
   EmptyStateLinkAction,
   EmptyStateTitle
 } from '@/components/layout/EmptyState/EmptyListViewState'
+import { TableLoader } from '@/components/layout/Loaders/TableLoader'
+import PageContainer from '@/components/layout/Settings/PageContainer'
+import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
+import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
+import { RavenSchedulerEvent } from '@/types/RavenIntegrations/RavenSchedulerEvent'
+import { isSystemManager } from '@/utils/roles'
+import { Button } from '@radix-ui/themes'
+import { useFrappeDocTypeEventListener, useFrappeGetDocList } from 'frappe-react-sdk'
 import { LuCalendarClock } from 'react-icons/lu'
+import { Link } from 'react-router-dom'
+import { List } from './ScheduledMessageList'
 
 const SchedulerEvents = () => {
   const isRavenAdmin = isSystemManager()
@@ -45,30 +45,31 @@ const SchedulerEvents = () => {
     <PageContainer>
       <SettingsContentContainer>
         <SettingsPageHeader
-          title='Scheduled Messages'
-          description='You can create a scheduled message & a bot will send it to you at the specified time.'
+          title='Tin Nhắn Đã Lên Lịch'
+          description='Bạn có thể tạo một tin nhắn đã lên lịch và bot sẽ gửi nó đến bạn vào thời gian đã định.'
           actions={
             <Button asChild disabled={!isRavenAdmin}>
-              <Link to='create'>Create</Link>
+              <Link to='create'>Thêm mới</Link>
             </Button>
           }
         />
+
         {isLoading && !error && <TableLoader columns={2} />}
         <ErrorBanner error={error} />
         <ServerScriptNotEnabledCallout />
-        {data && data.length > 0 && <List data={data} />}
+        {data && data?.length > 0 && <List data={data} />}
         {(data?.length === 0 || !isRavenAdmin) && (
           <EmptyState>
             <EmptyStateIcon>
               <LuCalendarClock />
             </EmptyStateIcon>
-            <EmptyStateTitle>Reminders</EmptyStateTitle>
+            <EmptyStateTitle>Nhắc Nhở</EmptyStateTitle>
             <EmptyStateDescription>
-              Schedule messages to be sent to you at a specific date and time.
+              Lên lịch gửi tin nhắn đến bạn vào ngày và giờ cụ thể.
               <br />
-              These support the CRON syntax.
+              Hỗ trợ cú pháp CRON.
             </EmptyStateDescription>
-            {isRavenAdmin && <EmptyStateLinkAction to='create'>Schedule a reminder</EmptyStateLinkAction>}
+            {isRavenAdmin && <EmptyStateLinkAction to='create'>Lên lịch nhắc nhở</EmptyStateLinkAction>}
           </EmptyState>
         )}
       </SettingsContentContainer>

@@ -66,11 +66,11 @@ export const MessageSeenStatus = React.memo(
     if (!currentUserOwnsMessage) return null
 
     // Đảm bảo showPopover là boolean
-    const showPopover = channelType !== 'dm' && (seenByOthers.length > 0 || unseenByOthers.length > 0)
+    const showPopover = channelType !== 'dm' && (seenByOthers?.length > 0 || unseenByOthers?.length > 0)
 
     // Tính toán tỉ lệ đã đọc
-    const totalUsers = seenByOthers.length + unseenByOthers.length
-    const readPercentage = totalUsers > 0 ? (seenByOthers.length / totalUsers) * 100 : 0
+    const totalUsers = seenByOthers?.length + unseenByOthers?.length
+    const readPercentage = totalUsers > 0 ? (seenByOthers?.length / totalUsers) * 100 : 0
 
     // Xác định loại icon cần hiển thị
     const getIcon = () => {
@@ -79,7 +79,7 @@ export const MessageSeenStatus = React.memo(
       }
 
       // Nếu là DM hoặc tất cả đã đọc
-      if (channelType === 'dm' || unseenByOthers.length === 0) {
+      if (channelType === 'dm' || unseenByOthers?.length === 0) {
         return <FaRegCheckCircle className='text-green-500' />
       }
 
@@ -95,22 +95,22 @@ export const MessageSeenStatus = React.memo(
       if (!hasBeenSeen) {
         return 'Chưa xem'
       }
-      if (unseenByOthers.length === 0) {
+      if (unseenByOthers?.length === 0) {
         return 'Tất cả đã xem'
       }
 
       const firstTwoSeen = seenByOthers.slice(0, 2)
       const names = firstTwoSeen.map((user) => user.full_name).join(', ')
 
-      if (seenByOthers.length > 2) {
-        return `${names} và ${seenByOthers.length - 2} người khác đã xem`
+      if (seenByOthers?.length > 2) {
+        return `${names} và ${seenByOthers?.length - 2} người khác đã xem`
       }
 
-      if (seenByOthers.length > 0) {
+      if (seenByOthers?.length > 0) {
         return `${names} đã xem`
       }
 
-      return `${seenByOthers.length}/${totalUsers} đã xem`
+      return `${seenByOthers?.length}/${totalUsers} đã xem`
     }
 
     return (
@@ -145,7 +145,7 @@ export const MessageSeenStatus = React.memo(
                   {/* Cột Read */}
                   <div className='pr-4 w-1/2'>
                     <div className='font-semibold mb-2 sticky top-0 bg-neutral-800 pb-1'>
-                      {seenByOthers.length} Đã xem
+                      {seenByOthers?.length} Đã xem
                     </div>
                     <div className='space-y-2 overflow-y-auto max-h-[350px] pr-2'>
                       {seenByOthers.map((user, index) => (
@@ -162,7 +162,7 @@ export const MessageSeenStatus = React.memo(
                   {/* Cột Unread */}
                   <div className='pl-4 w-1/2'>
                     <div className='font-semibold mb-2 sticky top-0 bg-neutral-800 pb-1'>
-                      {unseenByOthers.length} Chưa xem
+                      {unseenByOthers?.length} Chưa xem
                     </div>
                     <div className='space-y-2 overflow-y-auto max-h-[350px] pr-2'>
                       {unseenByOthers.map((user, index) => (

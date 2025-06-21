@@ -1,8 +1,8 @@
+import { HelperText, Label } from '@/components/common/Form'
+import { HStack, Stack } from '@/components/layout/Stack'
+import { Box, Button, Checkbox, Dialog, Select, Text, TextArea, TextField } from '@radix-ui/themes'
 import { useState } from 'react'
 import { NumberVariableType, StringVariableType, VariableType } from './FunctionConstants'
-import { Label, HelperText } from '@/components/common/Form'
-import { Stack, HStack } from '@/components/layout/Stack'
-import { Box, Select, TextField, Checkbox, TextArea, Dialog, Button, Text } from '@radix-ui/themes'
 
 type Props = {
   defaultValues?: VariableType
@@ -35,7 +35,7 @@ const VariableDialog = ({ defaultValues, onAdd, allowNameChange, name: defaultNa
       {
         type,
         description,
-        enum: enumValues.length > 0 ? enumValues : undefined,
+        enum: enumValues?.length > 0 ? enumValues : undefined,
         items: type === 'array' ? items : undefined
       },
       required

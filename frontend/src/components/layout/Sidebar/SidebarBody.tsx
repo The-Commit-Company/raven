@@ -45,7 +45,7 @@ export const SidebarBody = () => {
           />
         </Flex>
         <PinnedChannels unread_count={unread_count?.message} />
-        {(unreadChannels.length > 0 || unreadDMs.length > 0) && (
+        {(unreadChannels?.length > 0 || unreadDMs?.length > 0) && (
           <UnreadList unreadChannels={unreadChannels} unreadDMs={unreadDMs} />
         )}
         <ChannelList channels={readChannels} />
@@ -62,7 +62,7 @@ const ThreadsButton = () => {
 
   const totalUnreadThreads = useMemo(() => {
     // Need to remove the current thread ID from the unread threads if it exists. The current thread is not included in the unread threads since the user is already on the thread
-    return unreadThreads?.message.filter((t) => t.name !== threadID).length || 0
+    return unreadThreads?.message.filter((t) => t.name !== threadID)?.length || 0
   }, [unreadThreads, threadID])
 
   return (

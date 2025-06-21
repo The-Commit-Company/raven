@@ -1,15 +1,15 @@
-import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
-import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
-import { Loader } from '@/components/common/Loader'
-import { Box, Button, Dialog, Flex, Text } from '@radix-ui/themes'
-import { ChannelIcon } from '@/utils/layout/channelIcon'
-import { Suspense, lazy } from 'react'
-import { UserFields } from '@/utils/users/UserListProvider'
 import { ErrorText } from '@/components/common/Form'
-import { toast } from 'sonner'
-import { useParams } from 'react-router-dom'
+import { Loader } from '@/components/common/Loader'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
+import { ChannelIcon } from '@/utils/layout/channelIcon'
+import { UserFields } from '@/utils/users/UserListProvider'
+import { Box, Button, Dialog, Flex, Text } from '@radix-ui/themes'
+import { useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
+import { Suspense, lazy } from 'react'
+import { Controller, FormProvider, useForm } from 'react-hook-form'
+import { useParams } from 'react-router-dom'
+import { toast } from 'sonner'
 const AddMembersDropdown = lazy(() => import('../../selectDropdowns/AddMembersDropdown'))
 
 interface AddChannelMemberForm {
@@ -43,7 +43,7 @@ export const AddChannelMembersModalContent = ({ onClose }: AddChannelMemberModal
   const { handleSubmit, control } = methods
 
   const onSubmit = (data: AddChannelMemberForm) => {
-    if (data.add_members && data.add_members.length > 0) {
+    if (data.add_members && data.add_members?.length > 0) {
       call({
         channel_id: channelID,
         members: data.add_members.map((member) => member.name)
@@ -84,7 +84,7 @@ export const AddChannelMembersModalContent = ({ onClose }: AddChannelMemberModal
                         name='add_members'
                         rules={{
                           validate: (value) => {
-                            if (value && value.length > 0) {
+                            if (value && value?.length > 0) {
                               return true
                             }
                             return 'Vui lòng chọn ít nhất một thành viên'

@@ -1,8 +1,8 @@
-import { User } from '@/types/Core/User'
-import { useMemo } from 'react'
-import { Badge, Box, Checkbox, Flex, Table, Tooltip } from '@radix-ui/themes'
 import { UserAvatar } from '@/components/common/UserAvatar'
+import { User } from '@/types/Core/User'
 import { StandardDate } from '@/utils/dateConversions'
+import { Badge, Box, Checkbox, Flex, Table, Tooltip } from '@radix-ui/themes'
+import { useMemo } from 'react'
 import { FiAlertTriangle } from 'react-icons/fi'
 
 interface UsersTableProps {
@@ -17,7 +17,7 @@ export const UsersTable = ({ data, selected, setSelected, defaultSelected }: Use
     if (checked) {
       setSelected((curr) => {
         const user_array: string[] = []
-        data.forEach((user) => {
+        data?.forEach((user) => {
           if (!selected.includes(user.name) && !defaultSelected.includes(user.name)) {
             user_array.push(user.name)
           }
@@ -30,7 +30,7 @@ export const UsersTable = ({ data, selected, setSelected, defaultSelected }: Use
   }
 
   const isAllChecked = useMemo(() => {
-    if (data && data.length) {
+    if (data && data?.length) {
       let allChecked = true
       data?.forEach((user) => {
         if (!selected.includes(user.name) && !defaultSelected.includes(user.name)) {
