@@ -26,6 +26,7 @@ import ChatbotAIStream from '../chatbot-ai/ChatbotAIStream'
 import LabelByUserList from '../labels/LabelByUserList'
 import ThreadsCustom from '../threads/ThreadsCustom'
 import { MessageSaved } from './DirectMessageSaved'
+import { truncateText } from '@/utils/textUtils/truncateText'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
 
@@ -128,11 +129,6 @@ export const DirectMessageItem = ({ dm_channel }: { dm_channel: DMChannelWithUnr
 
 const isDMChannel = (c: UnifiedChannel): c is DMChannelWithUnreadCount => {
   return 'peer_user_id' in c && typeof c.peer_user_id === 'string'
-}
-
-const truncateText = (text: string, maxLength: number) => {
-  if (!text) return ''
-  return text.length > maxLength ? text.slice(0, maxLength) + '...' : text
 }
 
 export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel }) => {

@@ -18,7 +18,7 @@ export const DeleteImageModal = ({ onClose }: DeleteImageModalProps) => {
     call({
       user_image: ''
     }).then(() => {
-      toast.success('Profile picture removed.')
+      toast.success('Ảnh đại diện đã được gỡ.')
       mutate()
       onClose()
     })
@@ -26,7 +26,7 @@ export const DeleteImageModal = ({ onClose }: DeleteImageModalProps) => {
 
   return (
     <>
-      <AlertDialog.Title>{__('Remove Image')}</AlertDialog.Title>
+      <AlertDialog.Title>{__('Xóa ảnh')}</AlertDialog.Title>
 
       <Flex direction={'column'} gap='2'>
         <ErrorBanner error={error} />
@@ -42,7 +42,7 @@ export const DeleteImageModal = ({ onClose }: DeleteImageModalProps) => {
         <AlertDialog.Action>
           <Button variant='solid' color='red' onClick={removeImage} disabled={loading}>
             {loading && <Loader />}
-            {loading ? __('Removing') : __('Remove')}
+            {loading ? __('Đang xóa...') : __('Xóa')}
           </Button>
         </AlertDialog.Action>
       </Flex>

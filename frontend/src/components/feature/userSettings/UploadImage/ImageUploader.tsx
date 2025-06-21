@@ -39,7 +39,7 @@ export const ImageUploader = ({
         user_image: file
       })
         .then(() => {
-          toast(__('Image uploaded successfully.'))
+          toast(__('Ảnh đã được tải lên thành công'))
           mutate()
           setUploadImageModalOpen(false)
         })
@@ -89,11 +89,11 @@ export const UploadImage = ({
 }) => {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Tooltip content='Upload Image' side='right'>
+      <Tooltip content='Tải ảnh lên' side='right'>
         <Dialog.Trigger>
           <IconButton
             type='button'
-            aria-label='upload image'
+            aria-label='tải ảnh lên'
             size={'1'}
             className={'absolute -right-2 -bottom-1 rounded-md shadow-md'}
           >
@@ -121,11 +121,11 @@ export const DeleteImage = ({ open, setOpen }: { open: boolean; setOpen: (open: 
 
   return (
     <AlertDialog.Root open={open} onOpenChange={setOpen}>
-      <Tooltip content='Remove Image' side='right'>
+      <Tooltip content='Xóa ảnh' side='right'>
         <AlertDialog.Trigger>
           <IconButton
             type='button'
-            aria-label='remove image'
+            aria-label='xóa ảnh'
             size={'1'}
             className={'absolute -right-2 bottom-6 rounded-md bg-white dark:bg-slate-4 shadow-md'}
           >

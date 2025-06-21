@@ -118,7 +118,7 @@ export const useFetchChannelList = (): ChannelListContextType => {
    * Instead, throttle this - wait for all events to subside
    */
   useFrappeEventListener('channel_list_updated', () => {
-    if (!rest.isValidating) {
+    if (!isValidating) {
       setNewUpdatesAvailable((n) => n + 1)
     }
   })
