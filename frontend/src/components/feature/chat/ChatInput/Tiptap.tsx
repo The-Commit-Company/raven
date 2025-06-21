@@ -40,7 +40,6 @@ import { RightToolbarButtons, SendButton } from './RightToolbarButtons'
 import { TextFormattingMenu } from './TextFormattingMenu'
 import './tiptap.styles.css'
 import { ToolPanel } from './ToolPanel'
-import { useChannelSeenUsers } from '@/hooks/useChannelSeenUsers'
 const MobileInputActions = lazy(() => import('./MobileActions/MobileInputActions'))
 
 const lowlight = createLowlight(common)
@@ -135,7 +134,7 @@ const Tiptap = forwardRef(
 
     const channelMembersRef = useRef<MemberSuggestions[]>([])
     const { call: trackVisit } = useFrappePostCall('raven.api.raven_channel_member.track_visit')
-    const { refetchWithTrackSeen } = useChannelSeenUsers({ channelId: channelID })
+    // const { refetchWithTrackSeen } = useChannelSeenUsers({ channelId: channelID || '' })
     const { unread_count } = useUnreadMessageCount()
     const updateUnreadCountToZero = useUpdateUnreadCountToZero()
 
@@ -146,7 +145,7 @@ const Tiptap = forwardRef(
 
       try {
         await trackVisit({ channel_id: channelID })
-        refetchWithTrackSeen() // không cần await
+        // refetchWithTrackSeen() // không cần await
         updateUnreadCountToZero(channelID)
       } catch (err) {
         console.error('trackVisit failed', err)
