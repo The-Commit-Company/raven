@@ -100,6 +100,9 @@ export const useFetchChannelList = (): ChannelListContextType => {
   )
   const [newUpdatesAvailable, setNewUpdatesAvailable] = useState(0)
 
+  console.log(data);
+  
+
   useEffect(() => {
     let timeout: NodeJS.Timeout | undefined
     if (newUpdatesAvailable) {
