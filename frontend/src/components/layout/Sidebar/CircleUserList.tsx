@@ -2,7 +2,6 @@ import { useChannelActions } from '@/hooks/useChannelActions'
 import { useGetUser } from '@/hooks/useGetUser'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { ChannelWithGroupType, sortedChannelsAtom } from '@/utils/channel/ChannelAtom'
-import { useUnreadMessages } from '@/utils/layout/sidebar'
 import { closestCenter, DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { arrayMove, rectSortingStrategy, SortableContext, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -10,9 +9,8 @@ import * as ContextMenu from '@radix-ui/react-context-menu'
 import { Tooltip } from '@radix-ui/themes'
 import clsx from 'clsx'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { FaUsers } from 'react-icons/fa6'
-import { IoTriangle } from 'react-icons/io5'
 import { useNavigate, useParams } from 'react-router-dom'
 
 interface Props {
@@ -61,7 +59,7 @@ const CircleUserItem = ({ channel, isActive, onActivate }: Props) => {
 
   const shortName = useMemo(() => {
     const firstWord = displayName?.split(' ')[0] || ''
-    return firstWord.length > 6 ? firstWord.slice(0, 6) + '...' : firstWord
+    return firstWord?.length > 6 ? firstWord.slice(0, 6) + '...' : firstWord
   }, [displayName, isMobile])
 
   return (

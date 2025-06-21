@@ -45,8 +45,8 @@ export const prepareSortedChannels = (
       is_done: Object.prototype.hasOwnProperty.call(currentChannelIsDone, channel.name)
         ? currentChannelIsDone[channel.name]
         : typeof channel.is_done === 'number'
-        ? channel.is_done
-        : 0,
+          ? channel.is_done
+          : 0,
       user_labels: channel.user_labels ?? []
     })),
     ...dm_channels.map((dm) => ({
@@ -55,8 +55,8 @@ export const prepareSortedChannels = (
       is_done: Object.prototype.hasOwnProperty.call(currentChannelIsDone, dm.name)
         ? currentChannelIsDone[dm.name]
         : typeof dm.is_done === 'number'
-        ? dm.is_done
-        : 0,
+          ? dm.is_done
+          : 0,
       user_labels: dm.user_labels ?? []
     }))
   ].sort((a, b) => {
@@ -65,7 +65,6 @@ export const prepareSortedChannels = (
     return timeB - timeA
   })
 }
-
 
 // Hook để lấy danh sách channel chưa done
 export const useEnrichedSortedChannels = (isDoneFilter?: 0 | 1) => {

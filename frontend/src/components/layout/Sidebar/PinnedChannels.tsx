@@ -36,7 +36,7 @@ const PinnedChannels = ({ unread_count }: { unread_count?: UnreadCountData }) =>
     }
   }, [channels, myProfile, unread_count, workspaceID])
 
-  if (pinnedChannels.length === 0) {
+  if (pinnedChannels?.length === 0) {
     return null
   }
 

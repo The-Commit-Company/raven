@@ -1,17 +1,17 @@
-import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList } from '../../layout/Sidebar/SidebarComp'
 import { ChannelItemElement } from '@/components/feature/channels/ChannelList'
-import { DirectMessageItemElement } from '../../feature/direct-messages/DirectMessageList'
-import { __ } from '@/utils/translations'
-import { useStickyState } from '@/hooks/useStickyState'
-import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { SidebarBadge, SidebarViewMoreButton } from '@/components/layout/Sidebar/SidebarComp'
-import { Box, DropdownMenu, Flex, IconButton } from '@radix-ui/themes'
 import { ChannelWithUnreadCount, DMChannelWithUnreadCount } from '@/components/layout/Sidebar/useGetChannelUnreadCounts'
-import clsx from 'clsx'
+import { useStickyState } from '@/hooks/useStickyState'
 import { UnreadCountData } from '@/utils/channel/ChannelListProvider'
-import { BiDotsVerticalRounded } from 'react-icons/bi'
+import { __ } from '@/utils/translations'
+import { Box, DropdownMenu, Flex, IconButton } from '@radix-ui/themes'
+import clsx from 'clsx'
 import { useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { BiDotsVerticalRounded } from 'react-icons/bi'
 import { toast } from 'sonner'
+import { DirectMessageItemElement } from '../../feature/direct-messages/DirectMessageList'
+import { SidebarGroup, SidebarGroupItem, SidebarGroupLabel, SidebarGroupList } from '../../layout/Sidebar/SidebarComp'
 
 interface UnreadListProps {
   unreadChannels: ChannelWithUnreadCount[]
@@ -26,7 +26,7 @@ export const UnreadList = ({ unreadChannels, unreadDMs }: UnreadListProps) => {
   const ref = useRef<HTMLDivElement>(null)
 
   const [height, setHeight] = useState(
-    (ref?.current?.clientHeight ?? showData) ? (unreadDMs.length + unreadChannels.length) * 36 - 4 : 0
+    (ref?.current?.clientHeight ?? showData) ? (unreadDMs?.length + unreadChannels?.length) * 36 - 4 : 0
   )
 
   useLayoutEffect(() => {

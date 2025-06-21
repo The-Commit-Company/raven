@@ -1,20 +1,20 @@
-import { BiSearch } from 'react-icons/bi'
+import { Loader } from '@/components/common/Loader'
+import { UserAvatar } from '@/components/common/UserAvatar'
+import { useGetUserRecords } from '@/hooks/useGetUserRecords'
+import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
+import { DateMonthYear } from '@/utils/dateConversions'
+import { ChannelIcon } from '@/utils/layout/channelIcon'
+import { UserFields } from '@/utils/users/UserListProvider'
+import { Box, Checkbox, Flex, Grid, Link, ScrollArea, Select, Text, TextField } from '@radix-ui/themes'
 import { useFrappeGetCall } from 'frappe-react-sdk'
-import { useState, useContext } from 'react'
-import { useDebounce } from '../../../hooks/useDebounce'
+import { useContext, useState } from 'react'
+import { BiSearch } from 'react-icons/bi'
 import { GetFileSearchResult } from '../../../../../types/Search/Search'
+import { useDebounce } from '../../../hooks/useDebounce'
 import { FileExtensionIcon } from '../../../utils/layout/FileExtIcon'
 import { getFileExtension, getFileName } from '../../../utils/operations'
 import { ErrorBanner } from '../../layout/AlertBanner/ErrorBanner'
 import { EmptyStateForSearch } from '../../layout/EmptyState/EmptyState'
-import { UserFields } from '@/utils/users/UserListProvider'
-import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
-import { useGetUserRecords } from '@/hooks/useGetUserRecords'
-import { ChannelIcon } from '@/utils/layout/channelIcon'
-import { DateMonthYear } from '@/utils/dateConversions'
-import { Box, Checkbox, Flex, Grid, Select, TextField, Text, ScrollArea, Link } from '@radix-ui/themes'
-import { Loader } from '@/components/common/Loader'
-import { UserAvatar } from '@/components/common/UserAvatar'
 import { dateOption } from './GlobalSearch'
 
 interface Props {
@@ -246,7 +246,7 @@ export const FileSearch = ({
       <ScrollArea type='always' scrollbars='vertical' className='sm:h-[420px] h-[58vh]' mt='4'>
         <ErrorBanner error={error} />
         {data?.message?.length === 0 && <EmptyStateForSearch />}
-        {data?.message && data.message.length > 0 ? (
+        {data?.message && data.message?.length > 0 ? (
           <Flex direction='column' gap='4'>
             {data.message.map((f: FileSearchResult) => {
               return (

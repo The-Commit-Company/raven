@@ -407,7 +407,7 @@ const ModelSelector = () => {
             >
               <Select.Trigger placeholder='Select Model' className='w-full' />
               <Select.Content>
-                {validModels.length > 0 ? (
+                {validModels?.length > 0 ? (
                   validModels.map((model: string) => (
                     <Select.Item key={model} value={model}>
                       {model}

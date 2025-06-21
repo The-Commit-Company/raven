@@ -52,7 +52,7 @@ const FunctionList = () => {
         {isLoading && !error && <TableLoader columns={4} />}
         <ErrorBanner error={error} />
         <AINotEnabledCallout />
-        {data && data.length > 0 && <FunctionTable functions={data} />}
+        {data && data?.length > 0 && <FunctionTable functions={data} />}
         {(data?.length === 0 || !isRavenAdmin) && (
           <EmptyState>
             <EmptyStateIcon>

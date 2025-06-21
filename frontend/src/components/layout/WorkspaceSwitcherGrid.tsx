@@ -53,7 +53,7 @@ const WorkspaceSwitcherGrid = () => {
           ))}
         </Grid>
       </div>
-      {otherWorkspaces.length > 0 && (
+      {otherWorkspaces?.length > 0 && (
         <div className='container flex mx-auto flex-col gap-5 max-w-screen-lg'>
           <Stack gap='1'>
             <Heading className='not-cal' size='4'>

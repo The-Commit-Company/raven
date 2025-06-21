@@ -1,11 +1,11 @@
-import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { Button, Dialog } from '@radix-ui/themes'
-import { EditChannelDescriptionModalContent } from './EditChannelDescriptionModal'
-import { useState } from 'react'
-import { ButtonProps } from '@radix-ui/themes/dist/cjs/components/button'
-import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
-import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/layout/Drawer'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
+import { Button, Dialog } from '@radix-ui/themes'
+import { ButtonProps } from '@radix-ui/themes/dist/cjs/components/button'
+import { useState } from 'react'
+import { EditChannelDescriptionModalContent } from './EditChannelDescriptionModal'
 
 interface EditDescriptionButtonProps extends ButtonProps {
   channelData: ChannelListItem
@@ -18,7 +18,7 @@ export const EditDescriptionButton = ({ channelData, is_in_box }: EditDescriptio
     setOpen(false)
   }
   const button_text =
-    channelData && channelData.channel_description && channelData.channel_description.length > 0 ? 'Edit' : 'Add'
+    channelData && channelData.channel_description && channelData.channel_description?.length > 0 ? 'Edit' : 'Add'
 
   const isDesktop = useIsDesktop()
 

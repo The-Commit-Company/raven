@@ -190,7 +190,7 @@ const TimestampButton = () => {
       parsedContent =
         parsedContent.slice(0, index) +
         `<span class="timestamp" ${attributes}">${text}</span>` +
-        parsedContent.slice(index + text.length)
+        parsedContent.slice(index + text?.length)
     })
     return parsedContent
   }

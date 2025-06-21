@@ -8,7 +8,7 @@ import { FileDrop } from '../../file-upload/FileDrop'
 import useFileUpload from '../ChatInput/FileInput/useFileUpload'
 import ModalChatStream from './ModalChatStream'
 
-// const randomPlaceholder = COOL_PLACEHOLDERS[Math.floor(Math.random() * (COOL_PLACEHOLDERS.length))]
+// const randomPlaceholder = COOL_PLACEHOLDERS[Math.floor(Math.random() * (COOL_PLACEHOLDERS?.length))]
 interface ChatBoxBodyProps {
   channelData: ChannelListItem | DMChannelListItem
 }

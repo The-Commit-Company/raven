@@ -192,7 +192,7 @@ const SelectExistingFiles = ({ append, existingFiles }: { append: (id: string) =
             Close
           </Button>
         </Dialog.Close>
-        <Dialog.Close onClick={onSubmit} disabled={selectedFiles.length === 0}>
+        <Dialog.Close onClick={onSubmit} disabled={selectedFiles?.length === 0}>
           <Button type='button' className='not-cal'>
             Add
           </Button>

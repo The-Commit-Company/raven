@@ -28,7 +28,7 @@ const AddWorkspaceMembersModalContent = ({ workspaceID, onClose }: { workspaceID
   const { handleSubmit, control } = methods
 
   const onSubmit = (data: AddWorkspaceMemberForm) => {
-    if (data.add_members && data.add_members.length > 0) {
+    if (data.add_members && data.add_members?.length > 0) {
       call({
         workspace: workspaceID,
         members: data.add_members.map((m) => m.name)
@@ -57,7 +57,7 @@ const AddWorkspaceMembersModalContent = ({ workspaceID, onClose }: { workspaceID
                   name='add_members'
                   rules={{
                     validate: (value) => {
-                      if (value && value.length > 0) {
+                      if (value && value?.length > 0) {
                         return true
                       }
                       return 'Please select at least one member'

@@ -22,6 +22,7 @@ import { useDoubleTap } from 'use-double-tap'
 import { Message, MessageBlock } from '../../../../../../types/Messaging/Message'
 import { generateAvatarColor } from '../../selectDropdowns/GenerateAvatarColor'
 import { getStatusText } from '../../userSettings/AvailabilityStatus/SetUserAvailabilityMenu'
+import { ModalLeftRightLayout } from './LeftRightLayout/ModalLeftRighLayout'
 import { DateTooltip, DateTooltipShort } from './Renderers/DateTooltip'
 import { DoctypeLinkRenderer } from './Renderers/DoctypeLinkRenderer'
 import { FileMessageBlock } from './Renderers/FileMessage'
@@ -31,7 +32,6 @@ import { ThreadMessage } from './Renderers/ThreadMessage'
 import { TiptapRenderer } from './Renderers/TiptapRenderer/TiptapRenderer'
 import { ReplyMessageBox } from './ReplyMessageBox/ReplyMessageBox'
 import RetractedMessage from './RetractedMessage'
-import { ModalLeftRightLayout } from './LeftRightLayout/ModalLeftRighLayout'
 
 interface SeenUser {
   name: string

@@ -1,7 +1,7 @@
 const MAX_PREVIEW_LENGTH = 20
 
 const truncateText = (text: string, maxLength: number = MAX_PREVIEW_LENGTH): string => {
-  return text.length > maxLength ? text.slice(0, maxLength) + '...' : text
+  return text?.length > maxLength ? text.slice(0, maxLength) + '...' : text
 }
 
 const isImageFile = (filename: string = ''): boolean => /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(filename)

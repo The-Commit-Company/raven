@@ -181,7 +181,7 @@ const VariableBuilderField = ({
   return (
     <Stack>
       <Stack gap='1'>
-        {Object.entries(properties).length === 0 && (
+        {Object.entries(properties)?.length === 0 && (
           <Text size='2' color='gray' className='text-center pt-4'>
             No variables defined
           </Text>
@@ -210,7 +210,7 @@ const VariableBuilderField = ({
                   <Text size='2' color='gray'>
                     {value.description}
                   </Text>
-                  {(value.type === 'string' || value.type === 'number') && value.enum && value.enum.length > 0 && (
+                  {(value.type === 'string' || value.type === 'number') && value.enum && value.enum?.length > 0 && (
                     <Text as='span' size='2' color='gray' weight={'medium'}>
                       Options: {value.enum?.join(', ')}
                     </Text>

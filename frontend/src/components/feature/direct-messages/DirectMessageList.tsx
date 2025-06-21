@@ -39,7 +39,7 @@ export const DirectMessageList = ({ dm_channels }: DirectMessageListProps) => {
   const ref = useRef<HTMLDivElement>(null)
 
   const [height, setHeight] = useState(
-    (ref?.current?.clientHeight ?? showData) ? (dm_channels.length + (dm_channels.length < 5 ? 5 : 0)) * 34.79 : 0
+    (ref?.current?.clientHeight ?? showData) ? (dm_channels?.length + (dm_channels?.length < 5 ? 5 : 0)) * 34.79 : 0
   )
 
   useLayoutEffect(() => {
@@ -64,7 +64,7 @@ export const DirectMessageList = ({ dm_channels }: DirectMessageListProps) => {
         >
           <div ref={ref} className='flex gap-1 flex-col fade-in'>
             <DirectMessageItemList dm_channels={dm_channels} />
-            {dm_channels.length < 5 ? <ExtraUsersItemList /> : null}
+            {dm_channels?.length < 5 ? <ExtraUsersItemList /> : null}
           </div>
         </SidebarGroupList>
       </SidebarGroup>

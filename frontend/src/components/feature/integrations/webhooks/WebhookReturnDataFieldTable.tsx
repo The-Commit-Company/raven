@@ -53,7 +53,13 @@ export const WebhookData = () => {
           <HStack align={'center'}>
             <Dialog.Root open={previewOpen} onOpenChange={setPreviewOpen}>
               <Dialog.Trigger>
-                <Button type='button' variant='surface' color='gray' disabled={fields.length === 0} className='not-cal'>
+                <Button
+                  type='button'
+                  variant='surface'
+                  color='gray'
+                  disabled={fields?.length === 0}
+                  className='not-cal'
+                >
                   <FiEye />
                   Preview
                 </Button>

@@ -1,13 +1,13 @@
+import { UserAvatar } from '@/components/common/UserAvatar'
+import { ChannelMembers } from '@/hooks/fetchers/useFetchChannelMembers'
+import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { Box, Flex, Text, TextField } from '@radix-ui/themes'
 import { useContext, useMemo, useState } from 'react'
+import { BiSearch, BiSolidCrown } from 'react-icons/bi'
 import { useDebounce } from '../../../hooks/useDebounce'
 import { UserContext } from '../../../utils/auth/UserProvider'
-import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { AddMembersButton } from './add-members/AddMembersButton'
-import { Box, Flex, TextField, Text } from '@radix-ui/themes'
-import { BiSearch, BiCircle, BiSolidCrown } from 'react-icons/bi'
-import { UserAvatar } from '@/components/common/UserAvatar'
 import { UserActionsMenu } from './UserActions/UserActionsMenu'
-import { ChannelMembers } from '@/hooks/fetchers/useFetchChannelMembers'
 
 interface MemberDetailsProps {
   channelData: ChannelListItem
@@ -81,7 +81,7 @@ const MemberList = ({ channelData, channelMembers, activeUsers, updateMembers, i
   return (
     <Box className={'overflow-hidden overflow-y-scroll'}>
       <Flex direction='column' gap='2'>
-        {filteredMembers.length > 0 ? (
+        {filteredMembers?.length > 0 ? (
           <Flex direction='column'>
             {filteredMembers.map((member) => (
               <Box key={member.name} className={'hover:bg-slate-3 rounded-md'}>

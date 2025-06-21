@@ -73,7 +73,7 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
 
   // Message pagination logic
   const { visibleMessages, hasMore, startIdx } = useMemo(() => {
-    const totalMessages = localMessages.length
+    const totalMessages = localMessages?.length
     const startIdx = Math.max(0, totalMessages - visibleCount)
     return {
       visibleMessages: localMessages.slice(startIdx),

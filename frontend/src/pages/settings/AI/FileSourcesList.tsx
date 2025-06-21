@@ -50,7 +50,7 @@ const FileSourcesList = () => {
         {isLoading && !error && <TableLoader columns={2} />}
         <ErrorBanner error={error} />
         <AINotEnabledCallout />
-        {data && data.length > 0 && <FileSourceTable data={data} mutate={mutate} />}
+        {data && data?.length > 0 && <FileSourceTable data={data} mutate={mutate} />}
         {(data?.length === 0 || !isRavenAdmin) && (
           <EmptyState>
             <EmptyStateIcon>

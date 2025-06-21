@@ -361,7 +361,7 @@ const RecipientsTab = () => {
 
         {fields.map((row, index) => (
           <Fragment key={index}>
-            <div className={clsx('col-span-3 p-2', index !== fields.length - 1 ? 'border-b border-gray-4' : '')}>
+            <div className={clsx('col-span-3 p-2', index !== fields?.length - 1 ? 'border-b border-gray-4' : '')}>
               <Box>
                 <VisuallyHidden>
                   <Label htmlFor={`recipients.${index}.channel_type`}>Channel Type for Row {index + 1}</Label>
@@ -391,7 +391,7 @@ const RecipientsTab = () => {
                 />
               </Box>
             </div>
-            <div className={clsx('col-span-3 p-2', index !== fields.length - 1 ? 'border-b border-gray-4' : '')}>
+            <div className={clsx('col-span-3 p-2', index !== fields?.length - 1 ? 'border-b border-gray-4' : '')}>
               <Box>
                 <VisuallyHidden>
                   <Label htmlFor={`recipients.${index}.variable_type`}>Variable Type for Row {index + 1}</Label>
@@ -419,7 +419,7 @@ const RecipientsTab = () => {
                 />
               </Box>
             </div>
-            <div className={clsx('col-span-4 p-2', index !== fields.length - 1 ? 'border-b border-gray-4' : '')}>
+            <div className={clsx('col-span-4 p-2', index !== fields?.length - 1 ? 'border-b border-gray-4' : '')}>
               <Box>
                 <VisuallyHidden>
                   <Label htmlFor={`recipients.${index}.value`}>Value for Row {index + 1}</Label>
@@ -447,7 +447,7 @@ const RecipientsTab = () => {
             <div
               className={clsx(
                 'col-span-1 p-2 flex justify-center',
-                index !== fields.length - 1 ? 'border-b border-gray-4' : ''
+                index !== fields?.length - 1 ? 'border-b border-gray-4' : ''
               )}
             >
               <IconButton variant='surface' color='red' onClick={() => remove(index)}>
@@ -653,7 +653,7 @@ const DoctypeVariableField = ({
         aria-invalid={fieldState?.error ? 'true' : 'false'}
       />
       <Select.Content>
-        {suggestedFields.length > 0 && (
+        {suggestedFields?.length > 0 && (
           <Select.Group>
             <Select.Label>Suggested</Select.Label>
             {suggestedFields.map((field) => (

@@ -87,7 +87,7 @@ function MultipleUserComboBox({
       <ul
         className={`sm:w-[550px] w-[24rem] absolute bg-background mt-0 shadow-sm dark:shadow-md z-[9999] max-h-96 overflow-scroll p-0
                     border border-b-0 border-gray-3 dark:border-gray-6
-                    ${!(isOpen && items.length) && 'hidden'}`}
+                    ${!(isOpen && items?.length) && 'hidden'}`}
         {...getMenuProps()}
       >
         {isOpen &&
@@ -118,7 +118,7 @@ function MultipleUserComboBox({
             </li>
           ))}
       </ul>
-      {selectedUsers.length > 0 && (
+      {selectedUsers?.length > 0 && (
         <div className='mt-4 px-1'>
           <Separator size='4' />
           <div className='pt-1'>

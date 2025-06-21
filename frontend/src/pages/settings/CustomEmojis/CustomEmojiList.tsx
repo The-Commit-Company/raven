@@ -71,7 +71,7 @@ const CustomEmojiList = () => {
         />
         {isLoading && !error && <TableLoader columns={2} />}
         <ErrorBanner error={error} />
-        {data && data.length > 0 && <CustomEmojisTable emojis={data} onDelete={onDeleteEmoji} />}
+        {data && data?.length > 0 && <CustomEmojisTable emojis={data} onDelete={onDeleteEmoji} />}
         {data?.length === 0 && (
           <EmptyState>
             <EmptyStateIcon>

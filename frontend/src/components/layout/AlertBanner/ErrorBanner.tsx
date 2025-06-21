@@ -1,8 +1,7 @@
-import { FrappeError } from 'frappe-react-sdk'
-import { useMemo } from 'react'
-import React from 'react'
 import { ErrorCallout } from '@/components/common/Callouts/ErrorCallouts'
 import { Text } from '@radix-ui/themes'
+import { FrappeError } from 'frappe-react-sdk'
+import React, { useMemo } from 'react'
 
 interface ErrorBannerProps {
   error?: FrappeError | null
@@ -32,7 +31,7 @@ const getErrorMessages = (error?: FrappeError | null): ParsedErrorMessage[] => {
     }
   })
 
-  if (eMessages.length === 0) {
+  if (eMessages?.length === 0) {
     // Get the message from the exception by removing the exc_type
     const indexOfFirstColon = error?.exception?.indexOf(':')
     if (indexOfFirstColon) {
@@ -47,7 +46,7 @@ const getErrorMessages = (error?: FrappeError | null): ParsedErrorMessage[] => {
       }
     }
 
-    if (eMessages.length === 0) {
+    if (eMessages?.length === 0) {
       eMessages = [
         {
           message: error?.message,
@@ -76,7 +75,7 @@ export const ErrorBanner = ({ error, overrideHeading, children }: ErrorBannerPro
       }
     })
 
-    if (eMessages.length === 0) {
+    if (eMessages?.length === 0) {
       // Get the message from the exception by removing the exc_type
       const indexOfFirstColon = error?.exception?.indexOf(':')
       if (indexOfFirstColon) {
@@ -91,7 +90,7 @@ export const ErrorBanner = ({ error, overrideHeading, children }: ErrorBannerPro
         }
       }
 
-      if (eMessages.length === 0) {
+      if (eMessages?.length === 0) {
         eMessages = [
           {
             message: error?.message,
@@ -109,7 +108,7 @@ export const ErrorBanner = ({ error, overrideHeading, children }: ErrorBannerPro
     return message?.title
   }
 
-  if (messages.length === 0 || !error) return null
+  if (messages?.length === 0 || !error) return null
   return (
     <ErrorCallout>
       {overrideHeading && (

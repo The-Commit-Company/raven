@@ -122,7 +122,7 @@ const FieldRow = ({
               {field.options ? (
                 <Tooltip content={field.options.split('\n').join(', ')}>
                   <Badge color='blue' className='rounded-md'>
-                    {field.options.split('\n').length} Options
+                    {field.options.split('\n')?.length} Options
                   </Badge>
                 </Tooltip>
               ) : null}

@@ -1,16 +1,16 @@
-import { Button, Dialog } from '@radix-ui/themes'
-import { RiPushpinLine } from 'react-icons/ri'
-import { useState } from 'react'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
-import { PinnedMessageModalContent } from './PinnedMessageModalContent'
+import { Button, Dialog } from '@radix-ui/themes'
 import clsx from 'clsx'
+import { useState } from 'react'
+import { RiPushpinLine } from 'react-icons/ri'
+import { PinnedMessageModalContent } from './PinnedMessageModalContent'
 
 interface ViewPinnedMessagesButtonProps {
   pinnedMessagesString: string
 }
 
 export const ViewPinnedMessagesButton = ({ pinnedMessagesString }: ViewPinnedMessagesButtonProps) => {
-  const pinnedMessages = pinnedMessagesString ? pinnedMessagesString.split('\n').length : 0
+  const pinnedMessages = pinnedMessagesString ? pinnedMessagesString.split('\n')?.length : 0
 
   const [open, setOpen] = useState(false)
 

@@ -30,7 +30,7 @@ export const UsersTable = ({ data, selected, setSelected, defaultSelected }: Use
   }
 
   const isAllChecked = useMemo(() => {
-    if (data && data.length) {
+    if (data && data?.length) {
       let allChecked = true
       data?.forEach((user) => {
         if (!selected.includes(user.name) && !defaultSelected.includes(user.name)) {

@@ -1,14 +1,14 @@
+import { ErrorText, Label } from '@/components/common/Form'
+import { Loader } from '@/components/common/Loader'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { ChannelIcon } from '@/utils/layout/channelIcon'
+import { Box, Button, Dialog, Flex, Text, TextField } from '@radix-ui/themes'
 import { useFrappeUpdateDoc } from 'frappe-react-sdk'
 import { ChangeEvent, useCallback } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
-import { ChannelIcon } from '@/utils/layout/channelIcon'
-import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { Box, Dialog, Flex, Text, TextField, Button } from '@radix-ui/themes'
-import { ErrorText, Label } from '@/components/common/Form'
-import { Loader } from '@/components/common/Loader'
 import { toast } from 'sonner'
-import { useIsDesktop } from '@/hooks/useMediaQuery'
 
 interface RenameChannelForm {
   channel_name: string
@@ -103,7 +103,7 @@ export const RenameChannelModalContent = ({
                   <TextField.Slot side='left'>{<ChannelIcon type={type} />}</TextField.Slot>
                   <TextField.Slot side='right'>
                     <Text size='2' weight='light' color='gray'>
-                      {50 - field.value.length}
+                      {50 - field.value?.length}
                     </Text>
                   </TextField.Slot>
                 </TextField.Root>

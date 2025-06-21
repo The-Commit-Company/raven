@@ -1,6 +1,6 @@
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
-import { Flex, Theme, Text } from '@radix-ui/themes'
+import { Flex, Text, Theme } from '@radix-ui/themes'
 import { ReactRendererOptions } from '@tiptap/react'
 import { clsx } from 'clsx'
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
@@ -16,11 +16,11 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
   }
 
   const upHandler = () => {
-    setSelectedIndex((selectedIndex + props?.items.length - 1) % props?.items.length)
+    setSelectedIndex((selectedIndex + props?.items?.length - 1) % props?.items?.length)
   }
 
   const downHandler = () => {
-    setSelectedIndex((selectedIndex + 1) % props?.items.length)
+    setSelectedIndex((selectedIndex + 1) % props?.items?.length)
   }
 
   const enterHandler = () => {
@@ -57,7 +57,7 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
         gap='0'
         className='shadow-lg dark:bg-panel-solid bg-white overflow-y-scroll max-h-64 rounded-md'
       >
-        {props?.items.length ? (
+        {props?.items?.length ? (
           props.items.map((item: ChannelListItem, index: number) => (
             <MentionItem
               item={item}
@@ -65,7 +65,7 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
               selectItem={selectItem}
               selectedIndex={selectedIndex}
               key={item.name}
-              itemsLength={props.items.length}
+              itemsLength={props.items?.length}
             />
           ))
         ) : (

@@ -59,7 +59,7 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
       return c.user_labels?.some((label: { label_id: string; label: string }) => label.label_id === labelID)
     })
 
-    if (filtered.length === 0) {
+    if (filtered?.length === 0) {
       return <div className='text-gray-500 text-sm italic p-4 text-center'>Không có kênh nào gắn nhãn này</div>
     }
 
@@ -88,7 +88,7 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
 
   const filteredChannels = getFilteredChannels()
 
-  if (filteredChannels.length === 0 && title !== 'Trò chuyện') {
+  if (filteredChannels?.length === 0 && title !== 'Trò chuyện') {
     return <div className='text-gray-500 text-sm italic p-4 text-center'>Không có kết quả</div>
   }
 
@@ -132,7 +132,7 @@ const isDMChannel = (c: UnifiedChannel): c is DMChannelWithUnreadCount => {
 
 const truncateText = (text: string, maxLength: number) => {
   if (!text) return ''
-  return text.length > maxLength ? text.slice(0, maxLength) + '...' : text
+  return text?.length > maxLength ? text.slice(0, maxLength) + '...' : text
 }
 
 export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel }) => {

@@ -1,15 +1,14 @@
-import { useEffect, useRef, useState } from 'react'
-import { FiPlus } from 'react-icons/fi'
-import { Dialog } from '@radix-ui/themes'
-import { useIsDesktop } from '@/hooks/useMediaQuery'
-import { Box, Button, Flex, IconButton, TextField } from '@radix-ui/themes'
-import { Drawer, DrawerContent, DrawerTrigger } from '@/components/layout/Drawer'
-import { toast } from 'sonner'
-import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { Label } from '@/components/common/Form'
+import { Drawer, DrawerContent, DrawerTrigger } from '@/components/layout/Drawer'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { Box, Button, Dialog, Flex, IconButton, TextField } from '@radix-ui/themes'
 import { useFrappePostCall } from 'frappe-react-sdk'
-import { IoMdClose } from 'react-icons/io'
 import { useSetAtom } from 'jotai'
+import { useEffect, useRef, useState } from 'react'
+import { Controller, FormProvider, useForm } from 'react-hook-form'
+import { FiPlus } from 'react-icons/fi'
+import { IoMdClose } from 'react-icons/io'
+import { toast } from 'sonner'
 import { refreshLabelListAtom } from './conversations/atoms/labelAtom'
 
 interface CreateLabelForm {
@@ -178,7 +177,7 @@ export const CreateLabelContent = ({ setIsOpen }: { isOpen: boolean; setIsOpen: 
                   ) : (
                     <div className='text-transparent text-sm'>Ẩn</div>
                   )}
-                  <div className='text-sm text-gray-500'>{labelValue.length}/60</div>
+                  <div className='text-sm text-gray-500'>{labelValue?.length}/60</div>
                 </Flex>
               </>
             )}

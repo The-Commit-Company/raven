@@ -50,7 +50,7 @@ const DocumentNotificationList = () => {
         />
         {isLoading && !error && <TableLoader columns={4} />}
         <ErrorBanner error={error} />
-        {data && data.length > 0 && <DocumentNotificationTable notifications={data} />}
+        {data && data?.length > 0 && <DocumentNotificationTable notifications={data} />}
         {(data?.length === 0 || !isRavenAdmin) && (
           <EmptyState>
             <EmptyStateIcon>

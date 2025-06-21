@@ -27,7 +27,7 @@ import { ReplyMessageBox } from '../ChatMessage/ReplyMessageBox/ReplyMessageBox'
 import ChatStream from './ChatStream'
 import { GetMessagesResponse } from './useMessageAPI'
 
-// const randomPlaceholder = COOL_PLACEHOLDERS[Math.floor(Math.random() * (COOL_PLACEHOLDERS.length))]
+// const randomPlaceholder = COOL_PLACEHOLDERS[Math.floor(Math.random() * (COOL_PLACEHOLDERS?.length))]
 interface ChatBoxBodyProps {
   channelData: ChannelListItem | DMChannelListItem
 }
@@ -270,9 +270,9 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
               onMessageSend={sendMessage}
               messageSending={loading}
               slotBefore={
-                <Flex direction='column' justify='center' hidden={!selectedMessage && !files.length}>
+                <Flex direction='column' justify='center' hidden={!selectedMessage && !files?.length}>
                   {selectedMessage && <PreviousMessagePreview selectedMessage={selectedMessage} />}
-                  {files && files.length > 0 && (
+                  {files && files?.length > 0 && (
                     <Flex gap='2' width='100%' align='stretch' px='2' p='2' wrap='wrap'>
                       {files.map((f: CustomFile) => (
                         <Box className='grow-0' key={f.fileID}>
@@ -285,7 +285,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                       ))}
                     </Flex>
                   )}
-                  {files.length !== 0 && (
+                  {files?.length !== 0 && (
                     <CompressImageCheckbox compressImages={compressImages} setCompressImages={setCompressImages} />
                   )}
                 </Flex>

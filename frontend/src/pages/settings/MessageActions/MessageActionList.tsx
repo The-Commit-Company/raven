@@ -51,7 +51,7 @@ const MessageActionList = () => {
 
         {isLoading && !error && <TableLoader columns={2} />}
         <ErrorBanner error={error} />
-        {data && data.length > 0 && <MessageActionsTable actions={data} />}
+        {data && data?.length > 0 && <MessageActionsTable actions={data} />}
         {data?.length === 0 && (
           <EmptyState>
             <EmptyStateIcon>
