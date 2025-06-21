@@ -3,6 +3,7 @@ import { useIsDesktop, useIsMobile } from '@/hooks/useMediaQuery'
 import { useStickyState } from '@/hooks/useStickyState'
 import useUnreadMessageCount, { useUpdateUnreadCountToZero } from '@/hooks/useUnreadMessageCount'
 import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
+import eventBus from '@/utils/event-emitter'
 import { EnterKeyBehaviourAtom } from '@/utils/preferences'
 import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
 import { Box, Flex, IconButton } from '@radix-ui/themes'
@@ -40,7 +41,6 @@ import { RightToolbarButtons, SendButton } from './RightToolbarButtons'
 import { TextFormattingMenu } from './TextFormattingMenu'
 import './tiptap.styles.css'
 import { ToolPanel } from './ToolPanel'
-import { useChannelSeenUsers } from '@/hooks/useChannelSeenUsers'
 const MobileInputActions = lazy(() => import('./MobileActions/MobileInputActions'))
 
 const lowlight = createLowlight(common)
@@ -135,7 +135,6 @@ const Tiptap = forwardRef(
 
     const channelMembersRef = useRef<MemberSuggestions[]>([])
     const { call: trackVisit } = useFrappePostCall('raven.api.raven_channel_member.track_visit')
-    const { refetchWithTrackSeen } = useChannelSeenUsers({ channelId: channelID })
     const { unread_count } = useUnreadMessageCount()
     const updateUnreadCountToZero = useUpdateUnreadCountToZero()
 
@@ -146,7 +145,10 @@ const Tiptap = forwardRef(
 
       try {
         await trackVisit({ channel_id: channelID })
-        refetchWithTrackSeen() // không cần await
+        eventBus.emit('user:interacted', {
+          source: 'input',
+          timestamp: Date.now()
+        })
         updateUnreadCountToZero(channelID)
       } catch (err) {
         console.error('trackVisit failed', err)

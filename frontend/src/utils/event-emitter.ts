@@ -14,6 +14,10 @@ export interface EventBusEvents {
   'thread:deleted': {
     threadId: string
   }
+  'user:interacted': {
+    source: 'input' | 'textarea' | 'editor' | 'click'
+    timestamp: number
+  }
 }
 
 class TypedEventBus extends EventEmitter<EventBusEvents> {}
