@@ -80,8 +80,10 @@ const FrappeHR = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <SettingsContentContainer>
             <SettingsPageHeader
-              title={__('HR')}
-              description={__('Connect your HR system to Raven to sync employee data and send notifications.')}
+              title={__('Nhân sự')}
+              description={__(
+                'Kết nối hệ thống nhân sự của bạn với Raven để đồng bộ dữ liệu nhân viên và gửi thông báo.'
+              )}
               actions={
                 <Button type='submit' disabled={updatingDoc || !isRavenAdmin}>
                   {updatingDoc && <Loader className='text-white' />}
@@ -89,12 +91,13 @@ const FrappeHR = () => {
                 </Button>
               }
             />
+
             {!isHRInstalled && (
               <CustomCallout
                 iconChildren={<FiAlertTriangle />}
                 rootProps={{ color: 'yellow', variant: 'surface' }}
-                textChildren={__('HR is not installed on this site.')}
-              ></CustomCallout>
+                textChildren={__('Module Nhân sự chưa được cài đặt trên hệ thống này.')}
+              />
             )}
 
             <ErrorBanner error={error} />
@@ -116,12 +119,12 @@ const FrappeHR = () => {
                     )}
                   />
 
-                  {__('Automatically create channels for departments')}
+                  {__('Tự động tạo kênh cho các phòng ban')}
                 </Flex>
               </Text>
               <HelperText>
                 {__(
-                  'If checked, a channel will be created for each department. Employees in the department will be synced with channel members.'
+                  'Nếu được chọn, một kênh sẽ được tạo cho mỗi phòng ban. Nhân viên trong phòng ban sẽ được đồng bộ làm thành viên của kênh.'
                 )}
               </HelperText>
             </Flex>
@@ -173,10 +176,12 @@ const FrappeHR = () => {
                     )}
                   />
 
-                  {__('Show if a user is on leave')}
+                  {__('Hiển thị khi người dùng đang nghỉ phép')}
                 </Flex>
               </Text>
-              <HelperText>{__('If checked, users on Raven are notified if another user is on leave.')}</HelperText>
+              <HelperText>
+                {__('Nếu được chọn, người dùng trên Raven sẽ được thông báo khi có người khác đang nghỉ phép.')}
+              </HelperText>
             </Flex>
           </SettingsContentContainer>
         </form>
