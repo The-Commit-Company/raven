@@ -25,9 +25,9 @@ export const SidebarBody = () => {
 
   const isTablet = useIsTablet()
 
-  const isLoaded = !isLoading && !isValidating && (channels.length > 0 || dm_channels.length > 0)
+  // const isLoaded = !isLoading && !isValidating
 
-  if (!isLoaded) return <BeatLoader text='Đang tải danh sách tin nhắn...' />
+  // if (!isLoaded) return <BeatLoader text='Đang tải danh sách tin nhắn...' />
 
   return (
     <ScrollArea type='hover' scrollbars='vertical' className='h-[calc(100vh-4rem)] sidebar-scroll'>
