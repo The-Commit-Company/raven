@@ -1,7 +1,7 @@
 import { ChannelMembers } from '@/hooks/fetchers/useFetchChannelMembers'
 import { useIsDesktop, useIsMobile } from '@/hooks/useMediaQuery'
 import { useStickyState } from '@/hooks/useStickyState'
-import { useUpdateUnreadCountToZero } from '@/hooks/useUnreadMessageCount'
+import useUnreadMessageCount, { useUpdateUnreadCountToZero } from '@/hooks/useUnreadMessageCount'
 import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
 import { EnterKeyBehaviourAtom } from '@/utils/preferences'
 import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
@@ -40,6 +40,7 @@ import { RightToolbarButtons, SendButton } from './RightToolbarButtons'
 import { TextFormattingMenu } from './TextFormattingMenu'
 import './tiptap.styles.css'
 import { ToolPanel } from './ToolPanel'
+import { useChannelSeenUsers } from '@/hooks/useChannelSeenUsers'
 const MobileInputActions = lazy(() => import('./MobileActions/MobileInputActions'))
 
 const lowlight = createLowlight(common)
@@ -134,12 +135,18 @@ const Tiptap = forwardRef(
 
     const channelMembersRef = useRef<MemberSuggestions[]>([])
     const { call: trackVisit } = useFrappePostCall('raven.api.raven_channel_member.track_visit')
-
+    const { refetchWithTrackSeen } = useChannelSeenUsers({ channelId: channelID })
+    const { unread_count } = useUnreadMessageCount()
     const updateUnreadCountToZero = useUpdateUnreadCountToZero()
 
     const handleClick = async () => {
+      const unreadEntry = unread_count?.message.find((c) => c.name === channelID)
+
+      if (!unreadEntry || unreadEntry.unread_count <= 0) return // Không có hoặc = 0 → không cần track
+
       try {
         await trackVisit({ channel_id: channelID })
+        refetchWithTrackSeen() // không cần await
         updateUnreadCountToZero(channelID)
       } catch (err) {
         console.error('trackVisit failed', err)

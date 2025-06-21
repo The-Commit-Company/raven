@@ -104,7 +104,7 @@ export const useFetchChannelList = (): ChannelListContextType => {
     let timeout: NodeJS.Timeout | undefined
     if (newUpdatesAvailable) {
       timeout = setTimeout(() => {
-        mutate()
+        // mutate()
         // Also update the unread channel count
         globalMutate('unread_channel_count')
         setNewUpdatesAvailable(0)
