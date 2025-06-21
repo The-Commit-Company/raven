@@ -7,10 +7,10 @@ import { useIsTablet } from '@/hooks/useMediaQuery'
 import IsTabletSidebarNav from './IsTabletSidebarNav'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { prepareSortedChannels, setSortedChannelsAtom } from '@/utils/channel/ChannelAtom'
-import BeatLoader from '../Loaders/BeatLoader'
+// import BeatLoader from '../Loaders/BeatLoader'
 import { channelIsDoneAtom } from '@/utils/channel/channelIsDoneAtom'
 export const SidebarBody = () => {
-  const { isLoading, isValidating, channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
+  const { channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
 
   const setSortedChannels = useSetAtom(setSortedChannelsAtom)
 

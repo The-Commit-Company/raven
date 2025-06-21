@@ -13,6 +13,8 @@ import { toast } from 'sonner'
 import { useUpdateChannelLabels } from '@/utils/channel/ChannelAtom'
 import { useChannelActions } from '@/hooks/useChannelActions'
 import { useSWRConfig } from 'frappe-react-sdk'
+import { useIsMobile, useIsTablet } from '@/hooks/useMediaQuery'
+import { truncateText } from '@/utils/textUtils/truncateText'
 
 type Props = {
   channelID: string
@@ -72,6 +74,10 @@ const LabelItemList = ({
     }
   }
 
+  const isTablet = useIsTablet()
+  const isMobile = useIsMobile()
+  const maxLength = isTablet || isMobile ? 20 : 30
+
   return (
     <ContextMenu.Root>
       <ContextMenu.Trigger>
@@ -94,7 +100,7 @@ const LabelItemList = ({
                 </div>
               )}
               <Text as='span' className={clsx('line-clamp-1 text-ellipsis', 'text-base md:text-sm xs:text-xs')}>
-                {displayName}
+                {truncateText(displayName, maxLength)}
               </Text>
             </Flex>
             {unreadCount > 0 && (

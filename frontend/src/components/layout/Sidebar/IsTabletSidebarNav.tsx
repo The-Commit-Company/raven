@@ -2,26 +2,25 @@ import { useIsTablet } from '@/hooks/useMediaQuery'
 import { useUnreadMessageCount } from '@/hooks/useUnreadMessageCount'
 import { useSidebarMode } from '@/utils/layout/sidebar'
 import clsx from 'clsx'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { HiMenu } from 'react-icons/hi'
 import { filterItems, FilterList, useMentionUnreadCount } from './SidebarContainer'
+import { useEnrichedSortedChannels } from '@/utils/channel/ChannelAtom'
 
 export default function FilterTabs() {
-  const { title, setTitle, setLabelID } = useSidebarMode()
-  const { totalUnreadCount } = useUnreadMessageCount()
+  const { title, setTitle, setLabelID, setMode } = useSidebarMode()
+  const enrichedChannels = useEnrichedSortedChannels(0) // chỉ lấy channel chưa xong
   const { mentionUnreadCount, resetMentions } = useMentionUnreadCount()
 
   const isTablet = useIsTablet()
 
-  const { setMode } = useSidebarMode()
-
   const limitedTabs = filterItems.slice(0, 3)
-
-  // Trích ra các label trong limitedTabs
   const limitedLabels = limitedTabs.map((tab) => tab.label)
-
-  // Nếu title không nằm trong limitedTabs, render riêng
   const tabsToRender = limitedLabels.includes(title as string) ? limitedTabs : [{ label: title, icon: null }]
+
+  const totalUnreadCount = useMemo(() => {
+    return enrichedChannels.reduce((sum, c) => sum + (c.unread_count ?? 0), 0)
+  }, [enrichedChannels])
 
   const getBadgeCount = (label: string) => {
     if (['Trò chuyện', 'Chưa đọc'].includes(label)) return totalUnreadCount
@@ -59,7 +58,6 @@ export default function FilterTabs() {
           className='w-7 h-7 shrink-0 rounded-full dark:bg-gray-700 flex items-center justify-center relative'
         >
           <HiMenu className='w-4 h-4 dark:text-white' />
-
           {(totalUnreadCount > 0 || mentionUnreadCount > 0) && (
             <span className='absolute top-0 right-0 w-[8px] h-[8px] bg-red-500 rounded-full' />
           )}
@@ -74,7 +72,6 @@ export default function FilterTabs() {
           {tabsToRender.map((tab) => {
             const isActive = tab.label === title
             const badgeCount = getBadgeCount(tab.label as string)
-
             const isSingleTab = tabsToRender.length === 1
 
             return (
@@ -95,7 +92,6 @@ export default function FilterTabs() {
                   <span>{tab.label as string}</span>
                   {badgeCount > 0 && <span className='text-[10px] px-1 rounded-full leading-none'>{badgeCount}</span>}
 
-                  {/* ❌ Nút X nằm bên trong button */}
                   {isSingleTab && (
                     <span
                       onClick={(e) => {
@@ -117,7 +113,6 @@ export default function FilterTabs() {
 
       {isTablet && shouldRenderFilterList && (
         <>
-          {/* Overlay */}
           <div
             onClick={() => setShowFilterList(false)}
             className={clsx(
@@ -126,7 +121,6 @@ export default function FilterTabs() {
             )}
           />
 
-          {/* Sidebar */}
           <div
             className={clsx(
               'fixed top-0 left-0 h-full w-60 bg-white dark:bg-neutral-800 shadow-lg z-30',

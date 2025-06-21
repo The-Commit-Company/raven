@@ -13,7 +13,7 @@ import { useChannelDone } from '@/hooks/useChannelDone'
 import { useIsDesktop, useIsLaptop, useIsTablet } from '@/hooks/useMediaQuery'
 import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
 import { useEnrichedSortedChannels } from '@/utils/channel/ChannelAtom'
-import { formatLastMessage } from '@/utils/channel/useFormatLastMessage'
+import { formatLastMessage, useFormattedLastMessage } from '@/utils/channel/useFormatLastMessage'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { useSidebarMode } from '@/utils/layout/sidebar'
 import { useAtomValue } from 'jotai'
@@ -173,10 +173,8 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   }, [channel.last_message_details])
 
   const user = useGetUser(lastOwner)
-  const formattedMessage = useMemo(
-    () => formatLastMessage(channel, currentUser, user?.full_name),
-    [channel.last_message_details, currentUser, user?.full_name]
-  )
+  const formattedMessage = useFormattedLastMessage(channel, currentUser, user?.full_name)
+
   const rawName = peerUser
     ? peerUserId !== currentUser
       ? peerUser.full_name

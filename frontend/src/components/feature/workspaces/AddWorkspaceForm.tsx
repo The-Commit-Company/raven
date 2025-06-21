@@ -23,6 +23,7 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
   })
 
   const [image, setImage] = useState<CustomFile | undefined>(undefined)
+  const [workspaceNameLength, setWorkspaceNameLength] = useState(0)
 
   const {
     register,
@@ -33,7 +34,6 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
 
   const { createDoc, loading: creatingDoc, error } = useFrappeCreateDoc<RavenWorkspace>()
   const { updateDoc, loading: updatingDoc } = useFrappeUpdateDoc()
-
   const { upload, loading: uploadingFile, error: fileError } = useFrappeFileUpload()
 
   const onSubmit = (data: RavenWorkspace) => {
@@ -57,11 +57,10 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
         return res
       })
       .then((res) => {
-        // Mutate the workspace list, channel list
         mutate('workspaces_list')
         mutate('channel_list')
         toast.success('Workspace created', {
-          description: `You can now invite members to ${res.workspace_name}`,
+          description: `Bạn có thể mời thành viên vào ${res.workspace_name}`,
           duration: 2000
         })
         onClose(res.name)
@@ -69,7 +68,6 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
   }
 
   const isDesktop = useIsDesktop()
-
   const loading = creatingDoc || uploadingFile || updatingDoc
 
   return (
@@ -79,6 +77,7 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
           <ErrorBanner error={error} />
           <ErrorBanner error={fileError} />
 
+          {/* Tên Workspace */}
           <Stack>
             <Box>
               <Label htmlFor='workspace_name' isRequired>
@@ -87,16 +86,31 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
               <TextField.Root
                 id='workspace_name'
                 {...register('workspace_name', {
-                  required: 'Name is required'
+                  required: 'Tên workspace không được để trống',
+                  maxLength: {
+                    value: 140,
+                    message: 'Tên workspace tối đa 140 ký tự'
+                  }
                 })}
                 autoFocus={isDesktop}
-                placeholder='e.g. My Workspace'
+                placeholder='VD: Phòng Thiết Kế'
+                maxLength={140}
                 aria-invalid={errors.workspace_name ? 'true' : 'false'}
+                onChange={(e) => {
+                  setWorkspaceNameLength(e.target.value.length)
+                  methods.setValue('workspace_name', e.target.value)
+                }}
               />
+              <Flex justify='end' mt='1'>
+                <Text size='1' color={workspaceNameLength > 140 ? 'red' : 'gray'}>
+                  {workspaceNameLength}/140
+                </Text>
+              </Flex>
             </Box>
             {errors.workspace_name && <ErrorText>{errors.workspace_name?.message}</ErrorText>}
           </Stack>
 
+          {/* Mô tả */}
           <Stack>
             <Box>
               <Label htmlFor='description'>Mô tả</Label>
@@ -105,13 +119,14 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
                 {...register('description')}
                 rows={2}
                 resize='vertical'
-                placeholder='What is this workspace for?'
+                placeholder='Mô tả workspace này dùng cho mục đích gì?'
                 aria-invalid={errors.description ? 'true' : 'false'}
               />
             </Box>
             {errors.description && <ErrorText>{errors.description?.message}</ErrorText>}
           </Stack>
 
+          {/* Loại workspace */}
           <Stack>
             <Label htmlFor='channel_type'>Loại Workspace</Label>
             <Controller
@@ -119,7 +134,7 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
               control={control}
               render={({ field }) => (
                 <RadioGroup.Root
-                  defaultValue='1'
+                  defaultValue='Public'
                   variant='soft'
                   id='channel_type'
                   value={field.value}
@@ -128,21 +143,22 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
                   <Flex gap='4'>
                     <Text as='label' size='2'>
                       <Flex gap='2'>
-                        <RadioGroup.Item value='Public' /> {__('Public')}
+                        <RadioGroup.Item value='Public' /> {__('Công khai')}
                       </Flex>
                     </Text>
                     <Text as='label' size='2'>
                       <Flex gap='2'>
-                        <RadioGroup.Item value='Private' /> {__('Private')}
+                        <RadioGroup.Item value='Private' /> {__('Riêng tư')}
                       </Flex>
                     </Text>
                   </Flex>
                 </RadioGroup.Root>
               )}
             />
-            {/* Added min height to avoid layout shift when two lines of text are shown */}
             <HelperText>{helperText}</HelperText>
           </Stack>
+
+          {/* Chỉ admin tạo kênh */}
           <Stack py='2'>
             <Text as='label' size='2'>
               <Controller
@@ -150,23 +166,21 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
                 name={'only_admins_can_create_channels'}
                 render={({ field: { value, onChange, onBlur, name, disabled, ref } }) => (
                   <Checkbox
-                    checked={value ? true : false}
+                    checked={!!value}
                     disabled={disabled}
                     name={name}
                     aria-invalid={errors.only_admins_can_create_channels ? 'true' : 'false'}
-                    aria-describedby={
-                      errors.only_admins_can_create_channels ? 'only-admins-can-create-channels-error' : undefined
-                    }
-                    aria-required={errors.only_admins_can_create_channels ? 'true' : 'false'}
                     onBlur={onBlur}
                     ref={ref}
                     onCheckedChange={(v) => onChange(v ? 1 : 0)}
                   />
                 )}
               />
-              &nbsp; Chỉ quản trị viên mới có thể tạo kênh trong không gian làm việc này?
+              &nbsp; Chỉ quản trị viên có thể tạo kênh trong workspace này?
             </Text>
           </Stack>
+
+          {/* Upload Logo */}
           <Stack gap='0'>
             <Label htmlFor='workspace_image'>Logo Workspace</Label>
             <FileUploadBox
@@ -178,6 +192,8 @@ const AddWorkspaceForm = ({ onClose }: { onClose: (workspaceID?: string) => void
             />
           </Stack>
         </Stack>
+
+        {/* Submit / Cancel */}
         <Flex gap='3' mt='4' justify='end'>
           <Dialog.Close disabled={loading}>
             <Button variant='soft' color='gray'>
