@@ -69,7 +69,7 @@ export const useWebSocketEvents = (
     mutate(
       (d: any) => {
         if (event.message_id && d) {
-          const newMessages = d.message.messages.map((message: any) => {
+          const newMessages = d.message.messages?.map((message: any) => {
             if (message.name === event.message_id) {
               return { ...message, ...event.message_details }
             }
@@ -115,7 +115,7 @@ export const useWebSocketEvents = (
     mutate(
       (d: any) => {
         if (event.message_id && d) {
-          const newMessages = d.message.messages.map((message: any) => {
+          const newMessages = d.message.messages?.map((message: any) => {
             if (message.name === event.message_id) {
               return { ...message, message_reactions: event.reactions }
             }
@@ -141,7 +141,7 @@ export const useWebSocketEvents = (
     mutate(
       (d: any) => {
         if (event.message_id && d) {
-          const newMessages = d.message.messages.map((message: any) => {
+          const newMessages = d.message.messages?.map((message: any) => {
             if (message.name === event.message_id) {
               return { ...message, _liked_by: event.liked_by }
             }
@@ -167,7 +167,7 @@ export const useWebSocketEvents = (
     mutate(
       (d: any) => {
         if (event.message_id && d) {
-          const updatedMessages = d.message.messages.map((message: any) => {
+          const updatedMessages = d.message.messages?.map((message: any) => {
             if (message.name === event.message_id) {
               return { ...message, is_retracted: 1 }
             }

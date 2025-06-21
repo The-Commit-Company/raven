@@ -1,9 +1,9 @@
+import { ReactionObject } from '@/components/feature/chat/ChatMessage/MessageReactions'
+import { GetMessagesResponse } from '@/components/feature/chat/ChatStream/useMessageAPI'
 import { FrappeConfig, FrappeContext, useSWRConfig } from 'frappe-react-sdk'
 import { useCallback, useContext } from 'react'
 import { Message } from '../../../types/Messaging/Message'
-import { ReactionObject } from '@/components/feature/chat/ChatMessage/MessageReactions'
 import { useUserData } from './useUserData'
-import { GetMessagesResponse } from '@/components/feature/chat/ChatStream/useMessageAPI'
 
 /**
  * This hook is used to post a reaction to a message optimistically
@@ -22,7 +22,7 @@ const usePostMessageReaction = () => {
         const existingMessages = data?.message.messages ?? []
 
         // Find the message with the ID and update it's reactions object
-        const newMessages = existingMessages.map((m) => {
+        const newMessages = existingMessages?.map((m) => {
           if (m.name !== message.name) {
             return m
           }

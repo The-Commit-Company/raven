@@ -48,9 +48,7 @@ const WorkspaceSwitcherGrid = () => {
           }}
           gap='4'
         >
-          {myWorkspaces.map((workspace) => (
-            <MyWorkspaceItem key={workspace.name} workspace={workspace} />
-          ))}
+          {myWorkspaces?.map((workspace) => <MyWorkspaceItem key={workspace.name} workspace={workspace} />)}
         </Grid>
       </div>
       {otherWorkspaces?.length > 0 && (
@@ -72,9 +70,7 @@ const WorkspaceSwitcherGrid = () => {
             }}
             gap='4'
           >
-            {otherWorkspaces.map((workspace) => (
-              <OtherWorkspaceItem key={workspace.name} workspace={workspace} />
-            ))}
+            {otherWorkspaces?.map((workspace) => <OtherWorkspaceItem key={workspace.name} workspace={workspace} />)}
           </Grid>
         </div>
       )}

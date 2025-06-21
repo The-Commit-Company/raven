@@ -125,7 +125,7 @@ const CreatePollContent = ({ channelID, setIsOpen }: { channelID: string; setIsO
             </Label>
             <Flex direction={'column'} gap='2'>
               {fields &&
-                fields.map((field, index) => (
+                fields?.map((field, index) => (
                   <Flex key={field.id} gap='2' align={'start'}>
                     <div className={'w-full'}>
                       <TextField.Root

@@ -31,7 +31,7 @@ const AddWorkspaceMembersModalContent = ({ workspaceID, onClose }: { workspaceID
     if (data.add_members && data.add_members?.length > 0) {
       call({
         workspace: workspaceID,
-        members: data.add_members.map((m) => m.name)
+        members: data.add_members?.map((m) => m.name)
       })
         .then(() => {
           toast.success('Members added')
@@ -111,7 +111,7 @@ const AddMembersDropdown = ({
 
   //Options for dropdown
   const nonWorkspaceMembers = useMemo(() => {
-    const members = data?.message.map((m) => m.user)
+    const members = data?.message?.map((m) => m.user)
     return users.enabledUsers?.filter((m: UserFields) => !members?.includes(m.name)) ?? []
   }, [users.enabledUsers, data])
 

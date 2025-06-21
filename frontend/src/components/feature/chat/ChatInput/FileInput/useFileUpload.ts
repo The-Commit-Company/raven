@@ -46,7 +46,7 @@ export default function useFileUpload(channelID: string) {
   const uploadFiles = async (selectedMessage?: Message | null): Promise<RavenMessage[]> => {
     const newFiles = [...filesStateRef.current]
     if (newFiles?.length > 0) {
-      const promises: Promise<RavenMessage | null>[] = newFiles.map(async (f: CustomFile, index: number) => {
+      const promises: Promise<RavenMessage | null>[] = newFiles?.map(async (f: CustomFile, index: number) => {
         return file
           .uploadFile(
             f,

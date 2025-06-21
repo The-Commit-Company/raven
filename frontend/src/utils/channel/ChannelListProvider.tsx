@@ -178,7 +178,7 @@ export const useUpdateLastMessageInChannelList = () => {
             let newDMChannels = channelList.message.dm_channels
 
             if (isMainChannel) {
-              newChannels = newChannels.map((channel) => {
+              newChannels = newChannels?.map((channel) => {
                 if (channel.name === channelID) {
                   return {
                     ...channel,
@@ -191,7 +191,7 @@ export const useUpdateLastMessageInChannelList = () => {
             }
 
             if (isDMChannel) {
-              newDMChannels = newDMChannels.map((channel) => {
+              newDMChannels = newDMChannels?.map((channel) => {
                 if (channel.name === channelID) {
                   return {
                     ...channel,
@@ -232,7 +232,7 @@ export const useUpdateLastMessageDetails = () => {
       (prev) => {
         if (!prev) return prev
 
-        const newChannels = prev.message.channels.map((channel) => {
+        const newChannels = prev.message.channels?.map((channel) => {
           if (channel.name === channelID) {
             return {
               ...channel,
@@ -244,7 +244,7 @@ export const useUpdateLastMessageDetails = () => {
           return channel
         })
 
-        const newDMChannels = prev.message.dm_channels.map((channel) => {
+        const newDMChannels = prev.message.dm_channels?.map((channel) => {
           if (channel.name === channelID) {
             return {
               ...channel,

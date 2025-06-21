@@ -120,10 +120,10 @@ const ThreadsList = ({
         (d) => {
           if (!d) return d
 
-          const mutatedData = d.map((page) => {
+          const mutatedData = d?.map((page) => {
             return {
               ...page,
-              message: page.message.map((message) => {
+              message: page.message?.map((message) => {
                 if (message.name === data.threadId) {
                   return {
                     ...message,
@@ -155,7 +155,7 @@ const ThreadsList = ({
         (d) => {
           if (!d) return d
 
-          return d.map((page) => ({
+          return d?.map((page) => ({
             ...page,
             message: page.message.filter((message) => message.name !== data.threadId)
           }))
@@ -212,7 +212,7 @@ const ThreadsList = ({
 
   return (
     <ul className='list-none' role='list'>
-      {threads.map((thread) => (
+      {threads?.map((thread) => (
         <li key={thread.name} role='listitem'>
           <ThreadPreviewBox thread={thread} unreadCount={unreadThreadsMap?.[thread.name] ?? 0} />
         </li>

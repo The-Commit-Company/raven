@@ -46,7 +46,7 @@ export const AddChannelMembersModalContent = ({ onClose }: AddChannelMemberModal
     if (data.add_members && data.add_members?.length > 0) {
       call({
         channel_id: channelID,
-        members: data.add_members.map((member) => member.name)
+        members: data.add_members?.map((member) => member.name)
       }).then(() => {
         toast.success('Members added')
         mutate(['channel_members', channelID])

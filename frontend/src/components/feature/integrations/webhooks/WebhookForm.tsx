@@ -1,21 +1,20 @@
-import { useContext, useMemo } from 'react'
-import { Controller, useFormContext } from 'react-hook-form'
-import { Box, Checkbox, Flex, TextField, Select, TextArea, Text, Code, Badge, Tabs } from '@radix-ui/themes'
 import { ErrorText, HelperText, Label } from '@/components/common/Form'
-import { WebhookData } from './WebhookReturnDataFieldTable'
-import { WebhookHeaders } from './WebhookHeaders'
-import { TriggerEvents } from './utils'
-import { RavenWebhook } from '@/types/RavenIntegrations/RavenWebhook'
-import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
-import { ChannelListContext, ChannelListContextType, ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { SidebarIcon } from '@/components/layout/Sidebar/SidebarComp'
-import { useGetUser } from '@/hooks/useGetUser'
-import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { HStack, Stack } from '@/components/layout/Stack'
+import { RavenWebhook } from '@/types/RavenIntegrations/RavenWebhook'
+import { ChannelListContext, ChannelListContextType, ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { ChannelIcon } from '@/utils/layout/channelIcon'
+import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
+import { Badge, Box, Checkbox, Code, Flex, Select, Tabs, Text, TextArea, TextField } from '@radix-ui/themes'
+import { useContext, useMemo } from 'react'
+import { Controller, useFormContext } from 'react-hook-form'
 import { AiOutlineApi, AiOutlineDatabase } from 'react-icons/ai'
 import { BiBuildings, BiCodeCurly } from 'react-icons/bi'
 import { LuWorkflow } from 'react-icons/lu'
+import { WebhookHeaders } from './WebhookHeaders'
+import { WebhookData } from './WebhookReturnDataFieldTable'
+import { TriggerEvents } from './utils'
 
 const ICON_PROPS = {
   size: 18,
@@ -365,7 +364,7 @@ const ConditionWebhookForm = () => {
                   <Select.Content>
                     <Select.Group>
                       <Select.Label>Channel</Select.Label>
-                      {channels.map((channel, index) => (
+                      {channels?.map((channel, index) => (
                         <Select.Item key={index} value={channel.name}>
                           <ChannelItem channel={channel} />
                         </Select.Item>
@@ -396,7 +395,7 @@ const ConditionWebhookForm = () => {
                 <Select.Content>
                   <Select.Group>
                     <Select.Label>User</Select.Label>
-                    {users.map((user, index) => (
+                    {users?.map((user, index) => (
                       <Select.Item key={index} value={user.name}>
                         <DirectMessageItem user={user} />
                       </Select.Item>

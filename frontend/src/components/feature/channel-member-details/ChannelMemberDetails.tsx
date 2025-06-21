@@ -83,7 +83,7 @@ const MemberList = ({ channelData, channelMembers, activeUsers, updateMembers, i
       <Flex direction='column' gap='2'>
         {filteredMembers?.length > 0 ? (
           <Flex direction='column'>
-            {filteredMembers.map((member) => (
+            {filteredMembers?.map((member) => (
               <Box key={member.name} className={'hover:bg-slate-3 rounded-md'}>
                 <Flex justify='between' className={'pr-3'}>
                   <Flex className={'p-2'} gap='3'>

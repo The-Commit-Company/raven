@@ -84,7 +84,7 @@ export const getUsers = (
           // Show all users upto 50
           const userString = otherUsers
             .slice(0, 50)
-            .map((user) => userArray.find((u) => u.name == user)?.full_name)
+            ?.map((user) => userArray.find((u) => u.name == user)?.full_name)
             .join(', ')
           return `You, ${userString} and ${remainingUsers} others`
         } else {
@@ -93,7 +93,7 @@ export const getUsers = (
           const numberOfUsers = otherUsers?.length
           const userString = otherUsers
             .slice(0, numberOfUsers - 1)
-            .map((user) => userArray.find((u) => u.name == user)?.full_name)
+            ?.map((user) => userArray.find((u) => u.name == user)?.full_name)
             .join(', ')
           const lastUser = userArray.find((u) => u.name == otherUsers[numberOfUsers - 1])?.full_name
           return `You, ${userString}, and ${lastUser}`
@@ -104,7 +104,7 @@ export const getUsers = (
         if (numberOfUsers > 50) {
           const userString = usersList
             .slice(0, 50)
-            .map((user) => userArray.find((u) => u.name == user)?.full_name)
+            ?.map((user) => userArray.find((u) => u.name == user)?.full_name)
             .join(', ')
           const remainingUsers = usersList?.length - 50
           return `${userString} and ${remainingUsers} others`
@@ -113,7 +113,7 @@ export const getUsers = (
           // For example, John, Jane, and Henry
           const userString = usersList
             .slice(0, numberOfUsers - 1)
-            .map((user) => userArray.find((u) => u.name == user)?.full_name)
+            ?.map((user) => userArray.find((u) => u.name == user)?.full_name)
             .join(', ')
           const lastUser = userArray.find((u) => u.name == usersList[numberOfUsers - 1])?.full_name
           return `${userString} and ${lastUser}`

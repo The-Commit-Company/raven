@@ -23,7 +23,7 @@ export const useUnreadMessageCount = () => {
   )
 
   const totalUnreadCount = useMemo(() => {
-    const idsFromServer = new Set(unread_count?.message.map((c) => c.name))
+    const idsFromServer = new Set(unread_count?.message?.map((c) => c.name))
     const manualOnly = Array.from(manuallyMarked).filter((id) => !idsFromServer.has(id))
 
     const manualCount = manualOnly?.length
@@ -141,7 +141,7 @@ export const useFetchUnreadMessageCount = () => {
     updateCount(
       (d) => {
         if (d) {
-          const newChannels = d.message.map((c) => {
+          const newChannels = d.message?.map((c) => {
             if (c.name === channel_id) return { ...c, unread_count: 0 }
             return c
           })
@@ -158,7 +158,7 @@ export const useFetchUnreadMessageCount = () => {
     let blinkState = false
     let activeTitle = app_name
 
-    const allChannelMap = new Map((unread_count?.message || []).map((c) => [c.name, c]))
+    const allChannelMap = new Map((unread_count?.message || [])?.map((c) => [c.name, c]))
     const manualOnly = Array.from(manuallyMarked).filter((id) => !allChannelMap.has(id))
     const manualCount = manualOnly?.length
     const serverUnreadCount = unread_count?.message.reduce((sum, c) => sum + c.unread_count, 0) || 0
@@ -242,7 +242,7 @@ export const useUpdateUnreadCountToZero = () => {
     updateCount(
       (d) => {
         const currentList = d?.message ?? []
-        const newList = currentList.map((c) => (c.name === channel_id ? { ...c, unread_count: 0 } : c))
+        const newList = currentList?.map((c) => (c.name === channel_id ? { ...c, unread_count: 0 } : c))
         return { message: newList }
       },
       { revalidate: false }

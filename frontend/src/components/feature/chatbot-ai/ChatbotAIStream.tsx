@@ -22,7 +22,7 @@ const ChatbotAIStream = () => {
 
   // Chuyển đổi dữ liệu conversation sang ChatSession cho UI
   const sessions: ChatSession[] = useMemo(() => {
-    return normalizeConversations(conversations).map((c: ConversationData) => ({
+    return normalizeConversations(conversations)?.map((c: ConversationData) => ({
       id: c.name,
       title: c.title,
       creation: c.creation,
@@ -49,7 +49,7 @@ const ChatbotAIStream = () => {
   // Hàm update tiêu đề session
   const handleUpdateAISessions = useCallback(
     (updatedSessions: ChatSession[]) => {
-      const newConversations = updatedSessions.map((s) => ({
+      const newConversations = updatedSessions?.map((s) => ({
         name: s.id,
         title: s.title,
         creation: s.creation
@@ -72,7 +72,7 @@ const ChatbotAIStream = () => {
       // Cập nhật conversations trong cache
       mutateConversations((oldData: any[] | undefined) => {
         const oldConversations = oldData || []
-        return oldConversations.map((c: any) =>
+        return oldConversations?.map((c: any) =>
           c.name === data.conversation_id ? { ...c, title: data.new_title, creation: data.creation } : c
         )
       }, false) // false để không revalidate với server

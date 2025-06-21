@@ -1,14 +1,14 @@
-import { useMemo } from 'react'
-import { Flex, Text, Tabs, Box } from '@radix-ui/themes'
-import { ReactionObject } from '../MessageReactions'
-import { ReactionAnalyticsDialogProps } from '../MessageActions/MessageReactionAnalytics'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { useGetUser } from '@/hooks/useGetUser'
+import { Box, Flex, Tabs, Text } from '@radix-ui/themes'
+import { useMemo } from 'react'
+import { ReactionAnalyticsDialogProps } from '../MessageActions/MessageReactionAnalytics'
+import { ReactionObject } from '../MessageReactions'
 
 export const ReactionAnalyticsModal = ({ reactions }: ReactionAnalyticsDialogProps) => {
   const all_reacted_members = useMemo(() => {
     return reactions.flatMap(({ reaction, users, is_custom, emoji_name }: ReactionObject) =>
-      users.map((user: string) => ({ user, reaction, is_custom, emoji_name }))
+      users?.map((user: string) => ({ user, reaction, is_custom, emoji_name }))
     )
   }, [reactions])
 
@@ -18,7 +18,7 @@ export const ReactionAnalyticsModal = ({ reactions }: ReactionAnalyticsDialogPro
         <Flex direction='column' gap='4'>
           <Tabs.List>
             <TabTrigger emojiSrc='All' emojiName='All' />
-            {reactions.map((reaction) => {
+            {reactions?.map((reaction) => {
               return (
                 <TabTrigger
                   key={reaction.reaction}
@@ -34,10 +34,10 @@ export const ReactionAnalyticsModal = ({ reactions }: ReactionAnalyticsDialogPro
             <Tabs.Content value='All'>
               <UserList users={all_reacted_members} />
             </Tabs.Content>
-            {reactions.map((reaction) => (
+            {reactions?.map((reaction) => (
               <Tabs.Content key={reaction.reaction} value={reaction.reaction}>
                 <UserList
-                  users={reaction.users.map((user) => ({
+                  users={reaction.users?.map((user) => ({
                     user,
                     reaction: reaction.reaction,
                     is_custom: reaction.is_custom,
@@ -91,7 +91,7 @@ const UserList = ({ users }: { users: UserItemProps[] }) => (
   <Box className='overflow-hidden overflow-y-scroll h-[50vh] sm:h-64'>
     <Flex direction='column' gap='2'>
       <Flex direction='column'>
-        {users.map((user, index) => (
+        {users?.map((user, index) => (
           <UserItem
             key={index}
             user={user.user}

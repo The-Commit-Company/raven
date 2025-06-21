@@ -173,7 +173,7 @@ export function FilterList({ onClose }: { onClose?: () => void }) {
 
   return (
     <ul className={clsx('space-y-1 text-sm text-gray-12', isIconOnly ? 'px-1' : 'px-3 py-2')}>
-      {filterItems.map((item, idx) => {
+      {filterItems?.map((item, idx) => {
         const isActive = item.label === title
         let badgeCount = 0
 

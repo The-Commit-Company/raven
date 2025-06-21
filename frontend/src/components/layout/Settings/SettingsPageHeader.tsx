@@ -33,7 +33,7 @@ const SettingsPageHeader = ({ title, description, actions, headerBadges, breadcr
         {breadcrumbs ? (
           <Breadcrumb>
             <BreadcrumbList>
-              {breadcrumbs.map((b, index) => (
+              {breadcrumbs?.map((b, index) => (
                 <React.Fragment key={b.href}>
                   {index < breadcrumbs?.length - 1 ? (
                     <>

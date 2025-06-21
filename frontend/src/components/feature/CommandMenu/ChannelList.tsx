@@ -1,7 +1,7 @@
 import { useChannelList } from '@/utils/channel/ChannelListProvider'
 import { Command } from 'cmdk'
-import ChannelItem from './ChannelItem'
 import { useMemo } from 'react'
+import ChannelItem from './ChannelItem'
 
 const ChannelList = () => {
   const { channels } = useChannelList()
@@ -19,9 +19,7 @@ const ChannelList = () => {
 
   return (
     <Command.Group heading='Channels'>
-      {sortedChannels.map((channel) => (
-        <ChannelItem key={channel.name} channel={channel} />
-      ))}
+      {sortedChannels?.map((channel) => <ChannelItem key={channel.name} channel={channel} />)}
     </Command.Group>
   )
 }

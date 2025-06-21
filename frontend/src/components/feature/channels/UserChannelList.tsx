@@ -23,7 +23,7 @@ const UserChannelList = () => {
   return (
     <div>
       <div>
-        {dm_channels.map((channel) => (
+        {dm_channels?.map((channel) => (
           <ChannelItem
             key={channel.name}
             channelID={channel.name}
@@ -33,9 +33,7 @@ const UserChannelList = () => {
         ))}
         <br />
         <h5 className='text-sm mt-0 font-medium'>Những người chưa từng nhắn</h5>
-        {usersWithoutChannels.map((user) => (
-          <UserWithoutDMItem key={user.name} userID={user.name} />
-        ))}
+        {usersWithoutChannels?.map((user) => <UserWithoutDMItem key={user.name} userID={user.name} />)}
       </div>
     </div>
   )

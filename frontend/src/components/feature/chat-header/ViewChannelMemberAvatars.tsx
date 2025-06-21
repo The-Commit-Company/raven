@@ -16,7 +16,7 @@ export const ViewChannelMemberAvatars = ({ channelData }: ViewChannelDetailsButt
 
   return (
     <div className={'flex items-center -space-x-1 rtl:space-x-reverse animate-fadein cursor-pointer'}>
-      {Object.entries(channelMembers).map(([name, member], index) => {
+      {Object.entries(channelMembers)?.map(([name, member], index) => {
         if (index < 3)
           return (
             <UserAvatar

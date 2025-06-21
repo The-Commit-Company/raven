@@ -128,7 +128,7 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
               onChange={(e) => setSearch(e.target.value)}
             />
             <div className='flex-1 overflow-y-auto space-y-1'>
-              {filteredChannels.map((channel) => (
+              {filteredChannels?.map((channel) => (
                 <ChannelModalConversationItem
                   key={channel.name}
                   channel={channel}
@@ -145,7 +145,7 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
           <div className='md:w-1/2 p-2 text-sm order-1 md:order-none'>
             <div className='mb-2 font-medium'>Đã chọn: {selected.size} cuộc trò chuyện</div>
             <div className={`${isMobile ? 'flex flex-wrap mt-5 gap-4' : 'space-y-1'}`}>
-              {selectedChannels.map((channel) => (
+              {selectedChannels?.map((channel) => (
                 <SelectedChannelItem key={channel.name} channel={channel} handleToggle={handleToggle} />
               ))}
               {selectedChannels?.length === 0 && (

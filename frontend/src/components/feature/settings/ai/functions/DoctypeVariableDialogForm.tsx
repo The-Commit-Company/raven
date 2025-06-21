@@ -486,7 +486,7 @@ const OptionsAutoFill = ({ doctype, fieldname }: { doctype: string; fieldname: s
     db.getDocList(linkDoctypeName, {
       fields: ['name']
     }).then((options) => {
-      setValue('options', options.map((option) => option.name).join('\n'))
+      setValue('options', options?.map((option) => option.name).join('\n'))
     })
   }
 
@@ -567,7 +567,7 @@ const QuickImportPopover = ({ doctype }: { doctype: string }) => {
             </TextField.Slot>
           </TextField.Root>
           <ScrollArea style={{ height: 360 }}>
-            {data?.message?.slice(0, 15).map((item) => (
+            {data?.message?.slice(0, 15)?.map((item) => (
               <Stack
                 gap='0'
                 role='button'

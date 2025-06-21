@@ -30,7 +30,7 @@ const LabelItem: React.FC<LabelItemProps> = ({ label, name, channels }) => {
 
   // Hợp nhất mảng mới
   const mergedChannels = useMemo(() => {
-    return channels.map((ch) => {
+    return channels?.map((ch) => {
       const unreadItem = unreadMap.get(ch.channel_id)
 
       return {
@@ -82,7 +82,7 @@ const LabelItem: React.FC<LabelItemProps> = ({ label, name, channels }) => {
 
       {isExpanded && mergedChannels?.length > 0 && (
         <div className='ml-4 space-y-1'>
-          {mergedChannels.map((channel) => (
+          {mergedChannels?.map((channel) => (
             <LabelItemList
               key={channel.channel_id}
               channelID={channel.channel_id}

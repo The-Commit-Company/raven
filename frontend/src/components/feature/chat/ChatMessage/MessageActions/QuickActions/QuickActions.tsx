@@ -1,19 +1,19 @@
-import { Box, Flex } from '@radix-ui/themes'
-import { MessageContextMenuProps } from '../MessageActions'
-import { QUICK_ACTION_BUTTON_CLASS, QuickActionButton } from './QuickActionButton'
-import { BiDotsHorizontalRounded } from 'react-icons/bi'
-import { MouseEventHandler, useContext, useRef } from 'react'
-import { EmojiPickerButton } from './EmojiPickerButton'
+import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import usePostMessageReaction from '@/hooks/usePostMessageReaction'
 import { UserContext } from '@/utils/auth/UserProvider'
+import { QuickEmojisAtom } from '@/utils/preferences'
+import { Box, Flex } from '@radix-ui/themes'
+import clsx from 'clsx'
+import { useAtomValue } from 'jotai'
+import { MouseEventHandler, useContext, useRef } from 'react'
 import { AiOutlineEdit } from 'react-icons/ai'
+import { BiDotsHorizontalRounded } from 'react-icons/bi'
 import { LuReply } from 'react-icons/lu'
 import { toast } from 'sonner'
-import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import { MessageContextMenuProps } from '../MessageActions'
 import { CreateThreadActionButton } from './CreateThreadButton'
-import clsx from 'clsx'
-import usePostMessageReaction from '@/hooks/usePostMessageReaction'
-import { useAtomValue } from 'jotai'
-import { QuickEmojisAtom } from '@/utils/preferences'
+import { EmojiPickerButton } from './EmojiPickerButton'
+import { QUICK_ACTION_BUTTON_CLASS, QuickActionButton } from './QuickActionButton'
 
 interface QuickActionsProps extends MessageContextMenuProps {
   isEmojiPickerOpen: boolean
@@ -81,7 +81,7 @@ export const QuickActions = ({
       )}
     >
       <Flex gap='1'>
-        {quickEmojis.map((emoji) => {
+        {quickEmojis?.map((emoji) => {
           return (
             <QuickActionButton
               key={emoji}

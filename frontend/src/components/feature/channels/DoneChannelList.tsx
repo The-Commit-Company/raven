@@ -11,7 +11,7 @@ export const DoneChannelList = () => {
 
   return (
     <div className='flex flex-col gap-2'>
-      {doneChannels.map((channel) => (
+      {doneChannels?.map((channel) => (
         <div key={channel.name} className='relative group'>
           <DirectMessageItem dm_channel={channel} />
         </div>

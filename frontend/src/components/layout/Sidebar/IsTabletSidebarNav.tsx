@@ -18,7 +18,7 @@ export default function FilterTabs() {
   const limitedTabs = filterItems.slice(0, 3)
 
   // Trích ra các label trong limitedTabs
-  const limitedLabels = limitedTabs.map((tab) => tab.label)
+  const limitedLabels = limitedTabs?.map((tab) => tab.label)
 
   // Nếu title không nằm trong limitedTabs, render riêng
   const tabsToRender = limitedLabels.includes(title as string) ? limitedTabs : [{ label: title, icon: null }]
@@ -71,7 +71,7 @@ export default function FilterTabs() {
             tabsToRender?.length > 1 && 'bg-gray-200 dark:bg-neutral-800'
           )}
         >
-          {tabsToRender.map((tab) => {
+          {tabsToRender?.map((tab) => {
             const isActive = tab.label === title
             const badgeCount = getBadgeCount(tab.label as string)
 

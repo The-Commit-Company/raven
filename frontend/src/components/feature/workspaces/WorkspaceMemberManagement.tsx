@@ -296,7 +296,7 @@ const ManageMembersDialogContent = ({
   members: WorkspaceMemberFields[]
 }) => {
   const [newMembers, setNewMembers] = useState<MemberObject[]>(
-    members.map((member) => ({
+    members?.map((member) => ({
       user: member.user,
       is_admin: member?.is_admin ? 1 : 0,
       is_member: 1
@@ -333,13 +333,7 @@ const ManageMembersDialogContent = ({
   return (
     <Stack className='pt-4'>
       <ErrorBanner error={error} />
-      {errors?.length > 0 && (
-        <ErrorCallout>
-          {errors.map((error) => (
-            <Text key={error}>{error}</Text>
-          ))}
-        </ErrorCallout>
-      )}
+      {errors?.length > 0 && <ErrorCallout>{errors?.map((error) => <Text key={error}>{error}</Text>)}</ErrorCallout>}
       <MemberManager currentMembers={newMembers} onChange={onChange} />
       <HStack justify='between' pt='4' className='h-full'>
         <MemberStats members={newMembers} />
@@ -385,7 +379,7 @@ const MemberStats = ({ members }: { members: MemberObject[] }) => {
           <Separator className='my-2' size='4' />
           <ScrollArea className='max-h-64 w-full'>
             <ul>
-              {memberIDs.map((member) => (
+              {memberIDs?.map((member) => (
                 <li key={member.user}>
                   <Text as='span' size='2' color='gray' className='h-full flex items-center'>
                     {member.user}
@@ -414,7 +408,7 @@ const MemberStats = ({ members }: { members: MemberObject[] }) => {
           <Separator className='my-2' size='4' />
           <ScrollArea className='max-h-64 w-full'>
             <ul>
-              {admins.map((admin) => (
+              {admins?.map((admin) => (
                 <li key={admin.user}>
                   <Text as='span' size='2' color='gray' className='h-full flex items-center'>
                     {admin.user}

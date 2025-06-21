@@ -63,7 +63,7 @@ const BotFunctionsForm = () => {
                 <LinkField
                   doctype='Raven AI Function'
                   value={aiFunction}
-                  filters={[['name', 'not in', fields.map((field) => field.function) ?? []] as any]}
+                  filters={[['name', 'not in', fields?.map((field) => field.function) ?? []] as any]}
                   dropdownClass='sm:w-[350px]'
                   label='Function'
                   setValue={setAiFunction}

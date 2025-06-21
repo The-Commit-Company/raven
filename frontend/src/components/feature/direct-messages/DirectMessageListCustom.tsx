@@ -65,7 +65,7 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
 
     return (
       <>
-        {filtered.map((channel: DMChannelWithUnreadCount) => (
+        {filtered?.map((channel: DMChannelWithUnreadCount) => (
           <DirectMessageItem key={channel.name} dm_channel={channel} />
         ))}
       </>
@@ -92,13 +92,7 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
     return <div className='text-gray-500 text-sm italic p-4 text-center'>Không có kết quả</div>
   }
 
-  return (
-    <>
-      {filteredChannels.map((channel) => (
-        <DirectMessageItem key={channel.name} dm_channel={channel} />
-      ))}
-    </>
-  )
+  return <>{filteredChannels?.map((channel) => <DirectMessageItem key={channel.name} dm_channel={channel} />)}</>
 }
 
 export const DirectMessageItem = ({ dm_channel }: { dm_channel: DMChannelWithUnreadCount }) => {
