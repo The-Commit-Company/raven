@@ -1,12 +1,13 @@
 import json
 from datetime import timedelta
-
 import frappe
 from frappe import _
 from frappe.query_builder import JoinType, Order
 from frappe.query_builder.functions import Coalesce, Count, Max, Coalesce
 from raven.api.raven_channel import create_direct_message_channel, get_peer_user_id
 from raven.utils import get_channel_member, is_channel_member, track_channel_visit
+import datetime
+from frappe.utils import now_datetime, get_datetime
 
 @frappe.whitelist(methods=["POST"])
 def send_message(
@@ -877,11 +878,18 @@ def add_forwarded_message_to_channel(channel_id, forwarded_message):
 
 @frappe.whitelist()
 def retract_message(message_id: str):
-    user = frappe.session.user
     message = frappe.get_doc("Raven Message", message_id)
 
     if message.is_retracted:
         frappe.throw(_("Tin nhắn đã được thu hồi trước đó."))
+
+    # Kiểm tra giới hạn 3 giờ
+    message_time = get_datetime(message.creation)
+    current_time = now_datetime()
+    time_difference = current_time - message_time
+
+    if time_difference.total_seconds() > 3 * 3600:
+        frappe.throw(_("Bạn chỉ có thể thu hồi tin nhắn trong vòng 3 giờ sau khi gửi."))
 
     message.db_set("is_retracted", 1)
     frappe.db.commit()

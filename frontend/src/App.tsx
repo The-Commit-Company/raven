@@ -65,7 +65,7 @@ function App() {
       siteName={getSiteName()}
     >
       <UserProvider>
-        <Toaster richColors />
+        <Toaster position='top-right' richColors />
         <ThemeProvider
           appearance={appearance}
           // grayColor='slate'
