@@ -62,6 +62,7 @@ export const useChannelSeenUsers = ({ channelId }: { channelId: string }) => {
         console.error('Track seen failed:', err)
       } finally {
         pendingSeenUpdate.current = false
+        hasInteractedRef.current = false
       }
     }, 1500),
     [channelId, trackSeenCall]
@@ -130,9 +131,6 @@ export const useChannelSeenUsers = ({ channelId }: { channelId: string }) => {
     const onUserInteracted = () => {
       hasInteractedRef.current = true
       trackSeen()
-      setTimeout(() => {
-        hasInteractedRef.current = false
-      }, 0)
     }
 
     eventBus.on('user:interacted', onUserInteracted)

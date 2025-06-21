@@ -40,11 +40,11 @@ const DocumentNotificationList = () => {
     <PageContainer>
       <SettingsContentContainer>
         <SettingsPageHeader
-          title='Document Notifications'
-          description='Configure alerts to be sent to users or channels when documents are updated in the system.'
+          title='Thông báo Tài liệu'
+          description='Cấu hình cảnh báo để gửi đến người dùng hoặc các kênh khi tài liệu được cập nhật trong hệ thống.'
           actions={
             <Button asChild disabled={!isRavenAdmin}>
-              <Link to='create'>Create</Link>
+              <Link to='create'>Thêm mới</Link>
             </Button>
           }
         />
@@ -56,12 +56,13 @@ const DocumentNotificationList = () => {
             <EmptyStateIcon>
               <LuBellDot />
             </EmptyStateIcon>
-            <EmptyStateTitle>Stay in the Loop</EmptyStateTitle>
+            <EmptyStateTitle>Luôn Luôn Cập Nhật</EmptyStateTitle>
             <EmptyStateDescription>
-              Send messages to channels or users based on document activity in your ERP system. Keep your team informed
-              about important changes in real-time with rich document previews.
+              Gửi tin nhắn đến các kênh hoặc người dùng dựa trên hoạt động của tài liệu trong hệ thống ERP của bạn. Giữ
+              cho nhóm của bạn luôn được cập nhật về các thay đổi quan trọng theo thời gian thực với bản xem trước tài
+              liệu đầy đủ.
             </EmptyStateDescription>
-            {isRavenAdmin && <EmptyStateLinkAction to='create'>Create your first notification</EmptyStateLinkAction>}
+            {isRavenAdmin && <EmptyStateLinkAction to='create'>Tạo thông báo đầu tiên</EmptyStateLinkAction>}
           </EmptyState>
         )}
       </SettingsContentContainer>
@@ -93,10 +94,10 @@ const DocumentNotificationTable = ({ notifications }: { notifications: RavenDocu
     <Table.Root variant='surface' className='rounded-sm animate-fadein'>
       <Table.Header>
         <Table.Row>
-          <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Document Type</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Send Alert On</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Enabled</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>Tên</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>Loại Tài Liệu</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>Gửi Cảnh Báo Khi</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>Đã Bật</Table.ColumnHeaderCell>
         </Table.Row>
       </Table.Header>
       <Table.Body>
