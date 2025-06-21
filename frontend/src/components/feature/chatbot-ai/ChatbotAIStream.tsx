@@ -1,3 +1,4 @@
+import BeatLoader from '@/components/layout/Loaders/BeatLoader'
 import { useChatbotConversations, useCreateChatbotConversation } from '@/hooks/useChatbotAPI'
 import { useThrottleAsync } from '@/hooks/useThrottleAsync'
 import { ConversationData } from '@/types/ChatBot/types'
@@ -10,7 +11,11 @@ import ChatbotAIContainer, { ChatSession } from './ChatbotAIContainer'
 const ChatbotAIStream = () => {
   // Lấy danh sách conversation từ backend
   const [selectedAISessionId, setSelectedAISessionId] = useState<string | null>(null)
-  const { data: conversations, mutate: mutateConversations } = useChatbotConversations()
+  const {
+    data: conversations,
+    mutate: mutateConversations,
+    isLoading: loadingConversations
+  } = useChatbotConversations()
   const { call: createConversation } = useCreateChatbotConversation()
   const { workspaceID } = useParams<{ workspaceID: string; channelID: string }>()
   const navigate = useNavigate()
@@ -73,6 +78,10 @@ const ChatbotAIStream = () => {
       }, false) // false để không revalidate với server
     }
   })
+
+  if (loadingConversations) {
+    return <BeatLoader text='Đang tải tin nhắn...' />
+  }
 
   return (
     <ChatbotAIContainer
