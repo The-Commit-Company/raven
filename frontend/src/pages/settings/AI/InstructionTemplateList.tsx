@@ -53,7 +53,7 @@ const InstructionTemplateList = () => {
         {isLoading && !error && <TableLoader columns={2} />}
         <ErrorBanner error={error} />
         <AINotEnabledCallout />
-        {data && data.length > 0 && <InstructionTable data={data} />}
+        {data && data?.length > 0 && <InstructionTable data={data} />}
         {(data?.length === 0 || !isRavenAdmin) && (
           <EmptyState>
             <EmptyStateIcon>

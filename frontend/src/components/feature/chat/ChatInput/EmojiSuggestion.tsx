@@ -75,7 +75,7 @@ export const EmojiSuggestion = Node.create({
         // Allow any character to be a prefix for an emoji
         allowedPrefixes: null,
         items: (query) => {
-          if (query.query.length !== 0) {
+          if (query.query?.length !== 0) {
             return search(query.query)
           } else {
             return getTopFavoriteEmojis()

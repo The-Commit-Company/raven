@@ -1,19 +1,19 @@
-import { useDebounce } from '@/hooks/useDebounce'
-import { usePagination } from '@/hooks/usePagination'
-import { useFrappeGetCall } from 'frappe-react-sdk'
-import { ChangeEvent, useState } from 'react'
-import { Box, Dialog, Flex, Heading, IconButton, Select, Text, TextField } from '@radix-ui/themes'
-import { BiSearch } from 'react-icons/bi'
-import { IoMdClose } from 'react-icons/io'
-import { PageLengthSelector } from '../pagination/PageLengthSelector'
+import { Loader } from '@/components/common/Loader'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { TableLoader } from '@/components/layout/Loaders/TableLoader'
+import { useDebounce } from '@/hooks/useDebounce'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { usePagination } from '@/hooks/usePagination'
+import { FileExtensionIcon } from '@/utils/layout/FileExtIcon'
+import { Box, Dialog, Flex, Heading, IconButton, Select, Text, TextField } from '@radix-ui/themes'
+import { useFrappeGetCall } from 'frappe-react-sdk'
+import { ChangeEvent, useState } from 'react'
+import { BiSearch } from 'react-icons/bi'
+import { IoMdClose } from 'react-icons/io'
+import { useParams } from 'react-router-dom'
+import { PageLengthSelector } from '../pagination/PageLengthSelector'
 import { PageSelector } from '../pagination/PageSelector'
 import { FilesTable } from './FilesTable'
-import { useParams } from 'react-router-dom'
-import { Loader } from '@/components/common/Loader'
-import { FileExtensionIcon } from '@/utils/layout/FileExtIcon'
-import { useIsDesktop, useIsMobile } from '@/hooks/useMediaQuery'
 
 export type FileInChannel = {
   name: string
@@ -138,7 +138,7 @@ const ViewFilesContent = () => {
                 </Select.Group>
               </Select.Content>
             </Select.Root>
-            {debouncedText.length > 0 && debouncedText.length < 2 && (
+            {debouncedText?.length > 0 && debouncedText?.length < 2 && (
               <Text size='1' color='gray'>
                 Continue typing...
               </Text>
@@ -165,7 +165,7 @@ const ViewFilesContent = () => {
 
         {!data && !error && <TableLoader columns={3} />}
 
-        {data && data.message.length === 0 && (debouncedText.length >= 2 || debouncedText.length == 0) && (
+        {data && data.message?.length === 0 && (debouncedText?.length >= 2 || debouncedText?.length == 0) && (
           <Flex align='center' justify='center' direction='column' gap='2' className='min-h-[32rem]'>
             <Heading size='3'>Nothing to see here</Heading>
             <Text size='2' align='center'>
@@ -174,7 +174,7 @@ const ViewFilesContent = () => {
           </Flex>
         )}
 
-        {data && data.message.length !== 0 && <FilesTable data={data.message} />}
+        {data && data.message?.length !== 0 && <FilesTable data={data.message} />}
       </Flex>
     </div>
   )

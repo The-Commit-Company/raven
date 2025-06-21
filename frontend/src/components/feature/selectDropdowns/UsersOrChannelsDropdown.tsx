@@ -5,9 +5,9 @@ import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { ChannelListContext, ChannelListContextType, ChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { UserFields, UserListContext } from '@/utils/users/UserListProvider'
-import { TextField, Text } from '@radix-ui/themes'
+import { Text } from '@radix-ui/themes'
 import clsx from 'clsx'
-import { useMultipleSelection, useCombobox } from 'downshift'
+import { useCombobox, useMultipleSelection } from 'downshift'
 import { useContext, useMemo, useState } from 'react'
 import { BiBuildings } from 'react-icons/bi'
 
@@ -153,7 +153,7 @@ const UsersOrChannelsDropdown = ({
 
       <ul
         className={`sm:w-[550px] w-[24rem] absolute bg-background rounded-b-md mt-1 shadow-md z-[999] max-h-96 overflow-scroll p-0 ${
-          !(isOpen && items.length) && 'hidden'
+          !(isOpen && items?.length) && 'hidden'
         }`}
         {...getMenuProps()}
       >

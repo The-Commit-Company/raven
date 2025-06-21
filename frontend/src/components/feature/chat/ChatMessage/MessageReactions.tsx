@@ -56,7 +56,7 @@ export const MessageReactions = ({
     }))
   }, [message_reactions])
 
-  if (reactions.length === 0) return null
+  if (reactions?.length === 0) return null
 
   return (
     <Flex gap='1' mt='1' wrap='wrap'>

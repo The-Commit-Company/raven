@@ -40,10 +40,10 @@ export default function LabelList({ visible, onClickLabel }: Props) {
 
   // Luôn gọi mutate mỗi khi sidebar mở ra
   useEffect(() => {
-    if (visible && labelList.length === 0) {
+    if (visible && labelList?.length === 0) {
       mutate()
     }
-  }, [visible, labelList.length])
+  }, [visible, labelList?.length])
 
   // Gọi lại API nếu có thay đổi từ nơi khác (refreshKey tăng)
   useEffect(() => {
@@ -60,8 +60,8 @@ export default function LabelList({ visible, onClickLabel }: Props) {
   }, [data])
 
   if (!visible) return null
-  if (isLoading && labelList.length === 0) return <div className='text-sm text-gray-500 px-3'>Đang tải...</div>
-  if (error && labelList.length === 0) return <div className='text-sm text-red-500 px-3'>Lỗi tải nhãn</div>
+  if (isLoading && labelList?.length === 0) return <div className='text-sm text-gray-500 px-3'>Đang tải...</div>
+  if (error && labelList?.length === 0) return <div className='text-sm text-red-500 px-3'>Lỗi tải nhãn</div>
 
   return (
     <ul className='mt-1 space-y-1'>

@@ -1,19 +1,19 @@
-import { useCurrentEditor } from '@tiptap/react'
-import { BiAt, BiHash, BiSmile, BiPaperclip, BiSolidSend, BiChevronDown, BiBellOff } from 'react-icons/bi'
-import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
-import { ToolbarFileProps } from './Tiptap'
-import { Dialog, DropdownMenu, Flex, FlexProps, IconButton, Inset, Popover, Separator } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
-import { Suspense, lazy } from 'react'
-import { HiOutlineGif } from 'react-icons/hi2'
-import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button'
+import { HStack } from '@/components/layout/Stack'
 import { useBoolean } from '@/hooks/useBoolean'
-import { MdOutlineBarChart } from 'react-icons/md'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
+import { Dialog, DropdownMenu, Flex, FlexProps, IconButton, Inset, Popover, Separator } from '@radix-ui/themes'
+import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button'
+import { useCurrentEditor } from '@tiptap/react'
+import clsx from 'clsx'
+import { Suspense, lazy } from 'react'
+import { BiAt, BiBellOff, BiChevronDown, BiHash, BiPaperclip, BiSmile, BiSolidSend } from 'react-icons/bi'
+import { HiOutlineGif } from 'react-icons/hi2'
+import { MdOutlineBarChart } from 'react-icons/md'
 import AISavedPromptsButton from './AISavedPromptsButton'
 import DocumentLinkButton from './DocumentLinkButton'
-import { HStack } from '@/components/layout/Stack'
-import clsx from 'clsx'
+import { ToolbarFileProps } from './Tiptap'
+import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
 
 const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
 const CreatePollContent = lazy(() => import('@/components/feature/polls/CreatePoll'))
@@ -210,7 +210,7 @@ export const SendButton = ({ sendMessage, messageSending, setContent, boxProps, 
   const { editor } = useCurrentEditor()
   const onClick = (sendSilently: boolean = false) => {
     if (editor) {
-      const hasContent = editor.getText().trim().length > 0
+      const hasContent = editor.getText().trim()?.length > 0
 
       const hasInlineImage = editor.getHTML().includes('img')
 
@@ -222,8 +222,8 @@ export const SendButton = ({ sendMessage, messageSending, setContent, boxProps, 
         // remove empty paragraphs at the end of the content
         const content = json.content
 
-        for (let i = content.length - 1; i >= 0; i--) {
-          if (content[i].type === 'paragraph' && (!content[i].content || content[i].content.length === 0)) {
+        for (let i = content?.length - 1; i >= 0; i--) {
+          if (content[i].type === 'paragraph' && (!content[i].content || content[i].content?.length === 0)) {
             content.pop()
           } else {
             break

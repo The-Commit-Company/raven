@@ -2,7 +2,7 @@ import { AvatarProps } from '@radix-ui/themes/dist/cjs/components/avatar'
 
 const getHashOfString = (str: string) => {
   let hash = 0
-  for (let i = 0; i < str.length; i++) {
+  for (let i = 0; i < str?.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash)
   }
   hash = Math.abs(hash)
@@ -60,6 +60,6 @@ const COLORS: AvatarProps['color'][] = [
 
 export const generateAvatarColor = (id?: string): AvatarProps['color'] => {
   const hash = getHashOfString(id || 'random')
-  const index = normalizeHash(hash, 0, COLORS.length)
+  const index = normalizeHash(hash, 0, COLORS?.length)
   return COLORS[index]
 }

@@ -79,7 +79,7 @@ export const getUsers = (
     } else if (count > 3) {
       if (currentUserInList) {
         const otherUsers = usersList.filter((user, index) => index !== currentUserIndex)
-        const remainingUsers = otherUsers.length - 50
+        const remainingUsers = otherUsers?.length - 50
         if (remainingUsers > 0) {
           // Show all users upto 50
           const userString = otherUsers
@@ -90,7 +90,7 @@ export const getUsers = (
         } else {
           // The user string will need to have an ", and" just before the last user
           // For example, You, John, Jane, and Henry
-          const numberOfUsers = otherUsers.length
+          const numberOfUsers = otherUsers?.length
           const userString = otherUsers
             .slice(0, numberOfUsers - 1)
             .map((user) => userArray.find((u) => u.name == user)?.full_name)
@@ -99,14 +99,14 @@ export const getUsers = (
           return `You, ${userString}, and ${lastUser}`
         }
       } else {
-        const numberOfUsers = usersList.length
+        const numberOfUsers = usersList?.length
 
         if (numberOfUsers > 50) {
           const userString = usersList
             .slice(0, 50)
             .map((user) => userArray.find((u) => u.name == user)?.full_name)
             .join(', ')
-          const remainingUsers = usersList.length - 50
+          const remainingUsers = usersList?.length - 50
           return `${userString} and ${remainingUsers} others`
         } else {
           // The user string will need to have an ", and" just before the last user

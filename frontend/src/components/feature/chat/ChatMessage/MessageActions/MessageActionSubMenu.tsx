@@ -1,9 +1,9 @@
-import { ContextMenu, Flex, Text } from '@radix-ui/themes'
-import { BiBoltCircle } from 'react-icons/bi'
-import { useFrappeGetDocList } from 'frappe-react-sdk'
-import { RavenMessageAction } from '@/types/RavenIntegrations/RavenMessageAction'
-import { useSetAtom } from 'jotai'
 import { messageActionAtom } from '@/components/feature/message-actions/MessageActionController'
+import { RavenMessageAction } from '@/types/RavenIntegrations/RavenMessageAction'
+import { ContextMenu, Flex, Text } from '@radix-ui/themes'
+import { useFrappeGetDocList } from 'frappe-react-sdk'
+import { useSetAtom } from 'jotai'
+import { BiBoltCircle } from 'react-icons/bi'
 
 type Props = {
   messageID: string
@@ -54,7 +54,7 @@ const MessageActionSubMenuContent = (props: Props) => {
 
   return (
     <>
-      {data && data.length > 0 ? (
+      {data && data?.length > 0 ? (
         data?.map((action) => {
           return (
             <ContextMenu.Item

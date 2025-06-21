@@ -1,10 +1,10 @@
+import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { ContextMenu, Flex } from '@radix-ui/themes'
 import { useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { TiArrowBackOutline } from 'react-icons/ti'
-import { Poll } from '../Renderers/PollMessage'
-import { Message } from '../../../../../../../types/Messaging/Message'
 import { toast } from 'sonner'
-import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import { Message } from '../../../../../../../types/Messaging/Message'
+import { Poll } from '../Renderers/PollMessage'
 
 interface RetractVoteProps {
   message: Message
@@ -39,7 +39,7 @@ export const RetractVote = ({ message }: RetractVoteProps) => {
       })
   }
 
-  if (data && data.message?.current_user_votes.length > 0)
+  if (data && data.message?.current_user_votes?.length > 0)
     return (
       <>
         <ContextMenu.Item onClick={onRetractVote} disabled={data.message?.poll.is_disabled ? true : false}>

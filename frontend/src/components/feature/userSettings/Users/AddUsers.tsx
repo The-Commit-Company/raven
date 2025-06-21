@@ -1,24 +1,24 @@
+import { ErrorCallout } from '@/components/common/Callouts/ErrorCallouts'
+import { Loader } from '@/components/common/Loader'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
+import { TableLoader } from '@/components/layout/Loaders/TableLoader'
+import PageContainer from '@/components/layout/Settings/PageContainer'
+import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
+import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
 import { useDebounce } from '@/hooks/useDebounce'
 import { usePaginationWithDoctype } from '@/hooks/usePagination'
 import { User } from '@/types/Core/User'
-import { Filter, useFrappeGetDocList, useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
-import { ChangeEvent, useContext, useState } from 'react'
-import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
-import { TableLoader } from '@/components/layout/Loaders/TableLoader'
+import { isSystemManager } from '@/utils/roles'
 import { UserListContext } from '@/utils/users/UserListProvider'
 import { Button, Flex, Strong, Text, TextField } from '@radix-ui/themes'
-import { Loader } from '@/components/common/Loader'
+import { Filter, useFrappeGetDocList, useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
+import { ChangeEvent, useContext, useState } from 'react'
 import { BiSearch } from 'react-icons/bi'
-import { ErrorCallout } from '@/components/common/Callouts/ErrorCallouts'
 import { toast } from 'sonner'
 import { PageLengthSelector } from '../../pagination/PageLengthSelector'
 import { PageSelector } from '../../pagination/PageSelector'
-import { UsersTable } from './UsersTable'
-import { isSystemManager } from '@/utils/roles'
-import PageContainer from '@/components/layout/Settings/PageContainer'
-import SettingsPageHeader from '@/components/layout/Settings/SettingsPageHeader'
-import SettingsContentContainer from '@/components/layout/Settings/SettingsContentContainer'
 import { Sort } from '../../sorting/Sort'
+import { UsersTable } from './UsersTable'
 
 interface AddUsersResponse {
   failed_users: User[]
@@ -72,17 +72,17 @@ const AddUsers = () => {
 
   const handleAddUsers = async () => {
     setFailedUsers([])
-    if (selected.length > 0) {
+    if (selected?.length > 0) {
       call({
         users: JSON.stringify(selected)
       }).then((res) => {
-        if (res.message.success_users.length !== 0) {
-          toast.success(`You have added ${res.message.success_users.length} users to Raven`)
+        if (res.message.success_users?.length !== 0) {
+          toast.success(`You have added ${res.message.success_users?.length} users to Raven`)
         }
 
         mutate('raven.api.raven_users.get_list')
 
-        if (res.message.failed_users.length === 0) {
+        if (res.message.failed_users?.length === 0) {
           setSelected([])
         } else {
           setFailedUsers(res.message.failed_users)
@@ -119,7 +119,7 @@ const AddUsers = () => {
                 <BiSearch />
               </TextField.Slot>
             </TextField.Root>
-            {debouncedText.length > 0 && debouncedText.length < 2 && (
+            {debouncedText?.length > 0 && debouncedText?.length < 2 && (
               <Text size='1' color='gray'>
                 Continue typing...
               </Text>
@@ -144,7 +144,7 @@ const AddUsers = () => {
 
         <ErrorBanner error={error} />
         <ErrorBanner error={postError} />
-        {failedUsers.length > 0 && (
+        {failedUsers?.length > 0 && (
           <ErrorCallout>
             Could not add the following users to Raven since they have a <Strong>Role Profile</Strong> attached.
             <br />
@@ -164,7 +164,7 @@ const AddUsers = () => {
         )}
         {!data && !error && <TableLoader columns={3} />}
 
-        {data && data.length === 0 && debouncedText.length >= 2 && (
+        {data && data?.length === 0 && debouncedText?.length >= 2 && (
           <Flex align='center' justify='center' className='min-h-[32rem]'>
             <Text size='2' align='center'>
               No results found
@@ -172,7 +172,7 @@ const AddUsers = () => {
           </Flex>
         )}
 
-        {data && data.length !== 0 && (
+        {data && data?.length !== 0 && (
           <UsersTable data={data} defaultSelected={ravenUsersArray} selected={selected} setSelected={setSelected} />
         )}
       </SettingsContentContainer>

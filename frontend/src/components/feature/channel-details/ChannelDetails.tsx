@@ -1,15 +1,15 @@
-import { useContext, useMemo } from 'react'
-import { UserContext } from '../../../utils/auth/UserProvider'
-import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { ChannelIcon } from '@/utils/layout/channelIcon'
-import { EditChannelNameButton } from './rename-channel/EditChannelNameButton'
-import { EditDescriptionButton } from './edit-channel-description/EditDescriptionButton'
-import { LeaveChannelButton } from './leave-channel/LeaveChannelButton'
-import { Box, Flex, Separator, Switch, Text } from '@radix-ui/themes'
-import { DateMonthYear } from '@/utils/dateConversions'
 import { ChannelMembers } from '@/hooks/fetchers/useFetchChannelMembers'
 import { useGetUser } from '@/hooks/useGetUser'
+import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { DateMonthYear } from '@/utils/dateConversions'
+import { ChannelIcon } from '@/utils/layout/channelIcon'
+import { Box, Flex, Separator, Text } from '@radix-ui/themes'
+import { useContext, useMemo } from 'react'
+import { UserContext } from '../../../utils/auth/UserProvider'
 import ChannelPushNotificationToggle from './ChannelPushNotificationToggle'
+import { EditDescriptionButton } from './edit-channel-description/EditDescriptionButton'
+import { LeaveChannelButton } from './leave-channel/LeaveChannelButton'
+import { EditChannelNameButton } from './rename-channel/EditChannelNameButton'
 
 interface ChannelDetailsProps {
   channelData: ChannelListItem
@@ -62,7 +62,7 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
                 Channel description
               </Text>
               <Text size='1' color='gray'>
-                {channelData && channelData.channel_description && channelData.channel_description.length > 0
+                {channelData && channelData.channel_description && channelData.channel_description?.length > 0
                   ? channelData.channel_description
                   : 'No description'}
               </Text>
@@ -93,7 +93,7 @@ export const ChannelDetails = ({ channelData, channelMembers, onClose }: Channel
           {/* users can only leave channels they are members of */}
           {/* users cannot leave open channels */}
           {channelMember &&
-            Object.keys(channelMembers).length > 1 &&
+            Object.keys(channelMembers)?.length > 1 &&
             channelData?.type != 'Open' &&
             channelData.is_archived == 0 && (
               <>

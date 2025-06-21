@@ -1,12 +1,12 @@
-import { useFrappeUpdateDoc } from 'frappe-react-sdk'
-import { FormProvider, useForm } from 'react-hook-form'
+import { ErrorText, Label } from '@/components/common/Form'
+import { Loader } from '@/components/common/Loader'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { Box, Dialog, Flex, Button, TextArea, Text } from '@radix-ui/themes'
-import { Loader } from '@/components/common/Loader'
-import { ErrorText, Label } from '@/components/common/Form'
-import { toast } from 'sonner'
 import { __ } from '@/utils/translations'
+import { Box, Button, Dialog, Flex, Text, TextArea } from '@radix-ui/themes'
+import { useFrappeUpdateDoc } from 'frappe-react-sdk'
+import { FormProvider, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 interface RenameChannelForm {
   channel_description: string
@@ -43,7 +43,7 @@ export const EditChannelDescriptionModalContent = ({ channelData, onClose }: Ren
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Dialog.Title>
-          {channelData && channelData?.channel_description && channelData?.channel_description.length > 0
+          {channelData && channelData?.channel_description && channelData?.channel_description?.length > 0
             ? __('Edit description')
             : __('Add description')}
         </Dialog.Title>

@@ -1,23 +1,21 @@
+import { useIsTablet } from '@/hooks/useMediaQuery'
+import { prepareSortedChannels, setSortedChannelsAtom } from '@/utils/channel/ChannelAtom'
+import { channelIsDoneAtom } from '@/utils/channel/channelIsDoneAtom'
 import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
 import { Flex, ScrollArea } from '@radix-ui/themes'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { useContext, useEffect } from 'react'
 import { DirectMessageList } from '../../feature/direct-messages/DirectMessageListCustom'
-import CircleUserList from './CircleUserList'
-import { useIsTablet } from '@/hooks/useMediaQuery'
 import IsTabletSidebarNav from './IsTabletSidebarNav'
-import { useAtomValue, useSetAtom } from 'jotai'
-import { prepareSortedChannels, setSortedChannelsAtom } from '@/utils/channel/ChannelAtom'
-import BeatLoader from '../Loaders/BeatLoader'
-import { channelIsDoneAtom } from '@/utils/channel/channelIsDoneAtom'
 export const SidebarBody = () => {
-  const { isLoading, isValidating, channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
+  const { channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
 
   const setSortedChannels = useSetAtom(setSortedChannelsAtom)
 
   const currentChannelIsDone = useAtomValue(channelIsDoneAtom)
 
   useEffect(() => {
-    if (channels.length === 0 && dm_channels.length === 0) return
+    if (channels?.length === 0 && dm_channels?.length === 0) return
 
     const sorted = prepareSortedChannels(channels, dm_channels, currentChannelIsDone)
     setSortedChannels(sorted)

@@ -1,10 +1,10 @@
 import { CustomFile } from '@/components/feature/file-upload/FileDrop'
-import { useContext, useRef, useState } from 'react'
-import { Message } from '../../../../../../../types/Messaging/Message'
-import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
-import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
-import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
+import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
+import { useContext, useRef, useState } from 'react'
+import { toast } from 'sonner'
+import { Message } from '../../../../../../../types/Messaging/Message'
 
 export const fileExt = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF']
 export interface FileUploadProgress {
@@ -45,7 +45,7 @@ export default function useFileUpload(channelID: string) {
 
   const uploadFiles = async (selectedMessage?: Message | null): Promise<RavenMessage[]> => {
     const newFiles = [...filesStateRef.current]
-    if (newFiles.length > 0) {
+    if (newFiles?.length > 0) {
       const promises: Promise<RavenMessage | null>[] = newFiles.map(async (f: CustomFile, index: number) => {
         return file
           .uploadFile(

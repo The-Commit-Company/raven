@@ -80,7 +80,7 @@ const LabelItem: React.FC<LabelItemProps> = ({ label, name, channels }) => {
         {!(totalCount > 0 && !isExpanded) && <LabelItemMenu channels={channels} name={name} label={label} />}
       </div>
 
-      {isExpanded && mergedChannels.length > 0 && (
+      {isExpanded && mergedChannels?.length > 0 && (
         <div className='ml-4 space-y-1'>
           {mergedChannels.map((channel) => (
             <LabelItemList

@@ -1,11 +1,11 @@
-import { Box, Checkbox, Flex, Text, RadioGroup, Button, Badge, BoxProps } from '@radix-ui/themes'
-import { useEffect, useMemo, useState } from 'react'
-import { UserFields } from '../../../../../utils/users/UserListProvider'
-import { PollMessage } from '../../../../../../../types/Messaging/Message'
-import { useFrappeDocumentEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
-import { RavenPoll } from '@/types/RavenMessaging/RavenPoll'
 import { ErrorBanner, getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import { RavenPoll } from '@/types/RavenMessaging/RavenPoll'
 import { RavenPollOption } from '@/types/RavenMessaging/RavenPollOption'
+import { Badge, Box, BoxProps, Button, Checkbox, Flex, RadioGroup, Text } from '@radix-ui/themes'
+import { useFrappeDocumentEventListener, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
+import { useEffect, useMemo, useState } from 'react'
+import { PollMessage } from '../../../../../../../types/Messaging/Message'
+import { UserFields } from '../../../../../utils/users/UserListProvider'
 
 import { ViewPollVotes } from '@/components/feature/polls/ViewPollVotes'
 import { toast } from 'sonner'
@@ -75,7 +75,7 @@ const PollMessageBox = ({ data, messageID }: { data: Poll; messageID: string }) 
             </Badge>
           ) : null}
         </Flex>
-        {data.current_user_votes.length > 0 ? (
+        {data.current_user_votes?.length > 0 ? (
           <PollResults data={data} />
         ) : (
           <>
@@ -224,7 +224,7 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll; messageID: string })
 
   const { call } = useFrappePostCall('raven.api.raven_poll.add_vote')
   const onVoteSubmit = async () => {
-    if (!selectedOptions.length) {
+    if (!selectedOptions?.length) {
       toast.error('Please select at least one option')
       return
     }

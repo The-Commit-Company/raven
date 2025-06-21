@@ -1,13 +1,7 @@
 import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { UnreadCountData, useChannelList, useUpdateLastMessageInChannelList } from '@/utils/channel/ChannelListProvider'
-import {
-  FrappeConfig,
-  FrappeContext,
-  useFrappeEventListener,
-  useFrappeGetCall,
-  useFrappePostCall
-} from 'frappe-react-sdk'
+import { FrappeConfig, FrappeContext, useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
 import { useAtomValue } from 'jotai'
 import { useContext, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -32,7 +26,7 @@ export const useUnreadMessageCount = () => {
     const idsFromServer = new Set(unread_count?.message.map((c) => c.name))
     const manualOnly = Array.from(manuallyMarked).filter((id) => !idsFromServer.has(id))
 
-    const manualCount = manualOnly.length
+    const manualCount = manualOnly?.length
     const serverCount = unread_count?.message.reduce((sum, c) => sum + c.unread_count, 0) || 0
 
     return serverCount + manualCount
@@ -166,7 +160,7 @@ export const useFetchUnreadMessageCount = () => {
 
     const allChannelMap = new Map((unread_count?.message || []).map((c) => [c.name, c]))
     const manualOnly = Array.from(manuallyMarked).filter((id) => !allChannelMap.has(id))
-    const manualCount = manualOnly.length
+    const manualCount = manualOnly?.length
     const serverUnreadCount = unread_count?.message.reduce((sum, c) => sum + c.unread_count, 0) || 0
     const totalUnread = serverUnreadCount + manualCount
 

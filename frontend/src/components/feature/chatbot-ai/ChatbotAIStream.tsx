@@ -33,7 +33,7 @@ const ChatbotAIStream = () => {
   // Hàm tạo session mới
   const throttledHandleNewSession = useThrottleAsync(
     useCallback(async () => {
-      const title = `Đoạn chat mới ${sessions.length + 1}`
+      const title = `Đoạn chat mới ${sessions?.length + 1}`
       try {
         const res = await createConversation({ title })
         await mutateConversations()
@@ -42,7 +42,7 @@ const ChatbotAIStream = () => {
       } catch (error) {
         console.error('Error creating new session:', error)
       }
-    }, [createConversation, mutateConversations, sessions.length]),
+    }, [createConversation, mutateConversations, sessions?.length]),
     3000
   )
 
@@ -62,7 +62,7 @@ const ChatbotAIStream = () => {
   // Nếu selectedAISessionId không còn trong danh sách backend, tự động bỏ chọn hoặc chọn session đầu tiên
   useEffect(() => {
     if (selectedAISessionId && !sessions.find((s) => s.id === selectedAISessionId)) {
-      setSelectedAISessionId(sessions.length > 0 ? sessions[0].id : null)
+      setSelectedAISessionId(sessions?.length > 0 ? sessions[0].id : null)
     }
   }, [sessions, selectedAISessionId])
 

@@ -2,8 +2,8 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { Box, Flex, ScrollArea, TextField } from '@radix-ui/themes'
 import { useState } from 'react'
 import { BiSearch } from 'react-icons/bi'
-import { GIFSearchResults } from './GIFSearchResults'
 import { GIFFeaturedResults } from './GIFFeaturedResults'
+import { GIFSearchResults } from './GIFSearchResults'
 
 export const TENOR_SEARCH_API_ENDPOINT_BASE = `https://tenor.googleapis.com/v2/search`
 export const TENOR_FEATURED_API_ENDPOINT_BASE = `https://tenor.googleapis.com/v2/featured`
@@ -47,7 +47,7 @@ const GIFPicker = ({ onSelect }: GIFPickerProps) => {
           </TextField.Root>
         </Box>
         <ScrollArea className='h-[74vh] sm:h-auto pb-6 sm:pb-10 '>
-          {debouncedText.length >= 2 ? (
+          {debouncedText?.length >= 2 ? (
             <GIFSearchResults query={debouncedText} onSelect={onSelect} />
           ) : (
             <GIFFeaturedResults onSelect={onSelect} />

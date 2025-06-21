@@ -333,7 +333,7 @@ const ManageMembersDialogContent = ({
   return (
     <Stack className='pt-4'>
       <ErrorBanner error={error} />
-      {errors.length > 0 && (
+      {errors?.length > 0 && (
         <ErrorCallout>
           {errors.map((error) => (
             <Text key={error}>{error}</Text>
@@ -375,7 +375,7 @@ const MemberStats = ({ members }: { members: MemberObject[] }) => {
             size='2'
             className='text-gray-11 h-full flex items-center underline underline-offset-4 decoration-gray-8'
           >
-            {memberIDs.length} members
+            {memberIDs?.length} members
           </Text>
         </HoverCard.Trigger>
         <HoverCard.Content className='w-72'>
@@ -404,7 +404,7 @@ const MemberStats = ({ members }: { members: MemberObject[] }) => {
             size='2'
             className='text-gray-11 h-full flex items-center underline underline-offset-4 decoration-gray-8'
           >
-            {admins.length} admins
+            {admins?.length} admins
           </Text>
         </HoverCard.Trigger>
         <HoverCard.Content className='w-72'>

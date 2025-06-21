@@ -20,10 +20,10 @@ export const useMessageProcessing = (data: any, pinnedMessagesString?: string) =
     const messages = [...data.message.messages]
     const messagesWithDateSeparators: MessageDateBlock[] = []
 
-    if (messages.length === 0) return []
+    if (messages?.length === 0) return []
 
-    let currentDate = messages[messages.length - 1].creation.split(' ')[0]
-    let currentDateTime = new Date(messages[messages.length - 1].creation.split('.')[0]).getTime()
+    let currentDate = messages[messages?.length - 1].creation.split(' ')[0]
+    let currentDateTime = new Date(messages[messages?.length - 1].creation.split('.')[0]).getTime()
 
     // Add first date separator
     messagesWithDateSeparators.push({
@@ -33,13 +33,13 @@ export const useMessageProcessing = (data: any, pinnedMessagesString?: string) =
     })
 
     messagesWithDateSeparators.push({
-      ...messages[messages.length - 1],
+      ...messages[messages?.length - 1],
       is_continuation: 0,
-      is_pinned: pinnedMessageIDs.includes(messages[messages.length - 1].name) ? 1 : 0
+      is_pinned: pinnedMessageIDs.includes(messages[messages?.length - 1].name) ? 1 : 0
     })
 
     // Process remaining messages
-    for (let i = messages.length - 2; i >= 0; i--) {
+    for (let i = messages?.length - 2; i >= 0; i--) {
       const message = messages[i]
       const messageDate = message.creation.split(' ')[0]
       const messageDateTime = new Date(message.creation.split('.')[0]).getTime()

@@ -16,6 +16,7 @@ import { useEnrichedSortedChannels } from '@/utils/channel/ChannelAtom'
 import { formatLastMessage } from '@/utils/channel/useFormatLastMessage'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { useSidebarMode } from '@/utils/layout/sidebar'
+import { truncateText } from '@/utils/textUtils/truncateText'
 import { useAtomValue } from 'jotai'
 import { HiCheck } from 'react-icons/hi'
 import { SidebarBadge, SidebarGroup, SidebarIcon } from '../../layout/Sidebar/SidebarComp'
@@ -26,7 +27,6 @@ import ChatbotAIStream from '../chatbot-ai/ChatbotAIStream'
 import LabelByUserList from '../labels/LabelByUserList'
 import ThreadsCustom from '../threads/ThreadsCustom'
 import { MessageSaved } from './DirectMessageSaved'
-import { truncateText } from '@/utils/textUtils/truncateText'
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
 
@@ -60,7 +60,7 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
       return c.user_labels?.some((label: { label_id: string; label: string }) => label.label_id === labelID)
     })
 
-    if (filtered.length === 0) {
+    if (filtered?.length === 0) {
       return <div className='text-gray-500 text-sm italic p-4 text-center'>Không có kênh nào gắn nhãn này</div>
     }
 

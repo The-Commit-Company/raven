@@ -26,16 +26,16 @@ const TypingIndicator = memo(({ channel, maxDisplay = 3, showAnimation = true }:
       })
       .filter(Boolean) // Remove any null/undefined values
 
-    if (validTypingUsers.length === 0) return ''
+    if (validTypingUsers?.length === 0) return ''
 
     // Handle different cases of typing users
-    if (validTypingUsers.length === 1) {
+    if (validTypingUsers?.length === 1) {
       return `${validTypingUsers[0]} đang nhập...`
-    } else if (validTypingUsers.length <= maxDisplay) {
+    } else if (validTypingUsers?.length <= maxDisplay) {
       return `${validTypingUsers.join(' và ')} đang nhập...`
     } else {
       const displayUsers = validTypingUsers.slice(0, maxDisplay)
-      const remainingCount = validTypingUsers.length - maxDisplay
+      const remainingCount = validTypingUsers?.length - maxDisplay
       return `${displayUsers.join(', ')} và ${remainingCount} người khác đang nhập...`
     }
   }, [typingUsers, userRecords, currentUser, maxDisplay])

@@ -127,7 +127,7 @@ const DocTypePreviewEditor = ({
 
   return (
     <Stack>
-      {previewFields.length === 0 && (
+      {previewFields?.length === 0 && (
         <div>
           <Text size='2'>
             No fields have been selected for preview, hence we would show all mandatory fields of {doctype} in the

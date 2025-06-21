@@ -30,7 +30,7 @@ const WorkspaceSwitcher = () => {
     )
   }
 
-  if (data && data?.message.length === 0) {
+  if (data && data?.message?.length === 0) {
     return (
       <Flex justify='center' align='center' height='100vh' width='100vw' className='animate-fadein'>
         <Stack className='text-center' gap='1'>

@@ -181,7 +181,7 @@ const Tiptap = forwardRef(
     const [enterKeyBehaviour] = useAtom(EnterKeyBehaviourAtom)
 
     const handleMessageSendAction = (editor: any) => {
-      const hasContent = editor.getText().trim().length > 0
+      const hasContent = editor.getText().trim()?.length > 0
       let html = ''
       let json = {}
       if (hasContent) {
@@ -244,7 +244,7 @@ const Tiptap = forwardRef(
           'Mod-Enter': () => {
             const isCodeBlockActive = this.editor.isActive('codeBlock')
             const isListItemActive = this.editor.isActive('listItem')
-            const hasContent = this.editor.getText().trim().length > 0
+            const hasContent = this.editor.getText().trim()?.length > 0
             /**
              * when inside of a codeblock and setting for sending the message with CMD/CTRL-Enter
              * force calling the `onSubmit` function and clear the editor content
@@ -308,7 +308,7 @@ const Tiptap = forwardRef(
             props: {
               handleDOMEvents: {
                 drop(view, event) {
-                  const hasFiles = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length
+                  const hasFiles = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files?.length
 
                   if (!hasFiles || !fileProps) {
                     return
@@ -316,7 +316,7 @@ const Tiptap = forwardRef(
 
                   const images = Array.from(event.dataTransfer.files).filter((file) => /image/i.test(file.type))
 
-                  if (images.length === 0) {
+                  if (images?.length === 0) {
                     return
                   }
 
@@ -327,7 +327,7 @@ const Tiptap = forwardRef(
                   })
                 },
                 paste(view, event) {
-                  const hasFiles = event.clipboardData && event.clipboardData.files && event.clipboardData.files.length
+                  const hasFiles = event.clipboardData && event.clipboardData.files && event.clipboardData.files?.length
 
                   if (!hasFiles || !fileProps) {
                     return
@@ -335,7 +335,7 @@ const Tiptap = forwardRef(
 
                   const images = Array.from(event.clipboardData.files).filter((file) => /image/i.test(file.type))
 
-                  if (images.length === 0) {
+                  if (images?.length === 0) {
                     return
                   }
 

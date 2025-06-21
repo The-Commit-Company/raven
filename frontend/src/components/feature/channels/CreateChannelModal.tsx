@@ -241,7 +241,7 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
                     <TextField.Slot side='left'>{channelIcon}</TextField.Slot>
                     <TextField.Slot side='right'>
                       <Text size='2' weight='light' color='gray'>
-                        {50 - field.value.length}
+                        {50 - field.value?.length}
                       </Text>
                     </TextField.Slot>
                   </TextField.Root>

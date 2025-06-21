@@ -1,16 +1,16 @@
-import { Flex, Dialog, IconButton, Box, Button, VisuallyHidden } from '@radix-ui/themes'
-import { Suspense } from 'react'
-import { BiX } from 'react-icons/bi'
-import { Message } from '../../../../../../../types/Messaging/Message'
-import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { UserFields } from '@/utils/users/UserListProvider'
-import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { toast } from 'sonner'
-import UsersOrChannelsDropdown from '@/components/feature/selectDropdowns/UsersOrChannelsDropdown'
 import { ErrorText } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
-import { useFrappePostCall } from 'frappe-react-sdk'
+import UsersOrChannelsDropdown from '@/components/feature/selectDropdowns/UsersOrChannelsDropdown'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
+import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { UserFields } from '@/utils/users/UserListProvider'
+import { Box, Button, Dialog, Flex, IconButton, VisuallyHidden } from '@radix-ui/themes'
+import { useFrappePostCall } from 'frappe-react-sdk'
+import { Suspense } from 'react'
+import { Controller, FormProvider, useForm } from 'react-hook-form'
+import { BiX } from 'react-icons/bi'
+import { toast } from 'sonner'
+import { Message } from '../../../../../../../types/Messaging/Message'
 
 interface ForwardMessageModalProps {
   onClose: () => void
@@ -35,7 +35,7 @@ const ForwardMessageModal = ({ onClose, message }: ForwardMessageModalProps) => 
   const { call, error, loading } = useFrappePostCall('raven.api.raven_message.forward_message')
 
   const onSubmit = (data: ForwardMessageForm) => {
-    if (data.selected_options && data.selected_options.length > 0) {
+    if (data.selected_options && data.selected_options?.length > 0) {
       call({
         message_receivers: data.selected_options,
         forwarded_message: data.message
@@ -75,12 +75,12 @@ const ForwardMessageModal = ({ onClose, message }: ForwardMessageModalProps) => 
           <Box width='100%'>
             <Flex direction='column' gap='2'>
               <Suspense fallback={<Loader />}>
-                <Controller 
+                <Controller
                   control={control}
                   name='selected_options'
                   rules={{
                     validate: (value) => {
-                      if (value && value.length > 0) {
+                      if (value && value?.length > 0) {
                         return true
                       }
                       return 'Please select at least one member'

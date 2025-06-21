@@ -1,10 +1,10 @@
+import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { Text, TextField, VisuallyHidden } from '@radix-ui/themes'
+import clsx from 'clsx'
 import { useCombobox } from 'downshift'
 import { Filter, SearchResult, useSearch } from 'frappe-react-sdk'
 import { useState } from 'react'
 import { Label } from '../Form'
-import { Text, TextField, VisuallyHidden } from '@radix-ui/themes'
-import { useIsDesktop } from '@/hooks/useMediaQuery'
-import clsx from 'clsx'
 
 export interface LinkFieldProps {
   doctype: string
@@ -90,7 +90,7 @@ const LinkField = ({
           {...getInputProps()}
         ></TextField.Root>
       </div>
-      {isOpen && !items.length && (
+      {isOpen && !items?.length && (
         <div
           className={clsx(
             `p-2 sm:w-[550px] w-[24rem] absolute bg-background rounded-b-md mt-1 shadow-md z-[9999] max-h-96 overflow-scroll`,
@@ -105,7 +105,7 @@ const LinkField = ({
       <ul
         className={clsx(
           `sm:w-[550px] w-[24rem] absolute bg-background rounded-b-md mt-1 shadow-md z-[9999] max-h-96 overflow-scroll p-0 ${
-            !(isOpen && items.length) && 'hidden'
+            !(isOpen && items?.length) && 'hidden'
           }`,
           dropdownClass
         )}

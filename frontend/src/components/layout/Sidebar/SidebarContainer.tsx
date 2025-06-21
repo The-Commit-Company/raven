@@ -7,7 +7,6 @@ import {
   HiOutlineChatAlt2,
   HiOutlineCheckCircle,
   HiOutlineChip,
-  HiOutlineCog,
   HiOutlineFlag,
   HiOutlineHashtag,
   HiOutlineInbox,
@@ -121,7 +120,7 @@ export default function SidebarContainer({ sidebarRef }: { sidebarRef: React.Ref
           </span>
           {!isCollapsed && !isIconOnly && <span className='text-base'>Bộ lọc</span>}
         </div>
-        {/* 
+        {/*
         {tempMode === 'default' && (
           <HiOutlineCog className='w-5 h-5 pr-3 cursor-pointer hover:text-gray-900 dark:hover:text-white' />
         )} */}
@@ -157,7 +156,7 @@ export const FilterList = React.memo(({ onClose }: { onClose?: () => void }) => 
     const seen = new Set<string>()
     let total = 0
     for (const ch of enrichedChannels) {
-      if (Array.isArray(ch.user_labels) && ch.user_labels.length > 0 && !seen.has(ch.name)) {
+      if (Array.isArray(ch.user_labels) && ch.user_labels?.length > 0 && !seen.has(ch.name)) {
         seen.add(ch.name)
         total += ch.unread_count ?? 0
       }

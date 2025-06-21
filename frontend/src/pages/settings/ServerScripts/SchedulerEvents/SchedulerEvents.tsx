@@ -57,7 +57,7 @@ const SchedulerEvents = () => {
         {isLoading && !error && <TableLoader columns={2} />}
         <ErrorBanner error={error} />
         <ServerScriptNotEnabledCallout />
-        {data && data.length > 0 && <List data={data} />}
+        {data && data?.length > 0 && <List data={data} />}
         {(data?.length === 0 || !isRavenAdmin) && (
           <EmptyState>
             <EmptyStateIcon>

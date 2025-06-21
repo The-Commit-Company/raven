@@ -193,7 +193,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
     } = useChatStream(channelID, virtuosoRef, pinnedMessagesString, scrollState.isAtBottom)
 
     useEffect(() => {
-      if (messages && messages.length > 0 && !renderState.isInitialLoadComplete) {
+      if (messages && messages?.length > 0 && !renderState.isInitialLoadComplete) {
         setTimeout(() => {
           dispatchRenderState({ type: 'SET_INITIAL_LOAD_COMPLETE', payload: true })
         }, 100)
@@ -217,7 +217,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
           const shouldLoadNewer =
             hasNewMessages &&
             range &&
-            range.endIndex >= messages.length - 5 &&
+            range.endIndex >= messages?.length - 5 &&
             !loadingState.isLoadingMessages &&
             !loadingState.hasInitialLoadedWithMessageId
 
@@ -318,7 +318,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
         ...virtuosoRef.current,
         onUpArrow: () => {
           if (messages?.length) {
-            const lastMessage = messages[messages.length - 1]
+            const lastMessage = messages[messages?.length - 1]
             if (lastMessage.message_type === 'Text' && lastMessage.owner === userID && !lastMessage.is_bot_message) {
               editActions.setEditMessage(lastMessage)
             }
@@ -465,13 +465,13 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
 
         {error && <ErrorBanner error={error} />}
 
-        {messages && messages.length > 0 && (
+        {messages && messages?.length > 0 && (
           <Virtuoso
             ref={virtuosoRef}
             data={messages}
             itemContent={itemRenderer}
             followOutput={scrollState.isAtBottom ? 'auto' : false}
-            initialTopMostItemIndex={!isSavedMessage ? messages.length - 1 : targetIndex}
+            initialTopMostItemIndex={!isSavedMessage ? messages?.length - 1 : targetIndex}
             atTopStateChange={handleAtTopStateChange}
             atBottomStateChange={handleAtBottomStateChange}
             rangeChanged={handleRangeChanged}

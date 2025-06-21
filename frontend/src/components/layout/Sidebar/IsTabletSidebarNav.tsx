@@ -68,14 +68,14 @@ export default function FilterTabs() {
         <div
           className={clsx(
             'flex flex-1 justify-between items-center rounded-full px-1 py-1 gap-[2px] overflow-hidden',
-            tabsToRender.length > 1 && 'bg-gray-200 dark:bg-neutral-800'
+            tabsToRender?.length > 1 && 'bg-gray-200 dark:bg-neutral-800'
           )}
         >
           {tabsToRender.map((tab) => {
             const isActive = tab.label === title
             const badgeCount = getBadgeCount(tab.label as string)
 
-            const isSingleTab = tabsToRender.length === 1
+            const isSingleTab = tabsToRender?.length === 1
 
             return (
               <div
