@@ -1,4 +1,4 @@
-const MAX_PREVIEW_LENGTH = 20
+const MAX_PREVIEW_LENGTH = 10
 
 export const truncateText = (text: string, maxLength: number = MAX_PREVIEW_LENGTH): string => {
   if (!text) return ''
@@ -18,13 +18,13 @@ export interface Channel {
   last_message_details: any
 }
 
-export function formatLastMessage(
+export function formatLastMessageParts(
   channel: Channel,
   currentUser: string,
   senderName?: string,
   maxLength: number = MAX_PREVIEW_LENGTH
-): string {
-  if (!channel?.last_message_details) return ''
+): { senderLabel: string; contentLabel: string } {
+  if (!channel?.last_message_details) return { senderLabel: '', contentLabel: '' }
 
   let raw: any
   try {
@@ -33,7 +33,7 @@ export function formatLastMessage(
         ? JSON.parse(channel.last_message_details)
         : channel.last_message_details
   } catch {
-    return ''
+    return { senderLabel: '', contentLabel: '' }
   }
 
   const isCurrentUser = raw.owner === currentUser
@@ -69,8 +69,5 @@ export function formatLastMessage(
         break
     }
   }
-
-  if (!contentLabel) return ''
-
-  return senderLabel ? `${senderLabel}: ${contentLabel}` : contentLabel
+  return { senderLabel, contentLabel }
 }
