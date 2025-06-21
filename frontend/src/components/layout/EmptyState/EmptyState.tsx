@@ -151,11 +151,11 @@ const EmptyStateForDM = ({ channelData }: EmptyStateForDMProps) => {
             <Flex gap='2' align='center'>
               {peer || fullName ? (
                 <Text size='2'>
-                  Đây là kênh Tin Nhắn Trực Tiếp giữa bạn và <strong>{fullName ?? peer}</strong>.
+                  Đây là kênh tin nhắn trực tiếp giữa bạn và <strong>{fullName ?? peer}</strong>.
                 </Text>
               ) : (
                 <Text size='2'>
-                  Chúng tôi không thể tìm thấy người dùng cho kênh Tin Nhắn Trực Tiếp này (
+                  Chúng tôi không thể tìm thấy người dùng cho kênh tin nhắn trực tiếp này (
                   {replaceCurrentUserFromDMChannelName(channelData.channel_name, currentUser)}).
                 </Text>
               )}

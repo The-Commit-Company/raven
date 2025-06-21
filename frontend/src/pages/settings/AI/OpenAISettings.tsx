@@ -80,8 +80,8 @@ const OpenAISettings = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <SettingsContentContainer>
             <SettingsPageHeader
-              title='OpenAI Settings'
-              description='Set your OpenAI API Key to use AI features in Raven.'
+              title='Cài Đặt OpenAI'
+              description='Thiết lập OpenAI API Key để sử dụng các tính năng AI trong Raven.'
               actions={
                 <Button type='submit' disabled={updatingDoc || !isRavenAdmin}>
                   {updatingDoc && <Loader className='text-white' />}
