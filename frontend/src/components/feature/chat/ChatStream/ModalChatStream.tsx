@@ -230,7 +230,7 @@ const ChatStream = forwardRef<VirtuosoHandle, Props>(
 
           if (range && newMessageIds.size > 0) {
             const visibleMessages = messages.slice(range.startIndex, range.endIndex + 1)
-            visibleMessages.forEach((message: any) => {
+            visibleMessages?.forEach((message: any) => {
               if (message.name && newMessageIds.has(message.name)) {
                 setTimeout(() => markMessageAsSeen(message.name), 2000)
               }

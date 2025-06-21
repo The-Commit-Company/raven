@@ -50,7 +50,7 @@ export const useTypingIndicator = (channel: string) => {
 
   useEffect(() => {
     return () => {
-      timeoutsRef.current.forEach((timeout) => clearTimeout(timeout))
+      timeoutsRef.current?.forEach((timeout) => clearTimeout(timeout))
       timeoutsRef.current.clear()
     }
   }, [])

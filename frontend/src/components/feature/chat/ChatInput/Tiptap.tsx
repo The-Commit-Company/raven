@@ -322,7 +322,7 @@ const Tiptap = forwardRef(
 
                   event.preventDefault()
 
-                  images.forEach((image) => {
+                  images?.forEach((image) => {
                     fileProps.addFile(image)
                   })
                 },
@@ -341,7 +341,7 @@ const Tiptap = forwardRef(
 
                   event.preventDefault()
 
-                  images.forEach((image) => {
+                  images?.forEach((image) => {
                     fileProps.addFile(image)
                   })
                 }

@@ -129,7 +129,7 @@ const SelectExistingFiles = ({ append, existingFiles }: { append: (id: string) =
   }
 
   const onSubmit = () => {
-    selectedFiles.forEach((d) => append(d))
+    selectedFiles?.forEach((d) => append(d))
     setSelectedFiles([])
   }
 

@@ -80,7 +80,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
 
         const newMessages = [...existingMessages]
 
-        messages.forEach((message) => {
+        messages?.forEach((message) => {
           // Kiểm tra nếu tin nhắn đã tồn tại trong mảng tin nhắn hiện có
           const messageIndex = existingMessages.findIndex((m) => m.name === message.name)
 

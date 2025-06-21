@@ -1,12 +1,12 @@
 import useFetchWorkspaces, { WorkspaceFields } from '@/hooks/fetchers/useFetchWorkspaces'
 import { Avatar, Card, Grid, Heading, Text } from '@radix-ui/themes'
-import { Link } from 'react-router-dom'
-import { HStack, Stack } from './Stack'
-import { useMemo } from 'react'
 import { useFrappeGetCall, useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
+import { useMemo } from 'react'
 import { MdArrowOutward } from 'react-icons/md'
+import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import { getErrorMessage } from './AlertBanner/ErrorBanner'
+import { HStack, Stack } from './Stack'
 
 const WorkspaceSwitcherGrid = () => {
   const { data } = useFetchWorkspaces()
@@ -16,7 +16,7 @@ const WorkspaceSwitcherGrid = () => {
     const otherWorkspaces: WorkspaceFields[] = []
 
     if (data) {
-      data.message.forEach((workspace) => {
+      data.message?.forEach((workspace) => {
         if (workspace.workspace_member_name) {
           myWorkspaces.push(workspace)
         } else {
