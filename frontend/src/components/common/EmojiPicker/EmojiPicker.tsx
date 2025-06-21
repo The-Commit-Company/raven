@@ -57,7 +57,7 @@ const EmojiPicker = ({
       {
         id: 'Custom',
         name: 'Custom',
-        emojis: data.map((emoji) => ({
+        emojis: data?.map((emoji) => ({
           id: emoji.name,
           name: emoji.name,
           keywords: emoji.keywords?.split(','),

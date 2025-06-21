@@ -1,6 +1,6 @@
 import { HStack } from '@/components/layout/Stack'
 import { RavenWebhook } from '@/types/RavenIntegrations/RavenWebhook'
-import { Flex, Box, Heading, Table, TextField, IconButton, Button, Text } from '@radix-ui/themes'
+import { Box, Button, Flex, Heading, IconButton, Table, Text, TextField } from '@radix-ui/themes'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { BiMinusCircle } from 'react-icons/bi'
 import { FiPlus } from 'react-icons/fi'
@@ -47,7 +47,7 @@ export const WebhookHeaders = () => {
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {fields.map((field, index) => (
+            {fields?.map((field, index) => (
               <Table.Row key={field.id}>
                 <Table.Cell>
                   <TextField.Root

@@ -110,7 +110,7 @@ const GeneralFunctionDetails = ({ isEdit }: { isEdit?: boolean }) => {
                   <Select.Content>
                     <Select.Group>
                       <Select.Label className='pl-3'>Standard</Select.Label>
-                      {FUNCTION_TYPES.filter((f) => f.type === 'Standard').map((f) => (
+                      {FUNCTION_TYPES.filter((f) => f.type === 'Standard')?.map((f) => (
                         <Select.Item value={f.value} key={f.value}>
                           {f.value}
                         </Select.Item>
@@ -119,7 +119,7 @@ const GeneralFunctionDetails = ({ isEdit }: { isEdit?: boolean }) => {
 
                     <Select.Group>
                       <Select.Label className='pl-3'>Miscellaneous</Select.Label>
-                      {FUNCTION_TYPES.filter((f) => f.type === 'Other').map((f) => (
+                      {FUNCTION_TYPES.filter((f) => f.type === 'Other')?.map((f) => (
                         <Select.Item value={f.value} key={f.value}>
                           {f.value}
                         </Select.Item>
@@ -128,7 +128,7 @@ const GeneralFunctionDetails = ({ isEdit }: { isEdit?: boolean }) => {
 
                     <Select.Group>
                       <Select.Label className='pl-3'>Bulk Operations</Select.Label>
-                      {FUNCTION_TYPES.filter((f) => f.type === 'Bulk Operations').map((f) => (
+                      {FUNCTION_TYPES.filter((f) => f.type === 'Bulk Operations')?.map((f) => (
                         <Select.Item value={f.value} key={f.value}>
                           {f.value}
                         </Select.Item>

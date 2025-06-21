@@ -159,7 +159,7 @@ export const FileSearch = ({
               <Select.Item value='any'>From anyone</Select.Item>
               <Select.Group>
                 <Select.Label>Message from</Select.Label>
-                {Object.values(users).map((option) => (
+                {Object.values(users)?.map((option) => (
                   <Select.Item key={option.name} textValue={option.full_name} value={option.name}>
                     <Flex gap='2' align='center'>
                       <UserAvatar src={option.user_image} alt={option.full_name} />
@@ -177,7 +177,7 @@ export const FileSearch = ({
               <Select.Item value='any'>Tất cả</Select.Item>
               <Select.Group>
                 <Select.Label>Channels</Select.Label>
-                {channels.map((option) => (
+                {channels?.map((option) => (
                   <Select.Item key={option.name} value={option.name}>
                     <Flex gap='2' align='center' className='overflow-hidden'>
                       <ChannelIcon type={option.type} />
@@ -196,7 +196,7 @@ export const FileSearch = ({
               <Select.Separator />
               <Select.Group>
                 <Select.Label>Direct Messages</Select.Label>
-                {dm_channels.map((option) => (
+                {dm_channels?.map((option) => (
                   <Select.Item
                     key={option.name}
                     value={option.name}
@@ -221,7 +221,7 @@ export const FileSearch = ({
               <Select.Group>
                 <Select.Label>Date</Select.Label>
                 <Select.Item value='any'>Any time</Select.Item>
-                {dateOption.map((option) => (
+                {dateOption?.map((option) => (
                   <Select.Item key={option.value} value={option.value}>
                     {option.label}
                   </Select.Item>
@@ -248,7 +248,7 @@ export const FileSearch = ({
         {data?.message?.length === 0 && <EmptyStateForSearch />}
         {data?.message && data.message?.length > 0 ? (
           <Flex direction='column' gap='4'>
-            {data.message.map((f: FileSearchResult) => {
+            {data.message?.map((f: FileSearchResult) => {
               return (
                 <Flex gap='3' key={f.name} align='center'>
                   <Flex align='center' justify='center' className='w-[10%] sm:w-[5%]'>

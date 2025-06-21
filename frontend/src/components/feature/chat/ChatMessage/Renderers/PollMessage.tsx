@@ -100,7 +100,7 @@ const PollMessageBox = ({ data, messageID }: { data: Poll; messageID: string }) 
 const PollResults = ({ data }: { data: Poll }) => {
   return (
     <Flex direction='column' gap='2' className='w-full'>
-      {data.poll.options.map((option) => {
+      {data.poll.options?.map((option) => {
         return <PollOption key={option.name} data={data} option={option} />
       })}
       <Text as='span' size='1' color='gray' className='px-2'>
@@ -190,7 +190,7 @@ const SingleChoicePoll = ({ data, messageID }: { data: Poll; messageID: string }
 
   return (
     <RadioGroup.Root>
-      {data.poll.options.map((option) => (
+      {data.poll.options?.map((option) => (
         <div key={option.name}>
           <Text as='label' size='2' className='block w-full'>
             <Flex gap='2' p='2' className='rounded-sm hover:bg-accent-a2 dark:hover:bg-gray-5 w-full'>
@@ -244,7 +244,7 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll; messageID: string })
 
   return (
     <div>
-      {data.poll.options.map((option) => (
+      {data.poll.options?.map((option) => (
         <div key={option.name}>
           <Text as='label' size='2' className='block w-full'>
             <Flex gap='2' p='2' className='rounded-sm hover:bg-accent-a2 dark:hover:bg-gray-5 w-full'>

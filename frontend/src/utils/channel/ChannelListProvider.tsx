@@ -2,7 +2,7 @@ import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 import { RavenChannel } from '@/types/RavenChannelManagement/RavenChannel'
 import { FrappeError, useFrappeEventListener, useFrappeGetCall, useSWRConfig } from 'frappe-react-sdk'
-import { PropsWithChildren, createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { PropsWithChildren, createContext, useContext, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { KeyedMutator } from 'swr'
 
@@ -123,8 +123,8 @@ export const useFetchChannelList = (): ChannelListContextType => {
     }
   })
   return {
-    channels: data?.message?.channels,
-    dm_channels: data?.message?.dm_channels,
+    channels: data?.message?.channels as ChannelListItem[],
+    dm_channels: data?.message?.dm_channels as DMChannelListItem[],
     isLoading,
     isValidating,
     mutate,

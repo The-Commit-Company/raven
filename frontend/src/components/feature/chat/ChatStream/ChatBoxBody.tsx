@@ -274,7 +274,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                   {selectedMessage && <PreviousMessagePreview selectedMessage={selectedMessage} />}
                   {files && files?.length > 0 && (
                     <Flex gap='2' width='100%' align='stretch' px='2' p='2' wrap='wrap'>
-                      {files.map((f: CustomFile) => (
+                      {files?.map((f: CustomFile) => (
                         <Box className='grow-0' key={f.fileID}>
                           <FileListItem
                             file={f}

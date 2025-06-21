@@ -69,7 +69,7 @@ const MessageActionVariableBuilder = () => {
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {fields.map((field, index) => {
+            {fields?.map((field, index) => {
               return (
                 <Table.Row key={field.id}>
                   <Table.Cell>
@@ -199,7 +199,7 @@ const ImportDoctypeVariables = ({ append }: { append: (data: Partial<RavenMessag
 
   const importFields = () => {
     // Get the existing fields
-    const existingFields = (getValues('fields') || []).map((f) => f.fieldname)
+    const existingFields = (getValues('fields') || [])?.map((f) => f.fieldname)
 
     // Get all the required fields from the doctypes
     const requiredFields = doctypeMeta?.fields?.filter(

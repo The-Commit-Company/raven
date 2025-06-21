@@ -49,7 +49,7 @@ const SchedulerEvents = () => {
           description='Bạn có thể tạo một tin nhắn đã lên lịch và bot sẽ gửi nó đến bạn vào thời gian đã định.'
           actions={
             <Button asChild disabled={!isRavenAdmin}>
-              <Link to='create'>Thêm mới</Link>
+              <Link to='create'>Tạo mới</Link>
             </Button>
           }
         />

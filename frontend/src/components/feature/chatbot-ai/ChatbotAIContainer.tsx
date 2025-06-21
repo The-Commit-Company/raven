@@ -72,7 +72,7 @@ const ChatbotAIContainer: React.FC<Props> = ({
   useFrappeEventListener('raven:update_conversation_title', (data) => {
     if (data.conversation_id) {
       // Cập nhật UI ngay lập tức với tên mới
-      const updatedSessions = sessions.map((s) =>
+      const updatedSessions = sessions?.map((s) =>
         s.id === data.conversation_id ? { ...s, title: data.new_title, creation: data.creation } : s
       )
       onUpdateSessions(updatedSessions)
@@ -162,7 +162,7 @@ const ChatbotAIContainer: React.FC<Props> = ({
                 // Sắp xếp theo thời gian tạo (mới nhất lên trên)
                 return new Date(b.creation).getTime() - new Date(a.creation).getTime()
               })
-              .map((s) => (
+              ?.map((s) => (
                 <div
                   key={s.id}
                   className={`group relative flex items-center gap-2 px-3 py-1.5 rounded-2xl text-sm transition-all duration-200 cursor-pointer  capitalize font-normal select-none ${

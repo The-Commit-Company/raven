@@ -32,7 +32,7 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
 
   // Chuyển đổi dữ liệu conversation sang ChatSession cho UI
   const sessions: ChatSession[] = useMemo(() => {
-    return normalizeConversations(conversations).map((c) => ({
+    return normalizeConversations(conversations)?.map((c) => ({
       id: c.name,
       title: c.title,
       creation: c.creation,
@@ -99,7 +99,7 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
     // Nếu không có gì để gửi hoặc đang loading thì thoát
     if ((!hasText && !hasFile) || sending || loadingMessages) return
 
-    const context = localMessages.map((msg) => ({
+    const context = localMessages?.map((msg) => ({
       role: msg.role,
       content: msg.content
     }))

@@ -48,7 +48,7 @@ export const useUnreadThreadsCountEventListener = () => {
 
                 if (isPresent) {
                   return {
-                    message: existingCounts.map((thread) => {
+                    message: existingCounts?.map((thread) => {
                       if (thread.name !== threadID) {
                         return thread
                       }

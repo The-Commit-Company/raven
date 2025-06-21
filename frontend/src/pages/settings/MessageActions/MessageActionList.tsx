@@ -44,7 +44,7 @@ const MessageActionList = () => {
           description='Sử dụng các hành động này để thêm thao tác tùy chỉnh – như tạo issue hoặc task từ một tin nhắn.'
           actions={
             <Button asChild disabled={!isRavenAdmin}>
-              <Link to='create'>Thêm mới</Link>
+              <Link to='create'>Tạo mới</Link>
             </Button>
           }
         />

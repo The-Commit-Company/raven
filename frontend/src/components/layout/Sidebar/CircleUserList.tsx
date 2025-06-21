@@ -112,7 +112,7 @@ const CircleUserList = () => {
   const isMobile = useIsMobile()
   const { isPinned, togglePin, markAsUnread, isManuallyMarked } = useChannelActions()
 
-  const items = useMemo(() => allChannels.map((c) => c.name), [allChannels])
+  const items = useMemo(() => allChannels?.map((c) => c.name), [allChannels])
   const sensors = useSensors(useSensor(PointerSensor))
 
   const handleDragEnd = (event: any) => {
@@ -124,7 +124,7 @@ const CircleUserList = () => {
     const newItems = arrayMove(items, oldIndex, newIndex)
 
     const reordered = newItems
-      .map((name) => allChannels.find((c) => c.name === name))
+      ?.map((name) => allChannels.find((c) => c.name === name))
       .filter(Boolean) as ChannelWithGroupType[]
 
     setChannels(reordered)
@@ -140,7 +140,7 @@ const CircleUserList = () => {
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={items} strategy={rectSortingStrategy}>
           <div className='flex flex-wrap gap-3 p-2'>
-            {items.map((channelName) => {
+            {items?.map((channelName) => {
               const channel = allChannels.find((c) => c.name === channelName)
               if (!channel) return null
               return (

@@ -1,7 +1,7 @@
 // atoms/sortedChannelsAtom.ts
 import { atom, useAtomValue, useSetAtom } from 'jotai'
-import { useUnreadCount } from '../layout/sidebar'
 import { useMemo } from 'react'
+import { useUnreadCount } from '../layout/sidebar'
 import { channelIsDoneAtom } from './channelIsDoneAtom'
 
 export type ChannelWithGroupType = {
@@ -39,7 +39,7 @@ export const prepareSortedChannels = (
   currentChannelIsDone: Record<string, number> = {}
 ): ChannelWithGroupType[] => {
   return [
-    ...channels.map((channel) => ({
+    ...channels?.map((channel) => ({
       ...channel,
       group_type: 'channel' as const,
       is_done: Object.prototype.hasOwnProperty.call(currentChannelIsDone, channel.name)
@@ -49,7 +49,7 @@ export const prepareSortedChannels = (
           : 0,
       user_labels: channel.user_labels ?? []
     })),
-    ...dm_channels.map((dm) => ({
+    ...dm_channels?.map((dm) => ({
       ...dm,
       group_type: 'dm' as const,
       is_done: Object.prototype.hasOwnProperty.call(currentChannelIsDone, dm.name)
@@ -74,7 +74,7 @@ export const useEnrichedSortedChannels = (isDoneFilter?: 0 | 1) => {
 
   const enriched = useMemo(() => {
     return channels
-      .map((channel) => {
+      ?.map((channel) => {
         const resolvedIsDone = Object.prototype.hasOwnProperty.call(channelIsDone, channel.name)
           ? channelIsDone[channel.name]
           : channel.is_done
@@ -105,7 +105,7 @@ export const useEnrichedLabelChannels = (): ChannelWithGroupType[] => {
   const unreadList = useUnreadCount().message || []
 
   const enriched = useMemo(() => {
-    return channels.map((channel) => {
+    return channels?.map((channel) => {
       const unread = unreadList.find((u) => u.name === channel.name)
 
       return {
@@ -127,7 +127,7 @@ export const useUpdateChannelLabels = () => {
 
   const updateChannelLabels = (channelID: string, updateFn: (prevLabels: string[]) => string[]) => {
     setSortedChannels((prev) =>
-      prev.map((channel) =>
+      prev?.map((channel) =>
         channel.name === channelID
           ? {
               ...channel,

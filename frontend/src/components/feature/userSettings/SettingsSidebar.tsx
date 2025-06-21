@@ -38,7 +38,7 @@ export const SettingsSidebar = () => {
         </SettingsGroup>
         <SettingsSeparator />
         <SettingsGroup title='Trí Tuệ Nhân Tạo (AI)' icon={BiBot}>
-          <SettingsSidebarItem title='Tác nhân' to='bots' />
+          <SettingsSidebarItem title='Bot' to='bots' />
           <SettingsSidebarItem title='Hàm' to='functions' />
           {/* <SettingsSidebarItem title='Nguồn tệp' to='file-sources' /> */}
           <SettingsSidebarItem title='Hướng dẫn' to='instructions' />

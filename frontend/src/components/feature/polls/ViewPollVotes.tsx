@@ -1,14 +1,14 @@
-import { useFrappeGetCall } from 'frappe-react-sdk'
-import { Poll } from '../chat/ChatMessage/Renderers/PollMessage'
-import { useState } from 'react'
-import { Button, Dialog, Flex, ScrollArea, Separator, Text } from '@radix-ui/themes'
-import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
-import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { UserAvatar } from '@/components/common/UserAvatar'
-import { useGetUser } from '@/hooks/useGetUser'
-import clsx from 'clsx'
-import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/layout/Drawer'
+import { useGetUser } from '@/hooks/useGetUser'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
+import { Button, Dialog, Flex, ScrollArea, Separator, Text } from '@radix-ui/themes'
+import clsx from 'clsx'
+import { useFrappeGetCall } from 'frappe-react-sdk'
+import { useState } from 'react'
+import { Poll } from '../chat/ChatMessage/Renderers/PollMessage'
 
 type VoteData = {
   users: string[]
@@ -109,7 +109,7 @@ const VotesBlock = ({ votesData, poll }: { votesData: PollVotesResponse; poll: P
             {poll.poll.question}
           </Text>
           {votesData &&
-            Object.keys(votesData).map((opt) => {
+            Object.keys(votesData)?.map((opt) => {
               const option = votesData[opt]
               const optionName = poll.poll.options.find((o) => o.name === opt)?.option
               return (
@@ -126,7 +126,7 @@ const VotesBlock = ({ votesData, poll }: { votesData: PollVotesResponse; poll: P
                     </Text>
                   </div>
                   <Flex direction={'column'} gap={'2'} className='bg-gray-100 dark:bg-gray-3 rounded-md py-2 px-2'>
-                    {option.users.map((user) => {
+                    {option.users?.map((user) => {
                       return (
                         <div key={user} className='group'>
                           <UserVote user_id={user} />

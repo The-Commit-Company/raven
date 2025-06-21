@@ -24,7 +24,7 @@ export function mapUnreadToDMChannels(
     unreadMap[item.name] = item.unread_count || 0
   })
 
-  return dm_channels.map((channel) => ({
+  return dm_channels?.map((channel) => ({
     ...channel,
     unread_count: unreadMap[channel.name] || 0
   }))

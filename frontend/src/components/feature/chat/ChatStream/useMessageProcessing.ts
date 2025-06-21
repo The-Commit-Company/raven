@@ -15,7 +15,7 @@ export const useMessageProcessing = (data: any, pinnedMessagesString?: string) =
     if (!data) return undefined
 
     let pinnedMessageIDs = pinnedMessagesString?.split('\n') ?? []
-    pinnedMessageIDs = pinnedMessageIDs.map((messageID) => messageID.trim())
+    pinnedMessageIDs = pinnedMessageIDs?.map((messageID) => messageID.trim())
 
     const messages = [...data.message.messages]
     const messagesWithDateSeparators: MessageDateBlock[] = []

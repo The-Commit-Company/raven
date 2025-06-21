@@ -1,12 +1,12 @@
-import { Label, HelperText, ErrorText } from '@/components/common/Form'
+import { ErrorText, HelperText, Label } from '@/components/common/Form'
+import { Stack } from '@/components/layout/Stack'
 import { RavenSchedulerEvent } from '@/types/RavenIntegrations/RavenSchedulerEvent'
 import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
-import { Flex, Box, TextField, Select, Grid, TextArea } from '@radix-ui/themes'
+import { Box, Flex, Grid, Select, TextArea, TextField } from '@radix-ui/themes'
+import { useFrappeGetDocList } from 'frappe-react-sdk'
 import { useContext } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import { ChannelItem } from '../../integrations/webhooks/WebhookForm'
-import { useFrappeGetDocList } from 'frappe-react-sdk'
-import { Stack } from '@/components/layout/Stack'
 import ServerScriptNotEnabledCallout from './ServerScriptNotEnabledForm'
 
 export interface SchedulerEventForm extends RavenSchedulerEvent {
@@ -88,7 +88,7 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
                   <Select.Content>
                     <Select.Group>
                       <Select.Label>Channels</Select.Label>
-                      {channels.map((channel, index) => (
+                      {channels?.map((channel, index) => (
                         <Select.Item key={index} value={channel.name}>
                           <ChannelItem channel={channel} />
                         </Select.Item>

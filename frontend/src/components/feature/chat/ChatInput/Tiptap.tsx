@@ -159,13 +159,13 @@ const Tiptap = forwardRef(
       if (channelMembers) {
         // Sort the user list so that members are at the top
         channelMembersRef.current = enabledUsers
-          .map((user) => ({
+          ?.map((user) => ({
             ...user,
             is_member: user.name in channelMembers
           }))
           .sort((a, b) => (a.is_member ? -1 : 1))
       } else {
-        channelMembersRef.current = enabledUsers.map((user) => ({
+        channelMembersRef.current = enabledUsers?.map((user) => ({
           ...user,
           is_member: true
         }))

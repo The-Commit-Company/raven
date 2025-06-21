@@ -42,11 +42,11 @@ const InstructionTemplateList = () => {
     <PageContainer>
       <SettingsContentContainer>
         <SettingsPageHeader
-          title='Instruction Templates'
-          description='Save commonly used instructions as templates for your bots.'
+          title='Mẫu Hướng Dẫn'
+          description='Lưu các hướng dẫn thường dùng dưới dạng mẫu để sử dụng cho bot của bạn.'
           actions={
             <Button asChild disabled={!isRavenAdmin}>
-              <Link to='create'>Create</Link>
+              <Link to='create'>Tạo mới</Link>
             </Button>
           }
         />
@@ -59,14 +59,14 @@ const InstructionTemplateList = () => {
             <EmptyStateIcon>
               <BiFile />
             </EmptyStateIcon>
-            <EmptyStateTitle>AI Instruction Templates</EmptyStateTitle>
+            <EmptyStateTitle>Mẫu Hướng Dẫn Cho AI</EmptyStateTitle>
             <EmptyStateDescription>
-              Most bots require the same kind of instructions to perform their tasks, like "format dates as DD-MM-YYYY"
-              or "the current user is <Code color='gray'>{'{{user}}'}</Code>".
+              Hầu hết các bot cần những loại hướng dẫn tương tự để thực hiện nhiệm vụ, như "định dạng ngày theo
+              DD-MM-YYYY" hoặc "người dùng hiện tại là <Code color='gray'>{'{{user}}'}</Code>".
               <br />
-              Save commonly used instructions as templates for your AI bots.
+              Lưu các hướng dẫn thường dùng dưới dạng mẫu để sử dụng cho bot AI của bạn.
             </EmptyStateDescription>
-            {isRavenAdmin && <EmptyStateLinkAction to='create'>Create your first template</EmptyStateLinkAction>}
+            {isRavenAdmin && <EmptyStateLinkAction to='create'>Tạo mẫu đầu tiên</EmptyStateLinkAction>}
           </EmptyState>
         )}
       </SettingsContentContainer>

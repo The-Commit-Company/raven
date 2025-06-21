@@ -58,7 +58,7 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
         className='shadow-lg dark:bg-panel-solid bg-white overflow-y-scroll max-h-64 rounded-md'
       >
         {props?.items?.length ? (
-          props.items.map((item: ChannelListItem, index: number) => (
+          props.items?.map((item: ChannelListItem, index: number) => (
             <MentionItem
               item={item}
               index={index}

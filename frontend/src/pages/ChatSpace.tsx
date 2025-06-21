@@ -3,12 +3,12 @@ import { DirectMessageSpace } from '@/components/feature/chat/chat-space/DirectM
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { FullPageLoader } from '@/components/layout/Loaders/FullPageLoader'
 import { useCurrentChannelData } from '@/hooks/useCurrentChannelData'
-import { useEffect } from 'react'
-import { Box, Grid } from '@radix-ui/themes'
-import { Outlet, useParams, useSearchParams } from 'react-router-dom'
-import { useSWRConfig } from 'frappe-react-sdk'
-import { UnreadChannelCountItem, UnreadCountData } from '@/utils/channel/ChannelListProvider'
 import { useIsMobile } from '@/hooks/useMediaQuery'
+import { UnreadChannelCountItem, UnreadCountData } from '@/utils/channel/ChannelListProvider'
+import { Box, Grid } from '@radix-ui/themes'
+import { useSWRConfig } from 'frappe-react-sdk'
+import { useEffect } from 'react'
+import { Outlet, useParams, useSearchParams } from 'react-router-dom'
 
 const ChatSpace = () => {
   // only if channelID is present render ChatSpaceArea component'
@@ -47,7 +47,7 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
           'unread_channel_count',
           (d: { message: UnreadCountData } | undefined) => {
             if (d) {
-              const newChannels: UnreadChannelCountItem[] = d.message.map((c) => {
+              const newChannels: UnreadChannelCountItem[] = d.message?.map((c) => {
                 if (c.name === channelID)
                   return {
                     ...c,

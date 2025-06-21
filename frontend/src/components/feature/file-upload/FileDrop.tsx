@@ -53,7 +53,7 @@ export const FileDrop = forwardRef((props: FileDropProps, ref) => {
     onDrop: (receivedFiles, fileRejections) => {
       onFileChange([
         ...files,
-        ...receivedFiles.map((file) =>
+        ...receivedFiles?.map((file) =>
           Object.assign(file, {
             fileID: file.name + Date.now(),
             uploadProgress: 0

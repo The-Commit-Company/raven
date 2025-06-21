@@ -53,18 +53,19 @@ const BotList = () => {
     <PageContainer>
       <SettingsContentContainer>
         <SettingsPageHeader
-          title='Agents'
-          description='Use agents to send reminders, run AI assistants, and more.'
+          title='Bot'
+          description='Sử dụng bot để gửi nhắc nhở, chạy trợ lý AI và nhiều hơn nữa.'
           actions={
             <Button
               asChild
               disabled={!isRavenAdmin}
-              title={!isRavenAdmin ? "You don't have permissions to create agents." : 'Create a new agents.'}
+              title={!isRavenAdmin ? 'Bạn không có quyền tạo bot.' : 'Tạo bot mới.'}
             >
-              <Link to='create'>Create</Link>
+              <Link to='create'>Tạo mới</Link>
             </Button>
           }
         />
+
         {isLoading && !error && <TableLoader columns={2} />}
         <ErrorBanner error={error} />
         {data && data?.length > 0 && <BotTable bots={data} />}
@@ -74,13 +75,13 @@ const BotList = () => {
             <EmptyStateIcon>
               <BiBot />
             </EmptyStateIcon>
-            <EmptyStateTitle>Get started with agents</EmptyStateTitle>
+            <EmptyStateTitle>Bắt đầu với Bot</EmptyStateTitle>
             <EmptyStateDescription>
-              Create agents to run automations on Raven.
+              Tạo bot để tự động hóa các quy trình trên Raven.
               <br />
-              Send reminders, document notifications and run AI assistants.
+              Gửi nhắc nhở, thông báo tài liệu và chạy trợ lý AI.
             </EmptyStateDescription>
-            {isRavenAdmin && <EmptyStateLinkAction to='create'>Create your first agent</EmptyStateLinkAction>}
+            {isRavenAdmin && <EmptyStateLinkAction to='create'>Tạo bot đầu tiên</EmptyStateLinkAction>}
           </EmptyState>
         )}
       </SettingsContentContainer>

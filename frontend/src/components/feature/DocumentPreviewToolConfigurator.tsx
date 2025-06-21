@@ -97,7 +97,7 @@ const DocTypePreviewEditor = ({
     return eligibleFields.filter((field) => field.fieldname?.toLowerCase().includes(searchTerm))
   }, [eligibleFields, search])
 
-  const [selectedFields, setSelectedFields] = useState<string[]>(previewFields.map((field) => field.fieldname ?? ''))
+  const [selectedFields, setSelectedFields] = useState<string[]>(previewFields?.map((field) => field.fieldname ?? ''))
 
   const [hasChanged, setHasChanged] = useState(false)
 
@@ -180,9 +180,7 @@ const FieldSelector = ({
   return (
     <ScrollArea className='h-[60vh]'>
       <CheckboxCards.Root defaultValue={selectedFields} onValueChange={setSelectedFields} gap={'1'} size={'1'}>
-        {eligibleFields.map((field) => (
-          <PreviewFieldRow field={field} key={field.fieldname} />
-        ))}
+        {eligibleFields?.map((field) => <PreviewFieldRow field={field} key={field.fieldname} />)}
       </CheckboxCards.Root>
     </ScrollArea>
   )

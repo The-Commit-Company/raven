@@ -1,9 +1,9 @@
 // hooks/useChannelActions.ts
-import { useAtom, useSetAtom } from 'jotai'
-import { manuallyMarkedAtom, addToMarked, removeFromMarked } from '@/utils/atoms/manuallyMarkedAtom'
-import { useCircleUserList } from '@/utils/users/CircleUserListProvider'
 import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
+import { addToMarked, manuallyMarkedAtom, removeFromMarked } from '@/utils/atoms/manuallyMarkedAtom'
+import { useCircleUserList } from '@/utils/users/CircleUserListProvider'
 import { useFrappePostCall } from 'frappe-react-sdk'
+import { useAtom, useSetAtom } from 'jotai'
 
 export const useChannelActions = () => {
   const { pushChannel, removeChannel, selectedChannels } = useCircleUserList()
@@ -32,7 +32,7 @@ export const useChannelActions = () => {
         if (!prev) return prev
         const exists = prev.message.some((item) => item.name === channel.name)
         const updatedList = exists
-          ? prev.message.map((item) => (item.name === channel.name ? { ...item, unread_count: 1 } : item))
+          ? prev.message?.map((item) => (item.name === channel.name ? { ...item, unread_count: 1 } : item))
           : [
               ...prev.message,
               {

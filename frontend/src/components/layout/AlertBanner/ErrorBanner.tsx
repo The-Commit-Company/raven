@@ -17,13 +17,13 @@ interface ParsedErrorMessage {
 
 export const getErrorMessage = (error?: FrappeError | null): string => {
   const messages = getErrorMessages(error)
-  return messages.map((m) => m.message).join('\n')
+  return messages?.map((m) => m.message).join('\n')
 }
 
 const getErrorMessages = (error?: FrappeError | null): ParsedErrorMessage[] => {
   if (!error) return []
   let eMessages: ParsedErrorMessage[] = error?._server_messages ? JSON.parse(error?._server_messages) : []
-  eMessages = eMessages.map((m: any) => {
+  eMessages = eMessages?.map((m: any) => {
     try {
       return JSON.parse(m)
     } catch (e) {
@@ -67,7 +67,7 @@ export const ErrorBanner = ({ error, overrideHeading, children }: ErrorBannerPro
   const messages = useMemo(() => {
     if (!error) return []
     let eMessages: ParsedErrorMessage[] = error?._server_messages ? JSON.parse(error?._server_messages) : []
-    eMessages = eMessages.map((m: any) => {
+    eMessages = eMessages?.map((m: any) => {
       try {
         return JSON.parse(m)
       } catch (e) {
@@ -117,7 +117,7 @@ export const ErrorBanner = ({ error, overrideHeading, children }: ErrorBannerPro
         </Text>
       )}
       {/* Can do this since the error will be coming from the server */}
-      {messages.map((m, i) => (
+      {messages?.map((m, i) => (
         <div
           key={i}
           dangerouslySetInnerHTML={{

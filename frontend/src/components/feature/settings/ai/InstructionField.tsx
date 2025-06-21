@@ -216,9 +216,7 @@ const DynamicInstructionField = ({ allowUsingTemplate, instructionRequired, auto
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {variables.map((v) => (
-            <VariableRow key={v.variable} variable={v.variable} description={v.description} />
-          ))}
+          {variables?.map((v) => <VariableRow key={v.variable} variable={v.variable} description={v.description} />)}
         </Table.Body>
       </Table.Root>
     </Stack>
