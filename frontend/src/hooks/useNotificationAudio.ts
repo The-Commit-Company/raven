@@ -7,7 +7,7 @@ export const useNotificationAudio = () => {
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
-    const audio = new Audio(`${import.meta.env.BASE_URL}notification.mp3`)
+    const audio = new Audio(`${import.meta.env.BASE_URL}notification-new.mp3`)
     audio.volume = 0.9
     audio.preload = 'auto'
 

@@ -7,10 +7,11 @@ import { SetUserAvailabilityMenu } from '@/components/feature/userSettings/Avail
 import PushNotificationToggle from '@/components/feature/userSettings/PushNotifications/PushNotificationToggle'
 import useCurrentRavenUser from '@/hooks/useCurrentRavenUser'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
-import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { useIsDesktop, useIsMobile, useIsTablet } from '@/hooks/useMediaQuery'
 import { useUserData } from '@/hooks/useUserData'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { useSidebarMode } from '@/utils/layout/sidebar'
+import { truncateText } from '@/utils/textUtils/truncateText'
 import { __ } from '@/utils/translations'
 import { Box, DropdownMenu, Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
 import { useSetAtom } from 'jotai'
@@ -27,6 +28,8 @@ function isLabelObject(val: unknown): val is { labelId: string; labelName: strin
 
 export const SidebarHeader = () => {
   const isDesktop = useIsDesktop()
+  const isTablet = useIsTablet()
+  const isMobile = useIsMobile()
   const { mode, title, labelID } = useSidebarMode()
   const navigate = useNavigate()
   const userData = useUserData()
@@ -35,11 +38,15 @@ export const SidebarHeader = () => {
   const isActive = useIsUserActive(userData.name)
 
   const isLabelMode = title === 'Nhãn' || !!labelID
+  const maxLength = isTablet || isMobile ? 18 : 30
+
   if (isDesktop) {
     return (
       <header style={{ padding: mode === 'hide-filter' ? '20px 60px' : '6px 10px' }}>
         <Flex justify='between' px='2' align='center' pt='2'>
-          <span className='font-medium text-base'>{isLabelObject(title) ? title.labelName : title}</span>
+          <span className='font-medium text-base truncate'>
+            {truncateText(isLabelObject(title) ? title.labelName : title, maxLength)}
+          </span>
           <Box>
             {isLabelMode ? (
               <CreateLabelButton />

@@ -13,7 +13,7 @@ import { useChannelDone } from '@/hooks/useChannelDone'
 import { useIsDesktop, useIsLaptop, useIsTablet } from '@/hooks/useMediaQuery'
 import { manuallyMarkedAtom } from '@/utils/atoms/manuallyMarkedAtom'
 import { useEnrichedSortedChannels } from '@/utils/channel/ChannelAtom'
-import { formatLastMessage } from '@/utils/channel/useFormatLastMessage'
+import { useFormattedLastMessageParts } from '@/utils/channel/useFormatLastMessage'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { useSidebarMode } from '@/utils/layout/sidebar'
 import { truncateText } from '@/utils/textUtils/truncateText'
@@ -27,6 +27,8 @@ import ChatbotAIStream from '../chatbot-ai/ChatbotAIStream'
 import LabelByUserList from '../labels/LabelByUserList'
 import ThreadsCustom from '../threads/ThreadsCustom'
 import { MessageSaved } from './DirectMessageSaved'
+import clsx from 'clsx'
+
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
 
@@ -77,8 +79,8 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
   const getFilteredChannels = (): DMChannelWithUnreadCount[] => {
     switch (title) {
       case 'Trò chuyện nhóm':
-        return channel_list.filter((c: { group_type: string }) => c.group_type === 'channel')
-      case 'Cuộc trò chuyện riêng tư':
+        return channel_list.filter((c: { group_type: string }) => c.group_type === 'channel' )
+      case 'Trò chuyện 1-1':
         return channel_list.filter((c: { group_type: string }) => c.group_type === 'dm')
       case 'Chưa đọc':
         return channel_list.filter((c: { unread_count: number }) => c.unread_count > 0)
@@ -108,9 +110,9 @@ export const DirectMessageItem = ({ dm_channel }: { dm_channel: DMChannelWithUnr
   return (
     <ContextMenu.Root>
       <ContextMenu.Trigger>
-        <main className='select-none'>
+        <div className='select-none'>
           <DirectMessageItemElement channel={dm_channel} />
-        </main>
+        </div>
       </ContextMenu.Trigger>
       <ContextMenu.Content className='z-50 bg-white dark:bg-gray-800 border dark:border-gray-600 shadow rounded p-1 text-black dark:text-white'>
         <ContextMenu.Item onClick={() => markAsUnread(dm_channel)} className='dark:hover:bg-gray-700 px-2 py-1 rounded'>
@@ -173,10 +175,8 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   }, [channel.last_message_details])
 
   const user = useGetUser(lastOwner)
-  const formattedMessage = useMemo(
-    () => formatLastMessage(channel, currentUser, user?.full_name),
-    [channel.last_message_details, currentUser, user?.full_name]
-  )
+  const { senderLabel, contentLabel } = useFormattedLastMessageParts(channel, currentUser, user?.full_name)
+
   const rawName = peerUser
     ? peerUserId !== currentUser
       ? peerUser.full_name
@@ -199,7 +199,14 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   `
 
   return (
-    <div onClick={handleNavigate} className={`group relative cursor-pointer flex items-center p-1 mb-2 ${bgClass}`}>
+    <div
+      onClick={handleNavigate}
+      className={clsx(
+        'group relative cursor-pointer flex items-center p-1 mb-2',
+        !isTablet && 'overflow-y-hidden',
+        bgClass
+      )}
+    >
       <SidebarIcon>
         <Box className='relative'>
           {peerUser ? (
@@ -228,8 +235,9 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
             {displayName}
           </Text>
         </Flex>
-        <Text size='1' color='gray' className='truncate'>
-          {formattedMessage}
+        <Text size='1' className='truncate flex items-center gap-1'>
+          {senderLabel && <span>{senderLabel}:</span>}
+          <span>{contentLabel}</span>
         </Text>
       </Flex>
 

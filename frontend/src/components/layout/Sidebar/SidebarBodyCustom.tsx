@@ -7,6 +7,8 @@ import { useAtomValue, useSetAtom } from 'jotai'
 import { useContext, useEffect } from 'react'
 import { DirectMessageList } from '../../feature/direct-messages/DirectMessageListCustom'
 import IsTabletSidebarNav from './IsTabletSidebarNav'
+// import BeatLoader from '../Loaders/BeatLoader'
+
 export const SidebarBody = () => {
   const { channels, dm_channels } = useContext(ChannelListContext) as ChannelListContextType
 
