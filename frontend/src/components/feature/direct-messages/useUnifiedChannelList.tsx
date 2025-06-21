@@ -30,7 +30,7 @@ export const useUnifiedChannelList = ({
 
     const allChannels = [...channels, ...dm_channels]
 
-    allChannels.forEach((channel) => {
+    allChannels?.forEach((channel) => {
       if (channel.is_archived) return
 
       // Skip public channels with no membership when filtered

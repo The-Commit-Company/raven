@@ -73,7 +73,7 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
       })
 
       // ✅ Cập nhật local sortedChannelsAtom
-      channel_ids.forEach((channelID) => {
+      channel_ids?.forEach((channelID) => {
         addLabelToChannel(channelID, name)
       })
 

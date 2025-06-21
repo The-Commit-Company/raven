@@ -1,10 +1,9 @@
-import { MdLabelOutline } from 'react-icons/md'
-import { HiChevronRight, HiChevronDown } from 'react-icons/hi'
-import LabelItemMenu from './LabelItemMenu'
-import LabelItemList from './LabelItemList'
-import { useState, useMemo } from 'react'
-import { useEnrichedLabelChannels } from '@/utils/channel/ChannelAtom'
 import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
+import { useMemo, useState } from 'react'
+import { HiChevronDown, HiChevronRight } from 'react-icons/hi'
+import { MdLabelOutline } from 'react-icons/md'
+import LabelItemList from './LabelItemList'
+import LabelItemMenu from './LabelItemMenu'
 
 interface LabelItemProps {
   label: string

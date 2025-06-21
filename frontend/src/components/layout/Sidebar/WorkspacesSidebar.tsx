@@ -1,15 +1,15 @@
-import { Avatar, Box, Flex, ScrollArea, Text, Tooltip } from '@radix-ui/themes'
-import { HStack, Stack } from '../Stack'
-import useFetchWorkspaces, { WorkspaceFields } from '@/hooks/fetchers/useFetchWorkspaces'
-import { SidebarFooter } from './SidebarFooter'
+import { getInitials } from '@/components/common/UserAvatar'
+import { generateAvatarColor } from '@/components/feature/selectDropdowns/GenerateAvatarColor'
 import AddWorkspaceSidebarButton from '@/components/feature/workspaces/AddWorkspaceSidebarButton'
-import { Link, useLocation, useParams } from 'react-router-dom'
-import clsx from 'clsx'
-import { useContext, useMemo } from 'react'
+import useFetchWorkspaces, { WorkspaceFields } from '@/hooks/fetchers/useFetchWorkspaces'
 import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
 import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
-import { generateAvatarColor } from '@/components/feature/selectDropdowns/GenerateAvatarColor'
-import { getInitials } from '@/components/common/UserAvatar'
+import { Avatar, Box, Flex, ScrollArea, Text, Tooltip } from '@radix-ui/themes'
+import clsx from 'clsx'
+import { useContext, useMemo } from 'react'
+import { Link, useLocation, useParams } from 'react-router-dom'
+import { HStack, Stack } from '../Stack'
+import { SidebarFooter } from './SidebarFooter'
 
 const WorkspacesSidebar = () => {
   const { data } = useFetchWorkspaces()
@@ -23,7 +23,7 @@ const WorkspacesSidebar = () => {
     const workspace_unread_counts: Record<string, number> = {}
 
     // Loop over all channels in the channels context and find it's unread count and add it to the workspace_unread_counts object
-    channels.forEach((channel) => {
+    channels?.forEach((channel) => {
       if (channel.workspace) {
         const unreadCounts = unread_count?.message?.find((c) => c.name === channel.name)?.unread_count || 0
         workspace_unread_counts[channel.workspace] = (workspace_unread_counts?.[channel.workspace] || 0) + unreadCounts

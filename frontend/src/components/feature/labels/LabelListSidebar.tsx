@@ -1,12 +1,12 @@
-import { MdLabelOutline } from 'react-icons/md'
 import clsx from 'clsx'
-import { useEffect, useMemo } from 'react'
 import { useAtomValue, useSetAtom } from 'jotai'
+import { useEffect, useMemo } from 'react'
+import { MdLabelOutline } from 'react-icons/md'
 
-import { useSidebarMode } from '@/utils/layout/sidebar'
-import { labelListAtom, refreshLabelListAtom } from './conversations/atoms/labelAtom'
-import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useEnrichedSortedChannels } from '@/utils/channel/ChannelAtom'
+import { useSidebarMode } from '@/utils/layout/sidebar'
+import { useFrappeGetCall } from 'frappe-react-sdk'
+import { labelListAtom, refreshLabelListAtom } from './conversations/atoms/labelAtom'
 
 type Props = {
   visible: boolean
@@ -28,7 +28,7 @@ export default function LabelList({ visible, onClickLabel }: Props) {
 
     for (const ch of enrichedChannels) {
       if (Array.isArray(ch.user_labels)) {
-        ch.user_labels.forEach((labelId) => {
+        ch.user_labels?.forEach((labelId) => {
           const prev = map.get(labelId) ?? 0
           map.set(labelId, prev + (ch.unread_count ?? 0))
         })

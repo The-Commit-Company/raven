@@ -59,7 +59,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
 
         const newMessages = [...existingMessages]
 
-        messages.forEach((message) => {
+        messages?.forEach((message) => {
           // Check if the message is already present in the messages array
           const messageIndex = existingMessages.findIndex((m) => m.name === message.name)
 
