@@ -39,7 +39,7 @@ export const prepareSortedChannels = (
   currentChannelIsDone: Record<string, number> = {}
 ): ChannelWithGroupType[] => {
   return [
-    ...channels?.map((channel) => ({
+    ...(channels ?? []).map((channel) => ({
       ...channel,
       group_type: 'channel' as const,
       is_done: Object.prototype.hasOwnProperty.call(currentChannelIsDone, channel.name)
@@ -49,7 +49,7 @@ export const prepareSortedChannels = (
           : 0,
       user_labels: channel.user_labels ?? []
     })),
-    ...dm_channels?.map((dm) => ({
+    ...(dm_channels ?? []).map((dm) => ({
       ...dm,
       group_type: 'dm' as const,
       is_done: Object.prototype.hasOwnProperty.call(currentChannelIsDone, dm.name)

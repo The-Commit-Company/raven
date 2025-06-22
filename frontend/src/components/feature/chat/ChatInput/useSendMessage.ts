@@ -55,9 +55,6 @@ export const useSendMessage = (
   const { currentUser } = useContext(UserContext)
 
   const updateSidebarMessage = (msg: RavenMessage, fallbackText?: string) => {
-    const isImage =
-      msg.message_type === 'Image' || (msg?.attachment?.file_url || '').match(/\.(jpe?g|png|gif|webp|bmp|svg)$/i)
-
     updateLastMessageForChannel(channelID, {
       message_id: msg.name,
       content: fallbackText || msg.content || '',
