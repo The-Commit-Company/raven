@@ -1,11 +1,10 @@
 import { SidebarTrigger } from "@components/ui/sidebar";
 import { Separator } from "@components/ui/separator";
-import { Label } from "@components/ui/label";
 
 export default function SavedMessages() {
     return (
         <div className="flex flex-col">
-            <header className="fixed w-full top-(--app-header-height) flex items-center justify-between border-b bg-background py-2 px-2">
+            <header className="sticky top-(--app-header-height) flex items-center justify-between border-b bg-background py-2 px-2">
                 {/* Left side */}
                 <div className="flex items-center gap-4">
 
@@ -16,11 +15,11 @@ export default function SavedMessages() {
                         </div>
                     </div>
 
-                    <Label className="text-md">Saved Messages</Label>
+                    <span className="text-md font-medium">Saved Messages</span>
 
                 </div>
             </header>
-            <div className="flex flex-1 flex-col gap-4 p-4 pt-[calc(var(--app-header-height)+20px)]">
+            <div className="flex flex-1 flex-col gap-4 p-4">
                 {Array.from({ length: 24 }).map((_, index) => (
                     <div
                         key={index}

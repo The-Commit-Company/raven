@@ -1,6 +1,5 @@
 import { SidebarTrigger } from "@components/ui/sidebar";
 import { Separator } from "@components/ui/separator";
-import { Label } from "@components/ui/label";
 
 export default function AppSettings() {
     return (
@@ -16,7 +15,7 @@ export default function AppSettings() {
                         </div>
                     </div>
 
-                    <Label className="text-md">Settings</Label>
+                    <span className="text-md font-medium">Settings</span>
 
                 </div>
             </header>

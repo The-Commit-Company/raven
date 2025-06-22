@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
-import MainPage from "./layout"
 import AppSettings from "./pages/AppSettings"
 import Channel from "@pages/Channel"
 import Mentions from "@pages/Mentions"
 import SavedMessages from "@pages/SavedMessages"
 import ChannelSettings from "@components/features/channel/ChannelSettings/ChannelSettings"
+import MainPage from "@pages/MainPage"
 
 function App() {
   return (

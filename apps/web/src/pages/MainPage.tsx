@@ -1,4 +1,4 @@
-import { AppSidebar } from "./components/app-sidebar"
+import { AppSidebar } from "@components/app-sidebar"
 import {
     SidebarInset,
     SidebarProvider,
@@ -6,7 +6,7 @@ import {
 import AppHeader from "@components/features/header/AppHeader"
 import { Outlet } from "react-router-dom"
 
-export default function MainPage() {
+const MainPage = () => {
     return (
         <div className="flex flex-col h-screen">
             <AppHeader />
@@ -25,3 +25,5 @@ export default function MainPage() {
         </div>
     )
 }
+
+export default MainPage

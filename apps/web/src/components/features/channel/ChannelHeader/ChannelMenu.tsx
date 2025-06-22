@@ -9,7 +9,7 @@ const ChannelMenu = () => {
                 <Button variant="ghost" size="default" className="h-8">
                     <div className="flex items-center gap-1">
                         <Hash className="size-3.5" strokeWidth={2.4} />
-                        <span className="text-md font-medium">general</span>
+                        <span className="text-md font-medium">Channel Name</span>
                     </div>
                     <ChevronDown className="size-4" />
                 </Button>
