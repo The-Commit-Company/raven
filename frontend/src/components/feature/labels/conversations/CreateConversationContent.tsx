@@ -15,11 +15,13 @@ import clsx from 'clsx'
 import { UnifiedChannel } from '../../direct-messages/useUnifiedChannelList'
 import ChannelModalConversationItem from './ChannelModalConversationItem'
 import SelectedChannelItem from './SelectedChannelItem'
+import { useSidebarMode } from '@/utils/layout/sidebar'
 
 type Props = {
   setIsOpen: (v: boolean) => void
   label: string // label_id, ví dụ: 'ULB0001'
   name: string
+  channels: any[]
 }
 
 const ChannelDetailDialog = lazy(() => import('./ChannelDetailDialog'))
@@ -30,6 +32,7 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
   const [search, setSearch] = useState('')
   const [currentChannel, setCurrentChannel] = useState<UnifiedChannel | null>(null)
 
+  const { title } = useSidebarMode()
   const { call, loading } = useFrappePostCall('raven.api.user_channel_label.add_label_to_multiple_channels')
   const { addLabelToChannel } = useUpdateChannelLabels()
 
@@ -38,8 +41,6 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
   const handleOpenModal = (channel: UnifiedChannel) => {
     setCurrentChannel(channel)
   }
-
-  const { mutate } = useSWRConfig()
 
   const handleToggle = (channelID: string) => {
     setSelected((prev) => {
@@ -74,13 +75,13 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
 
       // ✅ Cập nhật local sortedChannelsAtom
       channel_ids?.forEach((channelID) => {
-        addLabelToChannel(channelID, name)
+        addLabelToChannel(channelID, { label_id: name, label })
       })
 
       // ✅ Cập nhật key để trigger re-render các nơi khác
       setRefreshKey((prev) => prev + 1)
 
-      mutate('channel_list')
+      // mutate('channel_list')
 
       setIsOpen(false)
       toast.success('Gán nhãn thành công')
@@ -96,7 +97,10 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
       <form className='space-y-4 overflow-hidden' onSubmit={handleSubmit}>
         <Dialog.Title className='text-lg font-semibold flex w-full items-center justify-between'>
           <Flex align='center' gap='2'>
-            Thêm cuộc trò chuyện vào <span className='italic'>"{label}"</span>
+            Thêm cuộc trò chuyện vào{' '}
+            <span className='italic'>
+              "{typeof title === 'object' && title !== null && 'labelName' in title ? title.labelName : title || label}"
+            </span>
           </Flex>
           <Dialog.Close>
             <IoMdClose
@@ -142,7 +146,7 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
           </div>
 
           {/* Right column */}
-          <div className='md:w-1/2 p-2 text-sm order-1 md:order-none'>
+          <div className='md:w-1/2 p-2 text-sm order-1 md:order-none overflow-x-hidden'>
             <div className='mb-2 font-medium'>Đã chọn: {selected.size} cuộc trò chuyện</div>
             <div className={`${isMobile ? 'flex flex-wrap mt-5 gap-4' : 'space-y-1'}`}>
               {selectedChannels?.map((channel) => (
@@ -155,13 +159,14 @@ const CreateConversationContent = ({ name, setIsOpen, label }: Props) => {
           </div>
         </div>
 
-        <Flex justify='between' align='center' pt='2'>
+        <Flex align='center' justify='end' gap='3'>
           <Dialog.Close>
-            <Button className='cursor-pointer' variant='ghost' type='button' size='2'>
-              Hủy bỏ
+            <Button type='button' variant='soft' size='2' className='cursor-pointer' disabled={loading}>
+              Hủy
             </Button>
           </Dialog.Close>
-          <Button className='cursor-pointer' type='submit' size='2' disabled={selected.size === 0 || loading}>
+
+          <Button type='submit' size='2' className='cursor-pointer' disabled={loading}>
             {loading ? 'Đang thêm...' : 'Thêm'}
           </Button>
         </Flex>

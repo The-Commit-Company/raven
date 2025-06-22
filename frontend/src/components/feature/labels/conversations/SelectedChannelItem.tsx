@@ -55,7 +55,7 @@ const SelectedChannelItem = ({ channel, handleToggle }: { channel: any; handleTo
         onClick={() => handleToggle(channel.name)}
         aria-label='Xoá khỏi danh sách'
         className={clsx(
-          'transition-colors p-1',
+          'transition-colors p-1 ml-auto cursor-pointer',
           isMobile
             ? 'absolute -top-1 -right-1 z-10 w-5 h-5 rounded-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 flex items-center justify-center shadow'
             : 'text-gray-500 hover:text-black dark:hover:text-white bg-transparent'

@@ -12,6 +12,7 @@ import { useContext } from 'react'
 import { BiChevronLeft } from 'react-icons/bi'
 import { Link } from 'react-router-dom'
 import ChannelHeaderMenu from './ChannelHeaderMenu'
+import ChannelLabelBadge from '../channels/ChannelLabelBadge'
 
 interface DMChannelHeaderProps {
   channelData: DMChannelListItem
@@ -64,15 +65,13 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
 
             {/* ✅ Hiển thị nhãn user_labels */}
             {Array.isArray(channelData.user_labels) &&
-              channelData.user_labels?.map((label) => (
-                <Badge
+              channelData.user_labels.map((label) => (
+                <ChannelLabelBadge
                   key={label.label_id}
-                  color='blue'
-                  variant='soft'
-                  className='font-medium px-1.5 py-0.5 text-xs dark:bg-[#003d3d] text-[#00e0e0] font-medium px-1.5 py-0.5 text-xs rounded'
-                >
-                  {label.label}
-                </Badge>
+                  channelID={channelData.name}
+                  labelID={label.label_id}
+                  labelName={label.label}
+                />
               ))}
 
             {!peerUser && (

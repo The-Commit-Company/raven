@@ -22,10 +22,14 @@ const UserList = () => {
   const usersWithoutChannels = users?.filter(
     (user) => !dm_channels.find((channel) => channel.peer_user_id === user.name)
   )
+  const filteredDmChannels = dm_channels?.filter((channel) => {
+    const peerUser = users?.find((user) => user.name === channel.peer_user_id)
+    return peerUser?.enabled === 1
+  })
 
   return (
     <Command.Group heading='Members'>
-      {dm_channels?.map((channel) => (
+      {filteredDmChannels?.map((channel) => (
         <DMChannelItem
           key={channel.name}
           channelID={channel.name}

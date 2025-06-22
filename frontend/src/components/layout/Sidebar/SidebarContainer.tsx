@@ -35,6 +35,9 @@ export const useMentionUnreadCount = () => {
     }
   )
 
+  console.log(mentionsCount);
+  
+
   useFrappeEventListener('raven_mention', () => {
     mutate()
   })
@@ -168,7 +171,7 @@ export const FilterList = React.memo(({ onClose }: { onClose?: () => void }) => 
     (label: string) => {
       setTitle(label)
       setLabelID('')
-      if (label === 'Nhắc đến') resetMentions()
+      // if (label === 'Nhắc đến') resetMentions()
       if (onClose) onClose()
       if (channelID) navigate(`/${workspaceID}`)
     },

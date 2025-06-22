@@ -29,11 +29,12 @@ import ThreadsCustom from '../threads/ThreadsCustom'
 import { MessageSaved } from './DirectMessageSaved'
 import clsx from 'clsx'
 
-
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
 
 export const DirectMessageList = () => {
-  const enriched = useEnrichedSortedChannels(0)
+  const { labelID } = useSidebarMode()
+
+  const enriched = useEnrichedSortedChannels(labelID ? undefined : 0)
 
   return (
     <SidebarGroup pb='4'>
@@ -79,7 +80,7 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
   const getFilteredChannels = (): DMChannelWithUnreadCount[] => {
     switch (title) {
       case 'Trò chuyện nhóm':
-        return channel_list.filter((c: { group_type: string }) => c.group_type === 'channel' )
+        return channel_list.filter((c: { group_type: string }) => c.group_type === 'channel')
       case 'Trò chuyện 1-1':
         return channel_list.filter((c: { group_type: string }) => c.group_type === 'dm')
       case 'Chưa đọc':
