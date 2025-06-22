@@ -139,12 +139,9 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   const { clearManualMark } = useChannelActions()
   const { markAsDone, markAsNotDone } = useChannelDone()
 
-  const { isDM, peerUserId, isGroupChannel } = useMemo(() => {
-    const isDM = isDMChannel(channel)
-    const peerUserId = isDM ? channel.peer_user_id : null
-    const isGroupChannel = !channel.is_direct_message && !channel.is_self_message
-    return { isDM, peerUserId, isGroupChannel }
-  }, [channel])
+  const isDM = isDMChannel(channel)
+  const peerUserId = isDM ? channel.peer_user_id : ''
+  const isGroupChannel = !channel.is_direct_message && !channel.is_self_message
 
   const isChannelDone = channel.is_done === 1
   const peerUser = useGetUser(peerUserId || '')
@@ -152,11 +149,6 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
   const isSelectedChannel = channelID === channel.name
   const isManuallyMarked = manuallyMarked.has(channel.name)
 
-  if (!isGroupChannel && (!isDM || !peerUserId || !peerUser?.enabled)) {
-    return null
-  }
-
-  // Parse người gửi cuối cùng — dùng useMemo để tránh parse lại nhiều lần
   const lastOwner = useMemo(() => {
     try {
       const raw =
@@ -192,6 +184,10 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
     ${isSelectedChannel ? 'bg-gray-300 dark:bg-gray-700' : ''}
     hover:bg-gray-100 dark:hover:bg-gray-600
   `
+
+  // ✅ Moved after hook calls to avoid hook mismatch
+  const shouldRender = isGroupChannel || (isDM && peerUserId && peerUser?.enabled)
+  if (!shouldRender) return null
 
   return (
     <div
@@ -244,14 +240,15 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
               if (isDesktop) {
                 e.stopPropagation()
               }
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
               isChannelDone ? markAsNotDone(channel.name) : markAsDone(channel.name)
             }}
             className='absolute z-99 right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded-full bg-gray-200 hover:bg-gray-300 h-[20px] w-[20px] flex items-center justify-center cursor-pointer'
             title={isChannelDone ? 'Chưa xong' : 'Đã xong'}
           >
             <HiCheck
-              className={`h-3 w-3 transition-colors duration-150 ${isChannelDone ? 'text-green-600' : 'text-gray-800'}`}
+              className={`h-3 w-3 transition-colors duration-150 ${
+                isChannelDone ? 'text-green-600' : 'text-gray-800'
+              }`}
             />
           </button>
         </Tooltip>

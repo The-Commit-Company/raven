@@ -65,7 +65,7 @@ const ChannelLabelBadge = ({
         {isHovered && (
           <button
             onClick={handleClickRemove}
-            className='absolute top-1/2 right-0 translate-y-[-50%] translate-x-[10%] w-4 h-4 flex items-center justify-center text-[10px] cursor-pointer text-black bg-transparent shadow'
+            className='absolute top-1/2 right-0 translate-y-[-50%] translate-x-[10%] w-4 h-4 flex items-center justify-center text-[10px] cursor-pointer text-black bg-transparent'
           >
             ✕
           </button>
