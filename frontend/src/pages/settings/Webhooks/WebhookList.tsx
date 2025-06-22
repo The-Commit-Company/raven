@@ -40,11 +40,11 @@ const WebhookList = () => {
     <PageContainer>
       <SettingsContentContainer>
         <SettingsPageHeader
-          title='Webhooks'
-          description='Fire webhooks on specific events like when a message is sent or channel is created.'
+          title='Webhook'
+          description='Kích hoạt webhook khi có sự kiện như gửi tin nhắn hoặc tạo kênh.'
           actions={
             <Button asChild disabled={!isRavenAdmin}>
-              <Link to='create'>Create</Link>
+              <Link to='create'>Tạo mới</Link>
             </Button>
           }
         />
@@ -60,12 +60,12 @@ const WebhookList = () => {
             <EmptyStateIcon>
               <LuWebhook />
             </EmptyStateIcon>
-            <EmptyStateTitle>Webhooks</EmptyStateTitle>
+            <EmptyStateTitle>Webhook</EmptyStateTitle>
             <EmptyStateDescription>
-              Webhooks allow you to receive HTTP requests whenever a specific event occurs - like when a message is sent
-              or a channel is created.
+              Webhook cho phép bạn nhận các yêu cầu HTTP mỗi khi có sự kiện cụ thể xảy ra – như khi một tin nhắn được
+              gửi hoặc một kênh được tạo.
             </EmptyStateDescription>
-            {isRavenAdmin && <EmptyStateLinkAction to='create'>Create your first webhook</EmptyStateLinkAction>}
+            {isRavenAdmin && <EmptyStateLinkAction to='create'>Tạo webhook đầu tiên</EmptyStateLinkAction>}
           </EmptyState>
         )}
       </SettingsContentContainer>

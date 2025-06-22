@@ -44,7 +44,7 @@ const DocumentNotificationList = () => {
           description='Cấu hình cảnh báo để gửi đến người dùng hoặc các kênh khi tài liệu được cập nhật trong hệ thống.'
           actions={
             <Button asChild disabled={!isRavenAdmin}>
-              <Link to='create'>Thêm mới</Link>
+              <Link to='create'>Tạo mới</Link>
             </Button>
           }
         />

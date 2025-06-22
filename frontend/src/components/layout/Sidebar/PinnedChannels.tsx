@@ -23,7 +23,7 @@ const PinnedChannels = ({ unread_count }: { unread_count?: UnreadCountData }) =>
           (channel) =>
             pinnedChannelIDs?.includes(channel.name) && channel.is_archived === 0 && channel.workspace === workspaceID
         )
-        .map((channel) => {
+        ?.map((channel) => {
           const count = unread_count?.find((unread) => unread.name === channel.name)?.unread_count || 0
           return {
             ...channel,
@@ -48,9 +48,7 @@ const PinnedChannels = ({ unread_count }: { unread_count?: UnreadCountData }) =>
         </SidebarGroupItem>
         <SidebarGroup>
           <SidebarGroupList>
-            {pinnedChannels.map((channel) => (
-              <ChannelItemElement channel={channel} key={channel.name} />
-            ))}
+            {pinnedChannels?.map((channel) => <ChannelItemElement channel={channel} key={channel.name} />)}
           </SidebarGroupList>
         </SidebarGroup>
       </SidebarGroup>

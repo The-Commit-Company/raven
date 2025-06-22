@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 const useRecentlyUsedDocType = () => {
   const recentlyUsedDoctypes = useMemo(() => {
     const existingItems = sessionStorage.getItem(`recently-used-doctype`) ?? '[]'
-    return JSON.parse(existingItems).map((doctype: string) => ({
+    return JSON.parse(existingItems)?.map((doctype: string) => ({
       value: doctype,
       description: 'Recently used'
     }))

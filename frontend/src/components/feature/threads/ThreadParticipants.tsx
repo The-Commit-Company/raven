@@ -14,7 +14,7 @@ export const ViewThreadParticipants = ({ participants }: ViewThreadParticipantsP
 
   return (
     <div className={'flex items-center -space-x-1 rtl:space-x-reverse animate-fadein'}>
-      {participants.map((member, index) => {
+      {participants?.map((member, index) => {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const user = useGetUser(member.user_id)
         if (index < 3)

@@ -47,7 +47,7 @@ export default function useUploadChatbotFile(conversation_id: string, messageTex
     const currentFiles = [...filesStateRef.current]
     if (currentFiles?.length === 0) return []
 
-    const promises = currentFiles.map(async (f: CustomFile) => {
+    const promises = currentFiles?.map(async (f: CustomFile) => {
       return file
         .uploadFile(
           f,

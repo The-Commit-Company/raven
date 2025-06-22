@@ -47,7 +47,7 @@ const BotFileSources = () => {
               <Dialog.Title>Select Files</Dialog.Title>
               <Dialog.Description size='2'>Select files from the list below.</Dialog.Description>
               <div className='mt-4'>
-                <SelectExistingFiles append={addNew} existingFiles={fields.map((d) => d.file)} />
+                <SelectExistingFiles append={addNew} existingFiles={fields?.map((d) => d.file)} />
               </div>
             </Dialog.Content>
           </Dialog.Root>

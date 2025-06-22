@@ -112,7 +112,7 @@ const LinkField = ({
         {...getMenuProps()}
       >
         {isOpen &&
-          items.map((item, index) => (
+          items?.map((item, index) => (
             <li
               className={clsx(
                 highlightedIndex === index && 'bg-gray-3 dark:bg-gray-4',

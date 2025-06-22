@@ -51,7 +51,7 @@ const CompanyWorkspaceMapping = () => {
           </Box>
         </HStack>
 
-        {fields.map((field, index) => (
+        {fields?.map((field, index) => (
           <HStack key={field.id} className='px-2 py-2 border-b border-gray-4'>
             <Box width='45%'>
               <Stack gap='1'>
@@ -116,7 +116,9 @@ const WorkspaceDropdown = ({ name }: { name: `company_workspace_mapping.${number
         >
           <Select.Trigger className='min-w-72' />
           <Select.Content>
-            {workspaces?.message.map((workspace) => <Select.Item value={workspace.name}>{workspace.name}</Select.Item>)}
+            {workspaces?.message?.map((workspace) => (
+              <Select.Item value={workspace.name}>{workspace.name}</Select.Item>
+            ))}
           </Select.Content>
         </Select.Root>
       )}

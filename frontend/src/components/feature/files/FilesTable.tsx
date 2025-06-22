@@ -1,12 +1,12 @@
-import { DateMonthYear, StandardDate } from '@/utils/dateConversions'
-import { Box, Button, DropdownMenu, Flex, HoverCard, Inset, Table, Text, Tooltip } from '@radix-ui/themes'
-import { FileInChannel } from './ViewFilesContent'
 import { UserAvatar } from '@/components/common/UserAvatar'
-import { formatBytes } from '@/utils/operations'
-import { BiDownload, BiLink, BiLinkExternal } from 'react-icons/bi'
-import { FileExtensionIcon } from '@/utils/layout/FileExtIcon'
 import useFileURLCopy from '@/hooks/useFileURLCopy'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { DateMonthYear, StandardDate } from '@/utils/dateConversions'
+import { FileExtensionIcon } from '@/utils/layout/FileExtIcon'
+import { formatBytes } from '@/utils/operations'
+import { Box, Button, DropdownMenu, Flex, HoverCard, Inset, Table, Text, Tooltip } from '@radix-ui/themes'
+import { BiDownload, BiLink, BiLinkExternal } from 'react-icons/bi'
+import { FileInChannel } from './ViewFilesContent'
 
 export const FilesTable = ({ data }: { data: FileInChannel[] }) => {
   const isDesktop = useIsDesktop()

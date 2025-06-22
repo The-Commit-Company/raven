@@ -1,17 +1,17 @@
-import { PageHeader } from '@/components/layout/Heading/PageHeader'
-import { useIsUserActive } from '@/hooks/useIsUserActive'
-import { DMChannelListItem } from '@/utils/channel/ChannelListProvider'
-import { Badge, Flex, Heading } from '@radix-ui/themes'
 import { UserAvatar } from '@/components/common/UserAvatar'
-import ChannelHeaderMenu from './ChannelHeaderMenu'
+import { PageHeader } from '@/components/layout/Heading/PageHeader'
+import useIsUserOnLeave from '@/hooks/fetchers/useIsUserOnLeave'
+import { useGetUser } from '@/hooks/useGetUser'
+import { useIsUserActive } from '@/hooks/useIsUserActive'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { UserContext } from '@/utils/auth/UserProvider'
+import { DMChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { replaceCurrentUserFromDMChannelName } from '@/utils/operations'
+import { Badge, Flex, Heading } from '@radix-ui/themes'
+import { useContext } from 'react'
 import { BiChevronLeft } from 'react-icons/bi'
 import { Link } from 'react-router-dom'
-import { useGetUser } from '@/hooks/useGetUser'
-import useIsUserOnLeave from '@/hooks/fetchers/useIsUserOnLeave'
-import { useContext } from 'react'
-import { UserContext } from '@/utils/auth/UserProvider'
-import { replaceCurrentUserFromDMChannelName } from '@/utils/operations'
-import { useIsDesktop } from '@/hooks/useMediaQuery'
+import ChannelHeaderMenu from './ChannelHeaderMenu'
 
 interface DMChannelHeaderProps {
   channelData: DMChannelListItem
@@ -64,7 +64,7 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
 
             {/* ✅ Hiển thị nhãn user_labels */}
             {Array.isArray(channelData.user_labels) &&
-              channelData.user_labels.map((label) => (
+              channelData.user_labels?.map((label) => (
                 <Badge
                   key={label.label_id}
                   color='blue'

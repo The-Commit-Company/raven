@@ -8,9 +8,7 @@ const ArchivedChannelList = () => {
   const archivedChannels = channels.filter((channel) => channel.is_archived)
   return (
     <Command.Group heading='Older Channels'>
-      {archivedChannels.map((channel) => (
-        <ChannelItem key={channel.channel_name} channel={channel} />
-      ))}
+      {archivedChannels?.map((channel) => <ChannelItem key={channel.channel_name} channel={channel} />)}
     </Command.Group>
   )
 }

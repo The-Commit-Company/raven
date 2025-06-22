@@ -89,7 +89,7 @@ const MentionsList: React.FC = () => {
 
   return (
     <ul role='list' className='list-none h-full overflow-y-auto scrollbar-hide'>
-      {mentions.map((mention) => (
+      {mentions?.map((mention) => (
         <li key={mention.name} className='border-b border-gray-4 last:border-0'>
           <MentionItem mention={mention} workspaceID={workspaceID} />
         </li>

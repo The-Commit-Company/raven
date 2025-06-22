@@ -243,7 +243,7 @@ const ChatbotAIChatBox: React.FC<Props> = ({
         )}
 
         <div className='max-w-3xl mx-auto p-4'>
-          {session.messages.map((msg, idx) => (
+          {session.messages?.map((msg, idx) => (
             <div key={msg.id || startIdx + idx} className='group mb-8'>
               <div className='flex gap-4 items-start'>
                 {/* Avatar */}

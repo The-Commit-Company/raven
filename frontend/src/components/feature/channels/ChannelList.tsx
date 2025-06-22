@@ -75,7 +75,7 @@ export const ChannelList = ({ channels }: ChannelListProps) => {
                 {__('No channels in this workspace.')}
               </Text>
             ) : null}
-            {filteredChannels.map((channel: ChannelWithUnreadCount) => (
+            {filteredChannels?.map((channel: ChannelWithUnreadCount) => (
               <ChannelItem channel={channel} key={channel.name} />
             ))}
           </div>

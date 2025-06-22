@@ -49,7 +49,7 @@ const Preferences = () => {
           <Stack className='max-w-[480px]'>
             <Label htmlFor='QuickEmojis'>Chọn emoji yêu thích để phản hồi nhanh</Label>
             <HStack gap='2'>
-              {quickEmojis.map((emoji, index) => (
+              {quickEmojis?.map((emoji, index) => (
                 <Popover.Root key={index}>
                   <Popover.Trigger>
                     <IconButton size='2' variant='soft' color='gray' className='min-w-[48px]'>

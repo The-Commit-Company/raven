@@ -113,7 +113,7 @@ const UsersOrChannelsDropdown = ({
         />
 
         <div className='inline-flex gap-1 p-1 items-center flex-wrap'>
-          {selectedOptions.map((selectedItemForRender, index) => {
+          {selectedOptions?.map((selectedItemForRender, index) => {
             const isChannel = 'channel_name' in selectedItemForRender
             return (
               <span
@@ -158,7 +158,7 @@ const UsersOrChannelsDropdown = ({
         {...getMenuProps()}
       >
         {isOpen &&
-          items.map((item, index) => {
+          items?.map((item, index) => {
             const isChecked = selectedOptions.some((o) => o.name === item.name)
             return (
               <li

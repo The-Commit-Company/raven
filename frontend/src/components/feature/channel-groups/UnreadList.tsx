@@ -82,13 +82,9 @@ export const UnreadList = ({ unreadChannels, unreadDMs }: UnreadListProps) => {
       >
         <div ref={ref} className='flex gap-1 flex-col fade-in'>
           {/* Render unread DMs */}
-          {unreadDMs.map((dm) => (
-            <DirectMessageItemElement key={dm.name} channel={dm} />
-          ))}
+          {unreadDMs?.map((dm) => <DirectMessageItemElement key={dm.name} channel={dm} />)}
           {/* Render unread channels */}
-          {unreadChannels.map((channel) => (
-            <ChannelItemElement key={channel.name} channel={channel} />
-          ))}
+          {unreadChannels?.map((channel) => <ChannelItemElement key={channel.name} channel={channel} />)}
         </div>
       </SidebarGroupList>
     </SidebarGroup>
@@ -110,7 +106,7 @@ const UnreadSectionActions = ({ channelIDs }: { channelIDs: string[] }) => {
           (d: { message: UnreadCountData } | undefined) => {
             if (d?.message) {
               // Update all channels with unread count as 0
-              const newChannels = d.message.map((c) => {
+              const newChannels = d.message?.map((c) => {
                 if (c.name && channelIDs.includes(c.name)) {
                   return {
                     ...c,

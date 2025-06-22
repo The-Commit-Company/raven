@@ -249,7 +249,7 @@ const DoctypeVariables = ({ doctype, withoutJinja }: { doctype: string; withoutJ
           field.fieldname &&
           field.label?.toLowerCase().includes(searchTerm)
       )
-      .map((field) => ({
+      ?.map((field) => ({
         variable: `doc.${field.fieldname}`,
         description: (
           <span>
@@ -359,7 +359,7 @@ const RecipientsTab = () => {
         </div>
         <div className='col-span-1 bg-gray-2 p-3 font-bold text-sm border-b border-gray-4'></div>
 
-        {fields.map((row, index) => (
+        {fields?.map((row, index) => (
           <Fragment key={index}>
             <div className={clsx('col-span-3 p-2', index !== fields?.length - 1 ? 'border-b border-gray-4' : '')}>
               <Box>
@@ -656,7 +656,7 @@ const DoctypeVariableField = ({
         {suggestedFields?.length > 0 && (
           <Select.Group>
             <Select.Label>Suggested</Select.Label>
-            {suggestedFields.map((field) => (
+            {suggestedFields?.map((field) => (
               <Select.Item key={field.fieldname} value={field.fieldname ?? ''}>
                 {field.label} ({field.fieldname})
               </Select.Item>
@@ -665,7 +665,7 @@ const DoctypeVariableField = ({
         )}
         <Select.Group>
           <Select.Label>All</Select.Label>
-          {fields.map((field) => (
+          {fields?.map((field) => (
             <Select.Item key={field.fieldname} value={field.fieldname ?? ''}>
               {field.label ?? ''} ({field.fieldname})
             </Select.Item>

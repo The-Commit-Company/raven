@@ -91,7 +91,7 @@ function MultipleUserComboBox({
         {...getMenuProps()}
       >
         {isOpen &&
-          items.map((item, index) => (
+          items?.map((item, index) => (
             <li
               className={clsx(
                 highlightedIndex === index && 'dark:bg-accent-9 bg-gray-3',
@@ -129,7 +129,7 @@ function MultipleUserComboBox({
         </div>
       )}
       <ScrollArea className='flex gap-1 my-1 items-center flex-wrap max-h-96' scrollbars='vertical'>
-        {selectedUsers.map(function renderSelectedItem(selectedItemForRender, index) {
+        {selectedUsers?.map(function renderSelectedItem(selectedItemForRender, index) {
           return (
             <span
               className='flex justify-between w-full items-center hover:bg-gray-2 hover:dark:bg-gray-3 py-1.5 rounded-md transition-all duration-200'

@@ -30,7 +30,7 @@ const WorkspacesSidebar = () => {
       }
     })
 
-    const myWorkspacesWithUnreadCounts = myWorkspaces.map((workspace) => {
+    const myWorkspacesWithUnreadCounts = myWorkspaces?.map((workspace) => {
       return {
         ...workspace,
         unread_count: workspace_unread_counts[workspace.name] || 0
@@ -44,9 +44,7 @@ const WorkspacesSidebar = () => {
     <Stack className='w-20 p-0 pb-4 border-r border-gray-4 dark:border-gray-6 h-screen' justify='between'>
       <ScrollArea className='h-[calc(100vh-7rem)]' type='hover' scrollbars='vertical'>
         <Stack align='center' className='px-1 py-2' gap='3'>
-          {myWorkspaces.map((workspace) => (
-            <WorkspaceItem workspace={workspace} key={workspace.name} />
-          ))}
+          {myWorkspaces?.map((workspace) => <WorkspaceItem workspace={workspace} key={workspace.name} />)}
           <AddWorkspaceSidebarButton />
         </Stack>
       </ScrollArea>

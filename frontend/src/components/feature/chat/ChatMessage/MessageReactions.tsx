@@ -50,7 +50,7 @@ export const MessageReactions = ({
   const reactions: ReactionObject[] = useMemo(() => {
     //Parse the string to a JSON object and get an array of reactions
     const parsed_json = JSON.parse(message_reactions ?? '{}') as Record<string, ReactionObject>
-    return Object.entries(parsed_json).map(([key, value]) => ({
+    return Object.entries(parsed_json)?.map(([key, value]) => ({
       ...value,
       emoji_name: key
     }))
@@ -60,7 +60,7 @@ export const MessageReactions = ({
 
   return (
     <Flex gap='1' mt='1' wrap='wrap'>
-      {reactions.map((reaction) => {
+      {reactions?.map((reaction) => {
         return (
           <ReactionButton
             key={reaction.reaction}

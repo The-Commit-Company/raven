@@ -20,7 +20,7 @@ const TypingIndicator = memo(({ channel, maxDisplay = 3, showAnimation = true }:
     // Filter out current user and get display names
     const validTypingUsers = typingUsers
       .filter((user) => user !== currentUser)
-      .map((user) => {
+      ?.map((user) => {
         const userRecord = userRecords[user]
         return userRecord?.first_name ?? userRecord?.full_name ?? user
       })
@@ -53,7 +53,7 @@ const TypingIndicator = memo(({ channel, maxDisplay = 3, showAnimation = true }:
     >
       {showAnimation && (
         <div className='flex items-center space-x-1 -mb-0.5' aria-hidden='true'>
-          {[0, 150, 300].map((delay, index) => (
+          {[0, 150, 300]?.map((delay, index) => (
             <div
               key={index}
               className='w-1.5 h-1.5 bg-gray-12 rounded-full animate-pulse-bounce'

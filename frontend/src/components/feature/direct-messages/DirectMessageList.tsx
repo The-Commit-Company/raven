@@ -75,7 +75,7 @@ export const DirectMessageList = ({ dm_channels }: DirectMessageListProps) => {
 const DirectMessageItemList = ({ dm_channels }: DirectMessageListProps) => {
   return (
     <>
-      {dm_channels.map((channel: DMChannelWithUnreadCount) => (
+      {dm_channels?.map((channel: DMChannelWithUnreadCount) => (
         <DirectMessageItem key={channel.name} dm_channel={channel} />
       ))}
     </>
@@ -186,9 +186,7 @@ const ExtraUsersItemList = () => {
 
   return (
     <>
-      {filteredUsers.map((user) => (
-        <ExtraUsersItem key={user.name} user={user} createDMChannel={createDMChannel} />
-      ))}
+      {filteredUsers?.map((user) => <ExtraUsersItem key={user.name} user={user} createDMChannel={createDMChannel} />)}
     </>
   )
 }

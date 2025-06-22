@@ -1,20 +1,19 @@
+import { useTheme } from '@/ThemeProvider'
+import { ErrorCallout } from '@/components/common/Callouts/ErrorCallouts'
+import { ErrorText, Label } from '@/components/common/Form'
+import { Loader } from '@/components/common/Loader'
+import AuthContainer from '@/components/layout/AuthContainer'
+import { DateSeparator } from '@/components/layout/Divider/DateSeparator'
+import { Stack } from '@/components/layout/Stack'
+import { TwoFactor } from '@/pages/auth/TwoFactor'
+import { LoginContext, LoginInputs } from '@/types/Auth/Login'
+import { Box, Button, Flex, IconButton, Link as LinkButton, Text, TextField } from '@radix-ui/themes'
+import { AuthResponse, FrappeError, useFrappeAuth, useFrappeGetCall } from 'frappe-react-sdk'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { BiShow, BiHide, BiLogoGithub, BiLogoFacebookCircle, BiMailSend } from 'react-icons/bi'
-import { Link } from 'react-router-dom'
-import { Box, Button, Flex, IconButton, Text, TextField, Link as LinkButton } from '@radix-ui/themes'
-import { FrappeError, useFrappeGetCall, useFrappeAuth, AuthResponse } from 'frappe-react-sdk'
-import { Loader } from '@/components/common/Loader'
-import { ErrorText, Label } from '@/components/common/Form'
-import { LoginInputs, LoginContext } from '@/types/Auth/Login'
-import AuthContainer from '@/components/layout/AuthContainer'
-import { TwoFactor } from '@/pages/auth/TwoFactor'
-import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
-import { DateSeparator } from '@/components/layout/Divider/DateSeparator'
+import { BiHide, BiLogoFacebookCircle, BiLogoGithub, BiMailSend, BiShow } from 'react-icons/bi'
 import { FcGoogle } from 'react-icons/fc'
-import { useTheme } from '@/ThemeProvider'
-import { Stack } from '@/components/layout/Stack'
-import { ErrorCallout } from '@/components/common/Callouts/ErrorCallouts'
+import { Link } from 'react-router-dom'
 
 export const SocialProviderIcons = {
   github: <BiLogoGithub size='24' />,
@@ -216,7 +215,7 @@ export const OtherLoginMethods = ({ isSubmitting }: { isSubmitting: boolean }) =
       ) : null}
       {/* Map all social oauth providers */}
       {loginContext?.message?.social_login
-        ? loginContext?.message?.provider_logins.map((soc: SocialProvider, i: number) => {
+        ? loginContext?.message?.provider_logins?.map((soc: SocialProvider, i: number) => {
             return (
               <Flex direction='column' key={i}>
                 <Button

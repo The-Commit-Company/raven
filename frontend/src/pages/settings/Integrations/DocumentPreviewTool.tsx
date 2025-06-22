@@ -8,8 +8,8 @@ const DocumentPreviewTool = () => {
     <PageContainer>
       <SettingsContentContainer>
         <SettingsPageHeader
-          title='Document Previews'
-          description='Customise how document links are displayed in the chat. You can add/remove fields to be displayed in the preview.'
+          title='Xem Trước Tài Liệu'
+          description='Tùy chỉnh cách hiển thị liên kết tài liệu trong cuộc trò chuyện. Bạn có thể thêm/bớt các trường hiển thị trong phần xem trước.'
         />
         <DocumentPreviewToolConfigurator />
       </SettingsContentContainer>

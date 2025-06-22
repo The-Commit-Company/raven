@@ -62,7 +62,7 @@ export default forwardRef((props: ReactRendererOptions['props'], ref) => {
         className='shadow-lg dark:bg-panel-solid bg-white overflow-y-scroll max-h-96 rounded-md'
       >
         {props?.items?.length ? (
-          props.items.map((item: MemberSuggestions, index: number) => (
+          props.items?.map((item: MemberSuggestions, index: number) => (
             <MentionItem
               item={item}
               index={index}

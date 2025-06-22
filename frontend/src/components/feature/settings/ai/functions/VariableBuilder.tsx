@@ -186,7 +186,7 @@ const VariableBuilderField = ({
             No variables defined
           </Text>
         )}
-        {Object.entries(properties).map(([key, value]) => {
+        {Object.entries(properties)?.map(([key, value]) => {
           return (
             <Stack
               key={key}

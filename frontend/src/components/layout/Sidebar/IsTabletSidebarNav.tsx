@@ -1,11 +1,10 @@
 import { useIsTablet } from '@/hooks/useMediaQuery'
-import { useUnreadMessageCount } from '@/hooks/useUnreadMessageCount'
+import { useEnrichedSortedChannels } from '@/utils/channel/ChannelAtom'
 import { useSidebarMode } from '@/utils/layout/sidebar'
 import clsx from 'clsx'
 import { useEffect, useMemo, useState } from 'react'
 import { HiMenu } from 'react-icons/hi'
 import { filterItems, FilterList, useMentionUnreadCount } from './SidebarContainer'
-import { useEnrichedSortedChannels } from '@/utils/channel/ChannelAtom'
 
 export default function FilterTabs() {
   const { title, setTitle, setLabelID, setMode } = useSidebarMode()
@@ -15,7 +14,9 @@ export default function FilterTabs() {
   const isTablet = useIsTablet()
 
   const limitedTabs = filterItems.slice(0, 3)
-  const limitedLabels = limitedTabs.map((tab) => tab.label)
+
+  // Trích ra các label trong limitedTabs
+  const limitedLabels = limitedTabs?.map((tab) => tab.label)
   const tabsToRender = limitedLabels.includes(title as string) ? limitedTabs : [{ label: title, icon: null }]
 
   const totalUnreadCount = useMemo(() => {
@@ -69,7 +70,7 @@ export default function FilterTabs() {
             tabsToRender?.length > 1 && 'bg-gray-200 dark:bg-neutral-800'
           )}
         >
-          {tabsToRender.map((tab) => {
+          {tabsToRender?.map((tab) => {
             const isActive = tab.label === title
             const badgeCount = getBadgeCount(tab.label as string)
             const isSingleTab = tabsToRender?.length === 1

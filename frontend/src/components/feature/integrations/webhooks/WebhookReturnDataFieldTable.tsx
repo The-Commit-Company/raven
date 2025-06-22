@@ -92,7 +92,7 @@ export const WebhookData = () => {
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {fields.map((field, index) => {
+            {fields?.map((field, index) => {
               const fieldname = watch(`webhook_data.${index}.fieldname`)
               return (
                 <Table.Row key={field.id}>
@@ -115,7 +115,7 @@ export const WebhookData = () => {
                           <Select.Content>
                             <Select.Group>
                               <Select.Label>Fieldname</Select.Label>
-                              {webhookDataFieldName.map((field, index) => (
+                              {webhookDataFieldName?.map((field, index) => (
                                 <Select.Item
                                   key={index}
                                   value={field.fieldname}
@@ -292,7 +292,7 @@ export const PreviewModal = ({ onClose }: { onClose: () => void }) => {
                 <Select.Content>
                   <Select.Group>
                     <Select.Label>Examples</Select.Label>
-                    {exampleList.map((example, index) => (
+                    {exampleList?.map((example, index) => (
                       <Select.Item key={index} value={example}>
                         {example}
                       </Select.Item>

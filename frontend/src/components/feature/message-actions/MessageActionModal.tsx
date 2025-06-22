@@ -1,19 +1,17 @@
-import { RavenMessageAction } from '@/types/RavenIntegrations/RavenMessageAction'
-import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
-import { Box, Button, Checkbox, Dialog, Select, Text, TextArea, TextField } from '@radix-ui/themes'
-import clsx from 'clsx'
-import { useFrappeGetCall, useFrappeGetDoc, useFrappePostCall } from 'frappe-react-sdk'
-import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form'
-import { HStack, Stack } from '@/components/layout/Stack'
-import { RavenMessageActionFields } from '@/types/RavenIntegrations/RavenMessageActionFields'
 import { ErrorText, HelperText, Label } from '@/components/common/Form'
 import LinkFormField from '@/components/common/LinkField/LinkFormField'
-import { useEffect } from 'react'
-import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
-import { useSetAtom } from 'jotai'
-import { messageActionAtom } from './MessageActionController'
-import { toast } from 'sonner'
 import { Loader } from '@/components/common/Loader'
+import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
+import { HStack, Stack } from '@/components/layout/Stack'
+import { RavenMessageAction } from '@/types/RavenIntegrations/RavenMessageAction'
+import { RavenMessageActionFields } from '@/types/RavenIntegrations/RavenMessageActionFields'
+import { Box, Button, Checkbox, Dialog, Select, Text, TextArea, TextField } from '@radix-ui/themes'
+import { useFrappeGetCall, useFrappeGetDoc, useFrappePostCall } from 'frappe-react-sdk'
+import { useSetAtom } from 'jotai'
+import { useEffect } from 'react'
+import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form'
+import { toast } from 'sonner'
+import { messageActionAtom } from './MessageActionController'
 
 interface MessageActionModalProps {
   messageID: string
@@ -219,7 +217,7 @@ const FieldRenderer = ({ field, autoFocus }: { field: RavenMessageActionFields; 
                   autoFocus={autoFocus}
                 />
                 <Select.Content>
-                  {field.options?.split('\n').map((option) => {
+                  {field.options?.split('\n')?.map((option) => {
                     return (
                       <Select.Item key={option} value={option}>
                         {option}

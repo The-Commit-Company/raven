@@ -124,7 +124,7 @@ export const MessageSearch = ({
               <Select.Item value='any'>From anyone</Select.Item>
               <Select.Group>
                 <Select.Label>Message from</Select.Label>
-                {Object.values(users).map((option) => (
+                {Object.values(users)?.map((option) => (
                   <Select.Item key={option.name} textValue={option.full_name} value={option.name}>
                     <Flex gap='2' align='center'>
                       <UserAvatar src={option.user_image} alt={option.full_name} />
@@ -142,7 +142,7 @@ export const MessageSearch = ({
               <Select.Item value='any'>Tất cả</Select.Item>
               <Select.Group>
                 <Select.Label>Channels</Select.Label>
-                {channels.map((option) => (
+                {channels?.map((option) => (
                   <Select.Item key={option.name} value={option.name}>
                     <Flex gap='2' align='center' className='overflow-hidden'>
                       <ChannelIcon type={option.type} />
@@ -161,7 +161,7 @@ export const MessageSearch = ({
               <Select.Separator />
               <Select.Group>
                 <Select.Label>Direct Messages</Select.Label>
-                {dm_channels.map((option) => (
+                {dm_channels?.map((option) => (
                   <Select.Item
                     key={option.name}
                     value={option.name}
@@ -186,7 +186,7 @@ export const MessageSearch = ({
               <Select.Group>
                 <Select.Label>Date</Select.Label>
                 <Select.Item value='any'>Any time</Select.Item>
-                {dateOption.map((option) => (
+                {dateOption?.map((option) => (
                   <Select.Item key={option.value} value={option.value}>
                     {option.label}
                   </Select.Item>
@@ -213,7 +213,7 @@ export const MessageSearch = ({
         {data?.message?.length === 0 && <EmptyStateForSearch />}
         {data?.message?.length && data?.message?.length > 0 ? (
           <Flex direction='column' gap='2'>
-            {data.message.map((message: Message) => {
+            {data.message?.map((message: Message) => {
               return (
                 <MessageBox
                   key={message.name}

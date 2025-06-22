@@ -1,16 +1,16 @@
+import { Stack } from '@/components/layout/Stack'
+import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { RavenBotAIPrompt } from '@/types/RavenAI/RavenBotAIPrompt'
+import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
+import { getKeyboardMetaKeyString } from '@/utils/layout/keyboardKey'
 import { Box, Button, Dialog, IconButton, Text, Tooltip } from '@radix-ui/themes'
 import { useCurrentEditor } from '@tiptap/react'
-import { BiSolidMagicWand } from 'react-icons/bi'
-import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
-import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
-import { useEffect, useState } from 'react'
 import { Command } from 'cmdk'
-import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { useFrappeGetCall } from 'frappe-react-sdk'
-import { RavenBotAIPrompt } from '@/types/RavenAI/RavenBotAIPrompt'
-import { getKeyboardMetaKeyString } from '@/utils/layout/keyboardKey'
-import { Stack } from '@/components/layout/Stack'
+import { useEffect, useState } from 'react'
+import { BiSolidMagicWand } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
+import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
 
 const AISavedPromptsButton = () => {
   const { editor } = useCurrentEditor()
@@ -88,7 +88,7 @@ const SavedPrompts = ({ onClose }: { onClose: () => void }) => {
           </Stack>
         </Command.Empty>
         {isLoading && <Command.Loading>Loading...</Command.Loading>}
-        {data?.message.map((prompt) => (
+        {data?.message?.map((prompt) => (
           <Command.Item
             key={prompt.name}
             onSelect={() => {

@@ -100,7 +100,7 @@ export const MessageSeenStatus = React.memo(
       }
 
       const firstTwoSeen = seenByOthers.slice(0, 2)
-      const names = firstTwoSeen.map((user) => user.full_name).join(', ')
+      const names = firstTwoSeen?.map((user) => user.full_name).join(', ')
 
       if (seenByOthers?.length > 2) {
         return `${names} và ${seenByOthers?.length - 2} người khác đã xem`
@@ -148,7 +148,7 @@ export const MessageSeenStatus = React.memo(
                       {seenByOthers?.length} Đã xem
                     </div>
                     <div className='space-y-2 overflow-y-auto max-h-[350px] pr-2'>
-                      {seenByOthers.map((user, index) => (
+                      {seenByOthers?.map((user, index) => (
                         <div key={`seen-${index}`} className='flex items-center gap-2'>
                           <UserAvatar src={user.user_image} alt={user.full_name} size='1' />
                           <span className='text-xs max-w-[120px] truncate block' title={user.full_name}>
@@ -165,7 +165,7 @@ export const MessageSeenStatus = React.memo(
                       {unseenByOthers?.length} Chưa xem
                     </div>
                     <div className='space-y-2 overflow-y-auto max-h-[350px] pr-2'>
-                      {unseenByOthers.map((user, index) => (
+                      {unseenByOthers?.map((user, index) => (
                         <div key={`unseen-${index}`} className='flex items-center gap-2'>
                           <UserAvatar src={user.user_image} alt={user.full_name} size='1' />
                           <span className='text-xs max-w-[120px] truncate block' title={user.full_name}>

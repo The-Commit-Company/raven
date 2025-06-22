@@ -351,7 +351,7 @@ const WorkflowTransitionOptions = ({
 
   return (
     <>
-      {transitions?.message.map((transition) => {
+      {transitions?.message?.map((transition) => {
         return (
           <DropdownMenu.Item key={transition.name} onClick={() => applyTransition(transition.action)}>
             <Text size='2' weight='medium'>

@@ -52,7 +52,7 @@ const VariableList = ({ doctype }: { doctype: string }) => {
       </HStack>
 
       <Stack>
-        {fields.map((field, index) => {
+        {fields?.map((field, index) => {
           return (
             <FieldRow key={field.id} field={field} index={index} update={update} remove={remove} doctype={doctype} />
           )
@@ -298,7 +298,7 @@ const ImportDoctypeVariables = ({
       return (
         childTableMeta.fields
           ?.filter((f) => f.reqd)
-          .map((f) => ({
+          ?.map((f) => ({
             ...getFieldInfoFromDocField(f, childTableMeta.name),
             child_table_name: fieldname
           })) || []
@@ -318,12 +318,12 @@ const ImportDoctypeVariables = ({
     const nonTableFields = requiredFields?.filter((f) => f.fieldtype !== 'Table' && f.fieldtype !== 'Table MultiSelect')
 
     // We need to check if the field already exists
-    const existingFields = fields.map((f) => f.fieldname)
+    const existingFields = fields?.map((f) => f.fieldname)
 
     const regularFieldsToBeAdded =
       nonTableFields
         ?.filter((f) => !existingFields.includes(f.fieldname ?? ''))
-        .map((f) => getFieldInfoFromDocField(f)) || []
+        ?.map((f) => getFieldInfoFromDocField(f)) || []
 
     const requiredTableFields = requiredFields?.filter(
       (f) => f.fieldtype === 'Table' || f.fieldtype === 'Table MultiSelect'

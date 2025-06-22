@@ -59,7 +59,7 @@ const AddUsers = () => {
   })
 
   const users = useContext(UserListContext)
-  const ravenUsersArray = users.enabledUsers.map((user) => user.name)
+  const ravenUsersArray = users.enabledUsers?.map((user) => user.name)
 
   const [selected, setSelected] = useState<string[]>([])
   const {
@@ -86,7 +86,7 @@ const AddUsers = () => {
           setSelected([])
         } else {
           setFailedUsers(res.message.failed_users)
-          setSelected((s) => s.filter((user) => res.message.failed_users.map((u) => u.name).includes(user)))
+          setSelected((s) => s.filter((user) => res.message.failed_users?.map((u) => u.name).includes(user)))
         }
       })
     }
@@ -152,7 +152,7 @@ const AddUsers = () => {
             <br />
             <br />
             <ol className='pl-4'>
-              {failedUsers.map((user, i) => (
+              {failedUsers?.map((user, i) => (
                 <li key={i}>
                   <Text as='span'>
                     <Strong>{user.full_name}</Strong> - {user.email}

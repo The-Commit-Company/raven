@@ -163,7 +163,7 @@ const MentionsList = () => {
 
   return (
     <ul role='list' className='list-none h-[380px] overflow-y-auto'>
-      {mentions.map((mention) => (
+      {mentions?.map((mention) => (
         <li key={mention.name} role='listitem' className='border-b border-gray-4 last:border-0'>
           <MentionItem mention={mention} />
         </li>
