@@ -77,11 +77,13 @@ export const CreateChannelButton = () => {
 const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) => void; isOpen: boolean }) => {
   const { workspaceID } = useParams()
 
-  const { data: canCreateChannel } = useFrappeGetCall<{ message: boolean }>(
-    'raven.api.workspaces.can_create_channel',
-    { workspace: workspaceID },
-    workspaceID ? undefined : null
-  )
+  // const { data: canCreateChannel } = useFrappeGetCall<{ message: boolean }>(
+  //   'raven.api.workspaces.can_create_channel',
+  //   { workspace: workspaceID },
+  //   workspaceID ? undefined : null
+  // )
+
+  // console.log(canCreateChannel);
 
   const { mutate } = useSWRConfig()
   const navigate = useNavigate()
@@ -128,8 +130,11 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
   const channelType = watch('type')
 
   const onSubmit = (data: ChannelCreationForm) => {
+    const cleanName = data.channel_name.trim()
+
     createDoc('Raven Channel', {
       ...data,
+      channel_name: cleanName,
       workspace: workspaceID
     }).then((result) => {
       if (result) {
@@ -160,11 +165,10 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
 
   const handleNameChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      setValue('channel_name', event.target.value?.toLowerCase().replace(' ', '-'))
+      setValue('channel_name', event.target.value)
     },
     [setValue]
   )
-
   const { channelIcon, header, helperText } = useMemo(() => {
     switch (channelType) {
       case 'Private':
@@ -221,11 +225,6 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
                     value: 3,
                     message: __('Channel name cannot be less than {0} characters.', ['3'])
                   },
-                  pattern: {
-                    // Cho phép chữ cái tiếng Việt, số và dấu gạch ngang
-                    value: /^[a-zA-ZÀ-ỹ0-9][a-zA-ZÀ-ỹ0-9-]*$/,
-                    message: __('Channel name can only contain letters, numbers and hyphens.')
-                  }
                 }}
                 render={({ field, fieldState: { error } }) => (
                   <TextField.Root
@@ -318,7 +317,7 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
                 {__('Hủy')}
               </Button>
             </Dialog.Close>
-            <Button type='submit' disabled={creatingChannel || !canCreateChannel?.message}>
+            <Button type='submit'>
               {creatingChannel && <Loader className='text-white' />}
               {creatingChannel ? __('Đang lưu') : __('Lưu')}
             </Button>
