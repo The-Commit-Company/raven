@@ -891,6 +891,14 @@ def retract_message(message_id: str):
     if time_difference.total_seconds() > 3 * 3600:
         frappe.throw(_("Bạn chỉ có thể thu hồi tin nhắn trong vòng 3 giờ sau khi gửi."))
 
+    last_message_id = frappe.db.get_value(
+        "Raven Message",
+        filters={"channel_id": message.channel_id ,"is_retracted": 0},
+        fieldname="name",
+        order_by="creation desc"
+    )
+    is_last_message = last_message_id == message.name
+
     message.db_set("is_retracted", 1)
     frappe.db.commit()
 
@@ -899,7 +907,8 @@ def retract_message(message_id: str):
         message={
             "message_id": message.name,
             "channel_id": message.channel_id,
-            "is_thread": message.is_thread
+            "is_thread": message.is_thread,
+			"is_last_message": is_last_message,
         },
         doctype="Raven Channel",
         docname=message.channel_id,
