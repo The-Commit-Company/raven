@@ -206,26 +206,22 @@ const MessageContent = ({
 
   return (
     <div className='flex-1 min-w-0 space-y-2'>
-      {/* Text Content */}
-      {message.content && (
-        <Text className='text-gray-900 dark:text-gray-100' size='2'>
-          <span className='font-semibold text-[13px]'>{user?.full_name}:</span>{' '}
-          <TextContent content={message.content} />
-        </Text>
-      )}
+      <Text className='text-gray-900 dark:text-gray-100' size='2'>
+        <span className='font-semibold text-[13px]'>{user?.full_name}:</span>{' '}
+        {message.is_retracted === 1 ? (
+          <Text as='span' size='2' color='gray'>
+            Tin nhắn đã được thu hồi
+          </Text>
+        ) : (
+          message.content && <TextContent content={message.content} />
+        )}
+      </Text>
 
       {/* YouTube Embed */}
       {isYoutube && embedUrl && <YouTubeEmbed embedUrl={embedUrl} />}
 
-      {/* Message Type Content */}
+      {/* Other message types (files, polls, etc.) */}
       <MessageContentRenderer message={message} user={user} />
-
-      {/* Channel Info
-      {channelName && (
-        <Text size='1' color='gray' className='block truncate text-gray-500 dark:text-gray-400'>
-          {channelName}
-        </Text>
-      )} */}
     </div>
   )
 }

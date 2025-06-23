@@ -8,6 +8,7 @@ from raven.api.raven_channel import create_direct_message_channel, get_peer_user
 from raven.utils import get_channel_member, is_channel_member, track_channel_visit
 import datetime
 from frappe.utils import now_datetime, get_datetime
+from pypika import Case
 
 @frappe.whitelist(methods=["POST"])
 def send_message(
@@ -269,7 +270,10 @@ def get_saved_messages():
 			raven_message.name,
 			raven_message.owner,
 			raven_message.creation,
-			raven_message.text,
+			Case()
+			.when(raven_message.is_retracted == 1, None)
+			.else_(raven_message.text)
+			.as_('text'),
 			raven_message.channel_id,
 			raven_message.file,
 			raven_message.message_type,
@@ -280,11 +284,13 @@ def get_saved_messages():
 			raven_message.thumbnail_height,
 			raven_message.is_bot_message,
 			raven_message.bot,
-			raven_message.content,
+			Case()
+			.when(raven_message.is_retracted == 1, None)
+			.else_(raven_message.content)
+			.as_('content'),
 			raven_message.is_retracted
 		)
 		.where(raven_message._liked_by.like(f"%{frappe.session.user}%"))
-		.where(raven_message.is_retracted == 0)
 		.where(
 			(raven_channel.type.isin(["Open", "Public"]))
 			| (raven_channel_member.user_id == frappe.session.user)
