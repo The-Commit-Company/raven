@@ -139,6 +139,22 @@ export const useSendMessage = (
     localStorage.setItem(STORAGE_KEY, JSON.stringify(current))
   }
 
+  const updatePendingState = (updater: (messages: PendingMessage[]) => PendingMessage[]) => {
+    setPendingMessages((prev) => {
+      const updatedChannel = updater(prev[channelID] || [])
+      const updated = {
+        ...prev,
+        [channelID]: updatedChannel
+      }
+      pendingQueueRef.current = {
+        ...pendingQueueRef.current,
+        [channelID]: updatedChannel.filter((m) => m.status === 'pending')
+      }
+      persistPendingMessages(updated)
+      return updated
+    })
+  }
+
   const updateSidebarMessage = (msg: RavenMessage, fallbackText?: string) => {
     updateLastMessageForChannel(channelID, {
       message_id: msg.name,
@@ -167,19 +183,7 @@ export const useSendMessage = (
     updateSidebarMessage(msgWithClientId)
     onMessageSent([msgWithClientId])
 
-    setPendingMessages((prev) => {
-      const updatedChannel = (prev[channelID] || []).filter((m) => m.id !== client_id)
-      const updated = {
-        ...prev,
-        [channelID]: updatedChannel
-      }
-      pendingQueueRef.current = {
-        ...pendingQueueRef.current,
-        [channelID]: updatedChannel.filter((m) => m.status === 'pending')
-      }
-      persistPendingMessages(updated)
-      return updated
-    })
+    updatePendingState((msgs) => msgs.filter((m) => m.id !== client_id))
   }
 
   const sendTextMessage = async (content: string, json?: any, sendSilently = false) => {
@@ -199,7 +203,6 @@ export const useSendMessage = (
       } catch (err) {
         console.error('sendFileMessages error', err)
 
-        // Push pending nếu có lỗi
         const pendingFileMessages: PendingMessage[] = fileMessages.map((msg) => ({
           id: createClientId(),
           content: msg.text || '',
@@ -210,18 +213,7 @@ export const useSendMessage = (
           json_content: msg.json
         }))
 
-        setPendingMessages((prev) => {
-          const updated = {
-            ...prev,
-            [channelID]: [...(prev[channelID] || []), ...pendingFileMessages]
-          }
-          pendingQueueRef.current = {
-            ...pendingQueueRef.current,
-            [channelID]: updated[channelID].filter((m) => m.status === 'pending')
-          }
-          persistPendingMessages(updated)
-          return updated
-        })
+        updatePendingState((msgs) => [...msgs, ...pendingFileMessages])
       }
     }
   }
@@ -244,24 +236,11 @@ export const useSendMessage = (
           createdAt: Date.now(),
           message_type: 'Text'
         }
-
-        setPendingMessages((prev) => {
-          const updated = {
-            ...prev,
-            [channelID]: [...(prev[channelID] || []), newPending]
-          }
-          pendingQueueRef.current = {
-            ...pendingQueueRef.current,
-            [channelID]: updated[channelID].filter((m) => m.status === 'pending')
-          }
-          persistPendingMessages(updated)
-          return updated
-        })
+        updatePendingState((msgs) => [...msgs, newPending])
       }
     }
   }
 
-  // Load pendingMessages từ localStorage khi mount
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY)
     if (saved) {
@@ -286,11 +265,12 @@ export const useSendMessage = (
         if (msg.message_type === 'Text') {
           await sendOneMessage(msg.content || '', msg.id)
         } else {
-          console.warn('Retry file message chưa làm flow cụ thể')
-          // Nếu muốn: re-upload file hoặc resend metadata ở đây
+          console.warn('Retrying file message...')
+          // Bạn có thể cải tiến đoạn này: nếu muốn gửi lại file thực sự
+          // Hoặc chỉ gửi metadata hoặc thông báo đã lỗi
         }
       } catch (err) {
-        console.error('retry sendMessage error', err)
+        console.error('retryPendingMessages error', err)
       }
     }
   }
@@ -302,8 +282,7 @@ export const useSendMessage = (
       if (msg.message_type === 'Text') {
         await sendOneMessage(msg.content || '', msg.id)
       } else {
-        console.warn('Send one file message chưa làm flow cụ thể')
-        // Nếu muốn: re-upload file hoặc resend metadata ở đây
+        console.warn('Retrying one file message...')
       }
     } catch (err) {
       console.error('sendOnePendingMessage error', err)
@@ -311,48 +290,20 @@ export const useSendMessage = (
   }
 
   const removePendingMessage = (id: string) => {
-    setPendingMessages((prev) => {
-      const updatedChannel = (prev[channelID] || []).filter((m) => m.id !== id)
-      const updated = {
-        ...prev,
-        [channelID]: updatedChannel
-      }
-      pendingQueueRef.current = {
-        ...pendingQueueRef.current,
-        [channelID]: updatedChannel.filter((m) => m.status === 'pending')
-      }
-      persistPendingMessages(updated)
-      return updated
-    })
+    updatePendingState((msgs) => msgs.filter((m) => m.id !== id))
   }
 
-  // Tự động đánh dấu error nếu pending quá 30s
   useEffect(() => {
     const interval = setInterval(() => {
       const now = Date.now()
-
-      setPendingMessages((prev) => {
-        const channelPending = prev[channelID] || []
-        const updatedChannelPending = channelPending.map((m) => {
+      updatePendingState((msgs) =>
+        msgs.map((m) => {
           if (m.status === 'pending' && now - m.createdAt > 30000) {
             return { ...m, status: 'error' }
           }
           return m
         })
-
-        const updated = {
-          ...prev,
-          [channelID]: updatedChannelPending
-        }
-
-        pendingQueueRef.current = {
-          ...pendingQueueRef.current,
-          [channelID]: updatedChannelPending.filter((m) => m.status === 'pending')
-        }
-        persistPendingMessages(updated)
-
-        return updated
-      })
+      )
     }, 5000)
 
     return () => clearInterval(interval)

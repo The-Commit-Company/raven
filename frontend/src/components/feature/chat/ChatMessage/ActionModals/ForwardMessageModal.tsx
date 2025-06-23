@@ -2,7 +2,11 @@ import { ErrorText } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
 import UsersOrChannelsDropdown from '@/components/feature/selectDropdowns/UsersOrChannelsDropdown'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
-import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import {
+  ChannelListItem,
+  useUpdateLastMessageDetails,
+  useUpdateLastMessageInChannelList
+} from '@/utils/channel/ChannelListProvider'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { Box, Button, Dialog, Flex, IconButton, VisuallyHidden } from '@radix-ui/themes'
 import { useFrappePostCall } from 'frappe-react-sdk'
@@ -34,21 +38,45 @@ const ForwardMessageModal = ({ onClose, message }: ForwardMessageModalProps) => 
 
   const { call, error, loading } = useFrappePostCall('raven.api.raven_message.forward_message')
 
+  const { updateLastMessageForChannel } = useUpdateLastMessageDetails()
+  const { updateLastMessageInChannelList } = useUpdateLastMessageInChannelList()
+
   const onSubmit = (data: ForwardMessageForm) => {
-    if (data.selected_options && data.selected_options?.length > 0) {
-      call({
-        message_receivers: data.selected_options,
-        forwarded_message: data.message
+  if (data.selected_options && data.selected_options.length > 0) {
+    call({
+      message_receivers: data.selected_options,
+      forwarded_message: data.message
+    })
+      .then(() => {
+        data.selected_options!.forEach((receiver) => {
+          let channelID = ''
+
+          if (receiver.type === 'User') {
+            channelID = (receiver as any).channel_id
+          } else {
+            channelID = receiver.name
+          }
+
+          const timestamp = new Date().toISOString()
+
+          const messageDetails = {
+            message_id: message.name,
+            content: message.text || '',
+            owner: message.owner
+          }
+
+          updateLastMessageInChannelList(channelID, timestamp, messageDetails)
+          updateLastMessageForChannel(channelID, messageDetails, timestamp)
+        })
+
+        toast.success('Chuyển tiếp tin nhắn thành công')
+        handleClose()
       })
-        .then(() => {
-          toast.success('Message forwarded successfully!')
-          handleClose()
-        })
-        .catch(() => {
-          toast.error('Failed to forward message')
-        })
-    }
+      .catch(() => {
+        toast.error('Chuyển tiếp tin nhắn thất bại')
+      })
   }
+}
 
   const handleClose = () => {
     reset()

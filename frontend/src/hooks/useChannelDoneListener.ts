@@ -7,6 +7,8 @@ export function useChannelDoneListener() {
   const setChannelIsDone = useSetAtom(channelIsDoneAtom)
 
   useFrappeEventListener('raven:channel_done_updated', ({ channel_id, is_done }) => {
+    console.log('alooo');
+    
     setChannelIsDone((prev) => ({
       ...prev,
       [channel_id]: is_done

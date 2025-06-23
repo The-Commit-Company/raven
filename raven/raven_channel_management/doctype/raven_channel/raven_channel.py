@@ -200,7 +200,7 @@ class RavenChannel(Document):
 		if self.is_direct_message == 1:
 			self.type = "Private"
 		if self.is_direct_message == 0:
-			self.channel_name = self.channel_name.strip().lower().replace(" ", "-")
+			self.channel_name = self.channel_name.strip()
 
 		if not self.is_direct_message and not self.workspace and not self.is_dm_thread:
 			workspaces = frappe.get_all("Raven Workspace")
