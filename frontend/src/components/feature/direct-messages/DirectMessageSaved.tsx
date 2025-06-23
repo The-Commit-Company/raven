@@ -18,7 +18,7 @@ import { useFrappePostCall } from 'frappe-react-sdk'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { BiChevronDown, BiChevronRight } from 'react-icons/bi'
 import { HiFlag } from 'react-icons/hi'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Message } from '../../../../../types/Messaging/Message'
 import { FileMessageBlock } from '../chat/ChatMessage/Renderers/FileMessage'
@@ -30,6 +30,7 @@ type MessageBoxProps = {
   message: Message & { workspace?: string }
   handleUnflagMessage: (message_id: string) => void
   channelName: string | null
+  messageId: string
 }
 
 type MessageContentRendererProps = {
@@ -229,10 +230,13 @@ const MessageContent = ({
   )
 }
 
-const DirectMessageSaved = ({ message, handleUnflagMessage }: MessageBoxProps) => {
+const DirectMessageSaved = ({ message, handleUnflagMessage, messageId }: MessageBoxProps) => {
   const navigate = useNavigate()
+  const location = useLocation()
+  const searchParams = new URLSearchParams(location.search)
   const { workspaceID } = useParams()
   const { channel_id } = message
+  const messageParams = searchParams.get('message_id')
 
   const users = useGetUserRecords()
   const user = useGetUser(message.is_bot_message && message.bot ? message.bot : message.owner)
@@ -261,8 +265,9 @@ const DirectMessageSaved = ({ message, handleUnflagMessage }: MessageBoxProps) =
 
   return (
     <article
-      className='py-2 px-3 group relative cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50
-                 transition-colors duration-150 ease-in-out rounded-lg mx-1'
+      className={`py-2 px-3 group relative cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50
+              transition-colors duration-150 ease-in-out rounded-lg mx-1
+              ${messageId === messageParams ? 'bg-gray-100 dark:bg-gray-800/80' : ''}`}
       onClick={handleNavigateToChannel}
     >
       <div className='flex items-start gap-3 w-full pr-8'>
@@ -306,7 +311,7 @@ const GroupedMessages = ({
         className='flex items-center justify-between px-3 py-1 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded'
         onClick={toggleCollapse}
       >
-        <Text className='text-sm text-gray-700 dark:text-gray-300'>{channelName}</Text>
+        <Text className='text-xs text-gray-700 dark:text-gray-300 truncate'>{channelName}</Text>
         {collapsed ? <BiChevronRight className='w-4 h-4' /> : <BiChevronDown className='w-4 h-4' />}
       </div>
 
@@ -323,6 +328,7 @@ const GroupedMessages = ({
               message={msg}
               handleUnflagMessage={handleUnflagMessage}
               channelName={channelName}
+              messageId={msg.name}
             />
           ))}
         </div>
