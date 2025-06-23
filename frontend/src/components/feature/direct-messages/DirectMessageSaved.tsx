@@ -9,6 +9,7 @@ import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { savedMessageStore, useSavedMessageStore } from '@/hooks/useSavedMessageStore'
 import { DMChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { getEmbedUrlFromYoutubeUrl, isValidUrl, isValidYoutubeUrl } from '@/utils/helpers'
+import { updateSavedCount } from '@/utils/updateSavedCount'
 import * as Popover from '@radix-ui/react-popover'
 import { Tooltip, TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip'
 import { Box, Text } from '@radix-ui/themes'
@@ -349,6 +350,7 @@ export const MessageSaved = () => {
       })
         .then(() => {
           savedMessageStore.removeMessage(message_id)
+          updateSavedCount(-1)
           toast('Message unsaved')
         })
         .catch((error) => {

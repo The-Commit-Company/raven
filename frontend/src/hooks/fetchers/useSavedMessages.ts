@@ -1,5 +1,5 @@
 import { useFrappeGetCall } from 'frappe-react-sdk'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Message } from '../../../../types/Messaging/Message'
 
 type SavedMessage = Message & { workspace?: string }
@@ -16,6 +16,12 @@ export function useSavedMessages() {
     if (!data) return []
     return data.message
   }, [data])
+
+  // Lưu tổng số tin nhắn vào localStorage
+  useEffect(() => {
+    const totalMessages = messages.length
+    localStorage.setItem('total_saved_messages', totalMessages.toString())
+  }, [messages])
 
   return {
     messages,

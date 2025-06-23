@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { savedMessageStore } from '@/hooks/useSavedMessageStore'
 import { UserContext } from '@/utils/auth/UserProvider'
+import { updateSavedCount } from '@/utils/updateSavedCount'
 import { ContextMenu, Flex } from '@radix-ui/themes'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { useContext } from 'react'
@@ -199,9 +200,11 @@ const SaveMessageAction = ({ message }: { message: Message }) => {
         if (isSaved) {
           toast('Message unsaved')
           savedMessageStore.removeMessage(message.name)
+          updateSavedCount(-1) // 👈 Giảm 1
         } else {
           savedMessageStore.pushMessage(response.message)
           toast.success('Message saved')
+          updateSavedCount(+1) // 👈 Tăng 1
         }
       })
       .catch((e) => {

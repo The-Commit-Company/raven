@@ -18,6 +18,7 @@ import {
 
 import { CreateLabelButton } from '@/components/feature/labels/CreateLabelModal'
 import LabelList from '@/components/feature/labels/LabelListSidebar'
+import { useSavedMessageCount } from '@/hooks/useSavedMessageCount'
 import { useEnrichedSortedChannels } from '@/utils/channel/ChannelAtom'
 import clsx from 'clsx'
 import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
@@ -175,6 +176,8 @@ export const FilterList = React.memo(({ onClose }: { onClose?: () => void }) => 
     [setTitle, setLabelID, resetMentions, onClose, channelID, workspaceID, navigate]
   )
 
+  const totalSaved = useSavedMessageCount()
+
   const renderedFilterItems = useMemo(() => {
     return filterItems.map((item, idx) => {
       const isActive = item.label === title
@@ -182,6 +185,7 @@ export const FilterList = React.memo(({ onClose }: { onClose?: () => void }) => 
 
       if (['Trò chuyện', 'Chưa đọc'].includes(item.label)) badgeCount = totalUnreadCountFiltered
       if (item.label === 'Nhắc đến') badgeCount = mentionUnreadCount
+      if (item.label === 'Đã gắn cờ') badgeCount = totalSaved as unknown as number
       if (item.label === 'Nhãn') badgeCount = labelChannelsUnreadCount
       if (item.label === 'Xong') badgeCount = totalDoneCount
 
