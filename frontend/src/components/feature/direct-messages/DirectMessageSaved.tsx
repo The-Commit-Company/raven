@@ -9,6 +9,7 @@ import { useIsUserActive } from '@/hooks/useIsUserActive'
 import { savedMessageStore, useSavedMessageStore } from '@/hooks/useSavedMessageStore'
 import { DMChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { getEmbedUrlFromYoutubeUrl, isValidUrl, isValidYoutubeUrl } from '@/utils/helpers'
+import { updateSavedCount } from '@/utils/updateSavedCount'
 import * as Popover from '@radix-ui/react-popover'
 import { Tooltip, TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip'
 import { Box, Text } from '@radix-ui/themes'
@@ -17,7 +18,7 @@ import { useFrappePostCall } from 'frappe-react-sdk'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { BiChevronDown, BiChevronRight } from 'react-icons/bi'
 import { HiFlag } from 'react-icons/hi'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Message } from '../../../../../types/Messaging/Message'
 import { FileMessageBlock } from '../chat/ChatMessage/Renderers/FileMessage'
@@ -29,6 +30,7 @@ type MessageBoxProps = {
   message: Message & { workspace?: string }
   handleUnflagMessage: (message_id: string) => void
   channelName: string | null
+  messageId: string
 }
 
 type MessageContentRendererProps = {
@@ -204,34 +206,33 @@ const MessageContent = ({
 
   return (
     <div className='flex-1 min-w-0 space-y-2'>
-      {/* Text Content */}
-      {message.content && (
-        <Text className='text-gray-900 dark:text-gray-100' size='2'>
-          <span className='font-semibold text-[13px]'>{user?.full_name}:</span>{' '}
-          <TextContent content={message.content} />
-        </Text>
-      )}
+      <Text className='text-gray-900 dark:text-gray-100' size='2'>
+        <span className='font-semibold text-[13px]'>{user?.full_name}:</span>{' '}
+        {message.is_retracted === 1 ? (
+          <Text as='span' size='2' color='gray'>
+            Tin nhắn đã được thu hồi
+          </Text>
+        ) : (
+          message.content && <TextContent content={message.content} />
+        )}
+      </Text>
 
       {/* YouTube Embed */}
       {isYoutube && embedUrl && <YouTubeEmbed embedUrl={embedUrl} />}
 
-      {/* Message Type Content */}
+      {/* Other message types (files, polls, etc.) */}
       <MessageContentRenderer message={message} user={user} />
-
-      {/* Channel Info
-      {channelName && (
-        <Text size='1' color='gray' className='block truncate text-gray-500 dark:text-gray-400'>
-          {channelName}
-        </Text>
-      )} */}
     </div>
   )
 }
 
-const DirectMessageSaved = ({ message, handleUnflagMessage }: MessageBoxProps) => {
+const DirectMessageSaved = ({ message, handleUnflagMessage, messageId }: MessageBoxProps) => {
   const navigate = useNavigate()
+  const location = useLocation()
+  const searchParams = new URLSearchParams(location.search)
   const { workspaceID } = useParams()
   const { channel_id } = message
+  const messageParams = searchParams.get('message_id')
 
   const users = useGetUserRecords()
   const user = useGetUser(message.is_bot_message && message.bot ? message.bot : message.owner)
@@ -260,8 +261,9 @@ const DirectMessageSaved = ({ message, handleUnflagMessage }: MessageBoxProps) =
 
   return (
     <article
-      className='py-2 px-3 group relative cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50
-                 transition-colors duration-150 ease-in-out rounded-lg mx-1'
+      className={`py-2 px-3 group relative cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50
+              transition-colors duration-150 ease-in-out rounded-lg mx-1
+              ${messageId === messageParams ? 'bg-gray-100 dark:bg-gray-800/80' : ''}`}
       onClick={handleNavigateToChannel}
     >
       <div className='flex items-start gap-3 w-full pr-8'>
@@ -305,7 +307,7 @@ const GroupedMessages = ({
         className='flex items-center justify-between px-3 py-1 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded'
         onClick={toggleCollapse}
       >
-        <Text className='text-sm text-gray-700 dark:text-gray-300'>{channelName}</Text>
+        <Text className='text-xs text-gray-700 dark:text-gray-300 truncate'>{channelName}</Text>
         {collapsed ? <BiChevronRight className='w-4 h-4' /> : <BiChevronDown className='w-4 h-4' />}
       </div>
 
@@ -322,6 +324,7 @@ const GroupedMessages = ({
               message={msg}
               handleUnflagMessage={handleUnflagMessage}
               channelName={channelName}
+              messageId={msg.name}
             />
           ))}
         </div>
@@ -349,6 +352,7 @@ export const MessageSaved = () => {
       })
         .then(() => {
           savedMessageStore.removeMessage(message_id)
+          updateSavedCount(-1)
           toast('Message unsaved')
         })
         .catch((error) => {

@@ -1,9 +1,8 @@
 import datetime
-
+from pypika import Case
 import frappe
 from frappe import _
 from frappe.query_builder import Order
-
 from raven.utils import track_channel_visit
 
 
@@ -32,7 +31,10 @@ def get_messages(channel_id: str, limit: int = 20, base_message: str | None = No
 			message.owner,
 			message.creation,
 			message.modified,
-			message.text,
+		    Case()
+			.when(message.is_retracted == 1, None)
+			.else_(message.text)
+			.as_('text'),
 			message.file,
 			message.message_type,
 			message.message_reactions,
@@ -46,7 +48,10 @@ def get_messages(channel_id: str, limit: int = 20, base_message: str | None = No
 			message.link_doctype,
 			message.link_document,
 			message.replied_message_details,
-			message.content,
+			Case()
+			.when(message.is_retracted == 1, None)
+			.else_(message.content)
+			.as_('content'),
 			message.is_edited,
 			message.is_forwarded,
 			message.poll_id,

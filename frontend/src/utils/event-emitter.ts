@@ -18,6 +18,9 @@ export interface EventBusEvents {
     source: 'input' | 'textarea' | 'editor' | 'click'
     timestamp: number
   }
+  'saved:count_changed': {
+    newCount: number
+  }
 }
 
 class TypedEventBus extends EventEmitter<EventBusEvents> {}
