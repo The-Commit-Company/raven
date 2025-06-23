@@ -37,7 +37,12 @@ export function formatLastMessageParts(
   }
 
   const isCurrentUser = raw.owner === currentUser
-  const senderLabel = isCurrentUser ? 'Bạn' : channel.is_direct_message ? '' : senderName || raw.owner || 'Người dùng'
+  let senderLabel = ''
+  if (raw.content?.includes('thu hồi')) {
+    senderLabel = ''
+  } else {
+    senderLabel = isCurrentUser ? 'Bạn' : channel.is_direct_message ? '' : senderName || raw.owner || 'Người dùng'
+  }
 
   let contentLabel = ''
 
