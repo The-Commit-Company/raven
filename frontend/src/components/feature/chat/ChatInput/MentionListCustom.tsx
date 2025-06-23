@@ -7,16 +7,18 @@ import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
 import { getTimePassed } from '@/utils/dateConversions'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { Box, Flex, Text } from '@radix-ui/themes'
-import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
+import { FrappeConfig, FrappeContext, useFrappePostCall } from 'frappe-react-sdk'
 import parse from 'html-react-parser'
 import React, { useCallback, useContext, useEffect, useMemo, useRef } from 'react'
-import { BiMessageAltDetail } from 'react-icons/bi'
+import { BiHide, BiMessageAltDetail } from 'react-icons/bi'
 import { LuAtSign } from 'react-icons/lu'
 import { Link, useParams } from 'react-router-dom'
+import { toast } from 'sonner'
 import useSWRInfinite from 'swr/infinite'
 
 interface MentionObject {
   name: string
+  mention_id: string
   channel_id: string
   channel_type: RavenChannel['type']
   channel_name: string
@@ -34,6 +36,7 @@ const PAGE_SIZE = 10
 const MentionsList: React.FC = () => {
   const { call } = useContext(FrappeContext) as FrappeConfig
   const { workspaceID } = useParams<{ workspaceID: string }>()
+  const [hiddenMentionIds, setHiddenMentionIds] = React.useState<Set<string>>(new Set())
 
   const getKey = useCallback((pageIndex: number, prev: { message: MentionObject[] } | null) => {
     if (prev && !prev.message?.length) return null
@@ -73,6 +76,14 @@ const MentionsList: React.FC = () => {
     return () => obs.disconnect()
   }, [loadMore])
 
+  const handleHideMention = useCallback((id: string) => {
+    setHiddenMentionIds((prev) => {
+      const next = new Set(prev)
+      next.add(id)
+      return next
+    })
+  }, [])
+
   if (isEmpty) {
     return (
       <Flex direction='column' align='center' justify='center' className='h-[320px] px-6 text-center'>
@@ -89,11 +100,13 @@ const MentionsList: React.FC = () => {
 
   return (
     <ul role='list' className='list-none h-full overflow-y-auto scrollbar-hide'>
-      {mentions?.map((mention) => (
-        <li key={mention.name} className='border-b border-gray-4 last:border-0'>
-          <MentionItem mention={mention} workspaceID={workspaceID} />
-        </li>
-      ))}
+      {mentions
+        ?.filter((m) => !hiddenMentionIds.has(m.name))
+        .map((mention) => (
+          <li key={mention.name} className='border-b border-gray-4 last:border-0'>
+            <MentionItem mention={mention} workspaceID={workspaceID} onHide={handleHideMention} />
+          </li>
+        ))}
 
       <div ref={observerRef} className='h-4'>
         {isReachingEnd ? (
@@ -114,7 +127,12 @@ const MentionsList: React.FC = () => {
 
 export default MentionsList
 
-const MentionItem: React.FC<{ mention: MentionObject; workspaceID?: string }> = ({ mention, workspaceID }) => {
+const MentionItem: React.FC<{ mention: MentionObject; workspaceID?: string; onHide: (id: string) => void }> = ({
+  mention,
+  workspaceID,
+  onHide
+}) => {
+  const { call, loading: isLoading } = useFrappePostCall('raven.api.mentions.toggle_mention_hidden')
   const to = useMemo(() => {
     const w = mention.workspace ?? workspaceID
     if (mention.is_thread) {
@@ -123,10 +141,34 @@ const MentionItem: React.FC<{ mention: MentionObject; workspaceID?: string }> = 
     return { pathname: `/${w}/${mention.channel_id}`, search: `message_id=${mention.name}` }
   }, [mention, workspaceID])
 
+  const handleClickHide = () => {
+    call({ mention_id: mention.mention_id })
+      .then(() => {
+        onHide(mention.name)
+      })
+      .catch((err) => {
+        toast.error(err.message)
+      })
+  }
+
   return (
-    <Link to={to} className='block py-3 px-4 hover:bg-gray-2 dark:hover:bg-gray-4'>
-      <ChannelContext mention={mention} />
-    </Link>
+    <div className='relative group'>
+      <Link to={to} className='block py-3 px-4 pr-8 hover:bg-gray-2 dark:hover:bg-gray-4'>
+        <ChannelContext mention={mention} />
+      </Link>
+
+      <button
+        onClick={handleClickHide}
+        disabled={isLoading}
+        title='Ẩn lượt nhắc này'
+        className='absolute right-1 bottom-1 opacity-0 group-hover:opacity-100
+               bg-gray-3 dark:bg-gray-6 hover:bg-red-4 dark:hover:bg-red-6
+               text-gray-12 dark:text-gray-2 p-1 rounded-full transition-all duration-200
+               shadow-sm hover:shadow-md cursor-pointer'
+      >
+        <BiHide size={14} />
+      </button>
+    </div>
   )
 }
 

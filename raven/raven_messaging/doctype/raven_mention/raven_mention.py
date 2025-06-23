@@ -14,6 +14,7 @@ class RavenMention(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		is_hidden: DF.Check
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data

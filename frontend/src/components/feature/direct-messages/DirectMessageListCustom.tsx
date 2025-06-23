@@ -17,6 +17,7 @@ import { useFormattedLastMessageParts } from '@/utils/channel/useFormatLastMessa
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { useSidebarMode } from '@/utils/layout/sidebar'
 import { truncateText } from '@/utils/textUtils/truncateText'
+import clsx from 'clsx'
 import { useAtomValue } from 'jotai'
 import { HiCheck } from 'react-icons/hi'
 import { SidebarBadge, SidebarGroup, SidebarIcon } from '../../layout/Sidebar/SidebarComp'
@@ -27,8 +28,6 @@ import ChatbotAIStream from '../chatbot-ai/ChatbotAIStream'
 import LabelByUserList from '../labels/LabelByUserList'
 import ThreadsCustom from '../threads/ThreadsCustom'
 import { MessageSaved } from './DirectMessageSaved'
-import clsx from 'clsx'
-
 
 type UnifiedChannel = ChannelWithUnreadCount | DMChannelWithUnreadCount | any
 
@@ -79,7 +78,7 @@ export const DirectMessageItemList = ({ channel_list }: any) => {
   const getFilteredChannels = (): DMChannelWithUnreadCount[] => {
     switch (title) {
       case 'Trò chuyện nhóm':
-        return channel_list.filter((c: { group_type: string }) => c.group_type === 'channel' )
+        return channel_list.filter((c: { group_type: string }) => c.group_type === 'channel')
       case 'Trò chuyện 1-1':
         return channel_list.filter((c: { group_type: string }) => c.group_type === 'dm')
       case 'Chưa đọc':
