@@ -9,10 +9,10 @@ import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { Box, Flex, Text } from '@radix-ui/themes'
 import { FrappeConfig, FrappeContext, useFrappePostCall } from 'frappe-react-sdk'
 import parse from 'html-react-parser'
-import React, { useCallback, useContext, useEffect, useMemo, useRef } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { BiHide, BiMessageAltDetail } from 'react-icons/bi'
 import { LuAtSign } from 'react-icons/lu'
-import { Link, useLocation, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import useSWRInfinite from 'swr/infinite'
 
@@ -25,6 +25,7 @@ interface MentionObject {
   workspace?: string
   is_thread: 0 | 1
   is_direct_message: 0 | 1
+  is_read: 0 | 1
   creation: string
   message_type: RavenMessage['message_type']
   owner: string
@@ -141,7 +142,14 @@ const MentionItem: React.FC<{
   workspaceID?: string
   onHide: (id: string) => void
 }> = ({ mention, workspaceID, onHide, messageParams }) => {
+  const [isRead, setIsRead] = useState(mention.is_read === 1)
+
   const { call, loading: isLoading } = useFrappePostCall('raven.api.mentions.toggle_mention_hidden')
+
+  const { call: markAsRead } = useFrappePostCall('raven.api.mentions.mark_mention_as_read')
+
+  const navigate = useNavigate()
+
   const to = useMemo(() => {
     const w = mention.workspace ?? workspaceID
     if (mention.is_thread) {
@@ -160,14 +168,27 @@ const MentionItem: React.FC<{
       })
   }
 
+  const handleClickMention = () => {
+    if (!isRead) {
+      markAsRead({ mention_id: mention.mention_id }).catch(() => {
+        console.warn('Mark as read failed')
+      })
+      setIsRead(true)
+    }
+
+    navigate(to)
+  }
+
   return (
     <div className='relative group'>
-      <Link
-        to={to}
-        className={`block py-3 px-4 pr-8 hover:bg-gray-2 dark:hover:bg-gray-4         ${mention.name === messageParams ? 'bg-gray-100 dark:bg-gray-800/80' : ''}`}
+      <Box
+        onClick={handleClickMention}
+        className={`block py-3 px-4 pr-8 hover:bg-gray-2 dark:hover:bg-gray-4 cursor-pointer ${mention.name === messageParams ? 'bg-gray-100 dark:bg-gray-800/80' : ''}`}
       >
         <ChannelContext mention={mention} />
-      </Link>
+
+        {!isRead && <span className='absolute top-3.5 right-2 w-2.5 h-2.5 rounded-full bg-blue-500 shadow-md' />}
+      </Box>
 
       <button
         onClick={handleClickHide}
@@ -204,7 +225,7 @@ const ChannelContext: React.FC<{ mention: MentionObject }> = ({ mention }) => {
             <HStack className='ml-auto' gap='0.5' align='center'>
               <ChannelIcon type={mention.channel_type} size={14} />
               <Text size='1' weight='medium'>
-                {mention.channel_name}
+                {mention.channel_name.length > 10 ? `${mention.channel_name.slice(0, 10)}...` : mention.channel_name}
               </Text>
             </HStack>
           )}

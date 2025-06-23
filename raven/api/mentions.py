@@ -35,7 +35,8 @@ def get_mentions(limit: int = 10, start: int = 0):
 			message.message_type,
 			message.owner,
 			message.text,
-			mention.is_hidden
+			mention.is_hidden,
+			mention.is_read
 		)
 		.left_join(message)
 		.on(mention.parent == message.name)
@@ -114,29 +115,38 @@ def get_unread_mention_count():
 
 @frappe.whitelist(methods=["POST"])
 def toggle_mention_hidden():
-    """
-    Toggle the 'is_hidden' status of a Raven Mention record
-    Requires: mention_id in JSON body
-    """
     data = frappe.request.json or {}
     mention_id = data.get("mention_id")
 
     if not mention_id:
         frappe.throw("Missing mention_id")
 
-    # Lấy trạng thái hiện tại
     current_status = frappe.db.get_value("Raven Mention", mention_id, "is_hidden")
     if current_status is None:
         frappe.throw(f"Mention {mention_id} not found")
 
-    # Toggle giá trị
     new_status = 0 if current_status else 1
 
-    # Cập nhật
     frappe.db.set_value("Raven Mention", mention_id, "is_hidden", new_status)
 
     return {
         "status": "success",
         "mention_id": mention_id,
         "is_hidden": new_status
+    }
+
+@frappe.whitelist(methods=["POST"])
+def mark_mention_as_read():
+    data = frappe.request.json or {}
+    mention_id = data.get("mention_id")
+
+    if not mention_id:
+        frappe.throw("Missing mention_id")
+
+    frappe.db.set_value("Raven Mention", mention_id, "is_read", 1)
+
+    return {
+        "status": "success",
+        "mention_id": mention_id,
+        "is_read": 1
     }

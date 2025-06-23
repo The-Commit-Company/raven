@@ -7,7 +7,8 @@
  "engine": "InnoDB",
  "field_order": [
   "user",
-  "is_hidden"
+  "is_hidden",
+  "is_read"
  ],
  "fields": [
   {
@@ -22,12 +23,18 @@
    "fieldname": "is_hidden",
    "fieldtype": "Check",
    "label": "Is Hidden"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_read",
+   "fieldtype": "Check",
+   "label": "Is Read"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-06-23 15:33:08.552996",
+ "modified": "2025-06-23 16:35:48.708294",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Mention",
