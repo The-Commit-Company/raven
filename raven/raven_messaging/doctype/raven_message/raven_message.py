@@ -276,7 +276,6 @@ class RavenMessage(Document):
 			frappe.qb.update(raven_channel)
 			.where(raven_channel.name == self.channel_id)
 			.set(raven_channel.last_message_timestamp, self.creation)
-			.set(raven_channel.last_message_details, message_details)
 		)
 		query.run()
 
