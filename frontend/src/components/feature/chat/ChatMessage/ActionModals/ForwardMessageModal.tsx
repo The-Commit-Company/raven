@@ -2,7 +2,7 @@ import { ErrorText } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
 import UsersOrChannelsDropdown from '@/components/feature/selectDropdowns/UsersOrChannelsDropdown'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
-import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { ChannelListItem, useUpdateLastMessageDetails, useUpdateLastMessageInChannelList } from '@/utils/channel/ChannelListProvider'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { Box, Button, Dialog, Flex, IconButton, VisuallyHidden } from '@radix-ui/themes'
 import { useFrappePostCall } from 'frappe-react-sdk'
@@ -34,6 +34,9 @@ const ForwardMessageModal = ({ onClose, message }: ForwardMessageModalProps) => 
 
   const { call, error, loading } = useFrappePostCall('raven.api.raven_message.forward_message')
 
+  const { updateLastMessageForChannel } = useUpdateLastMessageDetails()
+  const { updateLastMessageInChannelList } = useUpdateLastMessageInChannelList()
+
   const onSubmit = (data: ForwardMessageForm) => {
     if (data.selected_options && data.selected_options?.length > 0) {
       call({
@@ -41,6 +44,24 @@ const ForwardMessageModal = ({ onClose, message }: ForwardMessageModalProps) => 
         forwarded_message: data.message
       })
         .then(() => {
+          // Sau khi forward xong:
+          data?.selected_options.forEach((receiver) => {
+            const channelID = receiver.type === 'User' ? receiver?.channel_id : receiver?.name
+            const timestamp = new Date().toISOString()
+
+            const messageDetails = {
+              message_id: message.name,
+              content: message.text || '',
+              owner: message.owner
+            }
+
+            // Update cho sidebar (list channel)
+            updateLastMessageInChannelList(channelID, timestamp, messageDetails)
+
+            // Update cho channel đang active
+            updateLastMessageForChannel(channelID, messageDetails, timestamp)
+          })
+
           toast.success('Message forwarded successfully!')
           handleClose()
         })
@@ -111,5 +132,6 @@ const ForwardMessageModal = ({ onClose, message }: ForwardMessageModalProps) => 
     </FormProvider>
   )
 }
+
 
 export default ForwardMessageModal

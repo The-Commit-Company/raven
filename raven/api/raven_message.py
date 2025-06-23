@@ -851,36 +851,103 @@ def forward_message(message_receivers, forwarded_message):
 
 	return "messages forwarded"
 
-
 def add_forwarded_message_to_channel(channel_id, forwarded_message):
-	"""
-	Forward a message to a channel - copy over the message,
-	change the owner to the current user and timestamp to now,
-	mark it as forwarded
-	"""
-	# If the forwarded message has a file, we need to remove the "fid" from the URL - this is done so that the new user can access the file
-	if forwarded_message.get("file"):
-		forwarded_message["file"] = forwarded_message["file"].split("?")[0]
-	doc = frappe.get_doc(
-		{
-			"doctype": "Raven Message",
-			**forwarded_message,
-			"channel_id": channel_id,
-			"name": None,
-			"owner": frappe.session.user,
-			"creation": frappe.utils.now_datetime(),
-			"modified": frappe.utils.now_datetime(),
-			"is_continuation": 0,
-			"is_edited": 0,
-			"is_reply": 0,
-			"is_forwarded": 1,
-			"is_thread": 0,
-			"replied_message_details": None,
-			"message_reactions": None,
-		}
-	)
-	doc.insert()
-	return "message forwarded"
+    """
+    Forward a message to a channel - copy over the message,
+    change the owner to the current user and timestamp to now,
+    mark it as forwarded
+    """
+    # Thời gian hiện tại dùng đồng nhất
+    now_ts = frappe.utils.now_datetime()
+
+    # Nếu có file → bỏ ?fid
+    if forwarded_message.get("file"):
+        forwarded_message["file"] = forwarded_message["file"].split("?")[0]
+
+    # Tạo bản sao message mới
+    doc = frappe.get_doc(
+        {
+            "doctype": "Raven Message",
+            **forwarded_message,
+            "channel_id": channel_id,
+            "name": None,
+            "owner": frappe.session.user,
+            "creation": now_ts,
+            "modified": now_ts,
+            "is_continuation": 0,
+            "is_edited": 0,
+            "is_reply": 0,
+            "is_forwarded": 1,
+            "is_thread": 0,
+            "replied_message_details": None,
+            "message_reactions": None,
+        }
+    )
+    doc.insert()
+
+    # ✅ Batch RESET is_done = 0 (1 query)
+    done_members = frappe.get_all(
+        "Raven Channel Member",
+        filters={"channel_id": channel_id, "is_done": 1},
+        fields=["user_id"]
+    )
+
+    if done_members:
+        frappe.db.sql("""
+            UPDATE `tabRaven Channel Member`
+            SET is_done = 0
+            WHERE channel_id = %s AND is_done = 1
+        """, (channel_id,))
+
+        for member in done_members:
+            frappe.publish_realtime(
+                event="raven:channel_done_updated",
+                message={"channel_id": channel_id, "is_done": 0},
+                user=member.user_id,
+                after_commit=True
+            )
+
+    # ✅ Chuẩn bị nội dung hiển thị
+    message_type = doc.message_type or "Text"
+    content = doc.text or "tin nhắn forward"  # fallback tránh rỗng
+
+    if message_type in ["File", "Image"] and doc.json:
+        json_content = frappe.parse_json(doc.json)
+        filename = json_content.get("filename") or json_content.get("name") or "Tập tin"
+        content = filename
+
+    last_message = {
+        "message_id": doc.name,
+        "content": content,
+        "owner": doc.owner,
+        "message_type": message_type,
+        "is_bot_message": 0,
+        "bot": None,
+    }
+
+    # ✅ Update Raven Channel
+    frappe.db.set_value("Raven Channel", channel_id, {
+        "last_message_details": frappe.as_json(last_message),
+        "last_message_timestamp": now_ts
+    })
+
+    # ✅ Bắn realtime new_message cho các user khác (trừ sender)
+    members = frappe.get_all("Raven Channel Member", filters={"channel_id": channel_id}, pluck="user_id")
+    other_members = [user for user in members if user != frappe.session.user]
+
+    for member in other_members:
+        frappe.publish_realtime(
+            event="new_message",
+            message={
+                "channel_id": channel_id,
+                "user": frappe.session.user,
+                "seen_at": now_ts,
+            },
+            user=member
+        )
+        
+    return "message forwarded"
+
 
 @frappe.whitelist()
 def retract_message(message_id: str):
