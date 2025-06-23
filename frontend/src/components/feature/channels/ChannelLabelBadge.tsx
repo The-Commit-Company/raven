@@ -19,7 +19,7 @@ const ChannelLabelBadge = ({
   onRemoveLocally?: (channelID: string) => void
 }) => {
   const { removeChannel, loading: isLoading } = useRemoveChannelFromLabel()
-  const { removeLabelFromChannel, updateChannelLabels } = useUpdateChannelLabels()
+  const { updateChannelLabels } = useUpdateChannelLabels()
   const { mutate } = useSWRConfig()
   const setRefreshKey = useSetAtom(refreshLabelListAtom)
 
@@ -82,12 +82,7 @@ const ChannelLabelBadge = ({
             <Button className='cursor-pointer' variant='soft' onClick={() => setShowModal(false)}>
               Huỷ
             </Button>
-            <Button
-              className='cursor-pointer'
-              color='red'
-              onClick={handleConfirmRemove}
-              disabled={isLoading}
-            >
+            <Button className='cursor-pointer' color='red' onClick={handleConfirmRemove} disabled={isLoading}>
               {isLoading ? 'Đang xoá...' : 'Xoá'}
             </Button>
           </Flex>

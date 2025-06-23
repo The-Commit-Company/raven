@@ -3,7 +3,7 @@ import { PageHeader } from '@/components/layout/Heading/PageHeader'
 import useIsUserOnLeave from '@/hooks/fetchers/useIsUserOnLeave'
 import { useGetUser } from '@/hooks/useGetUser'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
-import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { useIsDesktop, useIsTablet } from '@/hooks/useMediaQuery'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { DMChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { replaceCurrentUserFromDMChannelName } from '@/utils/operations'
@@ -20,6 +20,7 @@ interface DMChannelHeaderProps {
 
 export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
   const { currentUser } = useContext(UserContext)
+  const isTablet = useIsTablet()
 
   const peerUserId = channelData.peer_user_id
   const peerUser = useGetUser(peerUserId || '')
@@ -63,8 +64,8 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
           <div className='flex flex-wrap items-center gap-2'>
             <span>{userName}</span>
 
-            {/* ✅ Hiển thị nhãn user_labels */}
-            {Array.isArray(channelData.user_labels) &&
+            {!isTablet &&
+              Array.isArray(channelData.user_labels) &&
               channelData.user_labels.map((label) => (
                 <ChannelLabelBadge
                   key={label.label_id}

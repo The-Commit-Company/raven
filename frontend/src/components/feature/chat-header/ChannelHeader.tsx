@@ -1,8 +1,8 @@
 import { PageHeader } from '@/components/layout/Heading/PageHeader'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
-import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { ChannelListItem, UserLabel } from '@/utils/channel/ChannelListProvider'
 import { EditChannelNameButton } from '../channel-details/rename-channel/EditChannelNameButton'
-import { Badge, Flex, Heading } from '@radix-ui/themes'
+import { Flex, Heading } from '@radix-ui/themes'
 import ChannelHeaderMenu from './ChannelHeaderMenu'
 import { ViewChannelMemberAvatars } from './ViewChannelMemberAvatars'
 import { BiChevronLeft } from 'react-icons/bi'
@@ -11,14 +11,18 @@ import { ViewPinnedMessagesButton } from '../pinned-messages/ViewPinnedMessagesB
 import ViewChannelDetailsModal from '../channels/ViewChannelDetailsModal'
 import { useState } from 'react'
 import ChannelLabelBadge from '../channels/ChannelLabelBadge'
+import { useIsTablet } from '@/hooks/useMediaQuery'
 
 interface ChannelHeaderProps {
   channelData: ChannelListItem
 }
-
 export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
   const lastWorkspace = localStorage.getItem('ravenLastWorkspace')
   const [open, setOpen] = useState(false)
+
+  const isTablet = useIsTablet()
+
+  const userLabels = channelData.user_labels as UserLabel[]
 
   return (
     <PageHeader>
@@ -44,8 +48,9 @@ export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
                 <span>{channelData.channel_name}</span>
 
                 {/* ✅ Hiển thị nhãn user_labels */}
-                {Array.isArray(channelData.user_labels) &&
-                  channelData.user_labels.map((label) => (
+                {!isTablet &&
+                  Array.isArray(userLabels) &&
+                  userLabels.map((label) => (
                     <ChannelLabelBadge
                       key={label.label_id}
                       channelID={channelData.name}

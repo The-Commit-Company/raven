@@ -240,15 +240,14 @@ export const DirectMessageItemElement = ({ channel }: { channel: UnifiedChannel 
               if (isDesktop) {
                 e.stopPropagation()
               }
+              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
               isChannelDone ? markAsNotDone(channel.name) : markAsDone(channel.name)
             }}
             className='absolute z-99 right-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded-full bg-gray-200 hover:bg-gray-300 h-[20px] w-[20px] flex items-center justify-center cursor-pointer'
             title={isChannelDone ? 'Chưa xong' : 'Đã xong'}
           >
             <HiCheck
-              className={`h-3 w-3 transition-colors duration-150 ${
-                isChannelDone ? 'text-green-600' : 'text-gray-800'
-              }`}
+              className={`h-3 w-3 transition-colors duration-150 ${isChannelDone ? 'text-green-600' : 'text-gray-800'}`}
             />
           </button>
         </Tooltip>

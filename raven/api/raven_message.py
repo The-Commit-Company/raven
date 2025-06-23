@@ -71,19 +71,19 @@ def send_message(
         filename = json_content.get("filename") or json_content.get("name") or "Tập tin"
         content = filename
 
-    # last_message = {
-    #     "message_id": doc.name,
-    #     "content": content,
-    #     "owner": doc.owner,
-    #     "message_type": message_type,
-    #     "is_bot_message": 0,
-    #     "bot": None,
-    # }
+    last_message = {
+        "message_id": doc.name,
+        "content": content,
+        "owner": doc.owner,
+        "message_type": message_type,
+        "is_bot_message": 0,
+        "bot": None,
+    }
 
-    # frappe.db.set_value("Raven Channel", channel_id, {
-    #     "last_message_details": frappe.as_json(last_message),
-    #     "last_message_timestamp": doc.creation
-    # })
+    frappe.db.set_value("Raven Channel", channel_id, {
+        "last_message_details": frappe.as_json(last_message),
+        "last_message_timestamp": doc.creation
+    })
 
     # ✅ Gửi sự kiện realtime tới các user khác trong channel (không gửi cho người gửi)
     members = frappe.get_all("Raven Channel Member", filters={"channel_id": channel_id}, pluck="user_id")

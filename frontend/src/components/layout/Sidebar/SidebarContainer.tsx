@@ -35,9 +35,6 @@ export const useMentionUnreadCount = () => {
     }
   )
 
-  console.log(mentionsCount);
-  
-
   useFrappeEventListener('raven_mention', () => {
     mutate()
   })

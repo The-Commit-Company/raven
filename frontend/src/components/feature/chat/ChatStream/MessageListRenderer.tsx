@@ -18,6 +18,7 @@ interface MessageItemRendererProps {
   setReactionMessage: (message: Message) => void
   seenUsers: any
   channel: any
+  isPending?: boolean
 }
 
 export const MessageItemRenderer = memo(
@@ -33,7 +34,8 @@ export const MessageItemRenderer = memo(
     setDeleteMessage,
     setReactionMessage,
     seenUsers,
-    channel
+    channel,
+    isPending
   }: MessageItemRendererProps) => {
     // Memoize the message key for better performance
     const messageKey = useMemo(() => `${message.name}_${message.modified}`, [message.name, message.modified])
@@ -72,6 +74,7 @@ export const MessageItemRenderer = memo(
           setReactionMessage={setReactionMessage}
           seenUsers={seenUsers}
           channel={channel}
+          isPending={isPending}
         />
       </div>
     )
