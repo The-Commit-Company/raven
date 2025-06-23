@@ -84,7 +84,7 @@ export const CreateLabelButton = () => {
           title='Tạo nhãn'
           className='transition-all ease-ease text-gray-10 bg-transparent hover:bg-gray-3 hover:text-gray-12'
         >
-          <FiPlus size='16' />
+          <FiPlus size='14' />
         </IconButton>
       </DrawerTrigger>
       <DrawerContent>
@@ -184,16 +184,16 @@ export const CreateLabelContent = ({ setIsOpen }: { isOpen: boolean; setIsOpen: 
           />
         </Box>
 
-        <Flex justify='between' align='center'>
+        <Flex justify='end' align='center'>
           <Flex gap='3' align='center'>
-            <Button className='cursor-pointer' type='submit' size='2' disabled={loading}>
-              Tạo
-            </Button>
             <Dialog.Close>
-              <Button className='cursor-pointer' variant='ghost' type='button' size='2'>
+              <Button className='cursor-pointer' variant='soft' type='button' size='2'>
                 Hủy bỏ
               </Button>
             </Dialog.Close>
+            <Button className='cursor-pointer' type='submit' size='2' disabled={loading}>
+              Tạo
+            </Button>
           </Flex>
         </Flex>
       </form>

@@ -57,6 +57,7 @@ interface MessageBlockProps {
   seenUsers: SeenUser[]
   channel: any
   isThinking?: boolean
+  isPending?: boolean
 }
 
 export const MessageItem = React.memo(
@@ -73,7 +74,8 @@ export const MessageItem = React.memo(
     showThreadButton = true,
     seenUsers,
     channel,
-    isThinking = false
+    isThinking = false,
+    isPending
   }: MessageBlockProps) => {
     const [isEmojiPickerOpen, setEmojiPickerOpen] = useState(false)
     const [selectedText, setSelectedText] = useState('')
@@ -308,7 +310,8 @@ export const MessageItem = React.memo(
                         : '',
                     // Đổi màu nền khi mở emoji picker
                     isEmojiPickerOpen ? 'bg-gray-2 dark:bg-gray-3' : '',
-                    isThinking && 'animate-pulse'
+                    isThinking && 'animate-pulse',
+                    isPending && 'animate-pulse'
                   )}
                 >
                   {/* Nội dung chính của tin nhắn */}
@@ -374,24 +377,25 @@ export const MessageItem = React.memo(
                         </Text>
                       )}
                       {/* Hiển thị các reaction của tin nhắn */}
-                      {message_reactions?.length && (
+                      {!isPending && message_reactions?.length && (
                         <MessageReactions message={message} message_reactions={message_reactions} />
                       )}
                       {/* Hiển thị thông tin luồng nếu đây là tin nhắn trong luồng */}
                       {message.is_thread === 1 ? <ThreadMessage thread={message} /> : null}
-
-                      <div className='absolute bottom-0 -right-5'>
-                        <MessageSeenStatus
-                          hasBeenSeen={hasBeenSeen}
-                          channelType={channel?.type}
-                          seenByOthers={seenByOthers}
-                          unseenByOthers={unseenByOthers}
-                          currentUserOwnsMessage={message.owner === currentUser}
-                        />
-                      </div>
+                      {!isPending && (
+                        <div className='absolute bottom-0 -right-5'>
+                          <MessageSeenStatus
+                            hasBeenSeen={hasBeenSeen}
+                            channelType={channel?.type}
+                            seenByOthers={seenByOthers}
+                            unseenByOthers={unseenByOthers}
+                            currentUserOwnsMessage={message.owner === currentUser}
+                          />
+                        </div>
+                      )}
                     </Flex>
                     {/* Hiển thị các hành động nhanh khi hover hoặc mở emoji picker */}
-                    {(isHoveredDebounced || isEmojiPickerOpen) && (
+                    {!isPending && (isHoveredDebounced || isEmojiPickerOpen) && (
                       <QuickActions
                         message={message}
                         onDelete={onDelete}
@@ -715,6 +719,81 @@ type MessageContentProps = BoxProps & {
  * - Xử lý hiển thị các loại tin nhắn khác nhau: văn bản, hình ảnh, file, khảo sát
  * - Hỗ trợ xem trước liên kết (link preview)
  */
+// export const MessageContent = ({
+//   message,
+//   user,
+//   currentUser,
+//   forceHideLinkPreview = false,
+//   ...props
+// }: MessageContentProps) => {
+//   return (
+//     <Box {...props}>
+//       {/* Hiển thị nội dung văn bản nếu có */}
+//       {message.text ? (
+//         <TiptapRenderer
+//           message={{
+//             ...message, // Giữ nguyên tất cả thuộc tính của tin nhắn
+//             message_type: 'Text' // Đảm bảo loại tin nhắn là Text
+//           }}
+//           user={user} // Thông tin người gửi
+//           currentUser={currentUser} // Thống tin người dùng hien tại
+//           // Quyết định có hiển thị xem trước liên kết không
+//           // Nếu forceHideLinkPreview = true hoặc message.hide_link_preview = true thì ẩn, ngược lại hiển thị
+//           showLinkPreview={forceHideLinkPreview ? false : message.hide_link_preview ? false : true}
+//         />
+//       ) : null}
+
+//       {/* Hiển thị hình ảnh nếu loại tin nhắn là Image */}
+//       {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} />}
+
+//       {/* Hiển thị file đính kèm nếu loại tin nhắn là File */}
+//       {message.message_type === 'File' && <FileMessageBlock message={message} user={user} />}
+
+//       {/* Hiển thị khảo sát nếu loại tin nhắn là Poll */}
+//       {message.message_type === 'Poll' && <PollMessageBlock message={message} user={user} />}
+//     </Box>
+//   )
+// }
+
+// export const MessageContent = ({
+//   message,
+//   user,
+//   currentUser,
+//   forceHideLinkPreview = false,
+//   ...props
+// }: MessageContentProps) => {
+//   const displayText = message.text || message.content
+
+//   return (
+//     <Box {...props}>
+//       {displayText ? (
+//         <TiptapRenderer
+//           message={{
+//             ...message,
+//             message_type: 'Text',
+//             text: displayText
+//           }}
+//           user={user}
+//           currentUser={currentUser}
+//           showLinkPreview={forceHideLinkPreview ? false : message.hide_link_preview ? false : true}
+//         />
+//       ) : null}
+
+//       {/* {isPending && !displayText && (
+//         <Box className='rounded bg-gray-200 text-gray-500 px-4 py-2 my-1 w-fit min-h-[32px] animate-pulse'>
+//           Đang gửi...
+//         </Box>
+//       )} */}
+
+//       {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} />}
+
+//       {message.message_type === 'File' && <FileMessageBlock message={message} user={user} />}
+
+//       {message.message_type === 'Poll' && <PollMessageBlock message={message} user={user} />}
+//     </Box>
+//   )
+// }
+
 export const MessageContent = ({
   message,
   user,
@@ -722,30 +801,28 @@ export const MessageContent = ({
   forceHideLinkPreview = false,
   ...props
 }: MessageContentProps) => {
+  const displayText =
+    message.message_type === 'File' || message.message_type === 'Image' ? '' : message.text || message.content
+
   return (
     <Box {...props}>
-      {/* Hiển thị nội dung văn bản nếu có */}
-      {message.text ? (
+      {displayText ? (
         <TiptapRenderer
           message={{
-            ...message, // Giữ nguyên tất cả thuộc tính của tin nhắn
-            message_type: 'Text' // Đảm bảo loại tin nhắn là Text
+            ...message,
+            message_type: 'Text',
+            text: displayText
           }}
-          user={user} // Thông tin người gửi
-          currentUser={currentUser} // Thống tin người dùng hien tại
-          // Quyết định có hiển thị xem trước liên kết không
-          // Nếu forceHideLinkPreview = true hoặc message.hide_link_preview = true thì ẩn, ngược lại hiển thị
+          user={user}
+          currentUser={currentUser}
           showLinkPreview={forceHideLinkPreview ? false : message.hide_link_preview ? false : true}
         />
       ) : null}
 
-      {/* Hiển thị hình ảnh nếu loại tin nhắn là Image */}
       {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} />}
 
-      {/* Hiển thị file đính kèm nếu loại tin nhắn là File */}
       {message.message_type === 'File' && <FileMessageBlock message={message} user={user} />}
 
-      {/* Hiển thị khảo sát nếu loại tin nhắn là Poll */}
       {message.message_type === 'Poll' && <PollMessageBlock message={message} user={user} />}
     </Box>
   )

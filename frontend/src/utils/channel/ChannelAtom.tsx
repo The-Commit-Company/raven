@@ -67,7 +67,7 @@ export const prepareSortedChannels = (
 }
 
 // Hook để lấy danh sách channel chưa done
-export const useEnrichedSortedChannels = (isDoneFilter?: 0 | 1) => {
+export const useEnrichedSortedChannels = (filter?: 0 | 1 | string) => {
   const channels = useAtomValue(sortedChannelsAtom)
   const channelIsDone = useAtomValue(channelIsDoneAtom)
   const unreadList = useUnreadCount().message || []
@@ -91,11 +91,18 @@ export const useEnrichedSortedChannels = (isDoneFilter?: 0 | 1) => {
         }
       })
       .filter((channel) => {
-        if (isDoneFilter === 0) return channel.is_done === 0
-        if (isDoneFilter === 1) return channel.is_done === 1
+        // Nếu filter là string → đang lọc theo labelID
+        if (typeof filter === 'string') {
+          return Array.isArray(channel.user_labels) && channel.user_labels.includes(filter)
+        }
+
+        // Nếu filter là 0 hoặc 1 → lọc theo is_done
+        if (filter === 0) return channel.is_done === 0
+        if (filter === 1) return channel.is_done === 1
+
         return true
       })
-  }, [channels, channelIsDone, unreadList, isDoneFilter])
+  }, [channels, channelIsDone, unreadList, filter])
 
   return enriched
 }
@@ -125,7 +132,10 @@ export const useEnrichedLabelChannels = (): ChannelWithGroupType[] => {
 export const useUpdateChannelLabels = () => {
   const setSortedChannels = useSetAtom(sortedChannelsAtom)
 
-  const updateChannelLabels = (channelID: string, updateFn: (prevLabels: string[]) => string[]) => {
+  const updateChannelLabels = (
+    channelID: string,
+    updateFn: (prevLabels: { label_id: string; label: string }[]) => { label_id: string; label: string }[]
+  ) => {
     setSortedChannels((prev) =>
       prev?.map((channel) =>
         channel.name === channelID
@@ -138,17 +148,40 @@ export const useUpdateChannelLabels = () => {
     )
   }
 
-  const addLabelToChannel = (channelID: string, newLabelID: string) => {
-    updateChannelLabels(channelID, (prev) => [...new Set([...prev, newLabelID])])
+  const addLabelToChannel = (channelID: string, newLabel: { label_id: string; label: string }) => {
+    updateChannelLabels(channelID, (prev) => {
+      // Nếu đã có rồi thì không thêm
+      if (prev.some((l) => l.label_id === newLabel.label_id)) {
+        return prev
+      }
+      // Thêm vào đầu mảng
+      return [...prev, newLabel]
+    })
   }
 
   const removeLabelFromChannel = (channelID: string, labelID: string) => {
-    updateChannelLabels(channelID, (prev) => prev.filter((id) => id !== labelID))
+    updateChannelLabels(channelID, (prev) => prev.filter((l) => l.label_id !== labelID))
+  }
+
+  const renameLabel = (oldLabelID: string, newLabel: string) => {
+    setSortedChannels((prev) =>
+      prev?.map((channel) => {
+        if (!Array.isArray(channel.user_labels)) return channel
+        const updatedLabels = channel.user_labels.map((l) =>
+          l.label_id === oldLabelID ? { ...l, label: newLabel } : l
+        )
+        return {
+          ...channel,
+          user_labels: updatedLabels
+        }
+      })
+    )
   }
 
   return {
     updateChannelLabels,
     addLabelToChannel,
-    removeLabelFromChannel
+    removeLabelFromChannel,
+    renameLabel
   }
 }

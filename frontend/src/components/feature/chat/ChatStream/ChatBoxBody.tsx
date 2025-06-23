@@ -166,7 +166,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
   } = useFileUpload(channelData.name)
 
   // Gửi tin nhắn (có kèm file và reply message nếu có)
-  const { sendMessage, loading } = useSendMessage(
+  const { sendMessage, loading, pendingMessages, retryPendingMessages } = useSendMessage(
     channelData.name,
     uploadFiles,
     onMessageSendCompleted,
@@ -248,6 +248,8 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
           replyToMessage={handleReplyAction}
           virtuosoRef={virtuosoRef as MutableRefObject<VirtuosoHandle>}
           ref={chatStreamRef as any}
+          pendingMessages={pendingMessages}
+          retryPendingMessages={retryPendingMessages}
         />
         {/* Chỉ hiển thị khu vực nhập liệu nếu người dùng có quyền gửi tin nhắn. */}
         {canUserSendMessage && (

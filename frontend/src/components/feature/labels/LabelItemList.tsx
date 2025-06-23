@@ -15,6 +15,8 @@ import { useChannelActions } from '@/hooks/useChannelActions'
 import { useSWRConfig } from 'frappe-react-sdk'
 import { useIsMobile, useIsTablet } from '@/hooks/useMediaQuery'
 import { truncateText } from '@/utils/textUtils/truncateText'
+import { useSetAtom } from 'jotai'
+import { refreshLabelListAtom } from './conversations/atoms/labelAtom'
 
 type Props = {
   channelID: string
@@ -47,6 +49,8 @@ const LabelItemList = ({
   const displayName = isDM ? user?.full_name : channelName
   const isActive = channelIDParams === channelID
 
+  const setRefreshKey = useSetAtom(refreshLabelListAtom)
+
   const { removeChannel, loading: isLoading } = useRemoveChannelFromLabel()
   const { updateChannelLabels } = useUpdateChannelLabels()
   const { clearManualMark } = useChannelActions()
@@ -63,8 +67,10 @@ const LabelItemList = ({
   const handleRemove = async () => {
     try {
       await removeChannel(labelID, channelID)
-      updateChannelLabels(channelID, (prevLabels) => prevLabels.filter((id) => id !== labelID))
       onRemoveLocally?.(channelID)
+      updateChannelLabels(channelID, (prevLabels) => prevLabels.filter((l) => l.label_id !== labelID))
+      setRefreshKey((prev) => prev + 1)
+
       toast.success(`Đã xóa thành công`)
       setShowModal(false)
       mutate('channel_list')
@@ -100,7 +106,7 @@ const LabelItemList = ({
                 </div>
               )}
               <Text as='span' className={clsx('line-clamp-1 text-ellipsis', 'text-base md:text-sm xs:text-xs')}>
-                {truncateText(displayName, maxLength)}
+                {truncateText(displayName || '', maxLength)}
               </Text>
             </Flex>
             {unreadCount > 0 && (

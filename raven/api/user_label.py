@@ -6,67 +6,119 @@ from collections import defaultdict
 def create_label(label):
     user = frappe.session.user
 
-    if not label:
-        frappe.throw(_("Missing label"))
+    try:
+        if not label:
+            return {
+                "status": "error",
+                "message": "Missing label"
+            }
 
-    if len(label) > 60:
-        frappe.throw(_("Label must not exceed 60 characters"))
+        trimmed_label = label.strip()
 
-    # Kiểm tra xem user đã có nhãn này chưa
-    existing = frappe.db.exists("User Label", {
-        "label": label,
-        "owner": user
-    })
+        if len(trimmed_label) > 60:
+            return {
+                "status": "error",
+                "message": "Label must not exceed 60 characters"
+            }
 
-    if existing:
-        frappe.throw(_("Label name already exists"))
+        # Kiểm tra xem user đã có nhãn này chưa
+        existing = frappe.db.exists("User Label", {
+            "label": trimmed_label,
+            "owner": user
+        })
 
-    new_label = frappe.get_doc({
-        "doctype": "User Label",
-        "label": label,
-        "owner": user
-    })
-    new_label.insert(ignore_permissions=True)
+        if existing:
+            return {
+                "status": "error",
+                "message": "Label name already exists"
+            }
 
-    return {
-        "status": "success",
-        "label_id": new_label.name
-    }
+        new_label = frappe.get_doc({
+            "doctype": "User Label",
+            "label": trimmed_label,
+            "owner": user
+        })
+        new_label.insert(ignore_permissions=True)
+
+        return {
+            "status": "success",
+            "message": "Label created",
+            "label_id": new_label.name
+        }
+
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Server error: {str(e)}"
+        }
+
 
 @frappe.whitelist(methods=["POST"])
 def update_label(label_id, new_label):
     user = frappe.session.user
 
-    if not label_id or not new_label:
-        frappe.throw(_("Missing label id or new label"))
+    try:
+        # Validate input
+        if not label_id or not new_label:
+            return {
+                "status": "error",
+                "message": "Missing label id or new label"
+            }
 
-    label_doc = frappe.get_doc("User Label", label_id)
+        trimmed_label = new_label.strip()
 
-    if not label_doc or label_doc.doctype != "User Label":
-        frappe.throw(_("Invalid label"))
+        # Giới hạn tối đa 60 ký tự
+        if len(trimmed_label) > 60:
+            return {
+                "status": "error",
+                "message": "Label name must not exceed 60 characters"
+            }
 
-    if label_doc.owner != user:
-        frappe.throw(_("You are not allowed to edit this label"))
+        # Lấy document
+        label_doc = frappe.get_doc("User Label", label_id)
 
-    # Kiểm tra trùng tên label khác của cùng user
-    duplicate = frappe.db.exists(
-        "User Label",
-        {
-            "owner": user,
-            "label": new_label,
-            "name": ["!=", label_id]
+        if not label_doc or label_doc.doctype != "User Label":
+            return {
+                "status": "error",
+                "message": "Invalid label"
+            }
+
+        # Kiểm tra quyền owner
+        if label_doc.owner != user:
+            return {
+                "status": "error",
+                "message": "You are not allowed to edit this label"
+            }
+
+        # Kiểm tra trùng tên label khác của cùng user
+        duplicate = frappe.db.exists(
+            "User Label",
+            {
+                "owner": user,
+                "label": trimmed_label,
+                "name": ["!=", label_id]
+            }
+        )
+        if duplicate:
+            return {
+                "status": "error",
+                "message": "Label name already exists"
+            }
+
+        # Cập nhật label
+        label_doc.label = trimmed_label
+        label_doc.save(ignore_permissions=True)
+
+        return {
+            "status": "success",
+            "message": "Label updated"
         }
-    )
-    if duplicate:
-        frappe.throw(_("Label name already exists"))
 
-    label_doc.label = new_label
-    label_doc.save(ignore_permissions=True)
-
-    return {
-        "status": "success",
-        "message": "Label updated"
-    }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Server error: {str(e)}"
+        }
 
 @frappe.whitelist()
 def delete_label(label_id):
@@ -108,7 +160,8 @@ def get_my_labels():
     labels = frappe.get_all(
         "User Label",
         filters={"owner": user},
-        fields=["name", "label"]
+        fields=["name", "label"],
+        order_by="creation ASC"
     )
 
     label_ids = [l["name"] for l in labels]

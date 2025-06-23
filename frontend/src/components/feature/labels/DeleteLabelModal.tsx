@@ -1,5 +1,5 @@
 import { Dialog, Button, Flex, Text } from '@radix-ui/themes'
-import { useFrappePostCall } from 'frappe-react-sdk'
+import { useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
 import { useSetAtom } from 'jotai'
 import { refreshLabelListAtom } from './conversations/atoms/labelAtom'
 import { toast } from 'sonner'
@@ -14,7 +14,7 @@ type Props = {
 const DeleteLabelModal = ({ name, label, isOpen, setIsOpen }: Props) => {
   const { call, loading: isLoading } = useFrappePostCall('raven.api.user_label.delete_label')
   const setRefreshKey = useSetAtom(refreshLabelListAtom)
-
+  const { mutate } = useSWRConfig()
   const handleDelete = async () => {
     try {
       const res = await call({ label_id: name })
@@ -23,6 +23,8 @@ const DeleteLabelModal = ({ name, label, isOpen, setIsOpen }: Props) => {
       if (message === 'Label deleted') {
         toast.success(`Xóa nhãn thành công`)
         setRefreshKey((prev) => prev + 1)
+        mutate('channel_list')
+
         setIsOpen(false)
       } else {
         console.error('Lỗi không rõ:', res)

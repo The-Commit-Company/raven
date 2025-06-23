@@ -48,9 +48,9 @@ const ThreadsCustom = () => {
           <Tabs.Content value='Participating'>
             <ParticipatingThreads />
           </Tabs.Content>
-          <Tabs.Content value='Other' className='h-[calc(100vh-6rem)] overflow-y-auto'>
+          {/* <Tabs.Content value='Other' className='h-[calc(100vh-6rem)] overflow-y-auto'>
             <OtherThreads />
-          </Tabs.Content>
+          </Tabs.Content> */}
           {/* <Tabs.Content value='AI Threads' className='h-[calc(100vh-6rem)] overflow-y-auto'>
             <AIThreads />
           </Tabs.Content> */}

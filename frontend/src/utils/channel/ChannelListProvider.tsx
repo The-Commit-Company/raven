@@ -15,6 +15,11 @@ export type UnreadChannelCountItem = {
   last_message_timestamp: string
 }
 
+export type UserLabel = {
+  label_id: string
+  label: string
+}
+
 export type UnreadCountData = UnreadChannelCountItem[]
 
 export type ChannelListItem = Pick<
@@ -36,7 +41,7 @@ export type ChannelListItem = Pick<
 > & {
   member_id: string
   is_done: number // <== thêm dòng này
-  user_labels?: string[]
+  user_labels: UserLabel[]
 }
 
 export interface DMChannelListItem extends ChannelListItem {
@@ -99,7 +104,7 @@ export const useFetchChannelList = (): ChannelListContextType => {
     }
   )
   const [newUpdatesAvailable, setNewUpdatesAvailable] = useState(0)
-  
+
   useEffect(() => {
     let timeout: NodeJS.Timeout | undefined
     if (newUpdatesAvailable) {
@@ -214,22 +219,30 @@ export const useUpdateLastMessageDetails = () => {
       (prev) => {
         if (!prev) return prev
 
-        const updateChannel = (channel: ChannelListItem) => {
-          if (channel.name === channelID) {
-            return {
-              ...channel,
-              last_message_details: message,
-              last_message_timestamp: timestamp,
-              unread_count: 0
-            }
-          }
-          return channel
-        }
-
         return {
           message: {
-            channels: prev.message.channels.map(updateChannel),
-            dm_channels: prev.message.dm_channels.map(updateChannel)
+            channels: prev.message.channels.map((channel) => {
+              if (channel.name === channelID) {
+                return {
+                  ...channel,
+                  last_message_details: message,
+                  last_message_timestamp: timestamp,
+                  unread_count: 0
+                }
+              }
+              return channel
+            }),
+            dm_channels: prev.message.dm_channels.map((dm_channel) => {
+              if (dm_channel.name === channelID) {
+                return {
+                  ...dm_channel,
+                  last_message_details: message,
+                  last_message_timestamp: timestamp,
+                  unread_count: 0
+                }
+              }
+              return dm_channel
+            })
           }
         }
       },

@@ -17,13 +17,19 @@ const UserChannelList = () => {
   const { enabledUsers: users } = useContext(UserListContext)
 
   const usersWithoutChannels = users?.filter(
-    (user) => !dm_channels.find((channel) => channel.peer_user_id === user.name)
+    (user) => !dm_channels?.find((channel) => channel.peer_user_id === user.name)
   )
+
+  const filteredDmChannels = dm_channels?.filter((channel) => {
+    const peerUser = users?.find((user) => user.name === channel.peer_user_id)
+    return peerUser?.enabled === 1
+  })
+  
 
   return (
     <div>
       <div>
-        {dm_channels?.map((channel) => (
+        {filteredDmChannels?.map((channel) => (
           <ChannelItem
             key={channel.name}
             channelID={channel.name}

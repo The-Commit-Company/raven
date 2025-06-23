@@ -3,6 +3,8 @@ import { FaUsers } from 'react-icons/fa'
 import { HiOutlineInformationCircle } from 'react-icons/hi'
 import clsx from 'clsx'
 import { useChannelDisplayInfo } from '@/utils/channel/getChannelInfo'
+import { useSetAtom } from 'jotai'
+import { createConversationChannelsAtom } from './atoms/conversationAtom'
 
 type Props = {
   name: string // label_id
@@ -14,6 +16,7 @@ type Props = {
 
 const ChannelModalConversationItem = ({ name, channel, selected, handleToggle, onOpenModal }: Props) => {
   const { isDM, displayName, avatarChar } = useChannelDisplayInfo(channel)
+  const setChannelsAtom = useSetAtom(createConversationChannelsAtom)
 
   if (channel?.is_self_message === 1) return null
 
@@ -39,7 +42,16 @@ const ChannelModalConversationItem = ({ name, channel, selected, handleToggle, o
           checked={isChecked}
           disabled={isAlreadyLabeled}
           onCheckedChange={() => {
-            if (!isAlreadyLabeled) handleToggle(channel.name)
+            if (!isAlreadyLabeled) {
+              handleToggle(channel.name)
+
+              // ✅ Add channel vào atom (nếu chưa có)
+              setChannelsAtom((prev) => {
+                const alreadyExists = prev.some((c) => c.name === channel.name)
+                if (alreadyExists) return prev
+                return [...prev, channel]
+              })
+            }
           }}
           className={clsx(disabledStyle)}
         />
@@ -54,7 +66,10 @@ const ChannelModalConversationItem = ({ name, channel, selected, handleToggle, o
           </div>
         )}
 
-        <div className={clsx('truncate text-sm', disabledStyle)}>{displayName}</div>
+        {/* <div className={clsx('truncate text-sm', disabledStyle)}>{displayName}</div> */}
+        <div className='truncate text-sm text-gray-12 flex items-center gap-1 w-60'>
+          <span className='truncate'>{displayName}</span>
+        </div>
       </label>
 
       <div
