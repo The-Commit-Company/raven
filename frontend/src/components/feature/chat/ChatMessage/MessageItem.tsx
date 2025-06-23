@@ -212,6 +212,8 @@ export const MessageItem = React.memo(
       )
     }, [seenUsers, message.creation, currentUser])
 
+    const isSaved = JSON.parse(message._liked_by ? message._liked_by : '[]').includes(currentUser)
+
     return (
       <div ref={messageRef}>
         {CHAT_STYLE === 'Left-Right' ? (
@@ -333,13 +335,18 @@ export const MessageItem = React.memo(
                       {/* Hiển thị biểu tượng nếu là tin nhắn được chuyển tiếp */}
                       {message.is_forwarded === 1 && (
                         <Flex className='text-gray-10 text-xs' gap={'1'} align={'center'}>
-                          <RiShareForwardFill size='12' /> forwarded
+                          <RiShareForwardFill size='12' /> Chuyển tiếp
                         </Flex>
                       )}
                       {/* Hiển thị biểu tượng nếu tin nhắn được ghim */}
                       {message.is_pinned === 1 && (
                         <Flex className='text-accent-9 text-xs' gap={'1'} align={'center'}>
-                          <RiPushpinFill size='12' /> Pinned
+                          <RiPushpinFill size='12' /> Ghim
+                        </Flex>
+                      )}
+                      {isSaved && (
+                        <Flex className='text-accent-9 text-xs' gap={'1'} align={'center'}>
+                          <RiPushpinFill size='12' /> Đã gắn cờ
                         </Flex>
                       )}
                       {/* Hiển thị tin nhắn được trả lời nếu có */}
