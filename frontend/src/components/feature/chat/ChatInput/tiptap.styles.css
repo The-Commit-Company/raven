@@ -59,6 +59,14 @@
     color: var(--accent-11);
 }
 
+.tiptap-editor .timeline-mention {
+    color: var(--blue-11);
+    background-color: var(--blue-3);
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
 .tiptap-editor a {
     text-decoration: underline;
     cursor: pointer;

@@ -9,6 +9,16 @@
     color: var(--accent-11);
 }
 
+.tiptap-renderer .timeline-mention-wrapper {
+    display: inline;
+}
+
+.tiptap-renderer .timeline-mention {
+    color: var(--blue-11);
+    background-color: var(--blue-3);
+    border: 1px solid var(--blue-6);
+}
+
 .tiptap-renderer .table-wrapper {
     overflow-x: auto;
     padding-right: 4rem;
