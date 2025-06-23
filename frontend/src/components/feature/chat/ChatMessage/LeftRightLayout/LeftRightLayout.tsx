@@ -90,6 +90,7 @@ export const LeftRightLayout = ({
   const [isEmojiPickerOpen, setEmojiPickerOpen] = useState(false)
 
   // For mobile, we want to show the quick actions on double tap
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const bind = useDoubleTap((event) => {
     if (!isDesktop) setIsHovered(!isHovered)
   })
@@ -127,6 +128,8 @@ export const LeftRightLayout = ({
       setSelectedText('')
     }
   }
+
+  const isSaved = JSON.parse(message._liked_by ? message._liked_by : '[]').includes(currentUser)
 
   if (is_retracted === 1) {
     return (
@@ -195,12 +198,17 @@ export const LeftRightLayout = ({
 
                 {message.is_forwarded === 1 && (
                   <Flex className='text-gray-10 text-xs' gap={'1'} align={'center'}>
-                    <RiShareForwardFill size='12' /> forwarded
+                    <RiShareForwardFill size='12' /> Chuyển tiếp
                   </Flex>
                 )}
                 {message.is_pinned === 1 && (
                   <Flex className='text-accent-9 text-xs' gap={'1'} align={'center'}>
-                    <RiPushpinFill size='12' /> Pinned
+                    <RiPushpinFill size='12' /> Ghim
+                  </Flex>
+                )}
+                {isSaved && (
+                  <Flex className='text-accent-9 text-xs' gap={'1'} align={'center'}>
+                    <RiPushpinFill size='12' /> Đã gắn cờ
                   </Flex>
                 )}
                 {linked_message && replied_message_details && (

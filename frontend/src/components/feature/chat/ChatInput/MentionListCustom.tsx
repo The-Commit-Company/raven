@@ -12,7 +12,7 @@ import parse from 'html-react-parser'
 import React, { useCallback, useContext, useEffect, useMemo, useRef } from 'react'
 import { BiHide, BiMessageAltDetail } from 'react-icons/bi'
 import { LuAtSign } from 'react-icons/lu'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import useSWRInfinite from 'swr/infinite'
 
@@ -37,6 +37,9 @@ const MentionsList: React.FC = () => {
   const { call } = useContext(FrappeContext) as FrappeConfig
   const { workspaceID } = useParams<{ workspaceID: string }>()
   const [hiddenMentionIds, setHiddenMentionIds] = React.useState<Set<string>>(new Set())
+  const location = useLocation()
+  const searchParams = new URLSearchParams(location.search)
+  const messageParams = searchParams.get('message_id')
 
   const getKey = useCallback((pageIndex: number, prev: { message: MentionObject[] } | null) => {
     if (prev && !prev.message?.length) return null
@@ -104,7 +107,12 @@ const MentionsList: React.FC = () => {
         ?.filter((m) => !hiddenMentionIds.has(m.name))
         .map((mention) => (
           <li key={mention.name} className='border-b border-gray-4 last:border-0'>
-            <MentionItem mention={mention} workspaceID={workspaceID} onHide={handleHideMention} />
+            <MentionItem
+              mention={mention}
+              workspaceID={workspaceID}
+              onHide={handleHideMention}
+              messageParams={messageParams}
+            />
           </li>
         ))}
 
@@ -127,11 +135,12 @@ const MentionsList: React.FC = () => {
 
 export default MentionsList
 
-const MentionItem: React.FC<{ mention: MentionObject; workspaceID?: string; onHide: (id: string) => void }> = ({
-  mention,
-  workspaceID,
-  onHide
-}) => {
+const MentionItem: React.FC<{
+  mention: MentionObject
+  messageParams?: string | null
+  workspaceID?: string
+  onHide: (id: string) => void
+}> = ({ mention, workspaceID, onHide, messageParams }) => {
   const { call, loading: isLoading } = useFrappePostCall('raven.api.mentions.toggle_mention_hidden')
   const to = useMemo(() => {
     const w = mention.workspace ?? workspaceID
@@ -153,7 +162,10 @@ const MentionItem: React.FC<{ mention: MentionObject; workspaceID?: string; onHi
 
   return (
     <div className='relative group'>
-      <Link to={to} className='block py-3 px-4 pr-8 hover:bg-gray-2 dark:hover:bg-gray-4'>
+      <Link
+        to={to}
+        className={`block py-3 px-4 pr-8 hover:bg-gray-2 dark:hover:bg-gray-4         ${mention.name === messageParams ? 'bg-gray-100 dark:bg-gray-800/80' : ''}`}
+      >
         <ChannelContext mention={mention} />
       </Link>
 
