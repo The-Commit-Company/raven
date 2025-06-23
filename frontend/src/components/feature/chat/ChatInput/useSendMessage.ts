@@ -110,9 +110,12 @@ import { useOnlineStatus } from '../../network/useNetworkStatus'
 
 export type PendingMessage = {
   id: string
-  content: string
-  status: 'pending' | 'sent' | 'error'
+  content?: string
+  status: 'pending' | 'error'
   createdAt: number
+  message_type: 'Text' | 'Image' | 'File' | 'Video'
+  file?: RavenMessage['file']
+  json_content?: any
 }
 
 export const useSendMessage = (
@@ -124,12 +127,12 @@ export const useSendMessage = (
   const { call, loading } = useFrappePostCall<{ message: RavenMessage }>('raven.api.raven_message.send_message')
   const { updateLastMessageForChannel } = useUpdateLastMessageDetails()
   const { currentUser } = useContext(UserContext)
-  const isOnline = useOnlineStatus()
-
   const STORAGE_KEY = `pending_messages_${channelID}`
 
   const [pendingMessages, setPendingMessages] = useState<Record<string, PendingMessage[]>>({})
   const pendingQueueRef = useRef<Record<string, PendingMessage[]>>({})
+
+  const createClientId = () => `${Date.now()}-${Math.random()}`
 
   const persistPendingMessages = (updated: Record<string, PendingMessage[]>) => {
     const current = updated[channelID] || []
@@ -180,7 +183,7 @@ export const useSendMessage = (
   }
 
   const sendTextMessage = async (content: string, json?: any, sendSilently = false) => {
-    const client_id = `${Date.now()}-${Math.random()}`
+    const client_id = createClientId()
     await sendOneMessage(content, client_id, json, sendSilently)
   }
 
@@ -189,8 +192,37 @@ export const useSendMessage = (
     if (fileMessages?.length > 0) {
       const last = fileMessages[fileMessages.length - 1]
       const text = last.message_type === 'Image' ? 'Đã gửi ảnh' : 'Đã gửi file'
-      updateSidebarMessage(last, text)
-      onMessageSent(fileMessages)
+
+      try {
+        updateSidebarMessage(last, text)
+        onMessageSent(fileMessages)
+      } catch (err) {
+        console.error('sendFileMessages error', err)
+
+        // Push pending nếu có lỗi
+        const pendingFileMessages: PendingMessage[] = fileMessages.map((msg) => ({
+          id: createClientId(),
+          content: msg.text || '',
+          status: 'pending',
+          createdAt: Date.now(),
+          message_type: msg.message_type,
+          file: msg.file,
+          json_content: msg.json
+        }))
+
+        setPendingMessages((prev) => {
+          const updated = {
+            ...prev,
+            [channelID]: [...(prev[channelID] || []), ...pendingFileMessages]
+          }
+          pendingQueueRef.current = {
+            ...pendingQueueRef.current,
+            [channelID]: updated[channelID].filter((m) => m.status === 'pending')
+          }
+          persistPendingMessages(updated)
+          return updated
+        })
+      }
     }
   }
 
@@ -204,12 +236,13 @@ export const useSendMessage = (
       console.error('sendMessage error', err)
 
       if (content.trim()) {
-        const client_id = `${Date.now()}-${Math.random()}`
+        const client_id = createClientId()
         const newPending: PendingMessage = {
           id: client_id,
           content,
           status: 'pending',
-          createdAt: Date.now()
+          createdAt: Date.now(),
+          message_type: 'Text'
         }
 
         setPendingMessages((prev) => {
@@ -245,17 +278,52 @@ export const useSendMessage = (
     }
   }, [channelID])
 
-  // Không tự retry khi có mạng nữa — để user tự bấm retry
   const retryPendingMessages = async () => {
     const queue = [...(pendingQueueRef.current[channelID] || [])]
 
     for (const msg of queue) {
       try {
-        await sendOneMessage(msg.content, msg.id)
+        if (msg.message_type === 'Text') {
+          await sendOneMessage(msg.content || '', msg.id)
+        } else {
+          console.warn('Retry file message chưa làm flow cụ thể')
+          // Nếu muốn: re-upload file hoặc resend metadata ở đây
+        }
       } catch (err) {
         console.error('retry sendMessage error', err)
       }
     }
+  }
+
+  const sendOnePendingMessage = async (id: string) => {
+    const msg = (pendingMessages[channelID] || []).find((m) => m.id === id)
+    if (!msg) return
+    try {
+      if (msg.message_type === 'Text') {
+        await sendOneMessage(msg.content || '', msg.id)
+      } else {
+        console.warn('Send one file message chưa làm flow cụ thể')
+        // Nếu muốn: re-upload file hoặc resend metadata ở đây
+      }
+    } catch (err) {
+      console.error('sendOnePendingMessage error', err)
+    }
+  }
+
+  const removePendingMessage = (id: string) => {
+    setPendingMessages((prev) => {
+      const updatedChannel = (prev[channelID] || []).filter((m) => m.id !== id)
+      const updated = {
+        ...prev,
+        [channelID]: updatedChannel
+      }
+      pendingQueueRef.current = {
+        ...pendingQueueRef.current,
+        [channelID]: updatedChannel.filter((m) => m.status === 'pending')
+      }
+      persistPendingMessages(updated)
+      return updated
+    })
   }
 
   // Tự động đánh dấu error nếu pending quá 30s
@@ -294,6 +362,8 @@ export const useSendMessage = (
     sendMessage,
     loading,
     pendingMessages: pendingMessages[channelID] || [],
-    retryPendingMessages // => dùng cho nút "Gửi lại"
+    retryPendingMessages,
+    sendOnePendingMessage,
+    removePendingMessage
   }
 }
