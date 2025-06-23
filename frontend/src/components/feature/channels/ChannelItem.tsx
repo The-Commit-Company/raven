@@ -7,6 +7,7 @@ import { replaceCurrentUserFromDMChannelName } from '@/utils/operations'
 import { Badge, Box, Flex, Text } from '@radix-ui/themes'
 
 import clsx from 'clsx'
+import { useIsUserActive } from '@/hooks/useIsUserActive'
 
 const ChannelItem = ({
   channelID,
@@ -18,8 +19,9 @@ const ChannelItem = ({
   peer_user_id: string
 }) => {
   const { currentUser } = useContext(UserContext)
-  const { workspaceID, channelID: currentChannelID } = useParams() // lấy segment sau workspaceID
+  const { workspaceID, channelID: currentChannelID } = useParams()
   const user = useGetUser(peer_user_id)
+  const isOnline = useIsUserActive(peer_user_id) // ✅ luôn gọi hook, không conditional
   const navigate = useNavigate()
 
   const handleClick = () => {
@@ -44,11 +46,15 @@ const ChannelItem = ({
     >
       <Flex gap='2' align='center' justify='between' width='100%'>
         <Flex gap='2' align='center'>
-          <UserAvatar src={user?.user_image} alt={userName} isBot={user?.type === 'Bot'} />
+          <Box className='relative'>
+            <UserAvatar isActive={isOnline} src={user?.user_image} alt={userName} isBot={user?.type === 'Bot'} />
+          </Box>
+
           <Text as='span' className={clsx('line-clamp-1 text-ellipsis', 'text-base md:text-sm xs:text-xs')}>
             {userName}
           </Text>
         </Flex>
+
         {user && !user?.enabled && (
           <Badge color='gray' variant='soft'>
             Disabled

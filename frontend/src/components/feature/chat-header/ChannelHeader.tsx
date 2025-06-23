@@ -1,6 +1,6 @@
 import { PageHeader } from '@/components/layout/Heading/PageHeader'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
-import { ChannelListItem } from '@/utils/channel/ChannelListProvider'
+import { ChannelListItem, UserLabel } from '@/utils/channel/ChannelListProvider'
 import { EditChannelNameButton } from '../channel-details/rename-channel/EditChannelNameButton'
 import { Flex, Heading } from '@radix-ui/themes'
 import ChannelHeaderMenu from './ChannelHeaderMenu'
@@ -10,16 +10,19 @@ import { Link } from 'react-router-dom'
 import { ViewPinnedMessagesButton } from '../pinned-messages/ViewPinnedMessagesButton'
 import ViewChannelDetailsModal from '../channels/ViewChannelDetailsModal'
 import { useState } from 'react'
+import ChannelLabelBadge from '../channels/ChannelLabelBadge'
+import { useIsTablet } from '@/hooks/useMediaQuery'
 
 interface ChannelHeaderProps {
   channelData: ChannelListItem
 }
-
 export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
-  // The channel header has the channel name, the channel type icon, edit channel name button, and the view or add members button
-
   const lastWorkspace = localStorage.getItem('ravenLastWorkspace')
   const [open, setOpen] = useState(false)
+
+  const isTablet = useIsTablet()
+
+  const userLabels = channelData.user_labels as UserLabel[]
 
   return (
     <PageHeader>
@@ -30,6 +33,7 @@ export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
         >
           <BiChevronLeft size='24' className='block text-gray-12' />
         </Link>
+
         <Flex gap='4' align={'center'} className='group animate-fadein pr-4'>
           <Flex gap='1' align={'center'}>
             <ChannelIcon type={channelData.type} size='18' />
@@ -40,9 +44,24 @@ export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
               }}
               className='mb-0.5 text-ellipsis line-clamp-1'
             >
-              {channelData.channel_name}
+              <div className='flex flex-wrap items-center gap-2'>
+                <span>{channelData.channel_name}</span>
+
+                {/* ✅ Hiển thị nhãn user_labels */}
+                {!isTablet &&
+                  Array.isArray(userLabels) &&
+                  userLabels.map((label) => (
+                    <ChannelLabelBadge
+                      key={label.label_id}
+                      channelID={channelData.name}
+                      labelID={label.label_id}
+                      labelName={label.label}
+                    />
+                  ))}
+              </div>
             </Heading>
           </Flex>
+
           <EditChannelNameButton
             channelID={channelData.name}
             channel_name={channelData.channel_name}

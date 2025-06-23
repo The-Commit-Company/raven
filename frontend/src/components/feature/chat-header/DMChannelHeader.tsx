@@ -3,7 +3,7 @@ import { PageHeader } from '@/components/layout/Heading/PageHeader'
 import useIsUserOnLeave from '@/hooks/fetchers/useIsUserOnLeave'
 import { useGetUser } from '@/hooks/useGetUser'
 import { useIsUserActive } from '@/hooks/useIsUserActive'
-import { useIsDesktop } from '@/hooks/useMediaQuery'
+import { useIsDesktop, useIsTablet } from '@/hooks/useMediaQuery'
 import { UserContext } from '@/utils/auth/UserProvider'
 import { DMChannelListItem } from '@/utils/channel/ChannelListProvider'
 import { replaceCurrentUserFromDMChannelName } from '@/utils/operations'
@@ -12,6 +12,7 @@ import { useContext } from 'react'
 import { BiChevronLeft } from 'react-icons/bi'
 import { Link } from 'react-router-dom'
 import ChannelHeaderMenu from './ChannelHeaderMenu'
+import ChannelLabelBadge from '../channels/ChannelLabelBadge'
 
 interface DMChannelHeaderProps {
   channelData: DMChannelListItem
@@ -19,6 +20,7 @@ interface DMChannelHeaderProps {
 
 export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
   const { currentUser } = useContext(UserContext)
+  const isTablet = useIsTablet()
 
   const peerUserId = channelData.peer_user_id
   const peerUser = useGetUser(peerUserId || '')
@@ -62,17 +64,15 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
           <div className='flex flex-wrap items-center gap-2'>
             <span>{userName}</span>
 
-            {/* ✅ Hiển thị nhãn user_labels */}
-            {Array.isArray(channelData.user_labels) &&
-              channelData.user_labels?.map((label) => (
-                <Badge
+            {!isTablet &&
+              Array.isArray(channelData.user_labels) &&
+              channelData.user_labels.map((label) => (
+                <ChannelLabelBadge
                   key={label.label_id}
-                  color='blue'
-                  variant='soft'
-                  className='font-medium px-1.5 py-0.5 text-xs dark:bg-[#003d3d] text-[#00e0e0] font-medium px-1.5 py-0.5 text-xs rounded'
-                >
-                  {label.label}
-                </Badge>
+                  channelID={channelData.name}
+                  labelID={label.label_id}
+                  labelName={label.label}
+                />
               ))}
 
             {!peerUser && (
