@@ -11,6 +11,7 @@ import { useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import ChannelItem from './ChannelItem'
+import { useIsUserActive } from '@/hooks/useIsUserActive'
 
 const UserChannelList = () => {
   const { dm_channels } = useChannelList()
@@ -24,7 +25,6 @@ const UserChannelList = () => {
     const peerUser = users?.find((user) => user.name === channel.peer_user_id)
     return peerUser?.enabled === 1
   })
-  
 
   return (
     <div>
@@ -48,6 +48,7 @@ const UserChannelList = () => {
 const UserWithoutDMItem = ({ userID }: { userID: string }) => {
   const { workspaceID } = useParams()
   const user = useGetUser(userID)
+  const isActive = useIsUserActive(userID)
   const navigate = useNavigate()
 
   const { call, loading } = useFrappePostCall<{ message: string }>(
@@ -77,7 +78,15 @@ const UserWithoutDMItem = ({ userID }: { userID: string }) => {
     >
       <Flex width='100%' justify='between' align='center'>
         <Flex gap='2' align='center'>
-          <UserAvatar src={user?.user_image} isBot={user?.type === 'Bot'} alt={user?.full_name ?? userID} />
+          <Box className='relative'>
+            <UserAvatar
+              isActive={isActive}
+              src={user?.user_image}
+              isBot={user?.type === 'Bot'}
+              alt={user?.full_name ?? userID}
+            />
+          </Box>
+
           <Text as='span' className={clsx('line-clamp-1 text-ellipsis', 'text-base md:text-sm xs:text-xs')}>
             {user?.full_name ?? userID}
           </Text>
