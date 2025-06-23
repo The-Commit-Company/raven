@@ -58,14 +58,14 @@ def get_mentions(limit: int = 10, start: int = 0):
 
 	result = query.run(as_dict=True)
 
-	if start == 0:
-		frappe.db.set_value(
-			"Raven User",
-			{"user": frappe.session.user},
-			"last_mention_viewed_on",
-			frappe.utils.get_datetime(),
-			update_modified=False,
-		)
+	# if start == 0:
+	# 	frappe.db.set_value(
+	# 		"Raven User",
+	# 		{"user": frappe.session.user},
+	# 		"last_mention_viewed_on",
+	# 		frappe.utils.get_datetime(),
+	# 		update_modified=False,
+	# 	)
 	return result
 
 
