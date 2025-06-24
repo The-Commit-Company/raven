@@ -12,67 +12,72 @@ type MessageDateBlock =
 
 export const useMessageProcessing = (data: any, pinnedMessagesString?: string) => {
   const messages = useMemo(() => {
-    if (!data) return undefined
+  if (!data) return undefined
 
-    let pinnedMessageIDs = pinnedMessagesString?.split('\n') ?? []
-    pinnedMessageIDs = pinnedMessageIDs?.map((messageID) => messageID.trim())
+  let pinnedMessageIDs = pinnedMessagesString?.split('\n') ?? []
+  pinnedMessageIDs = pinnedMessageIDs?.map((messageID) => messageID.trim())
 
-    const messages = [...data.message.messages]
-    const messagesWithDateSeparators: MessageDateBlock[] = []
+  const rawMessages = (data?.message?.messages || []).filter(
+    (msg: any) => !!msg && !!msg.creation
+  )
 
-    if (messages?.length === 0) return []
+  const messagesWithDateSeparators: MessageDateBlock[] = []
 
-    let currentDate = messages[messages?.length - 1].creation.split(' ')[0]
-    let currentDateTime = new Date(messages[messages?.length - 1].creation.split('.')[0]).getTime()
+  if (rawMessages?.length === 0) return []
 
-    // Add first date separator
-    messagesWithDateSeparators.push({
-      creation: getDateObject(`${currentDate} 00:00:00`).format('Do MMMM YYYY'),
-      message_type: 'date',
-      name: currentDate
-    })
+  const lastMessage = rawMessages[rawMessages.length - 1]
+  let currentDate = lastMessage.creation?.split?.(' ')[0] || ''
+  let currentDateTime = new Date(lastMessage.creation?.split?.('.')[0] || '').getTime()
 
-    messagesWithDateSeparators.push({
-      ...messages[messages?.length - 1],
-      is_continuation: 0,
-      is_pinned: pinnedMessageIDs.includes(messages[messages?.length - 1].name) ? 1 : 0
-    })
+  messagesWithDateSeparators.push({
+    creation: getDateObject(`${currentDate} 00:00:00`).format('Do MMMM YYYY'),
+    message_type: 'date',
+    name: currentDate
+  })
 
-    // Process remaining messages
-    for (let i = messages?.length - 2; i >= 0; i--) {
-      const message = messages[i]
-      const messageDate = message.creation.split(' ')[0]
-      const messageDateTime = new Date(message.creation.split('.')[0]).getTime()
+  messagesWithDateSeparators.push({
+    ...lastMessage,
+    is_continuation: 0,
+    is_pinned: pinnedMessageIDs.includes(lastMessage.name) ? 1 : 0
+  })
 
-      // Add date separator if date changes
-      if (messageDate !== currentDate) {
-        messagesWithDateSeparators.push({
-          creation: getDateObject(`${messageDate} 00:00:00`).format('Do MMMM YYYY'),
-          message_type: 'date',
-          name: messageDate
-        })
-      }
+  for (let i = rawMessages?.length - 2; i >= 0; i--) {
+    const message = rawMessages[i]
+    const messageDate = message.creation?.split?.(' ')[0] || ''
+    const messageDateTime = new Date(message.creation?.split?.('.')[0] || '').getTime()
 
-      const currentMessageSender = message.is_bot_message ? message.bot : message.owner
-      const nextMessage = messages[i + 1]
-      const nextMessageSender =
-        nextMessage.message_type === 'System' ? null : nextMessage.is_bot_message ? nextMessage.bot : nextMessage.owner
-
-      const is_continuation =
-        currentMessageSender === nextMessageSender && messageDateTime - currentDateTime <= 120000 ? 1 : 0
-
+    if (messageDate !== currentDate) {
       messagesWithDateSeparators.push({
-        ...message,
-        is_continuation,
-        is_pinned: pinnedMessageIDs.includes(message.name) ? 1 : 0
+        creation: getDateObject(`${messageDate} 00:00:00`).format('Do MMMM YYYY'),
+        message_type: 'date',
+        name: messageDate
       })
-
-      currentDate = messageDate
-      currentDateTime = new Date(message.creation).getTime()
     }
 
-    return messagesWithDateSeparators
-  }, [data, pinnedMessagesString])
+    const currentMessageSender = message.is_bot_message ? message.bot : message.owner
+    const nextMessage = rawMessages[i + 1]
+    const nextMessageSender =
+      nextMessage.message_type === 'System'
+        ? null
+        : nextMessage.is_bot_message
+        ? nextMessage.bot
+        : nextMessage.owner
+
+    const is_continuation =
+      currentMessageSender === nextMessageSender && messageDateTime - currentDateTime <= 120000 ? 1 : 0
+
+    messagesWithDateSeparators.push({
+      ...message,
+      is_continuation,
+      is_pinned: pinnedMessageIDs.includes(message.name) ? 1 : 0
+    })
+
+    currentDate = messageDate
+    currentDateTime = new Date(message.creation || '').getTime()
+  }
+
+  return messagesWithDateSeparators
+}, [data, pinnedMessagesString])
 
   return messages
 }
