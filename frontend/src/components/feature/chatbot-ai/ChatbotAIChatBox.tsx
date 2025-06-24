@@ -6,7 +6,7 @@ import { Button, Text, Tooltip } from '@radix-ui/themes'
 import clsx from 'clsx'
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { BiSolidSend } from 'react-icons/bi'
-import { FiCpu, FiPaperclip, FiRefreshCw } from 'react-icons/fi'
+import { FiArrowLeft, FiCpu, FiPaperclip, FiRefreshCw } from 'react-icons/fi'
 import { commonButtonStyle } from '../labels/LabelItemMenu'
 import ChatbotFileMessage from './ChatbotFileMessage'
 
@@ -198,6 +198,14 @@ const ChatbotAIChatBox: React.FC<Props> = ({
       <div className='border-b px-4 py-2 bg-white dark:bg-gray-2 border-gray-200 dark:border-gray-600'>
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-3'>
+            {/* Back button - chỉ hiển thị trên mobile */}
+            <button
+              onClick={() => window.history.back()}
+              className='md:hidden flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors'
+            >
+              <FiArrowLeft className='text-gray-600 dark:text-gray-400' size={18} />
+            </button>
+
             <div className='w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center'>
               <FiCpu className='text-white' size={16} />
             </div>
