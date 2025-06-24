@@ -104,18 +104,14 @@ export const useFetchUnreadMessageCount = () => {
 
   useFrappeEventListener('raven:unread_channel_count_updated', async (event) => {
     if (event.sent_by !== currentUser) {
-      // const isCurrentChannel = channelID === event.channel_id
-
-      // if (isCurrentChannel && !document.hidden) {
-      //   // Chỉ trackVisit khi tab active
-      //   trackVisit({ channel_id: channelID })
-      // }
-
       const currentUnread = unread_count?.message.find((c) => c.name === event.channel_id)?.unread_count || 0
       const isManuallyMarked = manuallyMarked.has(event.channel_id)
 
       const shouldPlay = !isManuallyMarked || (isManuallyMarked && currentUnread > 1) || event.play_sound
 
+      // Kiểm tra channel có nằm trong danh sách của user không
+      const isKnownChannel =
+        channels.some((c) => c.name === event.channel_id) || dm_channels.some((c) => c.name === event.channel_id)
       setLatestUnreadData({
         name: event.channel_id,
         last_message_sender_name: event.last_message_sender_name,
@@ -124,7 +120,7 @@ export const useFetchUnreadMessageCount = () => {
         last_message_timestamp: event.last_message_timestamp
       })
 
-      if (shouldPlay) {
+      if (isKnownChannel && shouldPlay) {
         play(event.last_message_timestamp)
       }
 
@@ -186,7 +182,6 @@ export const useFetchUnreadMessageCount = () => {
         } else {
           activeTitle = `(${totalUnread}) ${last_message_sender_name} đã nhắn cho bạn`
         }
-        play(last_message_timestamp)
       } else {
         activeTitle = `(${totalUnread}) Bạn có tin nhắn chưa đọc`
       }
