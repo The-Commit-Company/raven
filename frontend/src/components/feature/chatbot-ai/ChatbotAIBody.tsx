@@ -192,20 +192,22 @@ const ChatbotAIBody = ({ botID }: { botID?: string }) => {
 
   // Thêm xử lý realtime cho tin nhắn AI
   useFrappeEventListener('raven:new_ai_message', (data) => {
-    if (data.conversation_id === botID) {
-      const alreadyExists = localMessages.some((msg) => msg.id === data.message_id)
-      if (alreadyExists) return
+    if (data.conversation_id !== botID) return
 
-      setLocalMessages((prev) => [
+    setLocalMessages((prev) => {
+      const exists = prev.some((msg) => msg.id === data.message_id)
+      if (exists) return prev
+
+      return [
         ...prev,
         {
           id: data.message_id,
           role: 'ai',
           content: data.message
         }
-      ])
-      setIsThinking(false)
-    }
+      ]
+    })
+    setIsThinking(false)
   })
 
   useFrappeEventListener('raven:error', (error) => {
