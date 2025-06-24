@@ -127,6 +127,7 @@ export interface FileUploadProgress {
 //     fileUploadProgress
 //   }
 // }
+const createClientId = () => `${Date.now()}-${Math.random()}`
 
 export default function useFileUploadV2(channelID: string) {
   const { file } = useContext(FrappeContext) as FrappeConfig
@@ -163,6 +164,8 @@ export default function useFileUploadV2(channelID: string) {
   }
 
   const uploadOneFile = async (f: CustomFile, selectedMessage?: Message | null): Promise<RavenMessage | null> => {
+    const client_id = createClientId()
+
     return file
       .uploadFile(
         f,
