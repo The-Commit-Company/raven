@@ -7,7 +7,7 @@ import { IoMdClose } from 'react-icons/io'
 import { toast } from 'sonner'
 
 import { sortedChannelsAtom, useUpdateChannelLabels } from '@/utils/channel/ChannelAtom'
-import { useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
+import { useFrappePostCall } from 'frappe-react-sdk'
 import { refreshLabelListAtom } from './atoms/labelAtom'
 
 import { useIsMobile } from '@/hooks/useMediaQuery'
@@ -15,7 +15,6 @@ import clsx from 'clsx'
 import { UnifiedChannel } from '../../direct-messages/useUnifiedChannelList'
 import ChannelModalConversationItem from './ChannelModalConversationItem'
 import SelectedChannelItem from './SelectedChannelItem'
-import { useSidebarMode } from '@/utils/layout/sidebar'
 import { UserListContext } from '@/utils/users/UserListProvider'
 
 type Props = {

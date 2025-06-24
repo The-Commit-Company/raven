@@ -224,7 +224,7 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
                   minLength: {
                     value: 3,
                     message: __('Channel name cannot be less than {0} characters.', ['3'])
-                  },
+                  }
                 }}
                 render={({ field, fieldState: { error } }) => (
                   <TextField.Root
