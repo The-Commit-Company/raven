@@ -29,12 +29,17 @@ export interface BaseMessage {
 }
 
 export interface FileMessage extends BaseMessage {
+    id: string
+    fileMeta: any
+    is_error: any
+    is_pending: any
     text: string,
     file: string,
     message_type: 'File'
 }
 
 export interface ImageMessage extends BaseMessage {
+    fileMeta: any
     text: string,
     file: string,
     message_type: 'Image'

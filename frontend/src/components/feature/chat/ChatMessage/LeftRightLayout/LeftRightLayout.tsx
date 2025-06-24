@@ -40,6 +40,9 @@ export interface Props {
   unseenByOthers: any
   isThinking?: boolean
   is_retracted?: number
+  isPending?: boolean
+  removePendingMessage: (id: string) => void
+  sendOnePendingMessage: (id: string) => void
 }
 
 export const LeftRightLayout = ({
@@ -60,7 +63,10 @@ export const LeftRightLayout = ({
   channel,
   unseenByOthers,
   isThinking = false,
-  is_retracted
+  is_retracted,
+  isPending,
+  removePendingMessage,
+  sendOnePendingMessage
 }: Props) => {
   const {
     // name,
@@ -186,7 +192,8 @@ export const LeftRightLayout = ({
                     : !isDesktop && isHovered
                       ? 'bg-gray-2 dark:bg-gray-3'
                       : '',
-                  isThinking && 'animate-pulse'
+                  isThinking && 'animate-pulse',
+                  isPending && 'animate-pulse'
                 )}
               >
                 {!is_continuation && !alignToRight ? (
@@ -221,7 +228,13 @@ export const LeftRightLayout = ({
                   />
                 )}
 
-                <MessageContent message={message} user={user} currentUser={currentUser} />
+                <MessageContent
+                  removePendingMessage={removePendingMessage}
+                  sendOnePendingMessage={sendOnePendingMessage}
+                  message={message}
+                  user={user}
+                  currentUser={currentUser}
+                />
 
                 {message.link_doctype && message.link_document && (
                   <Box className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
@@ -235,13 +248,13 @@ export const LeftRightLayout = ({
                   </Text>
                 )}
 
-                {message_reactions?.length && (
+                {!isPending && message_reactions?.length && (
                   <MessageReactions message={message} message_reactions={message_reactions} />
                 )}
 
                 {message.is_thread === 1 ? <ThreadMessage thread={message} /> : null}
 
-                {(isHoveredDebounced || isEmojiPickerOpen) && (
+                {!isPending && (isHoveredDebounced || isEmojiPickerOpen) && (
                   <QuickActions
                     message={message}
                     onDelete={onDelete}
@@ -270,17 +283,18 @@ export const LeftRightLayout = ({
             />
           </ContextMenu.Root>
         </Stack>
-
-        <div className='absolute bottom-0 -right-2'>
-          <MessageSeenStatus
-            hasBeenSeen={hasBeenSeen}
-            channelType={channel?.type}
-            seenByOthers={seenByOthers}
-            unseenByOthers={unseenByOthers}
-            currentUserOwnsMessage={message.owner === currentUser}
-            position='end'
-          />
-        </div>
+        {!isPending && (
+          <div className='absolute bottom-0 -right-2'>
+            <MessageSeenStatus
+              hasBeenSeen={hasBeenSeen}
+              channelType={channel?.type}
+              seenByOthers={seenByOthers}
+              unseenByOthers={unseenByOthers}
+              currentUserOwnsMessage={message.owner === currentUser}
+              position='end'
+            />
+          </div>
+        )}
       </Flex>
     </div>
   )

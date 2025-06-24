@@ -17,7 +17,8 @@ def send_message(
     is_reply=False,
     linked_message=None,
     json_content=None,
-    send_silently=False
+    send_silently=False,
+    client_id=None  # <== Thêm client_id ở đây
 ):
     # Tạo tin nhắn mới
     doc_fields = {
@@ -50,10 +51,8 @@ def send_message(
 
     if done_members:
         for member in done_members:
-            # Cập nhật is_done = 0
             frappe.db.set_value("Raven Channel Member", member.name, "is_done", 0)
 
-            # Emit realtime event cho user bị reset done
             frappe.publish_realtime(
                 event="raven:channel_done_updated",
                 message={
@@ -91,7 +90,6 @@ def send_message(
 
     for member in members:
         if member != frappe.session.user:
-            # Gửi event new_message cho user khác
             frappe.publish_realtime(
                 event="new_message",
                 message={
@@ -102,7 +100,11 @@ def send_message(
                 user=member
             )
 
-    return doc
+    # ✅ Trả về message + client_id
+    return {
+        "message": doc.as_dict(),
+        "client_id": client_id
+    }
 
 @frappe.whitelist()
 def fetch_recent_files(channel_id):

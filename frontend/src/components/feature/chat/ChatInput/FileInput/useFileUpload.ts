@@ -2,10 +2,10 @@ import { CustomFile } from '@/components/feature/file-upload/FileDrop'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
-import { useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { Message } from '../../../../../../../types/Messaging/Message'
-import { useOnlineStatus } from '@/components/feature/network/useNetworkStatus'
+// import { useOnlineStatus } from '@/components/feature/network/useNetworkStatus'
 
 export const fileExt = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF']
 export interface FileUploadProgress {
@@ -162,7 +162,7 @@ export default function useFileUploadV2(channelID: string) {
   const uploadOneFile = async (
     f: CustomFile,
     selectedMessage?: Message | null
-  ): Promise<{ client_id: string; message: RavenMessage | null }> => {
+  ): Promise<{ client_id: string; message: RavenMessage | null; file: CustomFile }> => {
     const client_id = createClientId()
 
     return file
@@ -203,7 +203,7 @@ export default function useFileUploadV2(channelID: string) {
           }
         }))
 
-        return { client_id, message: res.data.message }
+        return { client_id, message: res.data.message, file: f }
       })
       .catch((e) => {
         console.error('uploadFile error', e)
@@ -211,13 +211,13 @@ export default function useFileUploadV2(channelID: string) {
           description: getErrorMessage(e)
         })
 
-        return { client_id, message: null }
+        return { client_id, message: null, file: f }
       })
   }
 
   const uploadFiles = async (
     selectedMessage?: Message | null
-  ): Promise<{ client_id: string; message: RavenMessage | null }[]> => {
+  ): Promise<{ client_id: string; message: RavenMessage | null; file: CustomFile }[]> => {
     const newFiles = [...filesStateRef.current]
     if (newFiles?.length === 0) return []
 
@@ -237,6 +237,7 @@ export default function useFileUploadV2(channelID: string) {
     compressImages,
     setCompressImages,
     uploadFiles,
+    uploadOneFile,
     fileUploadProgress
   }
 }

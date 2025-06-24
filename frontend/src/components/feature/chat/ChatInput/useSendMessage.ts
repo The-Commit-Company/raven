@@ -43,21 +43,30 @@ import { useUpdateLastMessageDetails } from '@/utils/channel/ChannelListProvider
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { useContext, useState, useEffect, useRef } from 'react'
 import { Message } from '../../../../../../types/Messaging/Message'
-import { useOnlineStatus } from '../../network/useNetworkStatus'
+// import { useOnlineStatus } from '../../network/useNetworkStatus'
+import { CustomFile } from '../../file-upload/FileDrop'
+import { isImageFile } from '../ChatMessage/Renderers/FileMessage'
+import { set as idbSet, get as idbGet } from 'idb-keyval'
 
 export type PendingMessage = {
   id: string
   content?: string
   status: 'pending' | 'error'
   createdAt: number
-  message_type: 'Text' | 'Image' | 'File' | 'Video'
-  file?: RavenMessage['file']
-  json_content?: any
+  message_type: 'Text' | 'File' | 'Image'
+  file?: CustomFile
+  fileMeta?: { name: string; size: number; type: string }
 }
 
 export const useSendMessage = (
   channelID: string,
-  uploadFiles: (selectedMessage?: Message | null) => Promise<RavenMessage[]>,
+  uploadFiles: (
+    selectedMessage?: Message | null
+  ) => Promise<{ client_id: string; message: RavenMessage | null; file: CustomFile }[]>,
+  uploadOneFile: (
+    f: CustomFile,
+    selectedMessage?: Message | null
+  ) => Promise<{ client_id: string; message: RavenMessage | null; file: CustomFile }>,
   onMessageSent: (messages: RavenMessage[]) => void,
   selectedMessage?: Message | null
 ) => {
@@ -71,11 +80,17 @@ export const useSendMessage = (
 
   const createClientId = () => `${Date.now()}-${Math.random()}`
 
-  const persistPendingMessages = (updated: Record<string, PendingMessage[]>) => {
+  const persistPendingMessages = async (updated: Record<string, PendingMessage[]>) => {
     const current = updated[channelID] || []
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(current))
+    const safeToSave = current.map((m) => {
+      if (m.message_type === 'File' || m.message_type === 'Image') {
+        const { id, content, status, createdAt, message_type, fileMeta, file } = m
+        return { id, content, status, createdAt, message_type, fileMeta, file }
+      }
+      return m
+    })
+    await idbSet(STORAGE_KEY, safeToSave)
   }
-
   const updatePendingState = (updater: (messages: PendingMessage[]) => PendingMessage[]) => {
     setPendingMessages((prev) => {
       const updatedChannel = updater(prev[channelID] || [])
@@ -114,46 +129,50 @@ export const useSendMessage = (
       linked_message: selectedMessage ? selectedMessage.name : null,
       send_silently: sendSilently
     })
+    console.log(res)
 
-    const msgWithClientId = { ...res.message, client_id }
+    const { message, client_id: returnedClientId } = res.message
+
+    const msgWithClientId = { ...message, client_id: returnedClientId }
 
     updateSidebarMessage(msgWithClientId)
     onMessageSent([msgWithClientId])
 
-    updatePendingState((msgs) => msgs.filter((m) => m.id !== client_id))
+    updatePendingState((msgs) => msgs.filter((m) => m.id !== returnedClientId))
   }
 
   const sendTextMessage = async (content: string, json?: any, sendSilently = false) => {
-    const client_id = createClientId()
+    // Tìm xem đã có pending message nào trùng content chưa
+    const pendingTextMsg = (pendingMessages[channelID] || []).find(
+      (m) => m.message_type === 'Text' && m.content === content
+    )
+
+    const client_id = pendingTextMsg ? pendingTextMsg.id : createClientId()
+
     await sendOneMessage(content, client_id, json, sendSilently)
   }
 
   const sendFileMessages = async () => {
-    const fileMessages = await uploadFiles(selectedMessage)
-    if (fileMessages?.length > 0) {
-      const last = fileMessages[fileMessages.length - 1]
-      const text = last.message_type === 'Image' ? 'Đã gửi ảnh' : 'Đã gửi file'
+    const uploadedFiles = await uploadFiles(selectedMessage)
 
-      try {
-        updateSidebarMessage(last, text)
-        onMessageSent(fileMessages)
-      } catch (err) {
-        console.error('sendFileMessages error', err)
-
-        const pendingFileMessages: PendingMessage[] = fileMessages
-          .filter((msg) => ['File', 'Text', 'Image', 'Video'].includes(msg.message_type))
-          .map((msg) => ({
-            id: createClientId(),
-            content: msg.text || '',
+    uploadedFiles.forEach(({ client_id, message, file }) => {
+      if (message) {
+        updateSidebarMessage(message)
+        onMessageSent([message])
+      } else {
+        updatePendingState((msgs) => [
+          ...msgs,
+          {
+            id: client_id,
             status: 'pending',
             createdAt: Date.now(),
-            message_type: msg.message_type as 'File' | 'Text' | 'Image' | 'Video',
-            file: msg.file,
-            json_content: msg.json
-          }))
-        updatePendingState((msgs) => [...msgs, ...pendingFileMessages])
+            message_type: isImageFile(file.name) ? 'Image' : 'File', // <--- Sửa ở đây
+            file,
+            fileMeta: { name: file.name, size: file.size, type: file.type }
+          }
+        ])
       }
-    }
+    })
   }
 
   const sendMessage = async (content: string, json?: any, sendSilently = false) => {
@@ -163,8 +182,6 @@ export const useSendMessage = (
       }
       await sendFileMessages()
     } catch (err) {
-      console.error('sendMessage error', err)
-
       if (content.trim()) {
         const client_id = createClientId()
         const newPending: PendingMessage = {
@@ -180,19 +197,22 @@ export const useSendMessage = (
   }
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY)
-    if (saved) {
+    const loadPending = async () => {
       try {
-        const parsed = JSON.parse(saved) as PendingMessage[]
-        setPendingMessages((prev) => ({
-          ...prev,
-          [channelID]: parsed
-        }))
-        pendingQueueRef.current[channelID] = parsed.filter((m) => m.status === 'pending')
+        const saved = await idbGet(STORAGE_KEY)
+        if (saved && Array.isArray(saved)) {
+          setPendingMessages((prev) => ({
+            ...prev,
+            [channelID]: saved
+          }))
+          pendingQueueRef.current[channelID] = saved.filter((m) => m.status === 'pending')
+        }
       } catch (err) {
-        console.error('Error parsing saved pending messages:', err)
+        console.error('Error loading pending messages from IndexedDB', err)
       }
     }
+
+    loadPending()
   }, [channelID])
 
   const retryPendingMessages = async () => {
@@ -202,10 +222,17 @@ export const useSendMessage = (
       try {
         if (msg.message_type === 'Text') {
           await sendOneMessage(msg.content || '', msg.id)
+        } else if (msg.message_type === 'File' && msg.file) {
+          const result = await uploadOneFile(msg.file, selectedMessage)
+          if (result.message) {
+            onMessageSent([result.message])
+            updateSidebarMessage(result.message)
+            removePendingMessage(msg.id)
+          } else {
+            updatePendingState((msgs) => msgs.map((m) => (m.id === msg.id ? { ...m, status: 'error' } : m)))
+          }
         } else {
-          console.warn('Retrying file message...')
-          // Bạn có thể cải tiến đoạn này: nếu muốn gửi lại file thực sự
-          // Hoặc chỉ gửi metadata hoặc thông báo đã lỗi
+          console.warn('Cannot retry file: missing file object in memory')
         }
       } catch (err) {
         console.error('retryPendingMessages error', err)
@@ -216,11 +243,21 @@ export const useSendMessage = (
   const sendOnePendingMessage = async (id: string) => {
     const msg = (pendingMessages[channelID] || []).find((m) => m.id === id)
     if (!msg) return
+
     try {
       if (msg.message_type === 'Text') {
         await sendOneMessage(msg.content || '', msg.id)
+      } else if (msg.message_type === 'File' && msg.file) {
+        const result = await uploadOneFile(msg.file, selectedMessage)
+        if (result.message) {
+          onMessageSent([result.message])
+          updateSidebarMessage(result.message)
+          removePendingMessage(id)
+        } else {
+          updatePendingState((msgs) => msgs.map((m) => (m.id === id ? { ...m, status: 'error' } : m)))
+        }
       } else {
-        console.warn('Retrying one file message...')
+        console.warn('Cannot retry file: missing file object in memory')
       }
     } catch (err) {
       console.error('sendOnePendingMessage error', err)

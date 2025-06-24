@@ -58,6 +58,8 @@ interface MessageBlockProps {
   channel: any
   isThinking?: boolean
   isPending?: boolean
+  removePendingMessage: (id: string) => void
+  sendOnePendingMessage: (id: string) => void
 }
 
 export const MessageItem = React.memo(
@@ -75,7 +77,9 @@ export const MessageItem = React.memo(
     seenUsers,
     channel,
     isThinking = false,
-    isPending
+    isPending,
+    removePendingMessage,
+    sendOnePendingMessage
   }: MessageBlockProps) => {
     const [isEmojiPickerOpen, setEmojiPickerOpen] = useState(false)
     const [selectedText, setSelectedText] = useState('')
@@ -239,6 +243,9 @@ export const MessageItem = React.memo(
             unseenByOthers={unseenByOthers}
             isThinking={isThinking}
             is_retracted={is_retracted}
+            isPending={isPending}
+            removePendingMessage={removePendingMessage}
+            sendOnePendingMessage={sendOnePendingMessage}
           />
         ) : (
           // Sử dụng layout mặc định nếu không phải 'Left-Right'
@@ -363,7 +370,13 @@ export const MessageItem = React.memo(
                         />
                       )}
                       {/* Hiển thị nội dung tin nhắn tùy theo loại */}
-                      <MessageContent message={message} user={user} currentUser={currentUser} />
+                      <MessageContent
+                        removePendingMessage={removePendingMessage}
+                        sendOnePendingMessage={sendOnePendingMessage}
+                        message={message}
+                        user={user}
+                        currentUser={currentUser}
+                      />
                       {/* Hiển thị liên kết tài liệu nếu có */}
                       {message.link_doctype && message.link_document && (
                         <Box className={clsx(message.is_continuation ? 'ml-0.5' : '-ml-0.5')}>
@@ -712,6 +725,8 @@ type MessageContentProps = BoxProps & {
   currentUser: string | null | undefined // Thống tin người dùng hien tại (tùy chọn)
   message: Message // Đối tượng tin nhắn
   forceHideLinkPreview?: boolean // Có ẩn xem trước liên kết không (tùy chọn, mặc định là false)
+  removePendingMessage: (id: string) => void
+  sendOnePendingMessage: (id: string) => void
 }
 
 /**
@@ -799,6 +814,8 @@ export const MessageContent = ({
   user,
   currentUser,
   forceHideLinkPreview = false,
+  removePendingMessage,
+  sendOnePendingMessage,
   ...props
 }: MessageContentProps) => {
   const displayText =
@@ -821,7 +838,14 @@ export const MessageContent = ({
 
       {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} />}
 
-      {message.message_type === 'File' && <FileMessageBlock message={message} user={user} />}
+      {message.message_type === 'File' && (
+        <FileMessageBlock
+          onRetry={(id) => sendOnePendingMessage(id)}
+          onRemove={(id) => removePendingMessage(id)}
+          message={message}
+          user={user}
+        />
+      )}
 
       {message.message_type === 'Poll' && <PollMessageBlock message={message} user={user} />}
     </Box>
