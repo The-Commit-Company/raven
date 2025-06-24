@@ -7,7 +7,7 @@ import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
 import { getTimePassed } from '@/utils/dateConversions'
 import { ChannelIcon } from '@/utils/layout/channelIcon'
 import { Box, Flex, Text } from '@radix-ui/themes'
-import { FrappeConfig, FrappeContext, useFrappePostCall } from 'frappe-react-sdk'
+import { FrappeConfig, FrappeContext, useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import parse from 'html-react-parser'
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { BiHide, BiMessageAltDetail } from 'react-icons/bi'
@@ -41,6 +41,7 @@ const MentionsList: React.FC = () => {
   const location = useLocation()
   const searchParams = new URLSearchParams(location.search)
   const messageParams = searchParams.get('message_id')
+  const { mutate: mutateUnreadCount } = useFrappeGetCall('raven.api.mentions.get_unread_mention_count')
 
   const getKey = useCallback((pageIndex: number, prev: { message: MentionObject[] } | null) => {
     if (prev && !prev.message?.length) return null
@@ -88,6 +89,13 @@ const MentionsList: React.FC = () => {
     })
   }, [])
 
+  const handleMentionRead = () => {
+    mutateUnreadCount((prev: { message: number }) => {
+      const count = prev?.message ?? 0
+      return { message: Math.max(0, count - 1) }
+    }, false)
+  }
+
   if (isEmpty) {
     return (
       <Flex direction='column' align='center' justify='center' className='h-[320px] px-6 text-center'>
@@ -113,6 +121,7 @@ const MentionsList: React.FC = () => {
               workspaceID={workspaceID}
               onHide={handleHideMention}
               messageParams={messageParams}
+              onMarkReadSuccess={handleMentionRead}
             />
           </li>
         ))}
@@ -141,7 +150,8 @@ const MentionItem: React.FC<{
   messageParams?: string | null
   workspaceID?: string
   onHide: (id: string) => void
-}> = ({ mention, workspaceID, onHide, messageParams }) => {
+  onMarkReadSuccess?: () => void
+}> = ({ mention, workspaceID, onHide, messageParams, onMarkReadSuccess }) => {
   const [isRead, setIsRead] = useState(mention.is_read === 1)
 
   const { call, loading: isLoading } = useFrappePostCall('raven.api.mentions.toggle_mention_hidden')
@@ -170,10 +180,14 @@ const MentionItem: React.FC<{
 
   const handleClickMention = () => {
     if (!isRead) {
-      markAsRead({ mention_id: mention.mention_id }).catch(() => {
-        console.warn('Mark as read failed')
-      })
-      setIsRead(true)
+      markAsRead({ mention_id: mention.mention_id })
+        .then(() => {
+          setIsRead(true)
+          onMarkReadSuccess?.()
+        })
+        .catch(() => {
+          console.warn('Mark as read failed')
+        })
     }
 
     navigate(to)

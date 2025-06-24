@@ -19,7 +19,6 @@ const EditLabelModal = ({ name, label, isOpen, setIsOpen }: Props) => {
   const setRefreshKey = useSetAtom(refreshLabelListAtom)
   const { renameLabel } = useUpdateChannelLabels()
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const trimmed = newLabel.trim()

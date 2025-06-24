@@ -72,46 +72,32 @@ def get_mentions(limit: int = 10, start: int = 0):
 @frappe.whitelist(methods=["GET"])
 def get_unread_mention_count():
 	"""
-	Get the number of mentions for the current user since the last mention viewed date
+	Get the number of unread mentions (is_read = 0)
 	"""
-
-	last_mention_viewed_date = frappe.db.get_value(
-		"Raven User", {"user": frappe.session.user}, "last_mention_viewed_on"
-	)
-
-	if not last_mention_viewed_date:
-		# Date when the feature was launched
-		last_mention_viewed_date = "2025-02-28 00:00:00"
 
 	mention = frappe.qb.DocType("Raven Mention")
 	message = frappe.qb.DocType("Raven Message")
 	channel = frappe.qb.DocType("Raven Channel")
 	channel_member = frappe.qb.DocType("Raven Channel Member")
 
-	# Join mention with message and message with channel.
-	# Only fetch count for where the user is a member of the channel
-
 	query = (
 		frappe.qb.from_(mention)
 		.select(Count(mention.name).as_("mention_count"))
-		.left_join(message)
-		.on(mention.parent == message.name)
-		.left_join(channel)
-		.on(message.channel_id == channel.name)
-		.left_join(channel_member)
-		.on(
-			(channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user)
+		.left_join(message).on(mention.parent == message.name)
+		.left_join(channel).on(message.channel_id == channel.name)
+		.left_join(channel_member).on(
+			(channel.name == channel_member.channel_id)
+			& (channel_member.user_id == frappe.session.user)
 		)
 		.where(mention.user == frappe.session.user)
+		.where(mention.is_read != 1)
 		.where(channel_member.user_id == frappe.session.user)
-		.where(message.creation > last_mention_viewed_date)
 		.where(message.owner != frappe.session.user)
+		.where(message.is_retracted != 1)
 	)
+
 	result = query.run(as_dict=True)
-	if result:
-		return result[0].mention_count
-	else:
-		return 0
+	return result[0].mention_count if result else 0
 
 @frappe.whitelist(methods=["POST"])
 def toggle_mention_hidden():

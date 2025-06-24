@@ -39,7 +39,6 @@ export const SidebarHeader = () => {
   const { logout } = useContext(UserContext)
   const { myProfile } = useCurrentRavenUser()
   const isActive = useIsUserActive(userData.name)
-  
 
   const maxLength = isTablet || isMobile ? 18 : 30
 
@@ -48,15 +47,10 @@ export const SidebarHeader = () => {
   // const labelTitle = isLabelObject(title) ? title : ''
 
   const displayTitle = isLabelObject(title) ? title.labelName : title ? title : ''
-  
+
   const renderCreateModal = labelID && (
     <Suspense fallback={null}>
-      <CreateConversationModal
-        name={labelID}
-        label={title}
-        isOpen={isCreateOpen}
-        setIsOpen={setIsCreateOpen}
-      />
+      <CreateConversationModal name={labelID} label={title} isOpen={isCreateOpen} setIsOpen={setIsCreateOpen} />
     </Suspense>
   )
 
