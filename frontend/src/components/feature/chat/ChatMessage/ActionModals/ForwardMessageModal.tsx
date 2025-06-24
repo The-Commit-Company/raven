@@ -42,41 +42,41 @@ const ForwardMessageModal = ({ onClose, message }: ForwardMessageModalProps) => 
   const { updateLastMessageInChannelList } = useUpdateLastMessageInChannelList()
 
   const onSubmit = (data: ForwardMessageForm) => {
-  if (data.selected_options && data.selected_options.length > 0) {
-    call({
-      message_receivers: data.selected_options,
-      forwarded_message: data.message
-    })
-      .then(() => {
-        data.selected_options!.forEach((receiver) => {
-          let channelID = ''
+    if (data.selected_options && data.selected_options.length > 0) {
+      call({
+        message_receivers: data.selected_options,
+        forwarded_message: data.message
+      })
+        .then(() => {
+          data.selected_options!.forEach((receiver) => {
+            let channelID = ''
 
-          if (receiver.type === 'User') {
-            channelID = (receiver as any).channel_id
-          } else {
-            channelID = receiver.name
-          }
+            if (receiver.type === 'User') {
+              channelID = (receiver as any).channel_id
+            } else {
+              channelID = receiver.name
+            }
 
-          const timestamp = new Date().toISOString()
+            const timestamp = new Date().toISOString()
 
-          const messageDetails = {
-            message_id: message.name,
-            content: message.text || '',
-            owner: message.owner
-          }
+            const messageDetails = {
+              message_id: message.name,
+              content: message.text || '',
+              owner: message.owner
+            }
 
-          updateLastMessageInChannelList(channelID, timestamp, messageDetails)
-          updateLastMessageForChannel(channelID, messageDetails, timestamp)
+            updateLastMessageInChannelList(channelID, timestamp, messageDetails)
+            updateLastMessageForChannel(channelID, messageDetails, timestamp)
+          })
+
+          toast.success('Chuyển tiếp tin nhắn thành công')
+          handleClose()
         })
-
-        toast.success('Chuyển tiếp tin nhắn thành công')
-        handleClose()
-      })
-      .catch(() => {
-        toast.error('Chuyển tiếp tin nhắn thất bại')
-      })
+        .catch(() => {
+          toast.error('Chuyển tiếp tin nhắn thất bại')
+        })
+    }
   }
-}
 
   const handleClose = () => {
     reset()

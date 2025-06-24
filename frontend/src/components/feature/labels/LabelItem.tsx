@@ -7,7 +7,6 @@ import { MdLabelOutline } from 'react-icons/md'
 import LabelItemList from './LabelItemList'
 import LabelItemMenu from './LabelItemMenu'
 
-
 interface LabelItemProps {
   label: string
   name: string
