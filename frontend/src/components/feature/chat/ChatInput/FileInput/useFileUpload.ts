@@ -127,11 +127,9 @@ export interface FileUploadProgress {
 //     fileUploadProgress
 //   }
 // }
-const createClientId = () => `${Date.now()}-${Math.random()}`
 
 export default function useFileUploadV2(channelID: string) {
   const { file } = useContext(FrappeContext) as FrappeConfig
-  const isOnline = useOnlineStatus()
 
   const fileInputRef = useRef<any>(null)
   const filesStateRef = useRef<CustomFile[]>([])
@@ -139,12 +137,10 @@ export default function useFileUploadV2(channelID: string) {
   const [files, setFiles] = useState<CustomFile[]>([])
   const [compressImages, setCompressImages] = useState(true)
   const [fileUploadProgress, setFileUploadProgress] = useState<Record<string, FileUploadProgress>>({})
-  const [pendingFiles, setPendingFiles] = useState<Record<string, CustomFile[]>>({})
-
-  const pendingQueueRef = useRef<Record<string, CustomFile[]>>({})
-  const isRetryingRef = useRef(false)
 
   filesStateRef.current = files
+
+  const createClientId = () => `${Date.now()}-${Math.random()}`
 
   const addFile = (file: File) => {
     const newFile: CustomFile = file as CustomFile
@@ -163,7 +159,10 @@ export default function useFileUploadV2(channelID: string) {
     })
   }
 
-  const uploadOneFile = async (f: CustomFile, selectedMessage?: Message | null): Promise<RavenMessage | null> => {
+  const uploadOneFile = async (
+    f: CustomFile,
+    selectedMessage?: Message | null
+  ): Promise<{ client_id: string; message: RavenMessage | null }> => {
     const client_id = createClientId()
 
     return file
@@ -177,7 +176,7 @@ export default function useFileUploadV2(channelID: string) {
             compressImages: compressImages,
             is_reply: selectedMessage ? 1 : 0,
             linked_message: selectedMessage ? selectedMessage.name : null,
-            text: '' // không để text là tên file
+            text: ''
           },
           fieldname: 'file'
         },
@@ -203,7 +202,8 @@ export default function useFileUploadV2(channelID: string) {
             isComplete: true
           }
         }))
-        return res.data.message
+
+        return { client_id, message: res.data.message }
       })
       .catch((e) => {
         console.error('uploadFile error', e)
@@ -211,66 +211,22 @@ export default function useFileUploadV2(channelID: string) {
           description: getErrorMessage(e)
         })
 
-        // thêm vào pending
-        setPendingFiles((prev) => {
-          const updated = {
-            ...prev,
-            [channelID]: [...(prev[channelID] || []), f]
-          }
-          pendingQueueRef.current = updated
-          return updated
-        })
-
-        return null
+        return { client_id, message: null }
       })
   }
 
-  const uploadFiles = async (selectedMessage?: Message | null): Promise<RavenMessage[]> => {
+  const uploadFiles = async (
+    selectedMessage?: Message | null
+  ): Promise<{ client_id: string; message: RavenMessage | null }[]> => {
     const newFiles = [...filesStateRef.current]
     if (newFiles?.length === 0) return []
 
     const promises = newFiles.map((f) => uploadOneFile(f, selectedMessage))
 
-    return Promise.all(promises)
-      .then((res) => {
-        setFiles([])
-        return res.filter((file) => file !== null)
-      })
-      .catch((e) => {
-        console.error(e)
-        return []
-      })
+    return Promise.all(promises).finally(() => {
+      setFiles([])
+    })
   }
-
-  // retry khi online trở lại
-  useEffect(() => {
-    if (isOnline && pendingQueueRef.current[channelID]?.length > 0 && !isRetryingRef.current) {
-      isRetryingRef.current = true
-
-      const retry = async () => {
-        console.log('Retry pendingFiles:', pendingQueueRef.current[channelID])
-        const queue = [...(pendingQueueRef.current[channelID] || [])]
-
-        for (const file of queue) {
-          try {
-            await uploadOneFile(file)
-          } catch (err) {
-            console.error('retry uploadFile error', err)
-          }
-        }
-
-        setPendingFiles((prev) => ({
-          ...prev,
-          [channelID]: []
-        }))
-
-        pendingQueueRef.current[channelID] = []
-        isRetryingRef.current = false
-      }
-
-      retry()
-    }
-  }, [isOnline, channelID])
 
   return {
     fileInputRef,
@@ -281,7 +237,6 @@ export default function useFileUploadV2(channelID: string) {
     compressImages,
     setCompressImages,
     uploadFiles,
-    fileUploadProgress,
-    pendingFiles: pendingFiles[channelID] || []
+    fileUploadProgress
   }
 }

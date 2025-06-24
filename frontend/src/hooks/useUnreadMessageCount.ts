@@ -112,15 +112,15 @@ export const useFetchUnreadMessageCount = () => {
       // Kiểm tra channel có nằm trong danh sách của user không
       const isKnownChannel =
         channels.some((c) => c.name === event.channel_id) || dm_channels.some((c) => c.name === event.channel_id)
-      setLatestUnreadData({
-        name: event.channel_id,
-        last_message_sender_name: event.last_message_sender_name,
-        is_direct_message: event.is_direct_message,
-        channel_name: event.channel_name,
-        last_message_timestamp: event.last_message_timestamp
-      })
 
       if (isKnownChannel && shouldPlay) {
+        setLatestUnreadData({
+          name: event.channel_id,
+          last_message_sender_name: event.last_message_sender_name,
+          is_direct_message: event.is_direct_message,
+          channel_name: event.channel_name,
+          last_message_timestamp: event.last_message_timestamp
+        })
         play(event.last_message_timestamp)
       }
 
