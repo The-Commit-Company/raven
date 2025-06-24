@@ -60,8 +60,15 @@ export const prepareSortedChannels = (
       user_labels: dm.user_labels ?? []
     }))
   ].sort((a, b) => {
-    const timeA = new Date(a.last_message_timestamp || 0).getTime()
-    const timeB = new Date(b.last_message_timestamp || 0).getTime()
+    const getTimestamp = (item: any) => {
+      const lastMsg = item.last_message_timestamp ? new Date(item.last_message_timestamp).getTime() : 0
+      const creation = item.creation ? new Date(item.creation).getTime() : 0
+      return lastMsg > 0 ? lastMsg : creation
+    }
+
+    const timeA = getTimestamp(a)
+    const timeB = getTimestamp(b)
+
     return timeB - timeA
   })
 }

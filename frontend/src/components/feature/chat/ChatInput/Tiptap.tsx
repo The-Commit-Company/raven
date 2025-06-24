@@ -629,7 +629,10 @@ const Tiptap = forwardRef(
                   <TextFormattingMenu />
                 </div>
               </BubbleMenu>
-              <div className='border-[1.5px] flex items-end justify-between border-gray-4 rounded-radius2 w-[calc(100vw-72px)] focus-within:border-accent-a8'>
+              <div
+                onClick={handleClick}
+                className='border-[1.5px] flex items-end justify-between border-gray-4 rounded-radius2 w-[calc(100vw-72px)] focus-within:border-accent-a8'
+              >
                 <div className='w-[85%]'>
                   <EditorContent editor={editor} />
                 </div>
