@@ -39,6 +39,11 @@ import { useParams } from 'react-router-dom'
 import { useAtom } from 'jotai'
 import { EnterKeyBehaviourAtom } from '@/utils/preferences'
 const MobileInputActions = lazy(() => import('./MobileActions/MobileInputActions'))
+import { ReactRendererOptions } from '@tiptap/react'
+import { useFrappePostCall } from 'frappe-react-sdk'
+import { useTimelineDocuments } from '@/hooks/useTimelineDocuments'
+import TimelineMentionList, { TimelineItem } from './TimelineMentionList'
+
 
 const lowlight = createLowlight(common)
 
@@ -105,6 +110,13 @@ export const ChannelMention = Mention.extend({
         }
     })
 
+// New Timeline Mention using $ character
+export const TimelineMention = Mention.extend({
+    name: 'timelineMention',
+    priority: 101, // Higher priority than default mention
+})
+
+
 export interface MemberSuggestions extends UserFields {
     is_member: boolean
 }
@@ -112,6 +124,9 @@ export interface MemberSuggestions extends UserFields {
 const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpArrow, channelMembers, onUserType, channelID, replyMessage, clearReplyMessage, placeholder = 'Type a message...', messageSending, sessionStorageKey = 'tiptap-editor', disableSessionStorage = false, defaultText = '' }: TiptapEditorProps, ref) => {
 
     const { enabledUsers } = useContext(UserListContext)
+    const { timelineDocuments } = useTimelineDocuments()
+
+    const { call: addTimelineUpdateCall } = useFrappePostCall('raven.api.timeline_api.add_timeline_update')
 
     const channelMembersRef = useRef<MemberSuggestions[]>([])
 
@@ -138,8 +153,7 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
 
     const [enterKeyBehaviour] = useAtom(EnterKeyBehaviourAtom)
 
-    const handleMessageSendAction = (editor: any) => {
-
+    const handleMessageSendAction = async (editor: any) => {
         const hasContent = editor.getText().trim().length > 0
         let html = ''
         let json = {}
@@ -150,16 +164,82 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
 
         editor.setEditable(false)
 
-        onMessageSend(html, json)
-            .then(() => {
-                editor.commands.clearContent(true);
-                editor.setEditable(true)
-                editor.commands.focus('start')
-            })
-            .catch(() => {
-                editor.setEditable(true)
-            })
+        try {
+            // Send the message first
+            await onMessageSend(html, json)
+        
+            // Process timeline updates
+            await processTimelineUpdates(json, html)
+        
+            editor.commands.clearContent(true);
+            editor.setEditable(true)
+            editor.commands.focus('start')
+        } catch (error) {
+            editor.setEditable(true)
+            throw error
+        }
         return editor.commands.clearContent(true);
+    }
+
+    const extractTimelineMentions = (json: any): Array<{timeline_id: string, experiment_id: string, timeline_task: string}> => {
+        const mentions: Array<{timeline_id: string, experiment_id: string, timeline_task: string}> = []
+        
+        if (!json || !json.content) return mentions
+        
+        const traverseContent = (content: any[]) => {
+            content.forEach((node: any) => {
+                if (node.type === 'timelineMention' && node.attrs) {
+                    mentions.push({
+                        timeline_id: node.attrs.timeline_id,
+                        experiment_id: node.attrs.experiment_id,
+                        timeline_task: node.attrs.timeline_task
+                    })
+                }
+                if (node.content) {
+                    traverseContent(node.content)
+                }
+            })
+        }
+        
+        traverseContent(json.content)
+        return mentions
+    }
+
+    const extractPlainTextAfterMention = (html: string, json: any): string => {
+        // Extract text that comes after timeline mentions
+        if (!json || !json.content) return html
+        
+        let plainText = ''
+        const traverseContent = (content: any[]) => {
+            content.forEach((node: any) => {
+                if (node.type === 'paragraph' && node.content) {
+                    let afterMention = false
+                    node.content.forEach((child: any) => {
+                        if (child.type === 'timelineMention') {
+                            afterMention = true
+                        } else if (child.type === 'text' && child.text && afterMention) {
+                            plainText += child.text.trim() + ' '
+                        }
+                    })
+                }
+            })
+        }
+        
+        traverseContent(json.content)
+        return plainText.trim() || html
+    }
+
+    const processTimelineUpdates = async (json: any, html: string) => {
+        const timelineMentions = extractTimelineMentions(json)
+        if (timelineMentions.length > 0) {
+            const updateText = extractPlainTextAfterMention(html, json)
+            await Promise.all(timelineMentions.map(mention => 
+                addTimelineUpdateCall({
+                    timeline_id: mention.timeline_id,
+                    update_text: updateText
+                })
+            ))
+        }
     }
 
     const handleNewLineAction = (editor: any) => {
@@ -175,7 +255,7 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
         name: 'keyboardHandler',
         addKeyboardShortcuts() {
             return {
-                Enter: () => {
+                'Enter': ({ editor }) => {
                     //  Check for phone
                     if (matchMedia('(max-device-width: 768px)').matches) {
                         return false
@@ -186,33 +266,32 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
                         return false
                     }
 
-                    const isCodeBlockActive = this.editor.isActive('codeBlock');
-                    const isListItemActive = this.editor.isActive('listItem');
-
-
+                    
+                    const isCodeBlockActive = editor.isActive('codeBlock');
+                    const isListItemActive = editor.isActive('listItem');
 
                     if (isCodeBlockActive || isListItemActive) {
                         return false;
                     }
 
                     if (enterKeyBehaviour === 'send-message') {
-                        return handleMessageSendAction(this.editor)
+                        handleMessageSendAction(editor)
+                        return true
                     } else {
-                        return handleNewLineAction(this.editor)
+                        return handleNewLineAction(editor)
                     }
-
                 },
 
-                'Mod-Enter': () => {
-                    const isCodeBlockActive = this.editor.isActive('codeBlock');
-                    const isListItemActive = this.editor.isActive('listItem');
-                    const hasContent = this.editor.getText().trim().length > 0
+                'Mod-Enter': ({ editor }) => {
+                    const isCodeBlockActive = editor.isActive('codeBlock');
+                    const isListItemActive = editor.isActive('listItem');
+                    const hasContent = editor.getText().trim().length > 0
                     /**
                      * when inside of a codeblock and setting for sending the message with CMD/CTRL-Enter
                      * force calling the `onSubmit` function and clear the editor content
                      */
                     if (isCodeBlockActive) {
-                        return this.editor.commands.newlineInCode();
+                        return editor.commands.newlineInCode();
                     }
 
                     if (isListItemActive) {
@@ -223,41 +302,43 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
                         let html = ''
                         let json = {}
                         if (hasContent) {
-                            html = this.editor.getHTML()
-                            json = this.editor.getJSON()
+                            html = editor.getHTML()
+                            json = editor.getJSON()
                         }
 
-                        this.editor.setEditable(false)
+                        editor.setEditable(false)
                         onMessageSend(html, json)
                             .then(() => {
-                                this.editor.commands.clearContent(true);
-                                this.editor.setEditable(true)
+                                editor.commands.clearContent(true);
+                                editor.setEditable(true)
                             })
                             .catch(() => {
-                                this.editor.setEditable(true)
+                                editor.setEditable(true)
                             })
-                        return this.editor.commands.clearContent(true);
+                        editor.commands.clearContent(true);
+                        return true;
                     }
 
                     return false;
                 },
-                Backspace: () => {
-                    const isEditorEmpty = this.editor.isEmpty
+                Backspace: ({ editor }) => {
+                    const isEditorEmpty = editor.isEmpty
 
                     if (isEditorEmpty) {
                         // Clear the reply message if the editor is empty
                         clearReplyMessage?.()
-                        return this.editor.commands.clearContent(true)
+                        editor.commands.clearContent(true)
+                        return true
                     }
 
                     return false
                 },
-                'Shift-Enter': () => {
-                    return handleNewLineAction(this.editor)
+                'Shift-Enter': ({ editor }) => {
+                    return handleNewLineAction(editor)
                 },
-                'ArrowUp': () => {
+                'ArrowUp': ({ editor }) => {
                     // If the editor is empty, call the onUpArrow function
-                    if (this.editor.isEmpty) {
+                    if (editor.isEmpty) {
                         onUpArrow?.()
                     }
                     return false
@@ -363,7 +444,7 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
                 return {
                     // this extends existing shortcuts instead of overwriting
                     ...this.parent?.(),
-                    'Mod-Shift-E': () => this.editor.commands.toggleCodeBlock(),
+                    'Mod-Shift-E': ({ editor }) => editor.commands.toggleCodeBlock(),
                 }
             }
         }).configure({
@@ -463,6 +544,87 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
                     return {
                         onStart: props => {
                             component = new ReactRenderer(ChannelMentionList, {
+                                props,
+                                editor: props.editor,
+                            })
+
+                            if (!props.clientRect) {
+                                return
+                            }
+
+                            popup = tippy('body' as any, {
+                                getReferenceClientRect: props.clientRect as any,
+                                appendTo: () => document.body,
+                                content: component.element,
+                                showOnCreate: true,
+                                interactive: true,
+                                trigger: 'manual',
+                                placement: 'bottom-start',
+                            })
+                        },
+
+                        onUpdate(props) {
+                            component.updateProps(props)
+
+                            if (!props.clientRect) {
+                                return
+                            }
+
+                            popup[0].setProps({
+                                getReferenceClientRect: props.clientRect,
+                            })
+                        },
+
+                        onKeyDown(props) {
+                            if (props.event.key === 'Escape') {
+                                popup[0].hide()
+
+                                return true
+                            }
+
+                            return component.ref?.onKeyDown(props)
+                        },
+
+                        onExit() {
+                            popup[0].destroy()
+                            component.destroy()
+                        },
+                    }
+                },
+
+            }
+        }),
+        // New Timeline Mention Configuration
+        TimelineMention.configure({
+            HTMLAttributes: {
+                class: 'mention timeline-mention',
+            },
+            renderHTML({ options, node }) {
+                return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`
+            },
+            suggestion: {
+                char: '$',
+                pluginKey: new PluginKey('timelineMention'),
+                // Allow any character to be a prefix for a timeline mention
+                allowedPrefixes: null,
+                allow: (props) => {
+                    // Do not allow mentions if the preceding character is a letter or digit
+                    const precedingCharacter = props.state.doc.textBetween(props.range.from - 1, props.range.from, '')
+                    return !/[a-zA-Z0-9]/.test(precedingCharacter)
+                },
+                items: (query) => {
+                    return timelineDocuments.filter((timeline: TimelineItem) => 
+                        timeline.timeline_task.toLowerCase().includes(query.query.toLowerCase()) ||
+                        timeline.experiment_id.toLowerCase().includes(query.query.toLowerCase())
+                    ).slice(0, 10);
+                },
+                render: () => {
+                    let component: any;
+                    let popup: any;
+
+                    return {
+                        onStart: props => {
+                            component = new ReactRenderer(TimelineMentionList, {
                                 props,
                                 editor: props.editor,
                             })

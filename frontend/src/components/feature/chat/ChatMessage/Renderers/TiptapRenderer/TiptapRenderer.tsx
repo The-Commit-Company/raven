@@ -15,6 +15,7 @@ import { common, createLowlight } from 'lowlight'
 import python from 'highlight.js/lib/languages/python'
 import { CustomBold } from './Bold'
 import { ChannelMentionRenderer, UserMentionRenderer } from './Mention'
+import { TimelineMentionRenderer } from './TimelineMentionRenderer'
 import { CustomLink } from './Link'
 import { CustomUnderline } from './Underline'
 import { Image } from '@tiptap/extension-image'
@@ -159,6 +160,20 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, showMiniIma
         suggestion: {
           char: '#',
           pluginKey: new PluginKey('channelMention'),
+        },
+      }),
+      Mention.extend({
+        name: 'timelineMention',
+        HTMLAttributes: {
+          class: 'mention timeline-mention',
+        },
+        addNodeView() {
+          return ReactNodeViewRenderer(TimelineMentionRenderer)
+        }
+      }).configure({
+        suggestion: {
+          char: '$',
+          pluginKey: new PluginKey('timelineMention'),
         },
       }),
       Details,
