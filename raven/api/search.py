@@ -1,5 +1,6 @@
 import frappe
 from pypika import JoinType
+from raven.typesense_setup import get_typesense_client
 
 
 @frappe.whitelist()
@@ -151,3 +152,35 @@ def get_search_result(
 		query = query.where(message._liked_by.like(f"%{frappe.session.user}%"))
 
 	return query.limit(20).offset(0).run(as_dict=True)
+
+@frappe.whitelist()
+def get_typense_search_result(
+    query: str,
+    query_by: str,
+    collection: str,
+    filter_by: dict = None,
+    sort_by: dict = None,
+    page: int = 1,
+    per_page: int = 10,
+    group_by: str = None,
+):
+    client = get_typesense_client(user=frappe.session.user)
+    search_params = {
+        "q": query,
+        "query_by": query_by,
+        "enable_lazy_filter": True,
+        "validate_field_names": False,
+        "page": page,
+        "per_page": per_page,
+    }
+
+    if filter_by:
+        search_params["filter_by"] = filter_by
+
+    if sort_by:
+        search_params["sort_by"] = sort_by
+
+    if group_by:
+        search_params["group_by"] = group_by
+
+    return client.collections[collection].documents.search(search_params)
