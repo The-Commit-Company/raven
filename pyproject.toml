@@ -10,7 +10,8 @@ dynamic = ["version"]
 dependencies = [
  "linkpreview~=0.9.0",
  "openai",
- "blurhash-python"
+ "blurhash-python",
+ "typesense"
 ]
 
 [build-system]

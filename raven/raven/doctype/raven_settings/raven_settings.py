@@ -5,21 +5,15 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
-
 class RavenSettings(Document):
 	# begin: auto-generated types
-	# ruff: noqa
-
 	# This code is auto-generated. Do not modify anything in this block.
 
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
-
-		from raven.raven_integrations.doctype.raven_hr_company_workspace.raven_hr_company_workspace import (
-			RavenHRCompanyWorkspace,
-		)
+		from raven.raven_integrations.doctype.raven_hr_company_workspace.raven_hr_company_workspace import RavenHRCompanyWorkspace
 
 		auto_add_system_users: DF.Check
 		auto_create_department_channel: DF.Check
@@ -27,6 +21,7 @@ class RavenSettings(Document):
 		config: DF.SmallText | None
 		department_channel_type: DF.Literal["Public", "Private"]
 		enable_ai_integration: DF.Check
+		enable_typesense: DF.Check
 		enable_video_calling_via_livekit: DF.Check
 		livekit_api_key: DF.Data | None
 		livekit_api_secret: DF.Password | None
@@ -42,8 +37,13 @@ class RavenSettings(Document):
 		show_if_a_user_is_on_leave: DF.Check
 		show_raven_on_desk: DF.Check
 		tenor_api_key: DF.Data | None
+		typesense_admin_api_key: DF.Password | None
+		typesense_connection_timeout_seconds: DF.Int
+		typesense_host: DF.Data | None
+		typesense_port: DF.Int
+		typesense_protocol: DF.Literal["http", "https"]
+		typesense_search_api_key: DF.Password | None
 		vapid_public_key: DF.Data | None
-	# ruff: noqa
 	# end: auto-generated types
 
 	def validate(self):
@@ -68,3 +68,8 @@ class RavenSettings(Document):
 
 		if self.openai_project_id:
 			self.openai_project_id = self.openai_project_id.strip()
+
+	@frappe.whitelist()
+	def run_typesense_setup(self):
+		from raven.typesense_setup import setup_typesense
+		return setup_typesense()
