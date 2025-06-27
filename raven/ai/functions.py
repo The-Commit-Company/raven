@@ -251,3 +251,33 @@ def set_value(doctype: str, document_id: str, fieldname: str | dict, value: str 
 		return client.set_value(doctype, document_id, fieldname)
 	else:
 		return client.set_value(doctype, document_id, fieldname, value)
+
+
+def get_report_result(
+	report_name: str,
+	filters: dict = None,
+	limit=None,
+	user: str = None,
+	ignore_prepared_report: bool = False,
+	are_default_filters: bool = True,
+):
+	"""
+	Run a report and return the columns and result
+	"""
+	# fetch the particular report
+	report = frappe.get_doc("Report", report_name)
+	if not report:
+		return {
+			"message": f"Report {report_name} is not present in the system. Please create the report first."
+		}
+
+	# run the report by using the get_data method and return the columns and result
+	columns, data = report.get_data(
+		filters=filters,
+		limit=limit,
+		user=user,
+		ignore_prepared_report=ignore_prepared_report,
+		are_default_filters=are_default_filters,
+	)
+
+	return {"columns": columns, "data": data}
