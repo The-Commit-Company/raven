@@ -156,23 +156,28 @@ doc_events = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# "all": [
-# "raven.tasks.all"
-# ],
-# "daily": [
-# "raven.tasks.daily"
-# ],
-# "hourly": [
-# "raven.tasks.hourly"
-# ],
-# "weekly": [
-# "raven.tasks.weekly"
-# ],
-# "monthly": [
-# "raven.tasks.monthly"
-# ],
-# }
+scheduler_events = {
+    # "all": [
+    # "raven.tasks.all"
+    # ],
+    # "daily": [
+    # "raven.tasks.daily"
+    # ],
+    # "hourly": [
+    # "raven.tasks.hourly"
+    # ],
+    # "weekly": [
+    # "raven.tasks.weekly"
+    # ],
+    # "monthly": [
+    # "raven.tasks.monthly"
+    # ],
+    "cron": {
+		"*/10 * * * *": [
+			"raven.raven_integrations.doctype.raven_search_sync.raven_search_sync.update_search_index"
+		]
+    }
+}
 
 # Testing
 # -------

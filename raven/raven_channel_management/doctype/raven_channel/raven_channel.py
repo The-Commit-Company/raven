@@ -5,6 +5,8 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
+from raven.raven_integrations.doctype.raven_search_sync.raven_search_sync import sync_to_search
+from raven.typesense_setup import _get_channel_permissions
 from raven.utils import delete_channel_members_cache
 
 
@@ -85,6 +87,25 @@ class RavenChannel(Document):
 				docname=message_channel_id,
 			)
 
+	def sync_to_search(self, delete=False):
+		"""
+		Add channel to Search Sync queue
+		"""
+		payload = {
+			"channel_name": self.channel_name,
+			"channel_description": self.channel_description,
+			"type": self.type,
+			"workspace": self.workspace,
+			"accessible_to": _get_channel_permissions([self.name])[self.name]
+		}
+		if not delete:
+			if not self.is_new():
+				sync_to_search(self.doctype, self.name, "Update", payload)
+			else:
+				sync_to_search(self.doctype, self.name, "Create", payload)
+		else:
+			sync_to_search(self.doctype, self.name, "Delete", payload)
+
 	def on_update(self):
 		if not self.is_thread:
 			# Update the channel list for all users
@@ -96,6 +117,8 @@ class RavenChannel(Document):
 				room="all",
 				after_commit=True,
 			)
+
+		self.sync_to_search()
 
 	def after_insert(self):
 		"""
@@ -238,3 +261,6 @@ class RavenChannel(Document):
 			self.name = self.workspace + "-" + self.channel_name.strip().lower().replace(" ", "-")
 		elif self.is_thread:
 			self.name = self.channel_name
+
+	def after_delete(self):
+		self.sync_to_search(delete=True)

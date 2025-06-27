@@ -17,8 +17,9 @@ from raven.notification import (
 	send_notification_to_topic,
 	send_notification_to_user,
 )
+from raven.typesense_setup import _get_channel_permissions
 from raven.utils import refresh_thread_reply_count, track_channel_visit
-
+from raven.raven_integrations.doctype.raven_search_sync.raven_search_sync import sync_to_search
 
 class RavenMessage(Document):
 	# begin: auto-generated types
@@ -185,6 +186,24 @@ class RavenMessage(Document):
 				"owner": details.owner,
 				"creation": datetime.datetime.strftime(details.creation, "%Y-%m-%d %H:%M:%S"),
 			}
+
+	def sync_to_search(self, delete=False):
+		"""
+		Add message to Search Sync queue
+		"""
+		payload = {
+			"message_type": self.message_type,
+			"channel_id": self.channel_id,
+			"content": self.content,
+			"accessible_to": _get_channel_permissions([self.channel_id])[self.channel_id]
+		}
+		if not delete:
+			if self.is_edited:
+				sync_to_search(self.doctype, self.name, "Update", payload)
+			else:
+				sync_to_search(self.doctype, self.name, "Create", payload)
+		else:
+			sync_to_search(self.doctype, self.name, "Delete", payload)
 
 	def after_insert(self):
 		if self.message_type != "System":
@@ -500,6 +519,8 @@ class RavenMessage(Document):
 		# TEMP: this is a temp fix for the Desk interface
 		self.publish_deprecated_event_for_desk()
 
+		self.sync_to_search(delete=True)
+
 	def publish_deprecated_event_for_desk(self):
 		# TEMP: this is a temp fix for the Desk interface
 		frappe.publish_realtime(
@@ -515,6 +536,8 @@ class RavenMessage(Document):
 		)
 
 	def on_update(self):
+
+		self.sync_to_search()
 
 		# TEMP: this is a temp fix for the Desk interface
 		self.publish_deprecated_event_for_desk()
