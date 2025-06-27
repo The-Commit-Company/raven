@@ -63,6 +63,7 @@ class RavenAIFunction(Document):
 			"Delete Multiple Documents",
 			"Send Message",
 			"Attach File to Document",
+			"Set Value",
 		]
 		if self.type in WRITE_PERMISSIONS:
 			self.requires_write_permissions = 1
@@ -72,6 +73,7 @@ class RavenAIFunction(Document):
 			"Get Multiple Documents",
 			"Get Report Result",
 			"Get List",
+			"Get Value",
 			"Get Amended Document",
 		]
 		if self.type in READ_PERMISSIONS:
