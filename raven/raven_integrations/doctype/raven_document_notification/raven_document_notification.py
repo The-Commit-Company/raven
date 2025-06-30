@@ -103,6 +103,15 @@ class RavenDocumentNotification(Document):
 
 	def send_notification(self, context, link_doctype, link_document):
 
+		if link_doctype and link_document:
+			if not frappe.db.exists(link_doctype, link_document):
+				frappe.log_error(
+					f"Could not find {link_doctype}: {link_document} when sending Raven notification {self.name}",
+					"Raven Notification Link Validation"
+				)
+				# Optionally: skip sending this notification
+				return
+
 		bot = frappe.get_doc("Raven Bot", self.sender)
 
 		channels, users = self.get_recipients(context)
@@ -235,6 +244,7 @@ def run_document_notification(doc, method):
 		notifications_to_send=notifications_to_send,
 		link_doctype=doc.doctype,
 		link_document=doc.name,
+		after_commit=True
 	)
 
 
