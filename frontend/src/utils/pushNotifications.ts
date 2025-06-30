@@ -6,25 +6,25 @@ export const showNotification = (payload: any) => {
     const registration = window.frappePushNotification.serviceWorkerRegistration
     if (!registration) return
 
-    const notificationTitle = payload?.data?.title
+    const notificationTitle = payload?.notification?.title
     const notificationOptions = {
-        body: payload?.data?.body || "",
+        body: payload?.notification?.body || "",
     }
-    if (payload?.data?.notification_icon) {
+    if (payload?.data?.image) {
         // @ts-ignore
-        notificationOptions["icon"] = payload.data.notification_icon
-    }
-
-    if (payload.data.raven_message_type === "Image") {
-        // @ts-ignore
-        notificationOptions["image"] = payload.data.content
+        notificationOptions["icon"] = payload.data.image
     }
 
     if (payload.data.creation) {
         // @ts-ignore
         notificationOptions["timestamp"] = payload.data.creation
     }
-    const url = `${payload.data.base_url}/raven/channel/${payload.data.channel_id}`
+    let url = `${payload.data.base_url}/raven/channel/${payload.data.channel_id}`
+
+    if (payload.data.message_url) {
+        url = payload.data.message_url
+    }
+
     if (isChrome()) {
         // @ts-ignore
         notificationOptions["data"] = {

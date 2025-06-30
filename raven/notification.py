@@ -6,6 +6,8 @@ from frappe.frappeclient import FrappeClient
 from frappe.utils import get_datetime, get_system_timezone
 from pytz import timezone, utc
 
+from raven.utils import get_channel_members
+
 
 def send_notification_for_message(message):
 	"""
@@ -40,9 +42,19 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 
 	try:
 
-		push_tokens = get_push_tokens_for_channel(message.channel_id)
+		channel_members = get_channel_members(message.channel_id)
 
-		mentioned_users = [user.get("user") for user in message.mentions]
+		users = []
+
+		# Loop over the channel members and add the users who have subscribed to push notifications
+		for member in channel_members.values():
+			if member.get("allow_notifications"):
+				users.append(member.get("user_id"))
+
+		if not users:
+			return
+
+		mentions = [user.get("user") for user in message.mentions]
 
 		replied_to = None
 
@@ -54,26 +66,26 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 
 			replied_to = replied_message_details.get("owner")
 
-		mentioned_tokens = []
-		replied_tokens = []
-		final_tokens = []
+		mentioned_users = []
+		replied_users = []
+		final_users = []
 
 		# If this is a bot message, then we should not filter out the push tokens of the message owner since we need to send the notification to the owner as well (it's coming from the bot)
 		if not message.is_bot_message:
 			# Filter out the push tokens of the message owner
-			push_tokens = [token for token in push_tokens if token.user != message.owner]
+			users = [user for user in users if user != message.owner]
 
-		for token in push_tokens:
-			if token.user == replied_to:
-				replied_tokens.append(token.fcm_token)
-			elif token.user in mentioned_users:
-				mentioned_tokens.append(token.fcm_token)
+		for user in users:
+			if user == replied_to:
+				replied_users.append(user)
+			elif user in mentions:
+				mentioned_users.append(user)
 			else:
-				final_tokens.append(token.fcm_token)
+				final_users.append(user)
 
 		# We now need to construct the payload for the push notification
 
-		if not mentioned_tokens and not replied_tokens and not final_tokens:
+		if not mentioned_users and not replied_users and not final_users:
 			return
 
 		messages = []
@@ -107,6 +119,7 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 
 		data = {
 			"base_url": frappe.utils.get_url(),
+			"message_url": url,
 			"sitename": frappe.local.site,
 			"message_id": message.name,
 			"channel_id": message.channel_id,
@@ -117,12 +130,13 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 			"type": "New message",
 			"is_thread": "1" if channel_doc.is_thread else "0",
 			"creation": get_milliseconds_since_epoch(message.creation),
+			"image": image if image else "",
 		}
 
-		if replied_tokens:
+		if replied_users:
 			messages.append(
 				{
-					"tokens": replied_tokens,
+					"users": replied_users,
 					"notification": {"title": f"{message_owner} replied{channel_name}", "body": content},
 					"data": data,
 					"tag": message.channel_id,
@@ -131,10 +145,10 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 				}
 			)
 
-		if mentioned_tokens:
+		if mentioned_users:
 			messages.append(
 				{
-					"tokens": mentioned_tokens,
+					"users": mentioned_users,
 					"notification": {"title": f"{message_owner} mentioned you{channel_name}", "body": content},
 					"data": data,
 					"tag": message.channel_id,
@@ -143,10 +157,10 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 				}
 			)
 
-		if final_tokens:
+		if final_users:
 			messages.append(
 				{
-					"tokens": final_tokens,
+					"users": final_users,
 					"notification": {"title": f"{message_owner}{channel_name}", "body": content},
 					"data": data,
 					"tag": message.channel_id,
@@ -173,63 +187,12 @@ def make_post_call_for_notification(messages, raven_settings):
 	)
 
 	client.post_api(
-		"raven_cloud.api.notification.send",
+		"raven_cloud.api.notification.send_to_users",
 		params={
 			"messages": json.dumps(messages),
 			"site_name": urlparse(frappe.utils.get_url()).hostname,
 		},
 	)
-
-
-def get_push_tokens_for_channel(channel_id):
-	"""
-	Gets the push tokens for all the users in the channel
-	"""
-
-	def _get_push_tokens_for_channel():
-
-		channel_member = frappe.qb.DocType("Raven Channel Member")
-		push_token = frappe.qb.DocType("Raven Push Token")
-		raven_user = frappe.qb.DocType("Raven User")
-
-		push_token_query = (
-			frappe.qb.from_(push_token)
-			.left_join(raven_user)
-			.on(raven_user.user == push_token.user)
-			.left_join(channel_member)
-			.on(channel_member.user_id == raven_user.name)
-			.where(channel_member.channel_id == channel_id)
-			.where(raven_user.type == "User")
-			.where(channel_member.allow_notifications == 1)
-			.select(push_token.fcm_token, push_token.user, raven_user.name.as_("raven_user_id"))
-		)
-
-		return push_token_query.run(as_dict=True)
-
-	return frappe.cache().hget(
-		"raven:push_tokens_for_channel", channel_id, _get_push_tokens_for_channel
-	)
-
-
-def get_push_tokens_for_user(user_id):
-	"""
-	Gets the push tokens for a user
-	"""
-
-	def _get_push_tokens_for_user(user_id):
-		return frappe.get_all(
-			"Raven Push Token", filters={"user": user_id}, fields=["fcm_token", "user"]
-		)
-
-	return frappe.cache().hget("raven:push_tokens_for_user", user_id, _get_push_tokens_for_user)
-
-
-def clear_push_tokens_for_channel_cache(channel_id):
-	frappe.cache().hdel("raven:push_tokens_for_channel", channel_id)
-
-
-def clear_push_tokens_for_user_cache(user_id):
-	frappe.cache().hdel("raven:push_tokens_for_user", user_id)
 
 
 # The below functions are used to send push notifications via the Frappe Push Notification Service

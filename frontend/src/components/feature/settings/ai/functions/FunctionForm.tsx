@@ -278,7 +278,7 @@ const ReferenceDoctypeField = () => {
 
     const type = watch('type')
 
-    const DOCUMENT_REF_FUNCTIONS = ["Get Document", "Get Multiple Documents", "Get List", "Create Document", "Create Multiple Documents", "Update Document", "Update Multiple Documents", "Delete Document", "Delete Multiple Documents", "Submit Document", "Cancel Document", "Get Amended Document"]
+    const DOCUMENT_REF_FUNCTIONS = ["Get Document", "Get Multiple Documents", "Get List", "Get Value", "Set Value", "Create Document", "Create Multiple Documents", "Update Document", "Update Multiple Documents", "Delete Document", "Delete Multiple Documents", "Submit Document", "Cancel Document", "Get Amended Document"]
 
     const onReferenceDoctypeChange = (e: ChangeEvent<HTMLInputElement>) => {
 
@@ -299,6 +299,14 @@ const ReferenceDoctypeField = () => {
             if (type === 'Get List') {
                 description = `This function fetches a list of ${e.target.value} from the system.`
                 function_name = `get_${e.target.value.toLowerCase().replace(/\s/g, '_')}_list`
+            }
+            if (type === 'Get Value') {
+                description = `This function fetches a value from a ${e.target.value} in the system.`
+                function_name = `get_${e.target.value.toLowerCase().replace(/\s/g, '_')}_value`
+            }
+            if (type === 'Set Value') {
+                description = `This function sets a value in a ${e.target.value} in the system.`
+                function_name = `set_${e.target.value.toLowerCase().replace(/\s/g, '_')}_value`
             }
             if (type === 'Create Document') {
                 description = `This function creates a ${e.target.value} in the system.`

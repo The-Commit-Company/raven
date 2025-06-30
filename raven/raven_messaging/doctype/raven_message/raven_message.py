@@ -213,7 +213,7 @@ class RavenMessage(Document):
 
 		is_ai_thread = channel_doc.is_ai_thread
 
-		if is_ai_thread and channel_doc.openai_thread_id:
+		if is_ai_thread:
 			frappe.enqueue(
 				method=handle_ai_thread_message,
 				message=self,
@@ -439,6 +439,7 @@ class RavenMessage(Document):
 				"content": self.content if self.message_type == "Text" else self.file,
 				"from_user": self.owner,
 				"type": "New message",
+				"image": owner_image,
 				"creation": get_milliseconds_since_epoch(self.creation),
 			},
 		)
@@ -546,6 +547,7 @@ class RavenMessage(Document):
 						"is_bot_message": self.is_bot_message,
 						"bot": self.bot,
 						"hide_link_preview": self.hide_link_preview,
+						"blurhash": self.blurhash,
 					},
 				},
 				doctype="Raven Channel",
@@ -599,6 +601,7 @@ class RavenMessage(Document):
 						"is_bot_message": self.is_bot_message,
 						"bot": self.bot,
 						"hide_link_preview": self.hide_link_preview,
+						"blurhash": self.blurhash,
 					},
 				},
 				doctype="Raven Channel",

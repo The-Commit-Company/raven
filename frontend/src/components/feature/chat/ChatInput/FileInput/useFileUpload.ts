@@ -5,6 +5,8 @@ import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import { atomFamily } from 'jotai/utils'
+import { atom, useAtom } from 'jotai'
 
 
 export const fileExt = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF']
@@ -12,12 +14,15 @@ export interface FileUploadProgress {
   progress: number,
   isComplete: boolean,
 }
+
+export const filesAtom = atomFamily((channelID: string) => atom<CustomFile[]>([]))
+
 export default function useFileUpload(channelID: string) {
 
   const { file } = useContext(FrappeContext) as FrappeConfig
   const fileInputRef = useRef<any>(null)
 
-  const [files, setFiles] = useState<CustomFile[]>([])
+  const [files, setFiles] = useAtom(filesAtom(channelID))
 
   const [compressImages, setCompressImages] = useState(true)
 
@@ -46,7 +51,7 @@ export default function useFileUpload(channelID: string) {
     })
   }
 
-  const uploadFiles = async (selectedMessage?: Message | null): Promise<RavenMessage[]> => {
+  const uploadFiles = async (selectedMessage?: Message | null, caption?: string): Promise<RavenMessage[]> => {
     const newFiles = [...filesStateRef.current]
     if (newFiles.length > 0) {
       const promises: Promise<RavenMessage | null>[] = newFiles.map(async (f: CustomFile, index: number) => {
@@ -58,7 +63,8 @@ export default function useFileUpload(channelID: string) {
               channelID: channelID,
               compressImages: compressImages,
               is_reply: index === 0 ? selectedMessage ? 1 : 0 : 0,
-              linked_message: index === 0 ? selectedMessage ? selectedMessage.name : null : null
+              linked_message: index === 0 ? selectedMessage ? selectedMessage.name : null : null,
+              caption: index === 0 && caption ? caption : ""
             },
             fieldname: 'file',
           },
