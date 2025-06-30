@@ -108,6 +108,8 @@ const TableSelectionField = ({ doctype }: { doctype: string }) => {
 
 export const VALID_DOCTYPE_FIELD_TYPES: DocField['fieldtype'][] = [
     'Autocomplete',
+    'Attach',
+    'Attach Image',
     'Check',
     'Code',
     'Currency',
