@@ -104,7 +104,7 @@ export const ThreadMessages = ({ threadMessage }: { threadMessage: Message }) =>
 
     const { fileInputRef, files, setFiles, removeFile, uploadFiles, addFile, fileUploadProgress } = useFileUpload(threadID ?? '')
 
-    const { sendMessage, loading } = useSendMessage(threadID ?? '', uploadFiles, onMessageSendCompleted, selectedMessage, files.length > 0)
+    const { sendMessage, loading } = useSendMessage(threadID ?? '', uploadFiles, onMessageSendCompleted, selectedMessage)
 
     const chatStreamRef = useRef<any>(null)
 
