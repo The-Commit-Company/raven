@@ -4,8 +4,9 @@ Improved agents integration with better import handling based on Desktop Raven a
 
 import asyncio
 import traceback
-
 import frappe
+import openai
+
 
 # Import agents SDK - the package is called 'agents' not 'openai_agents'
 from agents import (
@@ -463,9 +464,17 @@ async def handle_ai_request_async(
 			# Set max_turns to prevent infinite loops
 			result = await Runner.run(agent, full_input, max_turns=5)
 
-		except TypeError as te:
-			if "NoneType" in str(te) and "not iterable" in str(te):
-
+		except (TypeError, openai.NotFoundError) as e:
+			# Handle both TypeError and NotFoundError (404) with fallback
+			should_fallback = False
+			
+			if isinstance(e, TypeError) and "NoneType" in str(e) and "not iterable" in str(e):
+				should_fallback = True
+			elif isinstance(e, openai.NotFoundError):
+				# 404 errors indicate the endpoint is not supported (like agents SDK endpoints on Ollama)
+				should_fallback = True
+				
+			if should_fallback:
 				# Try direct API call as fallback
 				try:
 					# For direct API calls, we need to manually add tool definitions
