@@ -88,11 +88,12 @@ export const FUNCTION_TYPES = [
         description: "Custom function to be used in the system.",
         type: "Other"
     },
-    // { 
-    //     value: "Send Message",
-    //     description: "Function allows the bot to send a message to any user or channel in the system.",
-    //     requires_write_permissions: true
-    // },
+    {
+        value: "Send Message",
+        description: "Function allows the bot to send a message to any user or channel in the system.",
+        requires_write_permissions: true,
+        type: "Other"
+    },
     {
         value: "Attach File to Document",
         description: "Attach a file to any document.",

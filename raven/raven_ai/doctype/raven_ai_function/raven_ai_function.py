@@ -64,6 +64,7 @@ class RavenAIFunction(Document):
 			"Send Message",
 			"Attach File to Document",
 			"Set Value",
+			"Send Message",
 		]
 		if self.type in WRITE_PERMISSIONS:
 			self.requires_write_permissions = 1
@@ -349,6 +350,30 @@ class RavenAIFunction(Document):
 					},
 				},
 				"required": ["report_name"],
+			}
+		elif self.type == "Send Message":
+			params = {
+				"type": "object",
+				"properties": {
+					"content": {
+						"type": "string",
+						"description": "The text content of the message to send. Optional if file is provided.",
+					},
+					"link_doctype": {
+						"type": "string",
+						"description": "The doctype of the document to link the message to.",
+					},
+					"link_document": {
+						"type": "string",
+						"description": "The name of the document to link the message to.",
+					},
+					"file": {
+						"type": "string",
+						"description": "The file URL to send to the user. Will automatically determine if it's an image or file based on extension. Optional if content is provided.",
+					},
+				},
+				"required": [],
+				"additionalProperties": False,
 			}
 		else:
 			params = self.build_params_json_from_table()

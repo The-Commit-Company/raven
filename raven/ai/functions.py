@@ -281,3 +281,96 @@ def get_report_result(
 	)
 
 	return {"columns": columns, "data": data}
+
+
+def send_message(
+	message_id: str,
+	text: str = None,
+	bot=None,
+	link_doctype: str = None,
+	link_document: str = None,
+	file: str = None,
+):
+	"""
+	Send a message to mentioned users or channels.
+	Parses @username mentions and #channel mentions from the message text and sends the message to those recipients via direct message or channel.
+
+	Need to provide either text or link_doctype and link_document
+	text: The text of the message in HTML format. If markdown is True, the text will be converted to HTML.
+
+	Optional Parameters:
+	link_doctype: The doctype of the document to link the message to
+	link_document: The name of the document to link the message to
+	file: The file to send to the user
+	"""
+	if not text and not file and not link_doctype and not link_document:
+		return {
+			"status": "error",
+			"message": "Must provide either text, file, link_doctype, or link_document",
+		}
+
+	if not bot:
+		return {"status": "error", "message": "Bot parameter is required"}
+
+	frappe.log_error(
+		"Link Doctype and Document", {"link_doctype": link_doctype, "link_document": link_document}
+	)
+	# do not send link_doctype and link_document if not existing and yet passed
+	if link_doctype and not frappe.db.exists(link_doctype, link_document):
+		link_doctype = None
+		link_document = None
+
+	message = frappe.get_doc("Raven Message", message_id)
+
+	# process file if provided
+	file_url = None
+	if file:
+		# clean the file URL, check for last / and use the string after it
+		file_name = file.split("/")[-1]
+
+		# get existing file
+		file_doc = frappe.get_doc("File", {"file_name": file_name})
+		if not file_doc:
+			return {"status": "error", "message": f"File {file_name} not found"}
+		file_url = file_doc.file_url
+
+	# from the message, get the mentions (user mentions)
+	mentions = message.mentions
+
+	# for channel mentions we use the extract_channel_mentions method to get the channel names
+	channel_mentions = message.extract_channel_mentions()
+
+	# send the message to the mentioned users - first create a direct message channel and then send the message
+	for mention in mentions:
+		mention = mention.as_dict()
+
+		channel_id = bot.create_direct_message_channel(mention.user)
+		if not channel_id:
+			return {
+				"status": "error",
+				"message": f"Failed to create direct message channel for user {mention} as user is not a Raven User",
+			}
+
+		if file_url:
+			bot.send_message(channel_id, file=file_url)
+
+		if text or (link_doctype and link_document):
+			bot.send_message(
+				channel_id, text=text, markdown=True, link_doctype=link_doctype, link_document=link_document
+			)
+
+	# send the message to the mentioned channels
+	if channel_mentions:
+		for channel_mention in channel_mentions:
+			if file_url:
+				bot.send_message(channel_mention, file=file_url)
+			if text or (link_doctype and link_document):
+				bot.send_message(
+					channel_mention,
+					text=text,
+					markdown=True,
+					link_doctype=link_doctype,
+					link_document=link_document,
+				)
+
+	return {"status": "success"}
