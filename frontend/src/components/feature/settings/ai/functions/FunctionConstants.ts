@@ -99,11 +99,12 @@ export const FUNCTION_TYPES = [
         requires_write_permissions: true,
         type: "Other"
     },
-    // {
-    //     value: "Get Report Result",
-    //     description: "Allows the bot to get the result of any report in the system.",
-    //     requires_write_permissions: true
-    // },
+    {
+        value: "Get Report Result",
+        description: "Allows the bot to get the result of any report in the system.",
+        requires_write_permissions: false,
+        type: "Other"
+    },
 ]
 
 export type VariableType = StringVariableType | NumberVariableType | BooleanVariableType | ObjectVariableType | ArrayVariableType
