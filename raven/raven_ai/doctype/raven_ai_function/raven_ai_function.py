@@ -357,7 +357,7 @@ class RavenAIFunction(Document):
 				"properties": {
 					"content": {
 						"type": "string",
-						"description": "The text content of the message to send. Optional if file is provided.",
+						"description": "The text content of the message to send. Either content or file must be provided.",
 					},
 					"link_doctype": {
 						"type": "string",
@@ -369,7 +369,7 @@ class RavenAIFunction(Document):
 					},
 					"file": {
 						"type": "string",
-						"description": "The file URL to send to the user. Will automatically determine if it's an image or file based on extension. Optional if content is provided.",
+						"description": "The file URL to send to the user. Will automatically determine if it's an image or file based on extension. Either content or file must be provided.",
 					},
 				},
 				"required": [],
