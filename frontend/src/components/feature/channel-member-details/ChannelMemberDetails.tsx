@@ -122,7 +122,6 @@ const MemberList = ({ channelData, channelMembers, activeUsers, updateMembers, i
                                 {/* if current user is a channel member and admin they can remove users other than themselves if the channel is not open */}
                                 {channelMembers[currentUser] &&
                                     isCurrentUserAdmin &&
-                                    member.name !== currentUser &&
                                     channelData?.type !== 'Open' && channelData.is_archived == 0 &&
                                     <Flex align="center">
                                         <UserActionsMenu

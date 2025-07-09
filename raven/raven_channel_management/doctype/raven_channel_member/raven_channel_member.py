@@ -34,13 +34,27 @@ class RavenChannelMember(Document):
 			and not self.flags.in_insert
 			and not self.flags.ignore_permissions
 		):
-			# Check if the user is an existing admin of the channel
-			if not frappe.db.exists(
-				"Raven Channel Member",
-				{"channel_id": self.channel_id, "user_id": frappe.session.user, "is_admin": 1},
-			):
+
+			member = frappe.db.exists(
+				"Raven Channel Member", {"channel_id": self.channel_id, "user_id": frappe.session.user}
+			)
+			if member:
+				if "Raven Admin" in frappe.get_roles():
+					pass
+				elif frappe.db.get_value("Raven Channel Member", member, "is_admin") == 1:
+					pass
+				else:
+					frappe.throw(
+						_(
+							"You don't have permission to assign admins to this channel. Please ask another admin to do this."
+						),
+						frappe.PermissionError,
+					)
+			else:
 				frappe.throw(
-					_("You cannot make yourself an admin of a channel. Please ask another admin to do this."),
+					_(
+						"You don't have permission to assign admins to this channel. Please ask another admin to do this."
+					),
 					frappe.PermissionError,
 				)
 
