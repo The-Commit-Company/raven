@@ -149,8 +149,13 @@ def channel_has_permission(doc, user=None, ptype=None):
 		if ptype == "delete" or ptype == "write":
 			# Only channel admins can update or delete a channel
 			channel_member = get_channel_member(doc.name, user)
-			if channel_member and channel_member.get("is_admin"):
-				return True
+			if channel_member:
+				if channel_member.get("is_admin"):
+					return True
+				# If the user is a Raven Admin, they can update or delete the channel
+				roles = frappe.get_roles()
+				if "Raven Admin" in roles:
+					return True
 
 		if ptype == "read":
 			# Check if the channel type is public or open
@@ -243,8 +248,13 @@ def channel_member_has_permission(doc, user=None, ptype=None):
 	if ptype == "write":
 		# Only channel admins can update a channel member
 		channel_member = get_channel_member(doc.channel_id, user)
-		if channel_member and channel_member.get("is_admin"):
-			return True
+		if channel_member:
+			if channel_member.get("is_admin"):
+				return True
+			# If the user is a Raven Admin, they can update the channel member
+			roles = frappe.get_roles()
+			if "Raven Admin" in roles:
+				return True
 
 	# Allow self to modify their own channel member document
 	# if doc.user_id == user:
