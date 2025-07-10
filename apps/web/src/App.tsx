@@ -3,6 +3,7 @@ import AppSettings from "./pages/AppSettings"
 import Channel from "@pages/Channel"
 import Mentions from "@pages/Mentions"
 import SavedMessages from "@pages/SavedMessages"
+import SearchMessages from "@pages/SearchMessages"
 import ChannelSettings from "@components/features/channel/ChannelSettings/ChannelSettings"
 import MainPage from "@pages/MainPage"
 
@@ -17,6 +18,7 @@ function App() {
           <Route path="mentions" element={<Mentions />} />
           <Route path="settings" element={<AppSettings />} />
           <Route path="saved-messages" element={<SavedMessages />} />
+          <Route path="search" element={<SearchMessages />} />
         </Route>
       </Routes>
     </BrowserRouter>
