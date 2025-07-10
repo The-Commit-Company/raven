@@ -3,7 +3,7 @@ import { Box, Flex, Separator, Text } from '@radix-ui/themes'
 import clsx from 'clsx'
 import { PropsWithChildren, createElement } from 'react';
 import { IconType } from 'react-icons'
-import { BiBot, BiBuildings, BiMobileAlt } from 'react-icons/bi'
+import { BiBot, BiBuildings, BiMobileAlt, BiNotification } from 'react-icons/bi'
 import { BsBoxes } from 'react-icons/bs'
 import { FiLifeBuoy } from 'react-icons/fi';
 import { LuCircleUserRound } from 'react-icons/lu'
@@ -40,13 +40,15 @@ export const SettingsSidebar = () => {
                 <SettingsGroup title="AI" icon={BiBot}>
                     <SettingsSidebarItem title="Agents" to='bots' />
                     <SettingsSidebarItem title="Functions" to='functions' />
+                    <SettingsSidebarItem title="File Sources" to='file-sources' />
                     <SettingsSidebarItem title="Instructions" to="instructions" />
                     <SettingsSidebarItem title="Commands" to='commands' />
-                    <SettingsSidebarItem title="OpenAI Settings" to='openai-settings' />
+                    <SettingsSidebarItem title="AI Settings" to='ai-settings' />
                 </SettingsGroup>
                 <SettingsSeparator />
                 <div className='flex flex-col gap-1 -mx-1'>
                     <SettingsSidebarItem title="Mobile App" to='mobile-app' standalone icon={BiMobileAlt} />
+                    <SettingsSidebarItem title="Push Notifications" to='push-notifications' standalone icon={BiNotification} />
                     <SettingsSidebarItem title="Help & Support" to='help' standalone icon={FiLifeBuoy} />
                 </div>
             </Flex>

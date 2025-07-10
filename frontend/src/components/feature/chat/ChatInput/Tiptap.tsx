@@ -61,7 +61,7 @@ type TiptapEditorProps = {
     clearReplyMessage?: () => void,
     disableSessionStorage?: boolean,
     fileProps?: ToolbarFileProps,
-    onMessageSend: (message: string, json: any) => Promise<void>,
+    onMessageSend: (message: string, json: any, sendSilently?: boolean) => Promise<void>,
     messageSending: boolean,
     defaultText?: string,
     replyMessage?: Message | null,
@@ -582,14 +582,18 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
                         </div>
                     </BubbleMenu>
                     <div className='border-[1.5px] flex items-end justify-between border-gray-4 rounded-radius2 w-[calc(100vw-72px)] focus-within:border-accent-a8'>
-                        <div className='w-[90%]'>
+                        <div className='w-[85%]'>
                             <EditorContent editor={editor} />
                         </div>
-                        <div className='w-[10%] mb-0.5 flex items-center justify-center h-full'>
+                        <div className='flex items-center justify-center h-full'>
                             <SendButton
                                 size='2'
                                 variant='soft'
-                                className='bg-transparent'
+                                boxProps={{
+                                    className: 'rounded-r-radius2 rounded-l-none bg-transparent',
+                                    gap: '0'
+                                }}
+                                className='bg-transparent hover:bg-accent-a3'
                                 sendMessage={onMessageSend}
                                 messageSending={messageSending}
                                 setContent={setContent} />

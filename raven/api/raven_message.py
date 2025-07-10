@@ -11,7 +11,9 @@ from raven.utils import get_channel_member, is_channel_member, track_channel_vis
 
 
 @frappe.whitelist(methods=["POST"])
-def send_message(channel_id, text, is_reply=False, linked_message=None, json_content=None):
+def send_message(
+	channel_id, text, is_reply=False, linked_message=None, json_content=None, send_silently=False
+):
 	if is_reply:
 		doc = frappe.get_doc(
 			{
@@ -34,6 +36,10 @@ def send_message(channel_id, text, is_reply=False, linked_message=None, json_con
 				"json": json_content,
 			}
 		)
+
+	if send_silently:
+		doc.flags.send_silently = True
+
 	doc.insert()
 	return doc
 

@@ -14,10 +14,19 @@
   "tenor_api_key",
   "ai_section",
   "enable_ai_integration",
+  "enable_openai_services",
   "openai_organisation_id",
   "openai_api_key",
   "openai_project_id",
   "column_break_occp",
+  "enable_local_llm",
+  "local_llm_provider",
+  "local_llm_api_url",
+  "google_vision_and_document_ai_section",
+  "enable_google_apis",
+  "google_processor_location",
+  "google_project_id",
+  "google_service_account_json_key",
   "frappe_hr_tab",
   "auto_create_department_channel",
   "department_channel_type",
@@ -27,7 +36,18 @@
   "raven_mobile_tab",
   "oauth_client",
   "push_notifications_tab",
-  "push_notification_service"
+  "push_notification_service",
+  "push_notification_server_url",
+  "push_notification_api_key",
+  "push_notification_api_secret",
+  "config",
+  "vapid_public_key",
+  "video_calling_tab",
+  "livekit_settings_section",
+  "enable_video_calling_via_livekit",
+  "livekit_url",
+  "livekit_api_key",
+  "livekit_api_secret"
  ],
  "fields": [
   {
@@ -103,21 +123,28 @@
    "label": "Enable AI Integration"
   },
   {
-   "depends_on": "eval:doc.enable_ai_integration;",
+   "default": "1",
+   "depends_on": "eval:doc.enable_ai_integration",
+   "fieldname": "enable_openai_services",
+   "fieldtype": "Check",
+   "label": "Enable OpenAI Services"
+  },
+  {
+   "depends_on": "eval:doc.enable_openai_services;",
    "fieldname": "openai_organisation_id",
    "fieldtype": "Data",
    "label": "OpenAI Organisation ID",
-   "mandatory_depends_on": "eval:doc.enable_ai_integration;"
+   "mandatory_depends_on": "eval:doc.enable_openai_services;"
   },
   {
-   "depends_on": "eval:doc.enable_ai_integration;",
+   "depends_on": "eval:doc.enable_openai_services;",
    "fieldname": "openai_api_key",
    "fieldtype": "Password",
    "label": "OpenAI API Key",
-   "mandatory_depends_on": "eval:doc.enable_ai_integration;"
+   "mandatory_depends_on": "eval:doc.enable_openai_services;"
   },
   {
-   "depends_on": "eval:doc.enable_ai_integration;",
+   "depends_on": "eval:doc.enable_openai_services;",
    "description": "If not set, the integration will use the default project",
    "fieldname": "openai_project_id",
    "fieldtype": "Data",
@@ -126,6 +153,27 @@
   {
    "fieldname": "column_break_occp",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.enable_ai_integration",
+   "fieldname": "enable_local_llm",
+   "fieldtype": "Check",
+   "label": "Enable Local LLM"
+  },
+  {
+   "depends_on": "eval:doc.enable_local_llm",
+   "fieldname": "local_llm_provider",
+   "fieldtype": "Select",
+   "label": "Local LLM Provider",
+   "options": "LM Studio\nOllama\nLocalAI"
+  },
+  {
+   "depends_on": "eval:doc.enable_local_llm",
+   "fieldname": "local_llm_api_url",
+   "fieldtype": "Data",
+   "label": "Local LLM API URL",
+   "placeholder": "http://localhost:11434/v1"
   },
   {
    "fieldname": "raven_mobile_tab",
@@ -157,12 +205,118 @@
    "fieldtype": "Select",
    "label": "Push Notification Service",
    "options": "Frappe Cloud\nRaven"
+  },
+  {
+   "depends_on": "eval: doc.push_notification_service == \"Raven\";",
+   "fieldname": "push_notification_server_url",
+   "fieldtype": "Data",
+   "label": "Push Notification Server URL",
+   "length": 300,
+   "mandatory_depends_on": "eval: doc.push_notification_service == \"Raven\";"
+  },
+  {
+   "fieldname": "video_calling_tab",
+   "fieldtype": "Tab Break",
+   "label": "Video Calling"
+  },
+  {
+   "fieldname": "livekit_settings_section",
+   "fieldtype": "Section Break",
+   "label": "LiveKit Settings"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_video_calling_via_livekit",
+   "fieldtype": "Check",
+   "label": "Enable Video Calling via LiveKit"
+  },
+  {
+   "depends_on": "eval: doc.enable_video_calling_via_livekit;",
+   "fieldname": "livekit_url",
+   "fieldtype": "Data",
+   "label": "LiveKit URL",
+   "length": 300,
+   "mandatory_depends_on": "eval: doc.enable_video_calling_via_livekit;"
+  },
+  {
+   "depends_on": "eval: doc.enable_video_calling_via_livekit;",
+   "fieldname": "livekit_api_key",
+   "fieldtype": "Data",
+   "label": "LiveKit API Key",
+   "mandatory_depends_on": "eval: doc.enable_video_calling_via_livekit;"
+  },
+  {
+   "depends_on": "eval: doc.enable_video_calling_via_livekit;",
+   "fieldname": "livekit_api_secret",
+   "fieldtype": "Password",
+   "label": "LiveKit API Secret",
+   "mandatory_depends_on": "eval: doc.enable_video_calling_via_livekit;"
+  },
+  {
+   "depends_on": "eval: doc.push_notification_service == \"Raven\";",
+   "fieldname": "push_notification_api_key",
+   "fieldtype": "Data",
+   "label": "Push Notification API Key",
+   "mandatory_depends_on": "eval: doc.push_notification_service == \"Raven\";"
+  },
+  {
+   "depends_on": "eval: doc.push_notification_service == \"Raven\";",
+   "fieldname": "push_notification_api_secret",
+   "fieldtype": "Password",
+   "label": "Push Notification API Secret",
+   "mandatory_depends_on": "eval: doc.push_notification_service == \"Raven\";"
+  },
+  {
+   "fieldname": "config",
+   "fieldtype": "Small Text",
+   "hidden": 1,
+   "label": "Config",
+   "read_only": 1
+  },
+  {
+   "fieldname": "vapid_public_key",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "VAPID Public Key",
+   "length": 300,
+   "read_only": 1
+  },
+  {
+   "fieldname": "google_vision_and_document_ai_section",
+   "fieldtype": "Section Break",
+   "label": "Google Vision and Document AI"
+  },
+  {
+   "default": "0",
+   "description": "Useful for extracting information from documents before sending it to agents",
+   "fieldname": "enable_google_apis",
+   "fieldtype": "Check",
+   "label": "Enable Google APIs"
+  },
+  {
+   "default": "us",
+   "fieldname": "google_processor_location",
+   "fieldtype": "Select",
+   "label": "Google Processor Location",
+   "options": "us\neu"
+  },
+  {
+   "fieldname": "google_project_id",
+   "fieldtype": "Data",
+   "label": "Google Project ID"
+  },
+  {
+   "fieldname": "google_service_account_json_key",
+   "fieldtype": "Password",
+   "label": "Google Service Account JSON Key",
+   "length": 800
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-02-07 14:27:46.335513",
+ "modified": "2025-06-16 23:33:58.243626",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven Settings",
@@ -202,6 +356,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

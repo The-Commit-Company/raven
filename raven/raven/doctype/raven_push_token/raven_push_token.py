@@ -5,6 +5,7 @@ import frappe
 from frappe.model.document import Document
 
 from raven.api.notification import are_push_notifications_enabled
+from raven.raven_cloud_notifications import add_token_to_raven_cloud, delete_token_from_raven_cloud
 
 
 class RavenPushToken(Document):
@@ -26,6 +27,7 @@ class RavenPushToken(Document):
 		"""
 		If the push service is Frappe Cloud and is enabled, then send the token to the Frappe Cloud API
 		"""
+
 		push_service = self.get_push_service()
 
 		if push_service == "Frappe Cloud" and are_push_notifications_enabled():
@@ -38,11 +40,14 @@ class RavenPushToken(Document):
 				pass
 			except Exception:
 				frappe.log_error("Failed to subscribe to Frappe Cloud push notifications")
+		else:
+			add_token_to_raven_cloud(self.user, self.fcm_token)
 
 	def on_trash(self):
 		"""
 		If the push service is Frappe Cloud and is enabled, then delete the token from the Frappe Cloud API
 		"""
+
 		push_service = self.get_push_service()
 
 		if push_service == "Frappe Cloud" and are_push_notifications_enabled():
@@ -55,6 +60,8 @@ class RavenPushToken(Document):
 				pass
 			except Exception:
 				frappe.log_error("Failed to unsubscribe from Frappe Cloud push notifications")
+		else:
+			delete_token_from_raven_cloud(self.user, self.fcm_token)
 
 	def get_push_service(self) -> str:
 		"""

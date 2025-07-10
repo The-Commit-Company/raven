@@ -1,5 +1,6 @@
 import { Loader } from "@/components/common/Loader"
 import MessageActionForm from "@/components/feature/message-actions/MessageActionForm"
+import CommonSettingsMenu from "@/components/feature/settings/common/CommonSettingsMenu"
 import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import { FullPageLoader } from "@/components/layout/Loaders/FullPageLoader"
 import PageContainer from "@/components/layout/Settings/PageContainer"
@@ -74,6 +75,7 @@ const ViewMessageActionContent = ({ data, mutate }: { data: RavenMessageAction, 
                     title={data.action_name}
                     headerBadges={isDirty ? [{ label: "Not Saved", color: "red" }] : undefined}
                     actions={<HStack>
+                        <CommonSettingsMenu doctype="Raven Message Action" docname={data.name} label={"Message Action"} />
                         <Button type='submit' disabled={loading}>
                             {loading && <Loader className="text-white" />}
                             {loading ? "Saving" : "Save"}

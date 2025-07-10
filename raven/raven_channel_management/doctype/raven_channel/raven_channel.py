@@ -5,7 +5,7 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
-from raven.utils import delete_channel_members_cache
+from raven.utils import delete_channel_members_cache, get_raven_room
 
 
 class RavenChannel(Document):
@@ -62,7 +62,7 @@ class RavenChannel(Document):
 				{
 					"channel_id": self.name,
 				},
-				room="all",
+				room=get_raven_room(),
 				after_commit=True,
 			)
 
@@ -93,7 +93,7 @@ class RavenChannel(Document):
 				{
 					"channel_id": self.name,
 				},
-				room="all",
+				room=get_raven_room(),
 				after_commit=True,
 			)
 
@@ -118,7 +118,7 @@ class RavenChannel(Document):
 					{
 						"channel_id": self.name,
 					},
-					room="all",
+					room=get_raven_room(),
 					after_commit=True,
 				)
 
@@ -159,6 +159,10 @@ class RavenChannel(Document):
 			if frappe.db.exists(
 				"Raven Channel Member",
 				{"channel_id": self.name, "user_id": frappe.session.user, "is_admin": 1},
+			):
+				pass
+			elif "Raven Admin" in frappe.get_roles() and frappe.db.get_value(
+				"Raven Channel Member", {"channel_id": self.name, "user_id": frappe.session.user}
 			):
 				pass
 			elif frappe.session.user == "Administrator":

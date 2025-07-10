@@ -4,6 +4,7 @@
 import json
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 
 from raven.api.reactions import calculate_message_reaction
@@ -32,3 +33,11 @@ class RavenMessageReaction(Document):
 	def after_delete(self):
 		# Update the count for the current reaction
 		calculate_message_reaction(self.message, self.channel_id)
+
+
+def on_doctype_update():
+	frappe.db.add_unique(
+		"Raven Message Reaction",
+		fields=["message", "owner", "reaction_escaped"],
+		constraint_name="unique_reaction",
+	)

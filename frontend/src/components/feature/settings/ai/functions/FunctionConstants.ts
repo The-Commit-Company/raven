@@ -18,6 +18,18 @@ export const FUNCTION_TYPES = [
         type: "Standard"
     },
     {
+        value: "Get Value",
+        description: "Get a single value or multiple values from a document in the system using filters.",
+        requires_write_permissions: false,
+        type: "Standard"
+    },
+    {
+        value: "Set Value",
+        description: "Set a value in a document in the system. This function can set a single value or multiple values in a document.",
+        requires_write_permissions: true,
+        type: "Standard"
+    },
+    {
         value: "Create Document",
         description: "Create any document in the system.",
         requires_write_permissions: true,
@@ -54,6 +66,24 @@ export const FUNCTION_TYPES = [
         type: "Bulk Operations"
     },
     {
+        value: "Submit Document",
+        description: "Submit any document in the system.",
+        requires_write_permissions: true,
+        type: "Standard"
+    },
+    {
+        value: "Cancel Document",
+        description: "Cancel any document in the system.",
+        requires_write_permissions: true,
+        type: "Standard"
+    },
+    {
+        value: "Get Amended Document",
+        description: "Get the amended document for a given document. This function is only available for documents that have been cancelled and then amended.",
+        requires_write_permissions: false,
+        type: "Standard"
+    },
+    {
         value: "Custom Function",
         description: "Custom function to be used in the system.",
         type: "Other"
@@ -69,11 +99,12 @@ export const FUNCTION_TYPES = [
         requires_write_permissions: true,
         type: "Other"
     },
-    // {
-    //     value: "Get Report Result",
-    //     description: "Allows the bot to get the result of any report in the system.",
-    //     requires_write_permissions: true
-    // },
+    {
+        value: "Get Report Result",
+        description: "Allows the bot to get the result of any report in the system.",
+        requires_write_permissions: false,
+        type: "Other"
+    },
 ]
 
 export type VariableType = StringVariableType | NumberVariableType | BooleanVariableType | ObjectVariableType | ArrayVariableType

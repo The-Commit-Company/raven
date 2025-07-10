@@ -8,14 +8,16 @@ from frappe import _
 from frappe.model.document import Document
 from openai import APIConnectionError
 
-from raven.ai.openai_client import get_open_ai_client
+from raven.ai.openai_client import (
+	code_interpreter_file_types,
+	file_search_file_types,
+	get_open_ai_client,
+)
 from raven.utils import get_raven_user
 
 
 class RavenBot(Document):
 	# begin: auto-generated types
-	# ruff: noqa
-
 	# This code is auto-generated. Do not modify anything in this block.
 
 	from typing import TYPE_CHECKING
@@ -23,6 +25,7 @@ class RavenBot(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		from raven.raven_ai.doctype.raven_ai_bot_files.raven_ai_bot_files import RavenAIBotFiles
 		from raven.raven_ai.doctype.raven_bot_functions.raven_bot_functions import RavenBotFunctions
 
 		allow_bot_to_write_documents: DF.Check
@@ -33,21 +36,30 @@ class RavenBot(Document):
 		dynamic_instructions: DF.Check
 		enable_code_interpreter: DF.Check
 		enable_file_search: DF.Check
+		file_sources: DF.Table[RavenAIBotFiles]
+		google_document_processor_id: DF.Data | None
 		image: DF.AttachImage | None
 		instruction: DF.LongText | None
 		is_ai_bot: DF.Check
 		is_standard: DF.Check
 		model: DF.Data | None
+		model_provider: DF.Literal["OpenAI", "Local LLM"]
 		module: DF.Link | None
 		openai_assistant_id: DF.Data | None
+		openai_vector_store_id: DF.Data | None
 		raven_user: DF.Link | None
 		reasoning_effort: DF.Literal["low", "medium", "high"]
-	# ruff: noqa
+		temperature: DF.Float
+		top_p: DF.Float
+		use_google_document_parser: DF.Check
 	# end: auto-generated types
 
 	def validate(self):
 		if self.is_ai_bot and not self.instruction:
 			frappe.throw(_("Please provide an instruction for this AI Agent."))
+
+		if self.use_google_document_parser and not self.google_document_processor_id:
+			frappe.throw(_("Please select a Document Processor for this bot."))
 
 		self.validate_functions()
 
@@ -90,14 +102,30 @@ class RavenBot(Document):
 			self.db_set("raven_user", raven_user.name)
 
 		if self.is_ai_bot:
-			if not self.openai_assistant_id:
-				self.create_openai_assistant()
+			# Only create OpenAI assistant if using OpenAI provider (not for Agents SDK)
+			if self.model_provider == "OpenAI":
+				# Skip assistant creation if we're using Agents SDK even with OpenAI
+				# TODO: In future, we should completely phase out assistant creation
+				if not self.openai_assistant_id:
+					self.create_openai_assistant()
+				else:
+					self.update_openai_assistant()
 			else:
-				self.update_openai_assistant()
+				# For Local LLM or future Agents SDK, no assistant needed
+				if self.openai_assistant_id:
+					# Clear assistant ID if switching from OpenAI to Local LLM
+					self.db_set("openai_assistant_id", None)
+					return
 
 	def before_insert(self):
 		if self.is_ai_bot and not self.openai_assistant_id:
-			self.create_openai_assistant()
+			# Only create OpenAI assistant if using OpenAI provider (not for Agents SDK)
+			if self.model_provider == "OpenAI":
+				# Skip assistant creation for Local LLM
+				self.create_openai_assistant()
+			elif self.model_provider == "Local LLM":
+				# For Local LLM, we don't need an OpenAI assistant
+				return
 
 	def on_trash(self):
 		if self.openai_assistant_id:
@@ -109,7 +137,11 @@ class RavenBot(Document):
 			frappe.delete_doc("Raven User", self.raven_user)
 
 	def create_openai_assistant(self):
-		# Create an OpenAI Assistant for the bot
+		# Create an OpenAI Assistant for the bot (legacy - being phased out for Agents SDK)
+		# Check again to ensure we're not creating for Local LLM
+		if self.model_provider == "Local LLM":
+			return
+
 		client = get_open_ai_client()
 
 		# Sometimes users face an issue with the OpenAI API returning an error for "model_not_found"
@@ -127,7 +159,10 @@ class RavenBot(Document):
 				name=self.bot_name,
 				description=self.description or "",
 				tools=self.get_tools_for_assistant(),
+				tool_resources=self.get_tool_resources_for_assistant(),
 				reasoning_effort=reasoning_effort if model.startswith("o") else None,
+				temperature=self.temperature or 1,
+				top_p=self.top_p or 1,
 			)
 			# Update the tools which were activated for the bot
 			self.db_set("openai_assistant_id", assistant.id)
@@ -150,10 +185,14 @@ class RavenBot(Document):
 				frappe.throw(str(e))
 
 	def update_openai_assistant(self):
-		# Update the OpenAI Assistant for the bot
+		# Update the OpenAI Assistant for the bot (legacy - being phased out for Agents SDK)
 
 		# Additional check because it is being used in Raven AI Function
 		if not self.is_ai_bot:
+			return
+
+		# Don't update assistant for Local LLM bots
+		if self.model_provider == "Local LLM":
 			return
 
 		client = get_open_ai_client()
@@ -168,8 +207,11 @@ class RavenBot(Document):
 				name=self.bot_name,
 				description=self.description or "",
 				tools=self.get_tools_for_assistant(),
+				tool_resources=self.get_tool_resources_for_assistant(),
 				model=model,
 				reasoning_effort=reasoning_effort if model.startswith("o") else None,
+				temperature=self.temperature or 1,
+				top_p=self.top_p or 1,
 			)
 			self.check_and_update_enabled_tools(assistant)
 		except Exception as e:
@@ -237,11 +279,99 @@ class RavenBot(Document):
 
 		return tools
 
+	def get_tool_resources_for_assistant(self):
+		if not self.enable_file_search and not self.enable_code_interpreter:
+			return None
+
+		# Check if the bot has any file sources
+		if not self.file_sources:
+			return None
+
+		# Join file sources with Raven AI Bot Files
+		file_source_ids = [f.file for f in self.file_sources]
+
+		files = frappe.get_all(
+			"Raven AI File Source",
+			filters={"name": ["in", file_source_ids]},
+			fields=["file_type", "openai_file_id"],
+		)
+
+		# Some files can be added as a resource for both file search and code interpreter
+
+		code_interpreter_files = [
+			f.openai_file_id for f in files if f.file_type.lower() in code_interpreter_file_types
+		]
+
+		tool_resources = {}
+
+		if code_interpreter_files:
+			tool_resources["code_interpreter"] = {"file_ids": code_interpreter_files}
+
+		file_search_files = [
+			f.openai_file_id for f in files if f.file_type.lower() in file_search_file_types
+		]
+
+		# Create a vector store for the assistant if it doesn't exist. Else update the existing vector store
+
+		if file_search_files:
+			if not self.openai_vector_store_id:
+				self.create_vector_store(file_search_files)
+			else:
+				self.update_vector_store(file_search_files)
+
+			tool_resources["file_search"] = {"vector_store_ids": [self.openai_vector_store_id]}
+
+		# Check if the tool resources are empty
+		if tool_resources.get("file_search") or tool_resources.get("code_interpreter"):
+			return tool_resources
+		else:
+			return None
+
+	def create_vector_store(self, file_ids: list[str]):
+		# Create a new vector store for the assistant
+		client = get_open_ai_client()
+		vector_store = client.vector_stores.create(
+			name=self.name,
+			file_ids=file_ids,
+		)
+
+		self.openai_vector_store_id = vector_store.id
+
+	def update_vector_store(self, file_ids: list[str]):
+		# Update the vector store for the assistant
+		client = get_open_ai_client()
+
+		existing_vector_store_files = client.vector_stores.files.list(
+			vector_store_id=self.openai_vector_store_id, limit=100
+		)
+
+		existing_vector_store_file_ids = [f.id for f in existing_vector_store_files.data]
+
+		deleted_files = [f for f in existing_vector_store_file_ids if f not in file_ids]
+
+		added_files = [f for f in file_ids if f not in existing_vector_store_file_ids]
+
+		if added_files:
+			vector_store_file_batch = client.vector_stores.file_batches.create(
+				vector_store_id=self.openai_vector_store_id,
+				file_ids=added_files,
+			)
+
+		if deleted_files:
+			for file_id in deleted_files:
+				client.vector_stores.files.delete(
+					vector_store_id=self.openai_vector_store_id,
+					file_id=file_id,
+				)
+
 	def delete_openai_assistant(self):
 		# Delete the OpenAI Assistant for the bot
+		# Delete the vector store for the assistant
 		try:
 			client = get_open_ai_client()
 			client.beta.assistants.delete(self.openai_assistant_id)
+			if self.openai_vector_store_id:
+				client.vector_stores.delete(self.openai_vector_store_id)
 		except Exception:
 			frappe.log_error(
 				f"Error deleting OpenAI Assistant {self.openai_assistant_id} for bot {self.name}"
@@ -321,6 +451,7 @@ class RavenBot(Document):
 		link_document: str = None,
 		markdown: bool = False,
 		notification_name: str = None,
+		file: str = None,
 	) -> str:
 		"""
 		Send a text message to a channel
@@ -334,9 +465,19 @@ class RavenBot(Document):
 		link_doctype: The doctype of the document to link the message to
 		link_document: The name of the document to link the message to
 		markdown: If True, the text will be converted to HTML.
+		file: The file to send to the user.
 
 		Returns the message ID of the message sent
 		"""
+
+		message_type = "Text"
+
+		if file:
+			fileExt = ["jpg", "JPG", "jpeg", "JPEG", "png", "PNG", "gif", "GIF", "webp", "WEBP"]
+			if file.split(".")[-1] in fileExt:
+				message_type = "Image"
+			else:
+				message_type = "File"
 
 		if markdown:
 			text = frappe.utils.md_to_html(text)
@@ -347,7 +488,8 @@ class RavenBot(Document):
 				"doctype": "Raven Message",
 				"channel_id": channel_id,
 				"text": text,
-				"message_type": "Text",
+				"message_type": message_type,
+				"file": file,
 				"is_bot_message": 1,
 				"bot": self.raven_user,
 				"link_doctype": link_doctype,
@@ -396,6 +538,7 @@ class RavenBot(Document):
 		link_document: str = None,
 		markdown: bool = False,
 		notification_name: str = None,
+		file: str = None,
 	) -> str:
 		"""
 		Send a text message to a user in a Direct Message channel
@@ -409,6 +552,7 @@ class RavenBot(Document):
 		link_doctype: The doctype of the document to link the message to
 		link_document: The name of the document to link the message to
 		markdown: If True, the text will be converted to HTML.
+		file: The file to send to the user.
 
 		Returns the message ID of the message sent
 		"""
@@ -417,7 +561,7 @@ class RavenBot(Document):
 
 		if channel_id:
 			return self.send_message(
-				channel_id, text, link_doctype, link_document, markdown, notification_name
+				channel_id, text, link_doctype, link_document, markdown, notification_name, file
 			)
 
 	def get_last_message(self, channel_id: str = None, message_type: str = None) -> Document | None:

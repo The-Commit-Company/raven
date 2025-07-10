@@ -107,6 +107,54 @@ def delete_documents(doctype: str, document_ids: list):
 	return {"document_ids": document_ids, "message": "Documents deleted", "doctype": doctype}
 
 
+def submit_document(doctype: str, document_id: str):
+	"""
+	Submit a document in the database
+	"""
+	doc = frappe.get_doc(doctype, document_id)
+	doc.submit()
+	return {
+		"document_id": document_id,
+		"message": f"{doctype} {document_id} submitted",
+		"doctype": doctype,
+	}
+
+
+def cancel_document(doctype: str, document_id: str):
+	"""
+	Cancel a document in the database
+	"""
+	doc = frappe.get_doc(doctype, document_id)
+	doc.cancel()
+	return {
+		"document_id": document_id,
+		"message": f"{doctype} {document_id} cancelled",
+		"doctype": doctype,
+	}
+
+
+def get_amended_document_id(doctype: str, document_id: str):
+	"""
+	Get the amended document for a given document
+	"""
+	amended_doc = frappe.db.exists(doctype, {"amended_from": document_id})
+	if amended_doc:
+		return amended_doc
+	else:
+		return {"message": f"{doctype} {document_id} is not amended"}
+
+
+def get_amended_document(doctype: str, document_id: str):
+	"""
+	Get the amended document for a given document
+	"""
+	amended_doc = frappe.db.exists(doctype, {"amended_from": document_id})
+	if amended_doc:
+		return client.get(doctype, name=document_id)
+	else:
+		return {"message": f"{doctype} {document_id} is not amended", "doctype": doctype}
+
+
 def attach_file_to_document(doctype: str, document_id: str, file_path: str):
 	"""
 	Attach a file to a document in the database
@@ -161,3 +209,75 @@ def get_list(doctype: str, filters: dict = None, fields: list = None, limit: int
 
 	# Use the frappe.get_list method to get the list of documents
 	return frappe.get_list(doctype, filters=filters, fields=filtered_fields, limit=limit)
+
+
+def get_value(doctype: str, filters: dict = None, fieldname: str | list = "name"):
+	"""
+	Returns a value from a document
+
+	        :param doctype: DocType to be queried
+	        :param fieldname: Field to be returned (default `name`) - can be a list of fields(str) or a single field(str)
+	        :param filters: dict or string for identifying the record
+	"""
+	meta = frappe.get_meta(doctype)
+
+	if isinstance(fieldname, list):
+		for field in fieldname:
+			if not meta.has_field(field):
+				return {"message": f"Field {field} does not exist in {doctype}"}
+
+		return client.get_value(doctype, filters=filters, fieldname=fieldname)
+	else:
+		if not meta.has_field(fieldname):
+			return {"message": f"Field {fieldname} does not exist in {doctype}"}
+
+		return client.get_value(doctype, filters=filters, fieldname=fieldname)
+
+
+def set_value(doctype: str, document_id: str, fieldname: str | dict, value: str = None):
+	"""
+	Set a value in a document
+
+	        :param doctype: DocType to be queried
+	        :param document_id: Document ID to be updated
+	        :param fieldname: Field to be updated - fieldname string or JSON / dict with key value pair
+	        :param value: value if fieldname is JSON
+
+	        Example:
+	                client.set_value("Customer", "CUST-00001", {"customer_name": "John Doe", "customer_email": "john.doe@example.com"}) OR
+	                client.set_value("Customer", "CUST-00001", "customer_name", "John Doe")
+	"""
+	if isinstance(fieldname, dict):
+		return client.set_value(doctype, document_id, fieldname)
+	else:
+		return client.set_value(doctype, document_id, fieldname, value)
+
+
+def get_report_result(
+	report_name: str,
+	filters: dict = None,
+	limit=None,
+	user: str = None,
+	ignore_prepared_report: bool = False,
+	are_default_filters: bool = True,
+):
+	"""
+	Run a report and return the columns and result
+	"""
+	# fetch the particular report
+	report = frappe.get_doc("Report", report_name)
+	if not report:
+		return {
+			"message": f"Report {report_name} is not present in the system. Please create the report first."
+		}
+
+	# run the report by using the get_data method and return the columns and result
+	columns, data = report.get_data(
+		filters=filters,
+		limit=limit,
+		user=user,
+		ignore_prepared_report=ignore_prepared_report,
+		are_default_filters=are_default_filters,
+	)
+
+	return {"columns": columns, "data": data}

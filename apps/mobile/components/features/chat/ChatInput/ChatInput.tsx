@@ -1,6 +1,5 @@
-import { Keyboard, ScrollView, View } from "react-native"
+import { Keyboard, Pressable, ScrollView, View } from "react-native"
 import AdditionalInputs from "./AdditionalInputs"
-import { Button } from "@components/nativewindui/Button"
 import SendIcon from "@assets/icons/SendIcon.svg"
 import { useColorScheme } from "@hooks/useColorScheme"
 import SendItem from "./SendItem"
@@ -17,6 +16,7 @@ import { UserMentions } from "./mentions"
 import ReplyMessagePreview from "./ReplyMessagePreview"
 import AIEventIndicator from "./AIEventIndicator"
 import { useTyping } from "@raven/lib/hooks/useTypingIndicator"
+import * as ContextMenu from 'zeego/context-menu';
 
 interface ChatInputProps {
     channelID: string
@@ -46,7 +46,7 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
 
     const { colors } = useColorScheme()
 
-    const onSend = () => {
+    const onSend = (sendSilently: boolean = false) => {
         /* Parse the cotent to detect mentions and links.
         For example, when typing "Hey @Mary check this out www.frappe.io"
         The output of the component will be:
@@ -73,7 +73,7 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
 
         let html = md.render(replacedValue)
 
-        sendMessage(html)
+        sendMessage(html, false, sendSilently)
             .then(() => {
                 Keyboard.dismiss()
             })
@@ -132,10 +132,46 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
                 />
 
             </View>
-            <View>
-                <Button disabled={loading} size='icon' variant="plain" className="w-8 h-8 rounded-full mb-2" hitSlop={15} onPress={onSend}>
-                    <SendIcon fill={colors.primary} />
-                </Button>
+            <View className="mb-2">
+                <ContextMenu.Root>
+                    <ContextMenu.Trigger>
+                        <Pressable
+                            disabled={loading}
+                            // Add a subtle ripple effect on Android
+                            android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
+                            className="w-8 h-8 flex items-center justify-center rounded-full"
+                            hitSlop={15}
+                            onPress={() => onSend()}
+                            onLongPress={() => { }}>
+                            <SendIcon fill={colors.primary} />
+                        </Pressable>
+                    </ContextMenu.Trigger>
+                    <ContextMenu.Content>
+                        <ContextMenu.Item key="star" onSelect={() => onSend(true)}>
+                            <ContextMenu.ItemTitle>Send without notification</ContextMenu.ItemTitle>
+                            <ContextMenu.ItemIcon
+                                ios={{
+                                    name: 'bell.slash',
+                                    pointSize: 14,
+                                    weight: 'semibold',
+                                    scale: 'medium',
+                                    // can also be a color string. Requires iOS 15+
+                                    hierarchicalColor: {
+                                        dark: colors.icon,
+                                        light: colors.icon,
+                                    },
+                                    // alternative to hierarchical color. Requires iOS 15+
+                                    paletteColors: [
+                                        {
+                                            dark: colors.icon,
+                                            light: colors.icon,
+                                        },
+                                    ],
+                                }}
+                            />
+                        </ContextMenu.Item>
+                    </ContextMenu.Content>
+                </ContextMenu.Root>
             </View>
         </View>
     </View>
@@ -146,7 +182,7 @@ const FileScroller = ({ channelID, siteID }: { channelID: string, siteID: string
     const [files, setFiles] = useAtom(filesAtomFamily(siteID + channelID))
 
     const removeFile = (file: CustomFile) => {
-        setFiles((prevFiles) => {
+        setFiles((prevFiles: CustomFile[]) => {
             return prevFiles.filter((f) => f.fileID !== file.fileID)
         })
     }
@@ -155,7 +191,7 @@ const FileScroller = ({ channelID, siteID }: { channelID: string, siteID: string
         {files.length > 0 && <View className="px-2 pt-2 border-t border-border">
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                 <View className="flex-row gap-4 justify-start items-start py-2 pr-2">
-                    {files.map((file) => (
+                    {files.map((file: CustomFile) => (
                         <SendItem
                             key={file.fileID}
                             file={file}

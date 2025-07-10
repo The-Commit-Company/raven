@@ -41,10 +41,15 @@ class RavenAIFunction(Document):
 			"Update Multiple Documents",
 			"Delete Document",
 			"Delete Multiple Documents",
+			"Submit Document",
+			"Cancel Document",
+			"Get Amended Document",
 			"Custom Function",
 			"Send Message",
 			"Attach File to Document",
 			"Get Report Result",
+			"Get Value",
+			"Set Value",
 		]
 	# end: auto-generated types
 
@@ -58,11 +63,19 @@ class RavenAIFunction(Document):
 			"Delete Multiple Documents",
 			"Send Message",
 			"Attach File to Document",
+			"Set Value",
 		]
 		if self.type in WRITE_PERMISSIONS:
 			self.requires_write_permissions = 1
 
-		READ_PERMISSIONS = ["Get Document", "Get Multiple Documents", "Get Report Result", "Get List"]
+		READ_PERMISSIONS = [
+			"Get Document",
+			"Get Multiple Documents",
+			"Get Report Result",
+			"Get List",
+			"Get Value",
+			"Get Amended Document",
+		]
 		if self.type in READ_PERMISSIONS:
 			self.requires_write_permissions = 0
 
@@ -186,6 +199,42 @@ class RavenAIFunction(Document):
 				"required": ["document_ids"],
 				"additionalProperties": False,
 			}
+		elif self.type == "Submit Document":
+			params = {
+				"type": "object",
+				"properties": {
+					"document_id": {
+						"type": "string",
+						"description": f"The ID of the {self.reference_doctype} to submit",
+					}
+				},
+				"required": ["document_id"],
+				"additionalProperties": False,
+			}
+		elif self.type == "Cancel Document":
+			params = {
+				"type": "object",
+				"properties": {
+					"document_id": {
+						"type": "string",
+						"description": f"The ID of the {self.reference_doctype} to cancel",
+					}
+				},
+				"required": ["document_id"],
+				"additionalProperties": False,
+			}
+		elif self.type == "Get Amended Document":
+			params = {
+				"type": "object",
+				"properties": {
+					"document_id": {
+						"type": "string",
+						"description": f"The ID of the {self.reference_doctype} to get the amended document for",
+					}
+				},
+				"required": ["document_id"],
+				"additionalProperties": False,
+			}
 		elif self.type == "Attach File to Document":
 			params = {
 				"type": "object",
@@ -229,6 +278,77 @@ class RavenAIFunction(Document):
 				},
 				"required": ["filters", "fields"],
 				"additionalProperties": False,
+			}
+		elif self.type == "Get Value":
+			params = {
+				"type": "object",
+				"properties": {
+					"doctype": {
+						"type": "string",
+						"description": "The DocType to get the value from",
+					},
+					"filters": {
+						"type": "object",
+						"description": "Filters to apply when retrieving the value",
+					},
+					"fieldname": {
+						"anyOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}],
+						"description": "The fields whose value needs to be returned. Can be a single field or a list of fields. If a list of fields is provided, the values will be returned as a tuple.",
+					},
+				},
+				"required": ["doctype", "filters", "fieldname"],
+				"additionalProperties": False,
+			}
+		elif self.type == "Set Value":
+			params = {
+				"type": "object",
+				"properties": {
+					"doctype": {
+						"type": "string",
+						"description": "The DocType to set the value for",
+					},
+					"document_id": {
+						"type": "string",
+						"description": "The ID of the document to set the value for",
+					},
+					"fieldname": {
+						"anyOf": [{"type": "string"}, {"type": "object", "additionalProperties": True}],
+						"description": "The fields whose value needs to be set. Can be a single field or a JSON object with key value pairs.",
+					},
+					"value": {
+						"type": "string",
+						"description": "The value to set for the field. This is required if fieldname is a string.",
+					},
+				},
+				"required": ["doctype", "document_id", "fieldname"],
+				"additionalProperties": False,
+			}
+		elif self.type == "Get Report Result":
+			params = {
+				"type": "object",
+				"properties": {
+					"report_name": {"type": "string", "description": "Report Name"},
+					"filters": {
+						"type": "object",
+						"properties": {
+							"company": {"type": "string", "description": "Company name to run the report for"},
+							"from_date": {"type": "string", "description": "generate report from this date"},
+							"to_date": {"type": "string", "description": "generate report till this date"},
+						},
+						"required": ["company", "to_date", "from_date"],
+					},
+					"limit": {"type": "number", "description": "Limit for the number of records to be fetched"},
+					"ignore_prepared_report": {
+						"type": "boolean",
+						"description": "Whether to ignore the prepared report",
+					},
+					"user": {"type": "string", "description": "The user to run the report for"},
+					"are_default_filters": {
+						"type": "boolean",
+						"description": "Whether to use the default filters",
+					},
+				},
+				"required": ["report_name"],
 			}
 		else:
 			params = self.build_params_json_from_table()
@@ -360,6 +480,9 @@ class RavenAIFunction(Document):
 			"Update Multiple Documents",
 			"Delete Document",
 			"Delete Multiple Documents",
+			"Submit Document",
+			"Cancel Document",
+			"Get Amended Document",
 		]
 		if self.type in DOCUMENT_REF_FUNCTIONS:
 			if not self.reference_doctype:

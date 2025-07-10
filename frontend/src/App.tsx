@@ -103,13 +103,16 @@ const router = createBrowserRouter(
               <Route path=":ID" lazy={() => import('./pages/settings/AI/ViewInstructionTemplate')} />
             </Route>
 
+            <Route path="file-sources" lazy={() => import('./pages/settings/AI/FileSourcesList')} />
+
             <Route path="commands">
               <Route index lazy={() => import('./pages/settings/AI/SavedPromptsList')} />
               <Route path="create" lazy={() => import('./pages/settings/AI/CreateSavedPrompt')} />
               <Route path=":ID" lazy={() => import('./pages/settings/AI/ViewSavedPrompt')} />
             </Route>
 
-            <Route path="openai-settings" lazy={() => import('./pages/settings/AI/OpenAISettings')} />
+            <Route path="ai-settings" lazy={() => import('./pages/settings/AI/AISettings')} />
+            <Route path="openai-settings" lazy={() => import('./pages/settings/AI/AISettings')} /> {/* Redirect for backwards compatibility */}
 
             <Route path="webhooks">
               <Route index lazy={() => import('./pages/settings/Webhooks/WebhookList')} />
@@ -129,6 +132,7 @@ const router = createBrowserRouter(
               <Route path=":ID" lazy={() => import('./pages/settings/MessageActions/ViewMessageAction')} />
             </Route>
             <Route path="mobile-app" lazy={() => import('./pages/settings/MobileApp')} />
+            <Route path="push-notifications" lazy={() => import('./pages/settings/PushNotifications')} />
             <Route path="help" lazy={() => import('./pages/settings/HelpAndSupport')} />
           </Route>
           <Route path=":workspaceID" element={<MainPage />}>
