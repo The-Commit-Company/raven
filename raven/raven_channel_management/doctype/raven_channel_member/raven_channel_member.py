@@ -200,27 +200,26 @@ class RavenChannelMember(Document):
 		if not is_direct_message:
 
 			# Send a system message to the channel mentioning the member who joined
-			if not is_thread:
-				member_name = frappe.get_cached_value("Raven User", self.user_id, "full_name")
-				if self.user_id == frappe.session.user:
-					frappe.get_doc(
-						{
-							"doctype": "Raven Message",
-							"channel_id": self.channel_id,
-							"message_type": "System",
-							"text": f"{member_name} joined.",
-						}
-					).insert(ignore_permissions=True)
-				else:
-					current_user_name = frappe.get_cached_value("Raven User", frappe.session.user, "full_name")
-					frappe.get_doc(
-						{
-							"doctype": "Raven Message",
-							"channel_id": self.channel_id,
-							"message_type": "System",
-							"text": f"{current_user_name} added {member_name}.",
-						}
-					).insert(ignore_permissions=True)
+			member_name = frappe.get_cached_value("Raven User", self.user_id, "full_name")
+			if self.user_id == frappe.session.user:
+				frappe.get_doc(
+					{
+						"doctype": "Raven Message",
+						"channel_id": self.channel_id,
+						"message_type": "System",
+						"text": f"{member_name} joined.",
+					}
+				).insert(ignore_permissions=True)
+			else:
+				current_user_name = frappe.get_cached_value("Raven User", frappe.session.user, "full_name")
+				frappe.get_doc(
+					{
+						"doctype": "Raven Message",
+						"channel_id": self.channel_id,
+						"message_type": "System",
+						"text": f"{current_user_name} added {member_name}.",
+					}
+				).insert(ignore_permissions=True)
 
 		self.invalidate_channel_members_cache()
 

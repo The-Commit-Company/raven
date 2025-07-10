@@ -17,7 +17,12 @@ from raven.notification import (
 	send_notification_to_topic,
 	send_notification_to_user,
 )
-from raven.utils import get_raven_room, refresh_thread_reply_count, track_channel_visit
+from raven.utils import (
+	get_raven_room,
+	is_channel_member,
+	refresh_thread_reply_count,
+	track_channel_visit,
+)
 
 
 class RavenMessage(Document):
@@ -326,10 +331,11 @@ class RavenMessage(Document):
 				after_commit=True,
 			)
 		elif channel_doc.is_thread:
-			# TODO: Might be a good idea to just send this to the users who are participants in the thread - maybe not a lot of users?
-
 			# Get the number of replies in the thread
 			reply_count = refresh_thread_reply_count(self.channel_id)
+
+			self.add_mentioned_users_to_thread()
+
 			frappe.publish_realtime(
 				"thread_reply",
 				{
@@ -356,6 +362,26 @@ class RavenMessage(Document):
 				after_commit=True,
 				room=get_raven_room(),
 			)
+
+	def add_mentioned_users_to_thread(self):
+		"""
+		Add the mentioned users to the thread if they are members of the parent channel but not in the thread
+		"""
+		if not self.mentions:
+			return
+
+		parent_channel_id = frappe.get_cached_value("Raven Message", self.channel_id, "channel_id")
+		if parent_channel_id:
+			for mention in self.mentions:
+				if is_channel_member(parent_channel_id, mention.user) and not is_channel_member(
+					self.channel_id, mention.user
+				):
+					try:
+						frappe.get_doc(
+							{"doctype": "Raven Channel Member", "channel_id": self.channel_id, "user_id": mention.user}
+						).insert(ignore_permissions=True)
+					except Exception:
+						pass
 
 	def send_push_notification(self):
 		# Send Push Notification for the following:

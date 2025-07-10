@@ -3,7 +3,7 @@ from frappe import _
 from frappe.query_builder import Order
 from frappe.query_builder.functions import Coalesce, Count
 
-from raven.api.raven_channel import get_peer_user_id
+from raven.api.raven_channel import get_peer_user_id, is_channel_member
 from raven.utils import get_channel_members, get_thread_reply_count
 
 
@@ -257,6 +257,8 @@ def create_thread(message_id):
 		}
 	).insert()
 
+	users_added_to_thread = []
+
 	# Add the creator of the original message as a participant
 	creator = thread_message.owner
 
@@ -264,6 +266,7 @@ def create_thread(message_id):
 		frappe.get_doc(
 			{"doctype": "Raven Channel Member", "channel_id": thread_channel.name, "user_id": creator}
 		).insert(ignore_permissions=True)
+		users_added_to_thread.append(creator)
 
 	else:
 		# By now, the creator of the thread and the creator of the original message should be added as participants
@@ -283,6 +286,24 @@ def create_thread(message_id):
 						"user_id": peer_user_id,
 					}
 				).insert(ignore_permissions=True)
+				users_added_to_thread.append(peer_user_id)
+
+	# In the original message, any mentioned users should also be added as participants
+	for mention in thread_message.mentions:
+		if mention.user not in users_added_to_thread:
+			try:
+				# Check if this user is a member of the parent channel
+				if is_channel_member(channel_doc.name, mention.user):
+					frappe.get_doc(
+						{
+							"doctype": "Raven Channel Member",
+							"channel_id": thread_channel.name,
+							"user_id": mention.user,
+						}
+					).insert(ignore_permissions=True)
+					users_added_to_thread.append(mention.user)
+			except Exception:
+				pass
 
 	# Update the message to mark it as a thread
 	thread_message.is_thread = 1
