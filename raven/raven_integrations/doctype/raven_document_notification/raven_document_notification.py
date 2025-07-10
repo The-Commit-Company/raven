@@ -235,6 +235,7 @@ def run_document_notification(doc, method):
 		notifications_to_send=notifications_to_send,
 		link_doctype=doc.doctype,
 		link_document=doc.name,
+		enqueue_after_commit=True,
 	)
 
 

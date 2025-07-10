@@ -63,6 +63,7 @@ class RavenAIFunction(Document):
 			"Delete Multiple Documents",
 			"Send Message",
 			"Attach File to Document",
+			"Set Value",
 		]
 		if self.type in WRITE_PERMISSIONS:
 			self.requires_write_permissions = 1
@@ -72,6 +73,7 @@ class RavenAIFunction(Document):
 			"Get Multiple Documents",
 			"Get Report Result",
 			"Get List",
+			"Get Value",
 			"Get Amended Document",
 		]
 		if self.type in READ_PERMISSIONS:
@@ -320,6 +322,33 @@ class RavenAIFunction(Document):
 				},
 				"required": ["doctype", "document_id", "fieldname"],
 				"additionalProperties": False,
+			}
+		elif self.type == "Get Report Result":
+			params = {
+				"type": "object",
+				"properties": {
+					"report_name": {"type": "string", "description": "Report Name"},
+					"filters": {
+						"type": "object",
+						"properties": {
+							"company": {"type": "string", "description": "Company name to run the report for"},
+							"from_date": {"type": "string", "description": "generate report from this date"},
+							"to_date": {"type": "string", "description": "generate report till this date"},
+						},
+						"required": ["company", "to_date", "from_date"],
+					},
+					"limit": {"type": "number", "description": "Limit for the number of records to be fetched"},
+					"ignore_prepared_report": {
+						"type": "boolean",
+						"description": "Whether to ignore the prepared report",
+					},
+					"user": {"type": "string", "description": "The user to run the report for"},
+					"are_default_filters": {
+						"type": "boolean",
+						"description": "Whether to use the default filters",
+					},
+				},
+				"required": ["report_name"],
 			}
 		else:
 			params = self.build_params_json_from_table()
