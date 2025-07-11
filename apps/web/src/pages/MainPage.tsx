@@ -4,12 +4,18 @@ import {
     SidebarProvider,
 } from "@components/ui/sidebar"
 import AppHeader from "@components/features/header/AppHeader"
-import { Outlet } from "react-router-dom"
+import { Outlet, useLocation } from "react-router-dom"
+import React, { useState } from "react"
 
 const MainPage = () => {
+
+    const location = useLocation()
+    const isSearchPage = location.pathname === "/search"
+    const [searchValue, setSearchValue] = useState("")
+
     return (
         <div className="flex flex-col h-screen">
-            <AppHeader />
+            <AppHeader searchValue={isSearchPage ? searchValue : undefined} onSearchChange={isSearchPage ? setSearchValue : undefined} />
             <SidebarProvider
                 style={
                     {
@@ -19,7 +25,7 @@ const MainPage = () => {
                 }>
                 <AppSidebar />
                 <SidebarInset>
-                    <Outlet />
+                    <Outlet context={{ searchValue, setSearchValue }} />
                 </SidebarInset>
             </SidebarProvider>
         </div>

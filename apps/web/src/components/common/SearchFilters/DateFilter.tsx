@@ -8,6 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover"
 import { Separator } from "@components/ui/separator"
 import { CSSProperties } from "react"
 import React from "react"
+import { Label } from "@components/ui/label"
 
 export interface DateRange {
     from?: Date,
@@ -102,14 +103,15 @@ export default function DateFilter({ value, onValueChange, className, style, dro
 
     return (
         <div className={cn("w-full", className)} style={style}>
+            <Label className="text-xs text-muted-foreground mb-1 block">Date</Label>
             <Popover open={isOpen} onOpenChange={setIsOpen}>
                 <PopoverTrigger asChild>
-                    <Button variant="outline" className={"w-full max-w-xs justify-between text-left font-normal h-9 px-2"}>
-                        <span>{triggerLabel}</span>
+                    <Button variant="outline" className={"w-fit justify-between text-left font-normal h-9 px-2"}>
+                        <span className="pl-1">{triggerLabel}</span>
                         <ChevronDownIcon className="ml-2 h-4 w-4 opacity-30" />
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className={cn("w-80 p-0", dropdownClassName)} style={dropdownStyle} align="start">
+                <PopoverContent className={cn("w-full p-0", dropdownClassName)} style={dropdownStyle} align="start">
                     <div>
                         {/* Preset Options */}
                         <div className="flex flex-col gap-0.5 mb-1 p-1">
@@ -128,37 +130,39 @@ export default function DateFilter({ value, onValueChange, className, style, dro
                         </div>
                         <Separator />
                         {/* Custom Date Range */}
-                        <div className="flex flex-col gap-3.5 p-3">
+                        <div className="flex flex-col gap-3.5 p-3 w-full">
                             {/* From Date */}
-                            <div>
+                            <div className="w-full">
                                 <div className="text-xs text-muted-foreground mb-1">From</div>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button
                                             variant="outline"
-                                            className={cn("w-full justify-start text-left font-normal h-8 px-2", !value.from && "text-muted-foreground")}>
+                                            className={cn("w-full justify-start text-left font-normal h-8 px-2", !value.from && "text-muted-foreground")}
+                                        >
                                             <CalendarIcon className="h-4 w-4" />
                                             {value.from ? format(value.from, "dd MMM yyyy") : "Select a date"}
                                         </Button>
                                     </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0" align="start">
+                                    <PopoverContent className="w-full max-w-none min-w-[220px] p-0" align="start">
                                         <Calendar mode="single" selected={value.from} onSelect={handleFromChange} initialFocus />
                                     </PopoverContent>
                                 </Popover>
                             </div>
                             {/* To Date */}
-                            <div>
+                            <div className="w-full">
                                 <div className="text-xs text-muted-foreground mb-1">To</div>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button
                                             variant="outline"
-                                            className={cn("w-full justify-start text-left font-normal h-8 px-2", !value.to && "text-muted-foreground")}>
+                                            className={cn("w-full justify-start text-left font-normal h-8 px-2", !value.to && "text-muted-foreground")}
+                                        >
                                             <CalendarIcon className="h-4 w-4" />
                                             {value.to ? format(value.to, "dd MMM yyyy") : "Select a date"}
                                         </Button>
                                     </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0" align="start">
+                                    <PopoverContent className="w-full max-w-none min-w-[220px] p-0" align="start">
                                         <Calendar mode="single" selected={value.to} onSelect={handleToChange} initialFocus />
                                     </PopoverContent>
                                 </Popover>
