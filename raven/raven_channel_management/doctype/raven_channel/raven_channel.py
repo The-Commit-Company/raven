@@ -161,6 +161,10 @@ class RavenChannel(Document):
 				{"channel_id": self.name, "user_id": frappe.session.user, "is_admin": 1},
 			):
 				pass
+			elif "Raven Admin" in frappe.get_roles() and frappe.db.get_value(
+				"Raven Channel Member", {"channel_id": self.name, "user_id": frappe.session.user}
+			):
+				pass
 			elif frappe.session.user == "Administrator":
 				pass
 			else:

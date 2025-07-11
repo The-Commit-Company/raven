@@ -5,6 +5,8 @@ import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { RavenMessage } from '@/types/RavenMessaging/RavenMessage'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
+import { atomFamily } from 'jotai/utils'
+import { atom, useAtom } from 'jotai'
 
 
 export const fileExt = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF']
@@ -12,12 +14,15 @@ export interface FileUploadProgress {
   progress: number,
   isComplete: boolean,
 }
+
+export const filesAtom = atomFamily((channelID: string) => atom<CustomFile[]>([]))
+
 export default function useFileUpload(channelID: string) {
 
   const { file } = useContext(FrappeContext) as FrappeConfig
   const fileInputRef = useRef<any>(null)
 
-  const [files, setFiles] = useState<CustomFile[]>([])
+  const [files, setFiles] = useAtom(filesAtom(channelID))
 
   const [compressImages, setCompressImages] = useState(true)
 

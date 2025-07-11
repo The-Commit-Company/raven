@@ -1,4 +1,4 @@
-import { useCallback, useContext } from "react"
+import { useCallback, useContext, useMemo } from "react"
 import { ChannelDetails } from "../channel-details/ChannelDetails"
 import { ChannelMemberDetails } from "../channel-member-details/ChannelMemberDetails"
 import { ChannelSettings } from "../channel-settings/ChannelSettings"
@@ -11,6 +11,7 @@ import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
 import useFetchActiveUsers from "@/hooks/fetchers/useFetchActiveUsers"
 import { useIsDesktop } from "@/hooks/useMediaQuery"
 import { Drawer, DrawerContent } from "@/components/layout/Drawer"
+import { hasRavenAdminRole } from "@/utils/roles"
 
 interface ViewChannelDetailsModalContentProps {
     open: boolean,
@@ -63,7 +64,15 @@ const ViewChannelDetailsModalContent = ({ setOpen, channelData }: ViewChannelDet
     }, [setOpen])
 
     // channel settings are only available for admins 
-    const allowSettingChange = (channelMembers[currentUser]?.is_admin == 1) || false
+    const allowSettingChange = useMemo(() => {
+        if (channelMembers[currentUser]?.is_admin == 1) {
+            return true
+        }
+        if (channelMembers[currentUser] && hasRavenAdminRole()) {
+            return true
+        }
+        return false
+    }, [channelMembers, currentUser])
 
     return (
         <>

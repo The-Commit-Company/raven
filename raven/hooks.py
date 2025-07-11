@@ -14,10 +14,10 @@ app_logo_url = "/assets/raven/raven-logo.png"
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "raven.bundle.css"
+app_include_css = "raven.bundle.css"
 # app_include_css = "/assets/raven/css/raven.css"
 # app_include_js = "/assets/raven/js/raven.js"                 ]
-# app_include_js = "/assets/js/raven.bundle.js"
+app_include_js = "raven.bundle.js"
 
 add_to_apps_screen = [
 	{

@@ -415,7 +415,7 @@ const StartDMButton = ({ userID }: { userID: string }) => {
 }
 export const MessageContent = ({ message, user, forceHideLinkPreview = false, ...props }: MessageContentProps) => {
 
-    return <Box {...props}>
+    return <Box className='flex flex-col gap-1' {...props}>
         {message.text ? <TiptapRenderer message={{
             ...message,
             message_type: 'Text'
