@@ -4,7 +4,7 @@ import { FilterComponentProps } from './types'
 import { updateFilter } from './utils'
 import { Label } from '@components/ui/label'
 
-export function UserFilter({ filters, onFiltersChange, availableUsers }: FilterComponentProps) {
+export function UserFilter({ filters, onFiltersChange, availableUsers, showLabel = true }: FilterComponentProps) {
 
     if (!availableUsers || availableUsers.length === 0) {
         return null
@@ -13,8 +13,8 @@ export function UserFilter({ filters, onFiltersChange, availableUsers }: FilterC
     const selectedUser = availableUsers.find(u => u.name === filters.selectedUser)
 
     return (
-        <div className="w-full">
-            <Label className="text-xs text-muted-foreground mb-1 block">From</Label>
+        <div className="flex-shrink-0">
+            {showLabel && <Label className="text-xs text-muted-foreground mb-1 block">From</Label>}
             <Select
                 value={filters.selectedUser}
                 onValueChange={(value) => updateFilter(filters, 'selectedUser', value, onFiltersChange)}>

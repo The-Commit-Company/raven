@@ -5,14 +5,14 @@ import { FilterComponentProps, Channel } from './types'
 import { updateFilter, separateChannelsAndDMs, getChannelIconType } from './utils'
 import { Label } from '@components/ui/label'
 
-export function ChannelFilter({ filters, onFiltersChange, availableChannels, availableUsers }: FilterComponentProps) {
+export function ChannelFilter({ filters, onFiltersChange, availableChannels, availableUsers, showLabel = true }: FilterComponentProps) {
 
     const { channels, dms } = separateChannelsAndDMs(availableChannels)
     const selectedChannel = availableChannels.find(c => c.id === filters.selectedChannel)
 
     return (
-        <div className="w-full">
-            <Label className="text-xs text-muted-foreground mb-1 block">Channel</Label>
+        <div className="flex-shrink-0">
+            {showLabel && <Label className="text-xs text-muted-foreground mb-1 block">Channel</Label>}
             <Select
                 value={filters.selectedChannel}
                 onValueChange={(value) => updateFilter(filters, 'selectedChannel', value, onFiltersChange)}>

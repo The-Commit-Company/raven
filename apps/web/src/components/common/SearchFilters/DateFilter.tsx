@@ -29,10 +29,14 @@ interface DateFilterProps {
     /**
      * Optional style for the dropdown panel (PopoverContent).
      */
-    dropdownStyle?: CSSProperties
+    dropdownStyle?: CSSProperties,
+    /**
+     * Whether to show the label above the filter
+     */
+    showLabel?: boolean
 }
 
-export default function DateFilter({ value, onValueChange, className, style, dropdownClassName, dropdownStyle }: DateFilterProps) {
+export default function DateFilter({ value, onValueChange, className, style, dropdownClassName, dropdownStyle, showLabel = true }: DateFilterProps) {
 
     const presetOptions = [
         { label: "Today", value: "today" },
@@ -102,8 +106,8 @@ export default function DateFilter({ value, onValueChange, className, style, dro
     }
 
     return (
-        <div className={cn("w-full", className)} style={style}>
-            <Label className="text-xs text-muted-foreground mb-1 block">Date</Label>
+        <div className={cn("flex-shrink-0", className)} style={style}>
+            {showLabel && <Label className="text-xs text-muted-foreground mb-1 block">Date</Label>}
             <Popover open={isOpen} onOpenChange={setIsOpen}>
                 <PopoverTrigger asChild>
                     <Button variant="outline" className={"w-fit justify-between text-left font-normal h-9 px-2"}>
