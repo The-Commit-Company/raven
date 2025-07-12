@@ -14,10 +14,12 @@ class RavenSlackImportChannels(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		channel_messages: DF.Attach | None
 		channel_type: DF.Literal["Open", "Public", "Private"]
 		created_on: DF.Datetime | None
 		import_type: DF.Literal["Map To Existing Channel", "Create New Channel"]
 		members: DF.JSON | None
+		number_of_messages: DF.Int
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
@@ -28,8 +30,9 @@ class RavenSlackImportChannels(Document):
 		slack_is_archived: DF.Check
 		slack_is_general: DF.Check
 		slack_name: DF.Data | None
-		slack_purpose: DF.Data | None
+		slack_purpose: DF.SmallText | None
 		slack_topic: DF.Data | None
+		status: DF.Literal["Not Started", "In Progress", "Completed"]
 	# end: auto-generated types
 
 	pass

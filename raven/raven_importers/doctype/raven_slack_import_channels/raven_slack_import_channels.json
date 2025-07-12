@@ -18,7 +18,10 @@
   "slack_topic",
   "slack_purpose",
   "slack_creator_user_id",
-  "created_on"
+  "created_on",
+  "channel_messages",
+  "number_of_messages",
+  "status"
  ],
  "fields": [
   {
@@ -82,7 +85,7 @@
   },
   {
    "fieldname": "slack_purpose",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "label": "Slack Purpose"
   },
   {
@@ -101,13 +104,29 @@
    "fieldtype": "Select",
    "label": "Channel Type",
    "options": "Open\nPublic\nPrivate"
+  },
+  {
+   "fieldname": "channel_messages",
+   "fieldtype": "Attach",
+   "label": "Channel Messages"
+  },
+  {
+   "fieldname": "number_of_messages",
+   "fieldtype": "Int",
+   "label": "Number of messages"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Not Started\nIn Progress\nCompleted"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-06-09 01:24:42.839870",
+ "modified": "2025-07-12 11:04:36.265145",
  "modified_by": "Administrator",
  "module": "Raven Importers",
  "name": "Raven Slack Import Channels",

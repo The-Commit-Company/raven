@@ -14,6 +14,8 @@
   "users",
   "section_break_lsxa",
   "channels",
+  "section_break_spbm",
+  "emojis",
   "section_break_uatb",
   "error_logs"
  ],
@@ -79,12 +81,22 @@
    "fieldtype": "JSON",
    "label": "Error Logs",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_spbm",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "emojis",
+   "fieldtype": "Table",
+   "label": "Emojis",
+   "options": "Raven Slack Importer Emojis"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-20 02:26:40.526014",
+ "modified": "2025-07-12 08:53:46.400626",
  "modified_by": "Administrator",
  "module": "Raven Importers",
  "name": "Raven Slack Import",

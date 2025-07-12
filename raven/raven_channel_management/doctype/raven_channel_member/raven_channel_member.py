@@ -177,6 +177,11 @@ class RavenChannelMember(Document):
 		"""
 		Subscribe the user to the topic if the channel is not a DM
 		"""
+		self.invalidate_channel_members_cache()
+
+		if frappe.flags.in_import:
+			return
+
 		is_direct_message = frappe.get_cached_value(
 			"Raven Channel", self.channel_id, "is_direct_message"
 		)
@@ -220,8 +225,6 @@ class RavenChannelMember(Document):
 						"text": f"{current_user_name} added {member_name}.",
 					}
 				).insert(ignore_permissions=True)
-
-		self.invalidate_channel_members_cache()
 
 	def on_update(self):
 		"""

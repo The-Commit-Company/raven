@@ -36,4 +36,8 @@ export interface RavenSlackImportChannels{
 	slack_creator_user_id?: string
 	/**	Created On : Datetime	*/
 	created_on?: string
+	/**	Channel Messages : Attach	*/
+	channel_messages?: string
+	/**	Number of messages : Int	*/
+	number_of_messages?: number
 }

@@ -4,10 +4,11 @@
 import datetime
 import json
 import os
-import time
 import zipfile
 
+import emoji
 import frappe
+from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 from frappe.model.document import Document
 
 
@@ -26,9 +27,13 @@ class RavenSlackImport(Document):
 		from raven.raven_importers.doctype.raven_slack_import_users.raven_slack_import_users import (
 			RavenSlackImportUsers,
 		)
+		from raven.raven_importers.doctype.raven_slack_importer_emojis.raven_slack_importer_emojis import (
+			RavenSlackImporterEmojis,
+		)
 
 		channels: DF.Table[RavenSlackImportChannels]
 		channels_json_file: DF.Attach | None
+		emojis: DF.Table[RavenSlackImporterEmojis]
 		error_logs: DF.JSON | None
 		slack_export_zip_file: DF.Attach
 		status: DF.Literal["Not Started", "Staged", "In Progress", "Completed"]
@@ -42,8 +47,6 @@ class RavenSlackImport(Document):
 
 	@frappe.whitelist()
 	def unzip_files(self):
-
-		print("unzip_files")
 
 		if not self.slack_export_zip_file.endswith(".zip"):
 			frappe.throw("Please upload a zip file")
@@ -144,8 +147,24 @@ class RavenSlackImport(Document):
 		if len(workspaces) == 1:
 			workspace = workspaces[0].name
 
+		unique_emojis = set()
+
 		for channel in channels_json:
-			created_time_struct = time.localtime(channel.get("created"))
+
+			channel_messages = self.extract_channel_messages_json(channel.get("name"))
+
+			for message in channel_messages:
+				for e in message.get("reactions", []):
+					unique_emojis.add(e.get("name"))
+
+			# Save the channel messages to a JSON file
+			channel_messages_file_doc = frappe.new_doc("File")
+			channel_messages_file_doc.content = json.dumps(channel_messages)
+			channel_messages_file_doc.file_name = f"{channel.get('id')}.json"
+			channel_messages_file_doc.is_private = 1
+			channel_messages_file_doc.attached_to_doctype = "Raven Slack Import"
+			channel_messages_file_doc.attached_to_name = self.name
+			channel_messages_file_doc.save()
 
 			self.append(
 				"channels",
@@ -162,14 +181,27 @@ class RavenSlackImport(Document):
 					"channel_type": "Open" if channel.get("is_general") else "Public",
 					"workspace": workspace,
 					# Parse the created_on date from UNIX timestamp (in seconds) to datetime.datetime
-					"created_on": datetime.datetime(
-						year=created_time_struct.tm_year,
-						month=created_time_struct.tm_mon,
-						day=created_time_struct.tm_mday,
-						hour=created_time_struct.tm_hour,
-						minute=created_time_struct.tm_min,
-						second=created_time_struct.tm_sec,
-					),
+					"created_on": convert_slack_timestamp_to_datetime(channel.get("created")),
+					"number_of_messages": len(channel_messages),
+					"channel_messages": channel_messages_file_doc.file_url,
+				},
+			)
+		self.emojis = []
+		for e in unique_emojis:
+			is_custom = False
+			mapped_emoji = get_emoji_from_name(e)
+			if not mapped_emoji or mapped_emoji.startswith(":"):
+				is_custom = True
+			else:
+				escaped_emoji = mapped_emoji.encode("unicode-escape").decode("utf-8").replace("\\u", "")
+
+			self.append(
+				"emojis",
+				{
+					"slack_emoji_name": e,
+					"mapped_emoji": mapped_emoji,
+					"is_custom": is_custom,
+					"mapped_emoji_escaped": escaped_emoji,
 				},
 			)
 
@@ -180,6 +212,26 @@ class RavenSlackImport(Document):
 		"""
 		self.validate_users()
 		self.validate_channels()
+
+		# Create custom fields to keep track of duplicates
+		self.create_custom_fields()
+
+		# # Create/map users
+		user_map = self.create_users()
+
+		emoji_map = {}
+
+		for e in self.emojis:
+			emoji_map[e.slack_emoji_name] = {
+				"mapped_emoji": e.mapped_emoji,
+				"is_custom": e.is_custom,
+				"mapped_emoji_escaped": e.mapped_emoji_escaped,
+			}
+
+		# # Create/map channels
+		self.create_channels(user_map, emoji_map)
+
+		# Create/map channels
 
 	def validate_users(self):
 		for user in self.users:
@@ -207,7 +259,176 @@ class RavenSlackImport(Document):
 				if not channel.raven_channel:
 					frappe.throw(f"Please map the channel {channel.slack_name} to an existing channel")
 
-	# def create_custom_fields(self):
-	# 	"""
-	# 	Create a "conversion_id" custom field in Raven User, Raven Channel, Raven Message to track duplicates
-	# 	"""
+	def extract_channel_messages_json(self, channel_id):
+		"""
+		Function to fetch all channel messages and prepare them for import
+		"""
+
+		# Open the zip file and get the messages from the channel folder
+		# Each channel has a folder in the zip file called "channel_id" - we need to get all the JSON files in that folder and merge them
+		zip_file_doc = frappe.get_doc("File", {"file_url": self.slack_export_zip_file})
+		zip_path = zip_file_doc.get_full_path()
+
+		channel_messages = []
+
+		with zipfile.ZipFile(zip_path) as z:
+			for file in z.filelist:
+				if file.is_dir() or file.filename.startswith("__MACOSX/"):
+					# skip folders and macos hidden files
+					continue
+
+				if f"/{channel_id}/" in file.filename and file.filename.endswith(".json"):
+
+					# Read the JSON file and add it to the channel_messages list
+					with z.open(file.filename) as f:
+						channel_messages.extend(json.load(f))
+
+		return channel_messages
+
+	def create_custom_fields(self):
+		"""
+		Create a "conversion_id" custom field in Raven User, Raven Channel, Raven Message to track duplicates
+		"""
+
+		base_fields = [
+			{
+				"fieldname": "is_converted",
+				"label": "Is Converted",
+				"fieldtype": "Check",
+			},
+			{
+				"fieldname": "conversion_id",
+				"label": "Conversion ID",
+				"fieldtype": "Data",
+			},
+		]
+
+		create_custom_fields(
+			{
+				"Raven User": base_fields,
+				"Raven Channel": base_fields,
+				"Raven Message": base_fields,
+			}
+		)
+
+	def create_users(self):
+		"""
+		Create users from the import data
+		"""
+
+		user_map = {}
+
+		for user in self.users:
+			if user.import_type == "Create New User":
+
+				# Do not create user if it exists
+				existing_user = frappe.db.exists("User", {"email": user.email})
+
+				if not existing_user:
+					user_doc = frappe.new_doc("User")
+					user_doc.email = user.email
+					user_doc.first_name = user.first_name
+					user_doc.last_name = user.last_name
+					user_doc.send_welcome_email = 0
+					user_doc.add_roles("Raven User")
+				else:
+					user_doc = frappe.get_doc("User", existing_user)
+
+				# Do not create Raven User if it already exists
+				existing_raven_user = frappe.db.exists("Raven User", {"user": user_doc.name})
+
+				if not existing_raven_user:
+					# Else add the role and get the created Raven User
+					user_doc.add_roles("Raven User")
+					created_user = frappe.get_doc("Raven User", {"user": user_doc.name})
+				else:
+					# Get the created Raven User
+					created_user = frappe.get_doc("Raven User", existing_raven_user)
+
+				created_user.is_converted = 1
+				created_user.conversion_id = user.slack_user_id
+				created_user.flags.ignore_permissions = True
+				created_user.save()
+
+				user.raven_user = created_user.name
+
+				user_map[user.slack_user_id] = created_user.name
+
+			elif user.import_type == "Map to Existing User":
+				existing_user = frappe.get_doc("Raven User", {"user": user.raven_user})
+				existing_user.is_converted = 1
+				existing_user.conversion_id = user.slack_user_id
+				existing_user.flags.ignore_permissions = True
+				existing_user.save()
+
+				user_map[user.slack_user_id] = existing_user.name
+
+		return user_map
+
+	def create_channels(self, user_map, emoji_map):
+		"""
+		Create channels and channel members
+		"""
+		frappe.flags.in_import = True
+		try:
+			for channel in self.channels:
+				if channel.import_type == "Create New Channel":
+
+					channel_owner = frappe.session.user
+					if channel.slack_creator_user_id:
+						channel_owner = user_map.get(channel.slack_creator_user_id, None)
+
+					if channel.raven_channel and frappe.db.exists("Raven Channel", channel.raven_channel):
+						channel_doc = frappe.get_doc("Raven Channel", channel.raven_channel)
+					else:
+
+						channel_doc = frappe.new_doc("Raven Channel")
+						channel_doc.creation = channel.created_on
+						channel_doc.idx = 1
+						channel_doc.modified = channel.created_on
+						channel_doc.owner = channel_owner
+						channel_doc.modified_by = channel_owner
+						channel_doc.workspace = channel.raven_workspace
+						channel_doc.type = channel.channel_type
+						channel_doc.is_archived = channel.slack_is_archived
+						channel_doc.is_converted = True
+						channel_doc.conversion_id = channel.slack_id
+						channel_doc.channel_name = channel.slack_name
+						channel_doc.channel_description = channel.slack_purpose
+						channel_doc.name = f"{channel.raven_workspace}-{channel.slack_name}"
+
+						channel_doc.db_insert()
+
+						channel_doc.reload()
+
+					channel.raven_channel = channel_doc.name
+
+					# Add the channel owner as a member
+					channel_doc.add_members([channel_owner], is_admin=1)
+
+					# Add the channel members
+					channel_members = json.loads(channel.members)
+					for member in channel_members:
+						user_id = user_map.get(member, None)
+						if user_id and user_id != channel_owner:
+							channel_doc.add_members([user_id], is_admin=0)
+		except Exception as e:
+			frappe.flags.in_import = False
+			frappe.throw(e)
+
+		frappe.flags.in_import = False
+
+
+# Utils
+def convert_slack_timestamp_to_datetime(timestamp):
+	"""
+	Convert a Slack timestamp to a datetime object
+	"""
+	return datetime.datetime.fromtimestamp(timestamp)
+
+
+def get_emoji_from_name(emoji_name: str):
+	"""
+	Get an emoji from the emoji name. Something like "expressionless" > "😑"
+	"""
+	return emoji.emojize(f":{emoji_name}:", language="alias")
