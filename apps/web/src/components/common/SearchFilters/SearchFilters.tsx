@@ -13,7 +13,7 @@ interface SearchFiltersWithDrawerProps extends SearchFiltersProps {
 
 export function SearchFilters({ filters, onFiltersChange, availableChannels, availableUsers = [], onOpenMoreFilters }: SearchFiltersWithDrawerProps) {
     return (
-        <div className="space-y-4">
+        <div className="space-y-2">
             {/* Filter Controls */}
             <div className="flex flex-row items-end gap-2">
                 <UserFilter
@@ -22,6 +22,7 @@ export function SearchFilters({ filters, onFiltersChange, availableChannels, ava
                     availableChannels={availableChannels}
                     availableUsers={availableUsers}
                     showLabel={false}
+                    size="sm"
                 />
                 <ChannelFilter
                     filters={filters}
@@ -29,6 +30,7 @@ export function SearchFilters({ filters, onFiltersChange, availableChannels, ava
                     availableChannels={availableChannels}
                     availableUsers={availableUsers}
                     showLabel={false}
+                    size="sm"
                 />
                 <DateFilter
                     className="flex-shrink-0"
@@ -36,6 +38,7 @@ export function SearchFilters({ filters, onFiltersChange, availableChannels, ava
                     value={filters.dateRange}
                     onValueChange={(range) => onFiltersChange({ ...filters, dateRange: range })}
                     showLabel={false}
+                    size="sm"
                 />
                 <Button variant="ghost" size="sm" onClick={onOpenMoreFilters}>
                     <ListFilter className="w-4 h-4 mr-1" />

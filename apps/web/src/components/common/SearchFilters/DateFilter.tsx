@@ -33,10 +33,12 @@ interface DateFilterProps {
     /**
      * Whether to show the label above the filter
      */
-    showLabel?: boolean
+    showLabel?: boolean,
+    triggerLabelClassName?: string,
+    size?: 'sm'
 }
 
-export default function DateFilter({ value, onValueChange, className, style, dropdownClassName, dropdownStyle, showLabel = true }: DateFilterProps) {
+export default function DateFilter({ value, onValueChange, className, style, dropdownClassName, dropdownStyle, showLabel = true, triggerLabelClassName, size }: DateFilterProps) {
 
     const presetOptions = [
         { label: "Today", value: "today" },
@@ -105,13 +107,17 @@ export default function DateFilter({ value, onValueChange, className, style, dro
         triggerLabel = format(value.to, "dd MMM yyyy")
     }
 
+    // Determine classes based on size
+    const buttonSizeClass = size === 'sm' ? 'h-7 px-1' : 'h-9 px-2'
+    const labelSizeClass = size === 'sm' ? 'text-xs' : ''
+
     return (
         <div className={cn("flex-shrink-0", className)} style={style}>
             {showLabel && <Label className="text-xs text-muted-foreground mb-1 block">Date</Label>}
             <Popover open={isOpen} onOpenChange={setIsOpen}>
                 <PopoverTrigger asChild>
-                    <Button variant="outline" className={"w-fit justify-between text-left font-normal h-9 px-2"}>
-                        <span className="pl-1">{triggerLabel}</span>
+                    <Button variant="outline" className={cn("w-fit justify-between text-left font-normal", buttonSizeClass)}>
+                        <span className={cn("pl-1", triggerLabelClassName, labelSizeClass)}>{triggerLabel}</span>
                         <ChevronDownIcon className="ml-2 h-4 w-4 opacity-30" />
                     </Button>
                 </PopoverTrigger>
