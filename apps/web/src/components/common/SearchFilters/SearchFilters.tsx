@@ -40,8 +40,8 @@ export function SearchFilters({ filters, onFiltersChange, availableChannels, ava
                     showLabel={false}
                     size="sm"
                 />
-                <Button variant="ghost" size="sm" onClick={onOpenMoreFilters}>
-                    <ListFilter className="w-4 h-4 mr-1" />
+                <Button variant="ghost" onClick={onOpenMoreFilters} className="text-xs font-semibold h-7 px-2 rounded-md gap-1.5">
+                    <ListFilter className="w-1 h-1 mr-0.5" />
                     Filters
                 </Button>
                 <ClearFiltersButton

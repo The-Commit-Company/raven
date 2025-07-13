@@ -1,5 +1,5 @@
 import { Button } from "@components/ui/button";
-import { AtSignIcon, BookmarkIcon, Settings } from "lucide-react";
+import { AtSignIcon, BookmarkIcon, Settings, Search } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip";
 import UserHelpMenu from "./UserHelpMenu/UserHelpMenu";
 import Recents from "./RecentlyVisitedChannels/Recents";
@@ -8,7 +8,13 @@ import NavUserMenu from "./NavUserMenu/NavUserMenu";
 import { useNavigate, useLocation } from "react-router-dom";
 import { LucideIcon } from "lucide-react";
 
-const AppHeader = () => {
+interface AppHeaderProps { searchValue?: string, onSearchChange?: (value: string) => void }
+
+const AppHeader = ({ searchValue, onSearchChange }: AppHeaderProps) => {
+
+    const location = useLocation()
+    const isSearchPage = location.pathname === "/search"
+
     return (
         <header className="flex items-center justify-between border-b bg-background z-50 px-2 fixed top-0 w-full h-(--app-header-height)">
             {/* Left section - empty for balance */}
@@ -17,13 +23,22 @@ const AppHeader = () => {
             {/* Centered search bar section */}
             <div className="flex flex-1 items-center justify-center max-w-xl w-full gap-1">
                 <Recents />
-                <SearchBar />
+                {isSearchPage ? (
+                    <SearchBar value={searchValue || ""} onChange={onSearchChange || (() => { })} />
+                ) : (
+                    <SearchBar value={""} onChange={() => { }} />
+                )}
                 <UserHelpMenu />
             </div>
 
             {/* Right section - actions and user menu */}
             <div className="flex items-center justify-end gap-1.5 flex-1">
                 <div className="flex items-center gap-1">
+                    <NavButton
+                        path="/search"
+                        icon={Search}
+                        label="Search"
+                    />
                     <NavButton
                         path="/mentions"
                         icon={AtSignIcon}

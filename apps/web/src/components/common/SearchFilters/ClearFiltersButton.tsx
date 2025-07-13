@@ -12,10 +12,9 @@ export function ClearFiltersButton({ filters, onFiltersChange }: FilterComponent
     return (
         <Button
             variant="ghost"
-            size="sm"
             onClick={() => clearAllFilters(onFiltersChange)}
-            className="text-gray-500 hover:text-gray-700">
-            <X className="h-4 w-4 mr-1" />
+            className="text-gray-500 hover:text-gray-700 text-xs h-7 px-2 rounded-md gap-1.5">
+            <X />
             Clear All
         </Button>
     )

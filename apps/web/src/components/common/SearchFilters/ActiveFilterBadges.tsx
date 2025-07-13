@@ -19,10 +19,10 @@ function FilterBadge({ label, filterKey, filters, onFiltersChange }: FilterBadge
     return (
         <Badge
             variant="secondary"
-            className="gap-1 cursor-pointer hover:bg-secondary/80 transition-colors"
+            className="gap-1 text-[10px] cursor-pointer hover:bg-secondary/80 transition-colors"
             onClick={handleRemove}>
             {label}
-            <X className="h-3 w-3" />
+            <X className="w-1 h-1" />
         </Badge>
     )
 }

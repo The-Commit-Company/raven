@@ -1,7 +1,7 @@
 import { SidebarTrigger } from "@components/ui/sidebar"
 import { Separator } from "@components/ui/separator"
 import { dummySavedMessages, dummyUsers, dummyChannels, dummyFileMessages, dummyAllMessages } from '@components/data/dummyData'
-import { useMessageFilters, SearchFiltersComponent } from '@components/common/SearchFilters'
+import { SearchFiltersComponent } from '@components/common/SearchFilters'
 import type { SearchFilters } from '@components/common/SearchFilters'
 import { useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
@@ -27,7 +27,6 @@ export default function Search() {
         dateRange: { from: undefined, to: undefined },
         isPinned: null,
         isSaved: null,
-        isEdited: null,
         hasReactions: null,
         hasLink: null,
         inThread: null,
@@ -66,7 +65,7 @@ export default function Search() {
     }
 
     // Use the message filters hook for saved messages (used in 'all' tab)
-    const filteredMessages = useMessageFilters(dummySavedMessages, fullFilters, dummyChannels)
+    const filteredMessages = dummySavedMessages
 
     return (
         <div className="flex flex-col h-full">
@@ -99,7 +98,7 @@ export default function Search() {
                         availableUsers={availableUsers}
                         onOpenMoreFilters={() => setIsDrawerOpen(open => !open)}
                     />
-                    <div className="mt-4">
+                    <div className="mt-4 flex-1 overflow-y-auto">
                         {/* Results based on active tab */}
                         {activeTab === 'all' && (
                             <SearchResultsAll
