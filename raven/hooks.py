@@ -154,25 +154,12 @@ doc_events = {
 }
 
 # Scheduled Tasks
-# ---------------
-
-# scheduler_events = {
-# "all": [
-# "raven.tasks.all"
-# ],
-# "daily": [
-# "raven.tasks.daily"
-# ],
-# "hourly": [
-# "raven.tasks.hourly"
-# ],
-# "weekly": [
-# "raven.tasks.weekly"
-# ],
-# "monthly": [
-# "raven.tasks.monthly"
-# ],
-# }
+scheduler_events = {
+	"cron": {
+		# Run every 15 minutes
+		"*/15 * * * *": ["raven.raven_messaging.doctype.raven_reminder.raven_reminder.send_reminders"]
+	}
+}
 
 # Testing
 # -------
@@ -267,3 +254,7 @@ on_logout = "raven.api.user_availability.set_user_inactive"
 export_python_type_annotations = True
 
 raven_document_link_override = "raven.api.document_link.get_new_app_document_links"
+
+default_log_clearing_doctypes = {
+	"Raven Reminder": 30,
+}

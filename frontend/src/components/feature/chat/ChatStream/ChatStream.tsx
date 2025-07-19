@@ -18,7 +18,7 @@ import AttachFileToDocumentDialog, { useAttachFileToDocument } from '../ChatMess
 import { ReactionAnalyticsDialog, useMessageReactionAnalytics } from '../ChatMessage/MessageActions/MessageReactionAnalytics'
 import SystemMessageBlock from '../ChatMessage/SystemMessageBlock'
 import { useUserData } from '@/hooks/useUserData'
-
+import { RemindMeMessageDialog, useRemindMeMessage } from '../ChatMessage/MessageActions/RemindMeMessage'
 /**
  * Anatomy of a message
  *
@@ -83,7 +83,7 @@ const ChatStream = forwardRef(({ channelID, replyToMessage, showThreadButton = t
     const { setAttachDocument, ...attachDocProps } = useAttachFileToDocument(onModalClose)
 
     const { setReactionMessage, ...reactionProps } = useMessageReactionAnalytics(onModalClose)
-
+    const { setRemindMeMessage, ...remindMeMessageProps } = useRemindMeMessage()
     const onReplyMessageClick = (messageID: string) => {
         scrollToMessage(messageID)
     }
@@ -184,6 +184,7 @@ const ChatStream = forwardRef(({ channelID, replyToMessage, showThreadButton = t
                                     onAttachDocument={setAttachDocument}
                                     setDeleteMessage={setDeleteMessage}
                                     setReactionMessage={setReactionMessage}
+                                    setRemindMeMessage={setRemindMeMessage}
                                 />
                             </div>
                         </div>
@@ -210,6 +211,7 @@ const ChatStream = forwardRef(({ channelID, replyToMessage, showThreadButton = t
             <ForwardMessageDialog {...forwardProps} />
             <AttachFileToDocumentDialog {...attachDocProps} />
             <ReactionAnalyticsDialog {...reactionProps} />
+            <RemindMeMessageDialog {...remindMeMessageProps} />
         </div>
 
     )
