@@ -96,6 +96,7 @@ export default function DateFilter({ value, onValueChange, className, style, dro
 
     // Compose trigger label
     let triggerLabel = "Date"
+    let isPlaceholder = false
     if (value.preset) {
         const preset = presetOptions.find(p => p.value === value.preset)
         triggerLabel = preset ? preset.label : "Date"
@@ -105,6 +106,8 @@ export default function DateFilter({ value, onValueChange, className, style, dro
         triggerLabel = format(value.from, "dd MMM yyyy")
     } else if (value.to) {
         triggerLabel = format(value.to, "dd MMM yyyy")
+    } else {
+        isPlaceholder = true
     }
 
     // Determine classes based on size
@@ -117,7 +120,7 @@ export default function DateFilter({ value, onValueChange, className, style, dro
             <Popover open={isOpen} onOpenChange={setIsOpen}>
                 <PopoverTrigger asChild>
                     <Button variant="outline" className={cn("w-fit justify-between text-left font-normal", buttonSizeClass)}>
-                        <span className={cn("pl-1", triggerLabelClassName, labelSizeClass)}>{triggerLabel}</span>
+                        <span className={cn("pl-1", triggerLabelClassName, labelSizeClass, isPlaceholder && "text-muted-foreground")}>{triggerLabel}</span>
                         <ChevronDownIcon className="ml-2 h-4 w-4 opacity-30" />
                     </Button>
                 </PopoverTrigger>

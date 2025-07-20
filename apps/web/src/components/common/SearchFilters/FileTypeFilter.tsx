@@ -1,11 +1,10 @@
 import { FileText, Image, FileSpreadsheet, Presentation, ChevronDown } from 'lucide-react';
-import { FilterComponentProps } from './types';
-import { updateFilter } from './utils';
 import { Label } from '@components/ui/label';
 import { Checkbox } from '@components/ui/checkbox';
 import { Button } from '@components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover';
 import React from 'react';
+import { SearchFilters } from './types';
 
 const FILE_TYPE_OPTIONS = [
     { id: 'pdf', label: 'PDFs', icon: FileText },
@@ -13,22 +12,23 @@ const FILE_TYPE_OPTIONS = [
     { id: 'ppt', label: 'Presentations', icon: Presentation },
     { id: 'xls', label: 'Spreadsheets', icon: FileSpreadsheet },
     { id: 'image', label: 'Images', icon: Image },
-];
+]
 
-export function FileTypeFilter({ filters, onFiltersChange }: FilterComponentProps) {
-    const selected = filters.fileType || [];
-    const checkedCount = selected.length;
-    const [open, setOpen] = React.useState(false);
+export function FileTypeFilter({ filters }: { filters: SearchFilters }) {
+
+    const selected = filters.fileType || []
+    const checkedCount = selected.length
+    const [open, setOpen] = React.useState(false)
 
     const toggleFileType = (id: string) => {
-        let newSelected: string[];
+        let newSelected: string[]
         if (selected.includes(id)) {
-            newSelected = selected.filter((ft) => ft !== id);
+            newSelected = selected.filter((ft) => ft !== id)
         } else {
-            newSelected = [...selected, id];
+            newSelected = [...selected, id]
         }
-        updateFilter(filters, 'fileType', newSelected, onFiltersChange);
-    };
+        console.log('fileType', newSelected)
+    }
 
     return (
         <div className="w-full">
@@ -50,8 +50,8 @@ export function FileTypeFilter({ filters, onFiltersChange }: FilterComponentProp
                 <PopoverContent className="w-auto min-w-[var(--radix-popover-trigger-width)] max-w-[320px] p-0" align="start">
                     <div className="py-1 px-1 max-h-64 overflow-y-auto">
                         {FILE_TYPE_OPTIONS.map((fileType) => {
-                            const IconComponent = fileType.icon;
-                            const checked = selected.includes(fileType.id);
+                            const IconComponent = fileType.icon
+                            const checked = selected.includes(fileType.id)
                             return (
                                 <div
                                     key={fileType.id}
@@ -66,11 +66,11 @@ export function FileTypeFilter({ filters, onFiltersChange }: FilterComponentProp
                                     <IconComponent className={`h-4 w-4 ${checked ? 'text-primary' : 'text-muted-foreground'}`} />
                                     <span>{fileType.label}</span>
                                 </div>
-                            );
+                            )
                         })}
                     </div>
                 </PopoverContent>
             </Popover>
         </div>
-    );
+    )
 }

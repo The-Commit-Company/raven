@@ -1,15 +1,18 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@components/ui/select'
 import { UserAvatar } from '@components/features/message/UserAvatar'
-import { FilterComponentProps } from './types'
-import { updateFilter } from './utils'
 import { Label } from '@components/ui/label'
 import { cn } from "../../../lib/utils"
+import { SearchFilters } from './types'
+import { UserFields } from '@raven/types/common/UserFields'
 
-interface UserFilterProps extends FilterComponentProps {
+interface UserFilterProps {
+    filters: SearchFilters,
+    availableUsers: UserFields[],
+    showLabel?: boolean,
     size?: 'sm'
 }
 
-export function UserFilter({ filters, onFiltersChange, availableUsers, showLabel = true, size }: UserFilterProps) {
+export function UserFilter({ filters, availableUsers, showLabel = true, size }: UserFilterProps) {
 
     if (!availableUsers || availableUsers.length === 0) {
         return null
@@ -30,7 +33,7 @@ export function UserFilter({ filters, onFiltersChange, availableUsers, showLabel
             {showLabel && <Label className="text-xs text-muted-foreground mb-1 block">From</Label>}
             <Select
                 value={filters.selectedUser}
-                onValueChange={(value) => updateFilter(filters, 'selectedUser', value, onFiltersChange)}>
+                onValueChange={(value) => console.log(value)}>
                 <SelectTrigger className={cn("w-fit [&>span]:text-inherit", triggerSizeClass, paddingClass)}>
                     {selectedUser && filters.selectedUser !== 'all' ? (
                         <div className="flex items-center gap-1">

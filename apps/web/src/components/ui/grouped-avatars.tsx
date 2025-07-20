@@ -10,7 +10,7 @@ export interface User {
 interface GroupedAvatarsProps {
     users: User[]
     max?: number
-    size?: "sm" | "md" | "lg"
+    size?: "xs" | "sm" | "md" | "lg"
     className?: string
 }
 
@@ -21,6 +21,7 @@ export function GroupedAvatars({ users, max = 3, size = "md", className }: Group
     const remainingUsers = totalUsers - max > 0 ? Math.min(totalUsers - max, 9) : 0
 
     const sizeClasses = {
+        xs: "h-6 w-6 text-xs",
         sm: "h-7 w-7 text-xs",
         md: "h-9 w-9 text-sm",
         lg: "h-11 w-11 text-base",

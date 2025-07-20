@@ -1,11 +1,12 @@
 import React from 'react'
 
-export type SearchTab = 'all' | 'messages' | 'files' | 'people' | 'channels_threads'
+export type SearchTab = 'all' | 'messages' | 'files' | 'polls' | 'people' | 'channels_threads'
 
 const TABS: { key: SearchTab; label: string }[] = [
     { key: 'all', label: 'All' },
     { key: 'messages', label: 'Messages' },
     { key: 'files', label: 'Files' },
+    { key: 'polls', label: 'Polls' },
     { key: 'people', label: 'People' },
     { key: 'channels_threads', label: 'Channels & Threads' },
 ]

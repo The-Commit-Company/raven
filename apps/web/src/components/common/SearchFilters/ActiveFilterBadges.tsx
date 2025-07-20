@@ -1,19 +1,16 @@
 import { X } from 'lucide-react'
 import { Badge } from '@components/ui/badge'
-import { FilterComponentProps } from './types'
-import { clearFilter, hasActiveFilters, separateChannelsAndDMs, getDMUsers } from './utils'
-
+import { SearchFilters } from './types'
+import { RavenChannel } from '@raven/types/RavenChannelManagement/RavenChannel'
+import { UserFields } from '@raven/types/common/UserFields'
 interface FilterBadgeProps {
     label: string
-    filterKey: keyof FilterComponentProps['filters']
-    filters: FilterComponentProps['filters']
-    onFiltersChange: FilterComponentProps['onFiltersChange']
 }
 
-function FilterBadge({ label, filterKey, filters, onFiltersChange }: FilterBadgeProps) {
+function FilterBadge({ label }: FilterBadgeProps) {
 
     const handleRemove = () => {
-        clearFilter(filters, filterKey, onFiltersChange)
+        console.log('remove filter')
     }
 
     return (
@@ -27,95 +24,65 @@ function FilterBadge({ label, filterKey, filters, onFiltersChange }: FilterBadge
     )
 }
 
-export function ActiveFilterBadges({ filters, onFiltersChange, availableChannels, availableUsers }: FilterComponentProps) {
+export function ActiveFilterBadges({ filters, availableChannels, availableUsers }: { filters: SearchFilters, availableChannels: RavenChannel[], availableUsers: UserFields[] }) {
 
-    if (!hasActiveFilters(filters)) {
+    if (!filters) {
         return null
     }
-
-    const { dms } = separateChannelsAndDMs(availableChannels)
-    const dmUsers = getDMUsers(dms, availableUsers)
 
     return (
         <div className="flex flex-wrap gap-2">
             {filters.searchQuery && (
                 <FilterBadge
                     label={`Search: "${filters.searchQuery}"`}
-                    filterKey="searchQuery"
-                    filters={filters}
-                    onFiltersChange={onFiltersChange}
                 />
             )}
 
-            {filters.selectedChannel !== 'all' && (
+            {filters.selectedChannel !== '' && (
                 <FilterBadge
-                    label={`Channel: ${availableChannels.find(c => c.id === filters.selectedChannel)?.name}`}
-                    filterKey="selectedChannel"
-                    filters={filters}
-                    onFiltersChange={onFiltersChange}
+                    label={`Channel: ${availableChannels.find(c => c.name === filters.selectedChannel)?.name}`}
                 />
             )}
 
-            {filters.selectedUser !== 'all' && (
+            {filters.selectedUser !== '' && (
                 <FilterBadge
-                    label={`User: ${dmUsers.find(u => u.id === filters.selectedUser)?.user.full_name}`}
-                    filterKey="selectedUser"
-                    filters={filters}
-                    onFiltersChange={onFiltersChange}
+                    label={`User: ${availableUsers.find(u => u.name === filters.selectedUser)?.full_name}`}
                 />
             )}
 
-            {filters.channelType !== 'all' && (
+            {filters.channelType !== '' && (
                 <FilterBadge
                     label={`Type: ${filters.channelType}`}
-                    filterKey="channelType"
-                    filters={filters}
-                    onFiltersChange={onFiltersChange}
                 />
             )}
 
-            {filters.messageType !== 'all' && (
+            {filters.messageType !== '' && (
                 <FilterBadge
                     label={`Message: ${filters.messageType}`}
-                    filterKey="messageType"
-                    filters={filters}
-                    onFiltersChange={onFiltersChange}
                 />
             )}
 
             {filters.fileType.length > 0 && (
                 <FilterBadge
                     label={`File: ${filters.fileType.length === 1 ? filters.fileType[0].toUpperCase() : `${filters.fileType.length} types`}`}
-                    filterKey="fileType"
-                    filters={filters}
-                    onFiltersChange={onFiltersChange}
                 />
             )}
 
             {(filters.dateRange.from || filters.dateRange.to) && (
                 <FilterBadge
                     label={`Date: ${filters.dateRange.from && filters.dateRange.from.toLocaleDateString()}${filters.dateRange.to && ` - ${filters.dateRange.to.toLocaleDateString()}`}`}
-                    filterKey="dateRange"
-                    filters={filters}
-                    onFiltersChange={onFiltersChange}
                 />
             )}
 
             {filters.isPinned === true && (
                 <FilterBadge
                     label="Pinned"
-                    filterKey="isPinned"
-                    filters={filters}
-                    onFiltersChange={onFiltersChange}
                 />
             )}
 
             {filters.isSaved === true && (
                 <FilterBadge
                     label="Saved"
-                    filterKey="isSaved"
-                    filters={filters}
-                    onFiltersChange={onFiltersChange}
                 />
             )}
         </div>

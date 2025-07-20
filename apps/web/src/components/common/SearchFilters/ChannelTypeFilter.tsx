@@ -2,16 +2,15 @@ import { User } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@components/ui/select'
 import { Label } from '@components/ui/label'
 import { ChannelIcon } from '@components/common/ChannelIcon/ChannelIcon'
-import { FilterComponentProps } from './types'
-import { updateFilter } from './utils'
+import { SearchFilters } from './types'
 
-export function ChannelTypeFilter({ filters, onFiltersChange }: FilterComponentProps) {
+export function ChannelTypeFilter({ filters }: { filters: SearchFilters }) {
     return (
         <div>
             <Label className="text-xs text-muted-foreground mb-1 block">Channel Type</Label>
             <Select
                 value={filters.channelType}
-                onValueChange={(value) => updateFilter(filters, 'channelType', value, onFiltersChange)}>
+                onValueChange={(value) => console.log('channelType', value)}>
                 <SelectTrigger className="w-full">
                     <SelectValue placeholder="Channel Type" />
                 </SelectTrigger>

@@ -1,4 +1,3 @@
-import { SearchFiltersProps } from './types'
 import { ChannelFilter } from './ChannelFilter'
 import { UserFilter } from './UserFilter'
 import { ClearFiltersButton } from './ClearFiltersButton'
@@ -6,27 +5,28 @@ import { ActiveFilterBadges } from './ActiveFilterBadges'
 import DateFilter from './DateFilter'
 import { Button } from '@components/ui/button'
 import { ListFilter } from 'lucide-react'
-
-interface SearchFiltersWithDrawerProps extends SearchFiltersProps {
-    onOpenMoreFilters: () => void;
+import { RavenChannel } from '@raven/types/RavenChannelManagement/RavenChannel'
+import { UserFields } from '@raven/types/common/UserFields'
+import { SearchFilters as SearchFiltersType } from './types'
+interface SearchFiltersProps {
+    filters: SearchFiltersType,
+    availableChannels: RavenChannel[],
+    availableUsers: UserFields[],
+    onOpenMoreFilters: () => void
 }
-
-export function SearchFilters({ filters, onFiltersChange, availableChannels, availableUsers = [], onOpenMoreFilters }: SearchFiltersWithDrawerProps) {
+export function SearchFilters({ filters, availableChannels, availableUsers = [], onOpenMoreFilters }: SearchFiltersProps) {
     return (
         <div className="space-y-2">
             {/* Filter Controls */}
             <div className="flex flex-row items-end gap-2">
                 <UserFilter
                     filters={filters}
-                    onFiltersChange={onFiltersChange}
-                    availableChannels={availableChannels}
                     availableUsers={availableUsers}
                     showLabel={false}
                     size="sm"
                 />
                 <ChannelFilter
                     filters={filters}
-                    onFiltersChange={onFiltersChange}
                     availableChannels={availableChannels}
                     availableUsers={availableUsers}
                     showLabel={false}
@@ -36,7 +36,7 @@ export function SearchFilters({ filters, onFiltersChange, availableChannels, ava
                     className="flex-shrink-0"
                     dropdownClassName="w-[260px]"
                     value={filters.dateRange}
-                    onValueChange={(range) => onFiltersChange({ ...filters, dateRange: range })}
+                    onValueChange={(range) => console.log('dateRange', range)}
                     showLabel={false}
                     size="sm"
                 />
@@ -44,17 +44,11 @@ export function SearchFilters({ filters, onFiltersChange, availableChannels, ava
                     <ListFilter className="w-1 h-1 mr-0.5" />
                     Filters
                 </Button>
-                <ClearFiltersButton
-                    filters={filters}
-                    onFiltersChange={onFiltersChange}
-                    availableChannels={availableChannels}
-                    availableUsers={availableUsers}
-                />
+                {filters.selectedChannel !== '' || filters.selectedUser !== '' || filters.channelType !== '' || filters.dateRange.from !== undefined || filters.dateRange.to !== undefined && <ClearFiltersButton />}
             </div>
             {/* Active Filter Badges */}
             <ActiveFilterBadges
                 filters={filters}
-                onFiltersChange={onFiltersChange}
                 availableChannels={availableChannels}
                 availableUsers={availableUsers}
             />
