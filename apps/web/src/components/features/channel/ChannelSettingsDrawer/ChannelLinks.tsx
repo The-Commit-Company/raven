@@ -194,10 +194,10 @@ const ChannelLinks = () => {
                             aria-label={`Open link: ${link.title}`}>
 
                             {showPreviews ? (
-                                <>
+                                <div className="flex">
                                     {/* Preview Image */}
                                     {link.image_url && (
-                                        <div className="w-full h-32 bg-muted/30 relative overflow-hidden">
+                                        <div className="w-24 h-24 bg-muted/30 relative overflow-hidden flex-shrink-0">
                                             <img
                                                 src={link.image_url}
                                                 alt={link.title}
@@ -208,10 +208,10 @@ const ChannelLinks = () => {
                                     )}
 
                                     {/* Content */}
-                                    <div className="p-3">
-                                        {/* Header with favicon and title */}
-                                        <div className="flex items-start justify-between gap-2 mb-2">
-                                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                                    <div className="flex-1 p-3 min-w-0 flex flex-col justify-between">
+                                        {/* Top section: Title and domain */}
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
                                                 {link.favicon_url ? (
                                                     <img
                                                         src={link.favicon_url}
@@ -224,25 +224,18 @@ const ChannelLinks = () => {
                                                     />
                                                 ) : null}
                                                 <Link className="w-4 h-4 flex-shrink-0 text-muted-foreground hidden" />
-                                                <h3 className="text-sm font-medium text-foreground truncate">
+                                                <h3 className="text-sm font-medium text-foreground line-clamp-1">
                                                     {link.title}
                                                 </h3>
+                                                <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0 ml-auto" />
                                             </div>
-                                            <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0 mt-0.5" />
+                                            <div className="text-xs text-muted-foreground/60 mt-1">
+                                                {link.domain}
+                                            </div>
                                         </div>
 
-                                        {/* Description */}
-                                        <p className="text-[13px] text-muted-foreground mb-2 line-clamp-2">
-                                            {link.description}
-                                        </p>
-
-                                        {/* Domain */}
-                                        <div className="text-xs text-muted-foreground/60 mb-2">
-                                            {link.domain}
-                                        </div>
-
-                                        {/* Owner and timestamp */}
-                                        <div className="flex items-center gap-2 text-xs text-muted-foreground/80">
+                                        {/* Bottom section: User info */}
+                                        <div className="flex items-center gap-2 text-xs text-muted-foreground/80 mt-2">
                                             <UserAvatar
                                                 user={link.owner}
                                                 size="xs"
@@ -255,7 +248,7 @@ const ChannelLinks = () => {
                                             <span>{link.creation}</span>
                                         </div>
                                     </div>
-                                </>
+                                </div>
                             ) : (
                                 /* Compact List View */
                                 <div className="space-y-2">
@@ -282,7 +275,7 @@ const ChannelLinks = () => {
                                         </div>
                                         <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0 mt-0.5" />
                                     </div>
-                                    <div className="flex items-center gap-2 text-xs text-muted-foreground/80">
+                                    <div className="flex items-center gap-2 text-xs text-muted-foreground/80 ml-8">
                                         <UserAvatar
                                             user={link.owner}
                                             size="xs"

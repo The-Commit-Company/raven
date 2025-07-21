@@ -116,7 +116,7 @@ const ChannelPins = () => {
                                 size="sm"
                             />
                             <div className="font-medium text-sm">{message.owner.full_name}</div>
-                            <div className="text-xs text-muted-foreground/70">
+                            <div className="text-xs text-muted-foreground/80">
                                 {message.creation}
                             </div>
                         </div>

@@ -171,51 +171,53 @@ const ChannelFiles = () => {
                     {filteredFiles.map((file) => (
                         <div
                             key={file.name}
-                            className="group flex gap-3 p-3 border border-border/70 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+                            className="group p-3 border border-border/70 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
                             tabIndex={0}
                             role="button"
                             aria-label={`View ${file.file_name}`}>
-                            <div className="flex-shrink-0 mt-0.5">
-                                {file.message_type === 'Image' && file.file_thumbnail ? (
-                                    <div className="relative">
-                                        <img
-                                            src={file.file_thumbnail}
-                                            alt={file.file_name}
-                                            className="h-8 w-8 object-cover rounded-md border border-border/40"
-                                        />
-                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200 rounded-md" />
+                            <div className="flex gap-3">
+                                <div className="flex-shrink-0 mt-0.5">
+                                    {file.message_type === 'Image' && file.file_thumbnail ? (
+                                        <div className="relative">
+                                            <img
+                                                src={file.file_thumbnail}
+                                                alt={file.file_name}
+                                                className="h-8 w-8 object-cover rounded-md border border-border/40"
+                                            />
+                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200 rounded-md" />
+                                        </div>
+                                    ) : (
+                                        <FileIconComponent fileType={file.file_type} size="sm" />
+                                    )}
+                                </div>
+
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-start justify-between gap-2 mb-0.5">
+                                        <h3 className="text-sm font-medium text-foreground truncate pr-2">
+                                            {file.file_name}
+                                        </h3>
+                                        <Download className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0 mt-0.5" />
                                     </div>
-                                ) : (
-                                    <FileIconComponent fileType={file.file_type} size="sm" />
-                                )}
+
+                                    <div className="flex items-center gap-2 text-[11px] text-muted-foreground/90">
+                                        <span>{file.file_size}</span>
+                                        <span>•</span>
+                                        <span className="uppercase">{file.file_type}</span>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-start justify-between gap-2 mb-1">
-                                    <h3 className="text-sm font-medium text-foreground truncate pr-2">
-                                        {file.file_name}
-                                    </h3>
-                                    <Download className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0 mt-0.5" />
-                                </div>
-
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground/80 mb-2">
-                                    <span>{file.file_size}</span>
-                                    <span>•</span>
-                                    <span className="uppercase">{file.file_type}</span>
-                                </div>
-
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <UserAvatar
-                                        user={file.owner}
-                                        size="xs"
-                                        fontSize="xs"
-                                        radius="full"
-                                        showStatusIndicator={false}
-                                    />
-                                    <span className="text-muted-foreground">{file.owner.full_name}</span>
-                                    <span>•</span>
-                                    <span>{file.creation}</span>
-                                </div>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground/80 mt-2 ml-11">
+                                <UserAvatar
+                                    user={file.owner}
+                                    size="xs"
+                                    fontSize="xs"
+                                    radius="full"
+                                    showStatusIndicator={false}
+                                />
+                                <span>{file.owner.full_name}</span>
+                                <span>•</span>
+                                <span>{file.creation}</span>
                             </div>
                         </div>
                     ))}
