@@ -62,7 +62,7 @@ const getSizeClasses = (size: 'xs' | 'sm' | 'md' | 'lg') => {
         case 'sm':
             return {
                 avatar: 'h-6 w-6',
-                indicator: 'h-1.5 w-1.5 -bottom-0.5 -right-0.5',
+                indicator: 'h-2 w-2 -bottom-0.5 -right-0.5',
                 bot: 'h-2 w-2',
                 botContainer: 'h-2.5 w-2.5 bottom-1 right-1'
             }
@@ -108,9 +108,9 @@ const getRadiusClasses = (radius: 'sm' | 'md' | 'lg' | 'full') => {
 const getFontSizeClasses = (fontSize: 'xs' | 'sm' | 'md' | 'lg') => {
     switch (fontSize) {
         case 'xs':
-            return 'text-[10px]'
+            return '!text-[8px] font-bold'
         case 'sm':
-            return 'text-xs'
+            return 'text-[10px]'
         case 'md':
             return 'text-sm'
         case 'lg':

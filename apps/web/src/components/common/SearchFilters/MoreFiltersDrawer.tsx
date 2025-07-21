@@ -5,12 +5,13 @@ import { ChannelTypeFilter } from './ChannelTypeFilter'
 import { Checkbox } from '@components/ui/checkbox'
 import { Label } from '@components/ui/label'
 import { SearchFilters } from './types'
-interface MoreFiltersProps {
+
+interface MoreFiltersDrawerProps {
     filters: SearchFilters,
     onClose: () => void
 }
 
-export function MoreFilters({ filters, onClose }: MoreFiltersProps) {
+export function MoreFiltersDrawer({ filters, onClose }: MoreFiltersDrawerProps) {
     return (
         <div className="flex flex-col h-full px-4 py-3 max-w-md w-[340px]">
             <div className="flex items-center justify-between mb-3">

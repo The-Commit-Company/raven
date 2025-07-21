@@ -6,7 +6,9 @@ import { FileText, Headset, Info, Link, MessageSquareText, Pin, Star } from "luc
 import ChannelMembers from "./ChannelMembers"
 import ChannelMenu from "./ChannelMenu"
 
-const ChannelHeader = () => {
+interface ChannelHeaderProps { onOpenSettings: () => void }
+
+const ChannelHeader = ({ onOpenSettings }: ChannelHeaderProps) => {
     return (
         <div className="sticky top-(--app-header-height) flex items-center justify-between border-b bg-background py-1.5 px-2">
             {/* Left side */}
@@ -91,7 +93,11 @@ const ChannelHeader = () => {
                 <ChannelMembers />
                 <Tooltip>
                     <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={onOpenSettings}>
                             <Info className="size-4" />
                             <span className="sr-only">Channel Info</span>
                         </Button>

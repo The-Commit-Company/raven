@@ -8,7 +8,7 @@ import { useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import TabsBar, { SearchTab } from '@components/common/SearchFilters/TabsBar'
 import SearchResultsChannelsThreads from '@components/common/SearchFilters/SearchResultsChannelsThreads'
-import { MoreFilters } from '@components/common/SearchFilters/MoreFilters'
+import { MoreFiltersDrawer } from '@components/common/SearchFilters/MoreFiltersDrawer'
 import SearchResultsPeople from "@components/common/SearchFilters/SearchResultsPeople"
 import SearchResultsPolls from "@components/common/SearchFilters/SearchResultsPolls"
 import SearchResultsFiles from "@components/common/SearchFilters/SearchResultsFiles"
@@ -121,7 +121,7 @@ export default function Search() {
                 {/* Right Drawer */}
                 {isDrawerOpen && (
                     <div className="w-[340px] h-full border-l bg-background shadow-lg transition-all duration-300 flex flex-col">
-                        <MoreFilters
+                        <MoreFiltersDrawer
                             filters={fullFilters}
                             onClose={() => setIsDrawerOpen(false)}
                         />
