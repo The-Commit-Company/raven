@@ -105,7 +105,7 @@ const dummyMessages: Message[] = [
 const ChannelPins = () => {
     return (
         <ScrollArea className="h-full">
-            <div className="px-1 space-y-3">
+            <div className="px-1 space-y-2">
                 {dummyMessages.map((message) => (
                     <div
                         key={message.name}
