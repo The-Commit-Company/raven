@@ -1,9 +1,7 @@
 import { SidebarTrigger } from "@components/ui/sidebar"
 import { Separator } from "@components/ui/separator"
-import { dummyUsers, dummyChannels } from '@components/data/dummyData'
 import { SearchFilters } from '@components/common/SearchFilters/types'
 import { SearchFilters as SearchFiltersComponent } from '@components/common/SearchFilters/SearchFilters'
-import { RavenChannel } from '@raven/types/RavenChannelManagement/RavenChannel'
 import { useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import TabsBar, { SearchTab } from '@components/common/SearchFilters/TabsBar'
@@ -36,22 +34,6 @@ export default function Search() {
     const [activeTab, setActiveTab] = useState<SearchTab>('all')
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
-    // Convert dummyChannels to the format expected by SearchFilters
-    const availableChannels = Object.values(dummyChannels) as unknown as RavenChannel[]
-
-    // Convert dummyUsers to the format expected by SearchFilters
-    const availableUsers = Object.entries(dummyUsers).map(([id, user]) => ({
-        id,
-        name: user.name,
-        full_name: user.full_name,
-        user_image: user.user_image,
-        type: user.type as 'User' | 'Bot',
-        enabled: user.enabled,
-        first_name: user.first_name,
-        availability_status: user.availability_status,
-        custom_status: user.custom_status
-    }))
-
     // Compose the full filters object for useMessageFilters and SearchFilters
     const fullFilters: SearchFilters = {
         searchQuery: searchValue || '',
@@ -80,8 +62,8 @@ export default function Search() {
                     {/* Search and Filter Component (no search bar) */}
                     <SearchFiltersComponent
                         filters={fullFilters}
-                        availableChannels={availableChannels}
-                        availableUsers={availableUsers}
+                        availableChannels={[]}
+                        availableUsers={[]}
                         onOpenMoreFilters={() => setIsDrawerOpen(open => !open)}
                     />
                     <div className="mt-4 flex-1 overflow-y-auto">

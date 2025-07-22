@@ -2,7 +2,6 @@ import { Clock, User, Hash } from "lucide-react"
 import { Button } from "@components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
-import { dummyUsers } from "@components/data/dummyData";
 
 type Recents = {
     channel_name: string,
@@ -22,8 +21,8 @@ const Recents = () => {
         },
         {
             channel_name: "Administrator _ jane.smith@example.com",
-            peer_full_name: dummyUsers['jane.smith@example.com'].full_name,
-            peer_avatar_url: dummyUsers['jane.smith@example.com'].user_image,
+            peer_full_name: "Jane Smith",
+            peer_avatar_url: "https://i.pravatar.cc/150?u=jane.smith@example.com",
             type: "Private",
             is_direct_message: 1
         },
