@@ -9,7 +9,7 @@ import MainPage from "@pages/MainPage"
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.VITE_BASE_NAME}>
       <Routes>
         <Route path="/" element={<MainPage />}>
           <Route index element={<Channel />} />
