@@ -199,7 +199,7 @@ const ChannelFiles = () => {
                                         <Download className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0 mt-0.5" />
                                     </div>
 
-                                    <div className="flex items-center gap-2 text-[11px] text-muted-foreground/90">
+                                    <div className="flex items-center gap-2 text-[11px] text-muted-foreground/70">
                                         <span>{file.file_size}</span>
                                         <span>•</span>
                                         <span className="uppercase">{file.file_type}</span>

@@ -34,12 +34,12 @@ const ChannelInfo = () => {
                                 <div className="flex items-center gap-2 mb-1">
                                     <span className="text-sm font-medium">Channel name</span>
                                 </div>
-                                <div className="text-sm text-muted-foreground/80 mb-3.5">{mockChannel.name}</div>
+                                <div className="text-sm text-muted-foreground/90 mb-3.5">{mockChannel.name}</div>
 
                                 <div className="flex items-center gap-2 mb-1">
                                     <span className="text-sm font-medium">Channel description</span>
                                 </div>
-                                <p className="text-sm text-muted-foreground/80">{mockChannel.description}</p>
+                                <p className="text-sm text-muted-foreground/90">{mockChannel.description}</p>
                             </div>
                             <Edit className="w-4 h-4 text-muted-foreground hover:text-foreground flex-shrink-0 mt-1" />
                         </div>
@@ -53,7 +53,7 @@ const ChannelInfo = () => {
                                     {mockCreator.full_name.charAt(0).toUpperCase()}
                                 </AvatarFallback>
                             </Avatar>
-                            <span className="text-[13px] text-muted-foreground">
+                            <span className="text-[13px] text-muted-foreground/80">
                                 Created by {mockCreator.full_name} on {mockChannel.creation}
                             </span>
                         </div>

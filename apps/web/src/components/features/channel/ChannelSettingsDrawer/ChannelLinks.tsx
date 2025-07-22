@@ -269,7 +269,7 @@ const ChannelLinks = () => {
                                             <h3 className="text-sm font-medium text-foreground truncate">
                                                 {link.title}
                                             </h3>
-                                            <div className="text-xs text-muted-foreground/60">
+                                            <div className="text-xs text-muted-foreground/70 mt-0.5">
                                                 {link.domain}
                                             </div>
                                         </div>
