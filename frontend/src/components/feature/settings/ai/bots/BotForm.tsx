@@ -3,11 +3,12 @@ import { LuSquareFunction, LuSparkles } from 'react-icons/lu'
 import InstructionField from '../InstructionField'
 import { BiBot, BiCode, BiFile } from 'react-icons/bi'
 import GeneralBotForm from './GeneralBotForm'
-import AIFeaturesBotForm from './AIFeaturesBotForm'
 import BotFunctionsForm from './BotFunctionsForm'
 import { useFormContext } from 'react-hook-form'
 import { RavenBot } from '@/types/RavenBot/RavenBot'
 import BotDocs from './BotDocs'
+import BotFileSources from './BotFileSources'
+import AIFeaturesBotForm from './AIFeaturesBotForm'
 
 const ICON_PROPS = {
     size: 18,
@@ -25,6 +26,7 @@ const BotForm = ({ isEdit }: { isEdit: boolean }) => {
                 {isAiBot ? <Tabs.Trigger value='ai'><LuSparkles {...ICON_PROPS} /> AI</Tabs.Trigger> : null}
                 {isAiBot ? <Tabs.Trigger value='instructions'><BiFile {...ICON_PROPS} /> Instructions</Tabs.Trigger> : null}
                 {isAiBot ? <Tabs.Trigger value='functions'><LuSquareFunction {...ICON_PROPS} /> Functions</Tabs.Trigger> : null}
+                {isAiBot ? <Tabs.Trigger value='file-sources'><BiFile {...ICON_PROPS} /> Files</Tabs.Trigger> : null}
                 {isEdit ? <Tabs.Trigger value='api-docs'><BiCode {...ICON_PROPS} /> API Docs</Tabs.Trigger> : null}
             </Tabs.List>
             <Box pt='4'>
@@ -39,6 +41,9 @@ const BotForm = ({ isEdit }: { isEdit: boolean }) => {
                 </Tabs.Content>
                 <Tabs.Content value='functions'>
                     <BotFunctionsForm />
+                </Tabs.Content>
+                <Tabs.Content value='file-sources'>
+                    <BotFileSources />
                 </Tabs.Content>
                 <Tabs.Content value='api-docs'>
                     <BotDocs />

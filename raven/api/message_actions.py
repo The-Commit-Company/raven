@@ -20,7 +20,7 @@ def get_action_defaults(action_id: str, message_id: str):
 
 	if not workspace_id:
 		# Get the last workspace that this user has access to
-		workspace_id = frappe.get_last_doc("Raven Workspace", {"user_id": frappe.session.user}).name
+		workspace_id = frappe.get_last_doc("Raven Workspace Member", {"user": frappe.session.user}).name
 
 	url = frappe.utils.get_url(f"/raven/{workspace_id}")
 

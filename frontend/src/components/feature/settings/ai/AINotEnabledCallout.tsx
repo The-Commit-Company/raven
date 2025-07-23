@@ -8,15 +8,24 @@ const AINotEnabledCallout = () => {
 
     const { ravenSettings } = useRavenSettings()
 
-    if (ravenSettings?.enable_ai_integration === 1) {
+    // Check if AI is enabled and at least one provider is configured
+    const isAIEnabled = ravenSettings?.enable_ai_integration === 1
+    const hasOpenAI = ravenSettings?.enable_openai_services === 1
+    const hasLocalLLM = ravenSettings?.enable_local_llm === 1
+    
+    if (isAIEnabled && (hasOpenAI || hasLocalLLM)) {
         return null
     }
+
+    const message = !isAIEnabled 
+        ? "Raven AI is not enabled. Please enable it in" 
+        : "No AI providers are configured. Please configure at least one provider in"
 
     return (
         <CustomCallout
             iconChildren={<BiInfoCircle size='18' />}
             rootProps={{ color: 'blue', variant: 'surface' }}
-            textChildren={<Text>Raven AI is not enabled. Please enable it in <RadixLink asChild color='blue' underline='always'><Link to='/settings/openai-settings'>OpenAI Settings</Link></RadixLink></Text>}
+            textChildren={<Text>{message} <RadixLink asChild color='blue' underline='always'><Link to='/settings/ai-settings'>AI Settings</Link></RadixLink></Text>}
         />
     )
 }
