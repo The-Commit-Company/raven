@@ -4,7 +4,6 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from raven.raven_integrations.doctype.raven_search_sync.raven_search_sync import sync_to_search
 
 
 class RavenUser(Document):
@@ -27,7 +26,6 @@ class RavenUser(Document):
 		last_mention_viewed_on: DF.Datetime | None
 		pinned_channels: DF.Table[RavenPinnedChannels]
 		type: DF.Literal["User", "Bot"]
-		typesense_search_api_key: DF.Password | None
 		user: DF.Link | None
 		user_image: DF.AttachImage | None
 	# end: auto-generated types
@@ -61,8 +59,6 @@ class RavenUser(Document):
 	def on_update(self):
 		self.invalidate_user_list_cache()
 
-		self.sync_to_search()
-
 	def on_trash(self):
 		"""
 		Remove the Raven User from all channels
@@ -81,25 +77,6 @@ class RavenUser(Document):
 			user.save()
 
 		self.invalidate_user_list_cache()
-
-		self.sync_to_search(delete=True)
-
-	def sync_to_search(self, delete=False):
-		"""
-		Add user to Search Sync queue
-		"""
-		payload = {
-			"type": self.type,
-			"full_name": self.full_name,
-		}
-		if not delete:
-			if not self.is_new():
-				sync_to_search(self.doctype, self.name, "Update", payload)
-			else:
-				sync_to_search(self.doctype, self.name, "Create", payload)
-		else:
-			sync_to_search(self.doctype, self.name, "Delete", payload)
-
 
 	def invalidate_user_list_cache(self):
 

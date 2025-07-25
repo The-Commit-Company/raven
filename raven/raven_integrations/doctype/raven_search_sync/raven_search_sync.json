@@ -29,7 +29,7 @@
    "fieldname": "action",
    "fieldtype": "Select",
    "label": "Action",
-   "options": "Create\nUpdate\nDelete"
+   "options": "Upsert\nDelete"
   },
   {
    "fieldname": "document_id",
@@ -39,9 +39,10 @@
    "reqd": 1
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-20 19:19:25.219256",
+ "modified": "2025-07-18 19:40:27.435444",
  "modified_by": "Administrator",
  "module": "Raven Integrations",
  "name": "Raven Search Sync",
@@ -61,6 +62,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": []

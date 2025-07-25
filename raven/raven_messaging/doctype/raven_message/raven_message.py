@@ -17,7 +17,6 @@ from raven.notification import (
 	send_notification_to_topic,
 	send_notification_to_user,
 )
-from raven.typesense_setup import _get_channel_permissions
 from raven.utils import refresh_thread_reply_count, track_channel_visit
 from raven.raven_integrations.doctype.raven_search_sync.raven_search_sync import sync_to_search
 
@@ -195,13 +194,15 @@ class RavenMessage(Document):
 			"message_type": self.message_type,
 			"channel_id": self.channel_id,
 			"content": self.content,
-			"accessible_to": _get_channel_permissions([self.channel_id])[self.channel_id]
+			"is_thread": self.is_thread,
+			"is_bot_message": self.is_bot_message,
+			"bot": self.bot,
+			"owner": self.owner,
+			"creation": frappe.utils.get_date(self.creation),
+			"mentions": [mention.user for mention in self.mentions],
 		}
 		if not delete:
-			if self.is_edited:
-				sync_to_search(self.doctype, self.name, "Update", payload)
-			else:
-				sync_to_search(self.doctype, self.name, "Create", payload)
+			sync_to_search(self.doctype, self.name, "Upsert", payload)
 		else:
 			sync_to_search(self.doctype, self.name, "Delete", payload)
 

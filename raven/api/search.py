@@ -1,6 +1,6 @@
 import frappe
 from pypika import JoinType
-from raven.typesense_setup import get_typesense_client
+from raven.api.typesense_sync import get_typesense_client
 
 
 @frappe.whitelist()
@@ -157,14 +157,17 @@ def get_search_result(
 def get_typense_search_result(
     query: str,
     query_by: str,
-    collection: str,
     filter_by: dict = None,
     sort_by: dict = None,
     page: int = 1,
     per_page: int = 10,
     group_by: str = None,
 ):
-    client = get_typesense_client(user=frappe.session.user)
+    client = get_typesense_client()
+    raven_settings = frappe.get_cached_doc("Raven Settings")
+    typesense_hash = raven_settings.typesense_hash
+    collection = f"{typesense_hash}_messages"
+
     search_params = {
         "q": query,
         "query_by": query_by,

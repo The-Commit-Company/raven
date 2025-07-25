@@ -24,9 +24,7 @@
   "custom_status",
   "chat_style_section",
   "chat_style",
-  "column_break_xlzh",
-  "search_section",
-  "typesense_search_api_key"
+  "column_break_xlzh"
  ],
  "fields": [
   {
@@ -142,22 +140,12 @@
    "fieldname": "last_mention_viewed_on",
    "fieldtype": "Datetime",
    "label": "Last Mention Viewed On"
-  },
-  {
-   "fieldname": "search_section",
-   "fieldtype": "Section Break",
-   "label": "Search"
-  },
-  {
-   "fieldname": "typesense_search_api_key",
-   "fieldtype": "Password",
-   "label": "Search API Key",
-   "length": 255
   }
  ],
+ "grid_page_length": 50,
  "image_field": "user_image",
  "links": [],
- "modified": "2025-06-23 19:01:15.482277",
+ "modified": "2025-07-16 17:25:37.681786",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven User",
@@ -190,6 +178,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

@@ -37,12 +37,12 @@ class RavenSettings(Document):
 		show_if_a_user_is_on_leave: DF.Check
 		show_raven_on_desk: DF.Check
 		tenor_api_key: DF.Data | None
-		typesense_admin_api_key: DF.Password | None
+		typesense_api_key: DF.Password | None
 		typesense_connection_timeout_seconds: DF.Int
+		typesense_hash: DF.Data | None
 		typesense_host: DF.Data | None
 		typesense_port: DF.Int
 		typesense_protocol: DF.Literal["http", "https"]
-		typesense_search_api_key: DF.Password | None
 		vapid_public_key: DF.Data | None
 	# end: auto-generated types
 
@@ -69,7 +69,11 @@ class RavenSettings(Document):
 		if self.openai_project_id:
 			self.openai_project_id = self.openai_project_id.strip()
 
+	def before_save(self):
+		if self.typesense_protocol == "https":
+			self.typesense_port = 443
+
 	@frappe.whitelist()
-	def run_typesense_setup(self):
-		from raven.typesense_setup import setup_typesense
-		return setup_typesense()
+	def run_typesense_sync(self):
+		from raven.api.typesense_sync import sync_typesense	
+		return sync_typesense()

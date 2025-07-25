@@ -4,7 +4,7 @@
 import json
 import frappe
 from frappe.model.document import Document
-from raven.typesense_setup import get_typesense_client
+from raven.api.typesense_sync import get_typesense_client
 
 
 class RavenSearchSync(Document):
@@ -16,7 +16,7 @@ class RavenSearchSync(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		action: DF.Literal["Create", "Update", "Delete"]
+		action: DF.Literal["Upsert", "Delete"]
 		content: DF.JSON | None
 		document_id: DF.Data
 		reference_doctype: DF.Link
@@ -53,83 +53,51 @@ def update_search_index():
             return {"message": "No pending search sync records"}
 
         # Get all pending sync records
-        raven_search_sync = frappe.qb.DocType("Raven Search Sync")
+        sync_records = frappe.get_all("Raven Search Sync", 
+                                     fields=["reference_doctype", "document_id", "action", "content"],
+                                     order_by="reference_doctype, action")
 
-        query = (frappe.qb.from_(raven_search_sync)
-                .select(raven_search_sync.reference_doctype, 
-                        raven_search_sync.document_id, 
-                        raven_search_sync.action, 
-                        raven_search_sync.content)
-                .orderby(raven_search_sync.reference_doctype, raven_search_sync.action))
+        collection = f"{raven_settings.typesense_hash}_messages"
 
-        sync_records = query.run()
-
-        # Group records by doctype and action for batch processing
-        grouped_operations = {
-            "Create": {
-                "messages": [],
-                "channels": [],
-                "users": []
-            },
-            "Update": {
-                "messages": [],
-                "channels": [],
-                "users": []
-            },
-            "Delete": {
-                "messages": [],
-                "channels": [],
-                "users": []
-            }
-        }
+        # Group records by action for batch processing
+        upsert_documents = []
+        delete_documents = []
 
         for record in sync_records:
-            match record[0]:
-                case "Raven Message":
-                    collection = "messages"
-                case "Raven Channel":
-                    collection = "channels"
-                case "Raven User":
-                    collection = "users"
-                case _:
-                    continue
-            id = record[1]
-            action = record[2]
-            content = json.loads(record[3])
+            document_id = record.document_id
+            action = record.action
+            content = json.loads(record.content)
 
-            grouped_operations[action][collection].append({
-                "id": id,
+            document = {
+                "id": document_id,
                 **content
-            })
+            }
 
-        for action, collections in grouped_operations.items():
-            match action:
-                case "Create":
-                    _sync_to_typesense(client, collections)
-                case "Update":
-                    _sync_to_typesense(client, collections)
-                case "Delete":
-                    _delete_from_typesense(client, collections)
+            if action == "Upsert":
+                upsert_documents.append(document)
+            elif action == "Delete":
+                delete_documents.append(document)
+
+        # Process upsert operations
+        if upsert_documents:
+            _sync_to_typesense(client, collection, upsert_documents)
+
+        # Process delete operations
+        if delete_documents:
+            _delete_from_typesense(client, collection, delete_documents)
 
         frappe.db.delete("Raven Search Sync")
         frappe.db.commit()
-
     except Exception as e:
         frappe.log_error(f"Error in update_search_index: {str(e)}")
         return {"error": str(e)}
 
 
+def _sync_to_typesense(client, collection, documents):
+    """Create/Update documents in Typesense"""
+    client.collections[collection].documents.import_(documents, {"action": "emplace"})
 
-def _sync_to_typesense(client, collections):
-    """Create documents in Typesense"""
-    for collection, documents in collections.items():
-        if documents:
-            client.collections[collection].documents.import_(documents, {"action": "emplace"})
-
-def _delete_from_typesense(client, collections):
+def _delete_from_typesense(client, collection, documents):
     """Delete documents from Typesense"""
-    for collection, documents in collections.items():
-        if documents:
-       	    client.collections[collection].documents.delete({'filter_by': f"id:{[doc['id'] for doc in documents]}"})
-
-     
+    document_ids = [doc['id'] for doc in documents]
+    client.collections[collection].documents.delete({'filter_by': f"id:{document_ids}"})
