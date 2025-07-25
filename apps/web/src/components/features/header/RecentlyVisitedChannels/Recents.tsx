@@ -1,7 +1,7 @@
-import { Clock, User, Hash } from "lucide-react"
+import { Clock, Hash } from "lucide-react"
 import { Button } from "@components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
+import { UserAvatar } from '@components/features/message/UserAvatar'
 
 type Recents = {
     channel_name: string,
@@ -48,15 +48,22 @@ const Recents = () => {
                         key={index}
                         className="flex cursor-pointer items-center gap-2 py-2 text-sm">
                         {channel.is_direct_message ? (
-                            <Avatar className="h-5 w-5">
-                                {channel.peer_avatar_url ? (
-                                    <AvatarImage src={channel.peer_avatar_url} alt={channel.peer_full_name} className="rounded-sm" />
-                                ) : (
-                                    <AvatarFallback>
-                                        <User className="h-4 w-4" />
-                                    </AvatarFallback>
-                                )}
-                            </Avatar>
+                            <UserAvatar
+                                user={{
+                                    name: channel.peer_full_name || '',
+                                    full_name: channel.peer_full_name || '',
+                                    user_image: channel.peer_avatar_url || '',
+                                    type: 'User' as const,
+                                    availability_status: '' as const,
+                                    custom_status: '',
+                                    enabled: 1 as const,
+                                    first_name: channel.peer_full_name ? channel.peer_full_name.split(' ')[0] : '',
+                                }}
+                                size="xs"
+                                className="h-5 w-5 rounded-sm"
+                                showStatusIndicator={false}
+                                showBotIndicator={false}
+                            />
                         ) : (
                             <span className="flex h-5 w-5 items-center justify-center">
                                 <Hash className="h-4 w-4" />

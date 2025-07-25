@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Command, Inbox, PlusIcon, Box, User } from "lucide-react"
+import { Command, Inbox, PlusIcon, Box } from "lucide-react"
 import { Label } from "@components/ui/label"
 import {
     Sidebar,
@@ -14,8 +14,8 @@ import {
     useSidebar,
 } from "@components/ui/sidebar"
 import { Switch } from "@components/ui/switch"
-import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
 import { SearchForm } from "./sidebar-search"
+import { UserAvatar } from '@components/features/message/UserAvatar'
 
 // This is sample data
 const data = {
@@ -227,12 +227,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                     className="flex flex-col items-start gap-2 whitespace-nowrap border-b p-4 text-sm leading-tight last:border-b-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                                 >
                                     <div className="flex w-full items-center gap-2">
-                                        <Avatar className="size-5 rounded-sm">
-                                            <AvatarImage src="https://github.com/shadcn.png" />
-                                            <AvatarFallback>
-                                                <User className="size-4" />
-                                            </AvatarFallback>
-                                        </Avatar>
+                                        <UserAvatar
+                                            user={{
+                                                name: mail.name,
+                                                full_name: mail.name,
+                                                user_image: 'https://github.com/shadcn.png',
+                                                type: 'User' as const,
+                                                availability_status: '' as const,
+                                                custom_status: '',
+                                                enabled: 1 as const,
+                                                first_name: mail.name.split(' ')[0],
+                                            }}
+                                            size="xs"
+                                            className="size-5 rounded-sm"
+                                            showStatusIndicator={false}
+                                            showBotIndicator={false}
+                                        />
                                         <span className="font-medium">{mail.name}</span>{" "}
                                         <span className="ml-auto text-xs text-muted-foreground">{mail.date}</span>
                                     </div>

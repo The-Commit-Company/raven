@@ -7,11 +7,7 @@ import {
     Sparkles,
 } from "lucide-react"
 
-import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-} from "@components/ui/avatar"
+import { UserAvatar } from "@components/features/message/UserAvatar"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -38,7 +34,16 @@ export function NavUser({
     }
 }) {
     const { isMobile } = useSidebar()
-
+    const userFields = {
+        name: user.name,
+        full_name: user.name,
+        user_image: user.avatar,
+        type: 'User' as const,
+        availability_status: '' as const,
+        custom_status: '',
+        enabled: 1 as const,
+        first_name: user.name.split(' ')[0],
+    }
     return (
         <SidebarMenu>
             <SidebarMenuItem>
@@ -48,10 +53,7 @@ export function NavUser({
                             size="lg"
                             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground md:h-8 md:p-0"
                         >
-                            <Avatar className="h-8 w-8 rounded-lg">
-                                <AvatarImage src={user.avatar} alt={user.name} />
-                                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                            </Avatar>
+                            <UserAvatar user={userFields} size="md" className="rounded-lg" showStatusIndicator={false} showBotIndicator={false} />
                             <div className="grid flex-1 text-left text-sm leading-tight">
                                 <span className="truncate font-semibold">{user.name}</span>
                                 <span className="truncate text-xs">{user.email}</span>
@@ -67,10 +69,7 @@ export function NavUser({
                     >
                         <DropdownMenuLabel className="p-0 font-normal">
                             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                                <Avatar className="h-8 w-8 rounded-lg">
-                                    <AvatarImage src={user.avatar} alt={user.name} />
-                                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                                </Avatar>
+                                <UserAvatar user={userFields} size="md" className="rounded-lg" showStatusIndicator={false} showBotIndicator={false} />
                                 <div className="grid flex-1 text-left text-sm leading-tight">
                                     <span className="truncate font-semibold">{user.name}</span>
                                     <span className="truncate text-xs">{user.email}</span>

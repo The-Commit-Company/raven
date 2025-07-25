@@ -10,9 +10,7 @@ interface UserAvatarProps {
     size?: 'xs' | 'sm' | 'md' | 'lg',
     className?: string,
     showStatusIndicator?: boolean,
-    showBotIndicator?: boolean,
-    radius?: 'sm' | 'md' | 'lg' | 'full',
-    fontSize?: 'xs' | 'sm' | 'md' | 'lg'
+    showBotIndicator?: boolean
 }
 
 const getInitials = (name: string): string => {
@@ -23,7 +21,6 @@ const getInitials = (name: string): string => {
         .toUpperCase()
         .slice(0, 2)
 }
-
 
 const generateAvatarColor = (name: string): string => {
     let hash = 0
@@ -49,7 +46,6 @@ export const getStatusIndicatorColor = (status: string) => {
     }
 }
 
-
 const getSizeClasses = (size: 'xs' | 'sm' | 'md' | 'lg') => {
     switch (size) {
         case 'xs':
@@ -57,66 +53,41 @@ const getSizeClasses = (size: 'xs' | 'sm' | 'md' | 'lg') => {
                 avatar: 'h-4 w-4',
                 indicator: 'h-1 w-1 -bottom-0.5 -right-0.5',
                 bot: 'h-1.5 w-1.5',
-                botContainer: 'h-2 w-2 bottom-0.5 right-0.5'
+                botContainer: 'h-2 w-2 bottom-0.5 right-0.5',
+                font: '!text-[8px] font-bold'
             }
         case 'sm':
             return {
                 avatar: 'h-6 w-6',
                 indicator: 'h-2 w-2 -bottom-0.5 -right-0.5',
                 bot: 'h-2 w-2',
-                botContainer: 'h-2.5 w-2.5 bottom-1 right-1'
+                botContainer: 'h-2.5 w-2.5 bottom-1 right-1',
+                font: 'text-[10px]'
             }
         case 'md':
             return {
                 avatar: 'h-8 w-8',
                 indicator: 'h-2.5 w-2.5 bottom-1 right-1',
                 bot: 'h-3 w-3',
-                botContainer: 'h-3 w-3 bottom-1.5 right-1.5'
+                botContainer: 'h-3 w-3 bottom-1.5 right-1.5',
+                font: 'text-[13px]'
             }
         case 'lg':
             return {
                 avatar: 'h-12 w-12',
                 indicator: 'h-3 w-3 -bottom-1 -right-1',
                 bot: 'h-5 w-5',
-                botContainer: 'h-4 w-4 bottom-1.5 right-1.5'
+                botContainer: 'h-4 w-4 bottom-1.5 right-1.5',
+                font: 'text-md'
             }
         default:
             return {
                 avatar: 'h-8 w-8',
                 indicator: 'h-2.5 w-2.5 bottom-1 right-1',
                 bot: 'h-3 w-3',
-                botContainer: 'h-3 w-3 bottom-1.5 right-1.5'
+                botContainer: 'h-3 w-3 bottom-1.5 right-1.5',
+                font: 'text-[13px]'
             }
-    }
-}
-
-const getRadiusClasses = (radius: 'sm' | 'md' | 'lg' | 'full') => {
-    switch (radius) {
-        case 'sm':
-            return 'rounded-sm'
-        case 'md':
-            return 'rounded-md'
-        case 'lg':
-            return 'rounded-lg'
-        case 'full':
-            return 'rounded-full'
-        default:
-            return 'rounded-sm'
-    }
-}
-
-const getFontSizeClasses = (fontSize: 'xs' | 'sm' | 'md' | 'lg') => {
-    switch (fontSize) {
-        case 'xs':
-            return '!text-[8px] font-bold'
-        case 'sm':
-            return 'text-[10px]'
-        case 'md':
-            return 'text-sm'
-        case 'lg':
-            return 'text-base'
-        default:
-            return 'text-xs'
     }
 }
 
@@ -126,16 +97,12 @@ export const UserAvatar = memo<UserAvatarProps>(({
     size = 'md',
     className,
     showStatusIndicator = true,
-    showBotIndicator = true,
-    radius = 'sm',
-    fontSize = 'sm'
+    showBotIndicator = true
 }) => {
     const displayName = user.full_name || user.name
     const isBot = user.type === 'Bot'
     const availabilityStatus = user.availability_status
     const sizeClasses = getSizeClasses(size)
-    const radiusClasses = getRadiusClasses(radius)
-    const fontSizeClasses = getFontSizeClasses(fontSize)
 
     const avatarColor = useMemo(() => generateAvatarColor(displayName), [displayName])
 
@@ -157,18 +124,15 @@ export const UserAvatar = memo<UserAvatarProps>(({
 
     return (
         <div className={cn("relative inline-block", className)}>
-            <Avatar className={cn(sizeClasses.avatar, radiusClasses)}>
+            <Avatar className={cn(sizeClasses.avatar, "rounded-full")}>
                 <AvatarImage
                     src={user.user_image}
                     alt={`${displayName}'s profile picture`}
                     loading="lazy"
                 />
                 <AvatarFallback
-                    className={cn("text-white font-medium select-none", radiusClasses, fontSizeClasses)}
-                    style={{
-                        ...fallbackStyle,
-                        fontSize: fontSize === 'xs' ? '10px' : undefined
-                    }}
+                    className={cn("text-white font-medium select-none border-0", sizeClasses.font)}
+                    style={fallbackStyle}
                     aria-label={`${displayName} (initials)`}
                 >
                     {getInitials(displayName)}

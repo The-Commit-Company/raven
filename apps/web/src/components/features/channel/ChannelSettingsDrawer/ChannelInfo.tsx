@@ -1,12 +1,18 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar';
 import { Switch } from '@components/ui/switch';
 import { User, Edit, Lock, Globe, Archive, Trash2, Bell } from 'lucide-react';
+import { UserAvatar } from '@components/features/message/UserAvatar';
 
 const ChannelInfo = () => {
 
     const mockCreator = {
-        user_image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+        name: 'janhvi.patil',
         full_name: 'Janhvi Patil',
+        user_image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+        type: 'User' as const,
+        availability_status: '' as const,
+        custom_status: '',
+        enabled: 1 as const,
+        first_name: 'Janhvi',
     }
 
     const mockChannel = {
@@ -39,7 +45,7 @@ const ChannelInfo = () => {
                                 <div className="flex items-center gap-2 mb-1">
                                     <span className="text-sm font-medium">Channel description</span>
                                 </div>
-                                <p className="text-sm text-muted-foreground/90">{mockChannel.description}</p>
+                                <p className="text-sm text-muted-foreground/90 line-clamp-2">{mockChannel.description}</p>
                             </div>
                             <Edit className="w-4 h-4 text-muted-foreground hover:text-foreground flex-shrink-0 mt-1" />
                         </div>
@@ -47,12 +53,7 @@ const ChannelInfo = () => {
                         <div className="border-t border-border/50"></div>
 
                         <div className="flex items-center gap-2">
-                            <Avatar className="w-5 h-5 rounded-full">
-                                <AvatarImage src={mockCreator.user_image} />
-                                <AvatarFallback className="text-xs">
-                                    {mockCreator.full_name.charAt(0).toUpperCase()}
-                                </AvatarFallback>
-                            </Avatar>
+                            <UserAvatar user={mockCreator} size="xs" className="w-5 h-5 rounded-full" showStatusIndicator={false} showBotIndicator={false} />
                             <span className="text-[13px] text-muted-foreground/80">
                                 Created by {mockCreator.full_name} on {mockChannel.creation}
                             </span>
