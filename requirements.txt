@@ -6,3 +6,4 @@ openai-agents>=0.0.16
 markitdown
 pandas
 google-cloud-documentai
+httpx

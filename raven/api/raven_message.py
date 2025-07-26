@@ -9,11 +9,15 @@ from frappe.query_builder.functions import Coalesce, Count
 from raven.api.raven_channel import create_direct_message_channel, get_peer_user_id
 from raven.utils import get_channel_member, is_channel_member, track_channel_visit
 
+import httpx
 
 @frappe.whitelist(methods=["POST"])
 def send_message(
 	channel_id, text, is_reply=False, linked_message=None, json_content=None, send_silently=False
 ):
+	channel = frappe.get_doc("Raven Channel", channel_id)
+	
+	# Create the user's message first
 	if is_reply:
 		doc = frappe.get_doc(
 			{
@@ -41,7 +45,55 @@ def send_message(
 		doc.flags.send_silently = True
 
 	doc.insert()
+	
+	# After the user's message is inserted, check if we need to send a bot response
+	check_and_send_bot_response(channel, channel_id, text)
+	
 	return doc
+
+
+def check_and_send_bot_response(channel, channel_id, text):
+	"""
+	Check if this is a DM with CargoWiseBot and send a response if needed
+	"""
+	# Check if this is a DM with a bot
+	if channel.is_direct_message:
+		# Get channel members to find if any are bots
+		members = frappe.get_all(
+			"Raven Channel Member",
+			filters={"channel_id": channel_id},
+			fields=["user_id"]
+		)
+		
+		for member in members:
+			# Check if this user_id is a bot (via Raven User)
+			raven_user = frappe.db.get_value("Raven User", member.user_id, ["type", "bot"], as_dict=True)
+			if raven_user and raven_user.type == "Bot" and raven_user.bot:
+				# Get the bot name to check if it's CargoWiseBot
+				bot_name = frappe.db.get_value("Raven Bot", raven_user.bot, "bot_name")
+				print(f"🤖 MESSAGE TO BOT: {raven_user.bot} (name: {bot_name}) in channel {channel_id}")
+				
+				# Only respond if this is CargoWiseBot
+				if bot_name == "CargoWiseBot":
+					print(f"✅ CARGOWISE BOT DETECTED: Sending response")
+					
+					# Send immediate "thinking" message
+					thinking_message_id = send_thinking_message(channel_id, raven_user.bot)
+					
+					# Use frappe.enqueue to send actual response after a small delay
+					frappe.enqueue(
+						send_bot_response,
+						channel_id=channel_id,
+						bot_name=raven_user.bot,
+						user_message=text,
+						thinking_message_id=thinking_message_id,
+						queue="short",
+						timeout=30,
+						is_async=True
+					)
+				else:
+					print(f"❌ NOT CARGOWISE BOT: Ignoring message to {bot_name}")
+				break
 
 
 @frappe.whitelist()
@@ -571,3 +623,89 @@ def add_forwarded_message_to_channel(channel_id, forwarded_message):
 	)
 	doc.insert()
 	return "message forwarded"
+
+
+def send_thinking_message(channel_id, bot_raven_user):
+	"""
+	Send an immediate "thinking" message that will be replaced later
+	"""
+	try:
+		thinking_doc = frappe.get_doc({
+			"doctype": "Raven Message",
+			"channel_id": channel_id,
+			"text": "🤔 Freightify AI is working on your request...",
+			"message_type": "Text",
+			"owner": bot_raven_user,
+			"is_bot_message": 1,
+			"bot": bot_raven_user
+		})
+		thinking_doc.insert(ignore_permissions=True)
+		print(f"💭 THINKING MESSAGE SENT: {thinking_doc.name}")
+		return thinking_doc.name
+		
+	except Exception as e:
+		print(f"❌ ERROR sending thinking message: {str(e)}")
+		frappe.log_error(f"Error sending thinking message: {str(e)}", "Bot Thinking Message Error")
+		return None
+
+
+def send_bot_response(channel_id, bot_name, user_message, thinking_message_id=None):
+	"""
+	Send a dummy bot response for testing purposes
+	"""
+	print(f"🤖 SENDING DUMMY RESPONSE: Bot {bot_name} responding to '{user_message}'")
+	
+	# Make synchronous HTTP request
+	try:
+		response = httpx.post(
+			"http://4.224.78.184/shipment",
+			json={"text": "S00282993"},
+			timeout=10.0
+		)
+	except Exception as e:
+		print(f"❌ ERROR making HTTP request: {str(e)}")
+		frappe.log_error(f"Error making HTTP request: {str(e)}", "Bot HTTP Request Error")
+	
+	# Get the bot's Raven User ID
+	bot_raven_user = frappe.db.get_value("Raven Bot", bot_name, "raven_user")
+	if not bot_raven_user:
+		print(f"❌ ERROR: Could not find raven_user for bot {bot_name}")
+		return
+	
+	# Create a simple response based on the user's message
+	if "hello" in user_message.lower() or "hi" in user_message.lower():
+		response_text = f"👋 Hello! I'm Freightify AI. How can I help you today?"
+	elif "?" in user_message:
+		response_text = f"🤔 That's an interesting question! I'm Freightify AI, and I'm here to help with your freight and logistics needs."
+	elif "help" in user_message.lower():
+		response_text = f"📚 I'm Freightify AI, your logistics assistant. I can help you with shipping, tracking, and freight management!"
+	else:
+		response_text = f"🚚 Thanks for your message: '{user_message}'. I'm Freightify AI and I'm ready to assist with your logistics needs!"
+	
+	# Update the thinking message if it exists, otherwise create a new message
+	try:
+		if thinking_message_id:
+			# Replace the thinking message with the actual response
+			thinking_doc = frappe.get_doc("Raven Message", thinking_message_id)
+			thinking_doc.text = response_text
+			thinking_doc.save(ignore_permissions=True)
+			print(f"✅ SUCCESS: Thinking message updated with bot response!")
+			return thinking_message_id
+		else:
+			# Create a new message if no thinking message exists
+			response_doc = frappe.get_doc({
+				"doctype": "Raven Message",
+				"channel_id": channel_id,
+				"text": response_text,
+				"message_type": "Text",
+				"owner": bot_raven_user,
+				"is_bot_message": 1,
+				"bot": bot_raven_user
+			})
+			response_doc.insert(ignore_permissions=True)
+			print(f"✅ SUCCESS: New bot response sent successfully!")
+			return response_doc.name
+		
+	except Exception as e:
+		print(f"❌ ERROR sending bot response: {str(e)}")
+		frappe.log_error(f"Error sending dummy bot response: {str(e)}", "Bot Response Error")

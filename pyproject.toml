@@ -14,7 +14,8 @@ dependencies = [
  "openai-agents>=0.0.16",
  "markitdown",
  "pandas",
- "google-cloud-documentai"
+ "google-cloud-documentai",
+ "httpx"
 ]
 
 [build-system]
