@@ -8,6 +8,7 @@ import { ListFilter } from 'lucide-react'
 import { RavenChannel } from '@raven/types/RavenChannelManagement/RavenChannel'
 import { UserFields } from '@raven/types/common/UserFields'
 import { SearchFilters as SearchFiltersType } from './types'
+
 interface SearchFiltersProps {
     filters: SearchFiltersType,
     availableChannels: RavenChannel[],
@@ -31,6 +32,7 @@ export function SearchFilters({ filters, availableChannels, availableUsers = [],
                     availableUsers={availableUsers}
                     showLabel={false}
                     size="sm"
+                    dropdownClassName="w-[320px]"
                 />
                 <DateFilter
                     className="flex-shrink-0"

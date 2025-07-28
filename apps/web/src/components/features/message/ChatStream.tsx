@@ -3,6 +3,8 @@ import TextMessage from "./renderers/TextMessage"
 import ThreadMessage from "./renderers/ThreadMessage"
 import PollMessage from "./renderers/PollMessage"
 import SystemMessage from "./renderers/SystemMessage"
+import ReplyMessage from "./renderers/ReplyMessage"
+import ImageMessage from "./renderers/ImageMessage"
 
 
 const dummyUser1 = {
@@ -229,11 +231,289 @@ const dummyPoll3 = {
 
 const dummyCurrentUserVotes3: Array<{ option: string }> = []
 
+const dummyImages = [
+    {
+        name: "img-1",
+        file_name: "team_photo.jpg",
+        file_url: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop",
+        file_size: "2.4 MB",
+        file_type: "jpg",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=300&h=225&fit=crop"
+    },
+    {
+        name: "img-2",
+        file_name: "design_mockup.png",
+        file_url: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=800&h=600&fit=crop",
+        file_size: "1.8 MB",
+        file_type: "png",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=300&h=225&fit=crop"
+    },
+    {
+        name: "img-3",
+        file_name: "screenshot.png",
+        file_url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
+        file_size: "3.2 MB",
+        file_type: "png",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=300&h=225&fit=crop"
+    },
+    {
+        name: "img-4",
+        file_name: "presentation.jpg",
+        file_url: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=600&fit=crop",
+        file_size: "4.1 MB",
+        file_type: "jpg",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=300&h=225&fit=crop"
+    }
+]
+
+const dummyTwoImages = [
+    {
+        name: "img-2a",
+        file_name: "before.jpg",
+        file_url: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&h=600&fit=crop",
+        file_size: "1.8 MB",
+        file_type: "jpg",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=300&h=225&fit=crop"
+    },
+    {
+        name: "img-2b",
+        file_name: "after.jpg",
+        file_url: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=600&fit=crop",
+        file_size: "2.2 MB",
+        file_type: "jpg",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=300&h=225&fit=crop"
+    }
+]
+
+const dummyThreeImages = [
+    {
+        name: "img-3a",
+        file_name: "ui_design.jpg",
+        file_url: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=600&fit=crop",
+        file_size: "2.1 MB",
+        file_type: "jpg",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=300&h=225&fit=crop"
+    },
+    {
+        name: "img-3b",
+        file_name: "wireframe.png",
+        file_url: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&h=600&fit=crop",
+        file_size: "1.5 MB",
+        file_type: "png",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=300&h=225&fit=crop"
+    },
+    {
+        name: "img-3c",
+        file_name: "prototype.jpg",
+        file_url: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=600&fit=crop",
+        file_size: "3.8 MB",
+        file_type: "jpg",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=300&h=225&fit=crop"
+    }
+]
+
+const dummySixImages = [
+    {
+        name: "img-6a",
+        file_name: "meeting_notes.jpg",
+        file_url: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=600&fit=crop",
+        file_size: "1.9 MB",
+        file_type: "jpg",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=300&h=225&fit=crop"
+    },
+    {
+        name: "img-6b",
+        file_name: "dashboard.png",
+        file_url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop",
+        file_size: "2.3 MB",
+        file_type: "png",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&h=225&fit=crop"
+    },
+    {
+        name: "img-6c",
+        file_name: "analytics.jpg",
+        file_url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop",
+        file_size: "2.7 MB",
+        file_type: "jpg",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&h=225&fit=crop"
+    },
+    {
+        name: "img-6d",
+        file_name: "report.pdf",
+        file_url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop",
+        file_size: "1.6 MB",
+        file_type: "pdf",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&h=225&fit=crop"
+    },
+    {
+        name: "img-6e",
+        file_name: "chart.png",
+        file_url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop",
+        file_size: "1.2 MB",
+        file_type: "png",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&h=225&fit=crop"
+    },
+    {
+        name: "img-6f",
+        file_name: "data.jpg",
+        file_url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop",
+        file_size: "2.9 MB",
+        file_type: "jpg",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&h=225&fit=crop"
+    }
+]
+
+const dummyTenImages = [
+    {
+        name: "img-10a",
+        file_name: "homepage.png",
+        file_url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
+        file_size: "1.8 MB",
+        file_type: "png",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=300&h=225&fit=crop"
+    },
+    {
+        name: "img-10b",
+        file_name: "dashboard.png",
+        file_url: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=800&h=600&fit=crop",
+        file_size: "2.1 MB",
+        file_type: "png",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=300&h=225&fit=crop"
+    },
+    {
+        name: "img-10c",
+        file_name: "profile.png",
+        file_url: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop",
+        file_size: "1.9 MB",
+        file_type: "png",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=300&h=225&fit=crop"
+    },
+    {
+        name: "img-10d",
+        file_name: "settings.png",
+        file_url: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=600&fit=crop",
+        file_size: "2.4 MB",
+        file_type: "png",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=300&h=225&fit=crop"
+    },
+    {
+        name: "img-10e",
+        file_name: "mobile1.png",
+        file_url: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=600&fit=crop",
+        file_size: "2.0 MB",
+        file_type: "png",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=300&h=225&fit=crop"
+    },
+    {
+        name: "img-10f",
+        file_name: "mobile2.png",
+        file_url: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&h=600&fit=crop",
+        file_size: "1.7 MB",
+        file_type: "png",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=300&h=225&fit=crop"
+    },
+    {
+        name: "img-10g",
+        file_name: "mobile3.png",
+        file_url: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=600&fit=crop",
+        file_size: "2.2 MB",
+        file_type: "png",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=300&h=225&fit=crop"
+    },
+    {
+        name: "img-10h",
+        file_name: "mobile4.png",
+        file_url: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=600&fit=crop",
+        file_size: "1.6 MB",
+        file_type: "png",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=300&h=225&fit=crop"
+    },
+    {
+        name: "img-10i",
+        file_name: "tablet1.png",
+        file_url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop",
+        file_size: "2.3 MB",
+        file_type: "png",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&h=225&fit=crop"
+    },
+    {
+        name: "img-10j",
+        file_name: "tablet2.png",
+        file_url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop",
+        file_size: "2.5 MB",
+        file_type: "png",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&h=225&fit=crop"
+    }
+]
+
+const dummySingleImage = [
+    {
+        name: "img-single",
+        file_name: "product_shot.jpg",
+        file_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
+        file_size: "2.7 MB",
+        file_type: "jpg",
+        thumbnail_width: 800,
+        thumbnail_height: 600,
+        file_thumbnail: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=225&fit=crop"
+    }
+]
+
 export default function ChatStream() {
     return (
         <div className="flex flex-col p-4 h-full overflow-y-auto">
 
-            <DateSeparator label="10th November 2023" />
+            <DateSeparator label="10th November 2024" />
 
             <SystemMessage message="Desirae Lipshutz created this channel" time="05:27" />
             <SystemMessage message="Desirae Lipshutz added Brandon Franci, Alfonso Vaccarol and 3 others to this channel" time="05:29" />
@@ -244,7 +524,14 @@ export default function ChatStream() {
                 time="08:00 PM"
             />
 
-            <DateSeparator label="Today" />
+            <ReplyMessage
+                user={dummyUser2}
+                message="Hi Desirae, thanks for the warm welcome!"
+                time="08:01 PM"
+                repliedTo={{ user: dummyUser1, message: "Hi, everyone!" }}
+            />
+
+            <DateSeparator label="Yesterday" />
 
             <TextMessage
                 user={dummyUser1}
@@ -264,7 +551,7 @@ export default function ChatStream() {
 
             <TextMessage user={dummyUser1} message="Sounds great! Looking forward to the discussion." time="07:42 PM" />
 
-            <DateSeparator label="Yesterday" />
+            <DateSeparator label="Today" />
 
             <TextMessage
                 user={dummyUser2}
@@ -275,6 +562,50 @@ export default function ChatStream() {
             <PollMessage poll={dummyPoll} currentUserVotes={dummyCurrentUserVotes} />
             <PollMessage poll={dummyPoll2} currentUserVotes={dummyCurrentUserVotes2} />
             <PollMessage poll={dummyPoll3} currentUserVotes={dummyCurrentUserVotes3} />
+
+            <DateSeparator label="Image Messages" />
+
+            <ImageMessage
+                user={dummyUser1}
+                images={dummySingleImage}
+                time="11:30 AM"
+                message="Here's the product shot we discussed"
+            />
+
+            <ImageMessage
+                user={dummyUser2}
+                images={dummyTwoImages}
+                time="11:32 AM"
+                message="Before and after comparison"
+            />
+
+            <ImageMessage
+                user={dummyUser1}
+                images={dummyThreeImages}
+                time="11:35 AM"
+                message="UI design progress - wireframes and prototype"
+            />
+
+            <ImageMessage
+                user={dummyUser2}
+                images={dummyImages}
+                time="11:38 AM"
+                message="Check out these design mockups and screenshots"
+            />
+
+            <ImageMessage
+                user={dummyUser2}
+                images={dummySixImages}
+                time="11:40 AM"
+                message="Q4 analytics and reports"
+            />
+
+            <ImageMessage
+                user={dummyUser1}
+                images={dummyTenImages}
+                time="11:42 AM"
+                message="Complete project documentation and assets"
+            />
         </div>
     )
 }

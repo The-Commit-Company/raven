@@ -22,16 +22,21 @@ export default function ThreadMessage({
     const displayName = user?.full_name || user?.name || "User"
 
     return (
-        <div>
+        <div className="relative">
             {/* Thread Header Section */}
             <ThreadHeader
                 displayName={displayName}
                 threadTitle={threadTitle}
             />
 
-            <div className="flex items-start gap-3">
-                {/* Avatar Column with Connection Line */}
-                <AvatarColumn user={user} />
+            {/* Connection Line - positioned absolutely */}
+            <div className="absolute top-[42px] left-4 w-7 h-[calc(100%-60px)] border-l border-b border-border rounded-bl-lg z-0" />
+
+            <div className="flex items-start gap-3 relative z-10">
+                {/* Avatar Column */}
+                <div className="flex-shrink-0">
+                    <UserAvatar user={user} size="md" />
+                </div>
 
                 {/* Message Content Column */}
                 <MessageContentColumn
@@ -53,7 +58,7 @@ export default function ThreadMessage({
 // Separate component for thread header
 const ThreadHeader: React.FC<{ displayName: string, threadTitle: string }> = ({ displayName, threadTitle }) => {
     return (
-        <div className="flex items-center gap-1 mb-3 text-xs">
+        <div className="flex items-center gap-1 text-xs mb-3">
             <div className="flex items-center gap-0.5">
                 <Hash className="h-3 w-3" />
                 <span className="font-semibold">Thread</span>
@@ -66,16 +71,6 @@ const ThreadHeader: React.FC<{ displayName: string, threadTitle: string }> = ({ 
     )
 }
 
-// Separate component for avatar and vertical line
-const AvatarColumn: React.FC<{ user: UserFields }> = ({ user }) => {
-    return (
-        <div className="relative flex flex-col items-center">
-            <UserAvatar user={user} size="md" />
-            <div className="w-px bg-border flex-1 min-h-12" />
-        </div>
-    )
-}
-
 // Separate component for message content
 const MessageContentColumn: React.FC<{
     displayName: string
@@ -83,7 +78,7 @@ const MessageContentColumn: React.FC<{
     message: string
 }> = ({ displayName, time, message }) => {
     return (
-        <div>
+        <div className="flex-1">
             <MessageHeader displayName={displayName} time={time} />
             <MessageBody message={message} />
         </div>
@@ -93,9 +88,9 @@ const MessageContentColumn: React.FC<{
 // Message header with user name and timestamp
 const MessageHeader: React.FC<{ displayName: string, time: string }> = ({ displayName, time }) => {
     return (
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-2 mb-1">
             <span className="font-medium text-sm">{displayName}</span>
-            <span className="text-xs text-muted-foreground/80">{time}</span>
+            <span className="text-xs font-light text-muted-foreground/90">{time}</span>
         </div>
     )
 }
@@ -103,7 +98,7 @@ const MessageHeader: React.FC<{ displayName: string, time: string }> = ({ displa
 // Message body content
 const MessageBody: React.FC<{ message: string }> = ({ message }) => {
     return (
-        <div className="text-sm">
+        <div className="text-sm text-primary">
             <div>{message}</div>
         </div>
     )
@@ -121,20 +116,12 @@ const ThreadViewButton: React.FC<{
     }))
 
     return (
-        <div className="flex items-center ml-12">
-            <ConnectionLine />
+        <div className="flex items-center ml-11 mt-2">
             <ThreadButton
                 participants={participantAvatars}
                 messageCount={messageCount}
             />
         </div>
-    )
-}
-
-// Connection line element
-const ConnectionLine: React.FC = () => {
-    return (
-        <div className="w-6 h-6 border-l border-b border-border rounded-bl-lg -ml-8" />
     )
 }
 

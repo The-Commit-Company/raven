@@ -13,10 +13,11 @@ interface ChannelFilterProps {
     availableChannels: RavenChannel[],
     availableUsers: UserFields[],
     showLabel?: boolean,
-    size?: 'sm'
+    size?: 'sm',
+    dropdownClassName?: string
 }
 
-export function ChannelFilter({ filters, availableChannels, availableUsers, showLabel = true, size }: ChannelFilterProps) {
+export function ChannelFilter({ filters, availableChannels, availableUsers, showLabel = true, size, dropdownClassName }: ChannelFilterProps) {
 
     const channels = availableChannels.filter(c => !c.is_direct_message)
     const dms = availableChannels.filter(c => c.is_direct_message)
@@ -74,7 +75,7 @@ export function ChannelFilter({ filters, availableChannels, availableUsers, show
                         <SelectValue placeholder="In" className={cn("pl-1", labelSizeClass)} />
                     )}
                 </SelectTrigger>
-                <SelectContent className="w-full">
+                <SelectContent className={dropdownClassName || "w-full"}>
                     <SelectItem value="all">In Any Channel</SelectItem>
                     <SelectGroup>
                         <SelectLabel className="text-xs text-muted-foreground/80 px-2 py-1.5">Channels</SelectLabel>
