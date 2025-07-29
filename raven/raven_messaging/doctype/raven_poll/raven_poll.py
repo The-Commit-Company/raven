@@ -13,9 +13,9 @@ class RavenPoll(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
-
 		from raven.raven_messaging.doctype.raven_poll_option.raven_poll_option import RavenPollOption
 
+		end_date: DF.Datetime | None
 		is_anonymous: DF.Check
 		is_disabled: DF.Check
 		is_multi_choice: DF.Check
