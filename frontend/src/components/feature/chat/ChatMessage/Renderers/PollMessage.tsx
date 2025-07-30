@@ -63,6 +63,11 @@ const PollMessageBox = ({ data, messageID }: { data: Poll, messageID: string }) 
                         <IoLockClosed />
                         Poll is now closed, no more votes will be accepted
                     </Badge> : null}
+                    {data.poll.end_date && (
+                        <Text size='1' color='gray'>
+                            This poll will end on {new Date(data.poll.end_date).toLocaleString()}
+                        </Text>
+                    )}
                 </Flex>
                 {data.current_user_votes.length > 0 ?
                     <PollResults data={data} /> :

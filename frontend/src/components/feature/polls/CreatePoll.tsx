@@ -196,7 +196,12 @@ const CreatePollContent = ({ channelID, setIsOpen }: { channelID: string, setIsO
                             <Flex gap="2" align='center'>
                                 <Checkbox
                                     checked={hasEndDate}
-                                    onCheckedChange={(checked) => setHasEndDate(checked as boolean)}
+                                    onCheckedChange={(checked) => {
+                                        setHasEndDate(checked as boolean)
+                                        if (!checked) {
+                                            methods.setValue('end_date', undefined)
+                                        }
+                                    }}
                                 />
                                 Set poll end date and time
                             </Flex>
