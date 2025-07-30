@@ -1,6 +1,7 @@
 import json
 
 import frappe
+from frappe import _
 from google.api_core.client_options import ClientOptions
 from google.cloud import documentai, documentai_v1
 from google.oauth2 import service_account
@@ -241,7 +242,7 @@ def create_document_processor(processor_type_key: str):
 
 	raven_settings = frappe.get_single("Raven Settings")
 	if not raven_settings.enable_google_apis:
-		frappe.throw("Google APIs are not enabled. Please enable them in the Raven Settings.")
+		frappe.throw(_("Google APIs are not enabled. Please enable them in the Raven Settings."))
 
 	# Get the processor type configuration
 	config = PROCESSOR_TYPES_CONFIG[processor_type_key]
@@ -267,7 +268,7 @@ def create_document_processor(processor_type_key: str):
 			processor=documentai.Processor(display_name=display_name, type_=processor_type),
 		)
 		if not processor:
-			frappe.throw("Failed to create processor")
+			frappe.throw(_("Failed to create processor"))
 
 		return {
 			"id": processor.name.split("/")[-1],
@@ -279,7 +280,7 @@ def create_document_processor(processor_type_key: str):
 		}
 	except Exception as e:
 		frappe.log_error(f"Error creating document processor {str(e)}")
-		frappe.throw("Failed to create document processor")
+		frappe.throw(_("Failed to create document processor"))
 
 
 @frappe.whitelist(methods=["POST"])
@@ -291,7 +292,7 @@ def delete_document_processor(processor_id: str):
 
 	raven_settings = frappe.get_single("Raven Settings")
 	if not raven_settings.enable_google_apis:
-		frappe.throw("Google APIs are not enabled. Please enable them in the Raven Settings.")
+		frappe.throw(_("Google APIs are not enabled. Please enable them in the Raven Settings."))
 
 	location = raven_settings.google_processor_location
 	key = json.loads(raven_settings.get_password("google_service_account_json_key"))
@@ -334,6 +335,6 @@ def delete_document_processor(processor_id: str):
 
 	except Exception as e:
 		frappe.log_error(f"Error deleting document processor {str(e)}")
-		frappe.throw("Failed to delete document processor")
+		frappe.throw(_("Failed to delete document processor"))
 
 	return {"message": "Document processor deleted successfully"}
