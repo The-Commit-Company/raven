@@ -8,7 +8,9 @@ import { useGetUserRecords } from "@/hooks/useGetUserRecords"
 import { Badge, Box, Flex, Heading, Link, Text } from "@radix-ui/themes"
 import { UserAvatar } from "@/components/common/UserAvatar"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
-import { BiBookmark } from "react-icons/bi"
+import { GrInProgress } from "react-icons/gr"
+import { FaCheckDouble } from "react-icons/fa6"
+import { BiBookmark } from "react-icons/bi";
 import { DateMonthYear } from "@/utils/dateConversions"
 import { useGetUser } from "@/hooks/useGetUser"
 import useFetchChannelMembers from "@/hooks/fetchers/useFetchChannelMembers"
@@ -137,6 +139,48 @@ export const EmptyStateForSavedMessages = () => {
                 </Flex>
             </Flex>
         </Box>
+    )
+}
+
+export const EmptyStateForInProgressReminders = () => {
+    return (
+        <Flex
+            direction='column'
+            align='center'
+            justify='center'
+            className='h-[400px] px-6 text-center'
+        >
+            <div className='text-gray-8 mb-4'>
+                <GrInProgress size={48} />
+            </div>
+            <Text size='5' weight='medium' className='mb-2'>
+                No reminders in progress
+            </Text>
+            <Text as='p' size='2' color='gray' className='max-w-[400px]'>
+                When you create reminders from your messages, they'll appear here. You can create reminders by clicking on the Remind Me button on any message.
+            </Text>
+        </Flex>
+    )
+}
+
+export const EmptyStateForCompletedReminders = () => {
+    return (
+        <Flex
+            direction='column'
+            align='center'
+            justify='center'
+            className='h-[400px] px-6 text-center'
+        >
+            <div className='text-gray-8 mb-4'>
+                <FaCheckDouble size={48} />
+            </div>
+            <Text size='5' weight='medium' className='mb-2'>
+                No completed reminders yet
+            </Text>
+            <Text as='p' size='2' color='gray' className='max-w-[400px]'>
+                Your completed reminders and tasks will be shown here. Once you finish working on a reminder, mark it as "Completed" to keep track of your accomplishments.
+            </Text>
+        </Flex>
     )
 }
 

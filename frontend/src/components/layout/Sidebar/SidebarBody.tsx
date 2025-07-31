@@ -13,6 +13,8 @@ import { useGetChannelUnreadCounts } from './useGetChannelUnreadCounts'
 import { useParams } from 'react-router-dom'
 import { atomWithStorage } from 'jotai/utils'
 import useUnreadThreadsCount from '@/hooks/useUnreadThreadsCount'
+import { useFrappeEventListener, useFrappeGetCall } from 'frappe-react-sdk'
+import { toast } from 'sonner'
 
 export const showOnlyMyChannelsAtom = atomWithStorage('showOnlyMyChannels', false)
 
@@ -43,11 +45,7 @@ export const SidebarBody = () => {
                         label='Threads'
                         icon={<BiMessageAltDetail className='text-gray-12 dark:text-gray-300 mt-1 sm:text-sm text-base' />}
                         iconLabel='Threads' /> */}
-                    <SidebarItemForPage
-                        to={'saved-messages'}
-                        label='Saved'
-                        icon={<BiBookmark className='text-gray-12 dark:text-gray-300 mt-0.5 sm:text-sm text-base' />}
-                        iconLabel='Saved Message' />
+                    <SavedMessagesButton />
                 </Flex>
                 <PinnedChannels unread_count={unread_count?.message} />
                 {(unreadChannels.length > 0 || unreadDMs.length > 0) && <UnreadList unreadChannels={unreadChannels} unreadDMs={unreadDMs} />}
@@ -76,6 +74,24 @@ const ThreadsButton = () => {
             unreadCount={totalUnreadThreads}
             icon={<BiMessageAltDetail className='text-gray-12 dark:text-gray-300 mt-1 sm:text-sm text-base' />}
             iconLabel='Threads' />
+    )
+}
+
+const SavedMessagesButton = () => {
+
+    const { data: reminders, mutate } = useFrappeGetCall('raven.api.reminder.get_overdue_reminders', undefined, 'reminders_count')
+
+    useFrappeEventListener('due_reminders', () => {
+        mutate()
+    })
+
+    return (
+        <SidebarItemForPage
+            to={'saved-messages'}
+            label='Saved'
+            unreadCount={reminders?.message?.length}
+            icon={<BiBookmark className='text-gray-12 dark:text-gray-300 mt-1 sm:text-sm text-base' />}
+            iconLabel='Saved' />
     )
 }
 

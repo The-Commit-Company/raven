@@ -154,25 +154,12 @@ doc_events = {
 }
 
 # Scheduled Tasks
-# ---------------
-
-# scheduler_events = {
-# "all": [
-# "raven.tasks.all"
-# ],
-# "daily": [
-# "raven.tasks.daily"
-# ],
-# "hourly": [
-# "raven.tasks.hourly"
-# ],
-# "weekly": [
-# "raven.tasks.weekly"
-# ],
-# "monthly": [
-# "raven.tasks.monthly"
-# ],
-# }
+scheduler_events = {
+	"cron": {
+		# Run every 15 minutes
+		"*/15 * * * *": ["raven.api.reminder.send_reminders"]
+	}
+}
 
 # Testing
 # -------
