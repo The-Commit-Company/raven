@@ -3,6 +3,7 @@ Improved agents integration with better import handling based on Desktop Raven a
 """
 
 import asyncio
+import json
 import re
 import traceback
 
@@ -412,7 +413,9 @@ CRITICAL INSTRUCTIONS FOR TOOL USE:
 4. Do NOT ask the user to provide information that you can generate or retrieve yourself.
 5. Always read function descriptions carefully and follow any workflow instructions they contain.
 6. IMPORTANT: If a user asks about files they uploaded (PDFs, invoices, documents), you MUST use the 'analyze_conversation_file' tool. Never say you cannot analyze files - you have the tool to do it!
-7. For questions about invoice amounts, document content, or file information, ALWAYS use 'analyze_conversation_file' with an appropriate query."""
+7. For questions about invoice amounts, document content, or file information, ALWAYS use 'analyze_conversation_file' with an appropriate query.
+
+IMPORTANT: When calling tools, the SDK will handle the tool execution automatically. Simply state your intent to use the tool and the SDK will execute it. Do not use XML tags like <tool_call> or any other custom format."""
 
 			instructions = instructions + tools_instruction
 
@@ -553,6 +556,10 @@ async def handle_ai_request_async(
 		}
 
 		try:
+			# For Local LLM, always use direct API call to handle custom tool formats
+			if bot.model_provider == "Local LLM":
+				raise TypeError("Force fallback for Local LLM to handle custom tool calls")
+			
 			# Use Runner.run as a static method (not an instance)
 			# Set max_turns to prevent infinite loops
 			result = await Runner.run(agent, full_input, max_turns=5)
@@ -562,6 +569,9 @@ async def handle_ai_request_async(
 			should_fallback = False
 
 			if isinstance(e, TypeError) and "NoneType" in str(e) and "not iterable" in str(e):
+				should_fallback = True
+			elif isinstance(e, TypeError) and "Force fallback for Local LLM" in str(e):
+				# Forced fallback for Local LLM to handle custom tool calls
 				should_fallback = True
 			elif isinstance(e, openai.NotFoundError):
 				# 404 errors indicate the endpoint is not supported (like agents SDK endpoints on Ollama)
@@ -679,8 +689,70 @@ async def handle_ai_request_async(
 							else:
 								raw_response = "Tool execution failed - no results obtained."
 						else:
-							# No tool calls, just a regular response
+							# No tool calls, check if the response contains custom tool call format
 							raw_response = choice.message.content
+							
+							# Check for custom <tool_call> format in the response
+							if raw_response and "<tool_call>" in raw_response and "</tool_call>" in raw_response:
+								# Extract tool call from response
+								tool_call_match = re.search(r'<tool_call>\s*({.*?})\s*</tool_call>', raw_response, re.DOTALL)
+								
+								if tool_call_match:
+									try:
+										# Parse the tool call
+										tool_call_data = json.loads(tool_call_match.group(1))
+										tool_name = tool_call_data.get("name")
+										tool_args = json.dumps(tool_call_data.get("arguments", {}))
+										
+										# Find and execute the tool
+										tool_result = None
+										for tool in manager.tools:
+											if tool.name == tool_name:
+												# Execute the tool
+												tool_result = await tool.on_invoke_tool(None, tool_args)
+												break
+										
+										if tool_result:
+											# Remove the tool call from the response
+											response_without_tool = re.sub(r'<tool_call>.*?</tool_call>', '', raw_response, flags=re.DOTALL).strip()
+											
+											# Parse the tool result if it's JSON
+											try:
+												result_data = json.loads(tool_result)
+												if isinstance(result_data, dict) and "result" in result_data:
+													# Format the result nicely
+													formatted_result = "Voici les produits trouvés :\n\n"
+													for item in result_data["result"]:
+														if isinstance(item, dict):
+															formatted_result += f"• {item.get('name', 'Sans nom')}\n"
+													
+													# Add warning if present
+													if "warning" in result_data:
+														formatted_result += f"\n⚠️ {result_data['warning']}"
+													
+													raw_response = response_without_tool + "\n\n" + formatted_result if response_without_tool else formatted_result
+												else:
+													# Not the expected format, use as is
+													raw_response = f"{response_without_tool}\n\n{tool_result}"
+											except:
+												# Not JSON or parsing failed, use as is
+												raw_response = f"{response_without_tool}\n\n{tool_result}"
+										else:
+											frappe.log_error(
+												f"Tool '{tool_name}' not found or execution failed",
+												"Custom Tool Call Error"
+											)
+									
+									except json.JSONDecodeError as e:
+										frappe.log_error(
+											f"Failed to parse tool call JSON: {str(e)}\nContent: {tool_call_match.group(1)}",
+											"Tool Call Parse Error"
+										)
+									except Exception as e:
+										frappe.log_error(
+											f"Error executing custom tool call: {str(e)}",
+											"Tool Call Execution Error"
+										)
 
 						# Format the response
 						from raven.ai.response_formatter import format_ai_response
