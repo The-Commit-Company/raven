@@ -61,11 +61,10 @@ class RavenAgentManager:
 				api_key="not-needed",  # LM Studio doesn't require API key
 				base_url=self.settings.local_llm_api_url,
 			)
-			
+
 			# Create provider with use_responses=False for LM Studio
 			self.provider = OpenAIProvider(
-				openai_client=client,
-				use_responses=False  # Force l'utilisation de chat/completions endpoint
+				openai_client=client, use_responses=False  # Force l'utilisation de chat/completions endpoint
 			)
 		else:
 			# Standard OpenAI client
@@ -78,11 +77,10 @@ class RavenAgentManager:
 				organization=self.settings.openai_organisation_id,
 				project=self.settings.openai_project_id if self.settings.openai_project_id else None,
 			)
-			
+
 			# Create provider with use_responses=True for OpenAI
 			self.provider = OpenAIProvider(
-				openai_client=client,
-				use_responses=True  # Utilise /v1/responses pour OpenAI
+				openai_client=client, use_responses=True  # Utilise /v1/responses pour OpenAI
 			)
 
 		# Keep client reference for backward compatibility
@@ -146,7 +144,7 @@ class RavenAgentManager:
 
 		# Add Code Interpreter tool if enabled (only for OpenAI, not supported with Local LLM)
 		if (
-			hasattr(self.bot_doc, "enable_code_interpreter") 
+			hasattr(self.bot_doc, "enable_code_interpreter")
 			and self.bot_doc.enable_code_interpreter
 			and self.bot_doc.model_provider == "OpenAI"
 		):
@@ -349,18 +347,18 @@ class RavenAgentManager:
 				ComputerTool,
 				HostedMCPTool,
 				ImageGenerationTool,
-				LocalShellTool
+				LocalShellTool,
 			)
-			
+
 			for tool in self.tools:
 				if isinstance(tool, hosted_tool_types):
 					frappe.log_error(
 						f"Skipping hosted tool {tool.name} for Local LLM - not supported with ChatCompletions API",
-						"Tool Filtering"
+						"Tool Filtering",
 					)
 				else:
 					filtered_tools.append(tool)
-			
+
 			return filtered_tools
 		else:
 			# For OpenAI, all tools are supported
@@ -429,10 +427,10 @@ IMPORTANT: When calling tools, the SDK will handle the tool execution automatica
 		# Create agent - ALWAYS pass empty list instead of None for tools
 		# Get the model from the provider
 		model = self.provider.get_model(self.bot_doc.model)
-		
+
 		# Filter tools based on provider capabilities
 		filtered_tools = self._filter_tools_for_provider()
-		
+
 		agent = Agent(
 			name=self.bot_doc.bot_name,
 			instructions=instructions,
@@ -488,49 +486,44 @@ async def handle_ai_request_async(
 		if conversation_history:
 			# Convert conversation history to proper format for the SDK
 			input_items = []
-			
+
 			# Add conversation history as separate items
 			for msg in conversation_history:
 				# Clean HTML and extract plain text content
 				content = msg["content"]
-				
+
 				# Remove HTML details/summary tags for reasoning
 				if "<details" in content and "</details>" in content:
 					# Extract the main response after the details section
 					# Remove the entire details block
-					content = re.sub(r'<details.*?</details>', '', content, flags=re.DOTALL).strip()
-				
+					content = re.sub(r"<details.*?</details>", "", content, flags=re.DOTALL).strip()
+
 				# Skip empty messages
 				if not content:
 					continue
-				
+
 				if msg["role"] == "user":
-					input_items.append({
-						"role": "user",  # Use "role" not "type"
-						"content": content
-					})
+					input_items.append({"role": "user", "content": content})  # Use "role" not "type"
 				elif msg["role"] == "assistant":
-					input_items.append({
-						"role": "assistant",  # Use "role" not "type"
-						"content": content
-					})
-			
+					input_items.append({"role": "assistant", "content": content})  # Use "role" not "type"
+
 			# Add current message
-			current_msg = {
-				"role": "user",
-				"content": message
-			}
-			
+			current_msg = {"role": "user", "content": message}
+
 			# Add file context if present
 			if has_files_in_conversation:
 				files = list(manager.file_handler.conversation_files.values())
 				if len(files) == 1:
 					file_name = files[0]["file_name"]
-					current_msg["content"] = f"{message}\n\n[IMPORTANT: The user has uploaded the file '{file_name}'. You MUST use the 'analyze_conversation_file' tool to read and analyze THIS specific file before answering.]"
+					current_msg[
+						"content"
+					] = f"{message}\n\n[IMPORTANT: The user has uploaded the file '{file_name}'. You MUST use the 'analyze_conversation_file' tool to read and analyze THIS specific file before answering.]"
 				else:
 					file_names = [f["file_name"] for f in files]
-					current_msg["content"] = f"{message}\n\n[IMPORTANT: The user has uploaded files in this conversation. Available files: {', '.join(file_names)}. Use the 'analyze_conversation_file' tool to analyze the relevant file(s) based on the user's question.]"
-			
+					current_msg[
+						"content"
+					] = f"{message}\n\n[IMPORTANT: The user has uploaded files in this conversation. Available files: {', '.join(file_names)}. Use the 'analyze_conversation_file' tool to analyze the relevant file(s) based on the user's question.]"
+
 			input_items.append(current_msg)
 			full_input = input_items
 		else:
@@ -543,7 +536,7 @@ async def handle_ai_request_async(
 				else:
 					file_names = [f["file_name"] for f in files]
 					message = f"{message}\n\n[IMPORTANT: The user has uploaded files in this conversation. Available files: {', '.join(file_names)}. Use the 'analyze_conversation_file' tool to analyze the relevant file(s) based on the user's question.]"
-			
+
 			full_input = message
 
 		# Context for the agent
@@ -559,7 +552,7 @@ async def handle_ai_request_async(
 			# For Local LLM, always use direct API call to handle custom tool formats
 			if bot.model_provider == "Local LLM":
 				raise TypeError("Force fallback for Local LLM to handle custom tool calls")
-			
+
 			# Use Runner.run as a static method (not an instance)
 			# Set max_turns to prevent infinite loops
 			result = await Runner.run(agent, full_input, max_turns=5)
@@ -691,19 +684,21 @@ async def handle_ai_request_async(
 						else:
 							# No tool calls, check if the response contains custom tool call format
 							raw_response = choice.message.content
-							
+
 							# Check for custom <tool_call> format in the response
 							if raw_response and "<tool_call>" in raw_response and "</tool_call>" in raw_response:
 								# Extract tool call from response
-								tool_call_match = re.search(r'<tool_call>\s*({.*?})\s*</tool_call>', raw_response, re.DOTALL)
-								
+								tool_call_match = re.search(
+									r"<tool_call>\s*({.*?})\s*</tool_call>", raw_response, re.DOTALL
+								)
+
 								if tool_call_match:
 									try:
 										# Parse the tool call
 										tool_call_data = json.loads(tool_call_match.group(1))
 										tool_name = tool_call_data.get("name")
 										tool_args = json.dumps(tool_call_data.get("arguments", {}))
-										
+
 										# Find and execute the tool
 										tool_result = None
 										for tool in manager.tools:
@@ -711,11 +706,13 @@ async def handle_ai_request_async(
 												# Execute the tool
 												tool_result = await tool.on_invoke_tool(None, tool_args)
 												break
-										
+
 										if tool_result:
 											# Remove the tool call from the response
-											response_without_tool = re.sub(r'<tool_call>.*?</tool_call>', '', raw_response, flags=re.DOTALL).strip()
-											
+											response_without_tool = re.sub(
+												r"<tool_call>.*?</tool_call>", "", raw_response, flags=re.DOTALL
+											).strip()
+
 											# Parse the tool result if it's JSON
 											try:
 												result_data = json.loads(tool_result)
@@ -725,33 +722,35 @@ async def handle_ai_request_async(
 													for item in result_data["result"]:
 														if isinstance(item, dict):
 															formatted_result += f"• {item.get('name', 'Sans nom')}\n"
-													
+
 													# Add warning if present
 													if "warning" in result_data:
 														formatted_result += f"\n⚠️ {result_data['warning']}"
-													
-													raw_response = response_without_tool + "\n\n" + formatted_result if response_without_tool else formatted_result
+
+													raw_response = (
+														response_without_tool + "\n\n" + formatted_result
+														if response_without_tool
+														else formatted_result
+													)
 												else:
 													# Not the expected format, use as is
 													raw_response = f"{response_without_tool}\n\n{tool_result}"
-											except:
+											except Exception:
 												# Not JSON or parsing failed, use as is
 												raw_response = f"{response_without_tool}\n\n{tool_result}"
 										else:
 											frappe.log_error(
-												f"Tool '{tool_name}' not found or execution failed",
-												"Custom Tool Call Error"
+												f"Tool '{tool_name}' not found or execution failed", "Custom Tool Call Error"
 											)
-									
+
 									except json.JSONDecodeError as e:
 										frappe.log_error(
 											f"Failed to parse tool call JSON: {str(e)}\nContent: {tool_call_match.group(1)}",
-											"Tool Call Parse Error"
+											"Tool Call Parse Error",
 										)
 									except Exception as e:
 										frappe.log_error(
-											f"Error executing custom tool call: {str(e)}",
-											"Tool Call Execution Error"
+											f"Error executing custom tool call: {str(e)}", "Tool Call Execution Error"
 										)
 
 						# Format the response
