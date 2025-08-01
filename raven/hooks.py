@@ -156,23 +156,21 @@ doc_events = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# "all": [
-# "raven.tasks.all"
-# ],
-# "daily": [
-# "raven.tasks.daily"
-# ],
-# "hourly": [
-# "raven.tasks.hourly"
-# ],
-# "weekly": [
-# "raven.tasks.weekly"
-# ],
-# "monthly": [
-# "raven.tasks.monthly"
-# ],
-# }
+scheduler_events = {
+	# "all": [
+	# 	"raven.scheduler.all"
+	# ],
+	"daily": ["raven.scheduler.daily.sync_invalid_tokens"],
+	# "hourly": [
+	# 	"raven.scheduler.hourly"
+	# ],
+	# "weekly": [
+	# 	"raven.scheduler.weekly"
+	# ],
+	# "monthly": [
+	# 	"raven.scheduler.monthly"
+	# ],
+}
 
 # Testing
 # -------
