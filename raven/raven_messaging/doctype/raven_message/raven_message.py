@@ -7,7 +7,7 @@ import frappe
 from bs4 import BeautifulSoup
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import get_datetime, get_system_timezone
+from frappe.utils import get_datetime, get_datetime_str, get_system_timezone
 from pytz import timezone, utc
 
 from raven.ai.ai import handle_ai_thread_message, handle_bot_dm
@@ -190,15 +190,30 @@ class RavenMessage(Document):
 		"""
 		Add message to Search Sync queue
 		"""
+		# Get parent_channel_id - if current channel is a thread, get the parent channel
+		channel_doc = frappe.get_cached_doc("Raven Channel", self.channel_id)
+		if channel_doc.is_thread:
+			# For thread channels, get the parent channel from the thread message
+			parent_channel_id = frappe.get_cached_value("Raven Message", self.channel_id, "channel_id")
+		else:
+			parent_channel_id = self.channel_id
+
+		# Get file_type if message is a file
+		file_type = None
+		if self.message_type == "File" and self.file:
+			file_type = frappe.get_cached_value("File", {"attached_to_name": self.name}, "file_type")
+
 		payload = {
-			"message_type": self.message_type,
+			"parent_channel_id": parent_channel_id,
 			"channel_id": self.channel_id,
-			"content": self.content,
+			"content": self.content or "",
+			"message_type": self.message_type,
+			"file_type": file_type,
 			"is_thread": self.is_thread,
 			"is_bot_message": self.is_bot_message,
 			"bot": self.bot,
 			"owner": self.owner,
-			"creation": frappe.utils.get_date(self.creation),
+			"creation": get_datetime_str(self.creation),
 			"mentions": [mention.user for mention in self.mentions],
 		}
 		if not delete:
@@ -512,6 +527,7 @@ class RavenMessage(Document):
 
 		if self.message_type != "System":
 			self.publish_unread_count_event()
+			self.sync_to_search(delete=True)
 
 		# delete poll if the message is of type poll after deleting the message
 		if self.message_type == "Poll":
@@ -520,7 +536,6 @@ class RavenMessage(Document):
 		# TEMP: this is a temp fix for the Desk interface
 		self.publish_deprecated_event_for_desk()
 
-		self.sync_to_search(delete=True)
 
 	def publish_deprecated_event_for_desk(self):
 		# TEMP: this is a temp fix for the Desk interface
@@ -538,7 +553,8 @@ class RavenMessage(Document):
 
 	def on_update(self):
 
-		self.sync_to_search()
+		if self.message_type != "System":
+			self.sync_to_search()
 
 		# TEMP: this is a temp fix for the Desk interface
 		self.publish_deprecated_event_for_desk()

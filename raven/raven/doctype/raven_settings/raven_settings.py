@@ -3,6 +3,8 @@
 
 import frappe
 from frappe import _
+from frappe.rate_limiter import rate_limit
+from frappe.utils.background_jobs import enqueue, is_job_enqueued
 from frappe.model.document import Document
 
 class RavenSettings(Document):
@@ -74,6 +76,15 @@ class RavenSettings(Document):
 			self.typesense_port = 443
 
 	@frappe.whitelist()
+	@rate_limit(limit=1, seconds=60)
 	def run_typesense_sync(self):
 		from raven.api.typesense_sync import sync_typesense	
-		return sync_typesense()
+		job_id = "sync_typesense"
+		if not is_job_enqueued(job_id):
+			enqueue(
+				job_id=job_id,
+				method=sync_typesense(),
+				queue="long"
+			)
+		else:
+			frappe.throw(_("Job for syncing Typesense is already running. Please wait for it to complete."))

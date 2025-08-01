@@ -37,7 +37,7 @@ def sync_to_search(doctype, docname, action, content):
     doc.document_id = docname
     doc.action = action
     doc.content = content
-    doc.insert()
+    doc.deferred_insert()
 
 def update_search_index():
     """Process pending search sync records and update Typesense index"""
@@ -46,16 +46,23 @@ def update_search_index():
     if not raven_settings.enable_typesense:
         return
 
-    client = get_typesense_client(admin=True)
+    client = get_typesense_client()
 
     try:
         if frappe.db.count("Raven Search Sync") == 0:
             return {"message": "No pending search sync records"}
 
         # Get all pending sync records
-        sync_records = frappe.get_all("Raven Search Sync", 
-                                     fields=["reference_doctype", "document_id", "action", "content"],
-                                     order_by="reference_doctype, action")
+        # sync_records = frappe.get_all("Raven Search Sync", 
+        #                              fields=["reference_doctype", "document_id", "action", "content"],
+        #                              order_by="reference_doctype, action")
+
+        sync_records = frappe.qb.get_query(
+            "Raven Search Sync",
+            fields=["reference_doctype", "document_id", "action", "content", "name"],
+            order_by="reference_doctype, action",
+            for_update=True
+        ).run(as_dict=True)
 
         collection = f"{raven_settings.typesense_hash}_messages"
 
@@ -78,15 +85,23 @@ def update_search_index():
             elif action == "Delete":
                 delete_documents.append(document)
 
+        record_names = [record.name for record in sync_records]
         # Process upsert operations
         if upsert_documents:
             _sync_to_typesense(client, collection, upsert_documents)
+            frappe.db.delete("Raven Search Sync", {
+                "name": ("in", record_names),
+                "action": "Upsert"
+            })
 
         # Process delete operations
         if delete_documents:
             _delete_from_typesense(client, collection, delete_documents)
+            frappe.db.delete("Raven Search Sync", {
+                "name": ("in", record_names),
+                "action": "Delete"
+            })
 
-        frappe.db.delete("Raven Search Sync")
         frappe.db.commit()
     except Exception as e:
         frappe.log_error(f"Error in update_search_index: {str(e)}")

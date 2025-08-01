@@ -2,6 +2,23 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Raven Settings", {
+    setup: function (frm) {
+        frappe.realtime.subscribe("typesense_sync_progress", {
+            progress: function (data) {
+                frappe.show_progress(
+                    data.title || "Processing",
+                    data.percent,
+                    data.description
+                );
+            },
+            success: function () {
+                frappe.hide_progress();
+            },
+            error: function () {
+                frappe.hide_progress();
+            }
+        });
+    },
     refresh: function (frm) {
         if (frm.doc.typesense_connection_timeout_seconds === 0) {
             frm.set_value('typesense_connection_timeout_seconds', 5);
@@ -9,6 +26,7 @@ frappe.ui.form.on("Raven Settings", {
         }
     },
     sync_typesense: function (frm) {
+
         frm.call("run_typesense_sync").then((r) => {
             frappe.msgprint({
                 title: "Typesense sync completed",
@@ -18,7 +36,7 @@ frappe.ui.form.on("Raven Settings", {
         }).catch((e) => {
             frappe.msgprint({
                 title: "Typesense sync failed",
-                message: "An error occurred during Typesense sync.",
+                message: e.status !== 429 && "An error occurred during Typesense sync.",
                 indicator: "red",
             });
         });
