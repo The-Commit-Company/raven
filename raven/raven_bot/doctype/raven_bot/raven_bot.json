@@ -39,7 +39,10 @@
   "file_sources",
   "document_parsing_tab",
   "use_google_document_parser",
-  "google_document_processor_id"
+  "google_document_processor_id",
+  "marketplace_tab",
+  "marketplace_id",
+  "mapped_functions"
  ],
  "fields": [
   {
@@ -113,7 +116,8 @@
    "documentation_url": "https://platform.openai.com/docs/assistants/overview",
    "fieldname": "openai_assistant_id",
    "fieldtype": "Data",
-   "label": "OpenAI Assistant ID"
+   "label": "OpenAI Assistant ID",
+   "unique": 1
   },
   {
    "fieldname": "column_break_khmi",
@@ -242,13 +246,30 @@
    "fieldtype": "Data",
    "label": "Google Document Processor ID",
    "length": 400
+  },
+  {
+   "fieldname": "marketplace_tab",
+   "fieldtype": "Tab Break",
+   "label": "Marketplace"
+  },
+  {
+   "fieldname": "marketplace_id",
+   "fieldtype": "Data",
+   "label": "Marketplace ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "mapped_functions",
+   "fieldtype": "JSON",
+   "label": "Mapped Functions",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-17 00:04:29.764884",
+ "modified": "2025-07-25 13:26:53.133171",
  "modified_by": "Administrator",
  "module": "Raven Bot",
  "name": "Raven Bot",
