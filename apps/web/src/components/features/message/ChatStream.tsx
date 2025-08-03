@@ -876,12 +876,12 @@ export default function ChatStream() {
             />
 
             <div>
-                {/* <TextMessage
+                <TextMessage
                     user={dummyUser2}
                     message="Perfect! Let me know if you need any clarification on the design specs. I've shared the Figma file: https://figma.com/file/abc123"
                     time="09:29 AM"
-                    name="msg-7"
-                /> */}
+                    name="msg-19"
+                />
                 <MessageReactions
                     reactions={dummyReactions1}
                     allUsers={dummyUsers}
@@ -895,7 +895,7 @@ export default function ChatStream() {
                 user={dummyUser3}
                 message="I'll share the mobile wireframes once they're ready for review"
                 time="09:30 AM"
-                name="msg-80"
+                name="msg-20"
             />
 
             <DateSeparator label="Yesterday" />
@@ -904,14 +904,14 @@ export default function ChatStream() {
                 user={dummyUser1}
                 message="Hello, everyone! ⭐ How's everyone doing today? I hope you're all having a fantastic day!"
                 time="07:20 PM"
-                name="msg-20"
+                name="msg-21"
             />
 
             <TextMessage
                 user={dummyUser2}
                 message="Doing great! Just finished reviewing the latest design mockups"
                 time="07:25 PM"
-                name="msg-21"
+                name="msg-22"
             />
 
             <div>
@@ -919,7 +919,7 @@ export default function ChatStream() {
                     user={dummyUser1}
                     message="That's awesome! Can't wait to see them"
                     time="07:27 PM"
-                    name="msg-22"
+                    name="msg-23"
                 />
                 <MessageReactions
                     reactions={dummyReactions2}
@@ -936,7 +936,7 @@ export default function ChatStream() {
                     images={dummyImages}
                     time="07:30 PM"
                     message="Check out these design mockups and screenshots I've been working on"
-                    name="msg-76"
+                    name="msg-24"
                 />
                 <MessageReactions
                     reactions={dummyReactionsImage}
@@ -951,21 +951,21 @@ export default function ChatStream() {
                 user={dummyUser1}
                 message="These look amazing! I especially love the dashboard design"
                 time="07:32 PM"
-                name="msg-24"
+                name="msg-25"
             />
 
             <TextMessage
                 user={dummyUser2}
                 message="Thanks! The dashboard was the most challenging part to get right"
                 time="07:33 PM"
-                name="msg-25"
+                name="msg-26"
             />
 
             <TextMessage
                 user={dummyUser1}
                 message="You nailed it! The user flow looks really intuitive"
                 time="07:35 PM"
-                name="msg-26"
+                name="msg-27"
             />
 
             <div>
@@ -977,7 +977,7 @@ export default function ChatStream() {
                     threadSummary="8 Messages View threads"
                     messageCount={8}
                     participants={dummyParticipants}
-                    name="msg-71"
+                    name="msg-28"
                 />
                 <MessageReactions
                     reactions={dummyReactions5}
@@ -992,49 +992,49 @@ export default function ChatStream() {
                 user={dummyUser1}
                 message="Sounds great! Looking forward to the discussion. I think we should focus on LinkedIn and Twitter first since our target audience is primarily B2B professionals. We could share industry insights, product updates, and behind-the-scenes content about our development process."
                 time="07:42 PM"
-                name="msg-27"
+                name="msg-29"
             />
 
             <TextMessage
                 user={dummyUser3}
                 message="I love the idea of behind-the-scenes content! We could showcase our design process, user research findings, and even some of the challenges we've overcome. It would make us more relatable and humanize our brand."
                 time="07:43 PM"
-                name="msg-28"
+                name="msg-30"
             />
 
             <TextMessage
                 user={dummyUser2}
                 message="Perfect! I'll prepare a strategy document for our next meeting. I'm thinking we should create a content calendar with themes for each day of the week - maybe Monday insights, Wednesday wireframes, Friday features. What do you think?"
                 time="07:45 PM"
-                name="msg-29"
+                name="msg-31"
             />
 
             <TextMessage
                 user={dummyUser1}
                 message="Should we also consider Instagram for visual content? I know it's more B2C focused, but we could use it to showcase our UI/UX work and attract design talent to our team."
                 time="07:47 PM"
-                name="msg-30"
+                name="msg-32"
             />
 
             <TextMessage
                 user={dummyUser2}
                 message="Definitely! Instagram would be perfect for showcasing our design work. We could post wireframes, prototypes, and even short videos of our design process. Plus, it's a great way to build our employer brand and attract top design talent."
                 time="07:48 PM"
-                name="msg-31"
+                name="msg-33"
             />
 
             <TextMessage
                 user={dummyUser4}
                 message="From a technical perspective, we should also consider YouTube for longer-form content. We could create tutorials, product demos, and even share our development process. It would help with SEO and establish us as thought leaders in the space."
                 time="07:50 PM"
-                name="msg-32"
+                name="msg-34"
             />
 
             <TextMessage
                 user={dummyUser5}
                 message="Great points everyone! I'd also suggest we create a content approval workflow to ensure all posts align with our brand guidelines and security policies. We should probably set up some automated tools for scheduling and analytics tracking too."
                 time="07:52 PM"
-                name="msg-33"
+                name="msg-35"
             />
 
             <DateSeparator label="Today" />
@@ -1046,7 +1046,7 @@ export default function ChatStream() {
                 user={dummyUser2}
                 message="Welcome, @Alfonso Vaccarol! We're glad to have you join us"
                 time="10:09 AM"
-                name="msg-34"
+                name="msg-36"
             />
 
             <div>
@@ -1054,7 +1054,7 @@ export default function ChatStream() {
                     user={dummyUser1}
                     message="Morning team! Quick question - what's your favorite programming language for building scalable web applications? I found this comparison: https://stackoverflow.com/questions/2348046"
                     time="10:15 AM"
-                    name="msg-3             5"
+                    name="msg-35"
                 />
                 <MessageReactions
                     reactions={dummyReactions1}
@@ -1070,7 +1070,7 @@ export default function ChatStream() {
                 poll={dummyPoll2}
                 currentUserVotes={dummyCurrentUserVotes2}
                 time="10:16 AM"
-                name="msg-72"
+                name="msg-37"
             />
 
             <div>
@@ -1078,7 +1078,7 @@ export default function ChatStream() {
                     user={dummyUser2}
                     message="TypeScript all the way! The type safety is a game changer"
                     time="10:20 AM"
-                    name="msg-36"
+                    name="msg-38"
                 />
                 <MessageReactions
                     reactions={dummyReactions2}
@@ -1094,7 +1094,7 @@ export default function ChatStream() {
                 message="I've been using TypeScript for the mobile app too - it's been a lifesaver for catching bugs early!"
                 time="10:21 AM"
                 repliedTo={{ user: dummyUser2, message: "TypeScript all the way! The type safety is a game changer" }}
-                name="msg-73"
+                name="msg-39"
             />
 
             <div>
@@ -1102,7 +1102,7 @@ export default function ChatStream() {
                     user={dummyUser1}
                     message="Agreed! The refactoring experience is so much better with TypeScript"
                     time="10:22 AM"
-                    name="msg-37"
+                    name="msg-40"
                 />
                 <MessageReactions
                     reactions={dummyReactions4}
@@ -1117,7 +1117,7 @@ export default function ChatStream() {
                 user={dummyUser2}
                 message="Exactly! And the IDE support is incredible"
                 time="10:23 AM"
-                name="msg-38"
+                name="msg-41"
             />
 
             <ReplyMessage
@@ -1125,7 +1125,7 @@ export default function ChatStream() {
                 message="The autocomplete and refactoring tools are amazing. Saves so much time!"
                 time="10:24 AM"
                 repliedTo={{ user: dummyUser2, message: "Exactly! And the IDE support is incredible" }}
-                name="msg-39"
+                name="msg-42"
             />
 
             <ThreadMessage
@@ -1136,42 +1136,42 @@ export default function ChatStream() {
                 threadSummary="6 Messages View threads"
                 messageCount={6}
                 participants={dummyParticipants}
-                name="msg-74"
+                name="msg-43"
             />
 
             <TextMessage
                 user={dummyUser5}
                 message="Great point Mike! I've been researching this too. WebSockets would definitely be better for real-time features, but we need to consider the security implications. We should implement proper authentication and rate limiting to prevent abuse. Also, what about fallback mechanisms if WebSocket connections fail?"
                 time="10:27 AM"
-                name="msg-40"
+                name="msg-44"
             />
 
             <TextMessage
                 user={dummyUser2}
                 message="From a frontend perspective, I'm concerned about browser compatibility and connection stability. We should probably implement a hybrid approach - WebSockets for real-time features but keep REST APIs as fallback. This way we maintain functionality even if WebSocket connections drop."
                 time="10:29 AM"
-                name="msg-41"
+                name="msg-45"
             />
 
             <TextMessage
                 user={dummyUser3}
                 message="I agree with Brandon's hybrid approach. For mobile apps, we'll need to handle connection state changes and reconnection logic. We should also consider using a library like Socket.io that handles these edge cases automatically. What do you think about the database design for real-time collaboration?"
                 time="10:31 AM"
-                name="msg-42"
+                name="msg-46"
             />
 
             <TextMessage
                 user={dummyUser4}
                 message="Excellent points everyone! For the database, I'm thinking we need to implement operational transformation or conflict-free replicated data types (CRDTs) to handle concurrent edits. We could use PostgreSQL with its JSONB support for storing the document state. Alfonso, what's your take on the security architecture?"
                 time="10:33 AM"
-                name="msg-43"
+                name="msg-47"
             />
 
             <TextMessage
                 user={dummyUser5}
                 message="Perfect! For security, I recommend implementing JWT tokens for WebSocket authentication, with automatic token refresh. We should also add connection pooling and implement proper session management. I'll create a security audit checklist and we can review it together next week."
                 time="10:35 AM"
-                name="msg-44"
+                name="msg-48"
             />
 
             <div>
@@ -1179,7 +1179,7 @@ export default function ChatStream() {
                     user={dummyUser1}
                     message="Now, let's talk lunch - what's everyone feeling?"
                     time="11:30 AM"
-                    name="msg-45"
+                    name="msg-49"
                 />
                 <MessageReactions
                     reactions={dummyReactions3}
@@ -1195,7 +1195,7 @@ export default function ChatStream() {
                 poll={dummyPoll3}
                 currentUserVotes={dummyCurrentUserVotes3}
                 time="11:31 AM"
-                name="msg-75"
+                name="msg-50"
             />
 
             <div>
@@ -1203,7 +1203,7 @@ export default function ChatStream() {
                     user={dummyUser2}
                     message="I'm craving pizza!"
                     time="11:32 AM"
-                    name="msg-47"
+                    name="msg-51"
                 />
                 <MessageReactions
                     reactions={dummyReactions4}
@@ -1219,21 +1219,21 @@ export default function ChatStream() {
                 message="Pizza sounds amazing! I'm in for that"
                 time="11:32 AM"
                 repliedTo={{ user: dummyUser2, message: "I'm craving pizza!" }}
-                name="msg-48"
+                name="msg-52"
             />
 
             <TextMessage
                 user={dummyUser1}
                 message="Pizza sounds perfect! Should we order from that new place downtown?"
                 time="11:33 AM"
-                name="msg-49"
+                name="msg-53"
             />
 
             <TextMessage
                 user={dummyUser2}
                 message="Yes! Their margherita is amazing"
                 time="11:34 AM"
-                name="msg-50"
+                name="msg-54"
             />
 
             <ReplyMessage
@@ -1241,7 +1241,7 @@ export default function ChatStream() {
                 message="I've heard great things about their wood-fired oven too!"
                 time="11:35 AM"
                 repliedTo={{ user: dummyUser2, message: "Yes! Their margherita is amazing" }}
-                name="msg-51"
+                name="msg-55"
             />
 
             <ImageMessage
@@ -1249,21 +1249,21 @@ export default function ChatStream() {
                 images={dummySingleImage}
                 time="11:35 AM"
                 message="Here's the product shot we discussed in the meeting"
-                name="msg-52"
+                name="msg-56"
             />
 
             <TextMessage
                 user={dummyUser2}
                 message="That looks perfect! Can you share the before and after comparison?"
                 time="11:37 AM"
-                name="msg-53"
+                name="msg-57"
             />
 
             <TextMessage
                 user={dummyUser1}
                 message="Sure! Let me dig that up for you"
                 time="11:38 AM"
-                name="msg-54"
+                name="msg-58"
             />
 
             <ImageMessage
@@ -1271,14 +1271,14 @@ export default function ChatStream() {
                 images={dummyTwoImages}
                 time="11:40 AM"
                 message="Here's the before and after comparison you asked for"
-                name="msg-55"
+                name="msg-59"
             />
 
             <TextMessage
                 user={dummyUser1}
                 message="Incredible improvement! The new design is much cleaner"
                 time="11:42 AM"
-                name="msg-56"
+                name="msg-60"
             />
 
             <ReplyMessage
@@ -1286,14 +1286,14 @@ export default function ChatStream() {
                 message="The color scheme is much more modern too!"
                 time="11:42 AM"
                 repliedTo={{ user: dummyUser1, message: "Incredible improvement! The new design is much cleaner" }}
-                name="msg-57"
+                name="msg-61"
             />
 
             <TextMessage
                 user={dummyUser2}
                 message="Thanks! The user feedback really helped guide the redesign"
                 time="11:43 AM"
-                name="msg-58"
+                name="msg-62"
             />
 
             <ReplyMessage
@@ -1301,7 +1301,7 @@ export default function ChatStream() {
                 message="The user research sessions were really valuable for this"
                 time="11:44 AM"
                 repliedTo={{ user: dummyUser2, message: "Thanks! The user feedback really helped guide the redesign" }}
-                name="msg-59"
+                name="msg-63"
             />
 
             <ThreadMessage
@@ -1312,49 +1312,49 @@ export default function ChatStream() {
                 threadSummary="7 Messages View threads"
                 messageCount={7}
                 participants={dummyParticipants}
-                name="msg-60"
+                name="msg-64"
             />
 
             <TextMessage
                 user={dummyUser2}
                 message="That's a really important insight Sarah! 8 minutes is definitely too long for onboarding. I've been looking at some successful apps and they typically get users to their first 'aha moment' within 2-3 minutes. We should probably implement a progressive disclosure approach - show only what's essential upfront."
                 time="11:47 AM"
-                name="msg-61"
+                name="msg-65"
             />
 
             <TextMessage
                 user={dummyUser1}
                 message="I completely agree! We should also consider implementing a 'skip tutorial' option for power users who might be migrating from other platforms. What about the user feedback on the navigation? Are they finding it intuitive?"
                 time="11:49 AM"
-                name="msg-62"
+                name="msg-66"
             />
 
             <TextMessage
                 user={dummyUser3}
                 message="Great question! The navigation feedback is mixed. Users love the bottom tab bar for main sections, but they're getting lost when trying to access secondary features. I think we need to implement a more discoverable menu system, maybe with contextual help or tooltips for new users."
                 time="11:51 AM"
-                name="msg-63"
+                name="msg-67"
             />
 
             <TextMessage
                 user={dummyUser4}
                 message="From a technical perspective, we could implement analytics tracking to see exactly where users are dropping off in the onboarding flow. We could use tools like Mixpanel or Amplitude to create funnels and identify the specific pain points. This would give us data-driven insights to guide our redesign."
                 time="11:53 AM"
-                name="msg-64"
+                name="msg-68"
             />
 
             <TextMessage
                 user={dummyUser5}
                 message="Good idea Mike! We should also consider accessibility in our redesign. I've been reading about WCAG guidelines for mobile apps, and we need to ensure our onboarding flow works well with screen readers and other assistive technologies. This could actually help us simplify the flow too."
                 time="11:55 AM"
-                name="msg-65"
+                name="msg-69"
             />
 
             <TextMessage
                 user={dummyUser3}
                 message="Excellent points everyone! I think we should create a cross-functional working group to tackle this. We need input from design, engineering, and product. Let me schedule a workshop next week where we can map out the user journey and identify opportunities for improvement. Should we also consider A/B testing different onboarding approaches?"
                 time="11:57 AM"
-                name="msg-66"
+                name="msg-70"
             />
 
             <ImageMessage
@@ -1362,21 +1362,21 @@ export default function ChatStream() {
                 images={dummyThreeImages}
                 time="11:45 AM"
                 message="UI design progress - wireframes and prototype for the mobile app"
-                name="msg-77"
+                name="msg-71"
             />
 
             <TextMessage
                 user={dummyUser2}
                 message="Love the wireframes! The user flow looks intuitive"
                 time="11:47 AM"
-                name="msg-67"
+                name="msg-72"
             />
 
             <TextMessage
                 user={dummyUser1}
                 message="Thanks! I spent a lot of time on the user journey mapping"
                 time="11:48 AM"
-                name="msg-100"
+                name="msg-73"
             />
 
             <ImageMessage
@@ -1384,21 +1384,21 @@ export default function ChatStream() {
                 images={dummySixImages}
                 time="11:50 AM"
                 message="Q4 analytics and reports - we're seeing great growth!"
-                name="msg-78"
+                name="msg-74"
             />
 
             <TextMessage
                 user={dummyUser1}
                 message="Excellent numbers! Let me share the complete project documentation"
                 time="11:52 AM"
-                name="msg-81"
+                name="msg-75"
             />
 
             <TextMessage
                 user={dummyUser2}
                 message="The growth metrics are really impressive this quarter"
                 time="11:53 AM"
-                name="msg-82"
+                name="msg-76"
             />
 
             <ImageMessage
@@ -1406,21 +1406,21 @@ export default function ChatStream() {
                 images={dummyTenImages}
                 time="11:55 AM"
                 message="Complete project documentation and assets for all platforms"
-                name="msg-79"
+                name="msg-77"
             />
 
             <TextMessage
                 user={dummyUser2}
                 message="Perfect! Now let's share the financial reports"
                 time="12:00 PM"
-                name="msg-83"
+                name="msg-78"
             />
 
             <TextMessage
                 user={dummyUser1}
                 message="I'll upload the Q4 financial report now"
                 time="12:01 PM"
-                name="msg-84"
+                name="msg-79"
             />
 
             <ReplyMessage
@@ -1428,14 +1428,14 @@ export default function ChatStream() {
                 message="Great! I've been waiting to see the Q4 numbers"
                 time="12:01 PM"
                 repliedTo={{ user: dummyUser1, message: "I'll upload the Q4 financial report now" }}
-                name="msg-85"
+                name="msg-80"
             />
 
             <TextMessage
                 user={dummyUser4}
                 message="Same here! The Q3 report was really promising"
                 time="12:02 PM"
-                name="msg-86"
+                name="msg-81"
             />
 
             <ReplyMessage
@@ -1443,7 +1443,7 @@ export default function ChatStream() {
                 message="The growth metrics from Q3 were impressive. Looking forward to Q4!"
                 time="12:03 PM"
                 repliedTo={{ user: dummyUser4, message: "Same here! The Q3 report was really promising" }}
-                name="msg-87"
+                name="msg-82"
             />
 
             {/* Single File */}
@@ -1462,7 +1462,7 @@ export default function ChatStream() {
                 user={dummyUser2}
                 message="Thanks! I'll also share the updated project proposal and sales data"
                 time="12:03 PM"
-                name="msg-88"
+                name="msg-83"
             />
 
             <ReplyMessage
@@ -1470,7 +1470,7 @@ export default function ChatStream() {
                 message="Perfect! I've been waiting to see the updated proposal"
                 time="12:04 PM"
                 repliedTo={{ user: dummyUser2, message: "Thanks! I'll also share the updated project proposal and sales data" }}
-                name="msg-101"
+                name="msg-84"
             />
 
             {/* Two Files - 2x1 Grid */}
@@ -1496,14 +1496,14 @@ export default function ChatStream() {
                 user={dummyUser1}
                 message="Great work! I have the presentation and meeting recording to share"
                 time="12:08 PM"
-                name="msg-102"
+                name="msg-85"
             />
 
             <TextMessage
                 user={dummyUser2}
                 message="Looking forward to seeing the presentation!"
                 time="12:09 PM"
-                name="msg-103"
+                name="msg-86"
             />
 
             <ReplyMessage
@@ -1511,7 +1511,7 @@ export default function ChatStream() {
                 message="The demo recording will be really helpful for the client meeting"
                 time="12:10 PM"
                 repliedTo={{ user: dummyUser2, message: "Looking forward to seeing the presentation!" }}
-                name="msg-104"
+                name="msg-87"
             />
 
             {/* Three Files - 3x1 Grid */}
@@ -1542,14 +1542,14 @@ export default function ChatStream() {
                 user={dummyUser2}
                 message="Perfect! Let me add the technical documentation and project assets"
                 time="12:12 PM"
-                name="msg-105"
+                name="msg-88"
             />
 
             <TextMessage
                 user={dummyUser1}
                 message="That will complete our project documentation nicely"
                 time="12:13 PM"
-                name="msg-106"
+                name="msg-89"
             />
 
             {/* Four Files - 3x2 Grid */}
@@ -1586,7 +1586,7 @@ export default function ChatStream() {
                     user={dummyUser1}
                     message="Excellent! We have everything we need. Great work everyone!"
                     time="12:18 PM"
-                    name="msg-107"
+                    name="msg-90"
                 />
                 <MessageReactions
                     reactions={dummyReactions5}
@@ -1601,56 +1601,56 @@ export default function ChatStream() {
                 user={dummyUser3}
                 message="Absolutely! This has been super productive"
                 time="12:19 PM"
-                name="msg-89"
+                name="msg-91"
             />
 
             <TextMessage
                 user={dummyUser4}
                 message="Couldn't agree more! The team is really hitting its stride"
                 time="12:19 PM"
-                name="msg-90"
+                name="msg-92"
             />
 
             <TextMessage
                 user={dummyUser2}
                 message="This has been a productive morning! Should we schedule a review meeting?"
                 time="12:20 PM"
-                name="msg-91"
+                name="msg-93"
             />
 
             <TextMessage
                 user={dummyUser1}
                 message="Absolutely! How about tomorrow at 2 PM?"
                 time="12:21 PM"
-                name="msg-92"
+                name="msg-94"
             />
 
             <TextMessage
                 user={dummyUser2}
                 message="Perfect! I'll send out the calendar invite"
                 time="12:22 PM"
-                name="msg-93"
+                name="msg-95"
             />
 
             <TextMessage
                 user={dummyUser1}
                 message="Quick reminder: Don't forget about the client demo tomorrow at 10 AM! Here's the meeting link: https://meet.google.com/abc-defg-hij"
                 time="14:35 PM"
-                name="msg-6"
+                name="msg-96"
             />
 
             <TextMessage
                 user={dummyUser2}
                 message="Thanks for the reminder! I'll make sure everything is ready"
                 time="14:36 PM"
-                name="msg-94"
+                name="msg-97"
             />
 
             <TextMessage
                 user={dummyUser1}
                 message="Great! Let's make sure we have all the demo materials prepared"
                 time="14:37 PM"
-                name="msg-95"
+                name="msg-98"
             />
         </div>
     )
