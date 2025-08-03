@@ -1,9 +1,9 @@
 import { ScrollArea } from '@components/ui/scroll-area'
 import { UserAvatar } from '@components/features/message/UserAvatar'
 import { UserFields } from '@raven/types/common/UserFields'
-import { FileIconComponent } from '@components/common/FileIcon/FileIcon'
 import { Download, Search } from 'lucide-react'
 import { useState } from 'react'
+import FileTypeIcon from '@components/common/FileIcons/FileTypeIcon'
 
 interface FileAttachment {
     name: string
@@ -187,7 +187,7 @@ const ChannelFiles = () => {
                                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200 rounded-md" />
                                         </div>
                                     ) : (
-                                        <FileIconComponent fileType={file.file_type} size="sm" />
+                                        <FileTypeIcon fileType={file.file_type} size="sm" />
                                     )}
                                 </div>
 
@@ -211,8 +211,6 @@ const ChannelFiles = () => {
                                 <UserAvatar
                                     user={file.owner}
                                     size="xs"
-                                    fontSize="xs"
-                                    radius="full"
                                     showStatusIndicator={false}
                                 />
                                 <span>{file.owner.full_name}</span>

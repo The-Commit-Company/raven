@@ -20,7 +20,7 @@ export default function ReplyMessage({
                     <span className="font-medium text-sm">{user?.full_name || user?.name || "User"}</span>
                     <span className="text-xs font-light text-muted-foreground/90">{time}</span>
                 </div>
-                <div className="border-l-2 border-gray-500 bg-muted/60 pl-3 py-1 pb-2">
+                <div className="border-l-2 border-gray-500 bg-muted/60 pl-3 pt-1 pb-2 my-1">
                     <span className="text-xs text-muted-foreground font-medium">
                         Replying to {repliedTo.user?.full_name || repliedTo.user?.name || "User"}
                     </span>

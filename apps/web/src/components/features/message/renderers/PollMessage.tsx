@@ -2,15 +2,19 @@ import React from "react"
 import type { PollMessage } from "@raven/types/common/Message"
 import type { RavenPoll } from "@raven/types/RavenMessaging/RavenPoll"
 import type { RavenPollOption } from "@raven/types/RavenMessaging/RavenPollOption"
+import { UserFields } from "@raven/types/common/UserFields"
+import { UserAvatar } from "../UserAvatar"
 import { CheckCircle } from "lucide-react"
 import { cn } from "@lib/utils"
 import { GroupedAvatars } from "@components/ui/grouped-avatars"
 
 export interface PollMessageProps {
+    user: UserFields
     poll: RavenPoll & {
         options: (RavenPollOption & { voters?: { id: string; name: string; image: string }[] })[]
     }
     currentUserVotes: Array<{ option: string }>
+    time: string
 }
 
 const PollOptionBar = ({
@@ -50,30 +54,40 @@ const PollOptionBar = ({
     )
 }
 
-const PollMessage: React.FC<PollMessageProps> = ({ poll, currentUserVotes }) => {
+const PollMessage: React.FC<PollMessageProps> = ({ user, poll, currentUserVotes, time }) => {
     return (
-        <div className="w-full max-w-md bg-white border border-border/60 rounded-lg p-4 shadow-xs">
-            {/* Poll Question */}
-            <div className="font-medium mb-2 text-sm w-full">{poll.question}</div>
-            {/* Poll Options */}
-            <div className="flex flex-col gap-1 mb-2 w-full">
-                {poll.options.map((option) => {
-                    const totalVotes = poll.total_votes
-                    const percentage = totalVotes > 0 ? ((option.votes || 0) / totalVotes) * 100 : 0
-                    const isCurrentUserVote = currentUserVotes.some((vote) => vote.option === option.name)
-                    return (
-                        <PollOptionBar
-                            key={option.name}
-                            option={option}
-                            percentage={percentage}
-                            isCurrentUserVote={isCurrentUserVote}
-                        />
-                    )
-                })}
-            </div>
-            {/* Total votes */}
-            <div className="flex items-center justify-start w-full">
-                <span className="text-xs text-muted-foreground/80">Total votes: {poll.total_votes}</span>
+        <div className="flex items-start gap-3">
+            <UserAvatar user={user} size="md" />
+            <div className="flex-1">
+                <div className="flex items-baseline gap-2">
+                    <span className="font-medium text-sm">{user?.full_name || user?.name || "User"}</span>
+                    <span className="text-xs font-light text-muted-foreground/90">{time}</span>
+                </div>
+
+                <div className="w-full max-w-md bg-white border border-border/60 rounded-lg p-4 shadow-xs mt-1">
+                    {/* Poll Question */}
+                    <div className="font-medium mb-2 text-sm w-full">{poll.question}</div>
+                    {/* Poll Options */}
+                    <div className="flex flex-col gap-1 mb-2 w-full">
+                        {poll.options.map((option) => {
+                            const totalVotes = poll.total_votes
+                            const percentage = totalVotes > 0 ? ((option.votes || 0) / totalVotes) * 100 : 0
+                            const isCurrentUserVote = currentUserVotes.some((vote) => vote.option === option.name)
+                            return (
+                                <PollOptionBar
+                                    key={option.name}
+                                    option={option}
+                                    percentage={percentage}
+                                    isCurrentUserVote={isCurrentUserVote}
+                                />
+                            )
+                        })}
+                    </div>
+                    {/* Total votes */}
+                    <div className="flex items-center justify-start w-full">
+                        <span className="text-xs text-muted-foreground/80">Total votes: {poll.total_votes}</span>
+                    </div>
+                </div>
             </div>
         </div>
     )

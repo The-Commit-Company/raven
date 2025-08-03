@@ -260,9 +260,7 @@ const SearchResultsFiles = () => {
                                                     name: file.uploadedBy,
                                                     type: 'User'
                                                 }}
-                                                size="sm"
-                                                radius="full"
-                                                fontSize="xs"
+                                                size="xs"
                                             />
                                             <span>{file.uploadedBy}</span>
                                             <span className="w-px h-3 bg-muted-foreground/40"></span>
