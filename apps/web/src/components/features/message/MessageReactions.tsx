@@ -173,7 +173,7 @@ export const MessageReactions = memo<MessageReactionsProps>(({
 
   return (
     <div
-      className={cn("flex flex-wrap gap-1 mt-1 ml-12", className)}
+      className={cn("flex flex-wrap gap-1 mt-1.5 ml-12", className)}
       role="group"
       aria-label="Message reactions"
     >
