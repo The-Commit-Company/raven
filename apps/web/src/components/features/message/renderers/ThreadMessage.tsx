@@ -10,6 +10,7 @@ export default function ThreadMessage({
     threadTitle,
     participants = [],
     messageCount = 3,
+    name,
 }: {
     user: UserFields
     message: string
@@ -18,11 +19,12 @@ export default function ThreadMessage({
     threadTitle: string
     participants?: UserFields[]
     messageCount?: number
+    name: string
 }) {
     const displayName = user?.full_name || user?.name || "User"
 
     return (
-        <div className="relative">
+        <div className="relative" data-message-id={name}>
             {/* Thread Header Section */}
             <ThreadHeader
                 displayName={displayName}

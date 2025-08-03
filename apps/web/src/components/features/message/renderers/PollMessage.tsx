@@ -15,6 +15,7 @@ export interface PollMessageProps {
     }
     currentUserVotes: Array<{ option: string }>
     time: string
+    name: string
 }
 
 const PollOptionBar = ({
@@ -54,9 +55,9 @@ const PollOptionBar = ({
     )
 }
 
-const PollMessage: React.FC<PollMessageProps> = ({ user, poll, currentUserVotes, time }) => {
+const PollMessage: React.FC<PollMessageProps> = ({ user, poll, currentUserVotes, time, name }) => {
     return (
-        <div className="flex items-start gap-3">
+        <div className="flex items-start gap-3" data-message-id={name}>
             <UserAvatar user={user} size="md" />
             <div className="flex-1">
                 <div className="flex items-baseline gap-2">

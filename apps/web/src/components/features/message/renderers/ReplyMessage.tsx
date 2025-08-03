@@ -6,14 +6,16 @@ export default function ReplyMessage({
     message,
     time,
     repliedTo,
+    name,
 }: {
     user: UserFields
     message: string
     time: string
     repliedTo: { user: UserFields; message: string }
+    name: string
 }) {
     return (
-        <div className="flex items-start gap-3">
+        <div className="flex items-start gap-3" data-message-id={name}>
             <UserAvatar user={user} size="md" />
             <div className="flex-1">
                 <div className="flex items-baseline gap-2">

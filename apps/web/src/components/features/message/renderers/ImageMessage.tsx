@@ -20,6 +20,7 @@ export interface ImageMessageProps {
     images: ImageFile[]
     time: string
     message?: string
+    name: string
 }
 
 const ImageCarousel = ({ images, onImageClick }: { images: ImageFile[], onImageClick: (image: ImageFile) => void }) => {
@@ -193,12 +194,13 @@ const ImageGrid = ({ images, onImageClick }: { images: ImageFile[], onImageClick
     )
 }
 
-const ImageMessage = ({ user, images, time, message }: ImageMessageProps) => {
+const ImageMessage = ({ user, images, time, message, name }: ImageMessageProps) => {
     const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
 
     const handleImageClick = (image: ImageFile) => {
         const index = images.findIndex(img => img.name === image.name)
         setSelectedImageIndex(index)
+        console.log("Image clicked in message:", name, "image:", image.name)
     }
 
     const closeModal = () => {
