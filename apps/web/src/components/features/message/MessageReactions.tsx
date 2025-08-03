@@ -9,7 +9,7 @@ import {
 import { ReactionObject } from '@raven/types/common/ChatStream';
 import { UserFields } from '@raven/types/common/UserFields';
 import { cn } from '@lib/utils';
-import { Plus } from 'lucide-react';
+import { SmilePlus } from 'lucide-react';
 
 interface MessageReactionsProps {
   reactions: ReactionObject[];
@@ -17,7 +17,6 @@ interface MessageReactionsProps {
   currentUserId?: string;
   onReactionClick?: (emoji: string, isCustom?: boolean, emojiName?: string) => void;
   onAddReaction?: () => void;
-  readOnly?: boolean; // NEW: For saved messages
   className?: string;
 }
 
@@ -27,7 +26,6 @@ interface ReactionButtonProps {
   allUsers: Record<string, UserFields>;
   currentUserId: string;
   onClick?: () => void;
-  readOnly?: boolean; // NEW: For read-only mode
 }
 
 const getUsers = (
@@ -54,8 +52,7 @@ const ReactionButton = memo<ReactionButtonProps>(({
   isUserReacted,
   allUsers,
   currentUserId,
-  onClick,
-  readOnly = false
+  onClick
 }) => {
   const { reaction: emoji, users, count, emoji_name } = reaction;
 
@@ -65,42 +62,34 @@ const ReactionButton = memo<ReactionButtonProps>(({
   }, [users, currentUserId, allUsers, emoji_name]);
 
   const handleClick = useCallback(() => {
-    if (!readOnly) {
-      onClick?.();
-    }
-  }, [onClick, readOnly]);
+    onClick?.();
+  }, [onClick]);
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
-    if (!readOnly && (event.key === 'Enter' || event.key === ' ')) {
+    if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       onClick?.();
     }
-  }, [onClick, readOnly]);
+  }, [onClick]);
 
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            variant={isUserReacted ? "default" : "outline"}
+            variant="ghost"
             size="sm"
             className={cn(
-              "h-7 px-2 py-1 text-xs gap-1 min-w-[3ch] font-semibold",
-              // Only add interactive styles if not read-only
-              !readOnly && "transition-all hover:scale-105 focus:ring-2 focus:ring-blue-500 cursor-pointer",
-              readOnly && "cursor-default",
+              "h-7 px-2 py-1 text-xs gap-1 min-w-0 font-normal transition-all hover:scale-105 cursor-pointer rounded-md border",
               isUserReacted
-                ? "bg-blue-50 border-blue-500 text-blue-800 dark:bg-blue-900 dark:border-blue-700 dark:text-blue-100"
-                : "bg-gray-100 border-gray-300 dark:bg-gray-700 dark:border-gray-600",
-              // Remove hover effects in read-only mode
-              !readOnly && !isUserReacted && "hover:bg-gray-200 hover:border-gray-400 dark:hover:bg-gray-600"
+                ? "bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 border-blue-300 dark:border-blue-600"
+                : "bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 border-gray-200 dark:border-gray-600"
             )}
             onClick={handleClick}
             onKeyDown={handleKeyDown}
-            aria-label={readOnly ? tooltipContent : `${isUserReacted ? 'Remove' : 'Add'} reaction ${emoji_name}. ${tooltipContent}`}
-            aria-pressed={!readOnly ? isUserReacted : undefined}
-            role={readOnly ? "img" : "button"}
-            disabled={readOnly}
+            aria-label={`${isUserReacted ? 'Remove' : 'Add'} reaction ${emoji_name}. ${tooltipContent}`}
+            aria-pressed={isUserReacted}
+            role="button"
           >
             {reaction.is_custom ? (
               <img
@@ -115,7 +104,7 @@ const ReactionButton = memo<ReactionButtonProps>(({
                 {emoji}
               </span>
             )}
-            <span className="tabular-nums" aria-hidden="true">{count}</span>
+            <span className="tabular-nums text-xs text-gray-700 dark:text-gray-300" aria-hidden="true">{count}</span>
           </Button>
         </TooltipTrigger>
         <TooltipContent>
@@ -148,14 +137,14 @@ const AddReactionButton = memo<{
     <Button
       variant="ghost"
       size="sm"
-      className="h-7 w-8 px-0 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 focus:ring-2 focus:ring-blue-500"
+      className="h-7 w-7 p-0 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all hover:scale-105 rounded-md border border-gray-200 dark:border-gray-600"
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       disabled={disabled}
       aria-label="Add reaction"
       role="button"
     >
-      <Plus size={15} aria-hidden="true" />
+      <SmilePlus size={14} aria-hidden="true" />
     </Button>
   );
 });
@@ -168,7 +157,6 @@ export const MessageReactions = memo<MessageReactionsProps>(({
   currentUserId = '',
   onReactionClick,
   onAddReaction,
-  readOnly = false,
   className
 }) => {
   const handleReactionClick = useCallback((
@@ -176,18 +164,16 @@ export const MessageReactions = memo<MessageReactionsProps>(({
     isCustom?: boolean,
     emojiName?: string
   ) => {
-    if (!readOnly) {
-      onReactionClick?.(emoji, isCustom, emojiName);
-    }
-  }, [onReactionClick, readOnly]);
+    onReactionClick?.(emoji, isCustom, emojiName);
+  }, [onReactionClick]);
 
-  if (reactions.length === 0 && (readOnly || !onAddReaction)) {
+  if (reactions.length === 0 && !onAddReaction) {
     return null;
   }
 
   return (
     <div
-      className={cn("flex flex-wrap gap-1 mt-2", className)}
+      className={cn("flex flex-wrap gap-1 mt-1 ml-12", className)}
       role="group"
       aria-label="Message reactions"
     >
@@ -202,12 +188,11 @@ export const MessageReactions = memo<MessageReactionsProps>(({
             allUsers={allUsers}
             currentUserId={currentUserId}
             onClick={() => handleReactionClick(reaction.reaction, reaction.is_custom, reaction.emoji_name)}
-            readOnly={readOnly}
           />
         );
       })}
 
-      {!readOnly && onAddReaction && (
+      {onAddReaction && (
         <AddReactionButton
           onAddReaction={onAddReaction}
           disabled={!currentUserId}

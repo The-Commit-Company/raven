@@ -6,6 +6,9 @@ import SystemMessage from "./renderers/SystemMessage"
 import ReplyMessage from "./renderers/ReplyMessage"
 import ImageMessage from "./renderers/ImageMessage"
 import FileMessageRenderer from "./renderers/FileMessage"
+import { MessageReactions } from "./MessageReactions"
+import { ReactionObject } from "@raven/types/common/ChatStream"
+import { UserFields } from "@raven/types/common/UserFields"
 
 
 const dummyUser1 = {
@@ -531,7 +534,190 @@ const dummySingleImage = [
     }
 ]
 
+// Dummy users for reactions
+const dummyUsers: Record<string, UserFields> = {
+    "user1": {
+        name: "Desirae Lipshutz",
+        full_name: "Desirae Lipshutz",
+        user_image: "https://randomuser.me/api/portraits/women/44.jpg",
+        first_name: "Desirae",
+        enabled: 1,
+        type: "User",
+        availability_status: "Available",
+        custom_status: undefined
+    },
+    "user2": {
+        name: "Brandon Franci",
+        full_name: "Brandon Franci",
+        user_image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+        first_name: "Brandon",
+        enabled: 1,
+        type: "User",
+        availability_status: "Available",
+        custom_status: undefined
+    },
+    "user3": {
+        name: "Sarah Chen",
+        full_name: "Sarah Chen",
+        user_image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+        first_name: "Sarah",
+        enabled: 1,
+        type: "User",
+        availability_status: "Available",
+        custom_status: undefined
+    },
+    "user4": {
+        name: "Mike Rodriguez",
+        full_name: "Mike Rodriguez",
+        user_image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+        first_name: "Mike",
+        enabled: 1,
+        type: "User",
+        availability_status: "Available",
+        custom_status: undefined
+    },
+    "user5": {
+        name: "Alfonso Vaccarol",
+        full_name: "Alfonso Vaccarol",
+        user_image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
+        first_name: "Alfonso",
+        enabled: 1,
+        type: "User",
+        availability_status: "Available",
+        custom_status: undefined
+    }
+}
+
+// Dummy reactions
+const dummyReactions1: ReactionObject[] = [
+    {
+        reaction: "🎉",
+        users: ["user1", "user2", "user3"],
+        count: 3,
+        is_custom: false,
+        emoji_name: "party_popper"
+    },
+    {
+        reaction: "🔥",
+        users: ["user2", "user4"],
+        count: 2,
+        is_custom: false,
+        emoji_name: "fire"
+    },
+    {
+        reaction: "😎",
+        users: ["user5"],
+        count: 1,
+        is_custom: false,
+        emoji_name: "smiling_face_with_sunglasses"
+    },
+    {
+        reaction: "❤️",
+        users: ["user1"],
+        count: 1,
+        is_custom: false,
+        emoji_name: "heart"
+    }
+]
+
+const dummyReactions2: ReactionObject[] = [
+    {
+        reaction: "👏",
+        users: ["user1", "user2", "user3", "user4"],
+        count: 4,
+        is_custom: false,
+        emoji_name: "clapping_hands"
+    },
+    {
+        reaction: "🔥",
+        users: ["user2", "user5"],
+        count: 2,
+        is_custom: false,
+        emoji_name: "fire"
+    }
+]
+
+const dummyReactions3: ReactionObject[] = [
+    {
+        reaction: "😍",
+        users: ["user1", "user3"],
+        count: 2,
+        is_custom: false,
+        emoji_name: "heart_eyes"
+    },
+    {
+        reaction: "💯",
+        users: ["user2"],
+        count: 1,
+        is_custom: false,
+        emoji_name: "hundred_points"
+    }
+]
+
+const dummyReactions4: ReactionObject[] = [
+    {
+        reaction: "🚀",
+        users: ["user1", "user2", "user3", "user4", "user5"],
+        count: 5,
+        is_custom: false,
+        emoji_name: "rocket"
+    }
+]
+
+const dummyReactions5: ReactionObject[] = [
+    {
+        reaction: "✅",
+        users: ["user1", "user2"],
+        count: 2,
+        is_custom: false,
+        emoji_name: "check_mark"
+    },
+    {
+        reaction: "📈",
+        users: ["user3", "user4"],
+        count: 2,
+        is_custom: false,
+        emoji_name: "chart_increasing"
+    }
+]
+
+
+
+const dummyReactionsImage: ReactionObject[] = [
+    {
+        reaction: "😍",
+        users: ["user1", "user2", "user3"],
+        count: 3,
+        is_custom: false,
+        emoji_name: "heart_eyes"
+    },
+    {
+        reaction: "🔥",
+        users: ["user4"],
+        count: 1,
+        is_custom: false,
+        emoji_name: "fire"
+    },
+    {
+        reaction: "👏",
+        users: ["user5"],
+        count: 1,
+        is_custom: false,
+        emoji_name: "clapping_hands"
+    }
+]
+
 export default function ChatStream() {
+    const currentUserId = "user1" // Current user ID for reactions
+
+    const handleReactionClick = (emoji: string, isCustom?: boolean, emojiName?: string) => {
+        console.log("Reaction clicked:", { emoji, isCustom, emojiName })
+    }
+
+    const handleAddReaction = () => {
+        console.log("Add reaction clicked")
+    }
+
     return (
         <div className="flex flex-col p-4 h-full overflow-y-auto space-y-4">
 
@@ -669,11 +855,20 @@ export default function ChatStream() {
                 time="09:28 AM"
             />
 
-            <TextMessage
-                user={dummyUser2}
-                message="Perfect! Let me know if you need any clarification on the design specs"
-                time="09:29 AM"
-            />
+            <div>
+                <TextMessage
+                    user={dummyUser2}
+                    message="Perfect! Let me know if you need any clarification on the design specs"
+                    time="09:29 AM"
+                />
+                <MessageReactions
+                    reactions={dummyReactions1}
+                    allUsers={dummyUsers}
+                    currentUserId={currentUserId}
+                    onReactionClick={handleReactionClick}
+                    onAddReaction={handleAddReaction}
+                />
+            </div>
 
             <TextMessage
                 user={dummyUser3}
@@ -695,18 +890,36 @@ export default function ChatStream() {
                 time="07:25 PM"
             />
 
-            <TextMessage
-                user={dummyUser1}
-                message="That's awesome! Can't wait to see them"
-                time="07:27 PM"
-            />
+            <div>
+                <TextMessage
+                    user={dummyUser1}
+                    message="That's awesome! Can't wait to see them"
+                    time="07:27 PM"
+                />
+                <MessageReactions
+                    reactions={dummyReactions2}
+                    allUsers={dummyUsers}
+                    currentUserId={currentUserId}
+                    onReactionClick={handleReactionClick}
+                    onAddReaction={handleAddReaction}
+                />
+            </div>
 
-            <ImageMessage
-                user={dummyUser2}
-                images={dummyImages}
-                time="07:30 PM"
-                message="Check out these design mockups and screenshots I've been working on"
-            />
+            <div>
+                <ImageMessage
+                    user={dummyUser2}
+                    images={dummyImages}
+                    time="07:30 PM"
+                    message="Check out these design mockups and screenshots I've been working on"
+                />
+                <MessageReactions
+                    reactions={dummyReactionsImage}
+                    allUsers={dummyUsers}
+                    currentUserId={currentUserId}
+                    onReactionClick={handleReactionClick}
+                    onAddReaction={handleAddReaction}
+                />
+            </div>
 
             <TextMessage
                 user={dummyUser1}
@@ -726,15 +939,24 @@ export default function ChatStream() {
                 time="07:35 PM"
             />
 
-            <ThreadMessage
-                user={dummyUser2}
-                message="Hi, everyone! I'd like to start this thread to discuss social media marketing strategies for our new product launch. We need to plan our approach across different platforms and create a cohesive brand presence. I've been researching our competitors and noticed they're doing really well on LinkedIn with thought leadership content."
-                time="07:40 PM"
-                threadTitle="Social Media Marketing Strategies"
-                threadSummary="8 Messages View threads"
-                messageCount={8}
-                participants={dummyParticipants}
-            />
+            <div>
+                <ThreadMessage
+                    user={dummyUser2}
+                    message="Hi, everyone! I'd like to start this thread to discuss social media marketing strategies for our new product launch. We need to plan our approach across different platforms and create a cohesive brand presence. I've been researching our competitors and noticed they're doing really well on LinkedIn with thought leadership content."
+                    time="07:40 PM"
+                    threadTitle="Social Media Marketing Strategies"
+                    threadSummary="8 Messages View threads"
+                    messageCount={8}
+                    participants={dummyParticipants}
+                />
+                <MessageReactions
+                    reactions={dummyReactions5}
+                    allUsers={dummyUsers}
+                    currentUserId={currentUserId}
+                    onReactionClick={handleReactionClick}
+                    onAddReaction={handleAddReaction}
+                />
+            </div>
 
             <TextMessage
                 user={dummyUser1}
@@ -789,11 +1011,20 @@ export default function ChatStream() {
                 time="10:09 AM"
             />
 
-            <TextMessage
-                user={dummyUser1}
-                message="Morning team! Quick question - what's your favorite programming language for building scalable web applications?"
-                time="10:15 AM"
-            />
+            <div>
+                <TextMessage
+                    user={dummyUser1}
+                    message="Morning team! Quick question - what's your favorite programming language for building scalable web applications?"
+                    time="10:15 AM"
+                />
+                <MessageReactions
+                    reactions={dummyReactions1}
+                    allUsers={dummyUsers}
+                    currentUserId={currentUserId}
+                    onReactionClick={handleReactionClick}
+                    onAddReaction={handleAddReaction}
+                />
+            </div>
 
             <PollMessage
                 user={dummyUser1}
@@ -802,11 +1033,20 @@ export default function ChatStream() {
                 time="10:16 AM"
             />
 
-            <TextMessage
-                user={dummyUser2}
-                message="TypeScript all the way! The type safety is a game changer"
-                time="10:20 AM"
-            />
+            <div>
+                <TextMessage
+                    user={dummyUser2}
+                    message="TypeScript all the way! The type safety is a game changer"
+                    time="10:20 AM"
+                />
+                <MessageReactions
+                    reactions={dummyReactions2}
+                    allUsers={dummyUsers}
+                    currentUserId={currentUserId}
+                    onReactionClick={handleReactionClick}
+                    onAddReaction={handleAddReaction}
+                />
+            </div>
 
             <ReplyMessage
                 user={dummyUser3}
@@ -815,11 +1055,20 @@ export default function ChatStream() {
                 repliedTo={{ user: dummyUser2, message: "TypeScript all the way! The type safety is a game changer" }}
             />
 
-            <TextMessage
-                user={dummyUser1}
-                message="Agreed! The refactoring experience is so much better with TypeScript"
-                time="10:22 AM"
-            />
+            <div>
+                <TextMessage
+                    user={dummyUser1}
+                    message="Agreed! The refactoring experience is so much better with TypeScript"
+                    time="10:22 AM"
+                />
+                <MessageReactions
+                    reactions={dummyReactions4}
+                    allUsers={dummyUsers}
+                    currentUserId={currentUserId}
+                    onReactionClick={handleReactionClick}
+                    onAddReaction={handleAddReaction}
+                />
+            </div>
 
             <TextMessage
                 user={dummyUser2}
@@ -874,11 +1123,20 @@ export default function ChatStream() {
                 time="10:35 AM"
             />
 
-            <TextMessage
-                user={dummyUser1}
-                message="Now, let's talk lunch - what's everyone feeling?"
-                time="11:30 AM"
-            />
+            <div>
+                <TextMessage
+                    user={dummyUser1}
+                    message="Now, let's talk lunch - what's everyone feeling?"
+                    time="11:30 AM"
+                />
+                <MessageReactions
+                    reactions={dummyReactions3}
+                    allUsers={dummyUsers}
+                    currentUserId={currentUserId}
+                    onReactionClick={handleReactionClick}
+                    onAddReaction={handleAddReaction}
+                />
+            </div>
 
             <PollMessage
                 user={dummyUser1}
@@ -887,11 +1145,20 @@ export default function ChatStream() {
                 time="11:31 AM"
             />
 
-            <TextMessage
-                user={dummyUser2}
-                message="I'm craving pizza!"
-                time="11:32 AM"
-            />
+            <div>
+                <TextMessage
+                    user={dummyUser2}
+                    message="I'm craving pizza!"
+                    time="11:32 AM"
+                />
+                <MessageReactions
+                    reactions={dummyReactions4}
+                    allUsers={dummyUsers}
+                    currentUserId={currentUserId}
+                    onReactionClick={handleReactionClick}
+                    onAddReaction={handleAddReaction}
+                />
+            </div>
 
             <ReplyMessage
                 user={dummyUser3}
@@ -1222,11 +1489,20 @@ export default function ChatStream() {
                 message="All project files and documentation for the team"
             />
 
-            <TextMessage
-                user={dummyUser1}
-                message="Excellent! We have everything we need. Great work everyone!"
-                time="12:18 PM"
-            />
+            <div>
+                <TextMessage
+                    user={dummyUser1}
+                    message="Excellent! We have everything we need. Great work everyone!"
+                    time="12:18 PM"
+                />
+                <MessageReactions
+                    reactions={dummyReactions5}
+                    allUsers={dummyUsers}
+                    currentUserId={currentUserId}
+                    onReactionClick={handleReactionClick}
+                    onAddReaction={handleAddReaction}
+                />
+            </div>
 
             <TextMessage
                 user={dummyUser3}
