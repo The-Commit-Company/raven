@@ -30,6 +30,7 @@ def create_raven_tools(bot) -> list[FunctionTool]:
 
 				# Check if function has a valid path for execution
 				function_path = None
+				extra_args = {}
 
 				# For Custom Function, use the function_path directly
 				if function_doc.type == "Custom Function":
@@ -38,20 +39,33 @@ def create_raven_tools(bot) -> list[FunctionTool]:
 					function_path = function_doc.function_path
 				else:
 					# For standard types, create wrapper functions
-					if function_doc.type in ["Get List", "Get Document", "Update Document", "Create Document", "Delete Document"]:
+					if function_doc.type in [
+						"Get List",
+						"Get Document",
+						"Update Document",
+						"Create Document",
+						"Delete Document",
+					]:
 						# These need special handling because they exist as wrappers
 						function_path = f"raven.ai.sdk_tools.handle_{function_doc.type.lower().replace(' ', '_')}"
 					elif function_doc.type in [
-						"Get Multiple Documents", "Create Multiple Documents", "Update Multiple Documents",
-						"Delete Multiple Documents", "Submit Document", "Cancel Document", 
-						"Get Amended Document", "Get Value", "Set Value", "Attach File to Document"
+						"Get Multiple Documents",
+						"Create Multiple Documents",
+						"Update Multiple Documents",
+						"Delete Multiple Documents",
+						"Submit Document",
+						"Cancel Document",
+						"Get Amended Document",
+						"Get Value",
+						"Set Value",
+						"Attach File to Document",
 					]:
 						# These can use a generic wrapper that adapts parameters
 						function_path = "raven.ai.sdk_tools.handle_generic_function"
 						# Store the actual function to call
 						extra_args["actual_function"] = {
 							"Get Multiple Documents": "get_documents",
-							"Create Multiple Documents": "create_documents", 
+							"Create Multiple Documents": "create_documents",
 							"Update Multiple Documents": "update_documents",
 							"Delete Multiple Documents": "delete_documents",
 							"Submit Document": "submit_document",
@@ -59,7 +73,7 @@ def create_raven_tools(bot) -> list[FunctionTool]:
 							"Get Amended Document": "get_amended_document",
 							"Get Value": "get_value",
 							"Set Value": "set_value",
-							"Attach File to Document": "attach_file_to_document"
+							"Attach File to Document": "attach_file_to_document",
 						}.get(function_doc.type)
 					else:
 						continue
@@ -82,7 +96,6 @@ def create_raven_tools(bot) -> list[FunctionTool]:
 						del params["additionalProperties"]
 
 					# Check if this is a standard type that needs reference_doctype
-					extra_args = {}
 					if (
 						function_doc.type
 						in [
@@ -113,7 +126,9 @@ def create_raven_tools(bot) -> list[FunctionTool]:
 						tools.append(tool)
 
 			except Exception as e:
-				frappe.log_error("Raven AI Functions Error", f"Error processing function {func.function}: {str(e)}")
+				frappe.log_error(
+					"Raven AI Functions Error", f"Error processing function {func.function}: {str(e)}"
+				)
 
 	return tools
 
@@ -735,17 +750,14 @@ def handle_create_document(data=None, reference_doctype=None, **kwargs):
 		try:
 			# Use the existing create_document function from functions.py
 			from raven.ai.functions import create_document as create_doc_func
-			
+
 			# Get the bot function configuration if available
 			function = None
 			# The function parameter is not passed here, so we'll just pass None
-			
+
 			result = create_doc_func(reference_doctype, data, function)
-			
-			return {
-				"success": True,
-				"result": result
-			}
+
+			return {"success": True, "result": result}
 
 		except frappe.exceptions.ValidationError as ve:
 			return {
@@ -889,44 +901,42 @@ def handle_get_document(document_id, reference_doctype=None):
 def handle_generic_function(**kwargs):
 	"""
 	Generic handler that adapts parameters and calls the appropriate function from raven.ai.functions
-	
+
 	This handler is used for functions that don't need special parameter adaptation
 	"""
 	try:
 		# Get the actual function name from extra_args
 		actual_function = kwargs.pop("actual_function", None)
 		reference_doctype = kwargs.pop("reference_doctype", None)
-		
+
 		if not actual_function:
 			return {"success": False, "error": "No function specified"}
-		
+
 		# Get the reference doctype from context if not provided
 		if not reference_doctype:
 			reference_doctype = frappe.flags.get("current_function_doctype")
-		
+
 		if not reference_doctype:
 			return {"success": False, "error": "No reference doctype provided."}
-		
+
 		# Import the functions module
 		from raven.ai import functions
-		
+
 		# Get the actual function
 		func = getattr(functions, actual_function, None)
 		if not func:
 			return {"success": False, "error": f"Function {actual_function} not found"}
-		
+
 		# Call the function with doctype as first parameter
 		# The kwargs will contain the other parameters from the SDK
 		result = func(reference_doctype, **kwargs)
-		
+
 		# Wrap the result in success format
 		if isinstance(result, dict) and "error" in result:
 			return {"success": False, "error": result["error"]}
 		else:
 			return {"success": True, "result": result}
-			
+
 	except Exception as e:
 		# Return error in result format
 		return {"success": False, "error": str(e)}
-
-
