@@ -714,9 +714,9 @@ async def handle_ai_request_async(
 												{"role": "system", "content": agent.instructions},
 												{"role": "user", "content": message},
 												{"role": "assistant", "content": raw_response},
-												{"role": "tool", "content": tool_result, "tool_call_id": "custom_tool_call"}
+												{"role": "tool", "content": tool_result, "tool_call_id": "custom_tool_call"},
 											]
-											
+
 											# Make final API call to get proper response
 											final_response = await manager.client.chat.completions.create(
 												model=bot.model,
@@ -725,7 +725,7 @@ async def handle_ai_request_async(
 												top_p=agent.model_settings.top_p,
 												max_tokens=2000,
 											)
-											
+
 											if final_response and final_response.choices:
 												raw_response = final_response.choices[0].message.content
 											else:
