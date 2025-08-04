@@ -3,6 +3,7 @@
 
 import frappe
 from frappe.model.document import Document
+from frappe.utils import get_datetime, now_datetime
 
 
 class RavenPoll(Document):
@@ -16,6 +17,7 @@ class RavenPoll(Document):
 
 		from raven.raven_messaging.doctype.raven_poll_option.raven_poll_option import RavenPollOption
 
+		end_date: DF.Datetime | None
 		is_anonymous: DF.Check
 		is_disabled: DF.Check
 		is_multi_choice: DF.Check
@@ -32,6 +34,12 @@ class RavenPoll(Document):
 
 		# count the number of unique users who voted
 		self.total_votes = len(poll_votes) if poll_votes else 0
+
+		# Check if poll has expired and should be disabled
+		if self.end_date and not self.is_disabled:
+			end_datetime = get_datetime(self.end_date)
+			if now_datetime() >= end_datetime:
+				self.is_disabled = 1
 
 	def on_trash(self):
 		# Delete all poll votes

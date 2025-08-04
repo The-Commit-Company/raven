@@ -35,15 +35,12 @@ export const RetractVote = ({ message }: RetractVoteProps) => {
 
     if (data && data.message?.current_user_votes.length > 0)
         return (
-            <>
-                <ContextMenu.Item onClick={onRetractVote} disabled={data.message?.poll.is_disabled ? true : false}>
-                    <Flex gap='2'>
-                        <TiArrowBackOutline size='18' />
-                        Retract vote
-                    </Flex>
-                </ContextMenu.Item>
-                <ContextMenu.Separator />
-            </>
+            <ContextMenu.Item onClick={onRetractVote} disabled={data.message?.poll.is_disabled ? true : false}>
+                <Flex gap='2'>
+                    <TiArrowBackOutline size='18' />
+                    Retract vote
+                </Flex>
+            </ContextMenu.Item>
         )
 
     return null
