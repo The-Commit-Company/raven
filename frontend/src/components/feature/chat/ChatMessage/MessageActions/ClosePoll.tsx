@@ -29,7 +29,7 @@ export const ClosePoll = ({ message }: ClosePollProps) => {
         return call({
             poll_id: message?.poll_id,
         }).then(() => {
-            toast.success('Poll closed successfully')
+            toast.success('Poll closed')
         }).catch((e) => {
             toast.error('Could not close poll', {
                 description: getErrorMessage(e)
