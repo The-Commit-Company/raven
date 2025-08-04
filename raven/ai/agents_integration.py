@@ -64,7 +64,7 @@ class RavenAgentManager:
 
 			# Create provider with use_responses=False for LM Studio
 			self.provider = OpenAIProvider(
-				openai_client=client, use_responses=False  # Force use of chat/completions endpoint
+				openai_client=client, use_responses=False  # Force chat/completions endpoint usage
 			)
 		else:
 			# Standard OpenAI client
@@ -708,36 +708,28 @@ async def handle_ai_request_async(
 												break
 
 										if tool_result:
-											# Remove the tool call from the response
-											response_without_tool = re.sub(
-												r"<tool_call>.*?</tool_call>", "", raw_response, flags=re.DOTALL
-											).strip()
-
-											# Parse the tool result if it's JSON
-											try:
-												result_data = json.loads(tool_result)
-												if isinstance(result_data, dict) and "result" in result_data:
-													# Format the result nicely
-													formatted_result = "Voici les produits trouvés :\n\n"
-													for item in result_data["result"]:
-														if isinstance(item, dict):
-															formatted_result += f"• {item.get('name', 'Sans nom')}\n"
-
-													# Add warning if present
-													if "warning" in result_data:
-														formatted_result += f"\n⚠️ {result_data['warning']}"
-
-													raw_response = (
-														response_without_tool + "\n\n" + formatted_result
-														if response_without_tool
-														else formatted_result
-													)
-												else:
-													# Not the expected format, use as is
-													raw_response = f"{response_without_tool}\n\n{tool_result}"
-											except Exception:
-												# Not JSON or parsing failed, use as is
-												raw_response = f"{response_without_tool}\n\n{tool_result}"
+											# Make a second API call with the tool result
+											# Build messages with tool result
+											follow_up_messages = [
+												{"role": "system", "content": agent.instructions},
+												{"role": "user", "content": message},
+												{"role": "assistant", "content": raw_response},
+												{"role": "tool", "content": tool_result, "tool_call_id": "custom_tool_call"}
+											]
+											
+											# Make final API call to get proper response
+											final_response = await manager.client.chat.completions.create(
+												model=bot.model,
+												messages=follow_up_messages,
+												temperature=agent.model_settings.temperature,
+												top_p=agent.model_settings.top_p,
+												max_tokens=2000,
+											)
+											
+											if final_response and final_response.choices:
+												raw_response = final_response.choices[0].message.content
+											else:
+												raw_response = "Function executed but could not generate a response."
 										else:
 											frappe.log_error(
 												f"Tool '{tool_name}' not found or execution failed", "Custom Tool Call Error"
