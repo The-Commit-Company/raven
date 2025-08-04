@@ -64,7 +64,7 @@ class RavenAgentManager:
 
 			# Create provider with use_responses=False for LM Studio
 			self.provider = OpenAIProvider(
-				openai_client=client, use_responses=False  # Force l'utilisation de chat/completions endpoint
+				openai_client=client, use_responses=False  # Force use of chat/completions endpoint
 			)
 		else:
 			# Standard OpenAI client
@@ -80,7 +80,7 @@ class RavenAgentManager:
 
 			# Create provider with use_responses=True for OpenAI
 			self.provider = OpenAIProvider(
-				openai_client=client, use_responses=True  # Utilise /v1/responses pour OpenAI
+				openai_client=client, use_responses=True  # Use /v1/responses for OpenAI
 			)
 
 		# Keep client reference for backward compatibility
