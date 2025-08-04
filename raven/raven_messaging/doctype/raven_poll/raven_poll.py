@@ -14,6 +14,7 @@ class RavenPoll(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
+
 		from raven.raven_messaging.doctype.raven_poll_option.raven_poll_option import RavenPollOption
 
 		end_date: DF.Datetime | None
@@ -33,7 +34,7 @@ class RavenPoll(Document):
 
 		# count the number of unique users who voted
 		self.total_votes = len(poll_votes) if poll_votes else 0
-		
+
 		# Check if poll has expired and should be disabled
 		if self.end_date and not self.is_disabled:
 			end_datetime = get_datetime(self.end_date)

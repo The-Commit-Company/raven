@@ -157,12 +157,10 @@ doc_events = {
 # ---------------
 
 scheduler_events = {
-    "cron": {
-        # run every 5 minutes
-        "*/5 * * * *": [
-            "raven.scheduler.close_expired_polls.close_expired_polls"
-        ]
-    }
+	"cron": {
+		# run every 5 minutes
+		"*/5 * * * *": ["raven.scheduler.close_expired_polls.close_expired_polls"]
+	}
 }
 
 # Testing
