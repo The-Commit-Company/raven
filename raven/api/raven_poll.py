@@ -204,6 +204,12 @@ def close_poll(poll_id):
 	frappe.db.set_value("Raven Poll", poll_id, "is_disabled", 1)
 
 	# Event to update the poll
-	frappe.publish_realtime("doc_update", {"doctype": "Raven Poll", "name": poll_id})
+	frappe.publish_realtime(
+		"doc_update",
+		{"doctype": "Raven Poll", "name": poll_id},
+		doctype="Raven Poll",
+		docname=poll_id,
+		after_commit=True,
+	)
 
 	return "Poll closed successfully."
