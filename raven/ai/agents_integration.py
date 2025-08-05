@@ -616,7 +616,7 @@ async def handle_ai_request_async(
 						"messages": messages,
 						"temperature": agent.model_settings.temperature,
 						"top_p": agent.model_settings.top_p,
-						"max_tokens": 800,  # Reduced to avoid truncation and encourage conciseness
+						"max_tokens": 4096,  # Sufficient for reasoning and tool calls
 					}
 
 					# Add tools if available
