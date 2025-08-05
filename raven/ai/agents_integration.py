@@ -45,10 +45,13 @@ async def _handle_local_llm_request(manager, agent, full_input, bot):
 	Custom handler for Local LLMs that don't support native function calling.
 	This implements a text-based tool calling mechanism.
 	"""
-
 	try:
 		# Build messages for the API call
-		messages = [{"role": "system", "content": agent.instructions}]
+		# Decode HTML entities in instructions
+		import html
+
+		decoded_instructions = html.unescape(agent.instructions) if agent.instructions else ""
+		messages = [{"role": "system", "content": decoded_instructions}]
 
 		# Add conversation history
 		if isinstance(full_input, list):
@@ -94,6 +97,38 @@ async def _handle_local_llm_request(manager, agent, full_input, bot):
 
 			raw_response = html.unescape(raw_response)
 
+		# If response only contains <think> tags without actual content, ask for action
+		if raw_response and raw_response.strip().startswith("<think>") and "</think>" in raw_response:
+			think_end = raw_response.find("</think>")
+			if think_end != -1:
+				content_after_think = raw_response[think_end + 8 :].strip()
+				if not content_after_think or not ("<tool_call>" in content_after_think):
+					# LLM only thought but didn't act
+					# Ask for action
+					messages.append({"role": "assistant", "content": raw_response})
+					messages.append(
+						{
+							"role": "user",
+							"content": "Please proceed with the tool calls needed to complete the user's request. Don't just think - act now using <tool_call>.",
+						}
+					)
+
+					# Get new response
+					action_response = await manager.client.chat.completions.create(
+						model=bot.model,
+						messages=messages,
+						temperature=agent.model_settings.temperature,
+						top_p=agent.model_settings.top_p,
+						max_tokens=4096,
+					)
+
+					if action_response and action_response.choices:
+						choice = action_response.choices[0]
+						if hasattr(choice, "message") and choice.message and hasattr(choice.message, "content"):
+							raw_response = choice.message.content
+						elif hasattr(choice, "text"):
+							raw_response = choice.text
+
 		# Now handle tool calls in the response
 		max_iterations = 10  # Increased to handle LLMs that retry with wrong parameters
 		iteration = 0
@@ -104,16 +139,16 @@ async def _handle_local_llm_request(manager, agent, full_input, bot):
 			has_tool_call = "<tool_call>" in raw_response and "</tool_call>" in raw_response
 
 			if has_tool_call:
-				# Extract and execute tool call
-				tool_call_match = re.search(r"<tool_call>\s*({.*?})\s*</tool_call>", raw_response, re.DOTALL)
+				# Extract ALL tool calls from the response
+				tool_call_matches = re.findall(
+					r"<tool_call>\s*({.*?})\s*</tool_call>", raw_response, re.DOTALL
+				)
 
-				if tool_call_match:
+				for tool_call_json in tool_call_matches:
 					try:
-						tool_call_data = json.loads(tool_call_match.group(1))
+						tool_call_data = json.loads(tool_call_json)
 						tool_name = tool_call_data.get("name")
 						tool_args = json.dumps(tool_call_data.get("arguments", {}))
-
-						# Find available tools
 
 						# Find and execute the tool
 						tool_result = None
@@ -127,15 +162,18 @@ async def _handle_local_llm_request(manager, agent, full_input, bot):
 									tool_result = f"Error executing tool: {str(e)}"
 								break
 
-						if not tool_found:
-							pass
-
 						if not tool_result:
 							tool_result = f"Tool '{tool_name}' not found or returned no result"
 
 						# Add the exchange to messages
 						current_messages.append({"role": "assistant", "content": raw_response})
-						tool_result_msg = f"Tool result for {tool_name}: {tool_result}"
+
+						# Provide clear instruction to continue the workflow
+						tool_result_msg = f"""Tool result for {tool_name}: {tool_result}
+
+Now continue executing your workflow. According to your instructions, after getting context, you should proceed with the next step.
+
+If you need to call another tool, use the <tool_call> format immediately. Do not just think about it - execute the next tool call now."""
 						current_messages.append({"role": "user", "content": tool_result_msg})
 
 						# Make another API call with the tool result
@@ -144,13 +182,21 @@ async def _handle_local_llm_request(manager, agent, full_input, bot):
 							messages=current_messages,
 							temperature=agent.model_settings.temperature,
 							top_p=agent.model_settings.top_p,
-							max_tokens=2000,
+							max_tokens=4096,  # Increased to avoid truncation
 						)
 
 						if follow_up and follow_up.choices:
 							choice = follow_up.choices[0]
 							if hasattr(choice, "message") and choice.message and choice.message.content:
 								raw_response = choice.message.content
+
+								# If response only contains <think> tags, extract what's after them
+								if raw_response.strip().startswith("<think>") and "</think>" in raw_response:
+									think_end = raw_response.find("</think>")
+									if think_end != -1:
+										actual_response = raw_response[think_end + 8 :].strip()
+										if actual_response:
+											raw_response = actual_response
 							else:
 								raw_response = ""
 						else:
@@ -160,19 +206,40 @@ async def _handle_local_llm_request(manager, agent, full_input, bot):
 						break
 					except Exception as e:
 						break
+				# After processing all tool calls in this response
+				# Only increment iteration if we processed at least one tool call
+				if len(tool_call_matches) > 0:
+					iteration += 1
 				else:
-					# No more tool calls found
+					# No tool calls found
 					break
 			else:
 				# No tool calls in response
 				break
 
-			iteration += 1
-
 		# Format the final response
 		from raven.ai.response_formatter import format_ai_response
 
-		formatted_response = format_ai_response(raw_response) if raw_response else "No response content."
+		# Check if we have actual content besides think tags
+		if raw_response and "<think>" in raw_response and "</think>" in raw_response:
+			# Extract content after think tags
+			think_end = raw_response.rfind("</think>")  # Use rfind to get last occurrence
+			if think_end != -1:
+				content_after_think = raw_response[think_end + 8 :].strip()
+				if content_after_think:
+					# Use the content after think tags
+					formatted_response = format_ai_response(content_after_think)
+				else:
+					# No content after think, use raw response
+					formatted_response = "Processing your request..."
+			else:
+				formatted_response = (
+					format_ai_response(raw_response) if raw_response else "No response content."
+				)
+		else:
+			formatted_response = (
+				format_ai_response(raw_response) if raw_response else "No response content."
+			)
 
 		return {"response": formatted_response, "success": True, "provider": "Local LLM"}
 
