@@ -1,6 +1,42 @@
 import frappe
 from pypika import JoinType
+from frappe.search.sqlite_search import SQLiteSearch
+from raven.api.raven_channel import get_channel_list
+class RavenSearch(SQLiteSearch):
+    # Database file name
+    INDEX_NAME = "raven_search.db"
 
+    # Define the search schema
+    INDEX_SCHEMA = {
+        "text_fields": ["content"],
+        "metadata_fields": ["channel_id", "owner", "creation"],
+        "tokenizer": "unicode61 remove_diacritics 2 tokenchars '-_'",
+    }
+
+    # Define which doctypes to index and their field mappings
+    INDEXABLE_DOCTYPES = {
+        "Raven Message": {
+            "fields": ["name", "content", "channel_id", "owner", "creation"],
+        },
+    }
+
+    def get_search_filters(self):
+        """Return permission filters for current user"""
+        # Get channels accessible to current user
+        channel_list = get_channel_list(hide_archived=False)
+        channel_list = [channel.get("name") for channel in channel_list]
+
+        if not channel_list:
+            return {"channel_id": []}  # No access
+
+        return {"channel_id": channel_list}
+
+@frappe.whitelist()
+def sqlite_search(query, filters=None):
+    search = RavenSearch()
+    result = search.search(query, filters=filters)
+
+    return result
 
 @frappe.whitelist()
 def get_search_result(
