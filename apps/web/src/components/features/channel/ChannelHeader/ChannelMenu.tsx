@@ -2,7 +2,12 @@ import { Button } from "@components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@components/ui/dropdown-menu"
 import { BellOff, ChevronDown, Hash, LogOut, Settings, Users } from "lucide-react"
 
-const ChannelMenu = () => {
+interface ChannelMenuProps {
+    onOpenSettings?: () => void,
+    onOpenMembers?: () => void
+}
+
+const ChannelMenu = ({ onOpenSettings, onOpenMembers }: ChannelMenuProps) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -15,11 +20,17 @@ const ChannelMenu = () => {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-64">
-                <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm">
+                <DropdownMenuItem
+                    className="flex cursor-pointer items-center gap-2 py-2 text-sm"
+                    onClick={onOpenSettings}
+                >
                     <Settings className="h-4 w-4" />
                     <span>Channel settings</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm">
+                <DropdownMenuItem
+                    className="flex cursor-pointer items-center gap-2 py-2 text-sm"
+                    onClick={onOpenMembers}
+                >
                     <Users className="h-4 w-4" />
                     <span>Channel members</span>
                 </DropdownMenuItem>

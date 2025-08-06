@@ -1,6 +1,11 @@
 import { GroupedAvatars } from "@components/ui/grouped-avatars"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
 
-const ChannelMembers = () => {
+interface ChannelMembersProps {
+    onClick?: () => void
+}
+
+const ChannelMembers = ({ onClick }: ChannelMembersProps) => {
 
     const users = [
         { id: "1", name: "Alex Johnson", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" },
@@ -8,14 +13,24 @@ const ChannelMembers = () => {
         { id: "3", name: "Taylor Reed", image: undefined },
         { id: "4", name: "John Doe", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" },
         { id: "5", name: "Jane Smith", image: "https://images.unsplash.com/photo-1494790108755-2616b612b5c3?w=150&h=150&fit=crop&crop=face" },
-        { id: "6", name: "Michael Brown", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" },
-        { id: "7", name: "Emily Davis", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" },
-        { id: "8", name: "Daniel Wilson", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" },
-        { id: "9", name: "Olivia Moore", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face" },
+        { id: "6", name: "Desirae Lipshutz", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" },
+        { id: "7", name: "Brandon Franci", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" },
     ]
 
     return (
-        <GroupedAvatars size="sm" users={users} />
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <div
+                    onClick={onClick}
+                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                >
+                    <GroupedAvatars size="sm" users={users} />
+                </div>
+            </TooltipTrigger>
+            <TooltipContent>
+                <p>Channel Members</p>
+            </TooltipContent>
+        </Tooltip>
     )
 }
 

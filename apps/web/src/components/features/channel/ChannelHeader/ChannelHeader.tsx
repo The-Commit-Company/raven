@@ -6,9 +6,12 @@ import { FileText, Headset, Info, Link, MessageSquareText, Pin, Star } from "luc
 import ChannelMembers from "./ChannelMembers"
 import ChannelMenu from "./ChannelMenu"
 
-interface ChannelHeaderProps { onOpenSettings: () => void }
+interface ChannelHeaderProps {
+    onOpenSettings: () => void,
+    onOpenMembers: () => void
+}
 
-const ChannelHeader = ({ onOpenSettings }: ChannelHeaderProps) => {
+const ChannelHeader = ({ onOpenSettings, onOpenMembers }: ChannelHeaderProps) => {
     return (
         <div className="sticky top-(--app-header-height) flex items-center justify-between border-b bg-background py-1.5 px-2">
             {/* Left side */}
@@ -34,7 +37,7 @@ const ChannelHeader = ({ onOpenSettings }: ChannelHeaderProps) => {
                         </TooltipContent>
                     </Tooltip>
 
-                    <ChannelMenu />
+                    <ChannelMenu onOpenSettings={onOpenSettings} onOpenMembers={onOpenMembers} />
 
                     <Tooltip>
                         <TooltipTrigger asChild>
@@ -90,7 +93,7 @@ const ChannelHeader = ({ onOpenSettings }: ChannelHeaderProps) => {
                     <Headset className="size-3.5" />
                     <span className="text-sm">Start call</span>
                 </Button>
-                <ChannelMembers />
+                <ChannelMembers onClick={onOpenMembers} />
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <Button
