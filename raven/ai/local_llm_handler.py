@@ -224,7 +224,8 @@ You can call multiple functions in sequence. After each function call, I will pr
 					func_name = func_call["name"]
 					args = func_call.get("arguments", {})
 
-					result = execute_raven_function(func_name, args)
+					# Pass channel_id for functions that might need it
+					result = execute_raven_function(func_name, args, channel_id=channel_id)
 
 					# Store result
 					all_function_results.append({"function": func_name, "arguments": args, "result": result})
@@ -267,9 +268,14 @@ You can call multiple functions in sequence. After each function call, I will pr
 		return {"response": f"Error: {str(e)}", "success": False}
 
 
-def execute_raven_function(function_name: str, args: dict):
+def execute_raven_function(function_name: str, args: dict, channel_id: str = None):
 	"""
-	Execute a Raven function by name
+	Execute a Raven function by name.
+
+	Args:
+	        function_name: Name of the function to execute
+	        args: Arguments to pass to the function
+	        channel_id: Optional channel ID for context (used by notification functions)
 	"""
 	try:
 		# Special handling for get_current_context - use base function directly
@@ -287,6 +293,14 @@ def execute_raven_function(function_name: str, args: dict):
 			if function_path:
 				func = frappe.get_attr(function_path)
 				if func:
+					# Add channel_id to args if function accepts it and it's not already there
+					if channel_id and "channel_id" not in args:
+						# Check if function accepts channel_id parameter
+						import inspect
+
+						sig = inspect.signature(func)
+						if "channel_id" in sig.parameters:
+							args["channel_id"] = channel_id
 					result = func(**args)
 					# Ensure result is JSON serializable
 					if isinstance(result, dict):
