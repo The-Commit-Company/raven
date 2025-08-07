@@ -11,7 +11,7 @@ import requests
 def local_llm_handler(bot, message: str, channel_id: str, conversation_history: list = None):
 	"""
 	Fast handler using direct HTTP calls for better LM Studio compatibility.
-	
+
 	Handles both OpenAI and LM Studio APIs with automatic prompt simplification
 	for long prompts to prevent hallucinations with quantized models.
 	"""
@@ -72,22 +72,25 @@ def local_llm_handler(bot, message: str, channel_id: str, conversation_history: 
 
 		# Build system prompt
 		system_prompt = ""
-		
+
 		# Check if bot has custom instructions
 		if bot.instruction:
 			# For LM Studio with Qwen model, simplify long prompts to avoid hallucinations
 			if is_lm_studio and len(bot.instruction) > 1500:
 				# Simplify long prompts for LM Studio to prevent hallucinations with Qwen models
-				system_prompt = bot.instruction[:1000] + """
+				system_prompt = (
+					bot.instruction[:1000]
+					+ """
 ## FUNCTION CALLING RULES
 When asked to perform actions or retrieve data:
 1. Always use available functions
 2. Never invent or hallucinate data
 3. Call functions sequentially as needed"""
+				)
 			else:
 				# Use full instructions if not too long
 				system_prompt = bot.instruction
-		
+
 		# If no instructions, use a default
 		if not system_prompt:
 			system_prompt = """You are an intelligent AI assistant with access to business functions.
@@ -107,7 +110,7 @@ When the user asks you to perform an action, follow these steps:
 - When presenting lists or tables, use appropriate HTML formatting with <table class='table'>
 
 You can call multiple functions in sequence. After each function call, I will provide the result, and you can then call the next function if needed."""
-		
+
 		messages.append({"role": "system", "content": system_prompt})
 
 		# Add conversation history (last 20 messages only)
@@ -141,16 +144,13 @@ You can call multiple functions in sequence. After each function call, I will pr
 				"max_tokens": 4096,
 			}
 
-			# Add functions/tools based on provider 
+			# Add functions/tools based on provider
 			if functions:
 				if is_lm_studio:
 					# LM Studio uses tools format
 					tools = []
 					for func in functions:
-						tools.append({
-							"type": "function",
-							"function": func
-						})
+						tools.append({"type": "function", "function": func})
 					data["tools"] = tools
 				else:
 					# Standard OpenAI format
@@ -223,9 +223,9 @@ You can call multiple functions in sequence. After each function call, I will pr
 				for func_call in function_calls:
 					func_name = func_call["name"]
 					args = func_call.get("arguments", {})
-					
+
 					result = execute_raven_function(func_name, args)
-					
+
 					# Store result
 					all_function_results.append({"function": func_name, "arguments": args, "result": result})
 
@@ -234,7 +234,7 @@ You can call multiple functions in sequence. After each function call, I will pr
 						# LM Studio doesn't support function role, use user messages
 						result_msg = {
 							"role": "user",
-							"content": f"The result of {func_name} is: {json.dumps(result, default=str)}"
+							"content": f"The result of {func_name} is: {json.dumps(result, default=str)}",
 						}
 						messages.append(result_msg)
 					else:
@@ -275,8 +275,9 @@ def execute_raven_function(function_name: str, args: dict):
 		# Special handling for get_current_context - use base function directly
 		if function_name == "get_current_context":
 			from raven.ai.functions import get_current_context
+
 			return get_current_context()
-		
+
 		# Get the function document
 		function_doc = frappe.get_doc("Raven AI Function", function_name)
 
