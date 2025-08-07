@@ -1,5 +1,6 @@
 import frappe
 from frappe import _, client
+from frappe.utils import now_datetime, nowdate
 
 
 def get_document(doctype: str, document_id: str):
@@ -155,6 +156,32 @@ def get_amended_document(doctype: str, document_id: str):
 		return {"message": f"{doctype} {document_id} is not amended", "doctype": doctype}
 
 
+def get_current_context():
+	"""
+	Get the current user context including username, full name, current date and time.
+
+	This function should be called when users ask about:
+	- Current date/time ("what day is it", "what time is it")
+	- User identity ("who am I")
+	- Context information for task creation
+
+	Returns:
+	        dict: Context information including user details and current timestamp
+	"""
+	current_user = frappe.session.user
+	user_doc = frappe.get_doc("User", current_user)
+
+	return {
+		"user": current_user,
+		"full_name": user_doc.full_name or user_doc.first_name or current_user,
+		"current_date": nowdate(),
+		"current_time": now_datetime(),
+		"language": frappe.db.get_value("User", current_user, "language") or "en",
+		"time_zone": frappe.db.get_value("User", current_user, "time_zone")
+		or frappe.utils.get_system_timezone(),
+	}
+
+
 def attach_file_to_document(doctype: str, document_id: str, file_path: str):
 	"""
 	Attach a file to a document in the database
@@ -251,33 +278,3 @@ def set_value(doctype: str, document_id: str, fieldname: str | dict, value: str 
 		return client.set_value(doctype, document_id, fieldname)
 	else:
 		return client.set_value(doctype, document_id, fieldname, value)
-
-
-def get_report_result(
-	report_name: str,
-	filters: dict = None,
-	limit=None,
-	user: str = None,
-	ignore_prepared_report: bool = False,
-	are_default_filters: bool = True,
-):
-	"""
-	Run a report and return the columns and result
-	"""
-	# fetch the particular report
-	report = frappe.get_doc("Report", report_name)
-	if not report:
-		return {
-			"message": f"Report {report_name} is not present in the system. Please create the report first."
-		}
-
-	# run the report by using the get_data method and return the columns and result
-	columns, data = report.get_data(
-		filters=filters,
-		limit=limit,
-		user=user,
-		ignore_prepared_report=ignore_prepared_report,
-		are_default_filters=are_default_filters,
-	)
-
-	return {"columns": columns, "data": data}

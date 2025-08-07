@@ -41,7 +41,7 @@ def handle_bot_dm_with_agents(message, bot):
 		)
 		return
 
-	# Create thread channel for the conversation
+	# Create thread channel for the conversation FIRST
 	thread_channel = frappe.get_doc(
 		{
 			"doctype": "Raven Channel",
@@ -62,25 +62,18 @@ def handle_bot_dm_with_agents(message, bot):
 	# Manual commit required: AI processing happens in background job that needs the message to exist in DB
 	frappe.db.commit()  # nosemgrep
 
-	# Send initial thinking message
-	frappe.publish_realtime(
-		"ai_event",
-		{
-			"text": "Raven AI is thinking...",
-			"channel_id": thread_channel.name,
-			"bot": bot.name,
-		},
-		doctype="Raven Channel",
-		docname=thread_channel.name,
-		after_commit=True,
-	)
-
-	# Send event to automatically open the thread
+	# Send event to open the thread FIRST
 	publish_ai_thread_created_event(message, message.channel_id)
 
 	# Process message with Agents SDK
+	# Pass both thread channel ID and message ID for proper event handling
+	# Note: The thinking message is already sent from raven_message.py before enqueueing
 	process_message_with_agent(
-		message=message, bot=bot, channel_id=thread_channel.name, is_new_conversation=True
+		message=message,
+		bot=bot,
+		channel_id=thread_channel.name,
+		is_new_conversation=True,
+		thread_message_id=message.name,
 	)
 
 
@@ -170,20 +163,10 @@ def handle_bot_dm_with_assistants(message, bot):
 	# nosemgrep We need to commit here since the response will be streamed, and hence might take a while
 	frappe.db.commit()
 
-	frappe.publish_realtime(
-		"ai_event",
-		{
-			"text": "Raven AI is thinking...",
-			"channel_id": thread_channel.name,
-			"bot": bot.name,
-		},
-		doctype="Raven Channel",
-		docname=thread_channel.name,
-		after_commit=True,
-	)
-
-	# Send event to automatically open the thread
+	# Send event to open the thread
 	publish_ai_thread_created_event(message, message.channel_id)
+
+	# Note: The thinking message is already sent from raven_message.py before enqueueing
 
 	stream_response(ai_thread_id=ai_thread.id, bot=bot, channel_id=thread_channel.name)
 
@@ -217,16 +200,17 @@ def handle_ai_thread_message_with_agents(message, channel, bot):
 		)
 		return
 
-	# Send thinking message
+	# Send thinking message for existing threads
+	# We need to use channel.channel_name which is the thread ID that frontend expects
 	frappe.publish_realtime(
 		"ai_event",
 		{
-			"text": "Raven AI is thinking...",
-			"channel_id": channel.name,
+			"text": "Raven is thinking...",
+			"channel_id": channel.channel_name,  # This is the thread message ID that frontend uses
 			"bot": bot.name,
 		},
-		doctype="Raven Channel",
-		docname=channel.name,
+		user=message.owner,
+		after_commit=False,
 	)
 
 	# Process message with Agents SDK
@@ -292,22 +276,23 @@ def handle_ai_thread_message_with_assistants(message, channel, bot):
 			metadata={"user": message.owner, "message": message.name},
 		)
 
+	# Send thinking message for existing threads with Assistants API
 	frappe.publish_realtime(
 		"ai_event",
 		{
-			"text": "Raven AI is thinking...",
-			"channel_id": channel.name,
+			"text": "Raven is thinking...",
+			"channel_id": channel.channel_name,  # This is the thread message ID that frontend uses
 			"bot": bot.name,
 		},
-		doctype="Raven Channel",
-		docname=channel.name,
+		user=message.owner,
+		after_commit=False,
 	)
 
 	stream_response(ai_thread_id=channel.openai_thread_id, bot=bot, channel_id=channel.name)
 
 
 def process_message_with_agent(
-	message, bot, channel_id: str, is_new_conversation: bool, channel=None
+	message, bot, channel_id: str, is_new_conversation: bool, channel=None, thread_message_id=None
 ):
 	"""
 	Process a message using the Agents SDK.
@@ -404,11 +389,13 @@ def process_message_with_agent(
 				"file",
 				"is_bot_message",
 			],
-			order_by="creation asc",
-			limit=20,  # Limit to last 20 messages for context
+			order_by="creation desc",
+			limit=10,  # Reduced from 20 to 10 for better performance
 		)
 
-		for msg in messages[:-1]:  # Exclude the current message
+		# Reverse to get chronological order and exclude the current message
+		messages = list(reversed(messages[:-1] if messages else []))
+		for msg in messages:
 			# Use text field which contains the actual message content
 			msg_text = msg.text or msg.content or ""
 
@@ -431,14 +418,28 @@ def process_message_with_agent(
 
 	# Use the improved sync handler
 	try:
-		# Use Agents SDK for both OpenAI and Local LLM
-		response = handle_ai_request_sync(
-			bot=bot,
-			message=content,
-			channel_id=channel_id,
-			conversation_history=conversation_history,
-			file_handler=file_handler,
+		# Check if we should use local LLM handler (for Local LLM with functions)
+		use_local_handler = (
+			bot.model_provider == "Local LLM"
+			and bot.bot_functions
+			and len(bot.bot_functions) > 0
+			and (not file_handler or not file_handler.conversation_files)
 		)
+
+		if use_local_handler:
+			# Use direct HTTP calls for Local LLM (LM Studio) for better compatibility
+			from raven.ai.local_llm_handler import local_llm_handler
+
+			response = local_llm_handler(bot, content, channel_id, conversation_history)
+		else:
+			# Use Agents SDK for OpenAI and complex cases
+			response = handle_ai_request_sync(
+				bot=bot,
+				message=content,
+				channel_id=channel_id,
+				conversation_history=conversation_history,
+				file_handler=file_handler,
+			)
 
 		if response["success"]:
 			# Only send a response if there is one
@@ -453,15 +454,18 @@ def process_message_with_agent(
 
 			bot.send_message(channel_id=channel_id, text=error_text)
 
-		# Clear the "thinking" message after sending the response
+		# Clear the "thinking" message immediately after sending the response
+		# Use thread_message_id if available (for new conversations) or channel.channel_name (for existing threads)
+		event_channel_id = (
+			thread_message_id if thread_message_id else (channel.channel_name if channel else channel_id)
+		)
+		# Send without restrictions to ensure it arrives
 		frappe.publish_realtime(
 			"ai_event_clear",
 			{
-				"channel_id": channel_id,
+				"channel_id": event_channel_id,
 			},
-			doctype="Raven Channel",
-			docname=channel_id,
-			after_commit=True,
+			after_commit=False,  # Clear immediately, don't wait
 		)
 	except Exception as e:
 		import traceback
@@ -478,14 +482,15 @@ def process_message_with_agent(
 		bot.send_message(channel_id=channel_id, text=error_text)
 
 		# Clear the "thinking" message even on error
+		event_channel_id = (
+			thread_message_id if thread_message_id else (channel.channel_name if channel else channel_id)
+		)
 		frappe.publish_realtime(
 			"ai_event_clear",
 			{
-				"channel_id": channel_id,
+				"channel_id": event_channel_id,
 			},
-			doctype="Raven Channel",
-			docname=channel_id,
-			after_commit=True,
+			after_commit=False,  # Clear immediately
 		)
 
 
