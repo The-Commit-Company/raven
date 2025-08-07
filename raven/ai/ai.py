@@ -465,6 +465,7 @@ def process_message_with_agent(
 			{
 				"channel_id": event_channel_id,
 			},
+			room=event_channel_id,  # Send only to users in this channel
 			after_commit=False,  # Clear immediately, don't wait
 		)
 	except Exception as e:
@@ -490,6 +491,7 @@ def process_message_with_agent(
 			{
 				"channel_id": event_channel_id,
 			},
+			room=event_channel_id,  # Send only to users in this channel
 			after_commit=False,  # Clear immediately
 		)
 
