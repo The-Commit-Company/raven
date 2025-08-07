@@ -214,6 +214,54 @@ You can call multiple functions in sequence. After each function call, I will pr
 					except Exception as e:
 						pass
 
+			# Additional fallback: Check for OSS model format with commentary/constrain patterns
+			elif not function_calls and message_data.get("content"):
+				content = message_data["content"]
+
+				# Pattern 1: "Need function_name" followed by structured tokens
+				import re
+
+				# Check for "Need function_name" pattern
+				need_match = re.search(r"Need\s+(\w+)", content)
+				if need_match:
+					func_name = need_match.group(1)
+
+					# Try to extract JSON from various formats
+					json_patterns = [
+						r"<\|message\|>({.*?})(?:<\||\s|$)",  # <|message|>{json}
+						r"<\|constrain\|>json<\|message\|>({.*?})(?:<\||\s|$)",  # <|constrain|>json<|message|>{json}
+						r"\{[^}]*\}",  # Any JSON object
+					]
+
+					for pattern in json_patterns:
+						json_match = re.search(pattern, content, re.DOTALL)
+						if json_match:
+							try:
+								# Extract the JSON part
+								json_str = json_match.group(1) if "(" in pattern else json_match.group(0)
+								args = json.loads(json_str)
+								function_calls.append({"name": func_name, "arguments": args})
+								break
+							except (json.JSONDecodeError, ValueError):
+								continue
+
+				# Pattern 2: Direct function reference like "functions.function_name"
+				func_ref_match = re.search(r"functions\.(\w+)", content)
+				if not function_calls and func_ref_match:
+					func_name = func_ref_match.group(1)
+
+					# Try to find associated JSON
+					for pattern in [r"<\|message\|>({.*?})(?:<\||\s|$)", r"\{[^}]*\}"]:
+						json_match = re.search(pattern, content, re.DOTALL)
+						if json_match:
+							try:
+								json_str = json_match.group(1) if "(" in pattern else json_match.group(0)
+								args = json.loads(json_str)
+								function_calls.append({"name": func_name, "arguments": args})
+								break
+							except (json.JSONDecodeError, ValueError):
+								continue
+
 			# If we have function calls, execute them
 			if function_calls:
 				# Add assistant message to conversation
