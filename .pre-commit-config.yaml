@@ -46,6 +46,14 @@ repos:
         files: "raven.*"
         exclude: ".*setup.py$"
 
+  - repo: https://github.com/semgrep/semgrep
+    rev: v1.131.0
+    hooks:
+      - id: semgrep
+        files: "raven.*"
+        args: ["--config", "./frappe-semgrep-rules/rules", "--error"]
+        exclude: ".*json$|.*txt$|.*csv|.*md|.*svg"
+
 ci:
   autoupdate_schedule: weekly
   skip: []
