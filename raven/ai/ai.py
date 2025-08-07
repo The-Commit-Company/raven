@@ -455,7 +455,7 @@ def process_message_with_agent(
 		if response["success"]:
 			# Only send a response if there is one
 			if response["response"] is not None:
-				bot.send_message(channel_id=channel_id, text=response["response"])
+				bot.send_message(channel_id=channel_id, text=response["response"], markdown=True)
 			# If response is None (e.g., file-only upload), don't send anything
 		else:
 			# Send error message
