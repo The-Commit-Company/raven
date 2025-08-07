@@ -37,7 +37,7 @@ def local_llm_handler(bot, message: str, channel_id: str, conversation_history: 
 		# Get functions from bot
 		functions = []
 		if hasattr(bot, "bot_functions") and bot.bot_functions:
-			for func in bot.bot_functions[:10]:  # Limit to 10 functions
+			for func in bot.bot_functions:
 				try:
 					function_doc = frappe.get_doc("Raven AI Function", func.function)
 
