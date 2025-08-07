@@ -65,9 +65,20 @@ def handle_bot_dm_with_agents(message, bot):
 	# Send event to open the thread FIRST
 	publish_ai_thread_created_event(message, message.channel_id)
 
+	# Send thinking message for new DM threads
+	frappe.publish_realtime(
+		"ai_event",
+		{
+			"text": "Raven is thinking...",
+			"channel_id": message.name,  # For new DM threads, use the message ID
+			"bot": bot.name,
+		},
+		user=message.owner,
+		after_commit=False,
+	)
+
 	# Process message with Agents SDK
 	# Pass both thread channel ID and message ID for proper event handling
-	# Note: The thinking message is already sent from raven_message.py before enqueueing
 	process_message_with_agent(
 		message=message,
 		bot=bot,
@@ -455,19 +466,29 @@ def process_message_with_agent(
 			bot.send_message(channel_id=channel_id, text=error_text)
 
 		# Clear the "thinking" message immediately after sending the response
-		# Use thread_message_id if available (for new conversations) or channel.channel_name (for existing threads)
-		event_channel_id = (
-			thread_message_id if thread_message_id else (channel.channel_name if channel else channel_id)
-		)
-		# Send without restrictions to ensure it arrives
+		# For existing threads, use channel.channel_name (the parent message ID)
+		# For new conversations, use thread_message_id
+		# Otherwise use channel_id
+		if channel and hasattr(channel, "channel_name"):
+			# Existing thread - use the parent message ID
+			event_channel_id = channel.channel_name
+		elif thread_message_id:
+			# New conversation with thread
+			event_channel_id = thread_message_id
+		else:
+			# Direct message or other
+			event_channel_id = channel_id
+
+		# Send clear event exactly like we send the thinking message
 		frappe.publish_realtime(
 			"ai_event_clear",
 			{
 				"channel_id": event_channel_id,
 			},
-			room=event_channel_id,  # Send only to users in this channel
-			after_commit=False,  # Clear immediately, don't wait
+			user=message.owner,
+			after_commit=False,  # Same as thinking message
 		)
+
 	except Exception as e:
 		import traceback
 
