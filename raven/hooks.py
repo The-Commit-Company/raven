@@ -228,6 +228,7 @@ additional_timeline_content = {"*": ["raven.api.raven_message.get_timeline_messa
 website_route_rules = [
 	{"from_route": "/raven/<path:app_path>", "to_route": "raven"},
 	{"from_route": "/raven_mobile/<path:app_path>", "to_route": "raven"},
+	{"from_route": "/raven_v3/<path:app_path>", "to_route": "raven_v3"},
 ]
 
 permission_query_conditions = {
