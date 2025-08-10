@@ -9,6 +9,7 @@ import { RavenPollOption } from "@/types/RavenMessaging/RavenPollOption"
 
 import { ViewPollVotes } from "@/components/feature/polls/ViewPollVotes"
 import { toast } from "sonner"
+import { IoLockClosed } from "react-icons/io5"
 
 type PollMessageBlockProps = BoxProps & {
     message: PollMessage,
@@ -44,21 +45,29 @@ export const PollMessageBlock = ({ message, user, ...props }: PollMessageBlockPr
 
 const PollMessageBox = ({ data, messageID }: { data: Poll, messageID: string }) => {
     return (
-        <Flex align='center' gap='4' p='2' className="bg-gray-2
+        <Flex align='center' gap='4' p='2' className={`bg-gray-2
         shadow-sm
         dark:bg-gray-3
-        group-hover:bg-accent-a2
-        dark:group-hover:bg-gray-4
-        group-hover:transition-all
-        group-hover:delay-100
         min-w-64
         max-w-[420px]
         w-full
-        rounded-md">
+        rounded-md
+        ${data.poll.is_disabled ? '' : 'group-hover:bg-accent-a2 dark:group-hover:bg-gray-4 group-hover:transition-all group-hover:delay-100'}`}>
             <Flex direction='column' gap='2' p='2' className="w-full">
-                <Flex justify='between' align='center' gap='2'>
-                    <Text size='2' weight={'medium'}>{data.poll.question}</Text>
-                    {data.poll.is_anonymous ? <Badge color='blue' className={'w-fit'}>Anonymous</Badge> : null}
+                <Flex direction='column' gap='2'>
+                    <Flex justify='between' align='center' gap='2'>
+                        <Text size='2' weight={'medium'}>{data.poll.question}</Text>
+                        {data.poll.is_anonymous ? <Badge color='blue' className={'w-fit'}>Anonymous</Badge> : null}
+                    </Flex>
+                    {data.poll.is_disabled ? <Badge color="gray" className={'w-fit mb-2'}>
+                        <IoLockClosed />
+                        Poll is now closed. No more votes will be accepted.
+                    </Badge> : null}
+                    {data.poll.end_date && !data.poll.is_disabled && (
+                        <Text size='1' color='gray'>
+                            This poll will end on {new Date(data.poll.end_date).toLocaleString()}.
+                        </Text>
+                    )}
                 </Flex>
                 {data.current_user_votes.length > 0 ?
                     <PollResults data={data} /> :
@@ -69,7 +78,6 @@ const PollMessageBox = ({ data, messageID }: { data: Poll, messageID: string }) 
                         }
                     </>
                 }
-                {data.poll.is_disabled ? <Badge color="gray" className={'w-fit'}>Poll is now closed</Badge> : null}
                 {data.poll.is_anonymous ? null : <ViewPollVotes poll={data} />}
             </Flex>
         </Flex>
@@ -154,7 +162,7 @@ const SingleChoicePoll = ({ data, messageID }: { data: Poll, messageID: string }
             {data.poll.options.map(option => (
                 <div key={option.name}>
                     <Text as="label" size="2" className="block w-full">
-                        <Flex gap="2" p='2' className="rounded-sm hover:bg-accent-a2 dark:hover:bg-gray-5 w-full">
+                        <Flex gap="2" p='2' className={`rounded-sm w-full ${data.poll.is_disabled ? '' : 'hover:bg-accent-a2 dark:hover:bg-gray-5'}`}>
                             <RadioGroup.Item
                                 disabled={data.poll.is_disabled ? true : false}
                                 value={option.name}
@@ -207,7 +215,7 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll, messageID: string })
             {data.poll.options.map(option => (
                 <div key={option.name}>
                     <Text as="label" size="2" className="block w-full">
-                        <Flex gap="2" p='2' className="rounded-sm hover:bg-accent-a2 dark:hover:bg-gray-5 w-full">
+                        <Flex gap="2" p='2' className={`rounded-sm w-full ${data.poll.is_disabled ? '' : 'hover:bg-accent-a2 dark:hover:bg-gray-5'}`}>
                             <Checkbox
                                 disabled={data.poll.is_disabled ? true : false}
                                 value={option.name}
@@ -222,8 +230,12 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll, messageID: string })
                 </div>
             ))}
             <Flex justify={'between'} align={'center'} gap={'2'}>
-                <Text size='1' className="text-gray-500">To view the poll results, please submit your choice(s)</Text>
-                <Button disabled={data.poll.is_disabled ? true : false} size={'1'} variant={'soft'} style={{ alignSelf: 'flex-end' }} onClick={onVoteSubmit}>Submit</Button>
+                <Text size='1' className="text-gray-500 px-2 py-1">
+                    {data.poll.is_disabled ? 'This poll is closed and no longer accepting votes' : 'To view the poll results, please submit your choice(s)'}
+                </Text>
+                {!data.poll.is_disabled && (
+                    <Button size={'1'} variant={'soft'} style={{ alignSelf: 'flex-end' }} onClick={onVoteSubmit}>Submit</Button>
+                )}
             </Flex>
         </div>
     )

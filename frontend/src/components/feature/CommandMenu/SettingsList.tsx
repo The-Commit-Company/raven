@@ -77,6 +77,11 @@ const SettingsList = (props: Props) => {
                 Instructions
             </Command.Item>
 
+            <Command.Item value='document-processors' onSelect={onSelect}>
+                <BiFile size={ICON_SIZE} />
+                Document Processors
+            </Command.Item>
+
             <Command.Item value='commands' onSelect={onSelect}>
                 <BiMessageSquareDots size={ICON_SIZE} />
                 Commands
