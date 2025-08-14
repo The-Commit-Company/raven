@@ -103,6 +103,10 @@ const router = createBrowserRouter(
               <Route path=":ID" lazy={() => import('./pages/settings/AI/ViewInstructionTemplate')} />
             </Route>
 
+            <Route path="document-processors">
+              <Route index lazy={() => import('./pages/settings/AI/DocumentProcessors')} />
+            </Route>
+
             <Route path="file-sources" lazy={() => import('./pages/settings/AI/FileSourcesList')} />
 
             <Route path="commands">
