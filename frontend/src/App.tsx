@@ -178,7 +178,7 @@ function App() {
 
   return (
     <FrappeProvider
-      url={import.meta.env.VITE_FRAPPE_PATH ?? ''}
+      url={import.meta.env.VITE_FRAPPE_PATH ?? window.location.origin}
       socketPort={import.meta.env.VITE_SOCKET_PORT ? import.meta.env.VITE_SOCKET_PORT : undefined}
       //@ts-ignore
       swrConfig={{

@@ -12,7 +12,8 @@ const registerServiceWorker = () => {
   // @ts-ignore
   window.frappePushNotification = new FrappePushNotification("raven")
 
-  if ("serviceWorker" in navigator) {
+  // Skip service worker registration if push notifications are not properly configured
+  if ("serviceWorker" in navigator && window.frappe?.boot?.push_notification_service) {
     // @ts-ignore
     window.frappePushNotification
       .appendConfigToServiceWorkerURL("/assets/raven/raven/sw.js")
@@ -32,7 +33,7 @@ const registerServiceWorker = () => {
         console.error("Failed to register service worker", err)
       })
   } else {
-    console.error("Service worker not enabled/supported by browser")
+    console.info("Service worker skipped - push notifications not configured or not supported")
   }
 }
 

@@ -22,8 +22,9 @@ function getCommonSiteConfig() {
 
 const config = getCommonSiteConfig()
 const webserver_port = config ? config.webserver_port : 8000
+const socketio_port = config ? config.socketio_port : 9000
 if (!config) {
-  console.log('No common_site_config.json found, using default port 8000')
+  console.log('No common_site_config.json found, using default ports 8000/9000')
 }
 
 export default {
@@ -36,6 +37,12 @@ export default {
 			const site_name = req.headers.host.split(':')[0];
 			return `http://${site_name}:${webserver_port}`;
 		}
+	},
+	'^/socket.io': {
+		target: `http://127.0.0.1:${socketio_port}`,
+		ws: true,
+		changeOrigin: true,
+		secure: false
 	}
 };
 
