@@ -42,6 +42,7 @@ export const SettingsSidebar = () => {
                     <SettingsSidebarItem title="Functions" to='functions' />
                     <SettingsSidebarItem title="File Sources" to='file-sources' />
                     <SettingsSidebarItem title="Instructions" to="instructions" />
+                    <SettingsSidebarItem title="Document Processors" to="document-processors" />
                     <SettingsSidebarItem title="Commands" to='commands' />
                     <SettingsSidebarItem title="AI Settings" to='ai-settings' />
                 </SettingsGroup>

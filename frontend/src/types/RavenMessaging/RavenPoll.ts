@@ -21,6 +21,8 @@ export interface RavenPoll {
     is_multi_choice?: 0 | 1
     /**	Is Disabled : Check	*/
     is_disabled?: 0 | 1
+    /**	End Date : Datetime	*/
+    end_date?: string
     /**	Total Votes : Int	*/
     total_votes: number
 }

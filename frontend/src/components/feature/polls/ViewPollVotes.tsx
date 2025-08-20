@@ -30,13 +30,14 @@ export const ViewPollVotes = ({ poll }: ViewPollVotesProps) => {
     }
 
     const isDesktop = useIsDesktop()
+    const buttonText = poll.poll.is_disabled ? 'View Results' : 'View Votes'
 
     if (isDesktop) {
         return (
             <Dialog.Root open={open} onOpenChange={setOpen}>
 
                 <Dialog.Trigger>
-                    <Button variant='ghost' size={'1'} className='-mb-2.5 bg-transparent hover:text-accent-10 w-full'>View Votes</Button>
+                    <Button variant='ghost' size={'1'} className='-mb-2.5 bg-transparent hover:text-accent-10 w-full'>{buttonText}</Button>
                 </Dialog.Trigger>
 
                 <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'max-h-[80vh]')}>
@@ -51,7 +52,7 @@ export const ViewPollVotes = ({ poll }: ViewPollVotesProps) => {
         return <Drawer open={open} onOpenChange={setOpen}>
             <Separator className='w-full' />
             <DrawerTrigger asChild>
-                <Button variant='ghost' size={'1'} className='bg-transparent hover:text-accent-10 w-full'>View Votes</Button>
+                <Button variant='ghost' size={'1'} className='bg-transparent hover:text-accent-10 w-full'>{buttonText}</Button>
             </DrawerTrigger>
             <DrawerContent>
                 <div className='h-[80vh]'>

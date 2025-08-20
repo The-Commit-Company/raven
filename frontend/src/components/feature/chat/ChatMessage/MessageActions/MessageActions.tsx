@@ -6,6 +6,7 @@ import { BiBookmarkMinus, BiBookmarkPlus, BiCopy, BiDownload, BiLink, BiPapercli
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { useMessageCopy } from './useMessageCopy'
 import { RetractVote } from './RetractVote'
+import { ClosePoll } from './ClosePoll'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { AiOutlineEdit } from 'react-icons/ai'
@@ -41,6 +42,7 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
             {message ? <>
 
                 {message && message.message_type === 'Poll' && <RetractVote message={message} />}
+                {message && message.message_type === 'Poll' && <ClosePoll message={message} />}
 
                 <ContextMenu.Item>
                     <Flex gap='2' width='100%' onClick={onReply}>

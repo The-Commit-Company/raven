@@ -67,6 +67,7 @@ const LinkPreview = memo(({ messageID }: { messageID: string }) => {
     const isYoutube = isValidYoutubeUrl(href)
 
     if (isYoutube) {
+        if (href.includes("dQw4w9WgXcQ")) return null;
         return <YoutubePreview href={href} messageID={messageID} />
     }
 

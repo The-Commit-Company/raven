@@ -9,6 +9,7 @@ def create_poll(
 	options: list,
 	is_multi_choice: bool = None,
 	is_anonymous: bool = None,
+	end_date: str = None,
 ) -> str:
 	"""
 	Create a new poll in the Raven Poll doctype.
@@ -23,6 +24,7 @@ def create_poll(
 			"question": question,
 			"is_multi_choice": is_multi_choice,
 			"is_anonymous": is_anonymous,
+			"end_date": end_date,
 			"channel_id": channel_id,
 		}
 	)
@@ -91,6 +93,11 @@ def add_vote(message_id, option_id):
 
 	poll_id = frappe.get_cached_value("Raven Message", message_id, "poll_id")
 	is_poll_multi_choice = frappe.get_cached_value("Raven Poll", poll_id, "is_multi_choice")
+	is_disabled = frappe.get_cached_value("Raven Poll", poll_id, "is_disabled")
+
+	# Check if the poll is closed
+	if is_disabled:
+		frappe.throw(_("This poll is closed and no longer accepting votes"), frappe.PermissionError)
 
 	if is_poll_multi_choice:
 		for option in option_id:
@@ -119,6 +126,14 @@ def add_vote(message_id, option_id):
 def retract_vote(poll_id):
 	# delete all votes by the user for the poll (this takes care of the case where the user has voted for multiple options in the same poll)
 	user = frappe.session.user
+
+	# Check if the poll is closed
+	is_disabled = frappe.get_cached_value("Raven Poll", poll_id, "is_disabled")
+	if is_disabled:
+		frappe.throw(
+			_("This poll is closed and you can no longer retract your vote"), frappe.PermissionError
+		)
+
 	votes = frappe.get_all(
 		"Raven Poll Vote", filters={"poll_id": poll_id, "user_id": user}, fields=["name"]
 	)
@@ -167,3 +182,34 @@ def get_all_votes(poll_id):
 			result["percentage"] = (result["count"] / total_votes) * 100
 
 		return results
+
+
+@frappe.whitelist(methods=["POST"])
+def close_poll(poll_id):
+	"""
+	Close a poll by setting is_disabled to 1 (only poll owner can close the poll)
+	"""
+	poll_owner = frappe.get_cached_value("Raven Poll", poll_id, "owner")
+	is_poll_closed = frappe.get_cached_value("Raven Poll", poll_id, "is_disabled")
+
+	# Check if the current user is the owner of the poll
+	if poll_owner != frappe.session.user:
+		frappe.throw(_("Only the poll owner can close the poll"), frappe.PermissionError)
+
+	# Check if the poll is already closed
+	if is_poll_closed:
+		frappe.throw(_("This poll is already closed"), frappe.PermissionError)
+
+	# Close the poll
+	frappe.db.set_value("Raven Poll", poll_id, "is_disabled", 1)
+
+	# Event to update the poll
+	frappe.publish_realtime(
+		"doc_update",
+		{"doctype": "Raven Poll", "name": poll_id},
+		doctype="Raven Poll",
+		docname=poll_id,
+		after_commit=True,
+	)
+
+	return "Poll closed successfully."

@@ -17,9 +17,9 @@ type TicketType = "Feedback" | "Question" | "Bug"
 const subTitles: Record<TicketType, { heading: string, subHeading: string, defaultTextAreaValue: string, footerHeading: ReactNode }> = {
     "Feedback": {
         heading: "Send feedback",
-        subHeading: "How can we improve Linear? If you have a feature request, can you also share how you would use it and why it's important to you?",
+        subHeading: "How can we improve Raven? If you have a feature request, can you also share how you would use it and why it's important to you?",
         defaultTextAreaValue: "What if...",
-        footerHeading: <span>You can also email us at <Link href="mailto:support@thecommit.company" underline="none" size='1' target="_blank">support@thecommit.company</Link> We can't respond to every request but we read all of them.</span>
+        footerHeading: <span>You can also email us at <Link href="mailto:support@thecommit.company" underline="none" size='1' target="_blank">support@thecommit.company</Link>. We can't respond to every request but we read all of them.</span>
     },
     "Question": {
         heading: "Ask a question",

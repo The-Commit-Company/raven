@@ -29,3 +29,8 @@ export const convertMillisecondsToReadableDate = (timestampInMilliseconds: numbe
 
     return dayjs.unix(timestampInMilliseconds / 1000)
 }
+
+// Convert a Date object to Frappe datetime format string
+export const convertDateToTimeString = (date: Date): string => {
+    return dayjs(date).format(FRAPPE_DATETIME_FORMAT)
+}
