@@ -309,7 +309,7 @@
    "fieldname": "google_service_account_json_key",
    "fieldtype": "Password",
    "label": "Google Service Account JSON Key",
-   "length": 4000
+   "length": 800
   }
  ],
  "grid_page_length": 50,
