@@ -60,6 +60,7 @@ class RavenSearch(SQLiteSearch):
 
     def prepare_document(self, doc):
         """Custom document preparation"""
+        link_document = None
         if doc.link_document:
             link_document = get_preview_data(doc.link_doctype, doc.link_document)
             lowerCaseDoctype = doc.link_doctype.lower().replace(" ", "-")
@@ -72,7 +73,6 @@ class RavenSearch(SQLiteSearch):
             return None
         
         if doc.link_document:
-            link_document = get_preview_data(doc.link_doctype, doc.link_document)
             document["title"] = link_document.get("preview_title")
         
         is_thread = frappe.db.get_value("Raven Channel", doc.channel_id, "is_thread")
