@@ -28,6 +28,61 @@ def handle_bot_dm(message, bot):
 		return handle_bot_dm_with_assistants(message, bot)
 
 
+def push_message_to_channel(channel_id, text, is_bot_message=False, bot_user=None):
+    message = frappe.get_doc({
+        "doctype": "Raven Message",
+        "channel_id": channel_id,
+        "text": text,
+        "message_type": "Text",
+        "is_bot_message": is_bot_message,
+        "bot": bot_user if is_bot_message else None,
+    })
+    message.insert(ignore_permissions=True)
+    message.save()
+
+
+# def handle_ai_message_on_mention(self):
+#     if self.is_bot_message:
+#         return
+
+#     raven_settings = frappe.get_cached_doc("Raven Settings")
+#     if not raven_settings.enable_ai_integration:
+#         return
+
+#     channel_doc = frappe.get_cached_doc("Raven Channel", self.channel_id)
+
+#     if channel_doc.is_ai_thread:
+#         frappe.enqueue(handle_ai_thread_message, message=self, channel=channel_doc)
+#         return
+
+#     # if channel_doc.is_direct_message:
+#     #     peer_user = get_peer_user(self.channel_id, True)
+#     #     if peer_user and peer_user.get("type") == "Bot":
+#     #         bot = frappe.get_cached_doc("Raven Bot", peer_user.get("user_id"))
+#     #         if bot.is_ai_bot:
+#     #             frappe.enqueue(handle_bot_dm, message=self, bot=bot)
+#     #             return
+
+#     if not channel_doc.is_direct_message:
+#         if self.text and any(cmd in self.text.lower() for cmd in ["@HelloBot"]):
+#             bot_name = "@HelloBot"  
+#             bot = frappe.get_doc("Raven Bot", bot_name)
+
+#             # push_message_to_channel(
+#             #     channel_id=self.channel_id,
+#             #     text="Pre",
+#             #     is_bot_message=True,
+#             #     bot_user=bot.name,
+#             # )
+
+#             frappe.enqueue(
+#                 process_message_with_agent,
+#                 message=self,
+#                 bot=bot,
+#                 channel_id=self.channel_id,  
+#                 is_new_conversation=True,
+#             )
+
 def handle_bot_dm_with_agents(message, bot):
 	"""
 	Handle direct messages using Agents SDK.

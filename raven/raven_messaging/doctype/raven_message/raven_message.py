@@ -25,6 +25,47 @@ from raven.utils import (
 )
 
 
+
+def handle_bot_command(message, bot):
+    command = message.text.strip().lower()
+    bs = BeautifulSoup(command, 'html.parser')
+    text = bs.get_text()
+    command_map = {
+        "/work_plan": "Update Your Todays Work Plan ",
+        "/work_update": "Hello Mention your Work Update.",
+
+    }
+
+    if text == "/work_plan":
+        from frappe.utils import now
+        reply = f"The current server time is: {now()}"
+    else:
+        reply = command_map.get(text, "Unknown command. Try /help")
+
+    send_bot_message(bot=bot.name, to_channel=message.channel_id, content=reply)
+
+
+
+def send_bot_message(bot, to_channel, content):
+    bot_user = frappe.get_cached_value("Raven Bot", bot, "bot_user")
+
+    frappe.get_doc({
+        "doctype": "Raven Message",
+        "channel_id": to_channel,
+        "text": content,
+        "content": content,
+        "message_type": "Text",
+        "is_bot_message": 1,
+        "bot": bot,
+        "owner": bot_user,
+    }).insert(ignore_permissions=True)
+
+
+    frappe.db.commit()
+	
+
+
+
 class RavenMessage(Document):
 	# begin: auto-generated types
 	# ruff: noqa
@@ -198,14 +239,18 @@ class RavenMessage(Document):
 
 		if self.message_type == "Text":
 			self.handle_ai_message()
+			self.handle_mention_on_group()
 
 		self.send_push_notification()
 
 	def handle_ai_message(self):
 
 		# If the message was sent by a bot, do not call the function
+		
+		# print("inside of ai message" ,self.as_dict())
 		if self.is_bot_message:
 			return
+		
 
 		# If AI Integration is not enabled, do not call the function
 		raven_settings = frappe.get_cached_doc("Raven Settings")
@@ -235,7 +280,6 @@ class RavenMessage(Document):
 		is_dm = channel_doc.is_direct_message
 
 		# Only DMs to bots need to be handled (for now)
-
 		if not is_dm:
 			return
 
@@ -252,9 +296,14 @@ class RavenMessage(Document):
 			return
 
 		bot = frappe.get_cached_doc("Raven Bot", peer_user_doc.bot)
-
 		if not bot.is_ai_bot:
-			return
+			# print(self.as_dict())
+			# for key, value in self.items():
+				# print(f"{key}: {value}")
+			# return
+
+			handle_bot_command(message=self , bot=bot)
+			# return
 
 		frappe.enqueue(
 			method=handle_bot_dm,
@@ -265,9 +314,57 @@ class RavenMessage(Document):
 			at_front=True,
 		)
 
+	def handle_mention_on_group(self):
+		print(self.as_dict())
+		
+		if self.is_bot_message:
+			return
+		
+
+		raven_settings = frappe.get_cached_doc("Raven Settings")
+		if not raven_settings.enable_ai_integration:
+			return
+
+
+		channel_doc = frappe.get_cached_doc("Raven Channel", self.channel_id)
+
+		is_ai_thread = channel_doc.is_ai_thread
+
+		if is_ai_thread:
+			frappe.enqueue(
+				method=handle_ai_thread_message,
+				message=self,
+				timeout=600,
+				channel=channel_doc,
+				at_front=True,
+				job_name="handle_ai_thread_message",
+			)
+
+			return
+
+		bot = frappe.get_cached_doc("Raven Bot", self.bot)
+		if not bot.is_ai_bot:
+			# print(self.as_dict())
+			# for key, value in self.items():
+				# print(f"{key}: {value}")
+			# return
+
+			handle_bot_command(message=self , bot=bot)
+			# return
+
+		frappe.enqueue(
+			method=handle_bot_dm,
+			message=self,
+			bot=bot,
+			timeout=600,
+			job_name="handle_bot_dm",
+			at_front=True,
+		)
+
+
+
 	def set_last_message_timestamp(self):
 
-		# Update directly via SQL since we do not want to invalidate the document cache
 		message_details = json.dumps(
 			{
 				"message_id": self.name,

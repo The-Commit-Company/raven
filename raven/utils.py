@@ -213,3 +213,19 @@ def clear_thread_reply_count_cache(thread_id: str):
 	Clear the thread reply count cache
 	"""
 	frappe.cache().hdel("raven:thread_reply_count", thread_id)
+
+
+# your_app/utils.py
+
+def push_message_to_channel(channel_id, text, is_bot_message=False, bot_user=None):
+    doc = frappe.get_doc({
+        "doctype": "Raven Message",
+        "channel_id": channel_id,
+        "text": text,
+        "message_type": "Text",
+        "is_bot_message": is_bot_message,
+        "bot": bot_user if is_bot_message else None,
+    })
+
+
+    doc.insert(ignore_permissions=True)

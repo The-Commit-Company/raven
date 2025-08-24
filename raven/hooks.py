@@ -147,7 +147,8 @@ doc_events = {
 		"on_trash": "raven.raven_integrations.controllers.department.on_trash",
 	},
 	"Employee": {
-		"after_insert": "raven.raven_integrations.controllers.employee.after_insert",
+		"after_insert": "rav"
+		"en.raven_integrations.controllers.employee.after_insert",
 		"on_update": "raven.raven_integrations.controllers.employee.on_update",
 		"on_trash": "raven.raven_integrations.controllers.employee.on_trash",
 	},
@@ -158,8 +159,9 @@ doc_events = {
 
 scheduler_events = {
 	"cron": {
-		# run every 5 minutes
-		"*/5 * * * *": ["raven.scheduler.close_expired_polls.close_expired_polls"]
+		"*/5 * * * *": ["raven.scheduler.close_expired_polls.close_expired_polls"],
+		"0 10 * * *": ["raven.scheduler.morning_reminder.post_work_plan"],
+        "0 19 * * *":["raven.scheduler.morning_reminder.post_work_update"]
 	}
 }
 
