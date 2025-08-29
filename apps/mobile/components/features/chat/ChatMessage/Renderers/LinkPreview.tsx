@@ -1,8 +1,8 @@
 import Skeleton from '@components/layout/Skeleton';
 import { useLinkPreview } from '@hooks/useLinkPreview';
 import { memo } from 'react';
-import { View, Text, TouchableOpacity, Linking } from 'react-native';
-import { Image } from 'expo-image';
+import { View, Text, TouchableOpacity, Linking, Image } from 'react-native';
+// import { Image } from 'expo-image';
 
 type LinkPreviewProps = {
     messageID: string;
@@ -36,8 +36,8 @@ const LinkPreview = memo(({ href }: LinkPreviewProps) => {
                 <View>
                     {image && <Image
                         source={{ uri: image }}
-                        contentFit="cover"
-                        contentPosition={'center'}
+                        // contentFit="cover"
+                        // contentPosition={'center'}
                         style={{ width: '100%', height: 144 }}
                     />}
                     <View className="p-2 pt-2.5">

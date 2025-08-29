@@ -1,5 +1,5 @@
 import { useCallback, useMemo, memo } from 'react';
-import { View, Pressable, Linking, Share } from 'react-native';
+import { View, Pressable, Linking, Share, Image } from 'react-native';
 import { FrappeError } from 'frappe-react-sdk';
 import * as Clipboard from "expo-clipboard"
 import { toast } from 'sonner-native';
@@ -12,7 +12,7 @@ import UserAvatar from '@components/layout/UserAvatar';
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import useFileURL from '@hooks/useFileURL';
-import { Image } from 'expo-image';
+// import { Image } from 'expo-image';
 import clsx from 'clsx';
 import { Divider } from '@components/layout/Divider';
 import { useColorScheme } from '@hooks/useColorScheme';
@@ -268,7 +268,7 @@ const ImagePreview = ({ image }: { image: string }) => {
     const source = useFileURL(image);
 
     return <Image source={source}
-        contentFit='cover'
+    // contentFit='cover'
         style={{
             height: 200,
             width: "auto",

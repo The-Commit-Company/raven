@@ -1,7 +1,7 @@
 import { ImageMessage } from "@raven/types/common/Message";
 import { UserFields } from "@raven/types/common/UserFields";
-import { View } from "react-native";
-import { Image } from "expo-image";
+import { View, Image } from "react-native";
+// import { Image } from "expo-image";
 import useFileURL, { UseFileURLReturnType } from "@hooks/useFileURL";
 import { Gesture, GestureDetector, TapGesture } from "react-native-gesture-handler";
 import { runOnJS } from "react-native-reanimated";
@@ -95,7 +95,7 @@ const ImageMessageLayout = ({ source, width, height, alt, blurhash = DEFAULT_BLU
         }}
     >
 
-        <Image
+        {/* <Image
             source={source}
             style={{
                 borderRadius: 8,
@@ -105,6 +105,15 @@ const ImageMessageLayout = ({ source, width, height, alt, blurhash = DEFAULT_BLU
             placeholder={blurhash ? { blurhash, height, width } : undefined}
             contentFit="cover"
             transition={200}
+            alt={alt}
+        /> */}
+        <Image
+            source={source}
+            style={{
+                borderRadius: 8,
+                width: width,
+                height: height,
+            }}
             alt={alt}
         />
 

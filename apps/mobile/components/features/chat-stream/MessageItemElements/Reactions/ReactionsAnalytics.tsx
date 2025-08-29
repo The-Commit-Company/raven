@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import { Dimensions, Pressable, View } from 'react-native'
+import { Dimensions, Pressable, View, Image } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS, useAnimatedReaction } from 'react-native-reanimated'
 import { BottomSheetFlashList, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
@@ -11,7 +11,7 @@ import { Divider } from '@components/layout/Divider'
 import { Sheet } from '@components/nativewindui/Sheet'
 import { ReactionObject } from './MessageReactions'
 import useFileURL from '@hooks/useFileURL'
-import { Image } from 'expo-image'
+// import { Image } from 'expo-image'
 
 const { width } = Dimensions.get('window');
 
@@ -213,5 +213,11 @@ const UserItem = ({ user, reaction, is_custom, emoji_name }: UserItemProps) => {
 const CustomEmojiView = ({ emoji, width = 18, height = 18, emojiName }: { emoji: string, width?: number, height?: number, emojiName?: string }) => {
     const source = useFileURL(emoji)
 
-    return <Image source={source} style={{ width, height }} alt={emojiName ?? emoji} contentFit='scale-down' contentPosition={'center'} />
+    return <Image
+        source={source}
+        style={{ width, height }}
+        alt={emojiName ?? emoji}
+    // contentFit='scale-down'
+    // contentPosition={'center'}
+    />
 }

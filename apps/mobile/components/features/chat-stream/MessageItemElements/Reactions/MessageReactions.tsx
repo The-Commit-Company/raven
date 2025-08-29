@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, Image } from 'react-native'
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet'
 import { BottomSheetView } from '@gorhom/bottom-sheet'
@@ -8,7 +8,7 @@ import { useColorScheme } from '@hooks/useColorScheme'
 import EmojiPicker from '@components/common/EmojiPicker/EmojiPicker'
 import ReactionAnalytics from './ReactionsAnalytics'
 import useFileURL from '@hooks/useFileURL'
-import { Image } from 'expo-image'
+// import { Image } from 'expo-image'
 import clsx from 'clsx'
 import { ImpactFeedbackStyle } from 'expo-haptics'
 import { impactAsync } from 'expo-haptics'
@@ -139,7 +139,14 @@ const ReactionButton = ({ reaction, currentUser, saveReaction, onLongPress, long
 const CustomEmojiView = ({ emoji_src }: { emoji_src: string }) => {
     const source = useFileURL(emoji_src ?? "")
 
-    return <Image transition={100} source={source} style={{ width: 20, height: 20, borderRadius: 2 }} contentFit='scale-down' contentPosition={'center'} />
+    return <Image
+        // transition={100}
+        source={source}
+        style={{ width: 20, height: 20, borderRadius: 2 }}
+        // contentFit='scale-down'
+        // contentPosition={'center'}
+        alt={emoji_src}
+    />
 }
 
 interface AddEmojiButtonProps {

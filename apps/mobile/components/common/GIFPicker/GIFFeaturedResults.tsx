@@ -1,8 +1,8 @@
 import { useMemo, useCallback } from "react";
 import { useSWRInfinite } from "frappe-react-sdk";
-import { TouchableOpacity, Dimensions } from "react-native";
+import { TouchableOpacity, Dimensions, Image } from "react-native";
 import { TENOR_API_KEY, TENOR_CLIENT_KEY, TENOR_FEATURED_API_ENDPOINT_BASE } from "./GIFPickerKeys";
-import { Image } from "expo-image";
+// import { Image } from "expo-image";
 import { BottomSheetFlashList } from "@gorhom/bottom-sheet";
 
 export interface Props {
@@ -64,7 +64,7 @@ const GIFFeaturedResults = ({ onSelect }: Props) => {
                 className="bg-background"
             >
                 <Image
-                    contentFit="cover"
+                    // contentFit="cover"
                     source={{ uri: gif.media_formats.gif.url }}
                     style={{
                         width: "100%",

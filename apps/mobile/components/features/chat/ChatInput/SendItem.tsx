@@ -4,7 +4,7 @@ import { View, Text, ActivityIndicator, Pressable, useWindowDimensions } from "r
 import CrossIcon from "@assets/icons/CrossIcon.svg"
 import { useColorScheme } from "@hooks/useColorScheme"
 import { getFileExtension, isImageFile } from "@raven/lib/utils/operations"
-import { Image } from "expo-image"
+// import { Image } from "expo-image"
 import { COLORS } from "@theme/colors"
 
 const SendItem = ({ file, numberOfFiles, removeFile }: { file: CustomFile, numberOfFiles: number, removeFile: (file: CustomFile) => void }) => {
