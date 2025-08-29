@@ -1,6 +1,7 @@
 import 'expo-dev-client';
 import { router, Slot, usePathname } from 'expo-router';
 import { ThemeProvider } from '@react-navigation/native';
+import "../lib/nativewind-setup";
 import "../global.css";
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
