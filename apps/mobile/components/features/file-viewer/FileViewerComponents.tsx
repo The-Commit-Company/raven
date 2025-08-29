@@ -6,9 +6,9 @@ import { WebViewSourceUri } from "react-native-webview/lib/WebViewTypes"
 import { useVideoPlayer, VideoView } from 'expo-video'
 import ErrorBanner from "@components/common/ErrorBanner";
 import { router } from "expo-router";
-import { useWindowDimensions, View } from "react-native";
+import { useWindowDimensions, View, Image } from "react-native";
 import { fitContainer, ResumableZoom, Source, useImageResolution } from "react-native-zoom-toolkit";
-import { Image } from "expo-image";
+// import { Image } from "expo-image";
 
 
 export const useFileViewerAttributes = (uri: string) => {
@@ -109,7 +109,7 @@ const ImageComponent = ({ source, handleShowHeader }: { source: Source, handleSh
 
     return (
         <ResumableZoom extendGestures maxScale={resolution} onTap={handleShowHeader} onSwipe={backSwipe}>
-            <Image source={source} style={{ ...size }} contentFit="contain" enableLiveTextInteraction />
+            <Image source={source} style={{ ...size }} alt={source.uri} />
         </ResumableZoom>
     )
 }

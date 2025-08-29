@@ -1,8 +1,8 @@
 import { useCallback, useContext } from 'react';
 import { FrappeConfig, FrappeContext, useSWRInfinite } from 'frappe-react-sdk';
-import { Dimensions, Platform, Pressable, View } from 'react-native'
+import { Dimensions, Platform, Pressable, View, Image } from 'react-native'
 import { router, useLocalSearchParams } from 'expo-router';
-import { Image } from 'expo-image';
+// import { Image } from 'expo-image';
 import { LegendList } from '@legendapp/list';
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import { useColorScheme } from '@hooks/useColorScheme';
@@ -142,10 +142,10 @@ const ImageListItem = ({ file }: { file: MediaInChannel }) => {
                     borderWidth: 1,
                     borderColor: colors.grey6,
                 }}
-                contentFit="cover"
-                transition={200}
+                // contentFit="cover"
+                // transition={200}
                 alt={file.file_name}
-                cachePolicy="memory"
+                // cachePolicy="memory"
             />
         </Pressable>
     )
