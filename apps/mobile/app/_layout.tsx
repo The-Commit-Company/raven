@@ -1,4 +1,8 @@
 import 'expo-dev-client';
+
+// Suppress React Native Firebase v22 modular deprecation warnings during migration
+globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+
 import { router, Slot, usePathname } from 'expo-router';
 import { ThemeProvider } from '@react-navigation/native';
 import "../lib/nativewind-setup";

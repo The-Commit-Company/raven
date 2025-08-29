@@ -1,10 +1,10 @@
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Text } from '@components/nativewindui/Text'
 import useFileURL from '@hooks/useFileURL'
 import { cn } from '@lib/cn'
 import { RavenUser } from '@raven/types/Raven/RavenUser'
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { TextProps, View, ViewProps } from 'react-native'
-import { Image, ImageSource, ImageProps } from 'expo-image'
+import { TextProps, View, ViewProps, ImageProps, Image as RNImage } from 'react-native'
+// import { Image as ExpoImage, ImageSource, ImageProps as ExpoImageProps, ImageErrorEventData } from 'expo-image'
 import BotIcon from '@assets/icons/BotIcon.svg'
 import { getHashOfString, getInitials, normalizeHash } from '@raven/lib/utils/utils'
 import { useColorScheme } from '@hooks/useColorScheme'
@@ -112,15 +112,37 @@ const UserAvatar = ({ src, isActive, alt, availabilityStatus, isBot, imageProps,
     )
 }
 
-/** Uses expo-image to handle caching the image */
-const ImageComponent = ({ status, source, alt, onDisplay, onError, borderRadius = 6, ...props }: ImageProps & { status: 'error' | 'loaded' | 'loading', source?: ImageSource, alt: string, onDisplay: () => void, onError: () => void, borderRadius?: number } & ImageProps) => {
+/** Uses React Native Image with caching - expo-image commented out due to New Architecture compatibility issues */
+const ImageComponent = ({ status, source, alt, onDisplay, onError, borderRadius = 6, ...props }: { status: 'error' | 'loaded' | 'loading', source?: ImageSource, alt: string, onDisplay: () => void, onError: (error: ImageErrorEventData) => void, borderRadius?: number } & ExpoImageProps) => {
 
     if (!source) return null
     if (status === 'error') return null
 
-    return <Image
-        source={source}
-        alt={alt}
+    // TODO: Switch back to expo-image when New Architecture compatibility is fixed
+    // return <ExpoImage
+    //     source={source}
+    //     alt={alt}
+    //     style={{
+    //         flex: 1,
+    //         width: '100%',
+    //         height: '100%',
+    //         borderRadius: borderRadius,
+    //         aspectRatio: 1,
+    //     }}
+    //     onLoad={onDisplay}
+    //     onError={onError}
+    //     {...props}
+    // />
+
+    // Use React Native Image with basic caching for now
+    const rnImageSource = typeof source === 'string'
+        ? { uri: source }
+        : typeof source === 'object' && source && 'uri' in source
+            ? { uri: source.uri }
+            : { uri: '' }
+
+    return <RNImage
+        source={rnImageSource}
         style={{
             flex: 1,
             width: '100%',
@@ -128,9 +150,9 @@ const ImageComponent = ({ status, source, alt, onDisplay, onError, borderRadius 
             borderRadius: borderRadius,
             aspectRatio: 1,
         }}
-        onDisplay={onDisplay}
-        onError={onError}
-        {...props}
+        onLoad={onDisplay}
+        onError={(error: any) => onError({ error: 'React Native Image failed' })}
+        resizeMode="cover"
     />
 }
 
