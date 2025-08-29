@@ -4,7 +4,7 @@ import { useColorScheme } from '@hooks/useColorScheme'
 import { Text } from '@components/nativewindui/Text'
 import { Toggle } from '@components/nativewindui/Toggle'
 import { useCallback, useContext, useEffect, useState } from 'react'
-import { AuthorizationStatus, getMessaging } from '@react-native-firebase/messaging';
+import { AuthorizationStatus, getMessaging, requestPermission } from '@react-native-firebase/messaging';
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { toast } from 'sonner-native'
 import * as Device from 'expo-device';
@@ -26,7 +26,7 @@ const NotificationSetting = () => {
 
     const onToggle = useCallback((enabled: boolean) => {
         if (enabled) {
-            messaging.requestPermission().then((authorizationStatus) => {
+            requestPermission(messaging).then((authorizationStatus) => {
                 if (authorizationStatus !== AuthorizationStatus.AUTHORIZED && authorizationStatus !== AuthorizationStatus.EPHEMERAL) {
                     throw new Error('User has not granted permission to receive notifications.')
                 }

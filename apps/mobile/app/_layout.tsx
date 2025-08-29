@@ -1,8 +1,4 @@
 import 'expo-dev-client';
-
-// Suppress React Native Firebase v22 modular deprecation warnings during migration
-globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-
 import { router, Slot, usePathname } from 'expo-router';
 import { ThemeProvider } from '@react-navigation/native';
 import "../lib/nativewind-setup";
@@ -19,7 +15,11 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { Toaster } from 'sonner-native';
 import { LogBox, Platform } from 'react-native';
-import { getMessaging } from '@react-native-firebase/messaging';
+import {
+    getMessaging,
+    onNotificationOpenedApp,
+    getInitialNotification
+} from '@react-native-firebase/messaging';
 import { setDefaultSite } from '@lib/auth';
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -60,7 +60,7 @@ export default function RootLayout() {
         const onMount = async () => {
             // Get the defualt site from the async storage
             // Also check if the app was started by a notification
-            const initialNotification = await messaging.getInitialNotification();
+            const initialNotification = await getInitialNotification(messaging);
 
             if (initialNotification) {
                 if (initialNotification.data?.channel_id && initialNotification.data?.sitename) {
@@ -88,7 +88,7 @@ export default function RootLayout() {
         }
 
         // Handle notification open when app is in background
-        const unsubscribeOnNotificationOpen = messaging.onNotificationOpenedApp(async (remoteMessage) => {
+        const unsubscribeOnNotificationOpen = onNotificationOpenedApp(messaging, async (remoteMessage) => {
             // console.log('Notification opened app from background state:', remoteMessage);
             if (remoteMessage.data?.channel_id && remoteMessage.data?.sitename) {
                 setDefaultSite(remoteMessage.data.sitename as string)
