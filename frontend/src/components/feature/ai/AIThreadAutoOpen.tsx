@@ -8,6 +8,13 @@ const AIThreadAutoOpen = () => {
     // Listen for ai_thread_created event
     useFrappeEventListener('ai_thread_created', (data) => {
         if (data.is_ai_thread && data.thread_id && data.channel_id && channelID === data.channel_id && workspaceID) {
+            // Store the thread info in sessionStorage before navigating
+            const threadInfo = {
+                threadID: data.thread_id,
+                timestamp: Date.now()
+            };
+            sessionStorage.setItem('ai_thread_thinking', JSON.stringify(threadInfo));
+            
             // Navigate to the AI thread - data.channel_id is the original DM channel, data.thread_id is the message ID
             navigate(`/${workspaceID}/${data.channel_id}/thread/${data.thread_id}`);
         }
