@@ -19,6 +19,7 @@ from raven.ai.functions import (
 	get_list,
 	get_report_result,
 	get_value,
+	send_message,
 	set_value,
 	submit_document,
 	update_document,
@@ -27,7 +28,7 @@ from raven.ai.functions import (
 from raven.ai.openai_client import get_open_ai_client
 
 
-def stream_response(ai_thread_id: str, bot, channel_id: str):
+def stream_response(ai_thread_id: str, bot, channel_id: str, current_message_id: str):
 
 	client = get_open_ai_client()
 
@@ -312,6 +313,17 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 							ignore_prepared_report=args.get("ignore_prepared_report", False),
 							are_default_filters=args.get("are_default_filters", True),
 						)
+					if function.type == "Send Message":
+						self.publish_event("Delivering your message...")
+						function_output = send_message(
+							current_message_id,
+							text=args.get("content"),
+							bot=bot,
+							link_doctype=args.get("link_doctype"),
+							link_document=args.get("link_document"),
+							file=args.get("file"),
+						)
+
 					tool_outputs.append(
 						{"tool_call_id": tool.id, "output": json.dumps(function_output, default=str)}
 					)
