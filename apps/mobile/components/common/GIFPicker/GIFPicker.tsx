@@ -1,6 +1,6 @@
-import { Image } from "expo-image";
+// import { Image } from "expo-image";
 import { useState } from "react";
-import { View } from "react-native";
+import { View, Image } from "react-native";
 import { useDebounce } from "@raven/lib/hooks/useDebounce";
 import GIFSearchResults from "./GIFSearchResults";
 import GIFFeaturedResults from "./GIFFeaturedResults";
@@ -35,7 +35,7 @@ const GIFPicker = ({ onSelect }: GIFPickerProps) => {
                     source={{
                         uri: "https://www.gstatic.com/tenor/web/attribution/PB_tenor_logo_blue_horizontal.png"
                     }}
-                    contentFit="contain"
+                    // contentFit="contain"
                     style={{ width: 100, height: 16 }}
                 />
             </View>

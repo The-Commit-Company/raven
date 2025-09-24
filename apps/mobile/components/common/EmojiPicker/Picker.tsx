@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
-import { View, Text, Dimensions, Pressable } from 'react-native';
+import { View, Text, Dimensions, Pressable, Image } from 'react-native';
 import SearchInput from '../SearchInput/SearchInput';
-import { Image } from 'expo-image';
+// import { Image } from 'expo-image';
 import useFileURL from '@hooks/useFileURL';
 import Categories from './Categories';
 import { emojis as EMOJIS, categories as EMOJI_CATEGORIES } from "./emojis.json";
@@ -165,7 +165,7 @@ const EmojiItem = ({ emoji, onSelect, perLine }: { emoji: Emoji, onSelect: (emoj
                 onPress={onReact}
                 hitSlop={10}
             >
-                <Image source={source} style={{ width: emojiSize, height: emojiSize }} contentFit='scale-down' contentPosition={'center'} />
+                <Image source={source} style={{ width: emojiSize, height: emojiSize }} alt={emoji.name} />
             </Pressable>
         );
     }

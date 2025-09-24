@@ -1,6 +1,6 @@
-import { Pressable, View, ViewProps } from "react-native";
+import { Pressable, View, ViewProps, Image } from "react-native";
 import { Text } from '@components/nativewindui/Text';
-import { Image } from "expo-image";
+// import { Image } from "expo-image";
 import { getFileName } from "@raven/lib/utils/operations";
 import { useGetUser } from "@raven/lib/hooks/useGetUser";
 import useFileURL from "@hooks/useFileURL";
@@ -107,8 +107,8 @@ const ImageFileReplyBlock = ({ file, messageType, owner }: { file: string, messa
                         height: 20,
                         borderRadius: 4,
                     }}
-                    contentFit="cover"
-                    transition={200}
+                    // contentFit="cover"
+                    // transition={200}
                 />
             ) : (
                 <UniversalFileIcon width={18} height={18} fileName={fileName} />

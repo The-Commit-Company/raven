@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef } from 'react'
 import * as Device from 'expo-device';
-import { AuthorizationStatus, getMessaging } from '@react-native-firebase/messaging';
+import { AuthorizationStatus, getMessaging, requestPermission } from '@react-native-firebase/messaging';
 import useSiteContext from './useSiteContext';
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk';
 
@@ -21,7 +21,7 @@ const useFirebasePushTokenListener = () => {
 
         // When the site is switched, fetch the token and store it in the database
         if (siteInfo) {
-            messaging.requestPermission().then(async (authorizationStatus) => {
+            requestPermission(messaging).then(async (authorizationStatus) => {
                 if (authorizationStatus === AuthorizationStatus.AUTHORIZED) {
                     const token = await messaging.getToken()
                     call.post('raven.api.notification.subscribe', {
