@@ -17,3 +17,5 @@ raven/www/raven_v3.html
 apps/mobile/ios
 apps/mobile/android
 apps/mobile/.expo
+
+apps/web/.env.local

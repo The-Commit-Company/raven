@@ -47,15 +47,9 @@ export const EditChannelDescriptionModalContent = ({ channelData, onClose }: Ren
                     <Box width='100%'>
                         <Label htmlFor='channel_description'>{__("Channel description")}</Label>
                         <TextArea
-                            maxLength={140}
                             id='channel_description'
                             placeholder={__('Add description')}
-                            {...register('channel_description', {
-                                maxLength: {
-                                    value: 140,
-                                    message: __("Channel description cannot be more than 200 characters.")
-                                }
-                            })}
+                            {...register('channel_description')}
                             aria-invalid={errors.channel_description ? 'true' : 'false'}
                         />
                         <Text size='1' weight='light'>{__("This is how people will know what this channel is about.")}</Text>

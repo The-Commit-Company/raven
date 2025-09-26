@@ -226,15 +226,9 @@ const CreateChannelContent = ({ isOpen, setIsOpen }: { setIsOpen: (v: boolean) =
                     <Box>
                         <Label htmlFor='channel_description'>{__("Description")} <Text as='span' weight='light'>({__("optional")})</Text></Label>
                         <TextArea
-                            maxLength={140}
                             id='channel_description'
                             placeholder='Great wine and food. What could go wrong?'
-                            {...register('channel_description', {
-                                maxLength: {
-                                    value: 140,
-                                    message: __("Channel description cannot be more than {0} characters.", ["140"])
-                                }
-                            })}
+                            {...register('channel_description')}
                             aria-invalid={errors.channel_description ? 'true' : 'false'}
                         />
                         <HelperText>What is this channel about?</HelperText>

@@ -19,7 +19,7 @@ interface FileExtensionIconProps extends IconBaseProps {
     ext: string
 }
 
-const getFileType = (ext: string) => {
+export const getFileType = (ext: string) => {
     switch (ext) {
         case 'pdf': return 'pdf'
         case 'doc': return 'word'

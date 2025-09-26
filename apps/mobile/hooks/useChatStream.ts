@@ -96,24 +96,24 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
             if (!isDataFetched.current) {
                 isDataFetched.current = true
 
-                // // Single attempt with RAF to ensure we're in the next frame
-                // requestAnimationFrame(() => {
-                //     // Check if we have both the ref and data
-                //     if (data.message.messages?.length) {
-                //         listRef?.current?.scrollToEnd({
-                //             animated: false
-                //         })
+                // Single attempt with RAF to ensure we're in the next frame
+                requestAnimationFrame(() => {
+                    // Check if we have both the ref and data
+                    if (data.message.messages?.length) {
+                        listRef?.current?.scrollToEnd({
+                            animated: false
+                        })
 
-                //         // One backup attempt after a short delay
-                //         setTimeout(() => {
-                //             if (listRef?.current) {
-                //                 listRef.current.scrollToEnd({
-                //                     animated: false
-                //                 })
-                //             }
-                //         }, 250)
-                //     }
-                // })
+                        // One backup attempt after a short delay
+                        setTimeout(() => {
+                            if (listRef?.current) {
+                                listRef.current.scrollToEnd({
+                                    animated: false
+                                })
+                            }
+                        }, 250)
+                    }
+                })
             }
 
             if (!data.message.has_new_messages) {
