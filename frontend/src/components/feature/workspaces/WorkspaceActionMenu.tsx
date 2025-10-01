@@ -2,8 +2,10 @@ import { Label } from '@/components/common/Form'
 import { Loader } from '@/components/common/Loader'
 import { ErrorBanner } from '@/components/layout/AlertBanner/ErrorBanner'
 import { HStack, Stack } from '@/components/layout/Stack'
+import { lastWorkspaceAtom } from '@/utils/lastVisitedAtoms'
 import { AlertDialog, Box, Button, Dialog, DropdownMenu, IconButton, TextField, VisuallyHidden } from '@radix-ui/themes'
 import { useFrappeDeleteDoc, useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
+import { useAtom } from 'jotai'
 import { useState } from 'react'
 import { AiOutlineEdit } from 'react-icons/ai'
 import { BiDotsVerticalRounded, BiTrash } from 'react-icons/bi'
@@ -65,6 +67,8 @@ const RenameWorkspaceDialog = ({ onOpenChange, workspaceID, workspaceName }: { o
 
     const { call, loading, error } = useFrappePostCall("frappe.model.rename_doc.update_document_title")
 
+    const [lastWorkspace, setLastWorkspace] = useAtom(lastWorkspaceAtom)
+
     const handleSubmit = () => {
         call({
             doctype: "Raven Workspace",
@@ -76,6 +80,10 @@ const RenameWorkspaceDialog = ({ onOpenChange, workspaceID, workspaceName }: { o
                 toast.success("Workspace renamed")
                 globalMutate("workspaces_list")
                 onOpenChange(false)
+                // Update local storage if the last used workspace was renamed
+                if (lastWorkspace === workspaceID) {
+                    setLastWorkspace(res.message)
+                }
                 navigate("../" + res.message, {
                     replace: true
                 })
