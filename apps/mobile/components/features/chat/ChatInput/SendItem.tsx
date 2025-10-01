@@ -35,7 +35,7 @@ const SendItem = ({ file, numberOfFiles, removeFile }: { file: CustomFile, numbe
                     <UniversalFileIcon fileName={file.name} width={40} height={40} />
                     <View className='flex-col gap-1'>
                         <Text className="line-clamp-1 pr-14 color-foreground">{file.name}</Text>
-                        <Text className="text-xs color-grayText">{extension.toUpperCase()}</Text>
+                        <Text className="text-xs color-grayText">{extension?.toUpperCase()}</Text>
                     </View>
                 </View>}
             <Pressable hitSlop={10} className="absolute -right-2 -top-2 bg-slate-800 rounded-full p-0.5 border-2 border-background"
