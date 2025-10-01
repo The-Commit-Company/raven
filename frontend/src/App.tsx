@@ -35,8 +35,16 @@ const CACHE_KEYS = [
 
 const isDesktop = window.innerWidth > 768
 
-const lastWorkspace = JSON.parse(localStorage.getItem('ravenLastWorkspace') ?? '""') ?? ''
-const lastChannel = JSON.parse(localStorage.getItem('ravenLastChannel') ?? '""') ?? ''
+let lastWorkspace = ""
+let lastChannel = ""
+
+try {
+  lastWorkspace = JSON.parse(localStorage.getItem('ravenLastWorkspace') ?? '""') ?? ''
+  lastChannel = JSON.parse(localStorage.getItem('ravenLastChannel') ?? '""') ?? ''
+}
+catch {
+
+}
 
 console.log("Last workspace", lastWorkspace)
 
