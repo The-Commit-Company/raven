@@ -53,11 +53,11 @@ def react(message_id: str, reaction: str, is_custom: bool = False, emoji_name: s
 			"Raven Message Reaction",
 			filters={"message": message_id, "owner": user, "reaction_escaped": reaction_escaped},
 		)
-		
+
 		# Hook to trigger when delete reaction
 		for fn in frappe.get_hooks("raven_message_reaction_after_delete"):
 			frappe.get_attr(fn)(message_id)
-			
+
 		calculate_message_reaction(message_id, channel_id)
 		return "Ok"
 	except Exception as e:
