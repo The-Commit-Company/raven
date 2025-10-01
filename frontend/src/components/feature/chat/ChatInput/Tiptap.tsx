@@ -303,10 +303,6 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
                                     return
                                 }
 
-                                const images = Array.from(
-                                    event.clipboardData.files
-                                ).filter(file => /image/i.test(file.type))
-
                                 const files = Array.from(
                                     event.clipboardData.files
                                 )
@@ -315,10 +311,6 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
                                 }
 
                                 event.preventDefault()
-
-                                images.forEach(image => {
-                                    fileProps.addFile(image)
-                                })
 
                                 files.forEach(file => {
                                     fileProps.addFile(file)
