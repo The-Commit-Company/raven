@@ -12,6 +12,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "cd frontend && yarn dev",
+    "dev-web": "cd apps/web && yarn dev",
     "build": "yarn build-web && yarn build-web-v3",
     "postinstall": "yarn install-web && yarn install-desk",
     "install-desk": "cd raven && yarn install",
