@@ -63,7 +63,7 @@ def update_poll_votes(poll_id):
 	"""
 	To update all the votes in a poll, instead of updating the document directly, just write to the child table to avoid setting the "modified" timestamp.
 	"""
-	poll = frappe.get_cached_doc("Raven Poll", poll_id, for_update=True)
+	poll = frappe.get_doc("Raven Poll", poll_id, for_update=True)
 	# get votes for each option
 	poll_votes = frappe.get_all(
 		"Raven Poll Vote",
