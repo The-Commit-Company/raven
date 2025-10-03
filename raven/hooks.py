@@ -256,3 +256,5 @@ on_logout = "raven.api.user_availability.set_user_inactive"
 export_python_type_annotations = True
 
 raven_document_link_override = "raven.api.document_link.get_new_app_document_links"
+
+sqlite_search = ['raven.api.search.RavenSearch']
