@@ -1,6 +1,6 @@
 {
   "name": "raven-app",
-  "version": "2.6.2",
+  "version": "2.6.4",
   "description": "",
   "main": "index.js",
   "scripts": {

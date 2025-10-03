@@ -159,6 +159,11 @@ class RavenMessage(Document):
 		"""
 		self.validate_poll_id()
 
+		if not self.is_new() and self.has_value_changed("message_reactions"):
+			frappe.throw(
+				_("Direct modification of message_reactions is not allowed. Use the Reactions API.")
+			)
+
 	def validate_linked_message(self):
 		"""
 		If there is a linked message, the linked message should be in the same channel

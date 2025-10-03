@@ -60,7 +60,7 @@ const DocTypeCard = memo(({
         if (!data) return { previewFields: [], allFields: [] }
         const fieldsToRemove = ['preview_image', 'preview_title', 'id', 'raven_document_link'];
 
-        const allFields = Object.entries(Object.keys(data).reduce((acc, key) => {
+        const allFields = Object.entries(Object.keys(data)?.reduce((acc, key) => {
             if (!fieldsToRemove.includes(key)) {
                 acc[key as keyof typeof data] = data[key]?.replace(/<[^>]*>?/g, '');
             }
