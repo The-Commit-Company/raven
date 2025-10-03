@@ -27,8 +27,6 @@ from raven.utils import (
 
 class RavenMessage(Document):
 	# begin: auto-generated types
-	# ruff: noqa
-
 	# This code is auto-generated. Do not modify anything in this block.
 
 	from typing import TYPE_CHECKING
@@ -56,6 +54,7 @@ class RavenMessage(Document):
 		link_doctype: DF.Link | None
 		link_document: DF.DynamicLink | None
 		linked_message: DF.Link | None
+		links: DF.SmallText | None
 		mentions: DF.Table[RavenMention]
 		message_reactions: DF.JSON | None
 		message_type: DF.Literal["Text", "Image", "File", "Poll", "System"]
@@ -65,7 +64,6 @@ class RavenMessage(Document):
 		text: DF.LongText | None
 		thumbnail_height: DF.Data | None
 		thumbnail_width: DF.Data | None
-	# ruff: noqa
 	# end: auto-generated types
 
 	def before_validate(self):
@@ -84,7 +82,7 @@ class RavenMessage(Document):
 		1. Extract all user mentions
 		2. Remove empty trailing paragraphs
 		3. Extract the text content
-		4. TODO: Extract all links
+		4. Extract all links and store as | separated string
 		"""
 		if not self.text:
 			return
@@ -94,6 +92,14 @@ class RavenMessage(Document):
 		soup = BeautifulSoup(self.text, "html.parser")
 		self.remove_empty_trailing_paragraphs(soup)
 		self.extract_mentions(soup)
+
+		links = []
+		for link in soup.find_all("a"):
+			href = link.get("href")
+			if href:
+				links.append(href)
+		if links:
+			self.links = "|" + "|".join(links) + "|"
 
 		text_content = soup.get_text(" ", strip=True)
 
@@ -153,6 +159,11 @@ class RavenMessage(Document):
 		2. If the message is of type Poll, the poll_id should be set
 		"""
 		self.validate_poll_id()
+
+		if not self.is_new() and self.has_value_changed("message_reactions"):
+			frappe.throw(
+				_("Direct modification of message_reactions is not allowed. Use the Reactions API.")
+			)
 
 	def validate_linked_message(self):
 		"""

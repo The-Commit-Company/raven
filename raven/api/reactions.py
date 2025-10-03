@@ -15,13 +15,10 @@ def react(message_id: str, reaction: str, is_custom: bool = False, emoji_name: s
 	If yes, then unreacts (deletes), else reacts (creates).
 	"""
 
+	if not frappe.has_permission("Raven Message", doc=message_id, ptype="read"):
+		frappe.throw(_("You do not have permission to react to this message"), frappe.PermissionError)
+
 	channel_id = frappe.get_cached_value("Raven Message", message_id, "channel_id")
-	channel_type = frappe.get_cached_value("Raven Channel", channel_id, "type")
-
-	if channel_type == "Private":
-
-		if not is_channel_member(channel_id):
-			frappe.throw(_("You do not have permission to react to this message"), frappe.PermissionError)
 
 	if is_custom:
 		# The reaction is a custom emoji with a URL
@@ -53,6 +50,10 @@ def react(message_id: str, reaction: str, is_custom: bool = False, emoji_name: s
 			"Raven Message Reaction",
 			filters={"message": message_id, "owner": user, "reaction_escaped": reaction_escaped},
 		)
+
+		# Hook to trigger when delete reaction
+		for fn in frappe.get_hooks("raven_message_reaction_after_delete"):
+			frappe.get_attr(fn)(message_id)
 
 		calculate_message_reaction(message_id, channel_id)
 		return "Ok"

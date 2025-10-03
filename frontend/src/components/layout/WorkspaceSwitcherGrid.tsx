@@ -7,6 +7,9 @@ import { useFrappeGetCall, useFrappePostCall, useSWRConfig } from 'frappe-react-
 import { MdArrowOutward } from 'react-icons/md'
 import { toast } from 'sonner'
 import { getErrorMessage } from './AlertBanner/ErrorBanner'
+import { useSetAtom } from 'jotai'
+import { lastChannelAtom, lastWorkspaceAtom } from '@/utils/lastVisitedAtoms'
+import { useResetAtom } from 'jotai/utils'
 
 const WorkspaceSwitcherGrid = () => {
 
@@ -101,9 +104,12 @@ const getLogo = (workspace: WorkspaceFields) => {
 const MyWorkspaceItem = ({ workspace }: { workspace: WorkspaceFields }) => {
     const logo = getLogo(workspace)
 
+    const setLastWorkspace = useSetAtom(lastWorkspaceAtom)
+    const resetLastChannel = useResetAtom(lastChannelAtom)
+
     const openWorkspace = () => {
-        localStorage.setItem('ravenLastWorkspace', workspace.name)
-        localStorage.removeItem('ravenLastChannel')
+        setLastWorkspace(workspace.name)
+        resetLastChannel()
     }
 
     return <Card asChild className='shadow-sm hover:scale-105 transition-all duration-200'>

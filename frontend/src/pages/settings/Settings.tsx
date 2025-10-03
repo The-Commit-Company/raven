@@ -1,9 +1,11 @@
 import { SettingsSidebar } from '@/components/feature/userSettings/SettingsSidebar'
 import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { ChannelListProvider } from '@/utils/channel/ChannelListProvider'
+import { lastChannelAtom, lastWorkspaceAtom } from '@/utils/lastVisitedAtoms'
 import { __ } from '@/utils/translations'
 import { UserListProvider } from '@/utils/users/UserListProvider'
 import { Box, Flex, Heading } from '@radix-ui/themes'
+import { useAtomValue } from 'jotai'
 import { BiChevronLeft } from 'react-icons/bi'
 import { Link } from 'react-router-dom'
 import { Outlet } from "react-router-dom"
@@ -11,8 +13,8 @@ import { Outlet } from "react-router-dom"
 const Settings = () => {
     const isDesktop = useIsDesktop()
 
-    const lastWorkspace = localStorage.getItem('ravenLastWorkspace')
-    const lastChannel = localStorage.getItem('ravenLastChannel')
+    const lastWorkspace = useAtomValue(lastWorkspaceAtom)
+    const lastChannel = useAtomValue(lastChannelAtom)
 
     let path = '../'
 
