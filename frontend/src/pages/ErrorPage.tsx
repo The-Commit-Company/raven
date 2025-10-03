@@ -1,6 +1,8 @@
 import { HStack, Stack } from '@/components/layout/Stack'
 import { useIsMobile } from '@/hooks/useMediaQuery';
+import { lastChannelAtom, lastWorkspaceAtom } from '@/utils/lastVisitedAtoms';
 import { Button, Code, Flex, Heading, Link, Text } from '@radix-ui/themes'
+import { useAtomValue } from 'jotai';
 import { useNavigate, useRouteError } from 'react-router-dom'
 
 const ErrorPage = () => {
@@ -19,16 +21,17 @@ const ErrorPage = () => {
 
     const isMobile = useIsMobile()
 
+    const lastWorkspace = useAtomValue(lastWorkspaceAtom)
+    const lastChannel = useAtomValue(lastChannelAtom)
+
     const goToChannels = () => {
 
         if (isMobile) {
             navigate('/')
         } else {
-            const lastWorkspace = localStorage.getItem('ravenLastWorkspace')
-            const ravenLastChannel = localStorage.getItem('ravenLastChannel')
 
-            if (lastWorkspace && ravenLastChannel) {
-                navigate(`/${lastWorkspace}/${ravenLastChannel}`)
+            if (lastWorkspace && lastChannel) {
+                navigate(`/${lastWorkspace}/${lastChannel}`)
             } else if (lastWorkspace) {
                 navigate(`/${lastWorkspace}`)
             } else {

@@ -8,9 +8,11 @@ import SettingsContentContainer from "@/components/layout/Settings/SettingsConte
 import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
 import { HStack } from "@/components/layout/Stack"
 import { RavenBot } from "@/types/RavenBot/RavenBot"
+import { lastWorkspaceAtom } from "@/utils/lastVisitedAtoms"
 import { isEmpty } from "@/utils/validations"
 import { Button } from "@radix-ui/themes"
 import { useFrappeGetDoc, useFrappeUpdateDoc, SWRResponse, FrappeContext, FrappeConfig } from "frappe-react-sdk"
+import { useAtomValue } from "jotai"
 import { useContext, useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { FiExternalLink } from "react-icons/fi"
@@ -102,7 +104,7 @@ const OpenChatButton = ({ bot }: { bot: RavenBot }) => {
 
     const navigate = useNavigate()
 
-    const currentWorkspace = localStorage.getItem('ravenLastWorkspace')
+    const currentWorkspace = useAtomValue(lastWorkspaceAtom)
 
     const openChat = () => {
         call.post("raven.api.raven_channel.create_direct_message_channel", {

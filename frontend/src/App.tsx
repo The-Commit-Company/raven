@@ -35,9 +35,18 @@ const CACHE_KEYS = [
 
 const isDesktop = window.innerWidth > 768
 
-const lastWorkspace = localStorage.getItem('ravenLastWorkspace') ?? ''
-const lastChannel = localStorage.getItem('ravenLastChannel') ?? ''
+let lastWorkspace = ""
+let lastChannel = ""
 
+try {
+  lastWorkspace = JSON.parse(localStorage.getItem('ravenLastWorkspace') ?? '""') ?? ''
+  lastChannel = JSON.parse(localStorage.getItem('ravenLastChannel') ?? '""') ?? ''
+}
+catch {
+
+}
+
+console.log("Last workspace", lastWorkspace)
 
 // Initialize emoji-mart
 init({
@@ -101,6 +110,10 @@ const router = createBrowserRouter(
               <Route index lazy={() => import('./pages/settings/AI/InstructionTemplateList')} />
               <Route path="create" lazy={() => import('./pages/settings/AI/CreateInstructionTemplate')} />
               <Route path=":ID" lazy={() => import('./pages/settings/AI/ViewInstructionTemplate')} />
+            </Route>
+
+            <Route path="document-processors">
+              <Route index lazy={() => import('./pages/settings/AI/DocumentProcessors')} />
             </Route>
 
             <Route path="file-sources" lazy={() => import('./pages/settings/AI/FileSourcesList')} />

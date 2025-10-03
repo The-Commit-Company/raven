@@ -7,7 +7,7 @@ import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { DateMonthAtHourMinuteAmPm } from "@/utils/dateConversions"
 import { clsx } from "clsx"
 import { FileExtensionIcon } from "@/utils/layout/FileExtIcon"
-import { memo } from "react"
+import { memo, useState } from "react"
 import { toast } from "sonner"
 import { useIsDesktop } from "@/hooks/useMediaQuery"
 
@@ -111,8 +111,17 @@ const PDFPreviewButton = ({ message, user }: {
 
     const fileName = getFileName(message.file)
 
+    const [pdfKey, setPdfKey] = useState(0)
+
+    const handleDialogOpenChange = (open: boolean) => {
+        if (open) {
+            // Force re-render of the embed element by updating the key
+            setPdfKey(prev => prev + 1)
+        }
+    }
+
     return <Box>
-        <Dialog.Root>
+        <Dialog.Root onOpenChange={handleDialogOpenChange}>
             <Dialog.Trigger>
                 <IconButton
                     size={{
@@ -127,28 +136,35 @@ const PDFPreviewButton = ({ message, user }: {
                 </IconButton>
             </Dialog.Trigger>
             <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'min-w-[64rem]')} size='4'>
-                <Dialog.Title size='3'>{fileName}</Dialog.Title>
-                <Dialog.Description color='gray' size='1'>{user?.full_name ?? message.owner} on <DateMonthAtHourMinuteAmPm date={message.creation} /></Dialog.Description>
-                <Box my='4'>
-                    <embed
-                        src={message.file}
-                        type="application/pdf"
-                        width="100%"
-                        height='680px'
-                    />
-                </Box>
-                <Flex justify='end' gap='2' mt='3'>
-                    <Button variant='soft' color='gray' asChild>
-                        <Link className='no-underline' href={message.file} download>
-                            <BiDownload size='18' />
-                            Download
-                        </Link>
-                    </Button>
-                    <Dialog.Close>
-                        <Button color='gray' variant='soft'>Close</Button>
-                    </Dialog.Close>
-                </Flex>
+                <PDFPreviewContent fileName={fileName} user={user} message={message} pdfKey={pdfKey} />
             </Dialog.Content>
         </Dialog.Root>
     </Box>
+}
+
+const PDFPreviewContent = ({ fileName, user, message, pdfKey }: { fileName: string, user?: UserFields, message: FileMessage, pdfKey: number }) => {
+
+    return <>
+        <Dialog.Title size='3'>{fileName}</Dialog.Title>
+        <Dialog.Description color='gray' size='1'>{user?.full_name ?? message.owner} on <DateMonthAtHourMinuteAmPm date={message.creation} /></Dialog.Description>
+        <Box my='4'>
+            <embed
+                src={message.file + '#key=' + pdfKey}
+                type="application/pdf"
+                width="100%"
+                height='680px'
+            />
+        </Box>
+        <Flex justify='end' gap='2' mt='3'>
+            <Button variant='soft' color='gray' asChild>
+                <Link className='no-underline' href={message.file} download>
+                    <BiDownload size='18' />
+                    Download
+                </Link>
+            </Button>
+            <Dialog.Close>
+                <Button color='gray' variant='soft'>Close</Button>
+            </Dialog.Close>
+        </Flex></>
+
 }
