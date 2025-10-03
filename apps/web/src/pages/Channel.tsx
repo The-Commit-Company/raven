@@ -3,6 +3,7 @@ import ChannelHeader from '../components/features/channel/ChannelHeader/ChannelH
 import ChannelSettingsDrawer from '../components/features/channel/ChannelSettingsDrawer/ChannelSettingsDrawer';
 import ChannelMembersDrawer from '../components/features/channel/ChannelMembersDrawer/ChannelMembersDrawer';
 import ChatStream from "../components/features/message/ChatStream";
+import ChatInput from '@components/features/ChatInput/ChatInput';
 
 export default function Channel() {
 
@@ -15,6 +16,8 @@ export default function Channel() {
 
     const isDrawerOpen = drawerType !== null
 
+    const channelID = "general"
+
     return (
         <div className="flex flex-col h-full">
             <ChannelHeader
@@ -25,6 +28,7 @@ export default function Channel() {
                 {/* Main Content */}
                 <div className={`transition-all duration-300 ${isDrawerOpen ? 'w-[calc(100%-340px)]' : 'w-full'} h-full flex flex-col`}>
                     <ChatStream />
+                    <ChatInput channelID={channelID} />
                 </div>
                 {/* Channel Drawer */}
                 {isDrawerOpen && (
