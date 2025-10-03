@@ -113,7 +113,8 @@
    "documentation_url": "https://platform.openai.com/docs/assistants/overview",
    "fieldname": "openai_assistant_id",
    "fieldtype": "Data",
-   "label": "OpenAI Assistant ID"
+   "label": "OpenAI Assistant ID",
+   "no_copy": 1
   },
   {
    "fieldname": "column_break_khmi",
@@ -204,6 +205,7 @@
    "fieldname": "openai_vector_store_id",
    "fieldtype": "Data",
    "label": "OpenAI Vector Store ID",
+   "no_copy": 1,
    "read_only": 1
   },
   {
@@ -248,7 +250,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-17 00:04:29.764884",
+ "modified": "2025-10-03 16:40:08.890724",
  "modified_by": "Administrator",
  "module": "Raven Bot",
  "name": "Raven Bot",
