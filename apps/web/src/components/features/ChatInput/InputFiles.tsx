@@ -1,5 +1,5 @@
 import { useAtomValue } from 'jotai'
-import { uploadingFilesAtom, uploadedFilesAtom, useAttachFile, useRemoveFile } from './useFileInput'
+import { uploadingFilesAtom, uploadedFilesAtom, useAttachFile, useRemoveFile, FileItemType } from './useFileInput'
 import { Button } from '@components/ui/button'
 import { AlertCircleIcon, PlusIcon, Trash2Icon } from 'lucide-react'
 import { useMemo, useRef } from 'react'
@@ -28,39 +28,25 @@ export const InputFileList = ({ channelID }: InputFilesProps) => {
         })
 
         return f.sort((a, b) => a.timestamp - b.timestamp)
-
     }, [uploadingFiles, uploadedFiles])
+
+    const onRemove = useRemoveFile(channelID)
 
     return (
         <div className='flex gap-2 flex-wrap'>
             {files.map((file) => (
-                <FileItem key={file.id} file={file} channelID={channelID} />
+                <FileItem key={file.id} file={file} onRemove={onRemove} />
             ))}
         </div>
     )
 }
 
-interface FileItemType {
-    id: string,
-    fileName: string,
-    size: number,
-    timestamp: number,
-    uploadProgress?: number,
-    status: 'uploading' | 'uploaded' | 'error',
-    fileID?: string,
-    fileURL?: string,
-}
-
-const FileItem = ({ file, channelID }: { file: FileItemType, channelID: string }) => {
-
-    const onRemoveFile = useRemoveFile(channelID)
+const FileItem = ({ file, onRemove }: { file: FileItemType, onRemove: (file: FileItemType) => void }) => {
 
     const extension = getFileExtension(file.fileName)
 
     const onRemoveClick = () => {
-        if (file.fileID) {
-            onRemoveFile(file.fileID)
-        }
+        onRemove(file)
     }
 
     return <div className="rounded-lg border border-gray-200 dark:border-gray-200 min-w-64">

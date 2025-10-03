@@ -24,7 +24,7 @@ import { toast } from 'sonner'
  * 
  */
 
-export interface InputFileType {
+export interface QueuedFileType {
     /** The file object picked by the user */
     file: File,
     /** Upload progress */
@@ -55,8 +55,10 @@ export interface UploadedFile {
     timestamp: number
 }
 
+
+
 /** Atom to track files that are being uploaded per channel */
-export const uploadingFilesAtom = atomFamily((_channelID: string) => atom<InputFileType[]>([]))
+export const uploadingFilesAtom = atomFamily((_channelID: string) => atom<QueuedFileType[]>([]))
 
 /** Atom to track files that are uploaded per channel */
 export const uploadedFilesAtom = atomFamily((channelID: string) => atomWithStorage<UploadedFile[]>(`uploaded-files-${channelID}`, []))
@@ -116,10 +118,22 @@ export const useAttachFile = (channelID: string) => {
     return onAddFile
 }
 
+export interface FileItemType {
+    id: string,
+    fileName: string,
+    size: number,
+    timestamp: number,
+    uploadProgress?: number,
+    status: 'uploading' | 'uploaded' | 'error',
+    fileID?: string,
+    fileURL?: string,
+}
+
 export const useRemoveFile = (channelID: string) => {
 
     const { deleteDoc } = useFrappeDeleteDoc()
-    const setFiles = useSetAtom(uploadedFilesAtom(channelID))
+    const setUploadedFiles = useSetAtom(uploadedFilesAtom(channelID))
+    const setUploadingFiles = useSetAtom(uploadingFilesAtom(channelID))
 
     /** 
      * TODO: Add support for AbortController to cancel requests mid-flight
@@ -127,14 +141,17 @@ export const useRemoveFile = (channelID: string) => {
      * If it is already uploaded, delete the file from the server.
      * If it is being uploaded, wait for the file to upload and then delete the file from the server.
      * 
-     * File ID is the server file ID
      */
-    const onRemoveFile = (serverFileID: string) => {
-        setFiles((prevFiles) => prevFiles.filter((f) => f.fileID !== serverFileID))
-
-        if (serverFileID) {
-            deleteDoc('File', serverFileID)
+    const onRemoveFile = (file: FileItemType) => {
+        if (file.fileID) {
+            setUploadedFiles((prevFiles) => prevFiles.filter((f) => f.fileID !== file.fileID))
+            deleteDoc('File', file.fileID)
+        } else {
+            // Remove from both queues using frontend ID
+            setUploadingFiles((prevFiles) => prevFiles.filter((f) => f.id !== file.id))
+            setUploadedFiles((prevFiles) => prevFiles.filter((f) => f.id !== file.id))
         }
+
     }
 
     return onRemoveFile
