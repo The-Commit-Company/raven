@@ -306,6 +306,53 @@ def handle_ai_thread_message_with_assistants(message, channel, bot):
 	stream_response(ai_thread_id=channel.openai_thread_id, bot=bot, channel_id=channel.name)
 
 
+def extract_file_content_for_agent(file_url: str, file_extension: str, bot, file_handler):
+	"""
+	Extract content from a file for agent processing.
+
+	Tries Google Document AI first if enabled, falls back to basic extraction.
+	"""
+	extracted_content = ""
+
+	# Try Google Document AI first if enabled
+	if hasattr(bot, "use_google_document_parser") and bot.use_google_document_parser:
+		if hasattr(bot, "google_document_processor_id") and bot.google_document_processor_id:
+			if file_extension in ["jpg", "jpeg", "png", "pdf"]:
+				try:
+					extracted_content = run_document_ai_processor(
+						bot.google_document_processor_id, file_url, file_extension
+					)
+					if extracted_content:
+						return extracted_content
+				except Exception as e:
+					frappe.log_error(
+						f"Error extracting content with Google Document AI: {str(e)}\nFile: {file_url}",
+						"Google Document AI Error",
+					)
+
+	# Fallback to basic extraction
+	if not extracted_content:
+		try:
+			file_doc = frappe.get_doc("File", {"file_url": file_url})
+			file_path = file_doc.get_full_path()
+
+			if file_extension == "pdf":
+				extracted_content = file_handler._extract_pdf_content(file_path)
+			elif file_extension in ["txt", "md", "json"]:
+				with open(file_path, encoding="utf-8") as f:
+					extracted_content = f.read()
+			elif file_extension in ["xlsx", "xls", "csv"]:
+				extracted_content = file_handler._convert_spreadsheet_to_markdown(file_path, file_extension)
+			# For images, return empty - Google AI should handle them
+
+		except Exception as e:
+			frappe.log_error(
+				f"Error extracting file content: {str(e)}\nFile: {file_url}", "File Extraction Error"
+			)
+
+	return extracted_content
+
+
 def process_message_with_agent(
 	message, bot, channel_id: str, is_new_conversation: bool, channel=None
 ):
@@ -318,7 +365,7 @@ def process_message_with_agent(
 	# Track files in conversation
 	from raven.ai.conversation_file_handler import ConversationFileHandler
 
-	file_handler = ConversationFileHandler(channel_id)
+	file_handler = ConversationFileHandler(channel_id=channel_id, bot=bot)
 
 	# Check if this is a text message following a recent file upload
 	# to combine them into a single AI request
@@ -361,30 +408,50 @@ def process_message_with_agent(
 		if not message.text and not message.content:
 			return {"success": True, "response": None}
 
-		# For now, we'll include file information in the text
-		# In the future, we can enhance this to use multimodal capabilities
+		# Extract file content immediately (like Assistants API does)
 		if "fid" in message.file:
 			file_url = message.file.split("?fid=")[0]
 		else:
 			file_url = message.file
 
+		# Get file extension for processing
+		file_extension = file_url.split(".")[-1].lower() if "." in file_url else ""
+
+		# Extract file content using Google AI if enabled, or fallback to basic extraction
+		extracted_content = extract_file_content_for_agent(file_url, file_extension, bot, file_handler)
+
+		# Build message content with extracted text
 		if message.message_type == "File":
 			content = f"[User uploaded a file: {file_url}]"
+			if extracted_content:
+				content += f"\n\nExtracted content from the file:\n{extracted_content}"
 			if message.text or message.content:
-				content += f"\n{message.text or message.content}"
+				content += f"\n\nUser's question: {message.text or message.content}"
 		else:
 			content = f"[User uploaded an image: {file_url}]"
+			if extracted_content:
+				content += f"\n\nExtracted content from the image:\n{extracted_content}"
 			if message.text or message.content:
-				content += f"\n{message.text or message.content}"
+				content += f"\n\nUser's question: {message.text or message.content}"
 	else:
 		content = message.text or message.content or ""
 
-		# If we found a recent file upload, prepend it to the content
+		# If we found a recent file upload, extract and prepend its content
 		if recent_file_message:
 			file_url = recent_file_message.file
 			if "fid" in file_url:
 				file_url = file_url.split("?fid=")[0]
-			file_prefix = f"[User uploaded a {'file' if recent_file_message.message_type == 'File' else 'image'}: {file_url}]\n"
+
+			# Extract content from recent file
+			file_extension = file_url.split(".")[-1].lower() if "." in file_url else ""
+			extracted_content = extract_file_content_for_agent(file_url, file_extension, bot, file_handler)
+
+			file_prefix = f"[User uploaded a {'file' if recent_file_message.message_type == 'File' else 'image'}: {file_url}]"
+			if extracted_content:
+				file_prefix += f"\n\nExtracted content from the file:\n{extracted_content}\n\n"
+			else:
+				file_prefix += "\n"
+
 			content = file_prefix + content
 
 	# Get conversation history if this is an existing thread
