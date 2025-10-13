@@ -1,260 +1,292 @@
 import * as React from "react"
-import { Command, Inbox, PlusIcon, Box } from "lucide-react"
+import { Plus, MessageCircle } from "lucide-react"
 import { Label } from "@components/ui/label"
 import {
     Sidebar,
     SidebarContent,
-    SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
     SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
     useSidebar,
 } from "@components/ui/sidebar"
 import { Switch } from "@components/ui/switch"
+import { UserAvatar } from "@components/features/message/UserAvatar"
 import { SearchForm } from "./sidebar-search"
-import { UserAvatar } from '@components/features/message/UserAvatar'
+import { cn } from "@lib/utils"
+import { UserFields } from "@raven/types/common/UserFields"
+import { ChannelListItem } from "./common/ChannelListItem/ChannelListItem"
 
 // This is sample data
+interface MailItem extends UserFields {
+    email: string
+    date: string
+    teaser: string
+    unread: number
+}
+
 const data = {
     user: {
         name: "shadcn",
         email: "m@example.com",
         avatar: "/avatars/shadcn.jpg",
     },
-    navMain: [
+    workspaces: [
         {
-            title: "DMs",
-            url: "#",
-            icon: Inbox,
+            name: "ERPNext",
+            icon: "https://frappe.io/files/erpnext53456f.png",
             isActive: true,
+            color: "bg-white",
+            textColor: "text-gray-900",
+            notificationCount: 4,
+            channels: [
+                { id: "general", name: "general", type: "channel", channelType: "Public", unread: 5 },
+                { id: "bugs", name: "bugs", type: "channel", channelType: "Open", unread: 0 },
+                { id: "features", name: "features", type: "channel", channelType: "Private", unread: 12 },
+                { id: "releases", name: "releases", type: "channel", channelType: "Public", unread: 0 },
+            ],
         },
         {
-            title: "Workspace 1",
-            url: "#",
-            icon: Box,
+            name: "Helpdesk",
+            icon: "https://frappe.io/files/helpdesk8109cf.png",
             isActive: false,
+            color: "bg-white",
+            textColor: "text-gray-900",
+            notificationCount: 5,
+            channels: [
+                { id: "general", name: "general", type: "channel", channelType: "Public", unread: 0 },
+                { id: "academics", name: "academics", type: "channel", channelType: "Open", unread: 3 },
+                { id: "research", name: "research", type: "channel", channelType: "Private", unread: 0 },
+            ],
         },
         {
-            title: "Workspace 2",
-            url: "#",
-            icon: Box,
+            name: "Frappe School",
+            icon: "https://frappe.io/files/school.png",
             isActive: false,
+            color: "bg-white",
+            textColor: "text-gray-900",
+            notificationCount: 2,
+            channels: [
+                { id: "general", name: "general", type: "channel", channelType: "Open", unread: 0 },
+                { id: "standup", name: "standup", type: "channel", channelType: "Public", unread: 7 },
+                { id: "random", name: "random", type: "channel", channelType: "Private", unread: 0 },
+            ],
         },
         {
-            title: "Workspace 3",
-            url: "#",
-            icon: Box,
+            name: "Frappe HR",
+            icon: "https://frappe.io/files/hrbde4d8.png",
             isActive: false,
-        }
+            color: "bg-white",
+            textColor: "text-gray-900",
+            notificationCount: 0,
+            channels: [
+                { id: "general", name: "general", type: "channel", channelType: "Public", unread: 0 },
+                { id: "projects", name: "projects", type: "channel", channelType: "Open", unread: 0 },
+            ],
+        },
+        {
+            name: "Direct Messages",
+            icon: MessageCircle,
+            isActive: false,
+            color: "bg-slate-900 dark:bg-slate-100",
+            textColor: "text-slate-100 dark:text-slate-900",
+            notificationCount: 0,
+            channels: [
+                { id: "alice", name: "Alice", type: "dm", unread: 0 },
+                { id: "bob", name: "Bob", type: "dm", unread: 2 },
+            ],
+        },
     ],
     mails: [
         {
-            name: "William Smith",
-            email: "williamsmith@example.com",
+            name: "Sarah Chen",
+            full_name: "Sarah Chen",
+            user_image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
+            email: "sarah.chen@company.com",
+            type: "User",
             date: "09:34 AM",
             teaser:
                 "Hi team, just a reminder about our meeting tomorrow at 10 AM.\nPlease come prepared with your project updates.",
+            unread: 3,
         },
         {
-            name: "Alice Smith",
-            email: "alicesmith@example.com",
+            name: "Marcus Rodriguez",
+            full_name: "Marcus Rodriguez",
+            user_image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+            email: "marcus.rodriguez@company.com",
+            type: "User",
             date: "Yesterday",
             teaser:
                 "Thanks for the update. The progress looks great so far.\nLet's schedule a call to discuss the next steps.",
+            unread: 0,
         },
         {
-            name: "Bob Johnson",
-            email: "bobjohnson@example.com",
+            name: "Priya Patel",
+            full_name: "Priya Patel",
+            user_image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+            email: "priya.patel@company.com",
+            type: "User",
             date: "2 days ago",
             teaser:
                 "Hey everyone! I'm thinking of organizing a team outing this weekend.\nWould you be interested in a hiking trip or a beach day?",
+            unread: 15,
         },
         {
-            name: "Emily Davis",
-            email: "emilydavis@example.com",
+            name: "David Kim",
+            full_name: "David Kim",
+            user_image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+            email: "david.kim@company.com",
+            type: "User",
             date: "2 days ago",
             teaser:
                 "I've reviewed the budget numbers you sent over.\nCan we set up a quick call to discuss some potential adjustments?",
+            unread: 0,
         },
         {
-            name: "Michael Wilson",
-            email: "michaelwilson@example.com",
+            name: "Lisa Thompson",
+            full_name: "Lisa Thompson",
+            user_image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face",
+            email: "lisa.thompson@company.com",
+            type: "User",
             date: "1 week ago",
             teaser:
                 "Please join us for an all-hands meeting this Friday at 3 PM.\nWe have some exciting news to share about the company's future.",
-        },
-        {
-            name: "Sarah Brown",
-            email: "sarahbrown@example.com",
-            date: "1 week ago",
-            teaser:
-                "Thank you for sending over the proposal. I've reviewed it and have some thoughts.\nCould we schedule a meeting to discuss my feedback in detail?",
-        },
-        {
-            name: "David Lee",
-            email: "davidlee@example.com",
-            date: "1 week ago",
-            teaser:
-                "I've been brainstorming and came up with an interesting project concept.\nDo you have time this week to discuss its potential impact and feasibility?",
-        },
-        {
-            name: "Olivia Wilson",
-            email: "oliviawilson@example.com",
-            date: "1 week ago",
-            teaser:
-                "Just a heads up that I'll be taking a two-week vacation next month.\nI'll make sure all my projects are up to date before I leave.",
-        },
-        {
-            name: "James Martin",
-            email: "jamesmartin@example.com",
-            date: "1 week ago",
-            teaser:
-                "I've completed the registration for the upcoming tech conference.\nLet me know if you need any additional information from my end.",
-        },
-        {
-            name: "Sophia White",
-            email: "sophiawhite@example.com",
-            date: "1 week ago",
-            teaser:
-                "To celebrate our recent project success, I'd like to organize a team dinner.\nAre you available next Friday evening? Please let me know your preferences.",
+            unread: 1,
         },
     ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-    // Note: I'm using state to show active item.
+    // Note: I'm using state to show active workspace and channels.
     // IRL you should use the url/router.
-    const [activeItem, setActiveItem] = React.useState(data.navMain[0])
-    const [mails, setMails] = React.useState(data.mails)
+    const [activeWorkspace, setActiveWorkspace] = React.useState(data.workspaces[0])
+    const [, setActiveChannel] = React.useState(data.workspaces[0].channels[0])
+    const [mails] = React.useState<MailItem[]>(data.mails as MailItem[])
     const { setOpen } = useSidebar()
 
     return (
-        <Sidebar
-            collapsible="icon"
-            className="overflow-hidden [&>[data-sidebar=sidebar]]:flex-row pt-[42px]"
-            {...props}
-        >
-            {/* This is the first sidebar */}
-            {/* We disable collapsible and adjust width to icon. */}
-            {/* This will make the sidebar appear as icons. */}
-            <Sidebar
-                collapsible="none"
-                className="!w-[calc(var(--sidebar-width-icon)_+_1px)] border-r"
-            >
-                <SidebarHeader>
-                    <SidebarMenu>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton size="lg" asChild className="md:h-8 md:p-0">
-                                <a href="#">
-                                    <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                                        <Command className="size-4" />
-                                    </div>
-                                    <div className="grid flex-1 text-left text-sm leading-tight">
-                                        <span className="truncate font-semibold">Acme Inc</span>
-                                        <span className="truncate text-xs">Enterprise</span>
-                                    </div>
-                                </a>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    </SidebarMenu>
-                </SidebarHeader>
-                <SidebarContent>
-                    <SidebarGroup>
-                        <SidebarGroupContent className="px-1.5 md:px-0">
-                            <SidebarMenu>
-                                {data.navMain.map((item) => (
-                                    <SidebarMenuItem key={item.title}>
-                                        <SidebarMenuButton
-                                            tooltip={{
-                                                children: item.title,
-                                                hidden: false,
-                                            }}
-                                            onClick={() => {
-                                                setActiveItem(item)
-                                                const mail = data.mails.sort(() => Math.random() - 0.5)
-                                                setMails(
-                                                    mail.slice(
-                                                        0,
-                                                        Math.max(5, Math.floor(Math.random() * 10) + 1)
-                                                    )
-                                                )
-                                                setOpen(true)
-                                            }}
-                                            isActive={activeItem?.title === item.title}
-                                            className="px-2.5 md:px-2"
-                                        >
-                                            <item.icon />
-                                            <span>{item.title}</span>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                ))}
-                            </SidebarMenu>
-                        </SidebarGroupContent>
-                    </SidebarGroup>
-                </SidebarContent>
-                <SidebarFooter>
-                    <SidebarMenuButton>
-                        <PlusIcon />
-                    </SidebarMenuButton>
-                </SidebarFooter>
-            </Sidebar>
+        <Sidebar collapsible="icon" className="overflow-hidden pt-[42px]" {...props}>
+            <div className="flex h-full [&>[data-sidebar=sidebar]]:flex-row">
+                <div className="w-[60px] border-r border-border/40 bg-sidebar flex-shrink-0 relative">
+                    <div className="flex flex-col items-center gap-3 py-4">
+                        {data.workspaces.map((workspace) => (
+                            <div
+                                key={workspace.name}
+                                className="relative group cursor-pointer w-full flex justify-center"
+                                onClick={() => {
+                                    setActiveWorkspace(workspace)
+                                    setActiveChannel(workspace.channels[0])
+                                    setOpen(true)
+                                }}
+                            >
+                                <div
+                                    className={cn(
+                                        "absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-r-full transition-all duration-200",
+                                        activeWorkspace?.name === workspace.name
+                                            ? "h-8 bg-foreground"
+                                            : "h-2 bg-transparent group-hover:bg-foreground/60 group-hover:h-2",
+                                    )}
+                                />
 
-            {/* This is the second sidebar */}
-            {/* We disable collapsible and let it fill remaining space */}
-            <Sidebar collapsible="none" className="hidden flex-1 md:flex">
-                <SidebarHeader className="gap-3.5 border-b p-4">
-                    <div className="flex w-full items-center justify-between">
-                        <div className="text-base font-medium text-foreground">
-                            {activeItem?.title}
-                        </div>
-                        <Label className="flex items-center gap-2 text-sm">
-                            <span>Unreads</span>
-                            <Switch className="shadow-none" />
-                        </Label>
-                    </div>
-                    <SearchForm />
-                </SidebarHeader>
-                <SidebarContent>
-                    <SidebarGroup className="px-0">
-                        <SidebarGroupContent>
-                            {mails.map((mail) => (
-                                <a
-                                    href="#"
-                                    key={mail.email}
-                                    className="flex flex-col items-start gap-2 whitespace-nowrap border-b p-4 text-sm leading-tight last:border-b-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                                <div
+                                    className={cn(
+                                        "relative flex items-center justify-center w-8 h-8 transition-all duration-200 shadow-sm rounded-md",
+                                        workspace.color,
+                                        activeWorkspace?.name === workspace.name && "shadow-md",
+                                    )}
                                 >
-                                    <div className="flex w-full items-center gap-2">
-                                        <UserAvatar
-                                            user={{
-                                                name: mail.name,
-                                                full_name: mail.name,
-                                                user_image: 'https://github.com/shadcn.png',
-                                                type: 'User' as const,
-                                                availability_status: '' as const,
-                                                custom_status: '',
-                                                enabled: 1 as const,
-                                                first_name: mail.name.split(' ')[0],
-                                            }}
-                                            size="xs"
-                                            className="size-5 rounded-sm"
-                                            showStatusIndicator={false}
-                                            showBotIndicator={false}
+                                    {typeof workspace.icon === 'string' ? (
+                                        <img
+                                            src={workspace.icon}
+                                            alt={workspace.name}
+                                            className="w-8 h-8 object-cover rounded-md"
                                         />
-                                        <span className="font-medium">{mail.name}</span>{" "}
-                                        <span className="ml-auto text-xs text-muted-foreground">{mail.date}</span>
-                                    </div>
-                                    <span className="line-clamp-1 w-[280px] whitespace-break-spaces text-xs">
-                                        {mail.teaser}
-                                    </span>
-                                </a>
-                            ))}
-                        </SidebarGroupContent>
-                    </SidebarGroup>
-                </SidebarContent>
-            </Sidebar>
+                                    ) : workspace.name === "Direct Messages" ? (
+                                        <span className={cn("text-[10px] font-semibold", workspace.textColor)}>
+                                            DMs
+                                        </span>
+                                    ) : (
+                                        <workspace.icon className={cn("w-3.5 h-3.5", workspace.textColor)} />
+                                    )}
+                                    {workspace.notificationCount > 0 && (
+                                        <div className="absolute -bottom-0.5 -right-0.5 bg-red-500 rounded-full w-2 h-2 shadow-lg border border-slate-200 dark:border-slate-800" />
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+
+                        <div className="relative group cursor-pointer mt-2">
+                            <div className="flex items-center justify-center w-8 h-8 bg-background border-2 border-dashed border-muted-foreground/25 text-muted-foreground rounded-md hover:border-muted-foreground/50 hover:text-foreground transition-all duration-200">
+                                <Plus className="w-3.5 h-3.5" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex-1 flex flex-col">
+                    <SidebarHeader className="gap-1.5 border-b py-3">
+                        <div className="flex w-full items-center justify-between p-1">
+                            <div className="text-sm font-medium text-foreground truncate">
+                                {activeWorkspace?.name}
+                            </div>
+                            <Label className="flex items-center gap-2 text-[12px]">
+                                <span>Unreads</span>
+                                <Switch className="shadow-none" />
+                            </Label>
+                        </div>
+                        <SearchForm />
+                    </SidebarHeader>
+                    <SidebarContent>
+                        <SidebarGroup className="px-0">
+                            <SidebarGroupContent>
+                                {activeWorkspace?.name === "Direct Messages" ? (
+                                    // Direct Messages Layout
+                                    mails.map((mail) => (
+                                        <a
+                                            href="#"
+                                            key={mail.email}
+                                            className="flex flex-col items-start gap-2 whitespace-nowrap border-b p-4 text-sm leading-tight last:border-b-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                                        >
+                                            <div className="flex w-full items-center gap-2">
+                                                <UserAvatar
+                                                    user={mail as UserFields}
+                                                    size="sm"
+                                                    showStatusIndicator={false}
+                                                    showBotIndicator={false}
+                                                />
+                                                <span className="font-medium">{mail.name}</span>{" "}
+                                                <span className="ml-auto text-xs text-muted-foreground">{mail.date}</span>
+                                            </div>
+                                            <div className="flex w-full items-center gap-2">
+                                                <span className={cn(
+                                                    "line-clamp-1 flex-1 whitespace-break-spaces text-xs",
+                                                    mail.unread > 0 && "font-semibold"
+                                                )}>
+                                                    {mail.teaser}
+                                                </span>
+                                                {mail.unread > 0 && (
+                                                    <div className="bg-foreground text-background rounded px-1 py-0.5 text-[9px] font-semibold min-w-[16px] text-center">
+                                                        {mail.unread > 9 ? '9+' : mail.unread}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </a>
+                                    ))
+                                ) : (
+                                    // Regular Channels Layout
+                                    activeWorkspace?.channels.map((channel) => (
+                                        <ChannelListItem
+                                            key={channel.name}
+                                            name={channel.name}
+                                            {...('channelType' in channel && { type: channel.channelType as "Public" | "Open" | "Private" })}
+                                            unread={channel.unread}
+                                        />
+                                    ))
+                                )}
+                            </SidebarGroupContent>
+                        </SidebarGroup>
+                    </SidebarContent>
+                </div>
+            </div>
         </Sidebar>
     )
 }
