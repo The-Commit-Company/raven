@@ -67,7 +67,7 @@ const getSizeClasses = (size: 'xs' | 'sm' | 'md' | 'lg') => {
         case 'md':
             return {
                 avatar: 'h-8 w-8',
-                indicator: 'h-2.5 w-2.5 bottom-1 right-1',
+                indicator: 'h-2.5 w-2.5 -bottom-0.5 -right-0.5',
                 bot: 'h-3 w-3',
                 botContainer: 'h-3 w-3 bottom-1.5 right-1.5',
                 font: 'text-[13px]'

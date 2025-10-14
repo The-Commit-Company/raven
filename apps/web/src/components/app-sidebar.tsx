@@ -164,7 +164,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { setOpen } = useSidebar()
 
     return (
-        <Sidebar collapsible="icon" className="overflow-hidden pt-[42px]" {...props}>
+        <Sidebar collapsible="icon" className="overflow-hidden pt-[36px]" {...props}>
             <div className="flex h-full [&>[data-sidebar=sidebar]]:flex-row">
                 <div className="w-[60px] border-r border-border/40 bg-sidebar flex-shrink-0 relative">
                     <div className="flex flex-col items-center gap-3 py-4">
