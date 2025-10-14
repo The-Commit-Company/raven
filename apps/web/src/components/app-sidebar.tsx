@@ -208,7 +208,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                         <workspace.icon className={cn("w-3.5 h-3.5", workspace.textColor)} />
                                     )}
                                     {workspace.notificationCount > 0 && (
-                                        <div className="absolute -bottom-0.5 -right-0.5 bg-red-500 rounded-full w-2 h-2 shadow-lg border border-slate-200 dark:border-slate-800" />
+                                        <div className="absolute -bottom-0.5 -right-0.5 bg-unread rounded-full w-2 h-2 shadow-lg border border-slate-200 dark:border-slate-800" />
                                     )}
                                 </div>
                             </div>

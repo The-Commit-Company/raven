@@ -43,6 +43,7 @@ const AppHeader = ({ searchValue, onSearchChange }: AppHeaderProps) => {
                         path="/mentions"
                         icon={AtSignIcon}
                         label="Mentions"
+                        showNotification={true}
                     />
                     <NavButton
                         path="/saved-messages"
@@ -71,9 +72,10 @@ interface NavButtonProps {
     path: string,
     icon: LucideIcon,
     label: string,
+    showNotification?: boolean,
 }
 
-const NavButton = ({ path, icon: Icon, label }: NavButtonProps) => {
+const NavButton = ({ path, icon: Icon, label, showNotification = false }: NavButtonProps) => {
 
     const navigate = useNavigate()
     const location = useLocation()
@@ -82,14 +84,19 @@ const NavButton = ({ path, icon: Icon, label }: NavButtonProps) => {
     return (
         <Tooltip>
             <TooltipTrigger asChild>
-                <Button
-                    variant={isActive ? "secondary" : "ghost"}
-                    size="icon"
-                    className={`h-7 w-7 rounded-sm ${isActive ? "bg-secondary" : ""}`}
-                    onClick={() => navigate(path)}>
-                    <Icon className="h-3 w-3" />
-                    <span className="sr-only">{label}</span>
-                </Button>
+                <div className="relative">
+                    <Button
+                        variant={isActive ? "secondary" : "ghost"}
+                        size="icon"
+                        className={`h-7 w-7 rounded-sm ${isActive ? "bg-secondary" : ""}`}
+                        onClick={() => navigate(path)}>
+                        <Icon className="h-3 w-3" />
+                        <span className="sr-only">{label}</span>
+                    </Button>
+                    {showNotification && (
+                        <div className="absolute bottom-0 right-0 bg-notification rounded-full w-2 h-2 shadow-lg border border-background" />
+                    )}
+                </div>
             </TooltipTrigger>
             <TooltipContent>
                 <p>{label}</p>

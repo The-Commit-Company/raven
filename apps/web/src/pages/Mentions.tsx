@@ -5,7 +5,7 @@ import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon";
 import { Link } from "react-router-dom";
 import type { RavenChannel } from "@raven/types/RavenChannelManagement/RavenChannel";
 import type { RavenMessage } from "@raven/types/RavenMessaging/RavenMessage";
-import { AtSignIcon, MessageSquare } from "lucide-react";
+import { AtSignIcon, MessageSquare, Check } from "lucide-react";
 import { UserFields } from "@raven/types/common/UserFields";
 
 interface MentionObject {
@@ -31,6 +31,8 @@ interface MentionObject {
     owner: string
     /** Text of the message */
     text: string
+    /** Whether the mention has been read */
+    is_read?: boolean
 }
 
 // Dummy users matching those used in ChatStream
@@ -100,7 +102,8 @@ const sampleMentions: MentionObject[] = [
         creation: "10:30 AM",
         message_type: "Text",
         owner: "Sarah Chen",
-        text: "Hey <span class=\"mention\">@Desirae Lipshutz</span>, can you review the latest PR? <span class=\"mention\">@Brandon Franci</span> might want to take a look too."
+        text: "Hey <span class=\"mention\">@Desirae Lipshutz</span>, can you review the latest PR? <span class=\"mention\">@Brandon Franci</span> might want to take a look too.",
+        is_read: false
     },
     {
         name: "msg-2",
@@ -113,7 +116,8 @@ const sampleMentions: MentionObject[] = [
         creation: "9:15 AM",
         message_type: "Text",
         owner: "Alfonso Vaccarol",
-        text: "<span class=\"mention\">@Desirae Lipshutz</span> The deployment is scheduled for tomorrow at 2 PM. Please make sure all tests pass."
+        text: "<span class=\"mention\">@Desirae Lipshutz</span> The deployment is scheduled for tomorrow at 2 PM. Please make sure all tests pass.",
+        is_read: false
     },
     {
         name: "msg-3",
@@ -126,7 +130,8 @@ const sampleMentions: MentionObject[] = [
         creation: "Yesterday at 4:45 PM",
         message_type: "Text",
         owner: "Brandon Franci",
-        text: "Great work on the new feature <span class=\"mention\">@Desirae Lipshutz</span>! The client loved the demo."
+        text: "Great work on the new feature <span class=\"mention\">@Desirae Lipshutz</span>! The client loved the demo.",
+        is_read: true
     },
     {
         name: "msg-4",
@@ -139,7 +144,8 @@ const sampleMentions: MentionObject[] = [
         creation: "Yesterday at 2:20 PM",
         message_type: "Text",
         owner: "Mike Rodriguez",
-        text: "<span class=\"mention\">@Desirae Lipshutz</span> can you help debug this issue? I'm getting an error in the authentication flow."
+        text: "<span class=\"mention\">@Desirae Lipshutz</span> can you help debug this issue? I'm getting an error in the authentication flow.",
+        is_read: false
     },
     {
         name: "msg-5",
@@ -152,7 +158,8 @@ const sampleMentions: MentionObject[] = [
         creation: "Monday at 11:30 AM",
         message_type: "Text",
         owner: "Sarah Chen",
-        text: "Meeting rescheduled to 3 PM <span class=\"mention\">@Desirae Lipshutz</span> <span class=\"mention\">@Brandon Franci</span> <span class=\"mention\">@Alfonso Vaccarol</span>"
+        text: "Meeting rescheduled to 3 PM <span class=\"mention\">@Desirae Lipshutz</span> <span class=\"mention\">@Brandon Franci</span> <span class=\"mention\">@Alfonso Vaccarol</span>",
+        is_read: true
     },
     {
         name: "msg-6",
@@ -165,7 +172,8 @@ const sampleMentions: MentionObject[] = [
         creation: "Jan 12 at 5:15 PM",
         message_type: "Text",
         owner: "Alfonso Vaccarol",
-        text: "<span class=\"mention\">@Desirae Lipshutz</span> I've updated the documentation as per your feedback. Please take a look when you get a chance."
+        text: "<span class=\"mention\">@Desirae Lipshutz</span> I've updated the documentation as per your feedback. Please take a look when you get a chance.",
+        is_read: false
     }
 ];
 
@@ -177,15 +185,23 @@ const MentionItem = ({ mention }: { mention: MentionObject }) => {
     return (
         <Link
             to={`/channel/${mention.channel_id}?message_id=${mention.name}`}
-            className="group block px-6 py-3 hover:bg-accent/50 transition-colors"
+            className={`group block px-6 py-3 hover:bg-accent/50 transition-colors relative ${!mention.is_read ? 'bg-muted/10' : ''
+                }`}
         >
+            {/* Indicator line */}
+            {!mention.is_read && (
+                <div className="absolute left-2 top-2 bottom-2 w-1 bg-notification rounded-full" />
+            )}
+
             <div className="flex items-start gap-3">
                 <UserAvatar user={user} size="md" />
 
                 <div className="flex-1">
                     {/* Name and time - matching message header */}
                     <div className="flex items-baseline gap-2">
-                        <span className="font-medium text-sm">{senderName}</span>
+                        <span className={`text-sm ${!mention.is_read ? 'font-semibold' : 'font-medium'}`}>
+                            {senderName}
+                        </span>
                         <span className="text-xs font-light text-muted-foreground/90">
                             {mention.creation}
                         </span>
@@ -208,7 +224,7 @@ const MentionItem = ({ mention }: { mention: MentionObject }) => {
 
                     {/* Message content - matching message text styling */}
                     <div
-                        className="text-[13px] text-primary line-clamp-2 [&_.mention]:text-[oklch(58.8%_0.158_241.966)] [&_.mention]:font-medium [&_.mention]:bg-blue-50 dark:[&_.mention]:bg-blue-950/50 [&_.mention]:px-1 [&_.mention]:py-0.5 [&_.mention]:rounded [&_p]:my-0"
+                        className="text-[13px] text-primary line-clamp-2 [&_.mention]:text-mention [&_.mention]:font-medium [&_.mention]:bg-blue-50 dark:[&_.mention]:bg-blue-950/50 [&_.mention]:px-1 [&_.mention]:py-0.5 [&_.mention]:rounded [&_p]:my-0"
                         dangerouslySetInnerHTML={{ __html: mention.text }}
                     />
                 </div>
@@ -232,6 +248,12 @@ const EmptyState = () => (
 export default function Mentions() {
     const isLoading = false
     const mentions = sampleMentions
+    const unreadCount = mentions.filter(mention => !mention.is_read).length
+
+    const handleMarkAllAsRead = () => {
+        // In production, this would make an API call to mark all mentions as read
+        console.log("Marking all mentions as read")
+    }
 
     return (
         <div className="flex flex-col h-full">
@@ -244,8 +266,26 @@ export default function Mentions() {
                             <Separator orientation="vertical" />
                         </div>
                     </div>
-                    <span className="text-md font-semibold">Mentions</span>
+                    <div className="flex items-center gap-2">
+                        <span className="text-md font-semibold">Mentions</span>
+                        {unreadCount > 0 && (
+                            <div className="bg-muted text-foreground rounded px-1.5 py-0.5 text-[10px] font-semibold min-w-[18px] text-center">
+                                {unreadCount > 99 ? '99+' : unreadCount}
+                            </div>
+                        )}
+                    </div>
                 </div>
+
+                {/* Right side - Mark as read button */}
+                {unreadCount > 0 && (
+                    <button
+                        onClick={handleMarkAllAsRead}
+                        className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded hover:bg-muted/50"
+                    >
+                        <Check className="w-3 h-3" />
+                        Mark all as read
+                    </button>
+                )}
             </header>
 
             <div className="flex flex-1 flex-row gap-0 p-0 overflow-hidden">
