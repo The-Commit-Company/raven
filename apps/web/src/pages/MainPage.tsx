@@ -19,7 +19,7 @@ const MainPage = () => {
             <SidebarProvider
                 style={
                     {
-                        "--sidebar-width": "380px",
+                        "--sidebar-width": "340px",
                         "--sidebar-width-icon": "60px",
                         paddingTop: "var(--app-header-height)",
                     } as React.CSSProperties

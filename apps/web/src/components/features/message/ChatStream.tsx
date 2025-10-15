@@ -719,7 +719,7 @@ export default function ChatStream() {
     }
 
     return (
-        <div className="flex flex-col p-4 h-full overflow-y-auto space-y-4">
+        <div className="flex flex-col p-8 h-full overflow-y-auto space-y-5">
 
             <DateSeparator label="10th November 2024" />
 
