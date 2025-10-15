@@ -30,7 +30,7 @@ export const ChannelListItem = React.forwardRef<
                     type={type}
                     className="w-4 h-4"
                 />
-                <span className="font-medium">{name}</span>
+                <span className={cn("font-medium", unread > 0 && "font-semibold")}>{name}</span>
                 {unread > 0 && (
                     <div className="ml-auto bg-foreground text-background rounded px-1 py-0.5 text-[9px] font-semibold min-w-[16px] text-center">
                         {unread > 9 ? '9+' : unread}

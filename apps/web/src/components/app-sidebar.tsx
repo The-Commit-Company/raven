@@ -10,11 +10,11 @@ import {
     useSidebar,
 } from "@components/ui/sidebar"
 import { Switch } from "@components/ui/switch"
-import { UserAvatar } from "@components/features/message/UserAvatar"
 import { SearchForm } from "./sidebar-search"
 import { cn } from "@lib/utils"
 import { UserFields } from "@raven/types/common/UserFields"
 import { ChannelListItem } from "./common/ChannelListItem/ChannelListItem"
+import { DMListItem } from "./common/DMListItem/DMListItem"
 
 // This is sample data
 interface MailItem extends UserFields {
@@ -241,35 +241,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                 {activeWorkspace?.name === "Direct Messages" ? (
                                     // Direct Messages Layout
                                     mails.map((mail) => (
-                                        <a
-                                            href="#"
+                                        <DMListItem
                                             key={mail.email}
-                                            className="flex flex-col items-start gap-2 whitespace-nowrap border-b p-4 text-sm leading-tight last:border-b-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                                        >
-                                            <div className="flex w-full items-center gap-2">
-                                                <UserAvatar
-                                                    user={mail as UserFields}
-                                                    size="sm"
-                                                    showStatusIndicator={false}
-                                                    showBotIndicator={false}
-                                                />
-                                                <span className="font-medium">{mail.name}</span>{" "}
-                                                <span className="ml-auto text-xs text-muted-foreground">{mail.date}</span>
-                                            </div>
-                                            <div className="flex w-full items-center gap-2">
-                                                <span className={cn(
-                                                    "line-clamp-1 flex-1 whitespace-break-spaces text-xs",
-                                                    mail.unread > 0 && "font-semibold"
-                                                )}>
-                                                    {mail.teaser}
-                                                </span>
-                                                {mail.unread > 0 && (
-                                                    <div className="bg-foreground text-background rounded px-1 py-0.5 text-[9px] font-semibold min-w-[16px] text-center">
-                                                        {mail.unread > 9 ? '9+' : mail.unread}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </a>
+                                            user={mail as UserFields}
+                                            date={mail.date}
+                                            teaser={mail.teaser}
+                                            unread={mail.unread}
+                                        />
                                     ))
                                 ) : (
                                     // Regular Channels Layout
