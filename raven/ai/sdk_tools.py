@@ -23,16 +23,14 @@ def create_raven_tools(bot) -> list[FunctionTool]:
 
 	# Get the bot functions - use bot_functions instead of functions
 	if hasattr(bot, "bot_functions") and bot.bot_functions:
-
 		for func in bot.bot_functions:
-			# Log function details
-
 			try:
 				# Get function details from Raven AI Function (not Raven Bot Functions)
 				function_doc = frappe.get_doc("Raven AI Function", func.function)
 
 				# Check if function has a valid path for execution
 				function_path = None
+				extra_args = {}
 
 				# For Custom Function, use the function_path directly
 				if function_doc.type == "Custom Function":
@@ -40,18 +38,43 @@ def create_raven_tools(bot) -> list[FunctionTool]:
 						continue
 					function_path = function_doc.function_path
 				else:
-					# For standard types like "Get List", generate a function path for built-in handlers
-					if function_doc.type == "Get List":
-						function_path = "raven.ai.sdk_tools.handle_get_list"
-					elif function_doc.type == "Get Document":
-						function_path = "raven.ai.sdk_tools.handle_get_document"
-					elif function_doc.type == "Update Document":
-						function_path = "raven.ai.sdk_tools.handle_update_document"
-					elif function_doc.type == "Create Document":
-						function_path = "raven.ai.sdk_tools.handle_create_document"
-					elif function_doc.type == "Delete Document":
-						function_path = "raven.ai.sdk_tools.handle_delete_document"
-					# Add other standard types as needed
+					# For standard types, create wrapper functions
+					if function_doc.type in [
+						"Get List",
+						"Get Document",
+						"Update Document",
+						"Create Document",
+						"Delete Document",
+					]:
+						# These need special handling because they exist as wrappers
+						function_path = f"raven.ai.sdk_tools.handle_{function_doc.type.lower().replace(' ', '_')}"
+					elif function_doc.type in [
+						"Get Multiple Documents",
+						"Create Multiple Documents",
+						"Update Multiple Documents",
+						"Delete Multiple Documents",
+						"Submit Document",
+						"Cancel Document",
+						"Get Amended Document",
+						"Get Value",
+						"Set Value",
+						"Attach File to Document",
+					]:
+						# These can use a generic wrapper that adapts parameters
+						function_path = "raven.ai.sdk_tools.handle_generic_function"
+						# Store the actual function to call
+						extra_args["actual_function"] = {
+							"Get Multiple Documents": "get_documents",
+							"Create Multiple Documents": "create_documents",
+							"Update Multiple Documents": "update_documents",
+							"Delete Multiple Documents": "delete_documents",
+							"Submit Document": "submit_document",
+							"Cancel Document": "cancel_document",
+							"Get Amended Document": "get_amended_document",
+							"Get Value": "get_value",
+							"Set Value": "set_value",
+							"Attach File to Document": "attach_file_to_document",
+						}.get(function_doc.type)
 					else:
 						continue
 
@@ -65,16 +88,14 @@ def create_raven_tools(bot) -> list[FunctionTool]:
 						try:
 							params = json.loads(function_doc.params)
 						except Exception as e:
-							frappe.log_error(
-								"SDK Functions Debug", f"Error parsing params for {function_doc.name}: {str(e)}"
-							)
+							# Error parsing params, continue with empty params
+							pass
 
 					# Remove additionalProperties from params if present to avoid strict schema errors
 					if "additionalProperties" in params:
 						del params["additionalProperties"]
 
 					# Check if this is a standard type that needs reference_doctype
-					extra_args = {}
 					if (
 						function_doc.type
 						in [
@@ -105,7 +126,9 @@ def create_raven_tools(bot) -> list[FunctionTool]:
 						tools.append(tool)
 
 			except Exception as e:
-				frappe.log_error("SDK Functions Debug", f"Error processing function {func.function}: {str(e)}")
+				frappe.log_error(
+					"Raven AI Functions Error", f"Error processing function {func.function}: {str(e)}"
+				)
 
 	return tools
 
@@ -198,7 +221,6 @@ def create_function_tool(
 
 				return result_str
 			except Exception as e:
-				frappe.log_error("SDK Functions Debug", f"Error in on_invoke_tool: {str(e)}")
 				return json.dumps({"error": str(e)})
 
 		# Create and return the tool
@@ -212,7 +234,8 @@ def create_function_tool(
 
 		return tool
 	except Exception as e:
-		frappe.log_error("SDK Functions Debug", f"Error creating FunctionTool for {name}: {str(e)}")
+		# Error creating FunctionTool
+		pass
 		return None
 
 
@@ -232,30 +255,28 @@ def get_function_from_name(function_name: str) -> Callable:
 		try:
 			module_name, func_name = function_name.rsplit(".", 1)
 		except ValueError as ve:
-			frappe.log_error(
-				"SDK Functions Debug",
-				f"Invalid function name format: {function_name}. Should be 'module.function'",
-			)
+			# Invalid function name format
 			return None
 
 		# Import module
 		try:
 			module = __import__(module_name, fromlist=[func_name])
 		except ImportError as ie:
-			frappe.log_error("SDK Functions Debug", f"Module import error: {str(ie)}")
+			# Module import failed
 			return None
 
 		# Check for available attributes in the module
 		try:
 			available_attrs = dir(module)
 		except Exception as e:
-			frappe.log_error("SDK Functions Debug", f"Error getting module attributes: {str(e)}")
+			# Error getting module attributes
+			pass
 
 		# Get function
 		try:
 			function = getattr(module, func_name)
 		except AttributeError as ae:
-			frappe.log_error("SDK Functions Debug", f"Function not found in module: {str(ae)}")
+			# Function not found in module
 			return None
 
 		# Verify the object is callable
@@ -265,9 +286,7 @@ def get_function_from_name(function_name: str) -> Callable:
 		return function
 
 	except Exception as e:
-		frappe.log_error(
-			"SDK Functions Debug", f"Unexpected error getting function {function_name}: {str(e)}"
-		)
+		# Unexpected error getting function
 		return None
 
 
@@ -596,7 +615,7 @@ def handle_get_list(
 
 		return response
 	except Exception as e:
-		frappe.log_error("SDK Functions Debug", f"Error in handle_get_list: {str(e)}")
+		# Return error in result format
 		return {"success": False, "error": str(e)}
 
 
@@ -687,7 +706,122 @@ def handle_update_document(document_id=None, data=None, reference_doctype=None, 
 			}
 
 	except Exception as e:
-		frappe.log_error("SDK Functions Debug", f"Error in handle_update_document: {str(e)}")
+		# Return error in result format
+		return {"success": False, "error": str(e)}
+
+
+def handle_create_document(data=None, reference_doctype=None, **kwargs):
+	"""
+	Create a new document
+
+	Args:
+	    data (dict): Document data
+	    reference_doctype (str): DocType of the document (provided by function configuration)
+	    **kwargs: Additional parameters from function schema
+
+	Returns:
+	    dict: Created document data
+	"""
+
+	# Handle different parameter formats
+	if data is None:
+		data = {}
+		# Extract fields from kwargs
+		for key, value in kwargs.items():
+			if key not in ["reference_doctype"]:
+				data[key] = value
+
+	try:
+		# Get the reference doctype from function configuration
+		if not reference_doctype:
+			# Try to get from context
+			reference_doctype = frappe.flags.get("current_function_doctype")
+
+		if not reference_doctype:
+			return {
+				"success": False,
+				"error": "No reference doctype provided. Please specify a valid DocType.",
+			}
+
+		# Validate the doctype exists
+		if not frappe.db.exists("DocType", reference_doctype):
+			return {"success": False, "error": f"DocType '{reference_doctype}' does not exist."}
+
+		try:
+			# Use the existing create_document function from functions.py
+			from raven.ai.functions import create_document as create_doc_func
+
+			# Get the bot function configuration if available
+			function = None
+			# The function parameter is not passed here, so we'll just pass None
+
+			result = create_doc_func(reference_doctype, data, function)
+
+			return {"success": True, "result": result}
+
+		except frappe.exceptions.ValidationError as ve:
+			return {
+				"success": False,
+				"error": f"Validation error: {str(ve)}",
+			}
+
+	except Exception as e:
+		# Return error in result format
+		return {"success": False, "error": str(e)}
+
+
+def handle_delete_document(document_id, reference_doctype=None):
+	"""
+	Delete a document
+
+	Args:
+	    document_id (str): ID of the document to delete
+	    reference_doctype (str): DocType of the document (provided by function configuration)
+
+	Returns:
+	    dict: Deletion result
+	"""
+
+	try:
+		# Get the reference doctype from function configuration
+		if not reference_doctype:
+			# Try to get from context
+			reference_doctype = frappe.flags.get("current_function_doctype")
+
+		if not reference_doctype:
+			return {
+				"success": False,
+				"error": "No reference doctype provided. Please specify a valid DocType.",
+			}
+
+		# Validate the doctype exists
+		if not frappe.db.exists("DocType", reference_doctype):
+			return {"success": False, "error": f"DocType '{reference_doctype}' does not exist."}
+
+		# Validate document exists
+		if not frappe.db.exists(reference_doctype, document_id):
+			return {
+				"success": False,
+				"error": f"Document '{document_id}' not found in DocType '{reference_doctype}'.",
+			}
+
+		try:
+			# Delete document
+			frappe.delete_doc(reference_doctype, document_id)
+
+			return {
+				"success": True,
+				"message": f"Document '{document_id}' deleted successfully from {reference_doctype}.",
+			}
+
+		except frappe.DoesNotExistError:
+			return {
+				"success": False,
+				"error": f"Document '{document_id}' not found in DocType '{reference_doctype}'.",
+			}
+
+	except Exception as e:
+		# Return error in result format
 		return {"success": False, "error": str(e)}
 
 
@@ -760,5 +894,49 @@ def handle_get_document(document_id, reference_doctype=None):
 			}
 
 	except Exception as e:
-		frappe.log_error("SDK Functions Debug", f"Error in handle_get_document: {str(e)}")
+		# Return error in result format
+		return {"success": False, "error": str(e)}
+
+
+def handle_generic_function(**kwargs):
+	"""
+	Generic handler that adapts parameters and calls the appropriate function from raven.ai.functions
+
+	This handler is used for functions that don't need special parameter adaptation
+	"""
+	try:
+		# Get the actual function name from extra_args
+		actual_function = kwargs.pop("actual_function", None)
+		reference_doctype = kwargs.pop("reference_doctype", None)
+
+		if not actual_function:
+			return {"success": False, "error": "No function specified"}
+
+		# Get the reference doctype from context if not provided
+		if not reference_doctype:
+			reference_doctype = frappe.flags.get("current_function_doctype")
+
+		if not reference_doctype:
+			return {"success": False, "error": "No reference doctype provided."}
+
+		# Import the functions module
+		from raven.ai import functions
+
+		# Get the actual function
+		func = getattr(functions, actual_function, None)
+		if not func:
+			return {"success": False, "error": f"Function {actual_function} not found"}
+
+		# Call the function with doctype as first parameter
+		# The kwargs will contain the other parameters from the SDK
+		result = func(reference_doctype, **kwargs)
+
+		# Wrap the result in success format
+		if isinstance(result, dict) and "error" in result:
+			return {"success": False, "error": result["error"]}
+		else:
+			return {"success": True, "result": result}
+
+	except Exception as e:
+		# Return error in result format
 		return {"success": False, "error": str(e)}
