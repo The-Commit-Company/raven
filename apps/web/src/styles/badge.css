@@ -1,0 +1,49 @@
+/* Badge component styles for consistent unread count badges */
+:root {
+    /* Badge colors */
+    --badge-bg: theme('colors.gray.200');
+    --badge-text: theme('colors.gray.600');
+
+    /* Badge sizing */
+    --badge-padding-x: 0.25rem;
+    /* px-1 */
+    --badge-padding-y: 0.125rem;
+    /* py-0.5 */
+    --badge-font-size: 0.625rem;
+    /* text-[10px] - slightly larger */
+    --badge-min-width: 1rem;
+    /* min-w-[16px] */
+    --badge-border-radius: 0.25rem;
+    /* rounded */
+
+    /* Badge typography */
+    --badge-font-weight: 600;
+    /* font-semibold */
+}
+
+/* Badge component class */
+.badge-unread {
+    background-color: var(--badge-bg);
+    color: var(--badge-text);
+    padding: var(--badge-padding-y) var(--badge-padding-x);
+    font-size: var(--badge-font-size);
+    font-weight: var(--badge-font-weight);
+    min-width: var(--badge-min-width);
+    border-radius: var(--badge-border-radius);
+    text-align: center;
+    flex-shrink: 0;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --badge-bg: theme('colors.gray.700');
+        --badge-text: theme('colors.gray.200');
+    }
+}
+
+/* Dark mode class override */
+.dark .badge-unread {
+    background-color: theme('colors.gray.700');
+    color: theme('colors.gray.200');
+}
