@@ -116,7 +116,7 @@ const data = {
             type: "User",
             date: "Yesterday",
             teaser:
-                "Thanks for the update. The progress looks great so far.\nLet's schedule a call to discuss the next steps.",
+                "Thanks for the update, this is a good start.\nLet's schedule a call to discuss the next steps.",
             unread: 0,
         },
         {
@@ -161,17 +161,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const [activeWorkspace, setActiveWorkspace] = React.useState(data.workspaces[0])
     const [, setActiveChannel] = React.useState(data.workspaces[0].channels[0])
     const [mails] = React.useState<MailItem[]>(data.mails as MailItem[])
+    const [activeDM, setActiveDM] = React.useState<string | null>(null)
     const { setOpen } = useSidebar()
 
     return (
         <Sidebar collapsible="icon" className="overflow-hidden pt-[36px]" {...props}>
             <div className="flex h-full [&>[data-sidebar=sidebar]]:flex-row">
-                <div className="w-[60px] border-r border-border/40 bg-sidebar flex-shrink-0 relative">
+                <div className="w-[60px] border-r border-border/40 bg-sidebar flex-shrink-0 relative group/workspace-sidebar">
                     <div className="flex flex-col items-center gap-3 py-4">
                         {data.workspaces.map((workspace) => (
                             <div
                                 key={workspace.name}
-                                className="relative group cursor-pointer w-full flex justify-center"
+                                className="relative group/workspace-item cursor-pointer w-full flex justify-center"
                                 onClick={() => {
                                     setActiveWorkspace(workspace)
                                     setActiveChannel(workspace.channels[0])
@@ -183,7 +184,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                         "absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-r-full transition-all duration-200",
                                         activeWorkspace?.name === workspace.name
                                             ? "h-8 bg-foreground"
-                                            : "h-2 bg-transparent group-hover:bg-foreground/60 group-hover:h-2",
+                                            : "h-2 bg-transparent group-hover/workspace-item:bg-foreground/60 group-hover/workspace-item:h-2",
                                     )}
                                 />
 
@@ -223,7 +224,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </div>
 
                 <div className="flex-1 flex flex-col">
-                    <SidebarHeader className="gap-1.5 border-b py-3">
+                    <SidebarHeader className="gap-1.5 py-3">
                         <div className="flex w-full items-center justify-between p-1">
                             <div className="text-sm font-medium text-foreground truncate">
                                 {activeWorkspace?.name}
@@ -236,7 +237,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         <SearchForm />
                     </SidebarHeader>
                     <SidebarContent>
-                        <SidebarGroup className="px-0">
+                        <SidebarGroup className="p-0">
                             <SidebarGroupContent>
                                 {activeWorkspace?.name === "Direct Messages" ? (
                                     // Direct Messages Layout
@@ -247,6 +248,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                             date={mail.date}
                                             teaser={mail.teaser}
                                             unread={mail.unread}
+                                            isActive={activeDM === mail.email}
+                                            onClick={(e) => {
+                                                e.preventDefault()
+                                                setActiveDM(mail.email)
+                                            }}
                                         />
                                     ))
                                 ) : (
