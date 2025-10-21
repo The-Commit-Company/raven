@@ -23,6 +23,7 @@ import {
     SidebarMenuSubItem,
 } from "@components/ui/sidebar"
 import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
+import { CreateChannelButton } from "@components/features/channel/CreateChannel/CreateChannelButton"
 
 interface ChannelSidebarProps {
     data: ChannelSidebarData
@@ -45,25 +46,28 @@ export function ChannelSidebar({
 
     return (
         <SidebarGroup>
-            <div className="flex items-center">
-                <SidebarGroupLabel>Channels</SidebarGroupLabel>
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Info className="w-3 h-3 text-sidebar-foreground/50 hover:text-sidebar-foreground/70 cursor-help transition-colors" />
-                        </TooltipTrigger>
-                        <TooltipContent side="right" className="max-w-xs">
-                            <div className="space-y-2 text-xs">
-                                <div>
-                                    <strong>Channel Groups:</strong> Organize channels into collapsible groups
+            <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                    <SidebarGroupLabel>Channels</SidebarGroupLabel>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Info className="w-3 h-3 text-sidebar-foreground/50 hover:text-sidebar-foreground/70 cursor-help transition-colors" />
+                            </TooltipTrigger>
+                            <TooltipContent side="right" className="max-w-xs">
+                                <div className="space-y-2 text-xs">
+                                    <div>
+                                        <strong>Channel Groups:</strong> Organize channels into collapsible groups
+                                    </div>
+                                    <div>
+                                        <strong>Ungrouped:</strong> Channels not in groups appear at the bottom
+                                    </div>
                                 </div>
-                                <div>
-                                    <strong>Ungrouped:</strong> Channels not in groups appear at the bottom
-                                </div>
-                            </div>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                </div>
+                <CreateChannelButton />
             </div>
 
             <SidebarMenu>
