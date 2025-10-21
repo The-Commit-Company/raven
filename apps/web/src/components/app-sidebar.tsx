@@ -13,8 +13,10 @@ import { Switch } from "@components/ui/switch"
 import { SearchForm } from "./sidebar-search"
 import { cn } from "@lib/utils"
 import { UserFields } from "@raven/types/common/UserFields"
-import { ChannelListItem } from "./common/ChannelListItem/ChannelListItem"
 import { DMListItem } from "./common/DMListItem/DMListItem"
+import { ChannelSidebar } from "./channel-sidebar/ChannelSidebar"
+import { ChannelListItem } from "@raven/types/common/ChannelListItem"
+import { erpNextData, helpdeskData, frappeSchoolData, frappeHRData } from "../data/channelSidebarData"
 
 // This is sample data
 interface MailItem extends UserFields {
@@ -159,10 +161,36 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     // Note: I'm using state to show active workspace and channels.
     // IRL you should use the url/router.
     const [activeWorkspace, setActiveWorkspace] = React.useState(data.workspaces[0])
-    const [, setActiveChannel] = React.useState(data.workspaces[0].channels[0])
+    const [activeChannel, setActiveChannel] = React.useState(data.workspaces[0].channels[0])
     const [mails] = React.useState<MailItem[]>(data.mails as MailItem[])
     const [activeDM, setActiveDM] = React.useState<string | null>(null)
     const { setOpen } = useSidebar()
+
+
+    // Get channel data based on active workspace
+    const channelSidebarData = React.useMemo(() => {
+        switch (activeWorkspace?.name) {
+            case 'ERPNext':
+                return erpNextData
+            case 'Helpdesk':
+                return helpdeskData
+            case 'Frappe School':
+                return frappeSchoolData
+            case 'Frappe HR':
+                return frappeHRData
+            default:
+                return erpNextData
+        }
+    }, [activeWorkspace?.name])
+
+    const handleChannelClick = (channel: ChannelListItem) => {
+        setActiveChannel({
+            id: channel.name,
+            name: channel.channel_name,
+            type: channel.type || "Public",
+            unread: channel.last_message_details?.unread_count || 0
+        })
+    }
 
     return (
         <Sidebar collapsible="icon" className="overflow-hidden pt-[36px]" {...props}>
@@ -224,7 +252,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </div>
 
                 <div className="flex-1 flex flex-col">
-                    <SidebarHeader className="gap-1.5 py-3">
+                    <SidebarHeader className="gap-1.5 pt-3">
                         <div className="flex w-full items-center justify-between p-1">
                             <div className="text-sm font-medium text-foreground truncate">
                                 {activeWorkspace?.name}
@@ -256,15 +284,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                         />
                                     ))
                                 ) : (
-                                    // Regular Channels Layout
-                                    activeWorkspace?.channels.map((channel) => (
-                                        <ChannelListItem
-                                            key={channel.name}
-                                            name={channel.name}
-                                            {...('channelType' in channel && { type: channel.channelType as "Public" | "Open" | "Private" })}
-                                            unread={channel.unread}
-                                        />
-                                    ))
+                                    // New Channel Sidebar with Groups
+                                    <ChannelSidebar
+                                        data={channelSidebarData}
+                                        activeChannelId={activeChannel?.name}
+                                        onChannelClick={handleChannelClick}
+                                    />
                                 )}
                             </SidebarGroupContent>
                         </SidebarGroup>

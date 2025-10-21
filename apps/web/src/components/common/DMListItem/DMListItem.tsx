@@ -48,7 +48,7 @@ export const DMListItem = React.forwardRef<HTMLAnchorElement,
                         {teaser}
                     </div>
                     {unread > 0 && (
-                        <div className="bg-foreground text-background rounded px-1 py-0.5 text-[9px] font-semibold min-w-[16px] text-center flex-shrink-0">
+                        <div className="badge-unread">
                             {unread > 9 ? '9+' : unread}
                         </div>
                     )}
