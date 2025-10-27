@@ -22,6 +22,7 @@
   "enable_local_llm",
   "local_llm_provider",
   "local_llm_api_url",
+  "openai_compatible_api_key",
   "google_vision_and_document_ai_section",
   "enable_google_apis",
   "google_processor_location",
@@ -166,7 +167,7 @@
    "fieldname": "local_llm_provider",
    "fieldtype": "Select",
    "label": "Local LLM Provider",
-   "options": "LM Studio\nOllama\nLocalAI"
+   "options": "LM Studio\nOllama\nLocalAI\nOpenAI Compatible"
   },
   {
    "depends_on": "eval:doc.enable_local_llm",
@@ -174,6 +175,12 @@
    "fieldtype": "Data",
    "label": "Local LLM API URL",
    "placeholder": "http://localhost:11434/v1"
+  },
+  {
+   "depends_on": "eval:doc.enable_local_llm && doc.local_llm_provider == \"OpenAI Compatible\"",
+   "fieldname": "openai_compatible_api_key",
+   "fieldtype": "Password",
+   "label": "OpenAI Compatible API Key"
   },
   {
    "fieldname": "raven_mobile_tab",

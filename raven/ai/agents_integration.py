@@ -57,12 +57,18 @@ class RavenAgentManager:
 			if not self.settings.local_llm_api_url:
 				frappe.throw(_("Local LLM API URL is not configured in Raven Settings"))
 
+			# Handle OpenAI Compatible provider differently
+			if self.settings.local_llm_provider == "OpenAI Compatible":
+				api_key = self.settings.get_password("openai_compatible_api_key") or "sk-key"
+			else:
+				api_key = "not-needed"  # LM Studio, Ollama, LocalAI don't require API key
+
 			client = AsyncOpenAI(
-				api_key="not-needed",  # LM Studio doesn't require API key
+				api_key=api_key,
 				base_url=self.settings.local_llm_api_url,
 			)
 
-			# Create provider with use_responses=False for LM Studio
+			# Create provider with use_responses=False for Local LLM
 			self.provider = OpenAIProvider(
 				openai_client=client, use_responses=False  # Force use of chat/completions endpoint
 			)
