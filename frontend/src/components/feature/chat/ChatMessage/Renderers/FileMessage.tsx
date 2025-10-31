@@ -7,7 +7,7 @@ import { DIALOG_CONTENT_CLASS } from "@/utils/layout/dialog"
 import { DateMonthAtHourMinuteAmPm } from "@/utils/dateConversions"
 import { clsx } from "clsx"
 import { FileExtensionIcon } from "@/utils/layout/FileExtIcon"
-import { memo } from "react"
+import { memo, useState } from "react"
 import { toast } from "sonner"
 import { useIsDesktop } from "@/hooks/useMediaQuery"
 
@@ -127,28 +127,35 @@ const PDFPreviewButton = ({ message, user }: {
                 </IconButton>
             </Dialog.Trigger>
             <Dialog.Content className={clsx(DIALOG_CONTENT_CLASS, 'min-w-[64rem]')} size='4'>
-                <Dialog.Title size='3'>{fileName}</Dialog.Title>
-                <Dialog.Description color='gray' size='1'>{user?.full_name ?? message.owner} on <DateMonthAtHourMinuteAmPm date={message.creation} /></Dialog.Description>
-                <Box my='4'>
-                    <embed
-                        src={message.file}
-                        type="application/pdf"
-                        width="100%"
-                        height='680px'
-                    />
-                </Box>
-                <Flex justify='end' gap='2' mt='3'>
-                    <Button variant='soft' color='gray' asChild>
-                        <Link className='no-underline' href={message.file} download>
-                            <BiDownload size='18' />
-                            Download
-                        </Link>
-                    </Button>
-                    <Dialog.Close>
-                        <Button color='gray' variant='soft'>Close</Button>
-                    </Dialog.Close>
-                </Flex>
+                <PDFPreviewContent fileName={fileName} user={user} message={message} />
             </Dialog.Content>
         </Dialog.Root>
     </Box>
+}
+
+const PDFPreviewContent = ({ fileName, user, message }: { fileName: string, user?: UserFields, message: FileMessage }) => {
+
+    return <>
+        <Dialog.Title size='3'>{fileName}</Dialog.Title>
+        <Dialog.Description color='gray' size='1'>{user?.full_name ?? message.owner} on <DateMonthAtHourMinuteAmPm date={message.creation} /></Dialog.Description>
+        <Box my='4'>
+            <embed
+                src={message.file}
+                type="application/pdf"
+                width="100%"
+                height='680px'
+            />
+        </Box>
+        <Flex justify='end' gap='2' mt='3'>
+            <Button variant='soft' color='gray' asChild>
+                <Link className='no-underline' href={message.file} download>
+                    <BiDownload size='18' />
+                    Download
+                </Link>
+            </Button>
+            <Dialog.Close>
+                <Button color='gray' variant='soft'>Close</Button>
+            </Dialog.Close>
+        </Flex></>
+
 }

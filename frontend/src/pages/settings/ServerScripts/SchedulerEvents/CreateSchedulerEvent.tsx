@@ -15,7 +15,11 @@ const CreateSchedulerEvent = () => {
 
     const navigate = useNavigate()
 
-    const methods = useForm()
+    const methods = useForm({
+        defaultValues: {
+            day: "1"
+        }
+    })
 
     const { createDoc, error, loading } = useFrappeCreateDoc()
 

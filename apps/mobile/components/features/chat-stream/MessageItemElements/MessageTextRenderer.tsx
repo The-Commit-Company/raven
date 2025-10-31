@@ -108,13 +108,13 @@ const darkThemeTagStyles = {
     }
 }
 
-const lightThemeStyles: TRenderEngineConfig['tagsStyles'] = Object.keys(TAG_BASE_STYLES).reduce((acc, key) => {
+const lightThemeStyles: TRenderEngineConfig['tagsStyles'] = Object.keys(TAG_BASE_STYLES)?.reduce((acc, key) => {
     // @ts-ignore
     acc[key] = { ...TAG_BASE_STYLES[key], ...(lightThemeTagStyles?.[key] || {}) }
     return acc
 }, {} as TRenderEngineConfig['tagsStyles'])
 
-const darkThemeStyles: TRenderEngineConfig['tagsStyles'] = Object.keys(TAG_BASE_STYLES).reduce((acc, key) => {
+const darkThemeStyles: TRenderEngineConfig['tagsStyles'] = Object.keys(TAG_BASE_STYLES)?.reduce((acc, key) => {
     // @ts-ignore
     acc[key] = { ...TAG_BASE_STYLES[key], ...(darkThemeTagStyles?.[key] || {}) }
     return acc

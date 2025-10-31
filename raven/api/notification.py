@@ -8,7 +8,17 @@ from frappe.frappeclient import FrappeClient
 @frappe.whitelist()
 def are_push_notifications_enabled() -> bool:
 	try:
-		return frappe.db.get_single_value("Push Notification Settings", "enable_push_notification_relay")
+		push_service = frappe.db.get_single_value("Raven Settings", "push_notification_service")
+
+		if not push_service:
+			push_service = "Frappe Cloud"
+
+		if push_service == "Frappe Cloud":
+			return frappe.db.get_single_value(
+				"Push Notification Settings", "enable_push_notification_relay"
+			)
+		else:
+			return True
 	except frappe.DoesNotExistError:
 		# push notifications are not supported in the current framework version
 		return False

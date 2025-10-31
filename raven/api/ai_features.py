@@ -67,7 +67,9 @@ def get_openai_available_models():
 
 
 @frappe.whitelist()
-def test_llm_configuration(provider: str = "OpenAI", api_url: str = None):
+def test_llm_configuration(
+	provider: str = "OpenAI", api_url: str = None, local_llm_provider: str = None
+):
 	"""
 	Test LLM configuration (OpenAI or Local LLM)
 	"""
@@ -78,19 +80,41 @@ def test_llm_configuration(provider: str = "OpenAI", api_url: str = None):
 			# Test local LLM endpoint
 			import requests
 
-			response = requests.get(f"{api_url}/models", timeout=5)
-			if response.status_code == 200:
-				models = response.json()
+			# Check if it's OpenAI Compatible and get API key
+			api_key = None
+			if local_llm_provider == "OpenAI Compatible":
+				settings = frappe.get_single("Raven Settings")
+				api_key = settings.get_password("openai_compatible_api_key")
+				if not api_key:
+					return {
+						"success": False,
+						"message": "OpenAI Compatible API Key is required",
+					}
+
+			if api_key:
+				# Use OpenAI client for OpenAI Compatible services
+				client = openai.OpenAI(api_key=api_key, base_url=api_url)
+				models = client.models.list()
 				return {
 					"success": True,
-					"message": f"Successfully connected to {api_url}",
-					"models": models.get("data", []),
+					"message": f"Successfully connected to OpenAI Compatible service at {api_url}",
+					"models": [{"id": m.id} for m in models.data],
 				}
 			else:
-				return {
-					"success": False,
-					"message": f"Failed to connect to {api_url}. Status: {response.status_code}",
-				}
+				# For other local LLM providers, use direct HTTP request
+				response = requests.get(f"{api_url}/models", timeout=5)
+				if response.status_code == 200:
+					models = response.json()
+					return {
+						"success": True,
+						"message": f"Successfully connected to {api_url}",
+						"models": models.get("data", []),
+					}
+				else:
+					return {
+						"success": False,
+						"message": f"Failed to connect to {api_url}. Status: {response.status_code}",
+					}
 
 		elif provider == "OpenAI":
 			# Test OpenAI configuration

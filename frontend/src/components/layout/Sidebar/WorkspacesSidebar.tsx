@@ -10,6 +10,9 @@ import useUnreadMessageCount from '@/hooks/useUnreadMessageCount'
 import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
 import { generateAvatarColor } from '@/components/feature/selectDropdowns/GenerateAvatarColor'
 import { getInitials } from '@/components/common/UserAvatar'
+import { useSetAtom } from 'jotai'
+import { lastChannelAtom, lastWorkspaceAtom } from '@/utils/lastVisitedAtoms'
+import { useResetAtom } from 'jotai/utils'
 
 const WorkspacesSidebar = () => {
 
@@ -74,9 +77,12 @@ const WorkspaceItem = ({ workspace }: { workspace: WorkspaceFields & { unread_co
 
     const path = isSelected ? location.pathname : `/${workspace.name}`
 
+    const setLastWorkspace = useSetAtom(lastWorkspaceAtom)
+    const resetLastChannel = useResetAtom(lastChannelAtom)
+
     const openWorkspace = () => {
-        localStorage.setItem('ravenLastWorkspace', workspace.name)
-        localStorage.removeItem('ravenLastChannel')
+        setLastWorkspace(workspace.name)
+        resetLastChannel()
     }
 
     return <HStack position='relative' align='center' className='group'>

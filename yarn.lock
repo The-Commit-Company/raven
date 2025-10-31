@@ -2645,10 +2645,10 @@
   resolved "https://registry.yarnpkg.com/@jsamr/react-native-li/-/react-native-li-2.3.1.tgz#12a5b5f6e3971cec77b96bee58104eed0ae9314a"
   integrity sha512-Qbo4NEj48SQ4k8FZJHFE2fgZDKTWaUGmVxcIQh3msg5JezLdTMMHuRRDYctfdHI6L0FZGObmEv3haWbIvmol8w==
 
-"@legendapp/list@^1.1.4":
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/@legendapp/list/-/list-1.1.4.tgz#2d8f6ade038735ab1ca79fd493366ec464331eb8"
-  integrity sha512-Q+eLlMilmV2F8/orcR+0XFq543Up3V06WXqG/lpGqowo5reSXsjVCo7dQWNpvU+1+stb87SeAHw9k130DKa+iw==
+"@legendapp/list@^2.0.9":
+  version "2.0.9"
+  resolved "https://registry.yarnpkg.com/@legendapp/list/-/list-2.0.9.tgz#f661a8d64950b89e2a6bd0f390672ce3322e83ad"
+  integrity sha512-HOSSNK6iJs59UCAiuNqLFJIfUZgUpytv65M88a+oV49kHpa2aSlPKSlZQFbkS0LWrDFljlh1OpbPByXdI18xkw==
   dependencies:
     use-sync-external-store "^1.5.0"
 
@@ -4840,13 +4840,13 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-axios@^1.8.2:
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.9.0.tgz#25534e3b72b54540077d33046f77e3b8d7081901"
-  integrity sha512-re4CqKTJaURpzbLHtIi6XpDv20/CnpXOtjRY5/CU32L8gU8ek9UIivcfvSWvmKEngmVbrUtPpdDwWDWL7DNHvg==
+axios@^1.12.2:
+  version "1.12.2"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.12.2.tgz#6c307390136cf7a2278d09cec63b136dfc6e6da7"
+  integrity sha512-vMJzPewAlRyOgxV2dU0Cuz2O8zzzx9VYtbJOaBgXFeLc4IV/Eg50n4LowmehOOR61S8ZMpc2K5Sa7g6A4jfkUw==
   dependencies:
     follow-redirects "^1.15.6"
-    form-data "^4.0.0"
+    form-data "^4.0.4"
     proxy-from-env "^1.1.0"
 
 babel-core@^7.0.0-bridge.0:
@@ -6844,23 +6844,25 @@ foreground-child@^3.1.0:
     signal-exit "^4.0.1"
 
 form-data@^3.0.1:
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/form-data/-/form-data-3.0.3.tgz#349c8f2c9d8f8f0c879ee0eb7cc0d300018d6b09"
-  integrity sha512-q5YBMeWy6E2Un0nMGWMgI65MAKtaylxfNJGJxpGh45YDciZB4epbWpaAfImil6CPAPTYB4sh0URQNDRIZG5F2w==
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/form-data/-/form-data-3.0.4.tgz#938273171d3f999286a4557528ce022dc2c98df1"
+  integrity sha512-f0cRzm6dkyVYV3nPoooP8XlccPQukegwhAnpoLcXy+X+A8KfpGOoXwDr9FLZd3wzgLaBGQBE3lY93Zm/i1JvIQ==
   dependencies:
     asynckit "^0.4.0"
     combined-stream "^1.0.8"
     es-set-tostringtag "^2.1.0"
+    hasown "^2.0.2"
     mime-types "^2.1.35"
 
-form-data@^4.0.0:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/form-data/-/form-data-4.0.2.tgz#35cabbdd30c3ce73deb2c42d3c8d3ed9ca51794c"
-  integrity sha512-hGfm/slu0ZabnNt4oaRZ6uREyfCj6P4fT/n6A1rGV+Z0VdGXjfOhVUpkn6qVQONHGIFwmveGXyDs75+nr6FM8w==
+form-data@^4.0.4:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/form-data/-/form-data-4.0.4.tgz#784cdcce0669a9d68e94d11ac4eea98088edd2c4"
+  integrity sha512-KrGhL9Q4zjj0kiUt5OO4Mr/A/jlI2jDYs5eHBpYHPcBEVSiipAvn2Ko2HnPe20rmcuuvMHNdZFp+4IlGTMF0Ow==
   dependencies:
     asynckit "^0.4.0"
     combined-stream "^1.0.8"
     es-set-tostringtag "^2.1.0"
+    hasown "^2.0.2"
     mime-types "^2.1.12"
 
 fraction.js@^4.3.7:
@@ -6868,21 +6870,21 @@ fraction.js@^4.3.7:
   resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-4.3.7.tgz#06ca0085157e42fda7f9e726e79fefc4068840f7"
   integrity sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==
 
-frappe-js-sdk@^1.8.0:
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/frappe-js-sdk/-/frappe-js-sdk-1.9.0.tgz#535b098718de704a3dad80cbe4f87c490c299f3a"
-  integrity sha512-LFxXaOFH84dcEnESiUe8iPrU6pHP3vgDR8F8v/en9We9YhARbds4RLfPnB/6cks0OGOEbQ8IGhnmf4rMtkpzeA==
-  dependencies:
-    axios "^1.8.2"
-
-frappe-react-sdk@^1.11.0, frappe-react-sdk@^1.9.0:
+frappe-js-sdk@^1.11.0:
   version "1.11.0"
-  resolved "https://registry.yarnpkg.com/frappe-react-sdk/-/frappe-react-sdk-1.11.0.tgz#18ef2e3f61a06ac31173629e7d9ac798aa89942b"
-  integrity sha512-YlAC9/1gV40PARpRxS39A5iJxlkN6ArDKpSf4fLcBJ8WX/aRreCW/f1E/3TLJC5fJExZ9zvn7L5CAVmsL1qvcg==
+  resolved "https://registry.yarnpkg.com/frappe-js-sdk/-/frappe-js-sdk-1.11.0.tgz#97352c16bb2e0c3865a60309cf26f9b7c9a22285"
+  integrity sha512-XQM+FyiV4+ibEP6X+daWojqN5loex7d797HPIFzepDCEFw0ggERA/z2Dk7HD7+ilex1LrI4YpYislm54HMY0GQ==
   dependencies:
-    frappe-js-sdk "^1.8.0"
+    axios "^1.12.2"
+
+frappe-react-sdk@^1.13.0:
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/frappe-react-sdk/-/frappe-react-sdk-1.13.0.tgz#6001078770f2177a79be667cefd14ba2e1baf8d3"
+  integrity sha512-ldMmOaL0Dpu840lVktVuo6zfL9gIFYrBFFnFICqbdeNcmoZoUlOIe1w0SzaICXALGvNmVI3lfRNGOE0SG2+jsw==
+  dependencies:
+    frappe-js-sdk "^1.11.0"
     socket.io-client "4.7.1"
-    swr "^2.3.3"
+    swr "^2.3.6"
 
 freeport-async@^2.0.0:
   version "2.0.0"
@@ -8120,9 +8122,9 @@ linkify-it@^5.0.0:
     uc.micro "^2.0.0"
 
 linkifyjs@^4.2.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/linkifyjs/-/linkifyjs-4.3.0.tgz#f3d46b363ccfb5d7c13f6d11c1dd9848bd854a7f"
-  integrity sha512-kaSIzMpYb3ihAbMm48CUNpSKPwKw8vPVUItiIvPSrISqHYzvQm/6LhaWYkZsiUHNMml1dw+yPMM1/qzigJNg5g==
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/linkifyjs/-/linkifyjs-4.3.2.tgz#d97eb45419aabf97ceb4b05a7adeb7b8c8ade2b1"
+  integrity sha512-NT1CJtq3hHIreOianA8aSXn6Cw0JzYOuDQbOrSPe7gqFnCpKP++MQe3ODgO3oh2GJFORkAAdqredOa60z63GbA==
 
 locate-path@^3.0.0:
   version "3.0.0"
@@ -10922,10 +10924,10 @@ svgo@^3.0.2:
     csso "^5.0.5"
     picocolors "^1.0.0"
 
-swr@^2.3.3:
-  version "2.3.3"
-  resolved "https://registry.yarnpkg.com/swr/-/swr-2.3.3.tgz#9d6a703355f15f9099f45114db3ef75764444788"
-  integrity sha512-dshNvs3ExOqtZ6kJBaAsabhPdHyeY4P2cKwRCniDVifBMoG/SVI7tfLWqPXriVspf2Rg4tPzXJTnwaihIeFw2A==
+swr@^2.3.6:
+  version "2.3.6"
+  resolved "https://registry.yarnpkg.com/swr/-/swr-2.3.6.tgz#5fee0ee8a0762a16871ee371075cb09422b64f50"
+  integrity sha512-wfHRmHWk/isGNMwlLGlZX5Gzz/uTgo0o2IRuTMcf4CPuPFJZlq0rDaKUx+ozB5nBOReNV1kiOyzMfj+MBMikLw==
   dependencies:
     dequal "^2.0.3"
     use-sync-external-store "^1.4.0"
@@ -11470,10 +11472,10 @@ vite-plugin-svgr@^4.2.0:
     "@svgr/core" "^8.1.0"
     "@svgr/plugin-jsx" "^8.1.0"
 
-vite@^6.3.4:
-  version "6.3.5"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-6.3.5.tgz#fec73879013c9c0128c8d284504c6d19410d12a3"
-  integrity sha512-cZn6NDFE7wdTpINgs++ZJ4N49W2vRp8LCKrn3Ob1kYNtOo21vfDoaV5GzBfLU4MovSAB8uNRm4jgzVQZ+mBzPQ==
+vite@^6.3.6:
+  version "6.3.6"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-6.3.6.tgz#69a976b64930750d40219fbc68c5200874d315c1"
+  integrity sha512-0msEVHJEScQbhkbVTb/4iHZdJ6SXp/AvxL2sjwYQFfBqleHtnCqv1J3sa9zbWz/6kW1m9Tfzn92vW+kZ1WV6QA==
   dependencies:
     esbuild "^0.25.0"
     fdir "^6.4.4"

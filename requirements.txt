@@ -1,6 +1,6 @@
 # frappe -- https://github.com/frappe/frappe is installed via 'bench init'
 linkpreview
-openai
+openai>=1.100.2
 blurhash-python
 openai-agents>=0.0.16
 markitdown

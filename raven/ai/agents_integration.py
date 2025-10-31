@@ -268,8 +268,14 @@ class RavenAgentManager:
 			if not self.settings.local_llm_api_url:
 				frappe.throw(_("Local LLM API URL is not configured in Raven Settings"))
 
+			# Handle OpenAI Compatible provider differently
+			if self.settings.local_llm_provider == "OpenAI Compatible":
+				api_key = self.settings.get_password("openai_compatible_api_key") or "sk-key"
+			else:
+				api_key = "not-needed"  # LM Studio, Ollama, LocalAI don't require API key
+
 			client = AsyncOpenAI(
-				api_key="not-needed",  # LM Studio doesn't require API key
+				api_key=api_key,
 				base_url=self.settings.local_llm_api_url,
 			)
 
@@ -804,15 +810,17 @@ async def handle_ai_request_async(
 					enhanced_instructions = agent.instructions + tool_use_reminder
 
 					# Build messages array with proper conversation history
-					messages = [{"role": "system", "content": enhanced_instructions}]
+					messages = [{"role": "system", "content": [{"type": "text", "text": enhanced_instructions}]}]
 
 					# Add conversation history as separate messages
 					if conversation_history:
 						for msg in conversation_history:
-							messages.append({"role": msg["role"], "content": msg["content"]})
+							messages.append(
+								{"role": msg["role"], "content": [{"type": "text", "text": msg["content"]}]}
+							)
 
 					# Add current user message
-					messages.append({"role": "user", "content": message})
+					messages.append({"role": "user", "content": [{"type": "text", "text": message}]})
 
 					# Create the API call with or without tools
 					api_params = {
@@ -877,16 +885,25 @@ async def handle_ai_request_async(
 							# If we have tool results, make another API call with the results
 							if tool_results:
 								# Add assistant message with tool calls
+								assistant_message = choice.message.model_dump()
+								# Fix assistant message content format
+								if isinstance(assistant_message.get("content"), str):
+									assistant_message["content"] = [{"type": "text", "text": assistant_message["content"]}]
+
 								messages = [
-									{"role": "system", "content": agent.instructions},
-									{"role": "user", "content": full_input},
-									choice.message.model_dump(),
+									{"role": "system", "content": [{"type": "text", "text": agent.instructions}]},
+									{"role": "user", "content": [{"type": "text", "text": str(full_input)}]},
+									assistant_message,
 								]
 
 								# Add tool results
 								for result in tool_results:
 									messages.append(
-										{"role": "tool", "content": result["output"], "tool_call_id": result["tool_call_id"]}
+										{
+											"role": "tool",
+											"content": [{"type": "text", "text": result["output"]}],
+											"tool_call_id": result["tool_call_id"],
+										}
 									)
 
 								# Make final API call
