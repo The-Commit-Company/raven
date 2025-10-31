@@ -13,9 +13,11 @@ from pytz import timezone, utc
 from raven.ai.ai import handle_ai_thread_message, handle_bot_dm
 from raven.api.raven_channel import get_peer_user
 from raven.notification import (
+	MAX_NOTIFICATION_CONTENT_LENGTH,
 	send_notification_for_message,
 	send_notification_to_topic,
 	send_notification_to_user,
+	truncate_notification_content,
 )
 from raven.utils import (
 	get_raven_room,
@@ -461,19 +463,27 @@ class RavenMessage(Document):
 
 		message = self.get_notification_message_content()
 
+		# Truncate the message content to fit within FCM payload limits
+		truncated_message = truncate_notification_content(message)
+
 		owner_name, owner_image = self.get_message_owner_details()
+
+		# Prepare content for data payload - truncate if text message
+		content = self.content if self.message_type == "Text" else self.file
+		if self.message_type == "Text" and len(content) > MAX_NOTIFICATION_CONTENT_LENGTH:
+			content = content[:MAX_NOTIFICATION_CONTENT_LENGTH]
 
 		send_notification_to_user(
 			user_id=peer_raven_user_doc.user,
 			user_image_path=owner_image,
 			title=owner_name,
-			message=message,
+			message=truncated_message,
 			data={
 				"message_id": self.name,
 				"channel_id": self.channel_id,
 				"raven_message_type": self.message_type,
 				"channel_type": "DM",
-				"content": self.content if self.message_type == "Text" else self.file,
+				"content": content,
 				"from_user": self.owner,
 				"type": "New message",
 				"image": owner_image,
@@ -487,6 +497,9 @@ class RavenMessage(Document):
 		"""
 		message = self.get_notification_message_content()
 
+		# Truncate the message content to fit within FCM payload limits
+		truncated_message = truncate_notification_content(message)
+
 		is_thread = frappe.get_cached_value("Raven Channel", self.channel_id, "is_thread")
 
 		owner_name, owner_image = self.get_message_owner_details()
@@ -497,17 +510,22 @@ class RavenMessage(Document):
 			channel_name = frappe.get_cached_value("Raven Channel", self.channel_id, "channel_name")
 			title = f"{owner_name} in #{channel_name}"
 
+		# Prepare content for data payload - truncate if text message
+		content = self.content if self.message_type == "Text" else self.file
+		if self.message_type == "Text" and len(content) > MAX_NOTIFICATION_CONTENT_LENGTH:
+			content = content[:MAX_NOTIFICATION_CONTENT_LENGTH]
+
 		send_notification_to_topic(
 			channel_id=self.channel_id,
 			user_image_path=owner_image,
 			title=title,
-			message=message,
+			message=truncated_message,
 			data={
 				"message_id": self.name,
 				"channel_id": self.channel_id,
 				"raven_message_type": self.message_type,
 				"channel_type": "Channel",
-				"content": self.content if self.message_type == "Text" else self.file,
+				"content": content,
 				"from_user": self.owner,
 				"type": "New message",
 				"is_thread": "1" if is_thread else "0",
