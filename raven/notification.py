@@ -8,6 +8,8 @@ from pytz import timezone, utc
 
 from raven.utils import get_channel_members
 
+MAX_NOTIFICATION_CONTENT_LENGTH = 1000
+
 
 def send_notification_for_message(message):
 	"""
@@ -100,6 +102,9 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 
 		content = message.get_notification_message_content()
 
+		# Truncate the message content to fit within FCM payload limits
+		truncated_content = truncate_notification_content(content)
+
 		message_owner, message_owner_image = message.get_message_owner_details()
 
 		workspace = "" if channel_doc.is_dm_thread else channel_doc.workspace
@@ -125,7 +130,7 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 			"channel_id": message.channel_id,
 			"raven_message_type": message.message_type,
 			"channel_type": "DM" if channel_doc.is_direct_message else "Channel",
-			"content": message.content,
+			"content": truncated_content,
 			"from_user": message.owner,
 			"type": "New message",
 			"is_thread": "1" if channel_doc.is_thread else "0",
@@ -137,7 +142,10 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 			messages.append(
 				{
 					"users": replied_users,
-					"notification": {"title": f"{message_owner} replied{channel_name}", "body": content},
+					"notification": {
+						"title": f"{message_owner} replied{channel_name}",
+						"body": truncated_content,
+					},
 					"data": data,
 					"tag": message.channel_id,
 					"click_action": url,
@@ -149,7 +157,10 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 			messages.append(
 				{
 					"users": mentioned_users,
-					"notification": {"title": f"{message_owner} mentioned you{channel_name}", "body": content},
+					"notification": {
+						"title": f"{message_owner} mentioned you{channel_name}",
+						"body": truncated_content,
+					},
 					"data": data,
 					"tag": message.channel_id,
 					"click_action": url,
@@ -161,7 +172,7 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 			messages.append(
 				{
 					"users": final_users,
-					"notification": {"title": f"{message_owner}{channel_name}", "body": content},
+					"notification": {"title": f"{message_owner}{channel_name}", "body": truncated_content},
 					"data": data,
 					"tag": message.channel_id,
 					"click_action": url,
@@ -332,3 +343,13 @@ def get_milliseconds_since_epoch(timestamp: str) -> str:
 	# Get the timestamp in milliseconds since epoch for the UTC datetime
 	seconds_since_epoch = utc_datetime.timestamp()
 	return str(seconds_since_epoch * 1000)
+
+
+def truncate_notification_content(content):
+	"""
+	Truncate the push notification message content to fit within FCM payload limits
+	"""
+	if not content:
+		return
+
+	return content[:MAX_NOTIFICATION_CONTENT_LENGTH]
