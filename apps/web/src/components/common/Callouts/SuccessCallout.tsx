@@ -1,13 +1,15 @@
-import { BiCheckCircle } from "react-icons/bi";
 import { PropsWithChildren } from "react";
-import { CustomCallout } from "./CustomCallout";
+import { CheckCircleIcon } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
 
-export const SuccessCallout = ({ children, ...props }: PropsWithChildren<{ message?: string }>) => {
+export const SuccessCallout = ({ children, title }: PropsWithChildren<{ title?: string }>) => {
     return (
-        <CustomCallout
-            rootProps={{ color: "green" }}
-            iconChildren={<BiCheckCircle size="18" />}
-            textChildren={children || props.message || "Success"}
-        />
+        <Alert variant='success'>
+            <CheckCircleIcon />
+            {title && <AlertTitle>
+                {title}
+            </AlertTitle>}
+            <AlertDescription>{children}</AlertDescription>
+        </Alert>
     )
 }

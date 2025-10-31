@@ -9,6 +9,8 @@ import MainPage from "@pages/MainPage"
 import { FrappeProvider } from 'frappe-react-sdk'
 import { init } from 'emoji-mart'
 import Cookies from 'js-cookie'
+import LoginPage from "@pages/auth/Login"
+import ForgotPassword from "@pages/auth/ForgotPassword"
 
 function App() {
 
@@ -25,6 +27,8 @@ function App() {
     >
       <BrowserRouter basename={import.meta.env.VITE_BASE_NAME}>
         <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/" element={<MainPage />}>
             <Route index element={<Channel />} />
             <Route path="channel/:id" element={<Channel />} />

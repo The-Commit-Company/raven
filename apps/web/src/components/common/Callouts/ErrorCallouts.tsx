@@ -1,13 +1,15 @@
 import { PropsWithChildren } from "react"
-import { FiAlertTriangle } from "react-icons/fi"
-import { CustomCallout } from "./CustomCallout"
+import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert"
+import { AlertCircleIcon } from "lucide-react"
 
-export const ErrorCallout = ({ children, ...props }: PropsWithChildren<{ message?: string }>) => {
+export const ErrorCallout = ({ children, title }: PropsWithChildren<{ title?: string }>) => {
     return (
-        <CustomCallout
-            rootProps={{ color: "red" }}
-            iconChildren={<FiAlertTriangle size="18" />}
-            textChildren={children || props.message || "An error occurred"}
-        />
+        <Alert variant='destructive'>
+            <AlertCircleIcon />
+            {title && <AlertTitle>
+                {title}
+            </AlertTitle>}
+            <AlertDescription>{children}</AlertDescription>
+        </Alert>
     )
 }
