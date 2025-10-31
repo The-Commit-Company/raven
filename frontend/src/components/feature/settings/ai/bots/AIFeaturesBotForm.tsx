@@ -144,7 +144,7 @@ const AIFeaturesBotForm = (props: Props) => {
                         <BiInfoCircle />
                     </Callout.Icon>
                     <Callout.Text>
-                        File search and code interpreter features are not available for Local LLM providers.
+                        Currently, code interpreter features are not available for Local LLM providers.
                         These features require OpenAI's infrastructure.
                     </Callout.Text>
                 </Callout.Root>
