@@ -46,6 +46,16 @@ repos:
         files: "raven.*"
         exclude: ".*setup.py$"
 
+  # Semgrep is only enabled locally when frappe-semgrep-rules is present
+  # Comment out or adjust the config path if you don't have the rules locally
+  # - repo: https://github.com/semgrep/semgrep
+  #   rev: v1.131.0
+  #   hooks:
+  #     - id: semgrep
+  #       files: "raven.*"
+  #       args: ["--config", "./frappe-semgrep-rules/rules", "--error"]
+  #       exclude: ".*json$|.*txt$|.*csv|.*md|.*svg"
+
 ci:
   autoupdate_schedule: weekly
   skip: []

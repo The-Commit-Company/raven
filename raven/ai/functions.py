@@ -1,5 +1,6 @@
 import frappe
 from frappe import _, client
+from frappe.utils import now_datetime, nowdate
 
 
 def get_document(doctype: str, document_id: str):
@@ -153,6 +154,32 @@ def get_amended_document(doctype: str, document_id: str):
 		return client.get(doctype, name=document_id)
 	else:
 		return {"message": f"{doctype} {document_id} is not amended", "doctype": doctype}
+
+
+def get_current_context():
+	"""
+	Get the current user context including username, full name, current date and time.
+
+	This function should be called when users ask about:
+	- Current date/time ("what day is it", "what time is it")
+	- User identity ("who am I")
+	- Context information for task creation
+
+	Returns:
+	        dict: Context information including user details and current timestamp
+	"""
+	current_user = frappe.session.user
+	user_doc = frappe.get_doc("User", current_user)
+
+	return {
+		"user": current_user,
+		"full_name": user_doc.full_name or user_doc.first_name or current_user,
+		"current_date": nowdate(),
+		"current_time": now_datetime(),
+		"language": frappe.db.get_value("User", current_user, "language") or "en",
+		"time_zone": frappe.db.get_value("User", current_user, "time_zone")
+		or frappe.utils.get_system_timezone(),
+	}
 
 
 def attach_file_to_document(doctype: str, document_id: str, file_path: str):
