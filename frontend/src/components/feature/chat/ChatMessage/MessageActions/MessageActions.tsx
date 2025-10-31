@@ -44,15 +44,15 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                 {message && message.message_type === 'Poll' && <RetractVote message={message} />}
                 {message && message.message_type === 'Poll' && <ClosePoll message={message} />}
 
-                <ContextMenu.Item>
-                    <Flex gap='2' width='100%' onClick={onReply}>
+                <ContextMenu.Item onSelect={onReply}>
+                    <Flex gap='2' width='100%'>
                         <LuReply size='18' />
                         Reply
                     </Flex>
                 </ContextMenu.Item>
 
-                <ContextMenu.Item>
-                    <Flex gap='2' width='100%' onClick={onForward}>
+                <ContextMenu.Item onSelect={onForward}>
+                    <Flex gap='2' width='100%'>
                         <LuForward size='18' />
                         Forward
                     </Flex>
@@ -62,8 +62,8 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                 <ContextMenu.Separator />
                 <ContextMenu.Group>
                     {(message.text || selectedText) &&
-                        <ContextMenu.Item>
-                            <Flex gap='2' width='100%' onClick={copy}>
+                        <ContextMenu.Item onSelect={copy}>
+                            <Flex gap='2' width='100%'>
                                 <BiCopy size='18' />
                                 Copy {selectedText ? 'Selected Text' : ''}
                             </Flex>
@@ -72,8 +72,8 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
 
                     {['File', 'Image'].includes(message.message_type) &&
                         <ContextMenu.Group>
-                            <ContextMenu.Item>
-                                <Flex gap='2' width='100%' onClick={copy}>
+                            <ContextMenu.Item onSelect={copy}>
+                                <Flex gap='2' width='100%'>
                                     <BiLink size='18' />
                                     Copy link
                                 </Flex>
@@ -88,8 +88,8 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                                 </a>
                             </ContextMenu.Item>
 
-                            <ContextMenu.Item>
-                                <Flex gap='2' width='100%' onClick={onAttachDocument}>
+                            <ContextMenu.Item onSelect={onAttachDocument}>
+                                <Flex gap='2' width='100%'>
                                     <BiPaperclip size='18' />
                                     Attach File to Document
                                 </Flex>
@@ -104,8 +104,8 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
 
                 {isReactionsAvailable && <ContextMenu.Group>
                     <ContextMenu.Separator />
-                    <ContextMenu.Item>
-                        <Flex gap='2' width='100%' onClick={onViewReaction}>
+                    <ContextMenu.Item onSelect={onViewReaction}>
+                        <Flex gap='2' width='100%'>
                             <MdOutlineEmojiEmotions size='18' />
                             View Reactions
                         </Flex>
@@ -117,15 +117,15 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                 {isOwner && <ContextMenu.Group>
                     <ContextMenu.Separator />
                     {message.text ?
-                        <ContextMenu.Item>
-                            <Flex gap='2' width='100%' onClick={onEdit}>
+                        <ContextMenu.Item onSelect={onEdit}>
+                            <Flex gap='2' width='100%'>
                                 <AiOutlineEdit size='18' />
                                 Edit
                             </Flex>
                         </ContextMenu.Item>
                         : null}
-                    <ContextMenu.Item color="red">
-                        <Flex gap='2' width='100%' onClick={onDelete}>
+                    <ContextMenu.Item color="red" onSelect={onDelete}>
+                        <Flex gap='2' width='100%'>
                             <BiTrash size='18' />
                             Delete
                         </Flex>
@@ -154,8 +154,8 @@ const CopyMessageLink = ({ message }: { message: Message }) => {
         toast.success('Message link copied to clipboard')
     }
 
-    return <ContextMenu.Item>
-        <Flex gap='2' width='100%' onClick={onClick}>
+    return <ContextMenu.Item onSelect={onClick}>
+        <Flex gap='2' width='100%'>
             <BiLink size='18' />
             Copy Message Link
         </Flex>
@@ -188,8 +188,8 @@ const SaveMessageAction = ({ message }: { message: Message }) => {
             })
     }
 
-    return <ContextMenu.Item>
-        <Flex gap='2' width='100%' onClick={handleLike}>
+    return <ContextMenu.Item onSelect={handleLike}>
+        <Flex gap='2' width='100%'>
             {!isSaved && <BiBookmarkPlus size='18' />}
             {isSaved && <BiBookmarkMinus size='18' />}
             {!isSaved ? "Save" : "Unsave"} Message
@@ -219,8 +219,8 @@ const PinMessageAction = ({ message }: { message: Message }) => {
         })
     }
 
-    return <ContextMenu.Item>
-        <Flex gap='2' width='100%' onClick={handlePin}>
+    return <ContextMenu.Item onSelect={handlePin}>
+        <Flex gap='2' width='100%'>
             {!isPinned ? <RiPushpinLine size='18' /> : <RiUnpinLine size='18' />}
             {!isPinned ? "Pin" : "Unpin"}
         </Flex>
