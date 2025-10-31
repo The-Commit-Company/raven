@@ -67,6 +67,11 @@
         {
           "ios": {
             "useFrameworks": "static"
+          },
+          "android": {
+            "targetSdkVersion": 35,
+            "buildToolsVersion": "35.0.0",
+            "compileSdkVersion": 34
           }
         }
       ],
