@@ -36,7 +36,7 @@ class RavenSettings(Document):
 		livekit_api_secret: DF.Password | None
 		livekit_url: DF.Data | None
 		local_llm_api_url: DF.Data | None
-		local_llm_provider: DF.Literal["LM Studio", "Ollama", "LocalAI"]
+		local_llm_provider: DF.Literal["LM Studio", "Ollama", "LocalAI", "OpenAI Compatible"]
 		oauth_client: DF.Link | None
 		openai_api_key: DF.Password | None
 		openai_organisation_id: DF.Data | None
