@@ -130,9 +130,7 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 			"channel_id": message.channel_id,
 			"raven_message_type": message.message_type,
 			"channel_type": "DM" if channel_doc.is_direct_message else "Channel",
-			"content": message.content
-			if len(message.content) <= MAX_NOTIFICATION_CONTENT_LENGTH
-			else message.content[:MAX_NOTIFICATION_CONTENT_LENGTH],
+			"content": truncated_content,
 			"from_user": message.owner,
 			"type": "New message",
 			"is_thread": "1" if channel_doc.is_thread else "0",

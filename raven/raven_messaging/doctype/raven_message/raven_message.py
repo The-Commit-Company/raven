@@ -13,7 +13,6 @@ from pytz import timezone, utc
 from raven.ai.ai import handle_ai_thread_message, handle_bot_dm
 from raven.api.raven_channel import get_peer_user
 from raven.notification import (
-	MAX_NOTIFICATION_CONTENT_LENGTH,
 	send_notification_for_message,
 	send_notification_to_topic,
 	send_notification_to_user,
@@ -470,8 +469,8 @@ class RavenMessage(Document):
 
 		# Prepare content for data payload - truncate if text message
 		content = self.content if self.message_type == "Text" else self.file
-		if self.message_type == "Text" and len(content) > MAX_NOTIFICATION_CONTENT_LENGTH:
-			content = content[:MAX_NOTIFICATION_CONTENT_LENGTH]
+		if self.message_type == "Text":
+			content = truncate_notification_content(content)
 
 		send_notification_to_user(
 			user_id=peer_raven_user_doc.user,
@@ -512,8 +511,8 @@ class RavenMessage(Document):
 
 		# Prepare content for data payload - truncate if text message
 		content = self.content if self.message_type == "Text" else self.file
-		if self.message_type == "Text" and len(content) > MAX_NOTIFICATION_CONTENT_LENGTH:
-			content = content[:MAX_NOTIFICATION_CONTENT_LENGTH]
+		if self.message_type == "Text":
+			content = truncate_notification_content(content)
 
 		send_notification_to_topic(
 			channel_id=self.channel_id,
