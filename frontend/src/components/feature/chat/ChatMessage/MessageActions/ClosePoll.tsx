@@ -41,7 +41,7 @@ export const ClosePoll = ({ message }: ClosePollProps) => {
     if (data && data.message?.poll.owner === currentUser && !data.message?.poll.is_disabled)
         return (
             <>
-                <ContextMenu.Item onClick={onClosePoll}>
+                <ContextMenu.Item onSelect={onClosePoll}>
                     <Flex gap='2'>
                         <IoCloseCircleOutline size='18' />
                         Close Poll
