@@ -350,8 +350,6 @@ def truncate_notification_content(content):
 	Truncate the push notification message content to fit within FCM payload limits
 	"""
 	if not content:
-		return content
+		return
 
-	if len(content) > MAX_NOTIFICATION_CONTENT_LENGTH:
-		return content[:MAX_NOTIFICATION_CONTENT_LENGTH]
-	return content
+	return content[:MAX_NOTIFICATION_CONTENT_LENGTH]
