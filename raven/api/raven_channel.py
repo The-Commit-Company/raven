@@ -3,7 +3,7 @@ from frappe import _
 from frappe.query_builder import Order
 
 from raven.api.raven_users import get_current_raven_user
-from raven.utils import get_channel_members, is_channel_member, track_channel_visit
+from raven.utils import get_channel_members, get_raven_user, is_channel_member, track_channel_visit
 
 
 @frappe.whitelist()
@@ -149,6 +149,15 @@ def create_direct_message_channel(user_id):
 	3. Check if the user_id is the current user and set is_self_message accordingly
 	"""
 	# TODO: this logic might break if the user_id changes
+
+	# Validate both users are Raven Users
+	if not get_raven_user(frappe.session.user):
+		frappe.throw(_("You need to be a Raven User to send DMs."))
+
+	if user_id != frappe.session.user:
+		if not get_raven_user(user_id):
+			frappe.throw(_("The user you are trying to message is not a Raven User."))
+
 	channel_name = frappe.db.get_value(
 		"Raven Channel",
 		filters={
