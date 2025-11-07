@@ -16,7 +16,7 @@ import { useAtomValue } from "jotai"
 import { useContext, useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { FiExternalLink } from "react-icons/fi"
-import { useNavigate, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { toast } from "sonner"
 
 type Props = {}
@@ -102,19 +102,27 @@ const OpenChatButton = ({ bot }: { bot: RavenBot }) => {
 
     const { call } = useContext(FrappeContext) as FrappeConfig
 
-    const navigate = useNavigate()
-
     const currentWorkspace = useAtomValue(lastWorkspaceAtom)
 
     const openChat = () => {
         call.post("raven.api.raven_channel.create_direct_message_channel", {
             user_id: bot.raven_user
         }).then((res) => {
-            if (currentWorkspace) {
-                navigate(`/${currentWorkspace}/${res.message}`)
-            } else {
-                navigate(`/channel/${res.message}`)
+            const chatPath = currentWorkspace
+                ? `/${currentWorkspace}/${res.message}`
+                : `/channel/${res.message}`
+
+            let basePath = `${import.meta.env.VITE_BASE_NAME}`
+            if (!window.location.origin.endsWith("/")) {
+                basePath = "/" + basePath
             }
+
+            const fullUrl = `${window.location.origin}${basePath}${chatPath}`
+
+            window.open(fullUrl, '_blank')
+        }).catch((error) => {
+            toast.error('Failed to create chat channel')
+            console.error(error)
         })
     }
 
