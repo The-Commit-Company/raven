@@ -62,7 +62,7 @@ const EmojiPicker = ({ customEmojis, onSelect, perLine, defaultCategory = "peopl
 
     const emojis: Record<string, Emoji[]> = useMemo(() => {
 
-        const emojisByCategory = EMOJI_CATEGORIES.reduce((acc: any, category) => {
+        const emojisByCategory = EMOJI_CATEGORIES?.reduce((acc: any, category) => {
             const categoryId = category.id;
             const categoryEmojis: Emoji[] = []
             category.emojis.forEach((emojiId) => {

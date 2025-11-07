@@ -203,7 +203,7 @@ export const SchedulerEventsForm = ({ edit = false }: Props) => {
                             control={control}
                             name="day"
                             render={({ field }) => (
-                                <Select.Root {...field} onValueChange={(value) => field.onChange(value)} defaultValue="1">
+                                <Select.Root {...field} onValueChange={(value) => field.onChange(value)}>
                                     <Select.Trigger style={{ width: "100%" }} placeholder="Select Day" autoFocus={edit} />
                                     <Select.Content>
                                         <Select.Group>

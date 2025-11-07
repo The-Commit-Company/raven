@@ -3,7 +3,7 @@
     "name": "Raven",
     "slug": "Raven",
     "scheme": "raven.thecommit.company",
-    "version": "1.1.1",
+    "version": "1.1.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -67,6 +67,11 @@
         {
           "ios": {
             "useFrameworks": "static"
+          },
+          "android": {
+            "targetSdkVersion": 35,
+            "buildToolsVersion": "35.0.0",
+            "compileSdkVersion": 34
           }
         }
       ],

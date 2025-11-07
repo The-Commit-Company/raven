@@ -8,6 +8,7 @@ import { BiSearch, BiCircle, BiSolidCrown } from "react-icons/bi"
 import { UserAvatar } from "@/components/common/UserAvatar"
 import { UserActionsMenu } from "./UserActions/UserActionsMenu"
 import { ChannelMembers } from "@/hooks/fetchers/useFetchChannelMembers"
+import { hasRavenAdminRole } from "@/utils/roles"
 
 interface MemberDetailsProps {
     channelData: ChannelListItem,
@@ -85,6 +86,14 @@ const MemberList = ({ channelData, channelMembers, activeUsers, updateMembers, i
         )
     }, [input, channelMembers])
 
+    const isCurrentUserAdmin = useMemo(() => {
+        // Check if thr current user is a member + (admin or Raven Admin)
+        if (channelMembers[currentUser] && (channelMembers[currentUser].is_admin == 1 || hasRavenAdminRole())) {
+            return true
+        }
+        return false
+    }, [currentUser, channelMembers])
+
     return <Box className={'overflow-hidden overflow-y-scroll'}>
 
         <Flex direction='column' gap='2'>
@@ -112,8 +121,7 @@ const MemberList = ({ channelData, channelMembers, activeUsers, updateMembers, i
                                 </Flex>
                                 {/* if current user is a channel member and admin they can remove users other than themselves if the channel is not open */}
                                 {channelMembers[currentUser] &&
-                                    channelMembers[currentUser].is_admin === 1 &&
-                                    member.name !== currentUser &&
+                                    isCurrentUserAdmin &&
                                     channelData?.type !== 'Open' && channelData.is_archived == 0 &&
                                     <Flex align="center">
                                         <UserActionsMenu

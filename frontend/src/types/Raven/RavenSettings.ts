@@ -19,12 +19,30 @@ export interface RavenSettings{
 	tenor_api_key?: string
 	/**	Enable AI Integration : Check	*/
 	enable_ai_integration?: 0 | 1
+	/**	Enable OpenAI Services : Check	*/
+	enable_openai_services?: 0 | 1
 	/**	OpenAI Organisation ID : Data	*/
 	openai_organisation_id?: string
 	/**	OpenAI API Key : Password	*/
 	openai_api_key?: string
 	/**	OpenAI Project ID : Data - If not set, the integration will use the default project	*/
 	openai_project_id?: string
+	/**	Enable Local LLM : Check	*/
+	enable_local_llm?: 0 | 1
+	/**	Local LLM Provider : Select	*/
+	local_llm_provider?: "LM Studio" | "Ollama" | "LocalAI" | "OpenAI Compatible"
+	/**	Local LLM API URL : Data	*/
+	local_llm_api_url?: string
+	/**	OpenAI Compatible API Key : Password	*/
+	openai_compatible_api_key?: string
+	/**	Enable Google APIs : Check - Useful for extracting information from documents before sending it to agents	*/
+	enable_google_apis?: 0 | 1
+	/**	Google Processor Location : Select	*/
+	google_processor_location?: "us" | "eu"
+	/**	Google Project ID : Data	*/
+	google_project_id?: string
+	/**	Google Service Account JSON Key : Password	*/
+	google_service_account_json_key?: string
 	/**	Automatically Create a Channel for each Department : Check - If checked, a channel will be created in Raven for each department and employees will be synced with Raven Users.	*/
 	auto_create_department_channel?: 0 | 1
 	/**	Department Channel Type : Select	*/

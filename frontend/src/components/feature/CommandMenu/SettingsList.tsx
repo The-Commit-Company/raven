@@ -3,7 +3,7 @@ import { useSetAtom } from 'jotai'
 import { BiBoltCircle, BiBot, BiFile, BiGroup, BiMessageSquareDots, BiTime, BiUserCircle } from 'react-icons/bi'
 import { useNavigate } from 'react-router-dom'
 import { commandMenuOpenAtom } from './CommandMenu'
-import { PiOpenAiLogo } from 'react-icons/pi'
+import { PiMagicWand } from 'react-icons/pi'
 import { LuSquareFunction } from 'react-icons/lu'
 import { AiOutlineApi } from 'react-icons/ai'
 
@@ -77,14 +77,19 @@ const SettingsList = (props: Props) => {
                 Instructions
             </Command.Item>
 
+            <Command.Item value='document-processors' onSelect={onSelect}>
+                <BiFile size={ICON_SIZE} />
+                Document Processors
+            </Command.Item>
+
             <Command.Item value='commands' onSelect={onSelect}>
                 <BiMessageSquareDots size={ICON_SIZE} />
                 Commands
             </Command.Item>
 
-            <Command.Item value='openai-settings' onSelect={onSelect}>
-                <PiOpenAiLogo size={ICON_SIZE} />
-                OpenAI Settings
+            <Command.Item value='ai-settings' onSelect={onSelect}>
+                <PiMagicWand size={ICON_SIZE} />
+                AI Settings
             </Command.Item>
         </Command.Group>
     )

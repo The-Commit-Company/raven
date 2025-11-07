@@ -8,7 +8,17 @@ from frappe.frappeclient import FrappeClient
 @frappe.whitelist()
 def are_push_notifications_enabled() -> bool:
 	try:
-		return frappe.db.get_single_value("Push Notification Settings", "enable_push_notification_relay")
+		push_service = frappe.db.get_single_value("Raven Settings", "push_notification_service")
+
+		if not push_service:
+			push_service = "Frappe Cloud"
+
+		if push_service == "Frappe Cloud":
+			return frappe.db.get_single_value(
+				"Push Notification Settings", "enable_push_notification_relay"
+			)
+		else:
+			return True
 	except frappe.DoesNotExistError:
 		# push notifications are not supported in the current framework version
 		return False
@@ -40,6 +50,15 @@ def register_site_on_raven_cloud() -> None:
 		raven_settings.save()
 	else:
 		frappe.throw(_("Push notification service is not set to Raven Cloud."))
+
+
+@frappe.whitelist()
+def sync_user_tokens_to_raven_cloud():
+	"""
+	Sync all the tokens available on this site to Raven Cloud
+	"""
+	frappe.only_for("Raven Admin")
+	frappe.enqueue("raven.raven_cloud_notifications.sync_users_tokens_to_raven_cloud")
 
 
 @frappe.whitelist(methods=["POST"])

@@ -16,14 +16,18 @@ from raven.notification import (
 	send_notification_for_message,
 	send_notification_to_topic,
 	send_notification_to_user,
+	truncate_notification_content,
 )
-from raven.utils import refresh_thread_reply_count, track_channel_visit
+from raven.utils import (
+	get_raven_room,
+	is_channel_member,
+	refresh_thread_reply_count,
+	track_channel_visit,
+)
 
 
 class RavenMessage(Document):
 	# begin: auto-generated types
-	# ruff: noqa
-
 	# This code is auto-generated. Do not modify anything in this block.
 
 	from typing import TYPE_CHECKING
@@ -51,6 +55,7 @@ class RavenMessage(Document):
 		link_doctype: DF.Link | None
 		link_document: DF.DynamicLink | None
 		linked_message: DF.Link | None
+		links: DF.SmallText | None
 		mentions: DF.Table[RavenMention]
 		message_reactions: DF.JSON | None
 		message_type: DF.Literal["Text", "Image", "File", "Poll", "System"]
@@ -60,7 +65,6 @@ class RavenMessage(Document):
 		text: DF.LongText | None
 		thumbnail_height: DF.Data | None
 		thumbnail_width: DF.Data | None
-	# ruff: noqa
 	# end: auto-generated types
 
 	def before_validate(self):
@@ -79,7 +83,7 @@ class RavenMessage(Document):
 		1. Extract all user mentions
 		2. Remove empty trailing paragraphs
 		3. Extract the text content
-		4. TODO: Extract all links
+		4. Extract all links and store as | separated string
 		"""
 		if not self.text:
 			return
@@ -89,6 +93,14 @@ class RavenMessage(Document):
 		soup = BeautifulSoup(self.text, "html.parser")
 		self.remove_empty_trailing_paragraphs(soup)
 		self.extract_mentions(soup)
+
+		links = []
+		for link in soup.find_all("a"):
+			href = link.get("href")
+			if href:
+				links.append(href)
+		if links:
+			self.links = "|" + "|".join(links) + "|"
 
 		text_content = soup.get_text(" ", strip=True)
 
@@ -148,6 +160,11 @@ class RavenMessage(Document):
 		2. If the message is of type Poll, the poll_id should be set
 		"""
 		self.validate_poll_id()
+
+		if not self.is_new() and self.has_value_changed("message_reactions"):
+			frappe.throw(
+				_("Direct modification of message_reactions is not allowed. Use the Reactions API.")
+			)
 
 	def validate_linked_message(self):
 		"""
@@ -213,7 +230,7 @@ class RavenMessage(Document):
 
 		is_ai_thread = channel_doc.is_ai_thread
 
-		if is_ai_thread and channel_doc.openai_thread_id:
+		if is_ai_thread:
 			frappe.enqueue(
 				method=handle_ai_thread_message,
 				message=self,
@@ -326,10 +343,11 @@ class RavenMessage(Document):
 				after_commit=True,
 			)
 		elif channel_doc.is_thread:
-			# TODO: Might be a good idea to just send this to the users who are participants in the thread - maybe not a lot of users?
-
 			# Get the number of replies in the thread
 			reply_count = refresh_thread_reply_count(self.channel_id)
+
+			self.add_mentioned_users_to_thread()
+
 			frappe.publish_realtime(
 				"thread_reply",
 				{
@@ -339,7 +357,7 @@ class RavenMessage(Document):
 					"number_of_replies": reply_count,
 				},
 				after_commit=True,
-				room="all",
+				room=get_raven_room(),
 			)
 		else:
 			# This event needs to be published to all users on Raven (desk + website)
@@ -354,8 +372,28 @@ class RavenMessage(Document):
 					"last_message_timestamp": self.creation,
 				},
 				after_commit=True,
-				room="all",
+				room=get_raven_room(),
 			)
+
+	def add_mentioned_users_to_thread(self):
+		"""
+		Add the mentioned users to the thread if they are members of the parent channel but not in the thread
+		"""
+		if not self.mentions:
+			return
+
+		parent_channel_id = frappe.get_cached_value("Raven Message", self.channel_id, "channel_id")
+		if parent_channel_id:
+			for mention in self.mentions:
+				if is_channel_member(parent_channel_id, mention.user) and not is_channel_member(
+					self.channel_id, mention.user
+				):
+					try:
+						frappe.get_doc(
+							{"doctype": "Raven Channel Member", "channel_id": self.channel_id, "user_id": mention.user}
+						).insert(ignore_permissions=True)
+					except Exception:
+						pass
 
 	def send_push_notification(self):
 		# Send Push Notification for the following:
@@ -424,21 +462,30 @@ class RavenMessage(Document):
 
 		message = self.get_notification_message_content()
 
+		# Truncate the message content to fit within FCM payload limits
+		truncated_message = truncate_notification_content(message)
+
 		owner_name, owner_image = self.get_message_owner_details()
+
+		# Prepare content for data payload - truncate if text message
+		content = self.content if self.message_type == "Text" else self.file
+		if self.message_type == "Text":
+			content = truncate_notification_content(content)
 
 		send_notification_to_user(
 			user_id=peer_raven_user_doc.user,
 			user_image_path=owner_image,
 			title=owner_name,
-			message=message,
+			message=truncated_message,
 			data={
 				"message_id": self.name,
 				"channel_id": self.channel_id,
 				"raven_message_type": self.message_type,
 				"channel_type": "DM",
-				"content": self.content if self.message_type == "Text" else self.file,
+				"content": content,
 				"from_user": self.owner,
 				"type": "New message",
+				"image": owner_image,
 				"creation": get_milliseconds_since_epoch(self.creation),
 			},
 		)
@@ -448,6 +495,9 @@ class RavenMessage(Document):
 		The message was sent on a channel. Send a push notification to all the users in the channel (topic)
 		"""
 		message = self.get_notification_message_content()
+
+		# Truncate the message content to fit within FCM payload limits
+		truncated_message = truncate_notification_content(message)
 
 		is_thread = frappe.get_cached_value("Raven Channel", self.channel_id, "is_thread")
 
@@ -459,17 +509,22 @@ class RavenMessage(Document):
 			channel_name = frappe.get_cached_value("Raven Channel", self.channel_id, "channel_name")
 			title = f"{owner_name} in #{channel_name}"
 
+		# Prepare content for data payload - truncate if text message
+		content = self.content if self.message_type == "Text" else self.file
+		if self.message_type == "Text":
+			content = truncate_notification_content(content)
+
 		send_notification_to_topic(
 			channel_id=self.channel_id,
 			user_image_path=owner_image,
 			title=title,
-			message=message,
+			message=truncated_message,
 			data={
 				"message_id": self.name,
 				"channel_id": self.channel_id,
 				"raven_message_type": self.message_type,
 				"channel_type": "Channel",
-				"content": self.content if self.message_type == "Text" else self.file,
+				"content": content,
 				"from_user": self.owner,
 				"type": "New message",
 				"is_thread": "1" if is_thread else "0",
@@ -546,6 +601,7 @@ class RavenMessage(Document):
 						"is_bot_message": self.is_bot_message,
 						"bot": self.bot,
 						"hide_link_preview": self.hide_link_preview,
+						"blurhash": self.blurhash,
 					},
 				},
 				doctype="Raven Channel",
@@ -599,6 +655,7 @@ class RavenMessage(Document):
 						"is_bot_message": self.is_bot_message,
 						"bot": self.bot,
 						"hide_link_preview": self.hide_link_preview,
+						"blurhash": self.blurhash,
 					},
 				},
 				doctype="Raven Channel",

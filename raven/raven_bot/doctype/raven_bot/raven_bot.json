@@ -18,9 +18,13 @@
   "module",
   "ai_tab",
   "is_ai_bot",
-  "debug_mode",
+  "model_provider",
   "model",
+  "temperature",
+  "column_break_ebil",
+  "debug_mode",
   "reasoning_effort",
+  "top_p",
   "ai_section",
   "openai_assistant_id",
   "enable_code_interpreter",
@@ -32,7 +36,10 @@
   "dynamic_instructions",
   "bot_functions",
   "openai_vector_store_id",
-  "file_sources"
+  "file_sources",
+  "document_parsing_tab",
+  "use_google_document_parser",
+  "google_document_processor_id"
  ],
  "fields": [
   {
@@ -94,11 +101,20 @@
    "label": "Is AI Bot?"
   },
   {
+   "default": "OpenAI",
+   "depends_on": "eval:doc.is_ai_bot",
+   "fieldname": "model_provider",
+   "fieldtype": "Select",
+   "label": "Model Provider",
+   "options": "OpenAI\nLocal LLM"
+  },
+  {
    "depends_on": "eval: doc.is_ai_bot",
    "documentation_url": "https://platform.openai.com/docs/assistants/overview",
    "fieldname": "openai_assistant_id",
    "fieldtype": "Data",
-   "label": "OpenAI Assistant ID"
+   "label": "OpenAI Assistant ID",
+   "no_copy": 1
   },
   {
    "fieldname": "column_break_khmi",
@@ -166,6 +182,8 @@
   },
   {
    "default": "gpt-4o",
+   "depends_on": "eval:doc.is_ai_bot",
+   "description": "For OpenAI: gpt-4o, gpt-4, etc. For Local LLM: use model name from /v1/models endpoint",
    "fieldname": "model",
    "fieldtype": "Data",
    "label": "Model"
@@ -187,14 +205,52 @@
    "fieldname": "openai_vector_store_id",
    "fieldtype": "Data",
    "label": "OpenAI Vector Store ID",
+   "no_copy": 1,
    "read_only": 1
+  },
+  {
+   "default": "1",
+   "description": "What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.",
+   "fieldname": "temperature",
+   "fieldtype": "Float",
+   "label": "Temperature",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "column_break_ebil",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "description": "An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered.\n\nWe generally recommend altering this or temperature but not both.",
+   "fieldname": "top_p",
+   "fieldtype": "Float",
+   "label": "Top P"
+  },
+  {
+   "fieldname": "document_parsing_tab",
+   "fieldtype": "Tab Break",
+   "label": "Document Parsing"
+  },
+  {
+   "default": "0",
+   "description": "When images or PDFs are uploaded to the agent, Raven will automatically call Google Cloud APIs to parse the document and send it's results to the agent.",
+   "fieldname": "use_google_document_parser",
+   "fieldtype": "Check",
+   "label": "Use Google Document/Vision AI to parse documents"
+  },
+  {
+   "fieldname": "google_document_processor_id",
+   "fieldtype": "Data",
+   "label": "Google Document Processor ID",
+   "length": 400
   }
  ],
  "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-10 19:07:45.493080",
+ "modified": "2025-10-03 16:40:08.890724",
  "modified_by": "Administrator",
  "module": "Raven Bot",
  "name": "Raven Bot",

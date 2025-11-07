@@ -42,8 +42,9 @@ export const SettingsSidebar = () => {
                     <SettingsSidebarItem title="Functions" to='functions' />
                     <SettingsSidebarItem title="File Sources" to='file-sources' />
                     <SettingsSidebarItem title="Instructions" to="instructions" />
+                    <SettingsSidebarItem title="Document Processors" to="document-processors" />
                     <SettingsSidebarItem title="Commands" to='commands' />
-                    <SettingsSidebarItem title="OpenAI Settings" to='openai-settings' />
+                    <SettingsSidebarItem title="AI Settings" to='ai-settings' />
                 </SettingsGroup>
                 <SettingsSeparator />
                 <div className='flex flex-col gap-1 -mx-1'>

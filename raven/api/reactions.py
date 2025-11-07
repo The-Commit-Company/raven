@@ -15,16 +15,10 @@ def react(message_id: str, reaction: str, is_custom: bool = False, emoji_name: s
 	If yes, then unreacts (deletes), else reacts (creates).
 	"""
 
-	# PERF: No need for permission checks here.
-	# The permission checks are done in the controller method for the doctype
+	if not frappe.has_permission("Raven Message", doc=message_id, ptype="read"):
+		frappe.throw(_("You do not have permission to react to this message"), frappe.PermissionError)
 
 	channel_id = frappe.get_cached_value("Raven Message", message_id, "channel_id")
-	channel_type = frappe.get_cached_value("Raven Channel", channel_id, "type")
-
-	if channel_type == "Private":
-
-		if not is_channel_member(channel_id):
-			frappe.throw(_("You do not have permission to react to this message"), frappe.PermissionError)
 
 	if is_custom:
 		# The reaction is a custom emoji with a URL
@@ -32,18 +26,9 @@ def react(message_id: str, reaction: str, is_custom: bool = False, emoji_name: s
 	else:
 		reaction_escaped = reaction.encode("unicode-escape").decode("utf-8").replace("\\u", "")
 	user = frappe.session.user
-	existing_reaction = frappe.db.exists(
-		"Raven Message Reaction",
-		{"message": message_id, "owner": user, "reaction_escaped": reaction_escaped},
-	)
 
-	if existing_reaction:
-		# Why not use frappe.db.delete?
-		# Because frappe won't run the controller method for 'after_delete' if we do so,
-		# and we need to calculate the new count of reactions for our message
-		frappe.get_doc("Raven Message Reaction", existing_reaction).delete(delete_permanently=True)
-
-	else:
+	try:
+		# Try to insert the reaction first
 		frappe.get_doc(
 			{
 				"doctype": "Raven Message Reaction",
@@ -55,10 +40,28 @@ def react(message_id: str, reaction: str, is_custom: bool = False, emoji_name: s
 				"reaction_escaped": reaction_escaped,
 			}
 		).insert(ignore_permissions=True)
-	return "Ok"
+
+		calculate_message_reaction(message_id, channel_id)
+		return "Ok"
+
+	except frappe.exceptions.UniqueValidationError:
+		# If the reaction already exists, delete it
+		frappe.db.delete(
+			"Raven Message Reaction",
+			filters={"message": message_id, "owner": user, "reaction_escaped": reaction_escaped},
+		)
+
+		# Hook to trigger when delete reaction
+		for fn in frappe.get_hooks("raven_message_reaction_after_delete"):
+			frappe.get_attr(fn)(message_id)
+
+		calculate_message_reaction(message_id, channel_id)
+		return "Ok"
+	except Exception as e:
+		frappe.throw(_("Error reacting to message {0}").format(str(e)))
 
 
-def calculate_message_reaction(message_id, channel_id: str = None):
+def calculate_message_reaction(message_id, channel_id: str = None, do_not_publish: bool = False):
 
 	reactions = frappe.get_all(
 		"Raven Message Reaction",
@@ -73,11 +76,11 @@ def calculate_message_reaction(message_id, channel_id: str = None):
 		item_key = reaction_item.reaction_escaped if reaction_item.is_custom else reaction_item.reaction
 		if item_key in total_reactions:
 			existing_reaction = total_reactions[item_key]
-			new_users = existing_reaction.get("users")
-			new_users.append(reaction_item.owner)
+			new_users = set(existing_reaction.get("users"))
+			new_users.add(reaction_item.owner)
 			total_reactions[item_key] = {
-				"count": existing_reaction.get("count") + 1,
-				"users": new_users,
+				"count": len(new_users),
+				"users": list(new_users),
 				"reaction": reaction_item.reaction,
 				"is_custom": reaction_item.is_custom,
 			}
@@ -96,6 +99,10 @@ def calculate_message_reaction(message_id, channel_id: str = None):
 		json.dumps(total_reactions, indent=4),
 		update_modified=False,
 	)
+
+	if do_not_publish:
+		return
+
 	frappe.publish_realtime(
 		"message_reacted",
 		{

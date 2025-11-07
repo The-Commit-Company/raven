@@ -18,6 +18,18 @@ export const FUNCTION_TYPES = [
         type: "Standard"
     },
     {
+        value: "Get Value",
+        description: "Get a single value or multiple values from a document in the system using filters.",
+        requires_write_permissions: false,
+        type: "Standard"
+    },
+    {
+        value: "Set Value",
+        description: "Set a value in a document in the system. This function can set a single value or multiple values in a document.",
+        requires_write_permissions: true,
+        type: "Standard"
+    },
+    {
         value: "Create Document",
         description: "Create any document in the system.",
         requires_write_permissions: true,
@@ -87,11 +99,12 @@ export const FUNCTION_TYPES = [
         requires_write_permissions: true,
         type: "Other"
     },
-    // {
-    //     value: "Get Report Result",
-    //     description: "Allows the bot to get the result of any report in the system.",
-    //     requires_write_permissions: true
-    // },
+    {
+        value: "Get Report Result",
+        description: "Allows the bot to get the result of any report in the system.",
+        requires_write_permissions: false,
+        type: "Other"
+    },
 ]
 
 export type VariableType = StringVariableType | NumberVariableType | BooleanVariableType | ObjectVariableType | ArrayVariableType

@@ -156,23 +156,28 @@ doc_events = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# "all": [
-# "raven.tasks.all"
-# ],
-# "daily": [
-# "raven.tasks.daily"
-# ],
-# "hourly": [
-# "raven.tasks.hourly"
-# ],
-# "weekly": [
-# "raven.tasks.weekly"
-# ],
-# "monthly": [
-# "raven.tasks.monthly"
-# ],
-# }
+scheduler_events = {
+	# "all": [
+	# 	"raven.scheduler.all"
+	# ],
+	# "daily": [
+	# 	"raven.scheduler.daily"
+	# ],
+	# "hourly": [
+	# 	"raven.scheduler.hourly"
+	# ],
+	# "weekly": [
+	# 	"raven.scheduler.weekly"
+	# ],
+	# "monthly": [
+	# 	"raven.scheduler.monthly"
+	# ],
+	"daily_maintenance": ["raven.scheduler.daily.sync_invalid_tokens"],
+	"cron": {
+		# run every 5 minutes
+		"*/5 * * * *": ["raven.scheduler.close_expired_polls.close_expired_polls"]
+	},
+}
 
 # Testing
 # -------

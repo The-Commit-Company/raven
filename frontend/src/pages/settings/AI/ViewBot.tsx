@@ -1,5 +1,6 @@
 import { Loader } from "@/components/common/Loader"
 import BotForm from "@/components/feature/settings/ai/bots/BotForm"
+import CommonSettingsMenu from "@/components/feature/settings/common/CommonSettingsMenu"
 import { ErrorBanner } from "@/components/layout/AlertBanner/ErrorBanner"
 import { FullPageLoader } from "@/components/layout/Loaders/FullPageLoader"
 import PageContainer from "@/components/layout/Settings/PageContainer"
@@ -7,9 +8,11 @@ import SettingsContentContainer from "@/components/layout/Settings/SettingsConte
 import SettingsPageHeader from "@/components/layout/Settings/SettingsPageHeader"
 import { HStack } from "@/components/layout/Stack"
 import { RavenBot } from "@/types/RavenBot/RavenBot"
+import { lastWorkspaceAtom } from "@/utils/lastVisitedAtoms"
 import { isEmpty } from "@/utils/validations"
 import { Button } from "@radix-ui/themes"
 import { useFrappeGetDoc, useFrappeUpdateDoc, SWRResponse, FrappeContext, FrappeConfig } from "frappe-react-sdk"
+import { useAtomValue } from "jotai"
 import { useContext, useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { FiExternalLink } from "react-icons/fi"
@@ -78,6 +81,7 @@ const ViewBotContent = ({ data, mutate }: { data: RavenBot, mutate: SWRResponse[
                     title={data.bot_name}
                     headerBadges={isDirty ? [{ label: "Not Saved", color: "red" }] : undefined}
                     actions={<HStack>
+                        <CommonSettingsMenu doctype="Raven Bot" docname={data.name} label={"Agent"} />
                         <OpenChatButton bot={data} />
                         <Button type='submit' disabled={loading}>
                             {loading && <Loader className="text-white" />}
@@ -100,7 +104,7 @@ const OpenChatButton = ({ bot }: { bot: RavenBot }) => {
 
     const navigate = useNavigate()
 
-    const currentWorkspace = localStorage.getItem('ravenLastWorkspace')
+    const currentWorkspace = useAtomValue(lastWorkspaceAtom)
 
     const openChat = () => {
         call.post("raven.api.raven_channel.create_direct_message_channel", {

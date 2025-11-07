@@ -26,12 +26,20 @@ export interface RavenBot{
 	module?: string
 	/**	Is AI Bot? : Check	*/
 	is_ai_bot?: 0 | 1
+	/**	Model Provider : Select	*/
+	model_provider?: "OpenAI" | "Local LLM"
+	/**	Model : Data - For OpenAI: gpt-4o, gpt-4, etc. For Local LLM: use model name from /v1/models endpoint	*/
+	model?: string
+	/**	Temperature : Float - What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.	*/
+	temperature?: number
 	/**	Debug Mode : Check - If enabled, stack traces of errors will be sent as messages by the bot 	*/
 	debug_mode?: 0 | 1
-	/**	Model : Data	*/
-	model?: string
 	/**	Reasoning Effort : Select - Only applicable for OpenAI o-series models	*/
 	reasoning_effort?: "low" | "medium" | "high"
+	/**	Top P : Float - An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered.
+
+We generally recommend altering this or temperature but not both.	*/
+	top_p?: number
 	/**	OpenAI Assistant ID : Data	*/
 	openai_assistant_id?: string
 	/**	Enable Code Interpreter : Check -  Enable this if you want the bot to be able to process files like Excel sheets or data from Insights.
@@ -54,4 +62,8 @@ File search enables the assistant with knowledge from files that you upload. Onc
 	openai_vector_store_id?: string
 	/**	File Sources : Table - Raven AI Bot Files	*/
 	file_sources?: RavenAIBotFiles[]
+	/**	Use Google Document/Vision AI to parse documents : Check - When images or PDFs are uploaded to the agent, Raven will automatically call Google Cloud APIs to parse the document and send it's results to the agent.	*/
+	use_google_document_parser?: 0 | 1
+	/**	Google Document Processor ID : Data	*/
+	google_document_processor_id?: string
 }

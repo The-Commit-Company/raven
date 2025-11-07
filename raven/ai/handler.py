@@ -17,6 +17,9 @@ from raven.ai.functions import (
 	get_document,
 	get_documents,
 	get_list,
+	get_report_result,
+	get_value,
+	set_value,
 	submit_document,
 	update_document,
 	update_documents,
@@ -283,6 +286,32 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 							limit=args.get("limit", 20),
 						)
 
+					if function.type == "Get Value":
+						self.publish_event(f"Fetching value for {function.reference_doctype}...")
+						function_output = get_value(
+							doctype=function.reference_doctype,
+							filters=args.get("filters"),
+							fieldname=args.get("fieldname"),
+						)
+
+					if function.type == "Set Value":
+						self.publish_event(f"Setting value for {function.reference_doctype}...")
+						function_output = set_value(
+							doctype=function.reference_doctype,
+							document_id=args.get("document_id"),
+							fieldname=args.get("fieldname"),
+							value=args.get("value"),
+						)
+
+					if function.type == "Get Report Result":
+						self.publish_event(f"Running report {args.get('report_name')}...")
+						function_output = get_report_result(
+							report_name=args.get("report_name"),
+							filters=args.get("filters"),
+							user=args.get("user", frappe.session.user),
+							ignore_prepared_report=args.get("ignore_prepared_report", False),
+							are_default_filters=args.get("are_default_filters", True),
+						)
 					tool_outputs.append(
 						{"tool_call_id": tool.id, "output": json.dumps(function_output, default=str)}
 					)
@@ -392,4 +421,5 @@ def get_variables_for_instructions():
 		"employee_id": employee_id,
 		"department": department,
 		"employee_company": employee_company,
+		"lang": user.language.upper() if user.language else "EN",
 	}

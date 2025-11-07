@@ -37,21 +37,29 @@ class RavenBot(Document):
 		enable_code_interpreter: DF.Check
 		enable_file_search: DF.Check
 		file_sources: DF.Table[RavenAIBotFiles]
+		google_document_processor_id: DF.Data | None
 		image: DF.AttachImage | None
 		instruction: DF.LongText | None
 		is_ai_bot: DF.Check
 		is_standard: DF.Check
 		model: DF.Data | None
+		model_provider: DF.Literal["OpenAI", "Local LLM"]
 		module: DF.Link | None
 		openai_assistant_id: DF.Data | None
 		openai_vector_store_id: DF.Data | None
 		raven_user: DF.Link | None
 		reasoning_effort: DF.Literal["low", "medium", "high"]
+		temperature: DF.Float
+		top_p: DF.Float
+		use_google_document_parser: DF.Check
 	# end: auto-generated types
 
 	def validate(self):
 		if self.is_ai_bot and not self.instruction:
 			frappe.throw(_("Please provide an instruction for this AI Agent."))
+
+		if self.use_google_document_parser and not self.google_document_processor_id:
+			frappe.throw(_("Please select a Document Processor for this bot."))
 
 		self.validate_functions()
 
@@ -94,14 +102,30 @@ class RavenBot(Document):
 			self.db_set("raven_user", raven_user.name)
 
 		if self.is_ai_bot:
-			if not self.openai_assistant_id:
-				self.create_openai_assistant()
+			# Only create OpenAI assistant if using OpenAI provider (not for Agents SDK)
+			if self.model_provider == "OpenAI":
+				# Skip assistant creation if we're using Agents SDK even with OpenAI
+				# TODO: In future, we should completely phase out assistant creation
+				if not self.openai_assistant_id:
+					self.create_openai_assistant()
+				else:
+					self.update_openai_assistant()
 			else:
-				self.update_openai_assistant()
+				# For Local LLM or future Agents SDK, no assistant needed
+				if self.openai_assistant_id:
+					# Clear assistant ID if switching from OpenAI to Local LLM
+					self.db_set("openai_assistant_id", None)
+					return
 
 	def before_insert(self):
 		if self.is_ai_bot and not self.openai_assistant_id:
-			self.create_openai_assistant()
+			# Only create OpenAI assistant if using OpenAI provider (not for Agents SDK)
+			if self.model_provider == "OpenAI":
+				# Skip assistant creation for Local LLM
+				self.create_openai_assistant()
+			elif self.model_provider == "Local LLM":
+				# For Local LLM, we don't need an OpenAI assistant
+				return
 
 	def on_trash(self):
 		if self.openai_assistant_id:
@@ -113,7 +137,11 @@ class RavenBot(Document):
 			frappe.delete_doc("Raven User", self.raven_user)
 
 	def create_openai_assistant(self):
-		# Create an OpenAI Assistant for the bot
+		# Create an OpenAI Assistant for the bot (legacy - being phased out for Agents SDK)
+		# Check again to ensure we're not creating for Local LLM
+		if self.model_provider == "Local LLM":
+			return
+
 		client = get_open_ai_client()
 
 		# Sometimes users face an issue with the OpenAI API returning an error for "model_not_found"
@@ -133,6 +161,8 @@ class RavenBot(Document):
 				tools=self.get_tools_for_assistant(),
 				tool_resources=self.get_tool_resources_for_assistant(),
 				reasoning_effort=reasoning_effort if model.startswith("o") else None,
+				temperature=self.temperature or 1,
+				top_p=self.top_p or 1,
 			)
 			# Update the tools which were activated for the bot
 			self.db_set("openai_assistant_id", assistant.id)
@@ -155,10 +185,14 @@ class RavenBot(Document):
 				frappe.throw(str(e))
 
 	def update_openai_assistant(self):
-		# Update the OpenAI Assistant for the bot
+		# Update the OpenAI Assistant for the bot (legacy - being phased out for Agents SDK)
 
 		# Additional check because it is being used in Raven AI Function
 		if not self.is_ai_bot:
+			return
+
+		# Don't update assistant for Local LLM bots
+		if self.model_provider == "Local LLM":
 			return
 
 		client = get_open_ai_client()
@@ -176,6 +210,8 @@ class RavenBot(Document):
 				tool_resources=self.get_tool_resources_for_assistant(),
 				model=model,
 				reasoning_effort=reasoning_effort if model.startswith("o") else None,
+				temperature=self.temperature or 1,
+				top_p=self.top_p or 1,
 			)
 			self.check_and_update_enabled_tools(assistant)
 		except Exception as e:
