@@ -9,6 +9,8 @@ import { Outlet, useParams, useSearchParams } from "react-router-dom"
 import { useSWRConfig } from "frappe-react-sdk"
 import { UnreadChannelCountItem, UnreadCountData } from "@/utils/channel/ChannelListProvider"
 import { useIsMobile } from "@/hooks/useMediaQuery"
+import { useSetAtom } from "jotai"
+import { lastChannelAtom } from "@/utils/lastVisitedAtoms"
 
 const ChatSpace = () => {
 
@@ -36,10 +38,12 @@ const ChatSpaceArea = ({ channelID }: { channelID: string }) => {
 
     const baseMessage = searchParams.get('message_id')
 
+    const setLastChannel = useSetAtom(lastChannelAtom)
+
     useEffect(() => {
 
         // setting last visited channel in local storage
-        localStorage.setItem("ravenLastChannel", channelID)
+        setLastChannel(channelID)
 
         const unread_count = cache.get('unread_channel_count')
 

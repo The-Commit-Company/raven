@@ -3,19 +3,28 @@ Improved agents integration with better import handling based on Desktop Raven a
 """
 
 import asyncio
+import json
+import re
 import traceback
 
 import frappe
+import openai
 
 # Import agents SDK - the package is called 'agents' not 'openai_agents'
 from agents import (
 	Agent,
 	CodeInterpreterTool,
+	ComputerTool,
+	FileSearchTool,
+	HostedMCPTool,
+	ImageGenerationTool,
+	LocalShellTool,
 	ModelSettings,
+	OpenAIProvider,
 	Runner,
 	Tool,
+	WebSearchTool,
 	function_tool,
-	set_default_openai_client,
 )
 from frappe import _
 from openai import AsyncOpenAI
@@ -48,9 +57,20 @@ class RavenAgentManager:
 			if not self.settings.local_llm_api_url:
 				frappe.throw(_("Local LLM API URL is not configured in Raven Settings"))
 
+			# Handle OpenAI Compatible provider differently
+			if self.settings.local_llm_provider == "OpenAI Compatible":
+				api_key = self.settings.get_password("openai_compatible_api_key") or "sk-key"
+			else:
+				api_key = "not-needed"  # LM Studio, Ollama, LocalAI don't require API key
+
 			client = AsyncOpenAI(
-				api_key="not-needed",  # LM Studio doesn't require API key
+				api_key=api_key,
 				base_url=self.settings.local_llm_api_url,
+			)
+
+			# Create provider with use_responses=False for LM Studio
+			self.provider = OpenAIProvider(
+				openai_client=client, use_responses=False  # Force use of chat/completions endpoint
 			)
 		else:
 			# Standard OpenAI client
@@ -64,8 +84,12 @@ class RavenAgentManager:
 				project=self.settings.openai_project_id if self.settings.openai_project_id else None,
 			)
 
-		# Set default client for SDK
-		set_default_openai_client(client)
+			# Create provider with use_responses=True for OpenAI
+			self.provider = OpenAIProvider(
+				openai_client=client, use_responses=True  # Use /v1/responses for OpenAI
+			)
+
+		# Keep client reference for backward compatibility
 		self.client = client
 
 	async def _test_api_connection(self):
@@ -124,8 +148,12 @@ class RavenAgentManager:
 					"File Search Tool Error",
 				)
 
-		# Add Code Interpreter tool if enabled
-		if hasattr(self.bot_doc, "enable_code_interpreter") and self.bot_doc.enable_code_interpreter:
+		# Add Code Interpreter tool if enabled (only for OpenAI, not supported with Local LLM)
+		if (
+			hasattr(self.bot_doc, "enable_code_interpreter")
+			and self.bot_doc.enable_code_interpreter
+			and self.bot_doc.model_provider == "OpenAI"
+		):
 			try:
 				# Create CodeInterpreterTool with proper configuration
 				code_interpreter_tool = CodeInterpreterTool(
@@ -138,7 +166,12 @@ class RavenAgentManager:
 					f"Error adding Code Interpreter: {str(e)}\n{traceback.format_exc()}", "Code Interpreter Error"
 				)
 
-		if self.file_handler and self.file_handler.conversation_files:
+		# Only add conversation file tool for OpenAI, not Local LLM (content is pre-extracted for Local LLM)
+		if (
+			self.file_handler
+			and self.file_handler.conversation_files
+			and self.bot_doc.model_provider != "Local LLM"
+		):
 			conversation_file_tool = self.file_handler.create_file_analysis_tool()
 			if conversation_file_tool:
 				self.tools.append(conversation_file_tool)
@@ -313,6 +346,35 @@ class RavenAgentManager:
 				return func
 		return None
 
+	def _filter_tools_for_provider(self) -> list[Tool]:
+		"""Filter tools based on the provider capabilities"""
+		if self.bot_doc.model_provider == "Local LLM":
+			# Filter out hosted tools that are not supported with ChatCompletions API
+			filtered_tools = []
+			hosted_tool_types = (
+				CodeInterpreterTool,
+				FileSearchTool,
+				WebSearchTool,
+				ComputerTool,
+				HostedMCPTool,
+				ImageGenerationTool,
+				LocalShellTool,
+			)
+
+			for tool in self.tools:
+				if isinstance(tool, hosted_tool_types):
+					frappe.log_error(
+						f"Skipping hosted tool {tool.name} for Local LLM - not supported with ChatCompletions API",
+						"Tool Filtering",
+					)
+				else:
+					filtered_tools.append(tool)
+
+			return filtered_tools
+		else:
+			# For OpenAI, all tools are supported
+			return self.tools
+
 	def create_agent(self) -> Agent:
 		"""Create main agent with bot configuration"""
 
@@ -359,8 +421,10 @@ CRITICAL INSTRUCTIONS FOR TOOL USE:
 3. When the user confirms with words like "ok", "yes", "apply", "do it", "applique cela", etc., USE THE APPROPRIATE TOOL to make the change.
 4. Do NOT ask the user to provide information that you can generate or retrieve yourself.
 5. Always read function descriptions carefully and follow any workflow instructions they contain.
-6. IMPORTANT: If a user asks about files they uploaded (PDFs, invoices, documents), you MUST use the 'analyze_conversation_file' tool. Never say you cannot analyze files - you have the tool to do it!
-7. For questions about invoice amounts, document content, or file information, ALWAYS use 'analyze_conversation_file' with an appropriate query."""
+
+NOTE: File content from uploaded documents is automatically extracted and included in the conversation, so you can directly answer questions about files without needing special tools.
+
+IMPORTANT: When calling tools, the SDK will handle the tool execution automatically. Simply state your intent to use the tool and the SDK will execute it. Do not use XML tags like <tool_call> or any other custom format."""
 
 			instructions = instructions + tools_instruction
 
@@ -372,11 +436,17 @@ CRITICAL INSTRUCTIONS FOR TOOL USE:
 			model_settings.reasoning_effort = self.bot_doc.reasoning_effort
 
 		# Create agent - ALWAYS pass empty list instead of None for tools
+		# Get the model from the provider
+		model = self.provider.get_model(self.bot_doc.model)
+
+		# Filter tools based on provider capabilities
+		filtered_tools = self._filter_tools_for_provider()
+
 		agent = Agent(
 			name=self.bot_doc.bot_name,
 			instructions=instructions,
-			model=self.bot_doc.model,
-			tools=self.tools if self.tools else [],  # Pass empty list, not None
+			model=model,  # Pass the model object from provider
+			tools=filtered_tools if filtered_tools else [],  # Pass empty list, not None
 			model_settings=model_settings,
 		)
 
@@ -413,14 +483,7 @@ async def handle_ai_request_async(
 
 		manager = RavenAgentManager(bot, file_handler=file_handler)
 
-		# Test API connection first
-		if not await manager._test_api_connection():
-			return {
-				"response": "I'm having trouble connecting to the AI service. Please check the configuration and try again.",
-				"success": False,
-				"error": "API connection failed",
-			}
-
+		# No need to test API connection anymore - the SDK will handle errors
 		agent = manager.create_agent()
 
 		if not agent:
@@ -430,59 +493,62 @@ async def handle_ai_request_async(
 				"error": "Agent creation failed",
 			}
 
-		# Build conversation context
-		# If there are files in the conversation, always suggest to use them
-		has_files_in_conversation = manager.file_handler and manager.file_handler.conversation_files
+		# Build input with proper conversation history format
+		# Note: File content is now extracted upfront in ai.py and included in the message
+		if conversation_history:
+			# Convert conversation history to proper format for the SDK
+			input_items = []
 
-		# If files are present in the conversation, enhance the message
-		if has_files_in_conversation:
-			# Get file names - but only mention the most recent one if it's the only one
-			files = list(manager.file_handler.conversation_files.values())
-			if len(files) == 1:
-				# Only one file - be specific
-				file_name = files[0]["file_name"]
-				message = f"{message}\n\n[IMPORTANT: The user has uploaded the file '{file_name}'. You MUST use the 'analyze_conversation_file' tool to read and analyze THIS specific file before answering. The user is asking about the content of this file.]"
-			else:
-				# Multiple files - let the AI figure out which one based on context
-				file_names = [f["file_name"] for f in files]
-				message = f"{message}\n\n[IMPORTANT: The user has uploaded files in this conversation. Available files: {', '.join(file_names)}. Use the 'analyze_conversation_file' tool to analyze the relevant file(s) based on the user's question.]"
+			# Add conversation history as separate items
+			for msg in conversation_history:
+				# Clean HTML and extract plain text content
+				content = msg["content"]
 
-		# Don't include conversation history in the input if there are files
-		# This prevents confusion from previous "I can't access files" responses
-		if has_files_in_conversation:
-			full_input = message
+				# Remove HTML details/summary tags for reasoning
+				if "<details" in content and "</details>" in content:
+					# Extract the main response after the details section
+					# Remove the entire details block
+					content = re.sub(r"<details.*?</details>", "", content, flags=re.DOTALL).strip()
+
+				# Skip empty messages
+				if not content:
+					continue
+
+				if msg["role"] == "user":
+					input_items.append({"role": "user", "content": content})  # Use "role" not "type"
+				elif msg["role"] == "assistant":
+					input_items.append({"role": "assistant", "content": content})  # Use "role" not "type"
+
+			# Add current message
+			input_items.append({"role": "user", "content": message})
+			full_input = input_items
 		else:
+			# No history, just the current message
 			full_input = message
-			if conversation_history:
-				# Only include the last few messages to avoid confusion
-				recent_history = (
-					conversation_history[-3:] if len(conversation_history) > 3 else conversation_history
-				)
-				context_messages = []
-				for msg in recent_history:
-					role = "Assistant" if msg["role"] == "assistant" else "User"
-					# Truncate long messages
-					content = msg["content"][:200] + "..." if len(msg["content"]) > 200 else msg["content"]
-					context_messages.append(f"{role}: {content}")
-				full_input = "\n\n".join(context_messages) + f"\n\nUser: {message}"
-
-		# Context for the agent
-		context = {
-			"user": frappe.session.user,
-			"channel": channel_id,
-			"bot_name": bot.name,
-			"company": frappe.defaults.get_user_default("company"),
-			"conversation_history": conversation_history or [],
-		}
 
 		try:
+			# For Local LLM, always use direct API call to handle custom tool formats
+			if bot.model_provider == "Local LLM":
+				raise TypeError("Force fallback for Local LLM to handle custom tool calls")
+
 			# Use Runner.run as a static method (not an instance)
 			# Set max_turns to prevent infinite loops
 			result = await Runner.run(agent, full_input, max_turns=5)
 
-		except TypeError as te:
-			if "NoneType" in str(te) and "not iterable" in str(te):
+		except (TypeError, openai.NotFoundError) as e:
+			# Handle both TypeError and NotFoundError (404) with fallback
+			should_fallback = False
 
+			if isinstance(e, TypeError) and "NoneType" in str(e) and "not iterable" in str(e):
+				should_fallback = True
+			elif isinstance(e, TypeError) and "Force fallback for Local LLM" in str(e):
+				# Forced fallback for Local LLM to handle custom tool calls
+				should_fallback = True
+			elif isinstance(e, openai.NotFoundError):
+				# 404 errors indicate the endpoint is not supported (like agents SDK endpoints on Ollama)
+				should_fallback = True
+
+			if should_fallback:
 				# Try direct API call as fallback
 				try:
 					# For direct API calls, we need to manually add tool definitions
@@ -508,19 +574,21 @@ async def handle_ai_request_async(
 					# Add instruction to encourage immediate tool use
 					enhanced_instructions = (
 						agent.instructions
-						+ "\n\nIMPORTANT: When asked to perform an action, use your tools immediately. Do not overthink. Keep responses brief and action-oriented. When asked to improve something, propose a specific solution immediately. If asked about file content, invoices, or documents, ALWAYS use the analyze_conversation_file tool - never say you cannot analyze files."
+						+ "\n\nIMPORTANT: When asked to perform an action, use your tools immediately. Do not overthink. Keep responses brief and action-oriented. When asked to improve something, propose a specific solution immediately. File content from uploaded documents is automatically extracted and included in the conversation - DO NOT use the analyze_conversation_file tool for files that are already in the conversation context, just use the extracted content provided."
 					)
 
 					# Build messages array with proper conversation history
-					messages = [{"role": "system", "content": enhanced_instructions}]
+					messages = [{"role": "system", "content": [{"type": "text", "text": enhanced_instructions}]}]
 
 					# Add conversation history as separate messages
 					if conversation_history:
 						for msg in conversation_history:
-							messages.append({"role": msg["role"], "content": msg["content"]})
+							messages.append(
+								{"role": msg["role"], "content": [{"type": "text", "text": msg["content"]}]}
+							)
 
 					# Add current user message
-					messages.append({"role": "user", "content": message})
+					messages.append({"role": "user", "content": [{"type": "text", "text": message}]})
 
 					# Create the API call with or without tools
 					api_params = {
@@ -548,10 +616,6 @@ async def handle_ai_request_async(
 							for tool_call in choice.message.tool_calls:
 								tool_name = tool_call.function.name
 								tool_args = tool_call.function.arguments
-
-								# Truncate args for title to avoid length error
-								args_preview = tool_args[:50] + "..." if len(tool_args) > 50 else tool_args
-
 								# Find the tool in manager.tools
 								tool_result = None
 								for tool in manager.tools:
@@ -566,16 +630,30 @@ async def handle_ai_request_async(
 							# If we have tool results, make another API call with the results
 							if tool_results:
 								# Add assistant message with tool calls
+								assistant_message = choice.message.model_dump()
+								# Fix assistant message content format
+								if isinstance(assistant_message.get("content"), str):
+									assistant_message["content"] = [{"type": "text", "text": assistant_message["content"]}]
+
 								messages = [
-									{"role": "system", "content": agent.instructions},
-									{"role": "user", "content": full_input},
-									choice.message.model_dump(),
+									{"role": "system", "content": [{"type": "text", "text": agent.instructions}]},
+									{"role": "user", "content": [{"type": "text", "text": str(full_input)}]},
+									assistant_message,
 								]
 
 								# Add tool results
 								for result in tool_results:
+									# Ensure output is a string
+									output_content = result["output"]
+									if not isinstance(output_content, str):
+										output_content = json.dumps(output_content)
+
 									messages.append(
-										{"role": "tool", "content": result["output"], "tool_call_id": result["tool_call_id"]}
+										{
+											"role": "tool",
+											"content": [{"type": "text", "text": result["output"]}],
+											"tool_call_id": result["tool_call_id"],
+										}
 									)
 
 								# Make final API call
@@ -594,8 +672,76 @@ async def handle_ai_request_async(
 							else:
 								raw_response = "Tool execution failed - no results obtained."
 						else:
-							# No tool calls, just a regular response
+							# No tool calls, check if the response contains custom tool call format
 							raw_response = choice.message.content
+
+							# Check for custom <tool_call> format in the response
+							if raw_response and "<tool_call>" in raw_response and "</tool_call>" in raw_response:
+								# Extract tool call from response
+								tool_call_match = re.search(
+									r"<tool_call>\s*({.*?})\s*</tool_call>", raw_response, re.DOTALL
+								)
+
+								if tool_call_match:
+									try:
+										# Parse the tool call
+										tool_call_data = json.loads(tool_call_match.group(1))
+										tool_name = tool_call_data.get("name")
+										tool_args = json.dumps(tool_call_data.get("arguments", {}))
+
+										# Find and execute the tool
+										tool_result = None
+										for tool in manager.tools:
+											if tool.name == tool_name:
+												# Execute the tool
+												tool_result = await tool.on_invoke_tool(None, tool_args)
+												break
+
+										if tool_result:
+											# Remove the tool call from the response
+											response_without_tool = re.sub(
+												r"<tool_call>.*?</tool_call>", "", raw_response, flags=re.DOTALL
+											).strip()
+
+											# Parse the tool result if it's JSON
+											try:
+												result_data = json.loads(tool_result)
+												if isinstance(result_data, dict) and "result" in result_data:
+													# Format the result nicely
+													formatted_result = "Voici les produits trouvés :\n\n"
+													for item in result_data["result"]:
+														if isinstance(item, dict):
+															formatted_result += f"• {item.get('name', 'Sans nom')}\n"
+
+													# Add warning if present
+													if "warning" in result_data:
+														formatted_result += f"\n⚠️ {result_data['warning']}"
+
+													raw_response = (
+														response_without_tool + "\n\n" + formatted_result
+														if response_without_tool
+														else formatted_result
+													)
+												else:
+													# Not the expected format, use as is
+													raw_response = f"{response_without_tool}\n\n{tool_result}"
+											except Exception:
+												# Not JSON or parsing failed, use as is
+												raw_response = f"{response_without_tool}\n\n{tool_result}"
+										else:
+											frappe.log_error(
+												f"Tool '{tool_name}' not found or execution failed", "Custom Tool Call Error"
+											)
+
+									except json.JSONDecodeError as e:
+										frappe.log_error(
+											f"Failed to parse tool call JSON: {str(e)}\nContent: {tool_call_match.group(1)}",
+											"Tool Call Parse Error",
+										)
+									except Exception as e:
+										frappe.log_error(
+											f"Error executing custom tool call: {str(e)}", "Tool Call Execution Error"
+										)
 
 						# Format the response
 						from raven.ai.response_formatter import format_ai_response

@@ -30,9 +30,11 @@ export interface RavenSettings{
 	/**	Enable Local LLM : Check	*/
 	enable_local_llm?: 0 | 1
 	/**	Local LLM Provider : Select	*/
-	local_llm_provider?: "LM Studio" | "Ollama" | "LocalAI"
+	local_llm_provider?: "LM Studio" | "Ollama" | "LocalAI" | "OpenAI Compatible"
 	/**	Local LLM API URL : Data	*/
 	local_llm_api_url?: string
+	/**	OpenAI Compatible API Key : Password	*/
+	openai_compatible_api_key?: string
 	/**	Enable Google APIs : Check - Useful for extracting information from documents before sending it to agents	*/
 	enable_google_apis?: 0 | 1
 	/**	Google Processor Location : Select	*/

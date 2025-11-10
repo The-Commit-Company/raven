@@ -10,9 +10,10 @@ from agents import FunctionTool
 class ConversationFileHandler:
 	"""Handles files uploaded during conversations for SDK Agents"""
 
-	def __init__(self, channel_id: str):
+	def __init__(self, channel_id: str, bot):
 		self.channel_id = channel_id
 		self.conversation_files = {}
+		self.bot = bot
 
 	def add_conversation_file(self, message):
 		"""Add a file from a message to conversation context"""
@@ -34,6 +35,7 @@ class ConversationFileHandler:
 
 						file_info = {
 							"file_path": file_path,
+							"file_url": file_url,
 							"file_name": getattr(file_doc, "file_name", "Unknown"),
 							"file_type": self._get_file_type(file_doc),
 							"message_id": message.name,
@@ -94,40 +96,63 @@ class ConversationFileHandler:
 				for msg_id, file_info in files_to_analyze.items():
 					file_path = file_info["file_path"]
 					file_type = file_info["file_type"]
+					file_url = file_info.get("file_url", "")
 
 					# Extract content based on file type
 					content = ""
-					if file_type == "pdf":
-						content = self._extract_pdf_content(file_path)
-					elif file_type in ["txt", "md", "json"]:
-						with open(file_path, encoding="utf-8") as f:
-							content = f.read()
-					elif file_type in ["jpg", "jpeg", "png", "gif"]:
-						content = f"[Image file: {file_info['file_name']}]"
-					elif file_type in ["xlsx", "xls", "csv"]:
-						content = self._convert_spreadsheet_to_markdown(file_path, file_type)
-					else:
-						content = f"[File type {file_type}: {file_info['file_name']}]"
 
-					# Build generic result
-					result = {"file_name": file_info["file_name"], "file_type": file_type, "file_path": file_path}
+					if file_type in ["jpg", "jpeg", "png", "pdf"]:
+						content = self._extract_with_google_ai(file_url, file_type)
 
-					# Add content based on file type
-					if file_type in ["xlsx", "xls", "csv"]:
-						if content and not content.startswith("Error"):
-							result["content"] = content
-							result["analysis"] = "Spreadsheet content converted to markdown for analysis"
+						if content:
+							# Successfully extracted with Google AI
+							result = {
+								"file_name": file_info["file_name"],
+								"file_type": file_type,
+								"file_path": file_path,
+								"content": content,
+								"extraction_method": "Google Document AI",
+								"analysis": "Document content extracted using Google Document AI",
+							}
+							results.append(result)
+							continue
+
+					if not content:
+						if file_type == "pdf":
+							content = self._extract_pdf_content(file_path)
+						elif file_type in ["txt", "md", "json"]:
+							with open(file_path, encoding="utf-8") as f:
+								content = f.read()
+						elif file_type in ["jpg", "jpeg", "png", "gif"]:
+							content = f"[Image file: {file_info['file_name']}]"
+						elif file_type in ["xlsx", "xls", "csv"]:
+							content = self._convert_spreadsheet_to_markdown(file_path, file_type)
 						else:
-							result["analysis"] = (
-								content if content.startswith("Error") else "Unable to read spreadsheet"
-							)
-							result["note"] = "Failed to convert spreadsheet to readable format"
-					elif file_type == "pdf" and content and not content.startswith("Error"):
-						result["content_preview"] = content[:1000] + "..." if len(content) > 1000 else content
-						result["analysis"] = "PDF content extracted successfully"
-					else:
-						result["content_preview"] = content[:1000] + "..." if len(content) > 1000 else content
-						result["analysis"] = "File ready for analysis"
+							content = f"[File type {file_type}: {file_info['file_name']}]"
+
+						# Build generic result
+						result = {
+							"file_name": file_info["file_name"],
+							"file_type": file_type,
+							"file_path": file_path,
+						}
+
+						# Add content based on file type
+						if file_type in ["xlsx", "xls", "csv"]:
+							if content and not content.startswith("Error"):
+								result["content"] = content
+								result["analysis"] = "Spreadsheet content converted to markdown for analysis"
+							else:
+								result["analysis"] = (
+									content if content.startswith("Error") else "Unable to read spreadsheet"
+								)
+								result["note"] = "Failed to convert spreadsheet to readable format"
+						elif file_type == "pdf" and content and not content.startswith("Error"):
+							result["content_preview"] = content[:1000] + "..." if len(content) > 1000 else content
+							result["analysis"] = "PDF content extracted successfully"
+						else:
+							result["content_preview"] = content[:1000] + "..." if len(content) > 1000 else content
+							result["analysis"] = "File ready for analysis"
 
 					results.append(result)
 
@@ -210,6 +235,52 @@ class ConversationFileHandler:
 				"PDF Read Error",
 			)
 			return f"Error reading PDF: {str(e)}"
+
+	def _extract_with_google_ai(self, file_url: str, file_type: str) -> str:
+		"""
+		Extract content using Google Document AI if enabled
+
+		Args:
+		        file_url: URL of the file
+		        file_type: File extension (pdf, jpg, jpeg, png)
+
+		Returns:
+		        Extracted content or empty string if not available
+		"""
+		if not self.bot:
+			return ""
+
+		# Check if bot has Google Document AI enabled
+		if (
+			not hasattr(self.bot, "use_google_document_parser") or not self.bot.use_google_document_parser
+		):
+			return ""
+
+		if (
+			not hasattr(self.bot, "google_document_processor_id")
+			or not self.bot.google_document_processor_id
+		):
+			return ""
+
+		# Only supported file types for Document AI
+		if file_type not in ["jpg", "jpeg", "png", "pdf"]:
+			return ""
+
+		try:
+			from raven.ai.google_ai import run_document_ai_processor
+
+			extracted_content = run_document_ai_processor(
+				self.bot.google_document_processor_id, file_url, file_type
+			)
+
+			return extracted_content if extracted_content else ""
+
+		except Exception as e:
+			frappe.log_error(
+				f"Error extracting content with Google Document AI: {str(e)}\nFile: {file_url}",
+				"Google Document AI Error",
+			)
+			return ""
 
 	def _extract_invoice_info(self, content: str) -> dict:
 		"""Extract key invoice information from content"""

@@ -13,6 +13,8 @@ import useIsUserOnLeave from "@/hooks/fetchers/useIsUserOnLeave"
 import { UserContext } from "@/utils/auth/UserProvider"
 import { replaceCurrentUserFromDMChannelName } from "@/utils/operations"
 import { useIsDesktop } from "@/hooks/useMediaQuery"
+import { useAtomValue } from "jotai"
+import { lastWorkspaceAtom } from "@/utils/lastVisitedAtoms"
 
 interface DMChannelHeaderProps {
     channelData: DMChannelListItem,
@@ -52,7 +54,7 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
 
     const isDesktop = useIsDesktop()
 
-    const lastWorkspace = localStorage.getItem('ravenLastWorkspace')
+    const lastWorkspace = useAtomValue(lastWorkspaceAtom)
 
     return (
         <PageHeader>

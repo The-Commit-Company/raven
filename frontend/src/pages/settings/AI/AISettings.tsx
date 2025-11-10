@@ -254,7 +254,8 @@ const LocalLLMSection = () => {
         try {
             const result = await testConnection({
                 provider: 'Local LLM',
-                api_url: localLLMUrl
+                api_url: localLLMUrl,
+                local_llm_provider: localLLMProvider
             })
 
             setTestResult({
@@ -314,6 +315,7 @@ const LocalLLMSection = () => {
                                         <Select.Item value="LM Studio">LM Studio</Select.Item>
                                         <Select.Item value="Ollama">Ollama</Select.Item>
                                         <Select.Item value="LocalAI">LocalAI</Select.Item>
+                                        <Select.Item value="OpenAI Compatible">OpenAI Compatible</Select.Item>
                                     </Select.Content>
                                 </Select.Root>
                             )}
@@ -354,6 +356,25 @@ const LocalLLMSection = () => {
                         </HelperText>
                     </Box>
 
+                    {localLLMProvider === 'OpenAI Compatible' && (
+                        <Box>
+                            <Label htmlFor='openai_compatible_api_key'>OpenAI Compatible API Key</Label>
+                            <TextField.Root
+                                className={'w-48 sm:w-96'}
+                                id='openai_compatible_api_key'
+                                type='password'
+                                autoComplete='off'
+                                placeholder='••••••••••••••••••••••••••••••••'
+                                {...register('openai_compatible_api_key')}
+                                aria-invalid={errors.openai_compatible_api_key ? 'true' : 'false'}
+                            />
+                            {errors?.openai_compatible_api_key && <ErrorText>{errors.openai_compatible_api_key?.message}</ErrorText>}
+                            <HelperText>
+                                Enter the API key for your OpenAI compatible service
+                            </HelperText>
+                        </Box>
+                    )}
+
                     {testResult && (
                         <Callout.Root color={testResult.success ? "green" : "red"} size="1">
                             <Callout.Icon>
@@ -373,6 +394,7 @@ const LocalLLMSection = () => {
                             {localLLMProvider === 'LM Studio' && 'Make sure LM Studio is running with the server enabled on the specified URL.'}
                             {localLLMProvider === 'Ollama' && 'Make sure Ollama is running. Default URL is usually http://localhost:11434/v1'}
                             {localLLMProvider === 'LocalAI' && 'Make sure LocalAI is running on the specified URL.'}
+                            {localLLMProvider === 'OpenAI Compatible' && 'Make sure your OpenAI compatible service is running on the specified URL and that you have provided a valid API key.'}
                             {!localLLMProvider && 'Select a provider to see specific instructions.'}
                         </Callout.Text>
                     </Callout.Root>

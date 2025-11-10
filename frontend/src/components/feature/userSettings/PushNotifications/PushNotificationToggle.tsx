@@ -61,8 +61,7 @@ const PushNotificationToggle = (props: Props) => {
             })
     }
 
-    // @ts-expect-error
-    if (!window.frappe?.boot.push_relay_server_url && !isPushAvailable) {
+    if (!isPushAvailable) {
         return null
     }
     return (
