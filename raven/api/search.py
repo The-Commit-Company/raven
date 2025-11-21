@@ -24,7 +24,8 @@ class RavenSearch(SQLiteSearch):
                             "bot", 
                             "poll_id",
                             "file_type",
-                            "link"],
+                            "internal_link",
+                            "links"],
         "tokenizer": "unicode61 remove_diacritics 2 tokenchars '-_'",
     }
 
@@ -42,6 +43,7 @@ class RavenSearch(SQLiteSearch):
                        "bot",
                        "poll_id",
                        "file",
+                       "links",
                        "link_doctype",
                        "link_document"],
         },
@@ -64,7 +66,7 @@ class RavenSearch(SQLiteSearch):
         if doc.link_document:
             link_document = get_preview_data(doc.link_doctype, doc.link_document)
             lowerCaseDoctype = doc.link_doctype.lower().replace(" ", "-")
-            doc.link = f"/app/{lowerCaseDoctype}/{doc.link_document}"
+            doc.internal_link = f"/app/{lowerCaseDoctype}/{doc.link_document}"
             if not doc.content:
                 doc.content = link_document.get("preview_title")
             
@@ -92,7 +94,7 @@ class RavenSearch(SQLiteSearch):
                 document["file_type"] = file_extension.lstrip(".").upper() if file_extension else None
             else:
                 document["file_type"] = None
-            document["link"] = doc.file
+            document["internal_link"] = doc.file
         return document
 
     def index_doc(self, doctype, name):
