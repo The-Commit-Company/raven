@@ -68,7 +68,7 @@ def update_poll_votes(poll_id):
 	poll_votes = frappe.get_all(
 		"Raven Poll Vote",
 		filters={"poll_id": poll_id},
-		fields=["option", "count(name) as votes"],
+		fields=["option", "count(name) as votes"], # this won't work in frappe v16+
 		group_by="option",
 	)
 
@@ -85,12 +85,12 @@ def update_poll_votes(poll_id):
 			if option.name == vote.option:
 				option.votes = vote.votes
 				break
-
-	for option in poll.options:
+		
 		frappe.db.set_value(
 			"Raven Poll Option", option.name, "votes", option.votes, update_modified=False
 		)
 
 	frappe.db.set_value("Raven Poll", poll_id, "total_votes", total_votes, update_modified=False)
+	poll.total_votes = total_votes
 
 	poll.notify_update()
