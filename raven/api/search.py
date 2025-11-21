@@ -1,5 +1,146 @@
+import json
+import mimetypes
+
 import frappe
+from frappe.search.sqlite_search import SQLiteSearch
 from pypika import JoinType
+
+from raven.api.document_link import get_preview_data
+from raven.api.raven_channel import get_channel_list
+
+
+class RavenSearch(SQLiteSearch):
+	# Database file name
+	INDEX_NAME = "raven_search.db"
+
+	# Define the search schema
+	INDEX_SCHEMA = {
+		"text_fields": ["title", "content"],
+		"metadata_fields": [
+			"channel_id",
+			"owner",
+			"creation",
+			"parent_channel_id",
+			"mentions",
+			"is_thread",
+			"message_type",
+			"is_bot_message",
+			"bot",
+			"poll_id",
+			"file_type",
+			"internal_link",
+			"links",
+		],
+		"tokenizer": "unicode61 remove_diacritics 2 tokenchars '-_'",
+	}
+
+	# Define which doctypes to index and their field mappings
+	INDEXABLE_DOCTYPES = {
+		"Raven Message": {
+			"fields": [
+				"name",
+				"content",
+				"channel_id",
+				"owner",
+				"creation",
+				"is_thread",
+				"message_type",
+				"is_bot_message",
+				"bot",
+				"poll_id",
+				"file",
+				"links",
+				"link_doctype",
+				"link_document",
+			],
+		},
+	}
+
+	def get_search_filters(self):
+		"""Return permission filters for current user"""
+		# Get channels accessible to current user
+		channel_list = get_channel_list()
+		channel_list = [channel.get("name") for channel in channel_list]
+
+		if not channel_list:
+			return {"parent_channel_id": []}  # No access
+
+		return {"parent_channel_id": channel_list}
+
+	def prepare_document(self, doc):
+		"""Custom document preparation"""
+		link_document = None
+		if doc.link_document:
+			link_document = get_preview_data(doc.link_doctype, doc.link_document)
+			lowerCaseDoctype = doc.link_doctype.lower().replace(" ", "-")
+			doc.internal_link = f"/app/{lowerCaseDoctype}/{doc.link_document}"
+			if not doc.content:
+				doc.content = link_document.get("preview_title")
+
+		document = super().prepare_document(doc)
+		if not document:
+			return None
+
+		if doc.link_document:
+			document["title"] = link_document.get("preview_title")
+
+		is_thread = frappe.db.get_value("Raven Channel", doc.channel_id, "is_thread")
+		mentions = frappe.db.get_all("Raven Mention", {"parent": doc.name}, pluck="user")
+		if mentions:
+			# Convert list to | separated string for SQLite storage
+			document["mentions"] = "|" + "|".join(mentions) + "|"
+		if is_thread:
+			parent_channel_id = frappe.db.get_value("Raven Message", doc.channel_id, "channel_id")
+			document["parent_channel_id"] = parent_channel_id
+		else:
+			document["parent_channel_id"] = doc.channel_id
+		if doc.message_type == "File" or doc.message_type == "Image":
+			file_type = mimetypes.guess_type(doc.content)[0]
+			if file_type:
+				file_extension = mimetypes.guess_extension(file_type)
+				document["file_type"] = file_extension.lstrip(".").upper() if file_extension else None
+			else:
+				document["file_type"] = None
+			document["internal_link"] = doc.file
+		return document
+
+	def index_doc(self, doctype, name):
+		"""Override index_doc to handle custom fields properly"""
+		# Get the document
+		doc = frappe.db.get_value(doctype, name, self.INDEXABLE_DOCTYPES[doctype]["fields"], as_dict=1)
+		doc["doctype"] = doctype
+		self.raise_if_not_indexed()
+		# Remove existing document first to prevent duplicates
+		self.remove_doc(doctype, name)
+		# Prepare the document with our custom fields
+		document = self.prepare_document(doc)
+		if document:
+			# Index the prepared document
+			self._index_documents([document])
+
+	def _process_content(self, content):
+		"""Override _process_content since our content is already processed"""
+		if not content:
+			return ""
+		return content
+
+
+@frappe.whitelist()
+def sqlite_search(query, filters=None):
+	if filters:
+		filters = json.loads(filters)
+
+	search = RavenSearch()
+	result = search.search(query, filters=filters)
+
+	return result["results"][:20]
+
+
+@frappe.whitelist()
+def rebuild_search_index():
+	search = RavenSearch()
+	search.build_index()
+	return "Search index rebuilt"
 
 
 @frappe.whitelist()
