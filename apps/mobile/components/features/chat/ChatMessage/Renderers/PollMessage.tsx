@@ -88,7 +88,7 @@ const PollOption = ({ data, option }: { data: Poll; option: RavenPollOption }) =
     const percentage = useMemo(() => {
         const getPercentage = (votes: number) => {
             if (data.poll.is_multi_choice) {
-                const totalVotes = data.poll.options.reduce((acc, opt) => acc + (opt.votes ?? 0), 0)
+                const totalVotes = data.poll.options?.reduce((acc, opt) => acc + (opt.votes ?? 0), 0)
                 return totalVotes ? (votes / totalVotes) * 100 : 0
             }
             return data.poll.total_votes ? (votes / data.poll.total_votes) * 100 : 0

@@ -174,12 +174,15 @@ def get_all_votes(poll_id):
 			option = vote["option"]
 			results[option]["users"].append(vote["user_id"])
 
-		# Calculate total votes
-		total_votes = sum(result["count"] for result in results.values())
+		# Calculate total votes (use unique voters, not sum of all votes)
+		total_votes = poll_doc.total_votes or 0
 
 		# Calculate percentages
 		for result in results.values():
-			result["percentage"] = (result["count"] / total_votes) * 100
+			if total_votes > 0:
+				result["percentage"] = (result["count"] / total_votes) * 100
+			else:
+				result["percentage"] = 0
 
 		return results
 

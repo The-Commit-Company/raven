@@ -44,5 +44,3 @@ class RavenPoll(Document):
 	def on_trash(self):
 		# Delete all poll votes
 		frappe.db.delete("Raven Poll Vote", {"poll_id": self.name})
-
-	pass

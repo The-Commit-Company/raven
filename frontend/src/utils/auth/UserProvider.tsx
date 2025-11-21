@@ -1,8 +1,10 @@
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 import { useFrappeAuth, useSWRConfig } from 'frappe-react-sdk'
+import { useResetAtom } from 'jotai/utils'
 import { FC, PropsWithChildren } from 'react'
 import { createContext } from 'react'
 import { toast } from 'sonner'
+import { lastChannelAtom, lastWorkspaceAtom } from '../lastVisitedAtoms'
 
 interface UserContextProps {
     isLoading: boolean,
@@ -23,9 +25,12 @@ export const UserProvider: FC<PropsWithChildren> = ({ children }) => {
     const { mutate } = useSWRConfig()
     const { logout, currentUser, updateCurrentUser, isLoading } = useFrappeAuth()
 
+    const resetLastWorkspace = useResetAtom(lastWorkspaceAtom)
+    const resetLastChannel = useResetAtom(lastChannelAtom)
+
     const handleLogout = async () => {
-        localStorage.removeItem('ravenLastChannel')
-        localStorage.removeItem('ravenLastWorkspace')
+        resetLastChannel()
+        resetLastWorkspace()
         localStorage.removeItem('app-cache')
 
         // Disable push notifications
