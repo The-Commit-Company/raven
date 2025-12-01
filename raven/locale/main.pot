@@ -1,0 +1,2487 @@
+# Translations template for Raven.
+# Copyright (C) 2025 The Commit Company (Algocode Technologies Pvt. Ltd.)
+# This file is distributed under the same license as the Raven project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Raven VERSION\n"
+"Report-Msgid-Bugs-To: support@thecommit.company\n"
+"POT-Creation-Date: 2025-12-01 18:26+0053\n"
+"PO-Revision-Date: 2025-12-01 18:26+0053\n"
+"Last-Translator: support@thecommit.company\n"
+"Language-Team: support@thecommit.company\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#. Description of the 'Enable Code Interpreter' (Check) field in DocType 'Raven
+#. Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid ""
+" Enable this if you want the bot to be able to process files like Excel sheets or data from Insights.\n"
+"                    <br>\n"
+"                    OpenAI Assistants run code in a sandboxed environment (on OpenAI servers) to do this."
+msgstr ""
+
+#. Description of the Onboarding Step 'Add users'
+#: raven/raven/onboarding_step/adding_users_to_raven/adding_users_to_raven.json
+msgid ""
+"## Adding Users\n"
+"\n"
+"To access Raven, users need to have the **Raven User** role.\n"
+"\n"
+"Go to the \"Users\" list and add the role to the users you want on Raven."
+msgstr ""
+
+#. Description of the Onboarding Step 'Understanding Channels'
+#: raven/raven/onboarding_step/introduction_to_raven/introduction_to_raven.json
+msgid ""
+"## Channels\n"
+"\n"
+"Raven helps you and your team communicate with each other.\n"
+"\n"
+"Conversation happen in **channels**. \n"
+"\n"
+"All users who have access to Raven can view and send messages in **Open** channels. \n"
+"\n"
+"**Public** channels are visible to everyone, but only members can take send messages in them. Any user can join public channels. \n"
+"\n"
+"**Private** channels are only visible to members and new members can only be added by the channel admin - which is the creator of the channel. \n"
+"\n"
+"You could also send messages to other users privately via **Direct messages** - including yourself!\n"
+"\n"
+"A user could create as many channels and add as many users as they want to in them. "
+msgstr ""
+
+#. Description of the Onboarding Step 'Review Settings'
+#: raven/raven/onboarding_step/review_raven_settings/review_raven_settings.json
+msgid ""
+"## Raven Settings\n"
+"\n"
+"\n"
+"<em>**Automatically adding users to Raven**</em>\n"
+"\n"
+"To make it easy for you, the Raven User role is assigned to any user who has access to Desk. If you wish to turn this off, please head to Raven Settings."
+msgstr ""
+
+#. Description of the Onboarding Step 'It's time. Send a Raven.'
+#: raven/raven/onboarding_step/access_the_web_app/access_the_web_app.json
+msgid ""
+"### Access the web and mobile apps\n"
+"\n"
+"\n"
+"Raven is available at <a href=\"/raven\">**/raven**</a> for both web and mobile. On mobile, Raven can be installed as a PWA."
+msgstr ""
+
+#. Content of the 'html_xuuw' (HTML) field in DocType 'Raven User'
+#: raven/raven/doctype/raven_user/raven_user.json
+msgid "<p>To disable the user from accessing Raven, go to \"Users\" and remove the \"Raven User\" role.</p>"
+msgstr ""
+
+#. Header text in the Raven Workspace
+#: raven/raven/workspace/raven/raven.json
+msgid "<span class=\"h4\"><a href=\"/raven\">Raven</a></span>"
+msgstr ""
+
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.py:197
+msgid "A channel with this name already exists in this workspace."
+msgstr ""
+
+#. Label of the ai_section (Section Break) field in DocType 'Raven Settings'
+#. Label of a Card Break in the Raven Workspace
+#. Label of the ai_tab (Tab Break) field in DocType 'Raven Bot'
+#. Label of the ai_tab (Tab Break) field in DocType 'Raven Channel'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+#: raven/raven/workspace/raven/raven.json
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.json
+msgid "AI"
+msgstr ""
+
+#: raven/ai/openai_client.py:14
+msgid "AI Integration is not enabled"
+msgstr ""
+
+#. Label of the action_name (Data) field in DocType 'Raven Message Action'
+#: raven/raven_integrations/doctype/raven_message_action/raven_message_action.json
+msgid "Action Name"
+msgstr ""
+
+#. Label of an action in the Onboarding Step 'Add users'
+#: raven/raven/onboarding_step/adding_users_to_raven/adding_users_to_raven.json
+msgid "Add Users to Raven"
+msgstr ""
+
+#: frontend/src/components/feature/channel-details/edit-channel-description/EditChannelDescriptionModal.tsx:43
+#: frontend/src/components/feature/channel-details/edit-channel-description/EditChannelDescriptionModal.tsx:51
+msgid "Add description"
+msgstr ""
+
+#. Title of an Onboarding Step
+#: raven/raven/onboarding_step/adding_users_to_raven/adding_users_to_raven.json
+msgid "Add users"
+msgstr ""
+
+#. Label of the allow_bot_to_write_documents (Check) field in DocType 'Raven
+#. Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Allow Bot to Write Documents"
+msgstr ""
+
+#. Label of the allow_notifications (Check) field in DocType 'Raven Channel
+#. Member'
+#: raven/raven_channel_management/doctype/raven_channel_member/raven_channel_member.json
+msgid "Allow notifications"
+msgstr ""
+
+#. Description of the 'Top P' (Float) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid ""
+"An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered.\n"
+"\n"
+"We generally recommend altering this or temperature but not both."
+msgstr ""
+
+#: frontend/src/pages/settings/Appearance.tsx:54
+msgid "Appearance"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/UploadImage/DeleteImageModal.tsx:34
+msgid "Are you sure you want to remove this image?"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Attach File to Document"
+msgstr ""
+
+#. Label of the attendance_and_leaves_section (Section Break) field in DocType
+#. 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Attendance and Leaves"
+msgstr ""
+
+#. Label of the auto_create_department_channel (Check) field in DocType 'Raven
+#. Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Automatically Create a Channel for each Department"
+msgstr ""
+
+#. Label of the auto_add_system_users (Check) field in DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Automatically add system users to Raven"
+msgstr ""
+
+#: frontend/src/pages/settings/Integrations/FrappeHR.tsx:114
+msgid "Automatically create channels for departments"
+msgstr ""
+
+#. Label of the availability_status (Select) field in DocType 'Raven User'
+#: frontend/src/components/feature/userSettings/UserProfile/UserProfile.tsx:129
+#: raven/raven/doctype/raven_user/raven_user.json
+msgid "Availability Status"
+msgstr ""
+
+#. Option for the 'Availability Status' (Select) field in DocType 'Raven User'
+#: frontend/src/components/feature/userSettings/AvailabilityStatus/SetUserAvailabilityMenu.tsx:64
+#: frontend/src/components/feature/userSettings/AvailabilityStatus/SetUserAvailabilityMenu.tsx:72
+#: raven/raven/doctype/raven_user/raven_user.json
+msgid "Available"
+msgstr ""
+
+#. Option for the 'Availability Status' (Select) field in DocType 'Raven User'
+#: frontend/src/components/feature/userSettings/AvailabilityStatus/SetUserAvailabilityMenu.tsx:66
+#: raven/raven/doctype/raven_user/raven_user.json
+msgid "Away"
+msgstr ""
+
+#. Label of the blurhash (Small Text) field in DocType 'Raven Message'
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+msgid "Blurhash"
+msgstr ""
+
+#. Label of the bot_functions (Table) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Bot Functions"
+msgstr ""
+
+#. Label of the bot_name (Data) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Bot Name"
+msgstr ""
+
+#: raven/raven/doctype/raven_user/raven_user.py:48
+msgid "Bot is mandatory"
+msgstr ""
+
+#: raven/ai/agents_integration.py:383
+msgid "Bot model is not configured"
+msgstr ""
+
+#. Label of a Link in the Raven Workspace
+#: raven/raven/workspace/raven/raven.json
+msgid "Bots"
+msgstr ""
+
+#. Label of the cron_expression (Data) field in DocType 'Raven Scheduler Event'
+#: raven/raven_integrations/doctype/raven_scheduler_event/raven_scheduler_event.json
+msgid "CRON Expression"
+msgstr ""
+
+#. Description of the 'Message' (Code) field in DocType 'Raven Document
+#. Notification'
+#: raven/raven_integrations/doctype/raven_document_notification/raven_document_notification.json
+msgid "Can be HTML/Markdown/Plain Text. Support Jinja tags"
+msgstr ""
+
+#. Label of the can_only_join_via_invite (Check) field in DocType 'Raven
+#. Workspace'
+#: raven/raven/doctype/raven_workspace/raven_workspace.json
+msgid "Can only join via invite?"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Cancel Document"
+msgstr ""
+
+#. Option for the 'Webhook Trigger' (Select) field in DocType 'Raven Webhook'
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.json
+msgid "Channel Created"
+msgstr ""
+
+#. Option for the 'Webhook Trigger' (Select) field in DocType 'Raven Webhook'
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.json
+msgid "Channel Deleted"
+msgstr ""
+
+#. Label of the channel_description (Small Text) field in DocType 'Raven
+#. Channel'
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.json
+msgid "Channel Description"
+msgstr ""
+
+#. Label of the channel_id (Link) field in DocType 'Raven Pinned Channels'
+#. Label of the channel_id (Link) field in DocType 'Raven Incoming Webhook'
+#. Label of the channel_id (Link) field in DocType 'Raven Message'
+#. Label of the channel_id (Link) field in DocType 'Raven Message Reaction'
+#: raven/raven/doctype/raven_pinned_channels/raven_pinned_channels.json
+#: raven/raven_integrations/doctype/raven_incoming_webhook/raven_incoming_webhook.json
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+#: raven/raven_messaging/doctype/raven_message_reaction/raven_message_reaction.json
+msgid "Channel ID"
+msgstr ""
+
+#. Option for the 'Webhook Trigger' (Select) field in DocType 'Raven Webhook'
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.json
+msgid "Channel Member Added"
+msgstr ""
+
+#. Option for the 'Webhook Trigger' (Select) field in DocType 'Raven Webhook'
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.json
+msgid "Channel Member Deleted"
+msgstr ""
+
+#. Label of the channel_name (Data) field in DocType 'Raven Channel'
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.json
+msgid "Channel Name"
+msgstr ""
+
+#. Label of the channel_type (Select) field in DocType 'Raven Document
+#. Notification Recipients'
+#. Option for the 'Conditions On' (Select) field in DocType 'Raven Webhook'
+#. Label of the channel_type (Select) field in DocType 'Raven Webhook'
+#: raven/raven_integrations/doctype/raven_document_notification_recipients/raven_document_notification_recipients.json
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.json
+msgid "Channel Type"
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.py:221
+msgid "Channel Type cannot be triggered on other doctypes"
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.py:202
+msgid "Channel cannot be triggered on User"
+msgstr ""
+
+#: frontend/src/components/feature/channels/CreateChannelModal.tsx:130
+msgid "Channel created"
+msgstr ""
+
+#: frontend/src/components/feature/channel-details/edit-channel-description/EditChannelDescriptionModal.tsx:48
+msgid "Channel description"
+msgstr ""
+
+#: frontend/src/components/feature/channel-details/edit-channel-description/EditChannelDescriptionModal.tsx:34
+msgid "Channel description updated"
+msgstr ""
+
+#: frontend/src/components/feature/channels/CreateChannelModal.tsx:201
+msgid "Channel name can only contain letters, numbers and hyphens."
+msgstr ""
+
+#: frontend/src/components/feature/channels/CreateChannelModal.tsx:195
+msgid "Channel name cannot be less than {0} characters."
+msgstr ""
+
+#: frontend/src/components/feature/channels/CreateChannelModal.tsx:191
+msgid "Channel name cannot be more than {0} characters."
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_document_notification/raven_document_notification.py:80
+msgid "Channel {0} does not exist in Raven."
+msgstr ""
+
+#. Label of a Link in the Raven Workspace
+#: frontend/src/components/feature/channels/ChannelList.tsx:51
+#: raven/raven/workspace/raven/raven.json
+msgid "Channels"
+msgstr ""
+
+#: frontend/src/components/feature/channels/CreateChannelModal.tsx:171
+msgid "Channels are where your team communicates. They are best when organized around a topic - #development, for example."
+msgstr ""
+
+#. Label of the chat_style_section (Section Break) field in DocType 'Raven
+#. User'
+#: raven/raven/doctype/raven_user/raven_user.json
+msgid "Chat Layout"
+msgstr ""
+
+#. Label of the chat_style (Select) field in DocType 'Raven User'
+#: raven/raven/doctype/raven_user/raven_user.json
+msgid "Chat Style"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven Message Action
+#. Fields'
+#: raven/raven_integrations/doctype/raven_message_action_fields/raven_message_action_fields.json
+msgid "Checkbox"
+msgstr ""
+
+#. Label of the child_table_name (Data) field in DocType 'Raven AI Function
+#. Params'
+#: raven/raven_ai/doctype/raven_ai_function_params/raven_ai_function_params.json
+msgid "Child Table Name"
+msgstr ""
+
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.py:118
+msgid "Child table {0} is not a valid doctype"
+msgstr ""
+
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.py:112
+msgid "Child table {0} not found in {1}"
+msgstr ""
+
+#: frontend/src/components/feature/hr/CompanyWorkspaceMapping.tsx:28
+msgid "Choose workspaces based on companies"
+msgstr ""
+
+#. Label of the company (Data) field in DocType 'Raven HR Company Workspace'
+#: frontend/src/components/feature/hr/CompanyWorkspaceMapping.tsx:37
+#: raven/raven_integrations/doctype/raven_hr_company_workspace/raven_hr_company_workspace.json
+msgid "Company"
+msgstr ""
+
+#. Label of the company_workspace_mapping (Table) field in DocType 'Raven
+#. Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Company Workspace Mapping"
+msgstr ""
+
+#: frontend/src/components/feature/hr/CompanyWorkspaceMapping.tsx:54
+msgid "Company is required"
+msgstr ""
+
+#. Label of the conditions_on (Select) field in DocType 'Raven Webhook'
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.json
+msgid "Conditions On"
+msgstr ""
+
+#: frontend/src/pages/settings/Appearance.tsx:55
+msgid "Configure how you want the app to look."
+msgstr ""
+
+#: frontend/src/pages/settings/PushNotifications.tsx:83
+msgid "Configure the push notification service here."
+msgstr ""
+
+#: frontend/src/pages/settings/Preferences.tsx:26
+msgid "Configure your preferences."
+msgstr ""
+
+#: frontend/src/pages/settings/Integrations/FrappeHR.tsx:84
+msgid "Connect your HR system to Raven to sync employee data and send notifications."
+msgstr ""
+
+#: raven/raven_bot/doctype/raven_bot/raven_bot.py:173
+msgid "Connection to OpenAI API failed. Please check your Organization ID and API Key for any extra spaces. Error: {0}"
+msgstr ""
+
+#: frontend/src/components/feature/direct-messages/DirectMessageList.tsx:134
+msgid "Could not create channel"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function'
+#. Option for the 'Action' (Select) field in DocType 'Raven Message Action'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+#: raven/raven_integrations/doctype/raven_message_action/raven_message_action.json
+msgid "Create Document"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Create Multiple Documents"
+msgstr ""
+
+#: frontend/src/components/feature/channels/CreateChannelModal.tsx:145
+msgid "Create a private channel"
+msgstr ""
+
+#: frontend/src/components/feature/channels/CreateChannelModal.tsx:157
+msgid "Create a public channel"
+msgstr ""
+
+#: frontend/src/components/feature/channels/CreateChannelModal.tsx:151
+msgid "Create an open channel"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function'
+#. Option for the 'Action' (Select) field in DocType 'Raven Message Action'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+#: raven/raven_integrations/doctype/raven_message_action/raven_message_action.json
+msgid "Custom Function"
+msgstr ""
+
+#. Label of the custom_function_path (Small Text) field in DocType 'Raven
+#. Message Action'
+#: raven/raven_integrations/doctype/raven_message_action/raven_message_action.json
+msgid "Custom Function Path"
+msgstr ""
+
+#. Label of the custom_status (Data) field in DocType 'Raven User'
+#: frontend/src/components/feature/userSettings/UserProfile/UserProfile.tsx:160
+#: raven/raven/doctype/raven_user/raven_user.json
+msgid "Custom Status"
+msgstr ""
+
+#. Option for the 'Send to' (Select) field in DocType 'Raven Scheduler Event'
+#. Label of the dm (Link) field in DocType 'Raven Scheduler Event'
+#. Option for the 'Channel Type' (Select) field in DocType 'Raven Webhook'
+#: raven/raven_integrations/doctype/raven_scheduler_event/raven_scheduler_event.json
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.json
+msgid "DM"
+msgstr ""
+
+#. Option for the 'Event Frequency' (Select) field in DocType 'Raven Scheduler
+#. Event'
+#: raven/raven_integrations/doctype/raven_scheduler_event/raven_scheduler_event.json
+msgid "Date of the month"
+msgstr ""
+
+#. Label of the debug_mode (Check) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Debug Mode"
+msgstr ""
+
+#. Label of the default_value_type (Select) field in DocType 'Raven Message
+#. Action Fields'
+#: raven/raven_integrations/doctype/raven_message_action_fields/raven_message_action_fields.json
+msgid "Default Value Type"
+msgstr ""
+
+#. Label of the default_values_section (Section Break) field in DocType 'Raven
+#. Message Action Fields'
+#: raven/raven_integrations/doctype/raven_message_action_fields/raven_message_action_fields.json
+msgid "Default Values"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Delete Document"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Delete Multiple Documents"
+msgstr ""
+
+#. Label of the department_channel_type (Select) field in DocType 'Raven
+#. Settings'
+#: frontend/src/pages/settings/Integrations/FrappeHR.tsx:124
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Department Channel Type"
+msgstr ""
+
+#. Label of the device_information (Data) field in DocType 'Raven Push Token'
+#: raven/raven/doctype/raven_push_token/raven_push_token.json
+msgid "Device Information"
+msgstr ""
+
+#. Label of the dialog_properties_tab (Tab Break) field in DocType 'Raven
+#. Message Action'
+#: raven/raven_integrations/doctype/raven_message_action/raven_message_action.json
+msgid "Dialog Properties"
+msgstr ""
+
+#: raven/raven_messaging/doctype/raven_message/raven_message.py:166
+msgid "Direct modification of message_reactions is not allowed. Use the Reactions API."
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/PushNotifications/PushNotificationToggle.tsx:71
+msgid "Disable Notifications"
+msgstr ""
+
+#: frontend/src/pages/settings/MobileApp.tsx:35
+msgid "Do more with Raven on your mobile."
+msgstr ""
+
+#. Label of the do_not_ask_ai (Check) field in DocType 'Raven AI Function
+#. Params'
+#: raven/raven_ai/doctype/raven_ai_function_params/raven_ai_function_params.json
+msgid "Do not ask AI to fill this variable"
+msgstr ""
+
+#. Label of the do_not_attach_doc (Check) field in DocType 'Raven Document
+#. Notification'
+#: raven/raven_integrations/doctype/raven_document_notification/raven_document_notification.json
+msgid "Do not attach document with message"
+msgstr ""
+
+#. Option for the 'Availability Status' (Select) field in DocType 'Raven User'
+#: frontend/src/components/feature/userSettings/AvailabilityStatus/SetUserAvailabilityMenu.tsx:68
+#: raven/raven/doctype/raven_user/raven_user.json
+msgid "Do not disturb"
+msgstr ""
+
+#. Label of a Card Break in the Raven Workspace
+#: raven/raven/workspace/raven/raven.json
+msgid "DocTypes"
+msgstr ""
+
+#. Label of a Link in the Raven Workspace
+#: raven/raven/workspace/raven/raven.json
+msgid "Document Notifications"
+msgstr ""
+
+#. Label of the document_parsing_tab (Tab Break) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Document Parsing"
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_message_action/raven_message_action.py:44
+msgid "Document Type is required."
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/UploadImage/FileUploadBox.tsx:96
+msgid "Drag and drop your file here or"
+msgstr ""
+
+#. Label of the dynamic_instructions (Check) field in DocType 'Raven Bot
+#. Instruction Template'
+#. Label of the dynamic_instructions (Check) field in DocType 'Raven Bot'
+#: raven/raven_ai/doctype/raven_bot_instruction_template/raven_bot_instruction_template.json
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Dynamic Instructions"
+msgstr ""
+
+#. Description of the 'Dynamic Instructions' (Check) field in DocType 'Raven
+#. Bot Instruction Template'
+#. Description of the 'Dynamic Instructions' (Check) field in DocType 'Raven
+#. Bot'
+#: raven/raven_ai/doctype/raven_bot_instruction_template/raven_bot_instruction_template.json
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Dynamic Instructions allow you to embed Jinja tags in your instruction to the bot. Hence the instruction would be different based on the user who is calling the bot or the data in your system. These instructions are computed every time the bot is called. Check this if you want to embed things like Employee ID, Company Name etc in your instructions dynamically"
+msgstr ""
+
+#: frontend/src/components/feature/channel-details/edit-channel-description/EditChannelDescriptionModal.tsx:43
+msgid "Edit description"
+msgstr ""
+
+#. Label of the emoji_name (Data) field in DocType 'Raven Custom Emoji'
+#: raven/raven_messaging/doctype/raven_custom_emoji/raven_custom_emoji.json
+msgid "Emoji Name"
+msgstr ""
+
+#. Label of the enable_ai_integration (Check) field in DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Enable AI Integration"
+msgstr ""
+
+#. Label of the enable_code_interpreter (Check) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Enable Code Interpreter"
+msgstr ""
+
+#. Label of the enable_file_search (Check) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Enable File Search"
+msgstr ""
+
+#. Label of the enable_google_apis (Check) field in DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Enable Google APIs"
+msgstr ""
+
+#. Label of the enable_local_llm (Check) field in DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Enable Local LLM"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/PushNotifications/PushNotificationToggle.tsx:71
+msgid "Enable Notifications"
+msgstr ""
+
+#. Label of the enable_openai_services (Check) field in DocType 'Raven
+#. Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Enable OpenAI Services"
+msgstr ""
+
+#. Label of the enable_video_calling_via_livekit (Check) field in DocType
+#. 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Enable Video Calling via LiveKit"
+msgstr ""
+
+#. Description of the 'Enable File Search' (Check) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid ""
+"Enable this if you want the bot to be able to read PDF files and scan them.\n"
+"\n"
+"File search enables the assistant with knowledge from files that you upload. Once a file is uploaded, the assistant automatically decides when to retrieve content based on user requests."
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/PushNotifications/PushNotificationToggle.tsx:59
+msgid "Enabling..."
+msgstr ""
+
+#. Label of the environment (Select) field in DocType 'Raven Push Token'
+#: raven/raven/doctype/raven_push_token/raven_push_token.json
+msgid "Environment"
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_document_notification/raven_document_notification.py:251
+#: raven/raven_integrations/doctype/raven_document_notification/raven_document_notification.py:262
+msgid "Error in Raven Notification"
+msgstr ""
+
+#: raven/api/reactions.py:61
+msgid "Error reacting to message {0}"
+msgstr ""
+
+#: raven/public/js/timeline_button.js:310
+msgid "Error sending message"
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_document_notification/raven_document_notification.py:248
+msgid "Error while evaluating Raven Notification {0}. Please fix your template."
+msgstr ""
+
+#. Option for the 'Event Frequency' (Select) field in DocType 'Raven Scheduler
+#. Event'
+#: raven/raven_integrations/doctype/raven_scheduler_event/raven_scheduler_event.json
+msgid "Every Day"
+msgstr ""
+
+#. Option for the 'Event Frequency' (Select) field in DocType 'Raven Scheduler
+#. Event'
+#: raven/raven_integrations/doctype/raven_scheduler_event/raven_scheduler_event.json
+msgid "Every Day of the week"
+msgstr ""
+
+#. Label of the fcm_token (Small Text) field in DocType 'Raven Push Token'
+#: raven/raven/doctype/raven_push_token/raven_push_token.json
+msgid "FCM Token"
+msgstr ""
+
+#: raven/ai/google_ai.py:283
+msgid "Failed to create document processor"
+msgstr ""
+
+#: raven/ai/google_ai.py:271
+msgid "Failed to create processor"
+msgstr ""
+
+#: raven/ai/google_ai.py:338
+msgid "Failed to delete document processor"
+msgstr ""
+
+#: raven/api/support_request.py:45
+msgid "Failed to submit the ticket"
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_document_notification/raven_document_notification.py:95
+msgid "Field {0} does not exist in {1}."
+msgstr ""
+
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.py:123
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.py:129
+#: raven/raven_integrations/doctype/raven_message_action/raven_message_action.py:75
+msgid "Field {0} not found in {1}"
+msgstr ""
+
+#. Label of the file_sources (Table) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "File Sources"
+msgstr ""
+
+#. Label of the file_thumbnail (Attach) field in DocType 'Raven Message'
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+msgid "File Thumbnail"
+msgstr ""
+
+#: raven/ai/functions.py:172
+msgid "File not found"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/UploadImage/FileUploadBox.tsx:37
+msgid "File size is larger than the required size."
+msgstr ""
+
+#. Description of the 'Model' (Data) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "For OpenAI: gpt-4o, gpt-4, etc. For Local LLM: use model name from /v1/models endpoint"
+msgstr ""
+
+#. Option for the 'Push Notification Service' (Select) field in DocType 'Raven
+#. Settings'
+#: frontend/src/pages/settings/PushNotifications.tsx:133
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Frappe Cloud"
+msgstr ""
+
+#. Label of the frappe_hr_tab (Tab Break) field in DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Frappe HR"
+msgstr ""
+
+#. Label of the function_definition (JSON) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Function Definition"
+msgstr ""
+
+#. Label of the function_name (Data) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Function Name"
+msgstr ""
+
+#. Label of the function_path (Small Text) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Function Path"
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_message_action/raven_message_action.py:47
+msgid "Function Path is required."
+msgstr ""
+
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.py:470
+msgid "Function name cannot be one of the core functions. Please choose a different name."
+msgstr ""
+
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.py:495
+msgid "Function not found"
+msgstr ""
+
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.py:445
+msgid "Function path is required for Custom Functions"
+msgstr ""
+
+#: raven/api/message_actions.py:92
+msgid "Function {0} not found"
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_message_action/raven_message_action.py:56
+msgid "Function {0} not found."
+msgstr ""
+
+#. Label of a Link in the Raven Workspace
+#: raven/raven/workspace/raven/raven.json
+msgid "Functions"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Get Amended Document"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Get Document"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Get List"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Get Multiple Documents"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Get Report Result"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Get Value"
+msgstr ""
+
+#. Label of an action in the Onboarding Step 'It's time. Send a Raven.'
+#. Label of an action in the Onboarding Step 'Understanding Channels'
+#: raven/raven/onboarding_step/access_the_web_app/access_the_web_app.json
+#: raven/raven/onboarding_step/introduction_to_raven/introduction_to_raven.json
+msgid "Go to Raven"
+msgstr ""
+
+#: raven/ai/google_ai.py:245 raven/ai/google_ai.py:295
+msgid "Google APIs are not enabled. Please enable them in the Raven Settings."
+msgstr ""
+
+#: raven/api/events.py:25
+msgid "Google Calendar not found for the current user"
+msgstr ""
+
+#. Label of the google_document_processor_id (Data) field in DocType 'Raven
+#. Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Google Document Processor ID"
+msgstr ""
+
+#. Label of the google_processor_location (Select) field in DocType 'Raven
+#. Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Google Processor Location"
+msgstr ""
+
+#. Label of the google_project_id (Data) field in DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Google Project ID"
+msgstr ""
+
+#. Label of the google_service_account_json_key (Password) field in DocType
+#. 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Google Service Account JSON Key"
+msgstr ""
+
+#. Label of the google_vision_and_document_ai_section (Section Break) field in
+#. DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Google Vision and Document AI"
+msgstr ""
+
+#: frontend/src/pages/settings/Integrations/FrappeHR.tsx:83
+msgid "HR"
+msgstr ""
+
+#: frontend/src/pages/settings/Integrations/FrappeHR.tsx:93
+msgid "HR is not installed on this site."
+msgstr ""
+
+#. Label of the helper_text (Data) field in DocType 'Raven Message Action
+#. Fields'
+#: raven/raven_integrations/doctype/raven_message_action_fields/raven_message_action_fields.json
+msgid "Helper Text"
+msgstr ""
+
+#. Label of the hide_link_preview (Check) field in DocType 'Raven Message'
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+msgid "Hide link preview"
+msgstr ""
+
+#. Description of the 'Raven Bot' (Link) field in DocType 'Raven Bot AI Prompt'
+#: raven/raven_ai/doctype/raven_bot_ai_prompt/raven_bot_ai_prompt.json
+msgid "If added, this prompt will only be shown when interacting with the bot"
+msgstr ""
+
+#: frontend/src/pages/settings/Integrations/FrappeHR.tsx:118
+msgid "If checked, a channel will be created for each department. Employees in the department will be synced with channel members."
+msgstr ""
+
+#. Description of the 'Automatically Create a Channel for each Department'
+#. (Check) field in DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "If checked, a channel will be created in Raven for each department and employees will be synced with Raven Users."
+msgstr ""
+
+#. Description of the 'Pass parameters as JSON' (Check) field in DocType 'Raven
+#. AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "If checked, the params will be passed as a JSON object instead of named parameters"
+msgstr ""
+
+#. Description of the 'Is Global' (Check) field in DocType 'Raven Bot AI
+#. Prompt'
+#: raven/raven_ai/doctype/raven_bot_ai_prompt/raven_bot_ai_prompt.json
+msgid "If checked, this prompt will be available to all users on Raven"
+msgstr ""
+
+#: frontend/src/pages/settings/Integrations/FrappeHR.tsx:174
+msgid "If checked, users on Raven are notified if another user is on leave."
+msgstr ""
+
+#. Description of the 'Debug Mode' (Check) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "If enabled, stack traces of errors will be sent as messages by the bot "
+msgstr ""
+
+#. Description of the 'Do not attach document with message' (Check) field in
+#. DocType 'Raven Document Notification'
+#: raven/raven_integrations/doctype/raven_document_notification/raven_document_notification.json
+msgid "If enabled, the message won't have a document preview"
+msgstr ""
+
+#. Description of the 'OpenAI Project ID' (Data) field in DocType 'Raven
+#. Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "If not set, the integration will use the default project"
+msgstr ""
+
+#. Description of the 'Only allow admins to create channels in the workspace'
+#. (Check) field in DocType 'Raven Workspace'
+#: raven/raven/doctype/raven_workspace/raven_workspace.json
+msgid "If unchecked, any workspace member can create a channel"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/UploadImage/ImageUploader.tsx:37
+msgid "Image uploaded successfully."
+msgstr ""
+
+#. Label of the instruction (Long Text) field in DocType 'Raven Bot Instruction
+#. Template'
+#. Label of the instruction (Long Text) field in DocType 'Raven Bot'
+#: raven/raven_ai/doctype/raven_bot_instruction_template/raven_bot_instruction_template.json
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Instruction"
+msgstr ""
+
+#. Label of a Link in the Raven Workspace
+#: raven/raven/workspace/raven/raven.json
+msgid "Instruction Templates"
+msgstr ""
+
+#: raven/api/raven_users.py:21 raven/api/raven_users.py:50
+msgid "Insufficient permissions. Please contact your administrator."
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.py:219
+msgid "Invalid Channel Type"
+msgstr ""
+
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.py:451
+msgid "Invalid JSON in params"
+msgstr ""
+
+#: raven/raven_messaging/doctype/raven_poll_vote/raven_poll_vote.py:37
+msgid "Invalid option selected."
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_document_notification/raven_document_notification.py:147
+msgid "Invalid recipient variable type: {0}"
+msgstr ""
+
+#. Option for the 'Availability Status' (Select) field in DocType 'Raven User'
+#: frontend/src/components/feature/userSettings/AvailabilityStatus/SetUserAvailabilityMenu.tsx:70
+#: raven/raven/doctype/raven_user/raven_user.json
+msgid "Invisible"
+msgstr ""
+
+#. Label of the is_ai_bot (Check) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Is AI Bot?"
+msgstr ""
+
+#. Label of the is_ai_thread (Check) field in DocType 'Raven Channel'
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.json
+msgid "Is AI Thread"
+msgstr ""
+
+#. Label of the is_admin (Check) field in DocType 'Raven Workspace Member'
+#. Label of the is_admin (Check) field in DocType 'Raven Channel Member'
+#: raven/raven/doctype/raven_workspace_member/raven_workspace_member.json
+#: raven/raven_channel_management/doctype/raven_channel_member/raven_channel_member.json
+msgid "Is Admin"
+msgstr ""
+
+#. Label of the is_anonymous (Check) field in DocType 'Raven Poll'
+#: raven/raven_messaging/doctype/raven_poll/raven_poll.json
+msgid "Is Anonymous"
+msgstr ""
+
+#. Label of the is_archived (Check) field in DocType 'Raven Channel'
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.json
+msgid "Is Archived"
+msgstr ""
+
+#. Label of the is_bot_message (Check) field in DocType 'Raven Message'
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+msgid "Is Bot Message"
+msgstr ""
+
+#. Label of the is_dm_thread (Check) field in DocType 'Raven Channel'
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.json
+msgid "Is DM Thread"
+msgstr ""
+
+#. Label of the is_direct_message (Check) field in DocType 'Raven Channel'
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.json
+msgid "Is Direct Message"
+msgstr ""
+
+#. Label of the is_disabled (Check) field in DocType 'Raven Poll'
+#: raven/raven_messaging/doctype/raven_poll/raven_poll.json
+msgid "Is Disabled"
+msgstr ""
+
+#. Label of the is_edited (Check) field in DocType 'Raven Message'
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+msgid "Is Edited"
+msgstr ""
+
+#. Label of the is_forwarded (Check) field in DocType 'Raven Message'
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+msgid "Is Forwarded"
+msgstr ""
+
+#. Label of the is_multi_choice (Check) field in DocType 'Raven Poll'
+#: raven/raven_messaging/doctype/raven_poll/raven_poll.json
+msgid "Is Multi Choice"
+msgstr ""
+
+#. Label of the is_reply (Check) field in DocType 'Raven Message'
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+msgid "Is Reply"
+msgstr ""
+
+#. Label of the is_required (Check) field in DocType 'Raven Message Action
+#. Fields'
+#: raven/raven_integrations/doctype/raven_message_action_fields/raven_message_action_fields.json
+msgid "Is Required?"
+msgstr ""
+
+#. Label of the is_self_message (Check) field in DocType 'Raven Channel'
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.json
+msgid "Is Self Message"
+msgstr ""
+
+#. Label of the is_synced (Check) field in DocType 'Raven Channel'
+#. Label of the is_synced (Check) field in DocType 'Raven Channel Member'
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.json
+#: raven/raven_channel_management/doctype/raven_channel_member/raven_channel_member.json
+msgid "Is Synced"
+msgstr ""
+
+#. Label of the is_thread (Check) field in DocType 'Raven Channel'
+#. Label of the is_thread (Check) field in DocType 'Raven Message'
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.json
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+msgid "Is Thread"
+msgstr ""
+
+#. Title of an Onboarding Step
+#: raven/raven/onboarding_step/access_the_web_app/access_the_web_app.json
+msgid "It's time. Send a Raven."
+msgstr ""
+
+#. Label of the keywords (Data) field in DocType 'Raven Custom Emoji'
+#: raven/raven_messaging/doctype/raven_custom_emoji/raven_custom_emoji.json
+msgid "Keywords"
+msgstr ""
+
+#. Option for the 'Local LLM Provider' (Select) field in DocType 'Raven
+#. Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "LM Studio"
+msgstr ""
+
+#. Label of the last_mention_viewed_on (Datetime) field in DocType 'Raven User'
+#: raven/raven/doctype/raven_user/raven_user.json
+msgid "Last Mention Viewed On"
+msgstr ""
+
+#. Label of the last_message_details (JSON) field in DocType 'Raven Channel'
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.json
+msgid "Last Message Details"
+msgstr ""
+
+#. Label of the last_message_timestamp (Datetime) field in DocType 'Raven
+#. Channel'
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.json
+msgid "Last Message Timestamp"
+msgstr ""
+
+#. Label of the last_visit (Datetime) field in DocType 'Raven Channel Member'
+#: raven/raven_channel_management/doctype/raven_channel_member/raven_channel_member.json
+msgid "Last Visit"
+msgstr ""
+
+#. Option for the 'Chat Style' (Select) field in DocType 'Raven User'
+#: raven/raven/doctype/raven_user/raven_user.json
+msgid "Left-Right"
+msgstr ""
+
+#. Title of the Module Onboarding 'Raven'
+#: raven/raven/module_onboarding/raven/raven.json
+msgid "Let's setup Raven"
+msgstr ""
+
+#. Label of the link_doctype (Link) field in DocType 'Raven Message'
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+msgid "Link Doctype"
+msgstr ""
+
+#. Label of the link_document (Dynamic Link) field in DocType 'Raven Message'
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+msgid "Link Document"
+msgstr ""
+
+#. Description of the 'Company' (Data) field in DocType 'Raven HR Company
+#. Workspace'
+#: raven/raven_integrations/doctype/raven_hr_company_workspace/raven_hr_company_workspace.json
+msgid "Link to the company"
+msgstr ""
+
+#. Label of the linked_doctype (Link) field in DocType 'Raven Channel'
+#. Label of the linked_doctype (Link) field in DocType 'Raven Channel Member'
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.json
+#: raven/raven_channel_management/doctype/raven_channel_member/raven_channel_member.json
+msgid "Linked DocType"
+msgstr ""
+
+#. Label of the linked_document (Dynamic Link) field in DocType 'Raven Channel'
+#. Label of the linked_document (Dynamic Link) field in DocType 'Raven Channel
+#. Member'
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.json
+#: raven/raven_channel_management/doctype/raven_channel_member/raven_channel_member.json
+msgid "Linked Document"
+msgstr ""
+
+#: raven/raven_messaging/doctype/raven_message/raven_message.py:177
+msgid "Linked message should be in the same channel"
+msgstr ""
+
+#. Description of the 'Notification' (Data) field in DocType 'Raven Message'
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+msgid "Linked to the notification that triggered this message"
+msgstr ""
+
+#. Label of the livekit_api_key (Data) field in DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "LiveKit API Key"
+msgstr ""
+
+#. Label of the livekit_api_secret (Password) field in DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "LiveKit API Secret"
+msgstr ""
+
+#. Label of the livekit_settings_section (Section Break) field in DocType
+#. 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "LiveKit Settings"
+msgstr ""
+
+#. Label of the livekit_url (Data) field in DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "LiveKit URL"
+msgstr ""
+
+#. Option for the 'Model Provider' (Select) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Local LLM"
+msgstr ""
+
+#. Label of the local_llm_api_url (Data) field in DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Local LLM API URL"
+msgstr ""
+
+#: raven/ai/agents_integration.py:58
+msgid "Local LLM API URL is not configured in Raven Settings"
+msgstr ""
+
+#. Label of the local_llm_provider (Select) field in DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Local LLM Provider"
+msgstr ""
+
+#. Option for the 'Local LLM Provider' (Select) field in DocType 'Raven
+#. Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "LocalAI"
+msgstr ""
+
+#: frontend/src/components/layout/Sidebar/SidebarFooter.tsx:70
+msgid "Log Out"
+msgstr ""
+
+#. Label of the logo (Attach Image) field in DocType 'Raven Workspace'
+#: raven/raven/doctype/raven_workspace/raven_workspace.json
+msgid "Logo"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/UserProfile/UserProfile.tsx:83
+msgid "Manage your Raven profile"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/UploadImage/FileUploadBox.tsx:109
+msgid "Maximum file size: {0}MB"
+msgstr ""
+
+#. Label of a Link in the Raven Workspace
+#: raven/raven/workspace/raven/raven.json
+msgid "Message Actions"
+msgstr ""
+
+#. Label of the message_content_tab (Tab Break) field in DocType 'Raven
+#. Document Notification'
+#: raven/raven_integrations/doctype/raven_document_notification/raven_document_notification.json
+msgid "Message Content"
+msgstr ""
+
+#. Option for the 'Webhook Trigger' (Select) field in DocType 'Raven Webhook'
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.json
+msgid "Message Deleted"
+msgstr ""
+
+#. Option for the 'Webhook Trigger' (Select) field in DocType 'Raven Webhook'
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.json
+msgid "Message Edited"
+msgstr ""
+
+#. Option for the 'Default Value Type' (Select) field in DocType 'Raven Message
+#. Action Fields'
+#: raven/raven_integrations/doctype/raven_message_action_fields/raven_message_action_fields.json
+msgid "Message Field"
+msgstr ""
+
+#. Option for the 'Webhook Trigger' (Select) field in DocType 'Raven Webhook'
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.json
+msgid "Message Reacted On"
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.py:196
+msgid "Message Reaction cannot be triggered on Channel"
+msgstr ""
+
+#. Label of a Link in the Raven Workspace
+#. Label of the message_reactions (JSON) field in DocType 'Raven Message'
+#: raven/raven/workspace/raven/raven.json
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+msgid "Message Reactions"
+msgstr ""
+
+#: raven/api/raven_channel.py:235
+msgid "Message does not exist in this channel"
+msgstr ""
+
+#: raven/public/js/timeline_button.js:304
+msgid "Message sent"
+msgstr ""
+
+#: frontend/src/pages/settings/MobileApp.tsx:34
+msgid "Mobile App"
+msgstr ""
+
+#. Label of the model (Data) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Model"
+msgstr ""
+
+#. Label of the model_provider (Select) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Model Provider"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/UserProfile/UserProfile.tsx:113
+msgid "Name cannot be more than {0} characters."
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/UserProfile/UserProfile.tsx:115
+msgid "Name is required"
+msgstr ""
+
+#. Option for the 'Send Alert On' (Select) field in DocType 'Raven Document
+#. Notification'
+#: raven/raven_integrations/doctype/raven_document_notification/raven_document_notification.json
+msgid "New Document"
+msgstr ""
+
+#: raven/public/js/timeline_button.js:224
+msgid "No channels found"
+msgstr ""
+
+#: frontend/src/components/feature/channels/ChannelList.tsx:67
+msgid "No channels in this workspace."
+msgstr ""
+
+#. Label of the notification_name (Data) field in DocType 'Raven Document
+#. Notification'
+#: raven/raven_integrations/doctype/raven_document_notification/raven_document_notification.json
+msgid "Notification Name"
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_document_notification/raven_document_notification.py:66
+msgid "Notification for an event on {0} is not allowed."
+msgstr ""
+
+#. Option for the 'Local LLM Provider' (Select) field in DocType 'Raven
+#. Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Ollama"
+msgstr ""
+
+#. Label of the only_admins_can_create_channels (Check) field in DocType 'Raven
+#. Workspace'
+#: raven/raven/doctype/raven_workspace/raven_workspace.json
+msgid "Only allow admins to create channels in the workspace"
+msgstr ""
+
+#. Description of the 'Reasoning Effort' (Select) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Only applicable for OpenAI o-series models"
+msgstr ""
+
+#: raven/api/raven_poll.py:200
+msgid "Only the poll owner can close the poll"
+msgstr ""
+
+#: frontend/src/components/layout/Sidebar/SidebarHeader.tsx:62
+#: frontend/src/components/layout/Sidebar/SidebarHeader.tsx:83
+msgid "Open command menu"
+msgstr ""
+
+#. Option for the 'Model Provider' (Select) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "OpenAI"
+msgstr ""
+
+#. Label of the openai_api_key (Password) field in DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "OpenAI API Key"
+msgstr ""
+
+#: raven/ai/agents_integration.py:79
+msgid "OpenAI API key is not configured in Raven Settings"
+msgstr ""
+
+#. Label of the openai_assistant_id (Data) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "OpenAI Assistant ID"
+msgstr ""
+
+#. Option for the 'Local LLM Provider' (Select) field in DocType 'Raven
+#. Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "OpenAI Compatible"
+msgstr ""
+
+#. Label of the openai_compatible_api_key (Password) field in DocType 'Raven
+#. Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "OpenAI Compatible API Key"
+msgstr ""
+
+#. Label of the openai_file_id (Data) field in DocType 'Raven AI File Source'
+#: raven/raven_ai/doctype/raven_ai_file_source/raven_ai_file_source.json
+msgid "OpenAI File ID"
+msgstr ""
+
+#. Label of the openai_organisation_id (Data) field in DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "OpenAI Organisation ID"
+msgstr ""
+
+#. Label of the openai_project_id (Data) field in DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "OpenAI Project ID"
+msgstr ""
+
+#. Label of the openai_thread_id (Data) field in DocType 'Raven Channel'
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.json
+msgid "OpenAI Thread ID"
+msgstr ""
+
+#. Label of the openai_vector_store_id (Data) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "OpenAI Vector Store ID"
+msgstr ""
+
+#. Label of the option (Small Text) field in DocType 'Raven Poll Option'
+#. Label of the option (Data) field in DocType 'Raven Poll Vote'
+#: raven/raven_messaging/doctype/raven_poll_option/raven_poll_option.json
+#: raven/raven_messaging/doctype/raven_poll_vote/raven_poll_vote.json
+msgid "Option"
+msgstr ""
+
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.py:139
+msgid "Option {0} is not valid for field {1} in {2}"
+msgstr ""
+
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.py:133
+msgid "Options are required for select fields"
+msgstr ""
+
+#. Label of the parameters_section (Section Break) field in DocType 'Raven AI
+#. Function'
+#. Label of the parameters (Table) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Parameters"
+msgstr ""
+
+#. Label of the params (JSON) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Params"
+msgstr ""
+
+#. Label of the pass_parameters_as_json (Check) field in DocType 'Raven AI
+#. Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Pass parameters as JSON"
+msgstr ""
+
+#: frontend/src/components/feature/channels/ChannelList.tsx:162
+msgid "Pin"
+msgstr ""
+
+#: frontend/src/components/layout/Sidebar/PinnedChannels.tsx:45
+msgid "Pinned"
+msgstr ""
+
+#. Label of the pinned_channels_section (Section Break) field in DocType 'Raven
+#. User'
+#: raven/raven/doctype/raven_user/raven_user.json
+msgid "Pinned Channels"
+msgstr ""
+
+#. Label of the pinned_messages (Table) field in DocType 'Raven Channel'
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.json
+msgid "Pinned Messages"
+msgstr ""
+
+#. Label of the pinned_messages_string (Small Text) field in DocType 'Raven
+#. Channel'
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.json
+msgid "Pinned Messages String"
+msgstr ""
+
+#: frontend/src/components/feature/channels/CreateChannelModal.tsx:188
+msgid "Please add a channel name"
+msgstr ""
+
+#: raven/raven/doctype/raven_settings/raven_settings.py:81
+msgid "Please add the Google Service Account JSON Key"
+msgstr ""
+
+#: raven/raven/doctype/raven_settings/raven_settings.py:79
+msgid "Please enter the Google Project ID"
+msgstr ""
+
+#: raven/raven/doctype/raven_settings/raven_settings.py:68
+msgid "Please enter the Push Notification API Key"
+msgstr ""
+
+#: raven/raven/doctype/raven_settings/raven_settings.py:70
+msgid "Please enter the Push Notification API Secret"
+msgstr ""
+
+#: raven/raven/doctype/raven_settings/raven_settings.py:66
+msgid "Please enter the Push Notification Server URL"
+msgstr ""
+
+#: raven/raven/doctype/raven_settings/raven_settings.py:57
+msgid "Please map the companies to the workspace before enabling this feature."
+msgstr ""
+
+#: raven/raven_bot/doctype/raven_bot/raven_bot.py:59
+msgid "Please provide an instruction for this AI Agent."
+msgstr ""
+
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.py:96
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.py:489
+msgid "Please select a DocType for this function."
+msgstr ""
+
+#: raven/raven_bot/doctype/raven_bot/raven_bot.py:62
+msgid "Please select a Document Processor for this bot."
+msgstr ""
+
+#: raven/raven/doctype/raven_settings/raven_settings.py:83
+msgid "Please select the Google Processor Location"
+msgstr ""
+
+#. Option for the 'Message Type' (Select) field in DocType 'Raven Message'
+#. Label of the section_break_poll (Section Break) field in DocType 'Raven Poll
+#. Vote'
+#. Label of the poll_id (Link) field in DocType 'Raven Poll Vote'
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+#: raven/raven_messaging/doctype/raven_poll_vote/raven_poll_vote.json
+msgid "Poll"
+msgstr ""
+
+#. Label of the poll_id (Link) field in DocType 'Raven Message'
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+msgid "Poll ID"
+msgstr ""
+
+#: raven/raven_messaging/doctype/raven_message/raven_message.py:184
+msgid "Poll ID is mandatory for a poll message"
+msgstr ""
+
+#. Label of the section_break_poll_option (Section Break) field in DocType
+#. 'Raven Poll Option'
+#: raven/raven_messaging/doctype/raven_poll_option/raven_poll_option.json
+msgid "Poll Option"
+msgstr ""
+
+#. Label of the section_break_poll_options (Section Break) field in DocType
+#. 'Raven Poll'
+#: raven/raven_messaging/doctype/raven_poll/raven_poll.json
+msgid "Poll Options"
+msgstr ""
+
+#. Label of the section_break_poll_question (Section Break) field in DocType
+#. 'Raven Poll'
+#: raven/raven_messaging/doctype/raven_poll/raven_poll.json
+msgid "Poll Question"
+msgstr ""
+
+#. Label of the section_break_poll_settings (Section Break) field in DocType
+#. 'Raven Poll'
+#: raven/raven_messaging/doctype/raven_poll/raven_poll.json
+msgid "Poll Settings"
+msgstr ""
+
+#. Label of the section_break_poll_votes (Section Break) field in DocType
+#. 'Raven Poll'
+#: raven/raven_messaging/doctype/raven_poll/raven_poll.json
+msgid "Poll Votes"
+msgstr ""
+
+#: frontend/src/pages/settings/Preferences.tsx:25
+msgid "Preferences"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/UserProfile/UserProfile.tsx:65
+msgid "Profile update failed"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/UserProfile/UserProfile.tsx:62
+msgid "Profile updated"
+msgstr ""
+
+#. Label of the prompt (Small Text) field in DocType 'Raven Bot AI Prompt'
+#: raven/raven_ai/doctype/raven_bot_ai_prompt/raven_bot_ai_prompt.json
+msgid "Prompt"
+msgstr ""
+
+#. Label of the push_notification_api_key (Data) field in DocType 'Raven
+#. Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Push Notification API Key"
+msgstr ""
+
+#. Label of the push_notification_api_secret (Password) field in DocType 'Raven
+#. Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Push Notification API Secret"
+msgstr ""
+
+#. Label of the push_notification_server_url (Data) field in DocType 'Raven
+#. Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Push Notification Server URL"
+msgstr ""
+
+#. Label of the push_notification_service (Select) field in DocType 'Raven
+#. Settings'
+#: frontend/src/pages/settings/PushNotifications.tsx:110
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Push Notification Service"
+msgstr ""
+
+#: raven/api/notification.py:52
+msgid "Push notification service is not set to Raven Cloud."
+msgstr ""
+
+#: raven/api/notification.py:74
+msgid "Push notifications are not supported in the current framework version"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/PushNotifications/PushNotificationToggle.tsx:27
+msgid "Push notifications disabled"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/PushNotifications/PushNotificationToggle.tsx:58
+msgid "Push notifications enabled"
+msgstr ""
+
+#. Label of the question (Small Text) field in DocType 'Raven Poll'
+#: raven/raven_messaging/doctype/raven_poll/raven_poll.json
+msgid "Question"
+msgstr ""
+
+#. Option for the 'Push Notification Service' (Select) field in DocType 'Raven
+#. Settings'
+#. Name of a Workspace
+#: raven/raven/doctype/raven_settings/raven_settings.json
+#: raven/raven/workspace/raven/raven.json
+msgid "Raven"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_ai/doctype/raven_ai_bot_files/raven_ai_bot_files.json
+msgid "Raven AI Bot Files"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_ai/doctype/raven_ai_file_source/raven_ai_file_source.json
+msgid "Raven AI File Source"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Raven AI Function"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_ai/doctype/raven_ai_function_params/raven_ai_function_params.json
+msgid "Raven AI Function Params"
+msgstr ""
+
+#. Name of a role
+#: raven/raven/doctype/raven_settings/raven_settings.json
+#: raven/raven/doctype/raven_workspace/raven_workspace.json
+#: raven/raven/doctype/raven_workspace_member/raven_workspace_member.json
+#: raven/raven_ai/doctype/raven_ai_file_source/raven_ai_file_source.json
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+#: raven/raven_ai/doctype/raven_bot_ai_prompt/raven_bot_ai_prompt.json
+#: raven/raven_ai/doctype/raven_bot_instruction_template/raven_bot_instruction_template.json
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+#: raven/raven_integrations/doctype/raven_document_notification/raven_document_notification.json
+#: raven/raven_integrations/doctype/raven_incoming_webhook/raven_incoming_webhook.json
+#: raven/raven_integrations/doctype/raven_message_action/raven_message_action.json
+#: raven/raven_messaging/doctype/raven_custom_emoji/raven_custom_emoji.json
+msgid "Raven Admin"
+msgstr ""
+
+#. Label of the raven_bot (Link) field in DocType 'Raven Bot AI Prompt'
+#. Name of a DocType
+#: raven/raven_ai/doctype/raven_bot_ai_prompt/raven_bot_ai_prompt.json
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Raven Bot"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_ai/doctype/raven_bot_ai_prompt/raven_bot_ai_prompt.json
+msgid "Raven Bot AI Prompt"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_ai/doctype/raven_bot_functions/raven_bot_functions.json
+msgid "Raven Bot Functions"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_ai/doctype/raven_bot_instruction_template/raven_bot_instruction_template.json
+msgid "Raven Bot Instruction Template"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.json
+msgid "Raven Channel"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_channel_management/doctype/raven_channel_member/raven_channel_member.json
+msgid "Raven Channel Member"
+msgstr ""
+
+#: frontend/src/pages/settings/PushNotifications.tsx:130
+msgid "Raven Cloud"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_messaging/doctype/raven_custom_emoji/raven_custom_emoji.json
+msgid "Raven Custom Emoji"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_integrations/doctype/raven_document_notification/raven_document_notification.json
+msgid "Raven Document Notification"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_integrations/doctype/raven_document_notification_recipients/raven_document_notification_recipients.json
+msgid "Raven Document Notification Recipients"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_integrations/doctype/raven_hr_company_workspace/raven_hr_company_workspace.json
+msgid "Raven HR Company Workspace"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_integrations/doctype/raven_incoming_webhook/raven_incoming_webhook.json
+msgid "Raven Incoming Webhook"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_messaging/doctype/raven_mention/raven_mention.json
+msgid "Raven Mention"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+msgid "Raven Message"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_integrations/doctype/raven_message_action/raven_message_action.json
+msgid "Raven Message Action"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_integrations/doctype/raven_message_action_fields/raven_message_action_fields.json
+msgid "Raven Message Action Fields"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_messaging/doctype/raven_message_reaction/raven_message_reaction.json
+msgid "Raven Message Reaction"
+msgstr ""
+
+#. Label of the raven_mobile_tab (Tab Break) field in DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Raven Mobile"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven/doctype/raven_pinned_channels/raven_pinned_channels.json
+msgid "Raven Pinned Channels"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven/doctype/raven_pinned_messages/raven_pinned_messages.json
+msgid "Raven Pinned Messages"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_messaging/doctype/raven_poll/raven_poll.json
+msgid "Raven Poll"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_messaging/doctype/raven_poll_option/raven_poll_option.json
+msgid "Raven Poll Option"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_messaging/doctype/raven_poll_vote/raven_poll_vote.json
+msgid "Raven Poll Vote"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven/doctype/raven_push_token/raven_push_token.json
+msgid "Raven Push Token"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_integrations/doctype/raven_scheduler_event/raven_scheduler_event.json
+msgid "Raven Scheduler Event"
+msgstr ""
+
+#. Name of a DocType
+#. Label of a Link in the Raven Workspace
+#: raven/raven/doctype/raven_settings/raven_settings.json
+#: raven/raven/workspace/raven/raven.json
+msgid "Raven Settings"
+msgstr ""
+
+#. Name of a role
+#. Name of a DocType
+#. Label of the raven_user (Link) field in DocType 'Raven Bot'
+#: raven/raven/doctype/raven_push_token/raven_push_token.json
+#: raven/raven/doctype/raven_user/raven_user.json
+#: raven/raven/doctype/raven_workspace/raven_workspace.json
+#: raven/raven/doctype/raven_workspace_member/raven_workspace_member.json
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.json
+#: raven/raven_channel_management/doctype/raven_channel_member/raven_channel_member.json
+#: raven/raven_integrations/doctype/raven_message_action/raven_message_action.json
+#: raven/raven_messaging/doctype/raven_custom_emoji/raven_custom_emoji.json
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+#: raven/raven_messaging/doctype/raven_message_reaction/raven_message_reaction.json
+#: raven/raven_messaging/doctype/raven_poll/raven_poll.json
+#: raven/raven_messaging/doctype/raven_poll_vote/raven_poll_vote.json
+msgid "Raven User"
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.py:198
+msgid "Raven User cannot be triggered on Channel"
+msgstr ""
+
+#. Label of a Link in the Raven Workspace
+#: raven/raven/workspace/raven/raven.json
+msgid "Raven Users"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.json
+msgid "Raven Webhook"
+msgstr ""
+
+#. Name of a DocType
+#. Label of the raven_workspace (Link) field in DocType 'Raven HR Company
+#. Workspace'
+#: raven/raven/doctype/raven_workspace/raven_workspace.json
+#: raven/raven_integrations/doctype/raven_hr_company_workspace/raven_hr_company_workspace.json
+msgid "Raven Workspace"
+msgstr ""
+
+#. Name of a DocType
+#: raven/raven/doctype/raven_workspace_member/raven_workspace_member.json
+msgid "Raven Workspace Member"
+msgstr ""
+
+#. Success message of the Module Onboarding 'Raven'
+#: raven/raven/module_onboarding/raven/raven.json
+msgid "Raven is setup!"
+msgstr ""
+
+#. Label of the reaction (Data) field in DocType 'Raven Message Reaction'
+#: raven/raven_messaging/doctype/raven_message_reaction/raven_message_reaction.json
+msgid "Reaction"
+msgstr ""
+
+#. Label of the reaction_escaped (Data) field in DocType 'Raven Message
+#. Reaction'
+#: raven/raven_messaging/doctype/raven_message_reaction/raven_message_reaction.json
+msgid "Reaction Escaped"
+msgstr ""
+
+#. Label of the reasoning_effort (Select) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Reasoning Effort"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/UploadImage/DeleteImageModal.tsx:30
+msgid "Remove Image"
+msgstr ""
+
+#: frontend/src/components/feature/channels/ChannelList.tsx:154
+msgid "Remove Pin"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/UploadImage/DeleteImageModal.tsx:46
+msgid "Removing"
+msgstr ""
+
+#. Label of the replied_message_details (JSON) field in DocType 'Raven Message'
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+msgid "Replied Message Details"
+msgstr ""
+
+#. Label of the linked_message (Link) field in DocType 'Raven Message'
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+msgid "Replied Message ID"
+msgstr ""
+
+#. Label of the required (Check) field in DocType 'Raven AI Function Params'
+#: raven/raven_ai/doctype/raven_ai_function_params/raven_ai_function_params.json
+msgid "Required"
+msgstr ""
+
+#. Label of the requires_write_permissions (Check) field in DocType 'Raven AI
+#. Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Requires Write Permissions"
+msgstr ""
+
+#. Title of an Onboarding Step
+#: raven/raven/onboarding_step/review_raven_settings/review_raven_settings.json
+msgid "Review Settings"
+msgstr ""
+
+#. Label of a Link in the Raven Workspace
+#: raven/raven/workspace/raven/raven.json
+msgid "Saved Prompts"
+msgstr ""
+
+#. Label of the scheduler_event_id (Link) field in DocType 'Raven Scheduler
+#. Event'
+#: raven/raven_integrations/doctype/raven_scheduler_event/raven_scheduler_event.json
+msgid "Scheduler Event ID"
+msgstr ""
+
+#. Option for the 'Channel Type' (Select) field in DocType 'Raven Webhook'
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.json
+msgid "Self Message"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Send Message"
+msgstr ""
+
+#: raven/public/js/timeline_button.js:167
+#: raven/public/js/timeline_button.js:222
+#: raven/public/js/timeline_button.js:322
+msgid "Send a Raven"
+msgstr ""
+
+#. Label of the send_to (Select) field in DocType 'Raven Scheduler Event'
+#: raven/raven_integrations/doctype/raven_scheduler_event/raven_scheduler_event.json
+msgid "Send to"
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_message_action/raven_message_action.py:50
+msgid "Server Script is required."
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_message_action/raven_message_action.py:64
+msgid "Server Script must be of type API."
+msgstr ""
+
+#: raven/api/message_actions.py:97
+msgid "Server Script {0} is disabled"
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_message_action/raven_message_action.py:66
+msgid "Server Script {0} is disabled."
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/UserProfile/UserProfile.tsx:133
+msgid "Set Availability"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/CustomStatus/SetCustomStatusContent.tsx:46
+msgid "Set a custom status"
+msgstr ""
+
+#: frontend/src/components/layout/Sidebar/SidebarFooter.tsx:65
+msgid "Set custom status"
+msgstr ""
+
+#: frontend/src/pages/settings/Integrations/FrappeHR.tsx:55
+msgid "Settings updated"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/UserProfile/UserProfile.tsx:161
+msgid "Share what you are up to"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/CustomStatus/SetCustomStatusContent.tsx:53
+msgid "Share what you're up to"
+msgstr ""
+
+#. Label of the show_raven_on_desk (Check) field in DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Show Raven on Desk"
+msgstr ""
+
+#. Label of the show_if_a_user_is_on_leave (Check) field in DocType 'Raven
+#. Settings'
+#: frontend/src/pages/settings/Integrations/FrappeHR.tsx:170
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Show if a user is on leave"
+msgstr ""
+
+#. Description of the 'Title' (Data) field in DocType 'Raven Message Action'
+#: raven/raven_integrations/doctype/raven_message_action/raven_message_action.json
+msgid "Shown on the dialog"
+msgstr ""
+
+#. Option for the 'Chat Style' (Select) field in DocType 'Raven User'
+#: raven/raven/doctype/raven_user/raven_user.json
+msgid "Simple"
+msgstr ""
+
+#. Subtitle of the Module Onboarding 'Raven'
+#: raven/raven/module_onboarding/raven/raven.json
+msgid "Simple, work messaging tool"
+msgstr ""
+
+#. Option for the 'Variable Type' (Select) field in DocType 'Raven Document
+#. Notification Recipients'
+#. Option for the 'Default Value Type' (Select) field in DocType 'Raven Message
+#. Action Fields'
+#: raven/raven_integrations/doctype/raven_document_notification_recipients/raven_document_notification_recipients.json
+#: raven/raven_integrations/doctype/raven_message_action_fields/raven_message_action_fields.json
+msgid "Static"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/CustomStatus/SetCustomStatusContent.tsx:64
+msgid "Status cannot be more than {0} characters."
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/UserProfile/UserProfile.tsx:172
+msgid "Status cannot be more than {} characters."
+msgstr ""
+
+#. Label of the strict (Check) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Strict"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Submit Document"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/UploadImage/FileUploadBox.tsx:81
+msgctxt ".jpg"
+msgid "Supported formats: {0}, {1}, {2}"
+msgstr ""
+
+#. Label of the temperature (Float) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Temperature"
+msgstr ""
+
+#. Label of the template_name (Data) field in DocType 'Raven Bot Instruction
+#. Template'
+#: raven/raven_ai/doctype/raven_bot_instruction_template/raven_bot_instruction_template.json
+msgid "Template Name"
+msgstr ""
+
+#. Label of the tenor_api_key (Data) field in DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Tenor API Key"
+msgstr ""
+
+#: raven/raven_bot/doctype/raven_bot/raven_bot.py:239
+msgid "The code interpreter tool is not available for the model {0}, hence it has been disabled."
+msgstr ""
+
+#: raven/raven_bot/doctype/raven_bot/raven_bot.py:247
+msgid "The file search tool is not available for the model {0}, hence it has been disabled."
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/PushNotifications/PushNotificationToggle.tsx:30
+msgid "There was an error"
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_document_notification/raven_document_notification.py:56
+msgid "There was an error while evaluating the condition. Please fix your template."
+msgstr ""
+
+#: frontend/src/pages/settings/Integrations/FrappeHR.tsx:57
+msgid "There was an error."
+msgstr ""
+
+#. Description of the 'Bot' (Link) field in DocType 'Raven Scheduler Event'
+#: raven/raven_integrations/doctype/raven_scheduler_event/raven_scheduler_event.json
+msgid "This Bot will be used to send the message."
+msgstr ""
+
+#: frontend/src/components/feature/channel-details/edit-channel-description/EditChannelDescriptionModal.tsx:55
+msgid "This is how people will know what this channel is about."
+msgstr ""
+
+#. Description of the 'Is Thread' (Check) field in DocType 'Raven Message'
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+msgid "This message starts a thread"
+msgstr ""
+
+#: raven/www/raven.py:84
+msgid "This method is only meant for developer mode"
+msgstr ""
+
+#: raven/api/raven_poll.py:204
+msgid "This poll is already closed"
+msgstr ""
+
+#: raven/api/raven_poll.py:158
+msgid "This poll is anonymous. You do not have permission to access the votes."
+msgstr ""
+
+#: raven/api/raven_poll.py:100
+msgid "This poll is closed and no longer accepting votes"
+msgstr ""
+
+#: raven/api/raven_poll.py:134
+msgid "This poll is closed and you can no longer retract your vote"
+msgstr ""
+
+#: raven/raven_messaging/doctype/raven_poll_vote/raven_poll_vote.py:27
+msgid "This poll is closed."
+msgstr ""
+
+#. Label of the thread_bot (Link) field in DocType 'Raven Channel'
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.json
+msgid "Thread Bot"
+msgstr ""
+
+#. Label of the thumbnail_height (Data) field in DocType 'Raven Message'
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+msgid "Thumbnail Height"
+msgstr ""
+
+#. Label of the thumbnail_width (Data) field in DocType 'Raven Message'
+#: raven/raven_messaging/doctype/raven_message/raven_message.json
+msgid "Thumbnail Width"
+msgstr ""
+
+#: frontend/src/components/layout/Sidebar/SidebarHeader.tsx:112
+msgid "Toggle theme"
+msgstr ""
+
+#. Label of the top_p (Float) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Top P"
+msgstr ""
+
+#. Label of the total_votes (Int) field in DocType 'Raven Poll'
+#: raven/raven_messaging/doctype/raven_poll/raven_poll.json
+msgid "Total Votes"
+msgstr ""
+
+#. Label of the trigger_webhook_on_condition (Check) field in DocType 'Raven
+#. Webhook'
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.json
+msgid "Trigger Webhook on Condition"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/UploadImage/FileUploadBox.tsx:34
+msgid "Uh Oh! {0} exceeded the maximum file size required."
+msgstr ""
+
+#. Title of an Onboarding Step
+#: raven/raven/onboarding_step/introduction_to_raven/introduction_to_raven.json
+msgid "Understanding Channels"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Update Document"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function'
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.json
+msgid "Update Multiple Documents"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/AvailabilityStatus/SetUserAvailabilityMenu.tsx:22
+msgid "Updated!"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/UploadImage/UploadImageModal.tsx:68
+msgid "Uploading"
+msgstr ""
+
+#. Label of the use_google_document_parser (Check) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "Use Google Document/Vision AI to parse documents"
+msgstr ""
+
+#. Description of the 'Enable Google APIs' (Check) field in DocType 'Raven
+#. Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Useful for extracting information from documents before sending it to agents"
+msgstr ""
+
+#. Option for the 'Webhook Trigger' (Select) field in DocType 'Raven Webhook'
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.json
+msgid "User Added"
+msgstr ""
+
+#. Option for the 'Webhook Trigger' (Select) field in DocType 'Raven Webhook'
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.json
+msgid "User Deleted"
+msgstr ""
+
+#. Label of the user_status_section (Section Break) field in DocType 'Raven
+#. User'
+#: raven/raven/doctype/raven_user/raven_user.json
+msgid "User Status"
+msgstr ""
+
+#: raven/api/raven_users.py:141 raven/api/raven_users.py:144
+msgid "User has a role profile set. Please set the role to Raven User manually."
+msgstr ""
+
+#: raven/raven/doctype/raven_workspace_member/raven_workspace_member.py:32
+msgid "User is already a member of the workspace"
+msgstr ""
+
+#: raven/raven/doctype/raven_user/raven_user.py:51
+msgid "User is mandatory"
+msgstr ""
+
+#: raven/api/raven_channel_member.py:15
+msgid "User is not a member of this channel"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/CustomStatus/SetCustomStatusContent.tsx:32
+msgid "User status updated"
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_document_notification/raven_document_notification.py:74
+msgid "User {0} does not exist in Raven."
+msgstr ""
+
+#. Label of the vapid_public_key (Data) field in DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "VAPID Public Key"
+msgstr ""
+
+#. Label of the variable_type (Select) field in DocType 'Raven Document
+#. Notification Recipients'
+#: raven/raven_integrations/doctype/raven_document_notification_recipients/raven_document_notification_recipients.json
+msgid "Variable Type"
+msgstr ""
+
+#. Label of the video_calling_tab (Tab Break) field in DocType 'Raven Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "Video Calling"
+msgstr ""
+
+#. Label of an action in the Onboarding Step 'Review Settings'
+#: raven/raven/onboarding_step/review_raven_settings/review_raven_settings.json
+msgid "View Raven Settings"
+msgstr ""
+
+#: frontend/src/components/layout/Sidebar/MentionsButton.tsx:42
+msgid "View mentions"
+msgstr ""
+
+#. Label of the section_break_vote (Section Break) field in DocType 'Raven Poll
+#. Vote'
+#: raven/raven_messaging/doctype/raven_poll_vote/raven_poll_vote.json
+msgid "Vote"
+msgstr ""
+
+#. Label of the votes (Int) field in DocType 'Raven Poll Option'
+#: raven/raven_messaging/doctype/raven_poll_option/raven_poll_option.json
+msgid "Votes"
+msgstr ""
+
+#. Option for the 'Environment' (Select) field in DocType 'Raven Push Token'
+#: raven/raven/doctype/raven_push_token/raven_push_token.json
+msgid "Web"
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.py:61
+msgid "Webhook Data keys should be unique"
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.py:63
+msgid "Webhook Headers keys should be unique"
+msgstr ""
+
+#: raven/raven_integrations/doctype/raven_webhook/raven_webhook.py:53
+msgid "Webhook name already exists"
+msgstr ""
+
+#. Description of the 'Temperature' (Float) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic."
+msgstr ""
+
+#: frontend/src/components/feature/channels/CreateChannelModal.tsx:152
+msgid "When a channel is set to open, everyone is a member."
+msgstr ""
+
+#: frontend/src/components/feature/channels/CreateChannelModal.tsx:146
+msgid "When a channel is set to private, it can only be viewed or joined by invitation."
+msgstr ""
+
+#: frontend/src/components/feature/channels/CreateChannelModal.tsx:158
+msgid "When a channel is set to public, anyone can join the channel and read messages, but only members can post messages."
+msgstr ""
+
+#: frontend/src/components/feature/workspaces/AddWorkspaceForm.tsx:189
+#: frontend/src/components/feature/workspaces/WorkspaceEditForm.tsx:63
+msgid "When a workspace is set to private, it can only be viewed or joined by invitation.\\nWhen a workspace is set to public, anyone can join the workspace and view it's channels."
+msgstr ""
+
+#. Description of the 'Use Google Document/Vision AI to parse documents'
+#. (Check) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "When images or PDFs are uploaded to the agent, Raven will automatically call Google Cloud APIs to parse the document and send it's results to the agent."
+msgstr ""
+
+#. Label of a Link in the Raven Workspace
+#: raven/raven/workspace/raven/raven.json
+msgid "Workspace Members"
+msgstr ""
+
+#. Label of the workspace_name (Data) field in DocType 'Raven Workspace'
+#: raven/raven/doctype/raven_workspace/raven_workspace.json
+msgid "Workspace Name"
+msgstr ""
+
+#: frontend/src/components/feature/hr/CompanyWorkspaceMapping.tsx:102
+msgid "Workspace is required"
+msgstr ""
+
+#: raven/raven_channel_management/doctype/raven_channel_member/raven_channel_member.py:67
+msgid "You are already a member of this channel"
+msgstr ""
+
+#: raven/api/raven_channel.py:227
+msgid "You are not a member of this channel"
+msgstr ""
+
+#: raven/api/workspaces.py:67
+msgid "You are not a member of this workspace."
+msgstr ""
+
+#: raven/api/workspaces.py:145
+msgid "You are not an admin of this workspace."
+msgstr ""
+
+#: raven/raven_messaging/doctype/raven_poll_vote/raven_poll_vote.py:53
+msgid "You can only vote for yourself."
+msgstr ""
+
+#. Description of the 'Instruction' (Long Text) field in DocType 'Raven Bot
+#. Instruction Template'
+#. Description of the 'Instruction' (Long Text) field in DocType 'Raven Bot'
+#: raven/raven_ai/doctype/raven_bot_instruction_template/raven_bot_instruction_template.json
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "You can use Jinja variables here to customize the instruction to the bot at run time if dynamic instructions are enabled."
+msgstr ""
+
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.py:149
+msgid "You cannot change the name of a direct message channel"
+msgstr ""
+
+#: raven/raven/doctype/raven_workspace_member/raven_workspace_member.py:47
+#: raven/raven/doctype/raven_workspace_member/raven_workspace_member.py:73
+msgid "You cannot delete the last admin of the workspace. Please assign another user as the admin, or delete the workspace instead."
+msgstr ""
+
+#: raven/api/raven_users.py:18 raven/api/raven_users.py:47
+msgid "You do not have a <b>Raven User</b> role. Please contact your administrator to add your user profile as a <b>Raven User</b>."
+msgstr ""
+
+#: raven/api/workspaces.py:14
+msgid "You do not have access to Raven."
+msgstr ""
+
+#: raven/api/chat_stream.py:19 raven/api/chat_stream.py:123
+#: raven/api/chat_stream.py:209 raven/api/raven_poll.py:19
+msgid "You do not have permission to access this channel"
+msgstr ""
+
+#: raven/api/raven_poll.py:68 raven/api/raven_poll.py:92
+msgid "You do not have permission to access this message"
+msgstr ""
+
+#: raven/api/raven_poll.py:152
+msgid "You do not have permission to access this poll"
+msgstr ""
+
+#: raven/api/reactions.py:19
+msgid "You do not have permission to react to this message"
+msgstr ""
+
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.py:172
+msgid "You don't have permission to archive/unarchive this channel"
+msgstr ""
+
+#: raven/raven_channel_management/doctype/raven_channel_member/raven_channel_member.py:48
+#: raven/raven_channel_management/doctype/raven_channel_member/raven_channel_member.py:55
+msgid "You don't have permission to assign admins to this channel. Please ask another admin to do this."
+msgstr ""
+
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.py:189
+msgid "You don't have permission to modify this channel"
+msgstr ""
+
+#: raven/api/raven_message.py:54 raven/api/raven_message.py:242
+msgid "You don't have permission to view this channel"
+msgstr ""
+
+#: raven/raven_messaging/doctype/raven_poll_vote/raven_poll_vote.py:48
+msgid "You have already voted for this option."
+msgstr ""
+
+#: raven/api/raven_poll.py:141
+msgid "You have not voted for any option in this poll."
+msgstr ""
+
+#: frontend/src/pages/settings/MobileApp.tsx:40
+msgid "You need to be a System Manager to manage the mobile app configuration."
+msgstr ""
+
+#: frontend/src/pages/settings/PushNotifications.tsx:92
+msgid "You need to be a System Manager to manage the push notification service."
+msgstr ""
+
+#: raven/raven_ai/doctype/raven_ai_function/raven_ai_function.py:379
+msgid "You need to provide a default value for required parameters that are not asked by the AI."
+msgstr ""
+
+#: raven/raven_channel_management/doctype/raven_channel/raven_channel.py:156
+msgid "You need to specify a workspace for this channel"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function Params'
+#: raven/raven_ai/doctype/raven_ai_function_params/raven_ai_function_params.json
+msgid "boolean"
+msgstr ""
+
+#: frontend/src/components/feature/userSettings/UploadImage/FileUploadBox.tsx:99
+msgid "choose file"
+msgstr ""
+
+#. Option for the 'Google Processor Location' (Select) field in DocType 'Raven
+#. Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "eu"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function Params'
+#: raven/raven_ai/doctype/raven_ai_function_params/raven_ai_function_params.json
+msgid "float"
+msgstr ""
+
+#. Option for the 'Reasoning Effort' (Select) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "high"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function Params'
+#: raven/raven_ai/doctype/raven_ai_function_params/raven_ai_function_params.json
+msgid "integer"
+msgstr ""
+
+#. Option for the 'Reasoning Effort' (Select) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "low"
+msgstr ""
+
+#. Option for the 'Reasoning Effort' (Select) field in DocType 'Raven Bot'
+#: raven/raven_bot/doctype/raven_bot/raven_bot.json
+msgid "medium"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function Params'
+#: raven/raven_ai/doctype/raven_ai_function_params/raven_ai_function_params.json
+msgid "number"
+msgstr ""
+
+#: frontend/src/components/feature/channels/CreateChannelModal.tsx:227
+msgid "optional"
+msgstr ""
+
+#. Option for the 'Type' (Select) field in DocType 'Raven AI Function Params'
+#: raven/raven_ai/doctype/raven_ai_function_params/raven_ai_function_params.json
+msgid "string"
+msgstr ""
+
+#. Option for the 'Google Processor Location' (Select) field in DocType 'Raven
+#. Settings'
+#: raven/raven/doctype/raven_settings/raven_settings.json
+msgid "us"
+msgstr ""
+
