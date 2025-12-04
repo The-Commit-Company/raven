@@ -40,6 +40,30 @@ class RavenChannel(Document):
 		workspace: DF.Link | None
 	# end: auto-generated types
 
+	# -------------------------
+	# Helper: default workspace
+	# -------------------------
+	def _get_default_workspace(self):
+		"""
+		Return a default workspace name if available.
+
+		Priority:
+		1. A Raven Workspace doc with workspace_name == "Raven"
+		2. If exactly one Raven Workspace exists, return that
+		3. Otherwise return None
+		"""
+		# Try explicit "Raven" workspace first (common patch name)
+		ws = frappe.db.get_value("Raven Workspace", {"workspace_name": "Raven"})
+		if ws:
+			return ws
+
+		# Next, if only one workspace exists, return it
+		ws_list = frappe.get_all("Raven Workspace", fields=["name"], limit_page_length=2)
+		if len(ws_list) == 1:
+			return ws_list[0].name
+
+		return None
+
 	def on_trash(self):
 		# delete all members when channel is deleted
 		frappe.db.delete("Raven Channel Member", {"channel_id": self.name})
@@ -152,8 +176,13 @@ class RavenChannel(Document):
 
 		if not self.is_dm_thread and not self.is_direct_message:
 			# If it's not a direct message channel, it needs a workspace
+			# Try to auto-assign a default workspace if available, otherwise throw validation error.
 			if not self.workspace:
-				frappe.throw(_("You need to specify a workspace for this channel"), frappe.ValidationError)
+				default_ws = self._get_default_workspace()
+				if default_ws:
+					self.workspace = default_ws
+				else:
+					frappe.throw(_("You need to specify a workspace for this channel"), frappe.ValidationError)
 
 		if old_doc and old_doc.get("is_archived") != self.is_archived:
 			if frappe.db.exists(
@@ -206,6 +235,9 @@ class RavenChannel(Document):
 		if self.is_direct_message == 0:
 			self.channel_name = self.channel_name.strip().lower().replace(" ", "-")
 
+		# If workspace is not set, and it's not a direct message / dm-thread,
+		# prefer to auto-select the workspace if exactly one exists (existing behaviour).
+		# Keep that behavior + our new default logic in validate will handle multi-workspace cases.
 		if not self.is_direct_message and not self.workspace and not self.is_dm_thread:
 			workspaces = frappe.get_all("Raven Workspace")
 			if len(workspaces) == 1:
@@ -237,8 +269,19 @@ class RavenChannel(Document):
 				channel_member.insert(ignore_permissions=True)
 
 	def autoname(self):
-		if self.is_direct_message == 0 and self.is_thread == 0:
-			# Add workspace name to the channel name
-			self.name = self.workspace + "-" + self.channel_name.strip().lower().replace(" ", "-")
-		elif self.is_thread:
+		# Ensure workspace is present at autoname time (autoname runs before validate).
+		# If missing, attempt to pick a default. If still missing, raise a clear error.
+		if not getattr(self, "is_direct_message", 0) and not getattr(self, "is_thread", 0):
+			if not getattr(self, "workspace", None):
+				default_ws = self._get_default_workspace()
+				if default_ws:
+					self.workspace = default_ws
+				else:
+					# We cannot safely build a name without a workspace.
+					frappe.throw(_("Workspace is required to generate a channel name. Please set a Workspace."))
+
+			# sanitize channel_name and build the name
+			name_component = (self.channel_name or "").strip().lower().replace(" ", "-")
+			self.name = f"{self.workspace}-{name_component}"
+		elif getattr(self, "is_thread", 0):
 			self.name = self.channel_name

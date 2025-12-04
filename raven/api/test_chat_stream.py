@@ -1,7 +1,8 @@
 import datetime
 
 import frappe
-from frappe.tests import IntegrationTestCase
+#from frappe.tests import IntegrationTestCase
+from frappe.tests.utils import FrappeTestCase as IntegrationTestCase
 
 from raven.api.chat_stream import get_messages, get_newer_messages, get_older_messages
 
