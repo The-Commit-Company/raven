@@ -6,12 +6,17 @@ import {
 import AppHeader from "@components/features/header/AppHeader"
 import { Outlet, useLocation } from "react-router-dom"
 import React, { useState } from "react"
+import { useLoadUsers } from "@hooks/useLoadUsers"
 
 const MainPage = () => {
 
     const location = useLocation()
     const isSearchPage = location.pathname === "/search"
     const [searchValue, setSearchValue] = useState("")
+
+    const isReady = useLoadUsers()
+    // TODO: Add a loading state
+    if (!isReady) return <div>Loading users...</div>
 
     return (
         <div className="flex flex-col h-screen">

@@ -63,7 +63,6 @@ function App() {
 const CACHE_KEYS = [
   "raven.api.login.get_context",
   "workspaces_list",
-  "raven.api.raven_users.get_list",
   "channel_list",
 ]
 
