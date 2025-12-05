@@ -21,6 +21,7 @@ export default defineConfig({
       "@components": path.resolve(__dirname, "./src/components"),
       "@hooks": path.resolve(__dirname, "./src/hooks"),
       "@pages": path.resolve(__dirname, "./src/pages"),
+      "@utils": path.resolve(__dirname, "./src/utils"),
       "@assets": path.resolve(__dirname, "./src/assets"),
       "@raven/types": path.resolve(__dirname, "../../packages/types"),
       "@raven/lib": path.resolve(__dirname, "../../packages/lib"),

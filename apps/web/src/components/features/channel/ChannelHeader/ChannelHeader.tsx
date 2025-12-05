@@ -5,13 +5,37 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
 import { FileText, Headset, Info, Link, MessageSquareText, Pin, Star } from "lucide-react"
 import ChannelMembers from "./ChannelMembers"
 import ChannelMenu from "./ChannelMenu"
+import { useAtom, useSetAtom } from "jotai"
+import { channelDrawerAtom } from "@utils/channelAtoms"
+import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
 
-interface ChannelHeaderProps {
-    onOpenSettings: () => void,
-    onOpenMembers: () => void
-}
+const ChannelHeader = () => {
 
-const ChannelHeader = ({ onOpenSettings, onOpenMembers }: ChannelHeaderProps) => {
+    const channelID = useCurrentChannelID()
+
+    const setDrawerType = useSetAtom(channelDrawerAtom(channelID))
+
+
+    const onOpenMembers = () => {
+        setDrawerType('members')
+    }
+
+    const onOpenFiles = () => {
+        setDrawerType('files')
+    }
+
+    const onOpenLinks = () => {
+        setDrawerType('links')
+    }
+
+    const onOpenThreads = () => {
+        setDrawerType('threads')
+    }
+
+    const onOpenPins = () => {
+        setDrawerType('pins')
+    }
+
     return (
         <div className="sticky top-(--app-header-height) flex items-center justify-between border-b bg-background py-1.5 px-2">
             {/* Left side */}
@@ -37,11 +61,11 @@ const ChannelHeader = ({ onOpenSettings, onOpenMembers }: ChannelHeaderProps) =>
                         </TooltipContent>
                     </Tooltip>
 
-                    <ChannelMenu onOpenSettings={onOpenSettings} onOpenMembers={onOpenMembers} />
+                    <ChannelMenu />
 
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onOpenFiles}>
                                 <FileText className="h-3 w-3 text-foreground/80" />
                                 <span className="sr-only">Files</span>
                             </Button>
@@ -52,7 +76,7 @@ const ChannelHeader = ({ onOpenSettings, onOpenMembers }: ChannelHeaderProps) =>
                     </Tooltip>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onOpenLinks}>
                                 <Link className="h-3 w-3 text-foreground/80" />
                                 <span className="sr-only">Links</span>
                             </Button>
@@ -63,7 +87,7 @@ const ChannelHeader = ({ onOpenSettings, onOpenMembers }: ChannelHeaderProps) =>
                     </Tooltip>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onOpenThreads}>
                                 <MessageSquareText className="h-3 w-3 text-foreground/80" />
                                 <span className="sr-only">Threads</span>
                             </Button>
@@ -74,7 +98,7 @@ const ChannelHeader = ({ onOpenSettings, onOpenMembers }: ChannelHeaderProps) =>
                     </Tooltip>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="default" className="h-8 gap-2">
+                            <Button variant="ghost" size="default" className="h-8 gap-2" onClick={onOpenPins}>
                                 <Pin className="h-3 w-3 text-foreground/80" />
                                 <span className="sr-only">Pinned</span>
                                 <span className="text-muted-foreground text-sm font-normal">3</span>
@@ -94,24 +118,40 @@ const ChannelHeader = ({ onOpenSettings, onOpenMembers }: ChannelHeaderProps) =>
                     <span className="text-sm">Start call</span>
                 </Button>
                 <ChannelMembers onClick={onOpenMembers} />
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={onOpenSettings}>
-                            <Info className="size-4" />
-                            <span className="sr-only">Channel Info</span>
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                        <p>Channel Info</p>
-                    </TooltipContent>
-                </Tooltip>
+
+                <ChannelInfoToggle />
+
             </div>
         </div>
     )
+}
+
+const ChannelInfoToggle = () => {
+
+    const channelID = useCurrentChannelID()
+
+    const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
+
+    const onOpenSettings = () => {
+        if (['info', 'files', 'links', 'threads', 'pins'].includes(drawerType)) setDrawerType('')
+        else setDrawerType('info')
+    }
+
+    return <Tooltip>
+        <TooltipTrigger asChild>
+            <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={onOpenSettings}>
+                <Info className="size-4" />
+                <span className="sr-only">Channel Info</span>
+            </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+            <p>Channel Info</p>
+        </TooltipContent>
+    </Tooltip>
 }
 
 export default ChannelHeader

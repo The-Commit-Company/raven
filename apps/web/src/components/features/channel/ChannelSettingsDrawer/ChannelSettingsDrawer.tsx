@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@components/ui/tabs';
 import { ScrollArea } from '@components/ui/scroll-area';
 import ChannelThreads from './ChannelThreads';
@@ -6,15 +5,24 @@ import ChannelFiles from './ChannelFiles';
 import ChannelPins from './ChannelPins';
 import ChannelLinks from './ChannelLinks';
 import ChannelInfo from './ChannelInfo';
+import { useAtom } from 'jotai';
+import { channelDrawerAtom } from '@utils/channelAtoms';
+import { useCurrentChannelID } from '@hooks/useCurrentChannelID';
 
 const ChannelSettingsDrawer = () => {
 
-    const [activeTab, setActiveTab] = useState('info')
+    const channelID = useCurrentChannelID()
+
+    const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
+
+    const onTabChange = (value: string) => {
+        setDrawerType(value as '' | 'files' | 'pins' | 'links' | 'threads' | 'info')
+    }
 
     return (
         <div className="flex flex-col h-full p-3 max-w-md w-[380px]">
             <ScrollArea className="flex-1">
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <Tabs value={drawerType} onValueChange={onTabChange} className="w-full">
                     <TabsList className="grid w-full grid-cols-5 gap-1 px-1 mb-2 h-8">
                         <TabsTrigger value="info" className="text-xs h-6">Info</TabsTrigger>
                         <TabsTrigger value="files" className="text-xs h-6">Files</TabsTrigger>

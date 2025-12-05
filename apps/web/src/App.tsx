@@ -12,6 +12,20 @@ import Cookies from 'js-cookie'
 import LoginPage from "@pages/auth/Login"
 import ForgotPassword from "@pages/auth/ForgotPassword"
 
+const isDesktop = window.innerWidth > 768
+
+let lastWorkspace = ""
+let lastChannel = ""
+
+try {
+  lastWorkspace = JSON.parse(localStorage.getItem('ravenLastWorkspace') ?? '""') ?? ''
+  lastChannel = JSON.parse(localStorage.getItem('ravenLastChannel') ?? '""') ?? ''
+}
+catch {
+
+}
+
+
 function App() {
 
   return (
@@ -44,7 +58,7 @@ function App() {
   )
 }
 
-/** ----- SWR Caching */
+/** ----- SWR Caching ----- */
 
 const CACHE_KEYS = [
   "raven.api.login.get_context",
