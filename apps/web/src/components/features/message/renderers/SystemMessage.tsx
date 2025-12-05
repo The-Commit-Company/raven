@@ -8,7 +8,7 @@ interface SystemMessageProps {
 const SystemMessage: React.FC<SystemMessageProps> = ({ message, time }) => {
     return (
         <div className="flex flex-row gap-3 items-baseline">
-            <span className="text-xs text-muted-foreground font-light text-left">{time}</span>
+            <span className="text-xs text-muted-foreground font-light text-left tabular-nums">{time}</span>
             <span className="text-xs text-muted-foreground font-light">{message}</span>
         </div>
     )
