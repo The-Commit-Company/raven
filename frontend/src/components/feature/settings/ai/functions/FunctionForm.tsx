@@ -25,8 +25,27 @@ const FunctionForm = ({ isEdit }: { isEdit?: boolean }) => {
     return (
         <Tabs.Root defaultValue='function_details'>
             <Tabs.List>
-                <Tabs.Trigger value='function_details'><LuSquareFunction {...ICON_PROPS} /> Details</Tabs.Trigger>
-                <Tabs.Trigger value='variables' disabled={in_list(["Get Document", "Get Multiple Documents", "Delete Document", "Delete Multiple Documents", "Attach File to Document", "Submit Document", "Cancel Document", "Get Amended Document"], type)}><LuVariable {...ICON_PROPS} /> Variables</Tabs.Trigger>
+                <Tabs.Trigger value='function_details'>
+                    <LuSquareFunction {...ICON_PROPS} /> Details
+                </Tabs.Trigger>
+                <Tabs.Trigger
+                    value='variables'
+                    disabled={in_list([
+                        "Get Document",
+                        "Get Multiple Documents",
+                        "Delete Document",
+                        "Delete Multiple Documents",
+                        "Attach File to Document",
+                        "Submit Document",
+                        "Cancel Document",
+                        "Get Amended Document",
+                        "Get List",
+                        "Get Value",
+                        "Set Value",
+                        "Get Report Result"
+                    ], type)}>
+                    <LuVariable {...ICON_PROPS} /> Variables
+                </Tabs.Trigger>
             </Tabs.List>
             <Stack pt='4'>
                 <AINotEnabledCallout />
