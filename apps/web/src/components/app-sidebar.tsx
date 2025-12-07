@@ -16,6 +16,7 @@ import { UserFields } from "@raven/types/common/UserFields"
 import { DMListItem } from "./common/DMListItem/DMListItem"
 import { ChannelSidebar } from "./channel-sidebar/ChannelSidebar"
 import { ChannelListItem } from "@raven/types/common/ChannelListItem"
+import { ChannelSidebarData } from "../types/ChannelGroup"
 import { erpNextData, helpdeskData, frappeSchoolData, frappeHRData } from "../data/channelSidebarData"
 
 // This is sample data
@@ -168,7 +169,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
 
     // Get channel data based on active workspace
-    const channelSidebarData = React.useMemo(() => {
+    const [channelSidebarData, setChannelSidebarData] = React.useState<ChannelSidebarData>(() => {
         switch (activeWorkspace?.name) {
             case 'ERPNext':
                 return erpNextData
@@ -180,6 +181,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 return frappeHRData
             default:
                 return erpNextData
+        }
+    })
+
+    // Update channel data when workspace changes
+    React.useEffect(() => {
+        switch (activeWorkspace?.name) {
+            case 'ERPNext':
+                setChannelSidebarData(erpNextData)
+                break
+            case 'Helpdesk':
+                setChannelSidebarData(helpdeskData)
+                break
+            case 'Frappe School':
+                setChannelSidebarData(frappeSchoolData)
+                break
+            case 'Frappe HR':
+                setChannelSidebarData(frappeHRData)
+                break
+            default:
+                setChannelSidebarData(erpNextData)
         }
     }, [activeWorkspace?.name])
 
@@ -289,6 +310,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                         data={channelSidebarData}
                                         activeChannelId={activeChannel?.name}
                                         onChannelClick={handleChannelClick}
+                                        onDataChange={setChannelSidebarData}
                                     />
                                 )}
                             </SidebarGroupContent>

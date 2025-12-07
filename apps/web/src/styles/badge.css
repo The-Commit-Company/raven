@@ -33,17 +33,3 @@
     text-align: center;
     flex-shrink: 0;
 }
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --badge-bg: theme('colors.gray.700');
-        --badge-text: theme('colors.gray.200');
-    }
-}
-
-/* Dark mode class override */
-.dark .badge-unread {
-    background-color: theme('colors.gray.700');
-    color: theme('colors.gray.200');
-}
