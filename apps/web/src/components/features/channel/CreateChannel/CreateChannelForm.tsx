@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form'
 import { Button } from '@components/ui/button'
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react'
 import {
-    DialogDescription,
     DialogHeader,
     DialogTitle,
 } from '@components/ui/dialog'
@@ -16,7 +15,6 @@ import {
     FormLabel,
     FormMessage,
 } from '@components/ui/form'
-import { Separator } from '@components/ui/separator'
 import { ChannelNameInput } from './ChannelNameInput'
 import { ChannelDescriptionInput } from './ChannelDescriptionInput'
 import { ChannelTypeSelector } from './ChannelTypeSelector'
@@ -121,11 +119,6 @@ export const CreateChannelForm = ({ onClose }: CreateChannelFormProps) => {
                     <DialogTitle className="text-xl" id={currentStep === 1 ? 'step-1-title' : 'step-2-title'}>
                         {currentStep === 1 ? header : 'Add Members'}
                     </DialogTitle>
-                    <DialogDescription className="text-sm">
-                        {currentStep === 1
-                            ? 'Channels are where your team communicates. They are best when organized around a topic - #development, for example.'
-                            : 'Invite members to your new channel. You can always add more members later.'}
-                    </DialogDescription>
                 </DialogHeader>
 
                 {/* Stepper */}
@@ -133,8 +126,6 @@ export const CreateChannelForm = ({ onClose }: CreateChannelFormProps) => {
                     <Stepper steps={STEPS} currentStep={currentStep - 1} />
                 </div>
             </div>
-
-            <Separator />
 
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0" aria-label="Create channel form">
@@ -146,7 +137,7 @@ export const CreateChannelForm = ({ onClose }: CreateChannelFormProps) => {
                         aria-label={currentStep === 1 ? 'Channel details step' : 'Add members step'}
                     >
                         {currentStep === 1 && (
-                            <div className="space-y-4 h-full overflow-y-auto px-6" role="group" aria-labelledby="step-1-title">
+                            <div className="space-y-6 h-full overflow-y-auto px-6" role="group" aria-labelledby="step-1-title">
                                 <FormField
                                     control={form.control}
                                     name="channel_name"
@@ -248,16 +239,7 @@ export const CreateChannelForm = ({ onClose }: CreateChannelFormProps) => {
                                     >
                                         Cancel
                                     </Button>
-                                    <div className="flex items-center gap-2">
-                                        <Button
-                                            type="submit"
-                                            variant="outline"
-                                            disabled={isSubmitting}
-                                            className="text-sm px-5"
-                                            aria-label="Create channel without adding members"
-                                        >
-                                            {isSubmitting ? 'Creating...' : 'Create Channel'}
-                                        </Button>
+                                    <div className="flex items-center">
                                         <Button
                                             type="button"
                                             onClick={handleNext}

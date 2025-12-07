@@ -1,4 +1,3 @@
-
 import { ChevronRight, Info } from "lucide-react"
 import { ChannelSidebarData } from "../../types/ChannelGroup"
 import { ChannelListItem } from "@raven/types/common/ChannelListItem"
@@ -24,17 +23,24 @@ import {
 } from "@components/ui/sidebar"
 import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
 import { CreateChannelButton } from "@components/features/channel/CreateChannel/CreateChannelButton"
+import { CustomizeSidebarButton } from "@components/features/channel/CustomizeSidebar/CustomizeSidebarButton"
 
 interface ChannelSidebarProps {
     data: ChannelSidebarData
     activeChannelId?: string
     onChannelClick: (channel: ChannelListItem) => void
+    onDataChange?: (data: ChannelSidebarData) => void
+    showActions?: boolean
+    showUnreadBadges?: boolean
 }
 
 export function ChannelSidebar({
     data,
     activeChannelId,
-    onChannelClick
+    onChannelClick,
+    onDataChange,
+    showActions = true,
+    showUnreadBadges = true
 }: ChannelSidebarProps) {
 
     // Calculate total unread count for a group
@@ -67,7 +73,12 @@ export function ChannelSidebar({
                         </Tooltip>
                     </TooltipProvider>
                 </div>
-                <CreateChannelButton />
+                {showActions && (
+                    <div className="flex items-center">
+                        <CustomizeSidebarButton data={data} onSave={onDataChange} />
+                        <CreateChannelButton />
+                    </div>
+                )}
             </div>
 
             <SidebarMenu>
@@ -88,7 +99,7 @@ export function ChannelSidebar({
                                     >
                                         <span>{group.name}</span>
                                         <div className="ml-auto flex items-center gap-2">
-                                            {totalUnread > 0 && (
+                                            {showUnreadBadges && totalUnread > 0 && (
                                                 <div className="badge-unread opacity-0 group-data-[state=closed]/collapsible:opacity-100 transition-opacity">
                                                     {totalUnread > 9 ? '9+' : totalUnread}
                                                 </div>
@@ -117,7 +128,7 @@ export function ChannelSidebar({
                                                             {channel.channel_name}
                                                         </span>
                                                     </div>
-                                                    {channel.last_message_details?.unread_count > 0 && (
+                                                    {showUnreadBadges && channel.last_message_details?.unread_count > 0 && (
                                                         <div className="badge-unread">
                                                             {channel.last_message_details.unread_count > 9 ? '9+' : channel.last_message_details.unread_count}
                                                         </div>
@@ -152,7 +163,7 @@ export function ChannelSidebar({
                                         {channel.channel_name}
                                     </span>
                                 </div>
-                                {channel.last_message_details?.unread_count > 0 && (
+                                {showUnreadBadges && channel.last_message_details?.unread_count > 0 && (
                                     <div className="badge-unread">
                                         {channel.last_message_details.unread_count > 9 ? '9+' : channel.last_message_details.unread_count}
                                     </div>
