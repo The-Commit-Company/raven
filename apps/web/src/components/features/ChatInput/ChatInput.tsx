@@ -1,13 +1,21 @@
 import { Input } from "@components/ui/input"
 import { InputFileList, AddFileButton } from "./InputFiles"
 import SendButton from "./SendButton"
+import { forwardRef } from "react"
 
 interface ChatInputProps {
     channelID: string
 }
-const ChatInput = ({ channelID }: ChatInputProps) => {
+const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, ref) => {
+
+    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        // const formData = new FormData(e.currentTarget)
+        // const message = formData.get('message') as string
+        // console.log(message)
+    }
     return (
-        <div className="p-2 pb-4 w-full flex flex-col gap-2">
+        <form ref={ref} onSubmit={onSubmit} className="p-2 pb-4 w-full flex flex-col gap-2">
             <InputFileList channelID={channelID} />
             <div className="flex gap-2 items-end rounded-sm w-full">
                 <div className="flex items-center justify-center">
@@ -18,8 +26,8 @@ const ChatInput = ({ channelID }: ChatInputProps) => {
                 </div>
                 <SendButton channelID={channelID} />
             </div>
-        </div>
+        </form>
     )
-}
+})
 
 export default ChatInput

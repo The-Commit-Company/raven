@@ -1,7 +1,7 @@
-import { UserFields } from "@raven/types/common/UserFields"
 import { UserAvatar } from "../UserAvatar"
 import { extractUrlsFromText, isValidUrl } from "../../../../utils/linkUtils"
 import LinkPreview, { LinkPreviewData } from "./LinkPreview"
+import { useUser } from "@hooks/useUser"
 
 const getDummyPreviewData = (): LinkPreviewData => ({
     title: "Link Preview",
@@ -10,12 +10,14 @@ const getDummyPreviewData = (): LinkPreviewData => ({
     site_name: "Website"
 })
 
-export default function TextMessage({ user, message, time, name }: {
-    user: UserFields,
+export default function TextMessage({ userID, message, time, name }: {
+    userID: string,
     message: string,
     time: string,
     name: string
 }) {
+
+    const { data: user } = useUser(userID || '')
     const urls = extractUrlsFromText(message)
 
     const firstValidUrl = urls.find(url => isValidUrl(url))
@@ -26,7 +28,7 @@ export default function TextMessage({ user, message, time, name }: {
 
     return (
         <div className="flex items-start gap-3">
-            <UserAvatar user={user} size="md" />
+            {user && <UserAvatar user={user} size="md" />}
             <div className="flex-1">
                 <div className="flex items-baseline gap-2">
                     <span className="font-medium text-sm">{user?.full_name || user?.name || "User"}</span>

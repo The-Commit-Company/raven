@@ -114,7 +114,7 @@ export const AddFileButton = ({ channelID }: { channelID: string }) => {
                     onAddFile(files)
                 }
             }} className='hidden' />
-        <Button variant="secondary" size="icon" onClick={onClick}>
+        <Button variant="secondary" size="icon" onClick={onClick} type='button'>
             <PlusIcon />
         </Button>
     </>
