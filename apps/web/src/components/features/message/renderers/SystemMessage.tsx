@@ -13,7 +13,7 @@ const SystemMessage: React.FC<SystemMessageProps> = ({ message, time }) => {
         try {
             const dateObj = getDateObject(time)
             return {
-                shortTime: dateObj.format('hh:mm A'),
+                shortTime: dateObj.format('HH:mm'),
                 longTime: dateObj.format('Do MMMM YYYY, hh:mm A'),
             }
         }
@@ -26,7 +26,7 @@ const SystemMessage: React.FC<SystemMessageProps> = ({ message, time }) => {
     }, [time])
     return (
         <div className="flex flex-row gap-3 items-baseline">
-            <Tooltip>
+            <Tooltip delayDuration={300}>
                 <TooltipTrigger>
                     <span className="text-xs text-muted-foreground font-light text-left tabular-nums">{shortTime}</span>
                 </TooltipTrigger>

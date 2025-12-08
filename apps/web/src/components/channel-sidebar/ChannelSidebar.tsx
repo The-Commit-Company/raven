@@ -54,7 +54,7 @@ export function ChannelSidebar({
         <SidebarGroup>
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                    <SidebarGroupLabel>Channels</SidebarGroupLabel>
+                    <SidebarGroupLabel className="text-muted-foreground/80">Channels</SidebarGroupLabel>
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
@@ -97,25 +97,25 @@ export function ChannelSidebar({
                                     <SidebarMenuButton
                                         tooltip={group.name}
                                     >
-                                        <span>{group.name}</span>
+                                        <ChevronRight className="w-4 h-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                        <span className="text-xs">{group.name}</span>
                                         <div className="ml-auto flex items-center gap-2">
                                             {showUnreadBadges && totalUnread > 0 && (
                                                 <div className="badge-unread opacity-0 group-data-[state=closed]/collapsible:opacity-100 transition-opacity">
                                                     {totalUnread > 9 ? '9+' : totalUnread}
                                                 </div>
                                             )}
-                                            <ChevronRight className="w-4 h-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                                         </div>
                                     </SidebarMenuButton>
                                 </CollapsibleTrigger>
                                 <CollapsibleContent>
-                                    <ul className="border-sidebar-border mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l px-2.5 py-0.5">
+                                    <ul className="border-sidebar-border ml-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l px-2 py-0.5">
                                         {group.channels.map((channel) => (
                                             <SidebarMenuSubItem key={channel.name}>
                                                 <button
                                                     onClick={() => onChannelClick(channel)}
                                                     className={cn(
-                                                        "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 w-full",
+                                                        "text-sidebar-foreground ml-2 ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 w-full",
                                                         activeChannelId === channel.name && "bg-sidebar-accent text-sidebar-accent-foreground"
                                                     )}
                                                 >

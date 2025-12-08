@@ -12,6 +12,7 @@ import { UserFields } from "@raven/types/common/UserFields"
 import { Message } from "@raven/types/common/Message"
 import { useMemo } from "react"
 import { formatMessages } from "@hooks/useGetMessages"
+import { MessageItem } from "./renderers/MessageItem"
 
 
 const dummyUser1 = {
@@ -734,9 +735,7 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                         <DateSeparator label={message.creation} />
                     ) : message.message_type === "System" ? (
                         <SystemMessage message={message.text ?? ''} time={message.creation} />
-                    ) : message.message_type === 'Text' ? (
-                        <TextMessage message={message.content ?? ''} userID={message.owner} time={message.creation} name={message.name} />
-                    ) : null}
+                    ) : <MessageItem message={message} />}
                 </div>
             ))}
 
