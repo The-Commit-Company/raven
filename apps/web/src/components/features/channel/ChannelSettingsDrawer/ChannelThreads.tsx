@@ -191,8 +191,8 @@ const ChannelThreads = () => {
                                 <UserAvatar
                                     user={thread.last_message_owner}
                                     size="xs"
-                                    fontSize="xs"
-                                    radius="full"
+                                    // fontSize="xs"
+                                    // radius="full"
                                     showStatusIndicator={false}
                                 />
                                 <span>{thread.last_message_owner.full_name}</span>

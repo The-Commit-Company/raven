@@ -239,8 +239,8 @@ const ChannelLinks = () => {
                                             <UserAvatar
                                                 user={link.owner}
                                                 size="xs"
-                                                fontSize="xs"
-                                                radius="full"
+                                                // fontSize="xs"
+                                                // radius="full"
                                                 showStatusIndicator={false}
                                             />
                                             <span>{link.owner.full_name}</span>
@@ -279,8 +279,8 @@ const ChannelLinks = () => {
                                         <UserAvatar
                                             user={link.owner}
                                             size="xs"
-                                            fontSize="xs"
-                                            radius="full"
+                                            // fontSize="xs"
+                                            // radius="full"
                                             showStatusIndicator={false}
                                         />
                                         <span>{link.owner.full_name}</span>
