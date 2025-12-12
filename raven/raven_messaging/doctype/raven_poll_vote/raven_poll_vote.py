@@ -69,12 +69,12 @@ def update_poll_votes(poll_id):
 	poll_vote = frappe.qb.DocType("Raven Poll Vote")
 
 	poll_votes = (
-            frappe.qb.from_(poll_vote)
-            .select(poll_vote.option, Count(poll_vote.name).as_("votes"))
-            .where(poll_vote.poll_id == poll_id)
-            .groupby(poll_vote.option)
-            .run(as_dict=True)
-        )
+		frappe.qb.from_(poll_vote)
+		.select(poll_vote.option, Count(poll_vote.name).as_("votes"))
+		.where(poll_vote.poll_id == poll_id)
+		.groupby(poll_vote.option)
+		.run(as_dict=True)
+	)
 
 	users = frappe.get_all(
 		"Raven Poll Vote", filters={"poll_id": poll_id}, group_by="user_id", fields=["user_id"]
