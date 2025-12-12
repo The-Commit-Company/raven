@@ -43,7 +43,7 @@ export const SortableChannelItem = ({
             </div>
             <ChannelIcon
                 type={channel.type || "Public"}
-                className="w-4 h-4 flex-shrink-0 text-muted-foreground"
+                className="w-4 h-4 shrink-0 text-muted-foreground"
             />
             <span className="truncate text-sm">{channel.channel_name}</span>
         </div>

@@ -4,7 +4,6 @@
   "version": "2.6.5",
   "description": "Messaging Application",
   "workspaces": [
-    "frontend",
     "apps/*",
     "packages/*"
   ],

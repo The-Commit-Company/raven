@@ -4,6 +4,7 @@ import { RavenChannel } from '@raven/types/RavenChannelManagement/RavenChannel';
 
 interface ChannelIconProps extends IconBaseProps {
     type: RavenChannel['type']
+    className?: string
 }
 
 export const ChannelIcon = ({ type, ...props }: ChannelIconProps) => {

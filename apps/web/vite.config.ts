@@ -7,13 +7,16 @@ import proxyOptions from "./proxyOptions";
 
 // https://vite.dev/config/
 export default defineConfig({
+  // @ts-ignore - plugins is not typed
   plugins: [react({
     babel: {
       plugins: [
         'babel-plugin-react-compiler'
       ]
     }
-  }), tailwindcss()],
+  }),
+  // @ts-ignore - tailwindcss is not typed
+  tailwindcss()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

@@ -34,7 +34,7 @@ function App() {
       socketPort={import.meta.env.VITE_SOCKET_PORT ? import.meta.env.VITE_SOCKET_PORT : undefined}
       swrConfig={{
         errorRetryCount: 2,
-        //@ts-expect-error - SWR config
+        // @ts-ignore - SWR config
         provider: localStorageProvider
       }}
       siteName={getSiteName()}

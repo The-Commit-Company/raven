@@ -51,7 +51,7 @@ export const SidebarPreview = ({ data }: SidebarPreviewProps) => {
                                                 >
                                                     <ChannelIcon
                                                         type={channel.type || "Public"}
-                                                        className="w-4 h-4 flex-shrink-0"
+                                                        className="w-4 h-4 shrink-0"
                                                     />
                                                     <span className="truncate">
                                                         {channel.channel_name}
@@ -71,7 +71,7 @@ export const SidebarPreview = ({ data }: SidebarPreviewProps) => {
                                 <div className="w-full flex items-center gap-2">
                                     <ChannelIcon
                                         type={channel.type || "Public"}
-                                        className="w-4 h-4 flex-shrink-0"
+                                        className="w-4 h-4 shrink-0"
                                     />
                                     <span className="truncate">{channel.channel_name}</span>
                                 </div>
