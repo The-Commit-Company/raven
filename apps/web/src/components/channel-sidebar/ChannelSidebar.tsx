@@ -115,7 +115,7 @@ export function ChannelSidebar({
                                                 <button
                                                     onClick={() => onChannelClick(channel)}
                                                     className={cn(
-                                                        "text-sidebar-foreground ml-2 ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 w-full",
+                                                        "text-sidebar-foreground ml-2 ring-sidebar-ring hover:bg-sidebar-accent/80 hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 w-full",
                                                         activeChannelId === channel.name && "bg-sidebar-accent text-sidebar-accent-foreground"
                                                     )}
                                                 >
@@ -152,7 +152,7 @@ export function ChannelSidebar({
                         >
                             <button
                                 onClick={() => onChannelClick(channel)}
-                                className="w-full"
+                                className="w-full hover:bg-sidebar-accent/80 hover:text-sidebar-accent-foreground"
                             >
                                 <div className="flex items-center gap-2 w-full">
                                     <ChannelIcon

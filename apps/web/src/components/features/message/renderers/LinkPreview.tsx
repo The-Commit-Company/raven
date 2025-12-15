@@ -43,7 +43,7 @@ const YoutubePreview = ({ href }: { href: string }) => {
 const WebLinkPreview = ({ href, data, onHide }: { href: string, data: LinkPreviewData, onHide?: () => void }) => {
     return (
         <div className="pt-2 max-w-[580px] relative group/linkpreview">
-            <div className="bg-white border border-gray-200 rounded-lg p-0 sm:p-3 hover:shadow-xs transition-shadow">
+            <div className="bg-card border border-border rounded-lg p-0 sm:p-3 hover:shadow-xs transition-shadow">
                 <a
                     href={href}
                     target="_blank"
@@ -59,10 +59,10 @@ const WebLinkPreview = ({ href, data, onHide }: { href: string, data: LinkPrevie
                     )}
                     <div className="gap-1.5 sm:p-0 py-3 px-3 flex-1">
                         <div className="sm:gap-1 gap-0.5">
-                            <div className="font-bold text-sm block text-gray-900">{data.title}</div>
-                            <div className="text-xs text-gray-600">{data.site_name}</div>
+                            <div className="font-semibold text-sm block text-card-foreground">{data.title}</div>
+                            <div className="text-xs text-muted-foreground">{data.site_name}</div>
                         </div>
-                        <p className="text-xs text-gray-700 mt-1.5 line-clamp-2">{data.description}</p>
+                        <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2">{data.description}</p>
                     </div>
                 </a>
             </div>

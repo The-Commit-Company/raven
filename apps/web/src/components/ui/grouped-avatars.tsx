@@ -12,9 +12,16 @@ interface GroupedAvatarsProps {
     max?: number
     size?: "xs" | "sm" | "md" | "lg"
     className?: string
+    borderColorClass?: string
 }
 
-export function GroupedAvatars({ users, max = 3, size = "md", className }: GroupedAvatarsProps) {
+export function GroupedAvatars({
+    users,
+    max = 3,
+    size = "md",
+    className,
+    borderColorClass = "border-background",
+}: GroupedAvatarsProps) {
 
     const totalUsers = users.length
     const visibleUsers = users.slice(0, max)
@@ -30,7 +37,14 @@ export function GroupedAvatars({ users, max = 3, size = "md", className }: Group
     return (
         <div className={cn("flex -space-x-2", className)}>
             {visibleUsers.map((user) => (
-                <Avatar key={user.id} className={cn(sizeClasses[size], "border-2 border-background ring-0 rounded-full")}>
+                <Avatar
+                    key={user.id}
+                    className={cn(
+                        sizeClasses[size],
+                        "border-2 ring-0 rounded-full",
+                        borderColorClass,
+                    )}
+                >
                     <AvatarImage src={user.image || "/placeholder.svg"} alt={user.name} />
                     <AvatarFallback>
                         {user.name
@@ -43,7 +57,13 @@ export function GroupedAvatars({ users, max = 3, size = "md", className }: Group
             ))}
 
             {remainingUsers > 0 && (
-                <Avatar className={cn(sizeClasses[size], "border-2 border-background bg-muted text-muted-foreground ring-0 rounded-full text-xs")}>
+                <Avatar
+                    className={cn(
+                        sizeClasses[size],
+                        "border-2 bg-muted text-muted-foreground ring-0 rounded-full text-xs",
+                        borderColorClass,
+                    )}
+                >
                     <AvatarFallback>{remainingUsers}+</AvatarFallback>
                 </Avatar>
             )}
