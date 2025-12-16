@@ -188,11 +188,6 @@ const MentionItem = ({ mention }: { mention: MentionObject }) => {
             className={`group block px-6 py-3 hover:bg-accent/50 transition-colors relative ${!mention.is_read ? 'bg-muted/10' : ''
                 }`}
         >
-            {/* Indicator line */}
-            {!mention.is_read && (
-                <div className="absolute left-2 top-2 bottom-2 w-1 bg-notification rounded-full" />
-            )}
-
             <div className="flex items-start gap-3">
                 <UserAvatar user={user} size="md" />
 
