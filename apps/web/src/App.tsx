@@ -1,5 +1,8 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import AppSettings from "./pages/AppSettings"
+import Profile from "./pages/settings/Profile"
+import Appearance from "./pages/settings/Appearance"
+import Preferences from "./pages/settings/Preferences"
 import Channel from "@pages/Channel"
 import Mentions from "@pages/Mentions"
 import SavedMessages from "@pages/SavedMessages"
@@ -48,7 +51,12 @@ function App() {
             <Route path="channel/:id" element={<Channel />} />
             <Route path="channel/:id/settings" element={<ChannelSettings />} />
             <Route path="mentions" element={<Mentions />} />
-            <Route path="settings" element={<AppSettings />} />
+            <Route path="settings" element={<AppSettings />}>
+              <Route index element={<Navigate to="profile" replace />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="appearance" element={<Appearance />} />
+              <Route path="preferences" element={<Preferences />} />
+            </Route>
             <Route path="saved-messages" element={<SavedMessages />} />
             <Route path="search" element={<Search />} />
           </Route>

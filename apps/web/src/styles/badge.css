@@ -1,8 +1,8 @@
 /* Badge component styles for consistent unread count badges */
 :root {
     /* Badge colors */
-    --badge-bg: theme('colors.gray.200');
-    --badge-text: theme('colors.gray.600');
+    --badge-bg: var(--muted);
+    --badge-text: var(--muted-foreground);
 
     /* Badge sizing */
     --badge-padding-x: 0.25rem;
@@ -17,7 +17,7 @@
     /* rounded */
 
     /* Badge typography */
-    --badge-font-weight: 600;
+    --badge-font-weight: 500;
     /* font-semibold */
 }
 
