@@ -43,14 +43,18 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 		return
 
 	try:
-
 		channel_members = get_channel_members(message.channel_id)
 
 		users = []
 
 		# Loop over the channel members and add the users who have subscribed to push notifications
 		for member in channel_members.values():
-			if member.get("allow_notifications"):
+			is_dm_or_dm_thread = channel_doc.is_direct_message or channel_doc.is_dm_thread
+			# if the channel is a DM or DM thread, then we should add all the users to the list
+			# by default. The allow notifications field would be used in future when we expose
+			# this setting in the UI to provide an option to the user to opt-out of push
+			# notifications for a certain DM user
+			if is_dm_or_dm_thread or member.get("allow_notifications") == 1:
 				users.append(member.get("user_id"))
 
 		if not users:
@@ -72,7 +76,9 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 		replied_users = []
 		final_users = []
 
-		# If this is a bot message, then we should not filter out the push tokens of the message owner since we need to send the notification to the owner as well (it's coming from the bot)
+		# If this is a bot message, then we should not filter out the push tokens of the
+		# message owner since we need to send the notification to the owner as well
+		# (it's coming from the bot)
 		if not message.is_bot_message:
 			# Filter out the push tokens of the message owner
 			users = [user for user in users if user != message.owner]
@@ -172,7 +178,10 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 			messages.append(
 				{
 					"users": final_users,
-					"notification": {"title": f"{message_owner}{channel_name}", "body": truncated_content},
+					"notification": {
+						"title": f"{message_owner}{channel_name}",
+						"body": truncated_content,
+					},
 					"data": data,
 					"tag": message.channel_id,
 					"click_action": url,
@@ -231,7 +240,12 @@ def send_notification_to_user(user_id, title, message, data=None, user_image_pat
 			if data.get("channel_id"):
 				link = frappe.utils.get_url() + "/raven/channel/" + data.get("channel_id", "")
 			push_notification.send_notification_to_user(
-				user_id=user_id, title=title, body=message, icon=icon_url, data=data, link=link
+				user_id=user_id,
+				title=title,
+				body=message,
+				icon=icon_url,
+				data=data,
+				link=link,
 			)
 	except ImportError:
 		# push notifications are not supported in the current framework version
@@ -262,7 +276,12 @@ def send_notification_to_topic(channel_id, title, message, data=None, user_image
 			if data.get("channel_id"):
 				link = frappe.utils.get_url() + "/raven/channel/" + data.get("channel_id", "")
 			push_notification.send_notification_to_topic(
-				topic_name=channel_id, title=title, body=message, icon=icon_url, data=data, link=link
+				topic_name=channel_id,
+				title=title,
+				body=message,
+				icon=icon_url,
+				data=data,
+				link=link,
 			)
 	except ImportError:
 		# push notifications are not supported in the current framework version
