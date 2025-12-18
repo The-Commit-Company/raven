@@ -56,6 +56,10 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
             if is_dm_or_dm_thread or member.get("allow_notifications") == 1:
                 users.append(member.get("user_id"))
 
+        frappe.log_error(
+            title="DM Debug - Users",
+            message=f"users: {users}",
+        )
         if not users:
             return
 
