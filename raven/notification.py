@@ -45,26 +45,16 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
     try:
 
         channel_members = get_channel_members(message.channel_id)
-        frappe.log_error(
-            title="DM Debug - Channel Members",
-            message=f"channel_id: {message.channel_id}, channel_members: {channel_members}",
-        )
 
         users = []
 
         # Loop over the channel members and add the users who have subscribed to push notifications
         for member in channel_members.values():
-            frappe.log_error(
-                title="DM Debug - Channel Member",
-                message=f"member: {member.get('user_id')}, allow_notifications: {member.get('allow_notifications')}",
-            )
-            if member.get("allow_notifications") == 1:
+            is_dm_or_dm_thread = channel_doc.is_direct_message or channel_doc.is_dm_thread
+            # if the channel is a DM or DM thread, then we should add all the users to the list by default
+            # the allow notifications field would be used in future when we expose this setting in the UI to provide an option to the user to opt-out of push notifications for a certain DM user
+            if is_dm_or_dm_thread or member.get("allow_notifications") == 1:
                 users.append(member.get("user_id"))
-
-        frappe.log_error(
-            title="DM Debug - Users",
-            message=f"users: {users}",
-        )
 
         if not users:
             return
