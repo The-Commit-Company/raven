@@ -4,6 +4,7 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
+from frappe.query_builder.functions import Count
 
 
 class RavenPollVote(Document):
@@ -65,11 +66,14 @@ def update_poll_votes(poll_id):
 	"""
 	poll = frappe.get_doc("Raven Poll", poll_id, for_update=True)
 	# get votes for each option
-	poll_votes = frappe.get_all(
-		"Raven Poll Vote",
-		filters={"poll_id": poll_id},
-		fields=["option", "count(name) as votes"],
-		group_by="option",
+	poll_vote = frappe.qb.DocType("Raven Poll Vote")
+
+	poll_votes = (
+		frappe.qb.from_(poll_vote)
+		.select(poll_vote.option, Count(poll_vote.name).as_("votes"))
+		.where(poll_vote.poll_id == poll_id)
+		.groupby(poll_vote.option)
+		.run(as_dict=True)
 	)
 
 	users = frappe.get_all(
@@ -86,11 +90,11 @@ def update_poll_votes(poll_id):
 				option.votes = vote.votes
 				break
 
-	for option in poll.options:
 		frappe.db.set_value(
 			"Raven Poll Option", option.name, "votes", option.votes, update_modified=False
 		)
 
 	frappe.db.set_value("Raven Poll", poll_id, "total_votes", total_votes, update_modified=False)
+	poll.total_votes = total_votes
 
 	poll.notify_update()
