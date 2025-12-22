@@ -1,5 +1,5 @@
 import { useCurrentEditor } from '@tiptap/react'
-import { BiAt, BiHash, BiSmile, BiPaperclip, BiSolidSend, BiChevronDown, BiBellOff, BiMicrophone, BiStop } from 'react-icons/bi'
+import { BiAt, BiHash, BiSmile, BiPaperclip, BiSolidSend, BiChevronDown, BiBellOff, BiMicrophone, BiCheck } from 'react-icons/bi'
 import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
 import { ToolbarFileProps } from './Tiptap'
 import { Dialog, DropdownMenu, Flex, FlexProps, IconButton, Inset, Popover, Separator } from '@radix-ui/themes'
@@ -208,15 +208,15 @@ const VoiceNoteButton = ({ fileProps }: { fileProps: ToolbarFileProps }) => {
                 <IconButton
                     size='1'
                     variant='ghost'
-                    className={isRecording ? 'text-red-500 animate-pulse' : DEFAULT_BUTTON_STYLE}
+                    className={isRecording ? 'text-accent-a11 ring-accent-a11 ring-2 ring-inset rounded-radius2' : DEFAULT_BUTTON_STYLE}
                     disabled={editor?.isEditable === false}
                     title={isRecording ? 'Stop recording' : 'Record voice message'}
                     aria-label={isRecording ? 'stop recording' : 'record voice message'}
                 >
-                    {isRecording ? <BiStop {...ICON_PROPS} /> : <BiMicrophone {...ICON_PROPS} />}
+                    {isRecording ? <BiCheck {...ICON_PROPS} /> : <BiMicrophone {...ICON_PROPS} />}
                 </IconButton>
             </Popover.Trigger>
-            <Popover.Content>
+            <Popover.Content side="top" align="center">
                 <Suspense fallback={<Loader />}>
                     <VoiceRecorder fileProps={fileProps} isRecording={isRecording} setIsRecording={setIsRecording} />
                 </Suspense>

@@ -17,7 +17,7 @@ interface VoiceRecorderProps {
 
 const VoiceRecorder = ({ fileProps, isRecording, setIsRecording }: VoiceRecorderProps) => {
     const [recordingDuration, setRecordingDuration] = useState(0)
-    const [permissionState, setPermissionState] = useState<PermissionState>('prompt')
+    const [permissionState, setPermissionState] = useState<PermissionState | null>(null)
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null)
     const audioChunksRef = useRef<Blob[]>([])
@@ -51,37 +51,45 @@ const VoiceRecorder = ({ fileProps, isRecording, setIsRecording }: VoiceRecorder
 
         isInitializingRef.current = true
 
+        // Check permission before trying to access the microphone for better UI transitions
         const permissionStatus = await navigator.permissions.query({ name: 'microphone' as PermissionName })
         setPermissionState(permissionStatus.state)
-
-        if (permissionStatus.state === 'granted') {
+        if (permissionStatus.state === 'denied') {
+            toast.error('Microphone access denied. Please check permissions.')
+            setIsRecording(false)
+            return
+        }
+        try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+            if (stream) {
+                streamRef.current = stream
+                setPermissionState('granted')
 
-            streamRef.current = stream
+                const mimeType = MediaRecorder.isTypeSupported('audio/webm')
+                    ? 'audio/webm'
+                    : 'audio/mp4'
 
-            const mimeType = MediaRecorder.isTypeSupported('audio/webm')
-                ? 'audio/webm'
-                : 'audio/mp4'
+                const mediaRecorder = new MediaRecorder(stream, { mimeType })
+                mediaRecorderRef.current = mediaRecorder
+                audioChunksRef.current = []
 
-            const mediaRecorder = new MediaRecorder(stream, { mimeType })
-            mediaRecorderRef.current = mediaRecorder
-            audioChunksRef.current = []
-
-            mediaRecorder.ondataavailable = (event) => {
-                if (event.data.size > 0) {
-                    audioChunksRef.current.push(event.data)
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunksRef.current.push(event.data)
+                    }
                 }
+
+                mediaRecorder.start(1000)
+                setRecordingDuration(0)
+
+                timerRef.current = setInterval(() => {
+                    setRecordingDuration(prev => prev + 1)
+                }, 1000)
             }
-
-            mediaRecorder.start(1000)
-            setRecordingDuration(0)
-
-            timerRef.current = setInterval(() => {
-                setRecordingDuration(prev => prev + 1)
-            }, 1000)
-
-        } else {
-            toast.error('Failed to access microphone. Please check permissions.')
+        } catch (error) {
+            if (error != 'NotAllowedError: Permission dismissed') {
+                toast.error('Microphone access denied. Please check permissions.')
+            }
             setIsRecording(false)
         }
     }, [setIsRecording])
@@ -96,7 +104,7 @@ const VoiceRecorder = ({ fileProps, isRecording, setIsRecording }: VoiceRecorder
             const mimeType = mediaRecorder.mimeType
             const audioBlob = new Blob(audioChunksRef.current, { type: mimeType })
             const extension = mimeType.includes('webm') ? 'webm' : 'm4a'
-            const fileName = `voice-note-${Date.now()}.${extension}`
+            const fileName = `voice_note_${Date.now()}.${extension}`
             const audioFile = new File([audioBlob], fileName, { type: mimeType })
 
             fileProps.addFile(audioFile)
@@ -133,38 +141,38 @@ const VoiceRecorder = ({ fileProps, isRecording, setIsRecording }: VoiceRecorder
         return `${mins}:${secs.toString().padStart(2, '0')}`
     }
 
-    if (permissionState === 'prompt') {
+    if (permissionState === 'granted') {
         return (
-            <Flex align='center' justify='center' p='4'>
-                <Spinner size='2' />
-                <Text size='2' ml='2' color='gray'>Requesting microphone access...</Text>
+            <Flex align='center' gap='4'>
+                <Flex align='center' gap='2'>
+                    <span className='h-2 w-2 rounded-full bg-red-500 animate-pulse' />
+                    <Text size='2' weight='medium' className='font-mono min-w-[40px]'>
+                        {formatDuration(recordingDuration)}
+                    </Text>
+                </Flex>
+
+                <Flex gap='2'>
+                    <Popover.Close>
+                        <IconButton
+                            size='2'
+                            variant='ghost'
+                            color='red'
+                            onClick={discardRecording}
+                            title='Discard'
+                            aria-label='discard recording'
+                        >
+                            <IoCloseCircleOutline size={16} />
+                        </IconButton>
+                    </Popover.Close>
+                </Flex>
             </Flex>
         )
     }
 
     return (
-        <Flex align='center' gap='4'>
-            <Flex align='center' gap='2'>
-                <span className='h-2 w-2 rounded-full bg-red-500 animate-pulse' />
-                <Text size='2' weight='medium' className='font-mono min-w-[40px]'>
-                    {formatDuration(recordingDuration)}
-                </Text>
-            </Flex>
-
-            <Flex gap='2'>
-                <Popover.Close>
-                    <IconButton
-                        size='2'
-                        variant='ghost'
-                        color='red'
-                        onClick={discardRecording}
-                        title='Discard'
-                        aria-label='discard recording'
-                    >
-                        <IoCloseCircleOutline size={16} />
-                    </IconButton>
-                </Popover.Close>
-            </Flex>
+        <Flex align='center' justify='center'>
+            <Spinner size='2' />
+            {permissionState === 'prompt' && <Text size='2' ml='2' color='gray' className='animate-fadein'>Waiting for microphone access...</Text>}
         </Flex>
     )
 }
