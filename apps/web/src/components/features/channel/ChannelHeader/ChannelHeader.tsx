@@ -5,7 +5,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
 import { FileText, Headset, Info, Link, MessageSquareText, Pin, Star } from "lucide-react"
 import ChannelMembers from "./ChannelMembers"
 import ChannelMenu from "./ChannelMenu"
-import { useAtom, useSetAtom } from "jotai"
+import { useAtom } from "jotai"
 import { channelDrawerAtom } from "@utils/channelAtoms"
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
 
@@ -13,11 +13,12 @@ const ChannelHeader = () => {
 
     const channelID = useCurrentChannelID()
 
-    const setDrawerType = useSetAtom(channelDrawerAtom(channelID))
+    const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
 
 
     const onOpenMembers = () => {
-        setDrawerType('members')
+        if (drawerType === 'members') setDrawerType('')
+        else setDrawerType('members')
     }
 
     const onOpenFiles = () => {
