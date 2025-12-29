@@ -49,6 +49,7 @@ function App() {
           <Route path="/" element={<MainPage />}>
             <Route index element={<Channel />} />
             <Route path="channel/:id" element={<Channel />} />
+            <Route path="channel/:id/thread/:threadID" element={<Channel />} />
             <Route path="channel/:id/settings" element={<ChannelSettings />} />
             <Route path="mentions" element={<Mentions />} />
             <Route path="settings" element={<AppSettings />}>

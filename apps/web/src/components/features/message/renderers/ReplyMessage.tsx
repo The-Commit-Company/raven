@@ -30,7 +30,7 @@ export default function ReplyMessage({
                         {repliedTo.message}
                     </div>
                 </div>
-                <div className="text-[13px] text-primary">{message}</div>
+                <div className="text-[13px] text-primary wrap-break-word">{message}</div>
             </div>
         </div>
     )

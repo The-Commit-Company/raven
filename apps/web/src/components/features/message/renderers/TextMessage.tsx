@@ -34,7 +34,7 @@ export default function TextMessage({ userID, message, time, name }: {
                     <span className="font-medium text-sm">{user?.full_name || user?.name || "User"}</span>
                     <span className="text-xs font-light text-muted-foreground/90">{time}</span>
                 </div>
-                <div className="text-[13px] text-primary">{message}</div>
+                <div className="text-[13px] text-primary wrap-break-word">{message}</div>
                 {firstValidUrl && (
                     <LinkPreview
                         href={firstValidUrl}
