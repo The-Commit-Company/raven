@@ -14,6 +14,7 @@ import { init } from 'emoji-mart'
 import Cookies from 'js-cookie'
 import LoginPage from "@pages/auth/Login"
 import ForgotPassword from "@pages/auth/ForgotPassword"
+import Threads from "@pages/Threads"
 
 const isDesktop = window.innerWidth > 768
 
@@ -49,8 +50,10 @@ function App() {
           <Route path="/" element={<MainPage />}>
             <Route index element={<Channel />} />
             <Route path="channel/:id" element={<Channel />} />
+            <Route path="channel/:id/thread/:threadID" element={<Channel />} />
             <Route path="channel/:id/settings" element={<ChannelSettings />} />
             <Route path="mentions" element={<Mentions />} />
+            <Route path="threads" element={<Threads />} />
             <Route path="settings" element={<AppSettings />}>
               <Route index element={<Navigate to="profile" replace />} />
               <Route path="profile" element={<Profile />} />

@@ -1,5 +1,5 @@
 import { Button } from "@components/ui/button";
-import { AtSignIcon, BookmarkIcon, Settings, Search } from "lucide-react";
+import { AtSignIcon, BookmarkIcon, Settings, Search, MessageSquareText } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip";
 import UserHelpMenu from "./UserHelpMenu/UserHelpMenu";
 import Recents from "./RecentlyVisitedChannels/Recents";
@@ -40,15 +40,20 @@ const AppHeader = ({ searchValue, onSearchChange }: AppHeaderProps) => {
                         label="Search"
                     />
                     <NavButton
-                        path="/mentions"
-                        icon={AtSignIcon}
-                        label="Mentions"
-                        showNotification={true}
+                        path="/threads"
+                        icon={MessageSquareText}
+                        label="Threads"
                     />
                     <NavButton
                         path="/saved-messages"
                         icon={BookmarkIcon}
                         label="Saved"
+                    />
+                    <NavButton
+                        path="/mentions"
+                        icon={AtSignIcon}
+                        label="Mentions"
+                        showNotification={true}
                     />
                     <NavButton
                         path="/settings"

@@ -991,10 +991,10 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                     message="Hi, everyone! I'd like to start this thread to discuss social media marketing strategies for our new product launch. We need to plan our approach across different platforms and create a cohesive brand presence. I've been researching our competitors and noticed they're doing really well on LinkedIn with thought leadership content."
                     time="07:40 PM"
                     threadTitle="Social Media Marketing Strategies"
-                    threadSummary="8 Messages View threads"
                     messageCount={8}
                     participants={dummyParticipants}
                     name="msg-28"
+                    threadID="thread-28"
                 />
                 <MessageReactions
                     reactions={dummyReactions5}
@@ -1150,10 +1150,10 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 message="Hey team! I wanted to start a discussion about our technical architecture for the new features. We're planning to implement real-time collaboration, and I'm thinking we should use WebSockets with a Redis pub/sub system for scalability. The current REST API approach won't handle the concurrent user load we're expecting."
                 time="10:25 AM"
                 threadTitle="Technical Architecture Discussion"
-                threadSummary="6 Messages View threads"
                 messageCount={6}
                 participants={dummyParticipants}
                 name="msg-43"
+                threadID="thread-43"
             />
 
             <TextMessage userID="tina.torres@raven.com"
@@ -1326,10 +1326,10 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 message="Team, I wanted to start a discussion about our user experience strategy for the mobile app. I've been conducting user interviews and there are some interesting patterns emerging. Users are really struggling with the onboarding flow - it's taking them an average of 8 minutes to complete, which is way too long. I think we need to rethink our approach."
                 time="11:45 AM"
                 threadTitle="Mobile UX Strategy Discussion"
-                threadSummary="7 Messages View threads"
                 messageCount={7}
                 participants={dummyParticipants}
                 name="msg-64"
+                threadID="thread-64"
             />
 
             <TextMessage userID="tina.torres@raven.com"

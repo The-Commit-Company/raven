@@ -3,13 +3,17 @@ import ChannelSettingsDrawer from '../components/features/channel/ChannelSetting
 import ChannelMembersDrawer from '../components/features/channel/ChannelMembersDrawer/ChannelMembersDrawer';
 import ChatStream from "../components/features/message/ChatStream";
 import ChatInput from '@components/features/ChatInput/ChatInput';
+import ThreadDrawer from '@components/features/message/ThreadDrawer';
 import { useAtomValue } from 'jotai';
 import { channelDrawerAtom } from '@utils/channelAtoms';
 import { useCurrentChannelID } from '@hooks/useCurrentChannelID';
 import { RefObject, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import { useScrollToBottom } from '@hooks/useScrollToBottom';
 import { useInView } from 'react-intersection-observer';
 import { useGetMessages } from '@hooks/useGetMessages';
+
+const SETTINGS_DRAWER_TYPES = ['info', 'files', 'links', 'threads', 'pins'] as const
 
 export default function Channel() {
 
@@ -77,17 +81,25 @@ const ChannelContent = ({ channelID }: { channelID: string }) => {
 }
 
 const ChannelDrawer = () => {
-
     const channelID = useCurrentChannelID()
-
+    const { threadID } = useParams<{ threadID?: string }>()
     const drawerType = useAtomValue(channelDrawerAtom(channelID))
 
-    const isDrawerOpen = drawerType !== ''
+    if (!threadID && drawerType === '') {
+        return <div className="w-0" />
+    }
+
+    const width = threadID ? 'w-1/2' : ''
 
     return (
-        <div className={`transition-all duration-300 h-full border-l bg-background shadow-lg flex flex-col ${isDrawerOpen ? 'w-[380px]' : 'w-0'}`}>
-            {['info', 'files', 'links', 'threads', 'pins'].includes(drawerType) && <ChannelSettingsDrawer />}
-            {drawerType === 'members' && <ChannelMembersDrawer />}
+        <div className={`transition-all duration-300 h-full border-l bg-background flex flex-col ${width}`}>
+            {threadID ? (
+                <ThreadDrawer />
+            ) : drawerType === 'members' ? (
+                <ChannelMembersDrawer />
+            ) : SETTINGS_DRAWER_TYPES.includes(drawerType as typeof SETTINGS_DRAWER_TYPES[number]) ? (
+                <ChannelSettingsDrawer />
+            ) : null}
         </div>
     )
 }

@@ -262,7 +262,7 @@ export default function Mentions() {
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <span className="text-md font-semibold">Mentions</span>
+                        <span className="text-md font-medium">Mentions</span>
                         {unreadCount > 0 && (
                             <div className="bg-muted text-foreground rounded px-1.5 py-0.5 text-[10px] font-semibold min-w-[18px] text-center">
                                 {unreadCount > 99 ? '99+' : unreadCount}
