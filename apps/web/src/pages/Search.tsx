@@ -288,7 +288,7 @@ export default function Search() {
                             <Separator orientation="vertical" />
                         </div>
                     </div>
-                    <span className="text-md font-semibold">Search</span>
+                    <span className="text-md font-medium">Search</span>
                 </div>
             </header>
             <div className="flex flex-1 flex-row gap-0 p-0 overflow-hidden">
