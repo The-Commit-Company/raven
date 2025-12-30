@@ -1,8 +1,7 @@
 import { Badge } from "@components/ui/badge"
-import { UserAvatar } from "@components/features/message/UserAvatar"
 import { cn } from "@lib/utils"
 import { UserFields } from "@raven/types/common/UserFields"
-import { GroupedAvatars } from "@components/ui/grouped-avatars"
+import { BaseThreadMessage } from "@components/common/BaseThreadMessage"
 
 interface ParticipantUser {
     id: string
@@ -66,48 +65,17 @@ export const ThreadPreviewBox = ({
                 </div>
             )}
 
-            {/* Author and message */}
-            {user ? (
-                <div className="flex items-start gap-3 relative z-10">
-                    <div className="shrink-0">
-                        <UserAvatar user={user} size="md" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-sm mb-1">
-                            {user.full_name || user.name || "User"}
-                        </div>
-                        <div className="text-[13px] text-foreground leading-relaxed">
-                            {messageContent || 'No content'}
-                        </div>
-                    </div>
-                </div>
-            ) : (
-                <div className="flex items-start gap-3 relative z-10">
-                    <div className="shrink-0 w-9 h-9 rounded-full bg-muted" />
-                    <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-sm mb-1">User</div>
-                        <div className="text-[13px] text-foreground leading-relaxed">
-                            {messageContent || 'No content'}
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Participants and reply count */}
-            <div className="flex items-center gap-2 mt-3 ml-12 relative z-10">
-                {!isDirectMessage && (
-                    <>
-                        {aiUser ? (
-                            <UserAvatar user={aiUser} size="xs" showStatusIndicator={false} />
-                        ) : participants.length > 0 ? (
-                            <GroupedAvatars users={participants} max={3} size="xs" />
-                        ) : null}
-                    </>
-                )}
-                <span className="text-xs font-semibold text-primary">
-                    {replyCount} {replyCount === 1 ? 'Reply' : 'Replies'}
-                </span>
-            </div>
+            <BaseThreadMessage
+                user={user}
+                messageContent={messageContent}
+                channelName={undefined}
+                channelIcon={undefined}
+                participants={participants}
+                aiUser={aiUser}
+                isDirectMessage={isDirectMessage}
+                replyCount={replyCount}
+                showConnectorLine={false}
+            />
 
             {/* Unread badge */}
             {unreadCount > 0 && (
