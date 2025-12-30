@@ -131,7 +131,7 @@ export default function Threads() {
 
     return (
         <div className="flex flex-col">
-            <header className="sticky top-(--app-header-height) flex items-center justify-between border-b bg-background py-2 px-2">
+            <header className="sticky top-(--app-header-height) flex items-center justify-between border-b bg-background py-2 px-2 z-30">
                 {/* Left side */}
                 <div className="flex items-center gap-4">
 

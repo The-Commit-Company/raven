@@ -478,7 +478,7 @@ function ThreadPreviewBoxWrapper({
     const formattedDate = useMemo(() => {
         try {
             const dateObj = getDateObject(thread.creation)
-            return dateObj.format('Do MMMM YYYY')
+            return dateObj.format('Do MMMM YYYY, hh:mm A')
         } catch {
             return thread.creation
         }
