@@ -7,6 +7,9 @@ import { UserAvatar } from "../UserAvatar"
 import { CheckCircle } from "lucide-react"
 import { cn } from "@lib/utils"
 import { GroupedAvatars } from "@components/ui/grouped-avatars"
+import { useAtom } from "jotai"
+import { pollDrawerAtom } from "@utils/channelAtoms"
+import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
 
 export interface PollMessageProps {
     user: UserFields
@@ -30,12 +33,19 @@ const PollOptionBar = ({
     // Show a minimal bar (2%) for 0 votes
     const barWidth = percentage > 0 ? percentage : 2
     return (
-        <div className="relative flex items-center min-h-[1.25rem] rounded-md overflow-hidden group mb-1">
+        <div
+            className={cn(
+                "relative flex items-center min-h-5 rounded-md overflow-hidden group mb-1 border",
+                isCurrentUserVote
+                    ? "border-blue-500/30 bg-blue-500/3"
+                    : "border-transparent"
+            )}
+        >
             <div className="absolute top-0 left-0 h-full w-full transition-all duration-300 ease-in-out rounded-md bg-muted/60" />
             <div
                 className={cn(
-                    "absolute top-0 left-0 h-full bg-primary/10",
-                    "transition-all duration-300 ease-in-out rounded-md"
+                    "absolute top-0 left-0 h-full transition-all duration-300 ease-in-out rounded-md",
+                    isCurrentUserVote ? "bg-blue-500/10" : "bg-primary/10"
                 )}
                 style={{ width: `${barWidth}%` }}
             />
@@ -48,7 +58,7 @@ const PollOptionBar = ({
                 >
                     {option.option}
                 </span>
-                {isCurrentUserVote && <CheckCircle className="w-3 h-3" />}
+                {isCurrentUserVote && <CheckCircle className="w-3 h-3 text-muted-foreground" />}
             </div>
             <div className="relative z-10 flex items-center gap-3 pr-4">
                 {option.votes !== undefined && (
@@ -70,6 +80,17 @@ const PollOptionBar = ({
 }
 
 const PollMessage: React.FC<PollMessageProps> = ({ user, poll, currentUserVotes, time, name }) => {
+    const channelID = useCurrentChannelID()
+    const [, setPollDrawerData] = useAtom(pollDrawerAtom(channelID))
+
+    const handleOpenDrawer = () => {
+        setPollDrawerData({
+            user,
+            poll,
+            currentUserVotes,
+        })
+    }
+
     return (
         <div className="flex items-start gap-3" data-message-id={name}>
             <UserAvatar user={user} size="md" />
@@ -79,7 +100,19 @@ const PollMessage: React.FC<PollMessageProps> = ({ user, poll, currentUserVotes,
                     <span className="text-xs font-light text-muted-foreground/90">{time}</span>
                 </div>
 
-                <div className="w-full max-w-md bg-card border border-border rounded-lg p-4 shadow-xs mt-1">
+                <div
+                    className="w-full max-w-md bg-card border border-border rounded-lg p-4 shadow-xs mt-1 cursor-pointer hover:bg-muted/30 transition-colors"
+                    onClick={handleOpenDrawer}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault()
+                            handleOpenDrawer()
+                        }
+                    }}
+                    aria-label="View poll details"
+                >
                     {/* Poll Question */}
                     <div className="font-medium mb-2 text-sm w-full text-card-foreground">{poll.question}</div>
                     {/* Poll Options */}

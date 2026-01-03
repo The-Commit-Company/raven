@@ -90,11 +90,11 @@ const dummyPoll = {
             option: "The Overstory",
             votes: 5,
             voters: [
-                { id: "1", name: "Alice", image: "https://randomuser.me/api/portraits/women/1.jpg" },
-                { id: "2", name: "Bob", image: "https://randomuser.me/api/portraits/men/2.jpg" },
-                { id: "3", name: "Carol", image: "https://randomuser.me/api/portraits/women/3.jpg" },
-                { id: "4", name: "Dave", image: "https://randomuser.me/api/portraits/men/4.jpg" },
-                { id: "5", name: "Eve", image: "https://randomuser.me/api/portraits/women/5.jpg" },
+                { id: "1", name: "Alice", full_name: "Alice Smith", image: "https://randomuser.me/api/portraits/women/1.jpg" },
+                { id: "2", name: "Bob", full_name: "Bob Johnson", image: "https://randomuser.me/api/portraits/men/2.jpg" },
+                { id: "3", name: "Carol", full_name: "Carol Williams", image: "https://randomuser.me/api/portraits/women/3.jpg" },
+                { id: "4", name: "Dave", full_name: "Dave Brown", image: "https://randomuser.me/api/portraits/men/4.jpg" },
+                { id: "5", name: "Eve", full_name: "Eve Davis", image: "https://randomuser.me/api/portraits/women/5.jpg" },
             ],
         },
         {
@@ -107,8 +107,8 @@ const dummyPoll = {
             option: "The Nature Fix",
             votes: 2,
             voters: [
-                { id: "6", name: "Frank", image: "https://randomuser.me/api/portraits/men/6.jpg" },
-                { id: "7", name: "Grace", image: "https://randomuser.me/api/portraits/women/7.jpg" },
+                { id: "6", name: "Frank", full_name: "Frank Miller", image: "https://randomuser.me/api/portraits/men/6.jpg" },
+                { id: "7", name: "Grace", full_name: "Grace Wilson", image: "https://randomuser.me/api/portraits/women/7.jpg" },
             ],
         },
         {
@@ -126,6 +126,7 @@ const dummyPoll = {
     is_anonymous: 0 as 0 | 1,
     is_multi_choice: 0 as 0 | 1,
     is_disabled: 0 as 0 | 1,
+    end_date: "2024-12-31 23:59:59",
     total_votes: 7,
 }
 
@@ -150,14 +151,14 @@ const dummyPoll2 = {
             option: "TypeScript",
             votes: 8,
             voters: [
-                { id: "1", name: "Alice", image: "https://randomuser.me/api/portraits/women/1.jpg" },
-                { id: "2", name: "Bob", image: "https://randomuser.me/api/portraits/men/2.jpg" },
-                { id: "3", name: "Carol", image: "https://randomuser.me/api/portraits/women/3.jpg" },
-                { id: "4", name: "Dave", image: "https://randomuser.me/api/portraits/men/4.jpg" },
-                { id: "5", name: "Eve", image: "https://randomuser.me/api/portraits/women/5.jpg" },
-                { id: "6", name: "Frank", image: "https://randomuser.me/api/portraits/men/6.jpg" },
-                { id: "7", name: "Grace", image: "https://randomuser.me/api/portraits/women/7.jpg" },
-                { id: "8", name: "Henry", image: "https://randomuser.me/api/portraits/men/8.jpg" },
+                { id: "1", name: "Alice", full_name: "Alice Smith", image: "https://randomuser.me/api/portraits/women/1.jpg" },
+                { id: "2", name: "Bob", full_name: "Bob Johnson", image: "https://randomuser.me/api/portraits/men/2.jpg" },
+                { id: "3", name: "Carol", full_name: "Carol Williams", image: "https://randomuser.me/api/portraits/women/3.jpg" },
+                { id: "4", name: "Dave", full_name: "Dave Brown", image: "https://randomuser.me/api/portraits/men/4.jpg" },
+                { id: "5", name: "Eve", full_name: "Eve Davis", image: "https://randomuser.me/api/portraits/women/5.jpg" },
+                { id: "6", name: "Frank", full_name: "Frank Miller", image: "https://randomuser.me/api/portraits/men/6.jpg" },
+                { id: "7", name: "Grace", full_name: "Grace Wilson", image: "https://randomuser.me/api/portraits/women/7.jpg" },
+                { id: "8", name: "Henry", full_name: "Henry Moore", image: "https://randomuser.me/api/portraits/men/8.jpg" },
             ],
         },
         {
@@ -170,9 +171,9 @@ const dummyPoll2 = {
             option: "Python",
             votes: 3,
             voters: [
-                { id: "9", name: "Ivy", image: "https://randomuser.me/api/portraits/women/9.jpg" },
-                { id: "10", name: "Jack", image: "https://randomuser.me/api/portraits/men/10.jpg" },
-                { id: "11", name: "Kate", image: "https://randomuser.me/api/portraits/women/11.jpg" },
+                { id: "9", name: "Ivy", full_name: "Ivy Taylor", image: "https://randomuser.me/api/portraits/women/9.jpg" },
+                { id: "10", name: "Jack", full_name: "Jack Anderson", image: "https://randomuser.me/api/portraits/men/10.jpg" },
+                { id: "11", name: "Kate", full_name: "Kate Thomas", image: "https://randomuser.me/api/portraits/women/11.jpg" },
             ],
         },
         {
@@ -185,14 +186,15 @@ const dummyPoll2 = {
             option: "JavaScript",
             votes: 2,
             voters: [
-                { id: "12", name: "Liam", image: "https://randomuser.me/api/portraits/men/12.jpg" },
-                { id: "13", name: "Mia", image: "https://randomuser.me/api/portraits/women/13.jpg" },
+                { id: "12", name: "Liam", full_name: "Liam Jackson", image: "https://randomuser.me/api/portraits/men/12.jpg" },
+                { id: "13", name: "Mia", full_name: "Mia White", image: "https://randomuser.me/api/portraits/women/13.jpg" },
             ],
         },
     ],
     is_anonymous: 0 as 0 | 1,
     is_multi_choice: 0 as 0 | 1,
     is_disabled: 0 as 0 | 1,
+    end_date: "2025-01-15 18:00:00",
     total_votes: 13,
 }
 
@@ -217,10 +219,10 @@ const dummyPoll3 = {
             option: "Pizza",
             votes: 4,
             voters: [
-                { id: "1", name: "Alice", image: "https://randomuser.me/api/portraits/women/1.jpg" },
-                { id: "2", name: "Bob", image: "https://randomuser.me/api/portraits/men/2.jpg" },
-                { id: "3", name: "Carol", image: "https://randomuser.me/api/portraits/women/3.jpg" },
-                { id: "4", name: "Dave", image: "https://randomuser.me/api/portraits/men/4.jpg" },
+                { id: "1", name: "Alice", full_name: "Alice Smith", image: "https://randomuser.me/api/portraits/women/1.jpg" },
+                { id: "2", name: "Bob", full_name: "Bob Johnson", image: "https://randomuser.me/api/portraits/men/2.jpg" },
+                { id: "3", name: "Carol", full_name: "Carol Williams", image: "https://randomuser.me/api/portraits/women/3.jpg" },
+                { id: "4", name: "Dave", full_name: "Dave Brown", image: "https://randomuser.me/api/portraits/men/4.jpg" },
             ],
         },
         {
@@ -233,9 +235,9 @@ const dummyPoll3 = {
             option: "Sushi",
             votes: 3,
             voters: [
-                { id: "5", name: "Eve", image: "https://randomuser.me/api/portraits/women/5.jpg" },
-                { id: "6", name: "Frank", image: "https://randomuser.me/api/portraits/men/6.jpg" },
-                { id: "7", name: "Grace", image: "https://randomuser.me/api/portraits/women/7.jpg" },
+                { id: "5", name: "Eve", full_name: "Eve Davis", image: "https://randomuser.me/api/portraits/women/5.jpg" },
+                { id: "6", name: "Frank", full_name: "Frank Miller", image: "https://randomuser.me/api/portraits/men/6.jpg" },
+                { id: "7", name: "Grace", full_name: "Grace Wilson", image: "https://randomuser.me/api/portraits/women/7.jpg" },
             ],
         },
         {
@@ -248,17 +250,18 @@ const dummyPoll3 = {
             option: "Salad",
             votes: 1,
             voters: [
-                { id: "8", name: "Henry", image: "https://randomuser.me/api/portraits/men/8.jpg" },
+                { id: "8", name: "Henry", full_name: "Henry Moore", image: "https://randomuser.me/api/portraits/men/8.jpg" },
             ],
         },
     ],
     is_anonymous: 0 as 0 | 1,
     is_multi_choice: 0 as 0 | 1,
-    is_disabled: 0 as 0 | 1,
+    is_disabled: 1 as 0 | 1,
+    end_date: "2024-01-03 12:00:00",
     total_votes: 8,
 }
 
-const dummyCurrentUserVotes3: Array<{ option: string }> = []
+const dummyCurrentUserVotes3 = [{ option: "opt-7" }]
 
 const dummyImages = [
     {
