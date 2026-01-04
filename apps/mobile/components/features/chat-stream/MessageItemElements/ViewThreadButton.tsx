@@ -25,10 +25,12 @@ const ThreadReplyCount = ({ message }: Props) => {
     const { data } = useFrappeGetCall<{ message: number }>("raven.api.threads.get_number_of_replies", {
         thread_id: message.name
     }, ["thread_reply_count", message.name], {
-        revalidateOnFocus: false,
+        revalidateOnFocus: true,
+        revalidateOnMount: true,
+        refreshInterval: 0,
         shouldRetryOnError: false
     })
-    return <Text className='text-sm text-primary dark:text-secondary font-semibold'>{data?.message ?? 0} {data?.message === 1 ? t('messages.replyCount') : t('messages.repliesCount', { count: data?.message ?? 0 })}</Text>
+    return <Text className='text-sm text-primary dark:text-secondary font-semibold'>{data?.message === 1 ? t('messages.replyCount') : t('messages.repliesCount', { count: data?.message ?? 0 })}</Text>
 }
 
 export default ViewThreadButton
