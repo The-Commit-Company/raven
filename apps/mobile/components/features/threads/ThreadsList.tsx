@@ -9,6 +9,7 @@ import useUnreadThreadsCount from '@hooks/useUnreadThreadsCount'
 import { LegendList } from '@legendapp/list'
 import { useColorScheme } from "@hooks/useColorScheme"
 import ThreadPreviewBox from './ThreadPreviewBox'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
     /** Whether to fetch AI threads */
@@ -138,24 +139,26 @@ const ThreadsList = ({ aiThreads, content, channel, endpoint = "raven.api.thread
 
 const EmptyStateForThreads = ({ isFiltered = false, searchText }: { isFiltered?: boolean, searchText?: string }) => {
 
+    const { t } = useTranslation()
+
     const content = useMemo(() => {
         if (searchText && !isFiltered) {
             return {
-                title: "No results found",
-                description: `No threads match your search for "${searchText}". Try a different search term.`
+                title: t('threads.noResultsFound'),
+                description: t('threads.noResultsFoundDescription', { query: searchText })
             }
         } else if (isFiltered) {
             return {
-                title: "You're all caught up",
-                description: 'There are no unread threads to show. Clear the filter to see all threads.'
+                title: t('threads.allCaughtUp'),
+                description: t('threads.allCaughtUpDescription')
             }
         } else {
             return {
-                title: 'No threads yet',
-                description: 'Threads help keep conversations organized. Reply to any message to start a new thread or use the thread icon on messages to join existing discussions.'
+                title: t('threads.noThreads'),
+                description: t('threads.noThreadsDescription')
             }
         }
-    }, [isFiltered, searchText])
+    }, [isFiltered, searchText, t])
 
     const { colors } = useColorScheme()
 

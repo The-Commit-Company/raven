@@ -9,6 +9,7 @@ import { router } from "expo-router";
 import { useWindowDimensions, View } from "react-native";
 import { fitContainer, ResumableZoom, Source, useImageResolution } from "react-native-zoom-toolkit";
 import { Image } from "expo-image";
+import { useTranslation } from "react-i18next";
 
 
 export const useFileViewerAttributes = (uri: string) => {
@@ -73,10 +74,11 @@ interface ImageViewerProps {
 }
 
 const ImageViewer = ({ uri, handleShowHeader }: ImageViewerProps) => {
+    const { t } = useTranslation()
     const source = useFileURL(uri)
     if (!source) {
         return <View className="p-2">
-            <ErrorBanner message="Something went wrong" heading="Couldn't open image" />
+            <ErrorBanner message={t('errors.somethingWentWrong')} heading={t('errors.couldNotOpenImage')} />
         </View>
     }
     return (

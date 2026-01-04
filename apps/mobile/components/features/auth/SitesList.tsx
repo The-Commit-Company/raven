@@ -6,9 +6,10 @@ import { SiteAuthFlowSheet } from './AddSite'
 import { Text } from '@components/nativewindui/Text'
 import { Avatar, AvatarImage } from '@components/nativewindui/Avatar'
 import { useSiteSwitcher } from '@hooks/useSiteSwitcher'
+import { useTranslation } from 'react-i18next'
 
 const SitesList = () => {
-
+    const { t } = useTranslation()
     const { sites, siteInformation, handleSitePress, clearSiteInformation, hasSites, bottomSheetRef } = useSiteSwitcher()
 
     if (!hasSites) {
@@ -19,7 +20,7 @@ const SitesList = () => {
     return (
         <>
             <View className='flex w-full gap-2'>
-                <Text className='text-foreground text-base'>Select an existing site</Text>
+                <Text className='text-foreground text-base'>{t('auth.selectExistingSite')}</Text>
                 {Object.entries(sites).map(([siteName, siteInformation]) => (
                     <Pressable key={siteName} onPress={() => handleSitePress(siteName)} className='bg-card dark:bg-card rounded-lg px-2 py-2 active:bg-card-background/50 dark:active:bg-card/80'>
                         <View className='flex flex-row pr-2 items-center justify-between'>
@@ -40,7 +41,7 @@ const SitesList = () => {
                 ))}
                 <View className='w-full flex-row items-center gap-2 pt-4'>
                     <Divider className='flex-1' />
-                    <Text className='text-muted-foreground text-base'>or</Text>
+                    <Text className='text-muted-foreground text-base'>{t('common.or')}</Text>
                     <Divider className='flex-1' />
                 </View>
             </View>

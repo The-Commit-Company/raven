@@ -5,6 +5,7 @@ import EditMessageSheet from './EditMessageSheet'
 import { Sheet, useSheetRef } from '@components/nativewindui/Sheet'
 import { BottomSheetView } from '@gorhom/bottom-sheet'
 import ActionButton from '@components/common/Buttons/ActionButton'
+import { useTranslation } from 'react-i18next'
 
 interface EditMessageActionProps {
     message: Message
@@ -12,6 +13,7 @@ interface EditMessageActionProps {
 }
 
 const EditMessageAction = ({ message, onClose }: EditMessageActionProps) => {
+    const { t } = useTranslation()
     const { colors } = useColorScheme()
     const editSheetRef = useSheetRef()
 
@@ -44,7 +46,7 @@ const EditMessageAction = ({ message, onClose }: EditMessageActionProps) => {
             <ActionButton
                 onPress={handlePress}
                 icon={<EditIcon width={18} height={18} stroke={colors.icon} fillOpacity={0} />}
-                text='Edit'
+                text={t('common.edit')}
             />
 
             <Sheet enableDynamicSizing={false} ref={editSheetRef} snapPoints={['90']} enableDismissOnClose onDismiss={handleDismiss}>

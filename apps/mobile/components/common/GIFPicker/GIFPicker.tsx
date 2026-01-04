@@ -5,12 +5,14 @@ import { useDebounce } from "@raven/lib/hooks/useDebounce";
 import GIFSearchResults from "./GIFSearchResults";
 import GIFFeaturedResults from "./GIFFeaturedResults";
 import SearchInput from "../SearchInput/SearchInput";
+import { useTranslation } from 'react-i18next';
 
 export interface GIFPickerProps {
     onSelect: (gif: any) => void;
 }
 
 const GIFPicker = ({ onSelect }: GIFPickerProps) => {
+    const { t } = useTranslation()
     const [searchText, setSearchText] = useState('');
     const debouncedText = useDebounce(searchText, 200);
 
@@ -20,7 +22,7 @@ const GIFPicker = ({ onSelect }: GIFPickerProps) => {
                 <SearchInput
                     value={searchText}
                     onChangeText={setSearchText}
-                    placeholder="Search for a GIF"
+                    placeholder={t('media.searchGIF')}
                 />
             </View>
 

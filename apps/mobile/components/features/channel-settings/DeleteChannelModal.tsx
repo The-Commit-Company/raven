@@ -12,9 +12,10 @@ import { useColorScheme } from '@hooks/useColorScheme';
 import { ChannelListContext, ChannelListContextType } from "@raven/lib/providers/ChannelListProvider";
 import { useRouteToHome } from "@hooks/useRouting";
 import TrashIcon from '@assets/icons/TrashIcon.svg';
+import { useTranslation } from 'react-i18next';
 
 export const DeleteChannel = ({ channelData }: { channelData: FrappeDoc<ChannelListItem> | undefined }) => {
-
+    const { t } = useTranslation()
     const deleteSheetRef = useSheetRef()
     const { colors } = useColorScheme()
 
@@ -25,7 +26,7 @@ export const DeleteChannel = ({ channelData }: { channelData: FrappeDoc<ChannelL
                 android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}
                 onPress={() => deleteSheetRef.current?.present()}>
                 <TrashIcon height={18} width={18} fill={colors.destructive} />
-                <Text className="text-base text-destructive">Delete Channel</Text>
+                <Text className="text-base text-destructive">{t('channels.deleteChannel')}</Text>
             </Pressable>
             <DeleteChannelModal deleteSheetRef={deleteSheetRef} channelData={channelData} />
         </>
@@ -38,7 +39,7 @@ interface DeleteChannelModalProps {
 }
 
 const DeleteChannelModal: React.FC<DeleteChannelModalProps> = ({ deleteSheetRef, channelData }) => {
-
+    const { t } = useTranslation()
     const { deleteDoc, error, loading: deletingDoc } = useFrappeDeleteDoc()
     const { mutate } = useContext(ChannelListContext) as ChannelListContextType
 
@@ -52,13 +53,13 @@ const DeleteChannelModal: React.FC<DeleteChannelModalProps> = ({ deleteSheetRef,
         if (channelData?.name) {
             deleteDoc('Raven Channel', channelData.name)
                 .then(() => {
-                    toast.success(`Channel ${channelData?.channel_name} has been deleted.`)
+                    toast.success(t('channels.channelDeleted', { channelName: channelData?.channel_name }))
                     mutate()
                     handleClose()
                     goToHome()
                 })
                 .catch(() => {
-                    toast.error('Could not delete channel', {
+                    toast.error(t('channels.deleteChannelFailed'), {
                         description: error?.httpStatusText
                     })
                 })
@@ -79,13 +80,13 @@ const DeleteChannelModal: React.FC<DeleteChannelModalProps> = ({ deleteSheetRef,
                 return (
                     <BottomSheetView {...props}>
                         <View className="flex-col px-4 gap-3 mt-2 mb-16">
-                            <Text className="text-xl font-cal-sans">Delete this Channel?</Text>
+                            <Text className="text-xl font-cal-sans">{t('channels.deleteChannelConfirm')}</Text>
                             <Text className="text-sm">
-                                Please understand that when you delete <Text className="text-sm font-semibold">{channelData?.channel_name}</Text>:
+                                {t('channels.deleteChannelWarning', { channelName: '' })}<Text className="text-sm font-semibold">{channelData?.channel_name}</Text>:
                             </Text>
                             <Text className="text-sm">
-                                All messages, including files and images will be removed. <Text className="text-sm text-muted-foreground">
-                                    (You can archive this channel instead to preserve your messages)
+                                {t('channels.deleteChannelInfo')} <Text className="text-sm text-muted-foreground">
+                                    ({t('channels.deleteChannelArchiveHint')})
                                 </Text>
                             </Text>
                             <Pressable onPress={toggleAllowDelete} className="flex-row gap-2 items-center py-3">
@@ -96,14 +97,14 @@ const DeleteChannelModal: React.FC<DeleteChannelModalProps> = ({ deleteSheetRef,
                                     : <View className="border border-border rounded-full p-3"></View>
                                 }
                                 <Text className="text-sm">
-                                    Yes, I understand, permanently delete this channel
+                                    {t('channels.deleteChannelConfirmCheckbox')}
                                 </Text>
                             </Pressable>
                             <Button onPress={handleDeleteChannel} disabled={!allowDelete || deletingDoc} className="bg-red-600">
-                                <Text>{deletingDoc ? 'Deleting...' : 'Delete Channel'}</Text>
+                                <Text>{deletingDoc ? t('channels.deleting') : t('channels.deleteChannel')}</Text>
                             </Button>
                             <Button onPress={handleClose} variant="plain" className="border border-border">
-                                <Text>Cancel</Text>
+                                <Text>{t('common.cancel')}</Text>
                             </Button>
                         </View>
                     </BottomSheetView>

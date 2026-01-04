@@ -14,9 +14,11 @@ import { useCurrentChannelData } from '@hooks/useCurrentChannelData';
 import { toast } from 'sonner-native';
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import { COLORS } from '@theme/colors';
+import { useTranslation } from 'react-i18next';
 
 const ChannelMemberRow = ({ member }: { member: Member }) => {
 
+    const { t } = useTranslation()
     const { id: channelId } = useLocalSearchParams()
     const { myProfile: currentUserInfo } = useCurrentRavenUser()
     const { channelMembers, mutate: updateMembers } = useFetchChannelMembers(channelId as string ?? "")
@@ -35,7 +37,7 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
 
     const updateAdminStatus = async (admin: 1 | 0) => {
         if (isBot) {
-            toast.error("Bots cannot be made admins")
+            toast.error(t('members.botsCannotBeAdmins'))
             return
         }
         return updateDoc("Raven Channel Member", memberInfo?.message.name ?? "", {
@@ -44,12 +46,12 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
             updateMembers()
             reset()
             if (admin === 1) {
-                toast.success(`${member.full_name} has been made an admin`)
+                toast.success(t('members.madeAdmin', { name: member.full_name }))
             } else {
-                toast.warning(`${member.full_name} is no longer an admin`)
+                toast.warning(t('members.removedAdmin', { name: member.full_name }))
             }
         }).catch((e) => {
-            toast.error("Failed to update member status")
+            toast.error(t('members.updateMemberFailed'))
             reset()
         })
     }
@@ -75,21 +77,21 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
 
         const deleteMember = async () => {
             return deleteDoc('Raven Channel Member', memberInfo?.message.name).then(() => {
-                toast.success(`Removed ${member.full_name} from the channel`)
+                toast.success(t('members.removedFromChannel', { name: member.full_name }))
                 mutate(["channel_members", channelId])
             })
         }
 
         const showAlert = () =>
             Alert.alert(
-                `Remove Member?`,
-                `${member.full_name} will no longer have access to ${channel?.channelData.channel_name} channel.`,
+                t('members.removeMemberConfirm'),
+                t('members.removeMemberMessage', { name: member.full_name, channelName: channel?.channelData.channel_name }),
                 [
                     {
-                        text: 'Cancel',
+                        text: t('common.cancel'),
                     },
                     {
-                        text: 'Remove',
+                        text: t('common.remove'),
                         style: 'destructive',
                         onPress: deleteMember
                     },
@@ -109,7 +111,7 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
 
     const showActions = () => {
 
-        let options = ['Make channel admin', 'Dismiss channel admin', 'Cancel']
+        let options = [t('members.makeAdmin'), t('members.removeAdmin'), t('common.cancel')]
         const isAdmin = channelMembers[member.name].is_admin
 
         if (isAllowed) {
@@ -151,7 +153,7 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
                                     {member.full_name?.length > 40
                                         ? `${member.full_name.slice(0, 40)}...`
                                         : member.full_name}
-                                    {member.name === currentUserInfo?.name ? " (You)" : ""}
+                                    {member.name === currentUserInfo?.name ? ` (${t('common.you')})` : ""}
                                 </Text>
                                 {channelMembers[member.name].is_admin ? <CrownIcon fill="#FFC53D" width={16} height={16} /> : null}
                             </View>

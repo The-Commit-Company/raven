@@ -7,6 +7,7 @@ import { View } from "react-native"
 import { Text } from '@components/nativewindui/Text';
 import PinnedMessageItem from "./PinnedMessageItem"
 import ErrorBanner from "@components/common/ErrorBanner"
+import { useTranslation } from "react-i18next"
 
 const PinnedMessageList = () => {
 
@@ -37,9 +38,10 @@ const PinnedMessageList = () => {
 }
 
 const PinnedMessagesEmptyState = () => {
+    const { t } = useTranslation()
     return (
         <View className="flex-1 justify-center items-center p-4">
-            <Text className="text-muted-foreground">No pinned messages</Text>
+            <Text className="text-muted-foreground">{t('messages.noPinnedMessages')}</Text>
         </View>
     )
 }

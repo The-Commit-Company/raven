@@ -18,9 +18,11 @@ import ChannelRowItem from '@components/common/CommonListItems/ChannelRowItem';
 import DMRowItem from '@components/common/CommonListItems/DMRowItem';
 import { Text } from '@components/nativewindui/Text';
 import { LegendList } from '@legendapp/list';
+import { useTranslation } from 'react-i18next';
 
 export default function QuickSearch() {
 
+    const { t } = useTranslation()
     const { colors } = useColorScheme()
 
     const openMenuItemSheet = (url: string) => {
@@ -38,7 +40,7 @@ export default function QuickSearch() {
 
     return <>
         <Stack.Screen options={{
-            title: 'Quick Search',
+            title: t('search.quickSearch'),
             headerLeft: Platform.OS === 'ios' ? () => {
                 return (
                     <Link asChild href="../" relativeToDirectory>
@@ -61,19 +63,19 @@ export default function QuickSearch() {
                 <ActionButtonLarge
                     onPress={() => openMenuItemSheet('../home/browse-channels')}
                     icon={<HashIcon fill={colors.grey} height={20} width={20} />}
-                    text="View Channels"
+                    text={t('search.viewChannels')}
                     textProps={{ className: 'text-sm text-muted-foreground' }}
                 />
                 <ActionButtonLarge
                     onPress={() => openMenuItemSheet('../home/create-dm')}
                     icon={<UserIcon fill={colors.grey} height={20} width={20} />}
-                    text="Create DM"
+                    text={t('directMessages.createDM')}
                     textProps={{ className: 'text-sm text-muted-foreground' }}
                 />
                 <ActionButtonLarge
                     onPress={() => openMenuItemSheet('../home/create-channel')}
                     icon={<PlusIcon fill={colors.grey} height={20} width={20} />}
-                    text="New Channel"
+                    text={t('search.newChannel')}
                     textProps={{ className: 'text-sm text-muted-foreground' }}
                 />
             </View>
@@ -91,7 +93,7 @@ export default function QuickSearch() {
                 contentContainerStyle={{ paddingBottom: 180 }}
                 showsVerticalScrollIndicator={false}
                 ListEmptyComponent={
-                    <Text className="px-2 py-2 text-sm text-muted-foreground">No results found for "{searchQuery}"</Text>
+                    <Text className="px-2 py-2 text-sm text-muted-foreground">{t('search.noResultsFor', { query: searchQuery })}</Text>
                 }
             />
         </View>

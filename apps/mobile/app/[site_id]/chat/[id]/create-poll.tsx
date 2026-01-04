@@ -12,17 +12,17 @@ export default function CreatePollPage() {
 
     const { id: channelID } = useLocalSearchParams()
 
-    const { methods, onPress, creatingPoll } = useCreatePoll(channelID as string)
+    const { methods, onPress, creatingPoll, t } = useCreatePoll(channelID as string)
 
     return (
         <>
             <Stack.Screen options={{
                 headerStyle: { backgroundColor: colors.background },
                 headerLeft: () => Platform.OS === 'ios' ? <CloseCreatePollButton /> : undefined,
-                headerTitle: "Create Poll",
+                headerTitle: t('polls.createPoll'),
                 headerRight() {
                     return (
-                        <PollCreateButton onPress={onPress} isCreating={creatingPoll} />
+                        <PollCreateButton onPress={onPress} isCreating={creatingPoll} t={t} />
                     )
                 },
             }} />

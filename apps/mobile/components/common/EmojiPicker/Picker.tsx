@@ -7,6 +7,7 @@ import Categories from './Categories';
 import { emojis as EMOJIS, categories as EMOJI_CATEGORIES } from "./emojis.json";
 import { useDebounce } from '@raven/lib/hooks/useDebounce';
 import { BottomSheetFlashList } from '@gorhom/bottom-sheet';
+import { useTranslation } from 'react-i18next';
 
 const DEFAULT_X_PADDING = 6;
 
@@ -56,6 +57,7 @@ interface EmojiPickerProps {
 }
 
 const EmojiPicker = ({ customEmojis, onSelect, perLine, defaultCategory = "people" }: EmojiPickerProps) => {
+    const { t } = useTranslation()
     const [category, setCategory] = useState<CategoryType>(defaultCategory);
     const [searchText, setSearchText] = useState<string>('');
     const debouncedText = useDebounce(searchText)
@@ -130,7 +132,7 @@ const EmojiPicker = ({ customEmojis, onSelect, perLine, defaultCategory = "peopl
             />
             <View className='py-3'>
                 <SearchInput
-                    placeholder="Search"
+                    placeholder={t('common.search')}
                     onChangeText={setSearchText}
                     value={searchText}
                 />

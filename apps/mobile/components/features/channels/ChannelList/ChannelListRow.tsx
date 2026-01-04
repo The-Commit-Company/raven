@@ -13,9 +13,11 @@ import { toast } from 'sonner-native';
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
 import { RavenUser } from '@raven/types/Raven/RavenUser';
 import useSiteContext from '@hooks/useSiteContext';
+import { useTranslation } from 'react-i18next';
 
 export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
 
+    const { t } = useTranslation()
     const { colors } = useColorScheme()
 
     // const handleMuteChannel = () => {
@@ -32,9 +34,9 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
             const workspace = channel.workspace ?? 'channels'
             const link = `${siteID}/raven/${encodeURIComponent(workspace)}/${encodeURIComponent(channel.name)}`
             await Clipboard.setStringAsync(link)
-            toast.success('Channel link copied to clipboard!')
+            toast.success(t('messages.linkCopied'))
         } catch (error) {
-            toast.error('Failed to copy channel link.')
+            toast.error(t('messages.copyFailed'))
         }
     }
 
@@ -42,15 +44,15 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
 
     const showAlert = () =>
         Alert.alert(
-            'Leave channel?',
-            `Are you sure you want to leave ${channel.channel_name} channel?`,
+            t('channels.leaveChannelConfirm'),
+            t('channels.leaveChannelMessage', { channelName: channel.channel_name }),
             [
                 {
-                    text: 'Cancel',
+                    text: t('common.cancel'),
                     style: 'cancel',
                 },
                 {
-                    text: 'Leave',
+                    text: t('common.leave'),
                     style: 'destructive',
                     onPress: onLeaveChannel
                 },
@@ -102,7 +104,7 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
                 </ContextMenu.Item> */}
 
                 <ContextMenu.Item key="star" onSelect={onMoveToStarred}>
-                    <ContextMenu.ItemTitle>{isStarred ? 'Remove from starred' : 'Move to starred'}</ContextMenu.ItemTitle>
+                    <ContextMenu.ItemTitle>{isStarred ? t('channels.removeFromStarred') : t('channels.moveToStarred')}</ContextMenu.ItemTitle>
                     <ContextMenu.ItemIcon
                         ios={{
                             name: isStarred ? 'star.fill' : 'star',
@@ -126,7 +128,7 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
                 </ContextMenu.Item>
 
                 <ContextMenu.Item key="copy" onSelect={handleCopyLink}>
-                    <ContextMenu.ItemTitle>Copy link</ContextMenu.ItemTitle>
+                    <ContextMenu.ItemTitle>{t('messages.copyLink')}</ContextMenu.ItemTitle>
                     <ContextMenu.ItemIcon
                         ios={{
                             name: 'link',
@@ -150,7 +152,7 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
                 </ContextMenu.Item>
 
                 {channel.member_id && <ContextMenu.Item key="leave" destructive onSelect={showAlert}>
-                    <ContextMenu.ItemTitle>Leave channel</ContextMenu.ItemTitle>
+                    <ContextMenu.ItemTitle>{t('channels.leaveChannel')}</ContextMenu.ItemTitle>
                     <ContextMenu.ItemIcon
                         ios={{
                             name: 'rectangle.portrait.and.arrow.right',
@@ -181,17 +183,18 @@ export function ChannelListRow({ channel }: { channel: ChannelListItem }) {
 
 const useLeaveChannel = (channel: ChannelListItem) => {
 
+    const { t } = useTranslation()
     const { call, error } = useFrappePostCall("raven.api.raven_channel.leave_channel")
     const { mutate } = useContext(ChannelListContext) as ChannelListContextType
 
     const onLeaveChannel = async () => {
         return call({ channel_id: channel?.name })
             .then(() => {
-                toast.success(`You have left ${channel.channel_name} channel`)
+                toast.success(t('channels.leftChannel', { channelName: channel.channel_name }))
                 mutate()
             })
             .catch(() => {
-                toast.error('Could not leave channel', {
+                toast.error(t('channels.leaveChannelFailed'), {
                     description: error?.httpStatusText
                 })
             })
@@ -202,6 +205,7 @@ const useLeaveChannel = (channel: ChannelListItem) => {
 
 const useMoveToStarred = (channel: ChannelListItem) => {
 
+    const { t } = useTranslation()
     const { myProfile, mutate } = useCurrentRavenUser()
 
     const isStarred = useMemo(() => {
@@ -218,7 +222,7 @@ const useMoveToStarred = (channel: ChannelListItem) => {
         call.post('raven.api.raven_channel.toggle_pinned_channel', {
             channel_id: channel.name
         }).then((res: { message: RavenUser }) => {
-            toast.success(`${channel.channel_name} ${isStarred ? 'removed from favorites' : 'added to favorites'}`)
+            toast.success(isStarred ? t('channels.removedFromFavorites', { channelName: channel.channel_name }) : t('channels.addedToFavorites', { channelName: channel.channel_name }))
             if (res.message) {
                 mutate({ message: res.message }, { revalidate: false })
             }

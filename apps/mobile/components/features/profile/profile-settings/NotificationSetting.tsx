@@ -8,11 +8,12 @@ import { AuthorizationStatus, getMessaging } from '@react-native-firebase/messag
 import { FrappeConfig, FrappeContext } from 'frappe-react-sdk'
 import { toast } from 'sonner-native'
 import * as Device from 'expo-device';
+import { useTranslation } from 'react-i18next';
 
 const messaging = getMessaging()
 
 const NotificationSetting = () => {
-
+    const { t } = useTranslation();
     const { colors } = useColorScheme()
     const [enabled, setEnabled] = useState(false)
 
@@ -41,10 +42,10 @@ const NotificationSetting = () => {
                         }).then(() => {
                             setEnabled(true)
                         }).catch((error) => {
-                            toast.error('Failed to subscribe to push notifications.')
+                            toast.error(t('errors.somethingWentWrong'))
                         })
                     } else {
-                        toast.error('Failed to get token to subscribe.')
+                        toast.error(t('errors.somethingWentWrong'))
                     }
                 })
             })
@@ -59,14 +60,14 @@ const NotificationSetting = () => {
 
             setEnabled(false)
         }
-    }, [])
+    }, [t])
 
     return (
         <View>
             <View className='flex flex-row py-2.5 px-4 rounded-xl justify-between bg-background dark:bg-card'>
                 <View className='flex-row items-center gap-2'>
                     <BellOutlineIcon height={18} width={18} fill={colors.icon} />
-                    <Text className='text-base'>Push Notifications</Text>
+                    <Text className='text-base'>{t('notifications.pushNotifications')}</Text>
                 </View>
                 <Toggle value={enabled} onValueChange={onToggle} />
             </View>

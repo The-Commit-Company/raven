@@ -13,6 +13,7 @@ import { useEffect } from 'react';
 import { ChannelListItem } from '@raven/types/common/ChannelListItem';
 import PinOutlineIcon from '@assets/icons/PinOutlineIcon.svg';
 import ActionButton from '@components/common/Buttons/ActionButton';
+import { useTranslation } from 'react-i18next';
 
 type ChannelInfoModalProps = {
     channel: ChannelListItem
@@ -21,6 +22,8 @@ type ChannelInfoModalProps = {
 }
 
 const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelInfoModalProps) => {
+
+    const { t } = useTranslation()
 
     // Animation values
     const modalHeight = useSharedValue(0)
@@ -96,23 +99,23 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
                     <ActionButton
                         onPress={handleGoToViewMembers}
                         icon={<MembersIcon height={20} width={20} color={colors.foreground} />}
-                        text='Members'
+                        text={t('common.members')}
                         showChevron />
                     <ActionButton
                         onPress={handleGoToSettings}
                         icon={<SettingsIcon height={20} width={20} color={colors.foreground} />}
-                        text='Settings & Details'
+                        text={t('channels.settingsAndDetails')}
                         showChevron />
                     <ActionButton
                         onPress={handleGoToPins}
                         icon={<PinOutlineIcon height={20} width={20} color={colors.foreground} />}
-                        text='Pins'
+                        text={t('messages.pinnedMessages')}
                         count={pinnedMessages}
                         showChevron />
                     <ActionButton
                         onPress={handleGoToSharedMedia}
                         icon={<HollowFilesIcon height={20} width={20} fill={colors.foreground} />}
-                        text='Images and Files'
+                        text={t('media.imagesAndFiles')}
                         showChevron />
                 </Animated.View>
             </TouchableOpacity>

@@ -6,6 +6,7 @@ import { toast } from 'sonner-native'
 import ArrowBackRetractIcon from "@assets/icons/ArrowBackRetractIcon.svg"
 import { useColorScheme } from '@hooks/useColorScheme'
 import ActionButton from '@components/common/Buttons/ActionButton'
+import { useTranslation } from 'react-i18next'
 
 interface RetractVoteProps {
     message: Message
@@ -14,6 +15,7 @@ interface RetractVoteProps {
 
 const RetractVote = ({ message, onClose }: RetractVoteProps) => {
 
+    const { t } = useTranslation()
     const { retractVote, poll_data } = useRetractVote(message)
     const { colors } = useColorScheme()
 
@@ -22,7 +24,7 @@ const RetractVote = ({ message, onClose }: RetractVoteProps) => {
             <ActionButton
                 onPress={() => retractVote(onClose)}
                 icon={<ArrowBackRetractIcon width={18} height={18} fill={colors.icon} />}
-                text='Retract vote'
+                text={t('polls.retractVote')}
             />
         )
 
@@ -33,6 +35,7 @@ export default RetractVote
 
 const useRetractVote = (message: Message) => {
 
+    const { t } = useTranslation()
     const [isLoading, setIsLoading] = useState(false)
 
     const { data: poll_data } = useFrappeGetCall<{ message: Poll }>('raven.api.raven_poll.get_poll', {
@@ -51,12 +54,12 @@ const useRetractVote = (message: Message) => {
                 poll_id: message?.poll_id,
             })
             onSuccess()
-            toast.success('Vote retracted')
+            toast.success(t('polls.voteRetracted'))
             setIsLoading(false)
         } catch (e: unknown) {
-            toast.error('Could not retract vote')
+            toast.error(t('polls.voteRetractFailed'))
         }
-    }, [message])
+    }, [message, t])
 
     return { retractVote, poll_data, isLoading }
 }

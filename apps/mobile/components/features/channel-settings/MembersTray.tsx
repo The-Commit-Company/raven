@@ -5,12 +5,14 @@ import { useLocalSearchParams } from "expo-router";
 import { useFetchChannelMembers } from "@raven/lib/hooks/useFetchChannelMembers";
 import { ScrollView } from "react-native-gesture-handler";
 import { Button } from "@components/nativewindui/Button";
+import { useTranslation } from "react-i18next";
 interface MembersTrayProps {
     onViewAll: () => void
 }
 
 export const MembersTray = ({ onViewAll }: MembersTrayProps) => {
 
+    const { t } = useTranslation()
     const { id: channelId } = useLocalSearchParams()
     const { channelMembers } = useFetchChannelMembers(channelId as string ?? "")
 
@@ -28,10 +30,10 @@ export const MembersTray = ({ onViewAll }: MembersTrayProps) => {
     return (
         <View className="flex-col px-4 gap-3">
             <View className="flex-row items-center justify-between">
-                <Text className="text-[15px] font-medium">Members ({membersCount})</Text>
+                <Text className="text-[15px] font-medium">{t('common.members')} ({membersCount})</Text>
                 <Button variant="plain" size="none" onPress={onViewAll}>
                     <View className="flex-row items-center justify-end">
-                        <Text className="text-[15px] font-medium text-primary dark:text-secondary">View all</Text>
+                        <Text className="text-[15px] font-medium text-primary dark:text-secondary">{t('common.viewAll')}</Text>
                     </View>
                 </Button>
             </View>

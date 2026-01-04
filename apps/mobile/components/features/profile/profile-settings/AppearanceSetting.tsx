@@ -4,25 +4,26 @@ import { useColorScheme } from '@hooks/useColorScheme';
 import PaletteIcon from '@assets/icons/PaletteIcon.svg'
 import * as DropdownMenu from 'zeego/dropdown-menu'
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const AppearanceSetting = () => {
-
+    const { t } = useTranslation();
     const { colors } = useColorScheme()
     const { themeValue, setColorScheme } = useColorScheme()
 
     const themeDisplay = useMemo(() => {
-        if (themeValue === 'light') return 'Light'
-        if (themeValue === 'dark') return 'Dark'
-        if (themeValue === 'system') return 'System'
-        return 'Light'
-    }, [themeValue])
+        if (themeValue === 'light') return t('settings.lightTheme')
+        if (themeValue === 'dark') return t('settings.darkTheme')
+        if (themeValue === 'system') return t('settings.systemTheme')
+        return t('settings.lightTheme')
+    }, [themeValue, t])
 
     return (
         <View>
             <View className='flex flex-row py-2.5 px-4 rounded-xl justify-between bg-background dark:bg-card'>
                 <View className='flex-row items-center gap-2'>
                     <PaletteIcon height={18} width={18} color={colors.icon} />
-                    <Text className='text-base'>Appearance</Text>
+                    <Text className='text-base'>{t('profile.appearance')}</Text>
                 </View>
                 <DropdownMenu.Root>
                     <DropdownMenu.Trigger>
@@ -39,7 +40,7 @@ const AppearanceSetting = () => {
                                     light: 'gray',
                                 },
                             }} />
-                            <DropdownMenu.ItemTitle>Light</DropdownMenu.ItemTitle>
+                            <DropdownMenu.ItemTitle>{t('settings.lightTheme')}</DropdownMenu.ItemTitle>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item key="dark" onSelect={() => setColorScheme('dark')}>
                             <DropdownMenu.ItemIcon ios={{
@@ -51,7 +52,7 @@ const AppearanceSetting = () => {
                                     light: 'gray',
                                 },
                             }} />
-                            <DropdownMenu.ItemTitle>Dark</DropdownMenu.ItemTitle>
+                            <DropdownMenu.ItemTitle>{t('settings.darkTheme')}</DropdownMenu.ItemTitle>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item key="system" onSelect={() => setColorScheme('system')}>
                             <DropdownMenu.ItemIcon ios={{
@@ -63,7 +64,7 @@ const AppearanceSetting = () => {
                                     light: 'gray',
                                 },
                             }} />
-                            <DropdownMenu.ItemTitle>System</DropdownMenu.ItemTitle>
+                            <DropdownMenu.ItemTitle>{t('settings.systemTheme')}</DropdownMenu.ItemTitle>
                         </DropdownMenu.Item>
                     </DropdownMenu.Content>
                 </DropdownMenu.Root>

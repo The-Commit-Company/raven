@@ -14,6 +14,7 @@ import timezone from 'dayjs/plugin/timezone'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 import relativeTime from 'dayjs/plugin/relativeTime';
 import UnreadCountBadge from "@components/common/Badge/UnreadCountBadge"
+import { useTranslation } from 'react-i18next'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -22,6 +23,7 @@ dayjs.extend(relativeTime)
 
 const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
 
+    const { t } = useTranslation()
     const { myProfile } = useCurrentRavenUser()
     const user = useGetUser(dm.peer_user_id)
     const isActive = useIsUserActive(dm.peer_user_id)
@@ -74,7 +76,7 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
                         <View className='flex flex-row justify-between items-center'>
                             <Text
                                 className={'text-base font-medium text-foreground'}>
-                                {user?.full_name ?? dm.peer_user_id} {myProfile?.name === dm.peer_user_id && '(You)'}
+                                {user?.full_name ?? dm.peer_user_id} {myProfile?.name === dm.peer_user_id && `(${t('common.you')})`}
                             </Text>
                             {dm.last_message_timestamp ? (
                                 <LastMessageTimestamp
@@ -87,7 +89,7 @@ const DMRow = ({ dm }: { dm: DMChannelWithUnreadCount }) => {
                             <View
                                 style={{ maxHeight: 30, maxWidth: dm.unread_count > 0 ? '90%' : '100%', }}
                                 className='flex flex-row items-center gap-1'>
-                                {isSentByUser ? <Text className='text-sm text-muted-foreground' style={{ fontWeight: isUnread ? '500' : '400' }}>You:</Text> : null}
+                                {isSentByUser ? <Text className='text-sm text-muted-foreground' style={{ fontWeight: isUnread ? '500' : '400' }}>{t('common.you')}:</Text> : null}
                                 <Text className='text-sm text-muted-foreground line-clamp-1'
                                     style={{ fontWeight: isUnread ? '500' : '400' }}>{lastMessageContent}</Text>
                             </View>
@@ -107,6 +109,7 @@ interface LastMessageTimestampProps {
 }
 
 const LastMessageTimestamp = ({ timestamp }: LastMessageTimestampProps) => {
+    const { t } = useTranslation()
     const displayTimestamp = useMemo(() => {
 
         if (!timestamp) {
@@ -125,7 +128,7 @@ const LastMessageTimestamp = ({ timestamp }: LastMessageTimestampProps) => {
         if (dateObj.isSame(today, 'day')) {
             // If the difference is less than 1 minute, show "Just now"
             if (Math.abs(dateObj.diff(today, 'minute')) < 1) {
-                return 'just now'
+                return t('common.justNow')
             }
             if (Math.abs(dateObj.diff(today, 'hour')) < 1) {
                 return dateObj.fromNow()
@@ -134,7 +137,7 @@ const LastMessageTimestamp = ({ timestamp }: LastMessageTimestampProps) => {
         }
 
         if (dateObj.isSame(yesterday, 'day')) {
-            return 'Yesterday'
+            return t('common.yesterday')
         }
 
         if (dateObj.isSame(today, 'week')) {
@@ -146,7 +149,7 @@ const LastMessageTimestamp = ({ timestamp }: LastMessageTimestampProps) => {
         }
 
         return dateObj.format('D MMM YYYY')
-    }, [timestamp])
+    }, [timestamp, t])
 
     return (
         <Text className='text-xs text-muted-foreground'>

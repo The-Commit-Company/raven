@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
+import { Text } from '@components/nativewindui/Text';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
@@ -15,9 +16,11 @@ import ChannelMemberRow from '@components/features/channel-settings/Members/Chan
 import SearchInput from '@components/common/SearchInput/SearchInput';
 import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useTranslation } from 'react-i18next';
 
 const ChannelMembers = () => {
 
+    const { t } = useTranslation()
     const { colors } = useColorScheme()
     const insets = useSafeAreaInsets()
 
@@ -51,10 +54,10 @@ const ChannelMembers = () => {
                         <ChevronLeftIcon stroke={colors.foreground} />
                     </TouchableOpacity>
                 ),
-                headerTitle: () => <Text className='ml-2 text-base text-foreground font-semibold'>Members</Text>,
+                headerTitle: () => <Text className='ml-2 text-base text-foreground font-semibold'>{t('common.members')}</Text>,
                 headerRight: () => (
                     <TouchableOpacity onPress={() => router.push(`./add-members`)} hitSlop={10}>
-                        <Text className='text-base font-semibold text-primary dark:text-secondary'>Add</Text>
+                        <Text className='text-base font-semibold text-primary dark:text-secondary'>{t('common.add')}</Text>
                     </TouchableOpacity>
                 )
             }} />
@@ -85,7 +88,7 @@ const ChannelMembers = () => {
                             return (
                                 <View className="flex-1 items-center justify-center">
                                     <Text className="text-[15px] text-center text-muted-foreground">
-                                        No channel members found
+                                        {t('members.noMembers')}
                                     </Text>
                                 </View>
                             )
@@ -97,7 +100,7 @@ const ChannelMembers = () => {
             {!filteredMembers.length && debouncedText.length ? (
                 <View className="absolute inset-0 items-center justify-center h-60">
                     <Text className="text-[15px] text-center text-muted-foreground">
-                        No results found for searched text <Text className='font-semibold'>'{debouncedText}'</Text>
+                        {t('search.noResultsFor', { query: debouncedText })}
                     </Text>
                 </View>
             ) : null}

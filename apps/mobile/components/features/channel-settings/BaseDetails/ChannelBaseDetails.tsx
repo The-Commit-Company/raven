@@ -6,9 +6,11 @@ import { ChannelIcon } from '@components/features/channels/ChannelList/ChannelIc
 import { useColorScheme } from '@hooks/useColorScheme'
 import { Button } from '@components/nativewindui/Button'
 import { router } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 
 const ChannelBaseDetails = ({ channelData }: { channelData: FrappeDoc<ChannelListItem> | undefined }) => {
 
+    const { t } = useTranslation()
     const { colors } = useColorScheme()
 
     return (
@@ -20,7 +22,7 @@ const ChannelBaseDetails = ({ channelData }: { channelData: FrappeDoc<ChannelLis
                 </View>
                 <Button variant="plain" size="none"
                     onPress={() => { router.push(`../edit-channel-details`, { relativeToDirectory: true }) }}>
-                    <Text className='text-[15px] font-medium text-primary dark:text-secondary mr-1'>Edit</Text>
+                    <Text className='text-[15px] font-medium text-primary dark:text-secondary mr-1'>{t('common.edit')}</Text>
                 </Button>
             </View>
             {channelData?.channel_description && <Text className='text-base font-normal text-muted-foreground'>{channelData?.channel_description}</Text>}

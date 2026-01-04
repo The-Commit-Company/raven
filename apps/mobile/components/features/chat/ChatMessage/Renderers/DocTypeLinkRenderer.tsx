@@ -17,6 +17,7 @@ import clsx from 'clsx';
 import { Divider } from '@components/layout/Divider';
 import { useColorScheme } from '@hooks/useColorScheme';
 import useSiteContext from '@hooks/useSiteContext';
+import { useTranslation } from 'react-i18next';
 
 export const DocTypeLinkRenderer = ({ doctype, docname }: { doctype: string, docname: string }) => {
 
@@ -179,6 +180,7 @@ const FieldData = ({ fields, size = 'sm', className }: { fields: [string, any][]
 
 const Actions = ({ data, doctype, docname }: { data: Record<string, any>, doctype: string, docname: string }) => {
 
+    const { t } = useTranslation()
     const siteInfo = useSiteContext()
 
     const route = useMemo(() => {
@@ -192,12 +194,12 @@ const Actions = ({ data, doctype, docname }: { data: Record<string, any>, doctyp
     const copyLink = useCallback(async () => {
         try {
             await Clipboard.setStringAsync(route);
-            toast.success('Link copied to clipboard');
+            toast.success(t('media.linkCopied'));
         } catch (error) {
-            toast.error('Failed to copy link');
+            toast.error(t('media.copyLinkFailed'));
             console.error('Copy error:', error);
         }
-    }, []);
+    }, [t]);
 
     const openLink = useCallback(async () => {
         try {
@@ -206,20 +208,20 @@ const Actions = ({ data, doctype, docname }: { data: Record<string, any>, doctyp
             if (canOpen) {
                 await Linking.openURL(route);
             } else {
-                toast.error('Cannot open this URL');
+                toast.error(t('media.cannotOpenUrl'));
             }
         } catch (error) {
-            toast.error('Failed to open link');
+            toast.error(t('media.openLinkFailed'));
             console.error('Open link error:', error);
         }
-    }, []);
+    }, [t]);
 
     const copyToClipboard = async (text: string) => {
         try {
             await Clipboard.setStringAsync(text);
-            toast.success(`Copied to clipboard`);
+            toast.success(t('media.copiedToClipboard'));
         } catch {
-            toast.error('Failed to copy');
+            toast.error(t('media.copyFailed'));
         }
     };
 
@@ -243,7 +245,7 @@ const Actions = ({ data, doctype, docname }: { data: Record<string, any>, doctyp
             onPress={openLink}>
             <LinkExternalIcon fill={colors.icon} width={20} height={20} />
 
-            <Text className='text-foreground text-sm font-medium'>Open Document</Text>
+            <Text className='text-foreground text-sm font-medium'>{t('media.openDocument')}</Text>
         </Pressable>
         <View className='flex flex-row gap-2'>
             <Pressable
@@ -315,6 +317,7 @@ const DocTypeCardError = ({
     docname: string,
     error: FrappeError
 }) => {
+    const { t } = useTranslation()
     return (
         <View className="bg-background dark:bg-card-background/40 shadow-card border border-border dark:border-border/50 rounded-lg gap-1 p-2.5">
             {/* TODO: Insert Error Banner  here later*/}
@@ -329,7 +332,7 @@ const DocTypeCardError = ({
                 </Text>
             </View>
             <Text className='text-sm text-error-heading'>
-                There was an error loading preview data.
+                {t('errors.previewLoadError')}
             </Text>
         </View>
     )
