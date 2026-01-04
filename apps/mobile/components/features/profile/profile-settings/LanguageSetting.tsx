@@ -1,47 +1,43 @@
-import { View, TouchableOpacity } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
 import { useTranslation } from 'react-i18next';
-import { getAvailableLanguages, saveLanguage, getCurrentLanguage } from '@lib/i18n';
-import { useState } from 'react';
+import { getAvailableLanguages, getCurrentLanguage } from '@lib/i18n';
 import { useColorScheme } from '@hooks/useColorScheme';
 import GlobeIcon from '@assets/icons/GlobeIcon.svg';
-import CheckIcon from '@assets/icons/CheckIcon.svg';
+import ChevronRightIconThin from '@assets/icons/ChevronRightIconThin.svg';
+import { router } from 'expo-router';
 
 const LanguageSetting = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { colors } = useColorScheme();
-    const [currentLang, setCurrentLang] = useState(getCurrentLanguage());
     const languages = getAvailableLanguages();
 
-    const handleLanguageChange = async (langCode: string) => {
-        await saveLanguage(langCode);
-        setCurrentLang(langCode);
+    // Get current language name
+    const currentLangCode = getCurrentLanguage();
+    const currentLangName = languages.find(l => l.code === currentLangCode)?.name || currentLangCode;
+
+    const handleGoToLanguage = () => {
+        router.push('./language', {
+            relativeToDirectory: true
+        });
     };
 
     return (
-        <View className="bg-card rounded-xl overflow-hidden">
-            <View className="flex flex-row items-center px-4 py-3 border-b border-border">
-                <GlobeIcon height={20} width={20} fill={colors.icon} />
-                <Text className="ml-3 font-medium text-foreground">
-                    {t('settings.language')}
-                </Text>
+        <Pressable
+            onPress={handleGoToLanguage}
+            className="bg-background dark:bg-card rounded-xl active:bg-card-background/50 dark:active:bg-card/80"
+        >
+            <View className="flex flex-row py-0 pl-4 pr-2 items-center justify-between">
+                <View className="flex-row items-center gap-2 py-2.5">
+                    <GlobeIcon height={18} width={18} fill={colors.icon} />
+                    <Text className="text-base">{t('settings.language')}</Text>
+                </View>
+                <View className="flex-row h-10 items-center gap-1">
+                    <Text className="text-base text-muted-foreground">{currentLangName}</Text>
+                    <ChevronRightIconThin height={22} width={22} color={colors.grey} />
+                </View>
             </View>
-            {languages.map((lang, index) => (
-                <TouchableOpacity
-                    key={lang.code}
-                    onPress={() => handleLanguageChange(lang.code)}
-                    activeOpacity={0.7}
-                    className={`flex flex-row items-center justify-between px-4 py-3 ${
-                        index < languages.length - 1 ? 'border-b border-border' : ''
-                    }`}
-                >
-                    <Text className="text-foreground">{lang.name}</Text>
-                    {currentLang === lang.code && (
-                        <CheckIcon height={20} width={20} fill={colors.primary} />
-                    )}
-                </TouchableOpacity>
-            ))}
-        </View>
+        </Pressable>
     );
 };
 
