@@ -477,7 +477,11 @@
     "createDM": "Créer un message direct",
     "createDMFailed": "Impossible de créer le canal de messages directs",
     "noUsersFoundWithQuery": "Aucun utilisateur trouvé avec '{{query}}' dans son nom",
-    "allUsersHaveDM": "Il n'y a pas d'utilisateurs avec lesquels vous n'avez pas déjà un canal de messages directs"
+    "allUsersHaveDM": "Il n'y a pas d'utilisateurs avec lesquels vous n'avez pas déjà un canal de messages directs",
+    "noDMsFound": "Aucun message direct",
+    "noDMsFoundWithQuery": "Aucun message direct avec \"{{query}}\"",
+    "tryDifferentSearch": "Essayez de rechercher un autre nom d'utilisateur",
+    "startConversation": "Démarrez une nouvelle conversation pour la voir ici"
   },
   "search": {
     "quickSearch": "Recherche rapide",

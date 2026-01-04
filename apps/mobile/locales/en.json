@@ -477,7 +477,11 @@
     "createDM": "Create DM",
     "createDMFailed": "Could not create a DM channel",
     "noUsersFoundWithQuery": "No users found with '{{query}}' in their name",
-    "allUsersHaveDM": "There are no users that you do not already have a DM channel with"
+    "allUsersHaveDM": "There are no users that you do not already have a DM channel with",
+    "noDMsFound": "No DMs found",
+    "noDMsFoundWithQuery": "No DMs found with \"{{query}}\"",
+    "tryDifferentSearch": "Try searching for a different user name",
+    "startConversation": "Start a new conversation with someone to see it here"
   },
   "search": {
     "quickSearch": "Quick Search",
