@@ -322,6 +322,9 @@
   },
   "threads": {
     "threads": "Fils",
+    "participating": "Participants",
+    "other": "Autres",
+    "aiAgents": "Agents IA",
     "aiThreads": "Fils IA",
     "otherThreads": "Autres fils",
     "noThreads": "Aucun fil",

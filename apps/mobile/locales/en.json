@@ -322,6 +322,9 @@
   },
   "threads": {
     "threads": "Threads",
+    "participating": "Participating",
+    "other": "Other",
+    "aiAgents": "AI Agents",
     "aiThreads": "AI Threads",
     "otherThreads": "Other Threads",
     "noThreads": "No threads yet",
