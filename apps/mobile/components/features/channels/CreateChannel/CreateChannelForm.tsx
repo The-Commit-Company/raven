@@ -123,12 +123,6 @@ const CreateChannelForm = () => {
                     <Controller
                         control={control}
                         name="channel_description"
-                        rules={{
-                            maxLength: {
-                                value: 140,
-                                message: "Channel description cannot be more than 140 characters.",
-                            },
-                        }}
                         render={({ field: { onChange, onBlur, value } }) => (
                             <TextInput
                                 className="w-full border min-h-24 border-border rounded-lg px-3 pt-2 pb-2 text-[16px] leading-5 text-foreground"

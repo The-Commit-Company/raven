@@ -4,6 +4,7 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
+from frappe.query_builder.functions import Count
 
 
 class RavenPollVote(Document):
@@ -60,14 +61,26 @@ class RavenPollVote(Document):
 
 
 def update_poll_votes(poll_id):
-	poll = frappe.get_cached_doc("Raven Poll", poll_id)
+	"""
+	To update all the votes in a poll, instead of updating the document directly, just write to the child table to avoid setting the "modified" timestamp.
+	"""
+	poll = frappe.get_doc("Raven Poll", poll_id, for_update=True)
 	# get votes for each option
-	poll_votes = frappe.get_all(
-		"Raven Poll Vote",
-		filters={"poll_id": poll_id},
-		fields=["option", "count(name) as votes"],
-		group_by="option",
+	poll_vote = frappe.qb.DocType("Raven Poll Vote")
+
+	poll_votes = (
+		frappe.qb.from_(poll_vote)
+		.select(poll_vote.option, Count(poll_vote.name).as_("votes"))
+		.where(poll_vote.poll_id == poll_id)
+		.groupby(poll_vote.option)
+		.run(as_dict=True)
 	)
+
+	users = frappe.get_all(
+		"Raven Poll Vote", filters={"poll_id": poll_id}, group_by="user_id", fields=["user_id"]
+	)
+
+	total_votes = len(users) if users else 0
 
 	# update the votes for each option in the poll
 	for option in poll.options:
@@ -77,4 +90,11 @@ def update_poll_votes(poll_id):
 				option.votes = vote.votes
 				break
 
-	poll.save(ignore_permissions=True)
+		frappe.db.set_value(
+			"Raven Poll Option", option.name, "votes", option.votes, update_modified=False
+		)
+
+	frappe.db.set_value("Raven Poll", poll_id, "total_votes", total_votes, update_modified=False)
+	poll.total_votes = total_votes
+
+	poll.notify_update()

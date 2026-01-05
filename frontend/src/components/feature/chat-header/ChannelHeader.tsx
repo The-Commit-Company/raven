@@ -8,6 +8,8 @@ import { ViewChannelMemberAvatars } from "./ViewChannelMemberAvatars"
 import { BiChevronLeft } from "react-icons/bi"
 import { Link } from "react-router-dom"
 import { ViewPinnedMessagesButton } from "../pinned-messages/ViewPinnedMessagesButton"
+import { useAtomValue } from "jotai"
+import { lastWorkspaceAtom } from "@/utils/lastVisitedAtoms"
 
 interface ChannelHeaderProps {
     channelData: ChannelListItem
@@ -17,7 +19,7 @@ export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
 
     // The channel header has the channel name, the channel type icon, edit channel name button, and the view or add members button
 
-    const lastWorkspace = localStorage.getItem('ravenLastWorkspace')
+    const lastWorkspace = useAtomValue(lastWorkspaceAtom)
 
     return (
         <PageHeader>

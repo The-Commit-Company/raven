@@ -157,10 +157,26 @@ doc_events = {
 # ---------------
 
 scheduler_events = {
+	# "all": [
+	# 	"raven.scheduler.all"
+	# ],
+	# "daily": [
+	# 	"raven.scheduler.daily"
+	# ],
+	# "hourly": [
+	# 	"raven.scheduler.hourly"
+	# ],
+	# "weekly": [
+	# 	"raven.scheduler.weekly"
+	# ],
+	# "monthly": [
+	# 	"raven.scheduler.monthly"
+	# ],
+	"daily_maintenance": ["raven.scheduler.daily.sync_invalid_tokens"],
 	"cron": {
 		# run every 5 minutes
 		"*/5 * * * *": ["raven.scheduler.close_expired_polls.close_expired_polls"]
-	}
+	},
 }
 
 # Testing
@@ -256,3 +272,8 @@ on_logout = "raven.api.user_availability.set_user_inactive"
 export_python_type_annotations = True
 
 raven_document_link_override = "raven.api.document_link.get_new_app_document_links"
+
+# Translation
+# ------------
+# List of apps whose translatable strings should be excluded from this app's translations.
+ignore_translatable_strings_from = ["frappe"]
