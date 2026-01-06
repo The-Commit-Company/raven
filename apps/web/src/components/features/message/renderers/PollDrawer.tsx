@@ -125,7 +125,7 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                                 showStatusIndicator={false}
                             />
                             <span>{user?.full_name || user?.name || "User"}</span>
-                            <span>{poll.creation}</span>
+                            <span>{getDateObject(poll.creation).format('MMM D, hh:mm A')}</span>
                         </div>
 
                         {/* Poll Options */}
