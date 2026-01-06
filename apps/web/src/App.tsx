@@ -15,6 +15,7 @@ import Cookies from 'js-cookie'
 import LoginPage from "@pages/auth/Login"
 import ForgotPassword from "@pages/auth/ForgotPassword"
 import Threads from "@pages/Threads"
+import WorkspaceList from "@pages/settings/Workspaces/WorkspaceList"
 
 const isDesktop = window.innerWidth > 768
 
@@ -59,6 +60,7 @@ function App() {
               <Route path="profile" element={<Profile />} />
               <Route path="appearance" element={<Appearance />} />
               <Route path="preferences" element={<Preferences />} />
+              <Route path="workspaces" element={<WorkspaceList />} />
             </Route>
             <Route path="saved-messages" element={<SavedMessages />} />
             <Route path="search" element={<Search />} />

@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom"
 import { cn } from "@lib/utils"
 import { Separator } from "@components/ui/separator"
-import { UserCircle } from "lucide-react"
+import { UserCircle, Building2 } from "lucide-react"
 
 interface SettingsGroupProps {
     title: string
@@ -61,7 +61,7 @@ const SettingsSidebarItem = ({
                         standalone && "gap-1.5"
                     )}
                 >
-                    {Icon && <Icon size={15} className="flex-shrink-0" />}
+                    {Icon && <Icon size={15} className="shrink-0" />}
                     <span>{title}</span>
                 </div>
             )}
@@ -77,6 +77,9 @@ export const SettingsSidebar = () => {
                     <SettingsSidebarItem title="Profile" to="profile" />
                     <SettingsSidebarItem title="Appearance" to="appearance" />
                     <SettingsSidebarItem title="Preferences" to="preferences" />
+                </SettingsGroup>
+                <SettingsGroup title="Workspaces" icon={Building2}>
+                    <SettingsSidebarItem title="Workspaces" to="workspaces" />
                 </SettingsGroup>
                 <SettingsSeparator />
             </div>
