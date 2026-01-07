@@ -15,6 +15,7 @@ import { getDateObject } from "@utils/date"
 import type { RavenPoll } from "@raven/types/RavenMessaging/RavenPoll"
 import type { RavenPollOption } from "@raven/types/RavenMessaging/RavenPollOption"
 import type { UserFields } from "@raven/types/common/UserFields"
+import { getOptionPercentage, getPollStatus, isUserVote } from "./poll-components"
 
 export interface PollDrawerProps {
     user: UserFields
@@ -32,8 +33,7 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
     onClose,
 }) => {
     const totalVotes = poll.total_votes || 0
-    const isAnonymous = poll.is_anonymous === 1
-    const isPollClosed = poll.is_disabled === 1
+    const { isAnonymous, isDisabled: isPollClosed } = getPollStatus(poll)
     const hasVoted = currentUserVotes.length > 0
 
     const badgeClassName = "bg-muted text-muted-foreground border-border"
@@ -131,11 +131,9 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                         {/* Poll Options */}
                         <div className="space-y-3">
                             {poll.options.map((option) => {
+                                const percentage = getOptionPercentage(option, poll)
+                                const isCurrentUserVote = isUserVote(option.name, currentUserVotes)
                                 const optionVotes = option.votes || 0
-                                const percentage = totalVotes > 0 ? (optionVotes / totalVotes) * 100 : 0
-                                const isCurrentUserVote = currentUserVotes.some(
-                                    (vote) => vote.option === option.name
-                                )
                                 const optionWithVoters = option as typeof option & {
                                     voters?: { id: string; name: string; full_name?: string; image: string }[]
                                 }
