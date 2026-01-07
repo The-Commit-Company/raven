@@ -13,6 +13,7 @@ import { Message } from "@raven/types/common/Message"
 import { useMemo } from "react"
 import { formatMessages } from "@hooks/useGetMessages"
 import { MessageItem } from "./renderers/MessageItem"
+import { PollVotingMessage } from "./renderers/PollVotingMessage"
 
 
 const dummyUser1 = {
@@ -90,11 +91,11 @@ const dummyPoll = {
             option: "The Overstory",
             votes: 5,
             voters: [
-                { id: "1", name: "Alice", image: "https://randomuser.me/api/portraits/women/1.jpg" },
-                { id: "2", name: "Bob", image: "https://randomuser.me/api/portraits/men/2.jpg" },
-                { id: "3", name: "Carol", image: "https://randomuser.me/api/portraits/women/3.jpg" },
-                { id: "4", name: "Dave", image: "https://randomuser.me/api/portraits/men/4.jpg" },
-                { id: "5", name: "Eve", image: "https://randomuser.me/api/portraits/women/5.jpg" },
+                { id: "1", name: "Alice", full_name: "Alice Smith", image: "https://randomuser.me/api/portraits/women/1.jpg" },
+                { id: "2", name: "Bob", full_name: "Bob Johnson", image: "https://randomuser.me/api/portraits/men/2.jpg" },
+                { id: "3", name: "Carol", full_name: "Carol Williams", image: "https://randomuser.me/api/portraits/women/3.jpg" },
+                { id: "4", name: "Dave", full_name: "Dave Brown", image: "https://randomuser.me/api/portraits/men/4.jpg" },
+                { id: "5", name: "Eve", full_name: "Eve Davis", image: "https://randomuser.me/api/portraits/women/5.jpg" },
             ],
         },
         {
@@ -107,8 +108,8 @@ const dummyPoll = {
             option: "The Nature Fix",
             votes: 2,
             voters: [
-                { id: "6", name: "Frank", image: "https://randomuser.me/api/portraits/men/6.jpg" },
-                { id: "7", name: "Grace", image: "https://randomuser.me/api/portraits/women/7.jpg" },
+                { id: "6", name: "Frank", full_name: "Frank Miller", image: "https://randomuser.me/api/portraits/men/6.jpg" },
+                { id: "7", name: "Grace", full_name: "Grace Wilson", image: "https://randomuser.me/api/portraits/women/7.jpg" },
             ],
         },
         {
@@ -126,6 +127,7 @@ const dummyPoll = {
     is_anonymous: 0 as 0 | 1,
     is_multi_choice: 0 as 0 | 1,
     is_disabled: 0 as 0 | 1,
+    end_date: "2024-12-31 23:59:59",
     total_votes: 7,
 }
 
@@ -150,14 +152,14 @@ const dummyPoll2 = {
             option: "TypeScript",
             votes: 8,
             voters: [
-                { id: "1", name: "Alice", image: "https://randomuser.me/api/portraits/women/1.jpg" },
-                { id: "2", name: "Bob", image: "https://randomuser.me/api/portraits/men/2.jpg" },
-                { id: "3", name: "Carol", image: "https://randomuser.me/api/portraits/women/3.jpg" },
-                { id: "4", name: "Dave", image: "https://randomuser.me/api/portraits/men/4.jpg" },
-                { id: "5", name: "Eve", image: "https://randomuser.me/api/portraits/women/5.jpg" },
-                { id: "6", name: "Frank", image: "https://randomuser.me/api/portraits/men/6.jpg" },
-                { id: "7", name: "Grace", image: "https://randomuser.me/api/portraits/women/7.jpg" },
-                { id: "8", name: "Henry", image: "https://randomuser.me/api/portraits/men/8.jpg" },
+                { id: "1", name: "Alice", full_name: "Alice Smith", image: "https://randomuser.me/api/portraits/women/1.jpg" },
+                { id: "2", name: "Bob", full_name: "Bob Johnson", image: "https://randomuser.me/api/portraits/men/2.jpg" },
+                { id: "3", name: "Carol", full_name: "Carol Williams", image: "https://randomuser.me/api/portraits/women/3.jpg" },
+                { id: "4", name: "Dave", full_name: "Dave Brown", image: "https://randomuser.me/api/portraits/men/4.jpg" },
+                { id: "5", name: "Eve", full_name: "Eve Davis", image: "https://randomuser.me/api/portraits/women/5.jpg" },
+                { id: "6", name: "Frank", full_name: "Frank Miller", image: "https://randomuser.me/api/portraits/men/6.jpg" },
+                { id: "7", name: "Grace", full_name: "Grace Wilson", image: "https://randomuser.me/api/portraits/women/7.jpg" },
+                { id: "8", name: "Henry", full_name: "Henry Moore", image: "https://randomuser.me/api/portraits/men/8.jpg" },
             ],
         },
         {
@@ -170,9 +172,9 @@ const dummyPoll2 = {
             option: "Python",
             votes: 3,
             voters: [
-                { id: "9", name: "Ivy", image: "https://randomuser.me/api/portraits/women/9.jpg" },
-                { id: "10", name: "Jack", image: "https://randomuser.me/api/portraits/men/10.jpg" },
-                { id: "11", name: "Kate", image: "https://randomuser.me/api/portraits/women/11.jpg" },
+                { id: "9", name: "Ivy", full_name: "Ivy Taylor", image: "https://randomuser.me/api/portraits/women/9.jpg" },
+                { id: "10", name: "Jack", full_name: "Jack Anderson", image: "https://randomuser.me/api/portraits/men/10.jpg" },
+                { id: "11", name: "Kate", full_name: "Kate Thomas", image: "https://randomuser.me/api/portraits/women/11.jpg" },
             ],
         },
         {
@@ -185,14 +187,15 @@ const dummyPoll2 = {
             option: "JavaScript",
             votes: 2,
             voters: [
-                { id: "12", name: "Liam", image: "https://randomuser.me/api/portraits/men/12.jpg" },
-                { id: "13", name: "Mia", image: "https://randomuser.me/api/portraits/women/13.jpg" },
+                { id: "12", name: "Liam", full_name: "Liam Jackson", image: "https://randomuser.me/api/portraits/men/12.jpg" },
+                { id: "13", name: "Mia", full_name: "Mia White", image: "https://randomuser.me/api/portraits/women/13.jpg" },
             ],
         },
     ],
     is_anonymous: 0 as 0 | 1,
     is_multi_choice: 0 as 0 | 1,
     is_disabled: 0 as 0 | 1,
+    end_date: "2025-01-15 18:00:00",
     total_votes: 13,
 }
 
@@ -217,10 +220,10 @@ const dummyPoll3 = {
             option: "Pizza",
             votes: 4,
             voters: [
-                { id: "1", name: "Alice", image: "https://randomuser.me/api/portraits/women/1.jpg" },
-                { id: "2", name: "Bob", image: "https://randomuser.me/api/portraits/men/2.jpg" },
-                { id: "3", name: "Carol", image: "https://randomuser.me/api/portraits/women/3.jpg" },
-                { id: "4", name: "Dave", image: "https://randomuser.me/api/portraits/men/4.jpg" },
+                { id: "1", name: "Alice", full_name: "Alice Smith", image: "https://randomuser.me/api/portraits/women/1.jpg" },
+                { id: "2", name: "Bob", full_name: "Bob Johnson", image: "https://randomuser.me/api/portraits/men/2.jpg" },
+                { id: "3", name: "Carol", full_name: "Carol Williams", image: "https://randomuser.me/api/portraits/women/3.jpg" },
+                { id: "4", name: "Dave", full_name: "Dave Brown", image: "https://randomuser.me/api/portraits/men/4.jpg" },
             ],
         },
         {
@@ -233,9 +236,9 @@ const dummyPoll3 = {
             option: "Sushi",
             votes: 3,
             voters: [
-                { id: "5", name: "Eve", image: "https://randomuser.me/api/portraits/women/5.jpg" },
-                { id: "6", name: "Frank", image: "https://randomuser.me/api/portraits/men/6.jpg" },
-                { id: "7", name: "Grace", image: "https://randomuser.me/api/portraits/women/7.jpg" },
+                { id: "5", name: "Eve", full_name: "Eve Davis", image: "https://randomuser.me/api/portraits/women/5.jpg" },
+                { id: "6", name: "Frank", full_name: "Frank Miller", image: "https://randomuser.me/api/portraits/men/6.jpg" },
+                { id: "7", name: "Grace", full_name: "Grace Wilson", image: "https://randomuser.me/api/portraits/women/7.jpg" },
             ],
         },
         {
@@ -248,17 +251,333 @@ const dummyPoll3 = {
             option: "Salad",
             votes: 1,
             voters: [
-                { id: "8", name: "Henry", image: "https://randomuser.me/api/portraits/men/8.jpg" },
+                { id: "8", name: "Henry", full_name: "Henry Moore", image: "https://randomuser.me/api/portraits/men/8.jpg" },
+            ],
+        },
+    ],
+    is_anonymous: 0 as 0 | 1,
+    is_multi_choice: 0 as 0 | 1,
+    is_disabled: 1 as 0 | 1,
+    end_date: "2024-01-03 12:00:00",
+    total_votes: 8,
+}
+
+const dummyCurrentUserVotes3 = [{ option: "opt-7" }]
+
+// Poll 4: Anonymous single choice poll (user hasn't voted)
+const dummyPoll4 = {
+    creation: "2024-01-04 10:00:00",
+    name: "poll-4",
+    modified: "2024-01-04 10:00:00",
+    owner: "user@example.com",
+    modified_by: "user@example.com",
+    docstatus: 0 as 0 | 1 | 2,
+    question: "What's your preferred work schedule?",
+    options: [
+        {
+            creation: "2024-01-04 10:00:00",
+            name: "opt-10",
+            modified: "2024-01-04 10:00:00",
+            owner: "user@example.com",
+            modified_by: "user@example.com",
+            docstatus: 0 as 0 | 1 | 2,
+            option: "9 AM - 5 PM",
+            votes: 0,
+        },
+        {
+            creation: "2024-01-04 10:00:00",
+            name: "opt-11",
+            modified: "2024-01-04 10:00:00",
+            owner: "user@example.com",
+            modified_by: "user@example.com",
+            docstatus: 0 as 0 | 1 | 2,
+            option: "10 AM - 6 PM",
+            votes: 0,
+        },
+        {
+            creation: "2024-01-04 10:00:00",
+            name: "opt-12",
+            modified: "2024-01-04 10:00:00",
+            owner: "user@example.com",
+            modified_by: "user@example.com",
+            docstatus: 0 as 0 | 1 | 2,
+            option: "Flexible hours",
+            votes: 0,
+        },
+    ],
+    is_anonymous: 1 as 0 | 1,
+    is_multi_choice: 0 as 0 | 1,
+    is_disabled: 0 as 0 | 1,
+    end_date: "2024-12-31 23:59:59",
+    total_votes: 0,
+}
+
+// Poll 5: Multi choice poll (user hasn't voted)
+const dummyPoll5 = {
+    creation: "2024-01-05 14:00:00",
+    name: "poll-5",
+    modified: "2024-01-05 14:00:00",
+    owner: "user@example.com",
+    modified_by: "user@example.com",
+    docstatus: 0 as 0 | 1 | 2,
+    question: "Which team building activities interest you? (Select all that apply)",
+    options: [
+        {
+            creation: "2024-01-05 14:00:00",
+            name: "opt-13",
+            modified: "2024-01-05 14:00:00",
+            owner: "user@example.com",
+            modified_by: "user@example.com",
+            docstatus: 0 as 0 | 1 | 2,
+            option: "Escape room",
+            votes: 12,
+            voters: [
+                { id: "1", name: "Alice", full_name: "Alice Smith", image: "https://randomuser.me/api/portraits/women/1.jpg" },
+                { id: "2", name: "Bob", full_name: "Bob Johnson", image: "https://randomuser.me/api/portraits/men/2.jpg" },
+                { id: "3", name: "Carol", full_name: "Carol Williams", image: "https://randomuser.me/api/portraits/women/3.jpg" },
+                { id: "4", name: "Dave", full_name: "Dave Brown", image: "https://randomuser.me/api/portraits/men/4.jpg" },
+                { id: "5", name: "Eve", full_name: "Eve Davis", image: "https://randomuser.me/api/portraits/women/5.jpg" },
+            ],
+        },
+        {
+            creation: "2024-01-05 14:00:00",
+            name: "opt-14",
+            modified: "2024-01-05 14:00:00",
+            owner: "user@example.com",
+            modified_by: "user@example.com",
+            docstatus: 0 as 0 | 1 | 2,
+            option: "Cooking class",
+            votes: 8,
+            voters: [
+                { id: "6", name: "Frank", full_name: "Frank Miller", image: "https://randomuser.me/api/portraits/men/6.jpg" },
+                { id: "7", name: "Grace", full_name: "Grace Wilson", image: "https://randomuser.me/api/portraits/women/7.jpg" },
+                { id: "8", name: "Henry", full_name: "Henry Moore", image: "https://randomuser.me/api/portraits/men/8.jpg" },
+            ],
+        },
+        {
+            creation: "2024-01-05 14:00:00",
+            name: "opt-15",
+            modified: "2024-01-05 14:00:00",
+            owner: "user@example.com",
+            modified_by: "user@example.com",
+            docstatus: 0 as 0 | 1 | 2,
+            option: "Outdoor hiking",
+            votes: 6,
+            voters: [
+                { id: "9", name: "Ivy", full_name: "Ivy Taylor", image: "https://randomuser.me/api/portraits/women/9.jpg" },
+                { id: "10", name: "Jack", full_name: "Jack Anderson", image: "https://randomuser.me/api/portraits/men/10.jpg" },
+            ],
+        },
+        {
+            creation: "2024-01-05 14:00:00",
+            name: "opt-16",
+            modified: "2024-01-05 14:00:00",
+            owner: "user@example.com",
+            modified_by: "user@example.com",
+            docstatus: 0 as 0 | 1 | 2,
+            option: "Board games night",
+            votes: 10,
+            voters: [
+                { id: "11", name: "Kate", full_name: "Kate Thomas", image: "https://randomuser.me/api/portraits/women/11.jpg" },
+                { id: "12", name: "Liam", full_name: "Liam Jackson", image: "https://randomuser.me/api/portraits/men/12.jpg" },
+            ],
+        },
+    ],
+    is_anonymous: 0 as 0 | 1,
+    is_multi_choice: 1 as 0 | 1,
+    is_disabled: 0 as 0 | 1,
+    end_date: "2024-12-31 23:59:59",
+    total_votes: 36,
+}
+
+// Poll 6: Single choice poll (user hasn't voted)
+const dummyPoll6 = {
+    creation: "2024-01-06 09:00:00",
+    name: "poll-6",
+    modified: "2024-01-06 09:00:00",
+    owner: "user@example.com",
+    modified_by: "user@example.com",
+    docstatus: 0 as 0 | 1 | 2,
+    question: "Which framework should we use for the new project?",
+    options: [
+        {
+            creation: "2024-01-06 09:00:00",
+            name: "opt-17",
+            modified: "2024-01-06 09:00:00",
+            owner: "user@example.com",
+            modified_by: "user@example.com",
+            docstatus: 0 as 0 | 1 | 2,
+            option: "React",
+            votes: 15,
+            voters: [
+                { id: "1", name: "Alice", full_name: "Alice Smith", image: "https://randomuser.me/api/portraits/women/1.jpg" },
+                { id: "2", name: "Bob", full_name: "Bob Johnson", image: "https://randomuser.me/api/portraits/men/2.jpg" },
+                { id: "3", name: "Carol", full_name: "Carol Williams", image: "https://randomuser.me/api/portraits/women/3.jpg" },
+                { id: "4", name: "Dave", full_name: "Dave Brown", image: "https://randomuser.me/api/portraits/men/4.jpg" },
+                { id: "5", name: "Eve", full_name: "Eve Davis", image: "https://randomuser.me/api/portraits/women/5.jpg" },
+            ],
+        },
+        {
+            creation: "2024-01-06 09:00:00",
+            name: "opt-18",
+            modified: "2024-01-06 09:00:00",
+            owner: "user@example.com",
+            modified_by: "user@example.com",
+            docstatus: 0 as 0 | 1 | 2,
+            option: "Vue",
+            votes: 7,
+            voters: [
+                { id: "6", name: "Frank", full_name: "Frank Miller", image: "https://randomuser.me/api/portraits/men/6.jpg" },
+                { id: "7", name: "Grace", full_name: "Grace Wilson", image: "https://randomuser.me/api/portraits/women/7.jpg" },
+            ],
+        },
+        {
+            creation: "2024-01-06 09:00:00",
+            name: "opt-19",
+            modified: "2024-01-06 09:00:00",
+            owner: "user@example.com",
+            modified_by: "user@example.com",
+            docstatus: 0 as 0 | 1 | 2,
+            option: "Svelte",
+            votes: 3,
+            voters: [
+                { id: "8", name: "Henry", full_name: "Henry Moore", image: "https://randomuser.me/api/portraits/men/8.jpg" },
             ],
         },
     ],
     is_anonymous: 0 as 0 | 1,
     is_multi_choice: 0 as 0 | 1,
     is_disabled: 0 as 0 | 1,
-    total_votes: 8,
+    end_date: "2024-12-31 23:59:59",
+    total_votes: 25,
 }
 
-const dummyCurrentUserVotes3: Array<{ option: string }> = []
+// Poll 7: Multi choice poll (user hasn't voted) - Anonymous
+const dummyPoll7 = {
+    creation: "2024-01-07 15:00:00",
+    name: "poll-7",
+    modified: "2024-01-07 15:00:00",
+    owner: "user@example.com",
+    modified_by: "user@example.com",
+    docstatus: 0 as 0 | 1 | 2,
+    question: "What skills would you like to develop? (Select all that apply)",
+    options: [
+        {
+            creation: "2024-01-07 15:00:00",
+            name: "opt-20",
+            modified: "2024-01-07 15:00:00",
+            owner: "user@example.com",
+            modified_by: "user@example.com",
+            docstatus: 0 as 0 | 1 | 2,
+            option: "Leadership",
+            votes: 0,
+        },
+        {
+            creation: "2024-01-07 15:00:00",
+            name: "opt-21",
+            modified: "2024-01-07 15:00:00",
+            owner: "user@example.com",
+            modified_by: "user@example.com",
+            docstatus: 0 as 0 | 1 | 2,
+            option: "Public speaking",
+            votes: 0,
+        },
+        {
+            creation: "2024-01-07 15:00:00",
+            name: "opt-22",
+            modified: "2024-01-07 15:00:00",
+            owner: "user@example.com",
+            modified_by: "user@example.com",
+            docstatus: 0 as 0 | 1 | 2,
+            option: "Technical writing",
+            votes: 0,
+        },
+        {
+            creation: "2024-01-07 15:00:00",
+            name: "opt-23",
+            modified: "2024-01-07 15:00:00",
+            owner: "user@example.com",
+            modified_by: "user@example.com",
+            docstatus: 0 as 0 | 1 | 2,
+            option: "Data analysis",
+            votes: 0,
+        },
+    ],
+    is_anonymous: 1 as 0 | 1,
+    is_multi_choice: 1 as 0 | 1,
+    is_disabled: 0 as 0 | 1,
+    end_date: "2024-12-31 23:59:59",
+    total_votes: 0,
+}
+
+// Poll 8: Closed single choice poll (user hasn't voted)
+const dummyPoll8 = {
+    creation: "2024-01-08 11:00:00",
+    name: "poll-8",
+    modified: "2024-01-08 11:00:00",
+    owner: "user@example.com",
+    modified_by: "user@example.com",
+    docstatus: 0 as 0 | 1 | 2,
+    question: "Which location should we choose for the team offsite?",
+    options: [
+        {
+            creation: "2024-01-08 11:00:00",
+            name: "opt-24",
+            modified: "2024-01-08 11:00:00",
+            owner: "user@example.com",
+            modified_by: "user@example.com",
+            docstatus: 0 as 0 | 1 | 2,
+            option: "Mountain resort",
+            votes: 8,
+            voters: [
+                { id: "1", name: "Alice", full_name: "Alice Smith", image: "https://randomuser.me/api/portraits/women/1.jpg" },
+                { id: "2", name: "Bob", full_name: "Bob Johnson", image: "https://randomuser.me/api/portraits/men/2.jpg" },
+                { id: "3", name: "Carol", full_name: "Carol Williams", image: "https://randomuser.me/api/portraits/women/3.jpg" },
+                { id: "4", name: "Dave", full_name: "Dave Brown", image: "https://randomuser.me/api/portraits/men/4.jpg" },
+                { id: "5", name: "Eve", full_name: "Eve Davis", image: "https://randomuser.me/api/portraits/women/5.jpg" },
+                { id: "6", name: "Frank", full_name: "Frank Miller", image: "https://randomuser.me/api/portraits/men/6.jpg" },
+                { id: "7", name: "Grace", full_name: "Grace Wilson", image: "https://randomuser.me/api/portraits/women/7.jpg" },
+                { id: "8", name: "Henry", full_name: "Henry Moore", image: "https://randomuser.me/api/portraits/men/8.jpg" },
+            ],
+        },
+        {
+            creation: "2024-01-08 11:00:00",
+            name: "opt-25",
+            modified: "2024-01-08 11:00:00",
+            owner: "user@example.com",
+            modified_by: "user@example.com",
+            docstatus: 0 as 0 | 1 | 2,
+            option: "Beach destination",
+            votes: 5,
+            voters: [
+                { id: "9", name: "Ivy", full_name: "Ivy Taylor", image: "https://randomuser.me/api/portraits/women/9.jpg" },
+                { id: "10", name: "Jack", full_name: "Jack Anderson", image: "https://randomuser.me/api/portraits/men/10.jpg" },
+                { id: "11", name: "Kate", full_name: "Kate Thomas", image: "https://randomuser.me/api/portraits/women/11.jpg" },
+                { id: "12", name: "Liam", full_name: "Liam Jackson", image: "https://randomuser.me/api/portraits/men/12.jpg" },
+                { id: "13", name: "Mia", full_name: "Mia White", image: "https://randomuser.me/api/portraits/women/13.jpg" },
+            ],
+        },
+        {
+            creation: "2024-01-08 11:00:00",
+            name: "opt-26",
+            modified: "2024-01-08 11:00:00",
+            owner: "user@example.com",
+            modified_by: "user@example.com",
+            docstatus: 0 as 0 | 1 | 2,
+            option: "City hotel",
+            votes: 2,
+            voters: [
+                { id: "14", name: "Noah", full_name: "Noah Harris", image: "https://randomuser.me/api/portraits/men/14.jpg" },
+                { id: "15", name: "Olivia", full_name: "Olivia Martin", image: "https://randomuser.me/api/portraits/women/15.jpg" },
+            ],
+        },
+    ],
+    is_anonymous: 0 as 0 | 1,
+    is_multi_choice: 0 as 0 | 1,
+    is_disabled: 1 as 0 | 1,
+    end_date: "2024-01-08 12:00:00",
+    total_votes: 15,
+}
 
 const dummyImages = [
     {
@@ -529,12 +848,12 @@ const dummySingleImage = [
     {
         name: "img-single",
         file_name: "product_shot.jpg",
-        file_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
+        file_url: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop",
         file_size: "2.7 MB",
         file_type: "jpg",
         thumbnail_width: 800,
         thumbnail_height: 600,
-        file_thumbnail: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=225&fit=crop"
+        file_thumbnail: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=300&h=225&fit=crop"
     }
 ]
 
@@ -1251,6 +1570,69 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 message="Yes! Their margherita is amazing"
                 time="11:34 AM"
                 name="msg-54"
+            />
+
+            {/* Example 1: Anonymous single choice poll (user hasn't voted) */}
+            <PollVotingMessage
+                user={dummyUser2}
+                poll={dummyPoll4}
+                options={dummyPoll4.options}
+                time="12:00 PM"
+                name="msg-poll-1"
+                onOptionSelect={(option) => {
+                    console.log("Selected option:", option)
+                }}
+            />
+
+            {/* Example 2: Multi choice poll (user hasn't voted) */}
+            <PollVotingMessage
+                user={dummyUser3}
+                poll={dummyPoll5}
+                options={dummyPoll5.options}
+                time="12:05 PM"
+                name="msg-poll-2"
+                onOptionToggle={(optionId, checked) => {
+                    console.log("Toggled option:", optionId, checked)
+                }}
+                onSubmit={(selectedIds) => {
+                    console.log("Submitted options:", selectedIds)
+                }}
+            />
+
+            {/* Example 3: Single choice poll (user hasn't voted) */}
+            <PollVotingMessage
+                user={dummyUser4}
+                poll={dummyPoll6}
+                options={dummyPoll6.options}
+                time="12:10 PM"
+                name="msg-poll-3"
+                onOptionSelect={(option) => {
+                    console.log("Selected option:", option)
+                }}
+            />
+
+            {/* Example 4: Multi choice poll (user hasn't voted) - Anonymous */}
+            <PollVotingMessage
+                user={dummyUser5}
+                poll={dummyPoll7}
+                options={dummyPoll7.options}
+                time="12:15 PM"
+                name="msg-poll-4"
+                onOptionToggle={(optionId, checked) => {
+                    console.log("Toggled option:", optionId, checked)
+                }}
+                onSubmit={(selectedIds) => {
+                    console.log("Submitted options:", selectedIds)
+                }}
+            />
+
+            {/* Example 5: Closed single choice poll (user hasn't voted) - Shows results */}
+            <PollMessage
+                user={dummyUser1}
+                poll={dummyPoll8}
+                currentUserVotes={[]}
+                time="12:20 PM"
+                name="msg-poll-5"
             />
 
             <ReplyMessage

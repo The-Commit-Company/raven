@@ -4,8 +4,9 @@ import ChannelMembersDrawer from '../components/features/channel/ChannelMembersD
 import ChatStream from "../components/features/message/ChatStream";
 import ChatInput from '@components/features/ChatInput/ChatInput';
 import ThreadDrawer from '@components/features/message/ThreadDrawer';
-import { useAtomValue } from 'jotai';
-import { channelDrawerAtom } from '@utils/channelAtoms';
+import { PollDrawer } from '@components/features/message/renderers/PollDrawer';
+import { useAtom, useAtomValue } from 'jotai';
+import { channelDrawerAtom, pollDrawerAtom } from '@utils/channelAtoms';
 import { useCurrentChannelID } from '@hooks/useCurrentChannelID';
 import { RefObject, useRef } from 'react';
 import { useParams } from 'react-router-dom';
@@ -84,8 +85,10 @@ const ChannelDrawer = () => {
     const channelID = useCurrentChannelID()
     const { threadID } = useParams<{ threadID?: string }>()
     const drawerType = useAtomValue(channelDrawerAtom(channelID))
+    const pollDrawerData = useAtomValue(pollDrawerAtom(channelID))
+    const [, setPollDrawerData] = useAtom(pollDrawerAtom(channelID))
 
-    if (!threadID && drawerType === '') {
+    if (!threadID && drawerType === '' && !pollDrawerData) {
         return <div className="w-0" />
     }
 
@@ -95,6 +98,13 @@ const ChannelDrawer = () => {
         <div className={`transition-all duration-300 h-full border-l bg-background flex flex-col ${width}`}>
             {threadID ? (
                 <ThreadDrawer />
+            ) : pollDrawerData ? (
+                <PollDrawer
+                    user={pollDrawerData.user}
+                    poll={pollDrawerData.poll}
+                    currentUserVotes={pollDrawerData.currentUserVotes}
+                    onClose={() => setPollDrawerData(null)}
+                />
             ) : drawerType === 'members' ? (
                 <ChannelMembersDrawer />
             ) : SETTINGS_DRAWER_TYPES.includes(drawerType as typeof SETTINGS_DRAWER_TYPES[number]) ? (

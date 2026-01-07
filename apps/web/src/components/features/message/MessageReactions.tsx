@@ -82,7 +82,7 @@ const ReactionButton = memo<ReactionButtonProps>(({
             className={cn(
               "h-7 px-2 py-1 text-xs gap-1 min-w-0 font-normal transition-all hover:scale-105 cursor-pointer rounded-md border",
               isUserReacted
-                ? "bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 border-blue-300 dark:border-blue-600"
+                ? "bg-blue-500/10 hover:bg-blue-500/10 border-blue-500/30 dark:bg-blue-500/5 dark:hover:bg-blue-500/10 dark:border-blue-500/30"
                 : "bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 border-gray-200 dark:border-gray-600"
             )}
             onClick={handleClick}
