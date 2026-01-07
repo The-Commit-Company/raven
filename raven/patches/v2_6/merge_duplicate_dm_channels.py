@@ -82,6 +82,7 @@ def migrate_linked_records(primary_channel: str, duplicate_channels: list):
 		("Raven Scheduler Event", "channel"),
 		("Raven Scheduler Event", "dm"),
 		("Raven Webhook", "channel_id"),
+		("Raven Message Reaction", "channel_id"),
 	]
 
 	for doctype, field in linked_doctypes:
