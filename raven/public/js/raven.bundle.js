@@ -2,8 +2,8 @@ $(document).on('app_ready', function () {
     if (frappe.boot.show_raven_chat_on_desk && frappe.user.has_role("Raven User")) {
 
         try {
-            // If on mobile, do not show the chat
-            if (frappe.is_mobile()) {
+            // If on mobile or on frappe v16, do not show the chat
+            if (frappe.is_mobile() || frappe.boot.versions["frappe"].startsWith('16')) {
                 return;
             }
             let main_section = $(document).find('.main-section');
