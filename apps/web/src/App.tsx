@@ -141,12 +141,10 @@ init({
 })
 
 const getSiteName = () => {
-  // @ts-expect-error - Window exists
   if (window.frappe?.boot?.versions?.frappe.startsWith('14')) {
     return import.meta.env.VITE_SITE_NAME
   }
   else {
-    // @ts-expect-error - Window exists
     return window.frappe?.boot?.sitename ?? import.meta.env.VITE_SITE_NAME
   }
 }
