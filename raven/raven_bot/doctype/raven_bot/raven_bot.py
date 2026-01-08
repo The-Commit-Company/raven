@@ -429,14 +429,19 @@ class RavenBot(Document):
 		user_raven_user = frappe.db.get_value("Raven User", {"user": user_id}, "name")
 		if not user_raven_user:
 			return None
+
+		# get canonical order of the users
+		if self.raven_user > user_raven_user:
+			dm_user_1, dm_user_2 = self.raven_user, user_raven_user
+		else:
+			dm_user_1, dm_user_2 = user_raven_user, self.raven_user
+
 		channel_name = frappe.db.get_value(
 			"Raven Channel",
 			filters={
 				"is_direct_message": 1,
-				"channel_name": [
-					"in",
-					[self.raven_user + " _ " + user_raven_user, user_raven_user + " _ " + self.raven_user],
-				],
+				"dm_user_1": dm_user_1,
+				"dm_user_2": dm_user_2,
 			},
 		)
 		if channel_name:
@@ -519,10 +524,17 @@ class RavenBot(Document):
 			user_raven_user = get_raven_user(user_id)
 			if not user_raven_user:
 				frappe.throw(f"User {user_id} is not added as a Raven User")
+
+			# get canonical order of the users
+			if self.raven_user > user_raven_user:
+				dm_user_1, dm_user_2 = self.raven_user, user_raven_user
+			else:
+				dm_user_1, dm_user_2 = user_raven_user, self.raven_user
+
 			channel = frappe.get_doc(
 				{
 					"doctype": "Raven Channel",
-					"channel_name": self.raven_user + " _ " + user_raven_user,
+					"channel_name": dm_user_1 + " _ " + dm_user_2,
 					"is_direct_message": 1,
 				}
 			)
