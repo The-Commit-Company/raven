@@ -151,7 +151,7 @@ const ChannelMembersList = () => {
     return (
         <div className="px-1 space-y-3">
             {/* Member count */}
-            <div className="text-xs text-muted-foreground">
+            <div className="text-xs text-muted-foreground pl-1">
                 {filteredMembers.length} member{filteredMembers.length !== 1 ? 's' : ''}
             </div>
 
@@ -177,7 +177,7 @@ const ChannelMembersList = () => {
                             <UserAvatar
                                 user={member as UserFields}
                                 size="md"
-                                className="flex-shrink-0"
+                                className="shrink-0"
                                 showStatusIndicator={false}
                             />
                             <div className="flex-1 min-w-0">

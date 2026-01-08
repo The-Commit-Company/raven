@@ -9,20 +9,26 @@ import { useAtom, useAtomValue } from 'jotai';
 import { channelDrawerAtom, pollDrawerAtom } from '@utils/channelAtoms';
 import { useCurrentChannelID } from '@hooks/useCurrentChannelID';
 import { RefObject, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useOutletContext } from 'react-router-dom';
 import { useScrollToBottom } from '@hooks/useScrollToBottom';
 import { useInView } from 'react-intersection-observer';
 import { useGetMessages } from '@hooks/useGetMessages';
+import { useLocation } from 'react-router-dom';
 
 const SETTINGS_DRAWER_TYPES = ['info', 'files', 'links', 'threads', 'pins'] as const
 
 export default function Channel() {
-
     const channelID = useCurrentChannelID()
+    const location = useLocation()
+    const isSearchPage = location.pathname === "/search"
+    const { searchValue, setSearchValue } = useOutletContext<{ searchValue: string, setSearchValue: (v: string) => void }>()
 
     return (
         <div className="flex flex-col h-full">
-            <ChannelHeader />
+            <ChannelHeader
+                searchValue={isSearchPage ? searchValue : undefined}
+                onSearchChange={isSearchPage ? setSearchValue : undefined}
+            />
             <div className="flex flex-1 flex-row gap-0 p-0 overflow-hidden">
                 <ChannelContent channelID={channelID} />
                 <ChannelDrawer />

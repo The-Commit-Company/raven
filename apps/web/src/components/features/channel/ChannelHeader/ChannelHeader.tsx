@@ -2,16 +2,25 @@ import { Button } from "@components/ui/button"
 import { Separator } from "@components/ui/separator"
 import { SidebarTrigger } from "@components/ui/sidebar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
-import { FileText, Headset, Info, Link, MessageSquareText, Pin, Star } from "lucide-react"
+import { FileText, Headset, Link, MessageSquareText, Pin, Star, Search } from "lucide-react"
 import ChannelMembers from "./ChannelMembers"
 import ChannelMenu from "./ChannelMenu"
 import { useAtom } from "jotai"
 import { channelDrawerAtom } from "@utils/channelAtoms"
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
+import SearchBar from "../../header/QuickSearch/SearchBar"
+import { useNavigate, useLocation } from "react-router-dom"
 
-const ChannelHeader = () => {
+interface ChannelHeaderProps {
+    searchValue?: string
+    onSearchChange?: (value: string) => void
+}
 
+const ChannelHeader = ({ searchValue, onSearchChange }: ChannelHeaderProps) => {
     const channelID = useCurrentChannelID()
+    const navigate = useNavigate()
+    const location = useLocation()
+    const isSearchPage = location.pathname === "/search"
 
     const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
 
@@ -38,10 +47,9 @@ const ChannelHeader = () => {
     }
 
     return (
-        <div className="sticky top-(--app-header-height) flex items-center justify-between border-b bg-background py-1.5 px-2">
+        <div className="sticky top-0 flex items-center justify-between border-b bg-background py-1.5 px-2 z-50">
             {/* Left side */}
             <div className="flex items-center gap-2">
-
                 <div className="flex items-center gap-1">
                     <SidebarTrigger className="-ml-1" />
                     <div className="h-6">
@@ -52,7 +60,7 @@ const ChannelHeader = () => {
                 <div className="flex items-center gap-0.5">
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm">
                                 <Star className="h-3 w-3 text-foreground/80" />
                                 <span className="sr-only">Star</span>
                             </Button>
@@ -66,8 +74,8 @@ const ChannelHeader = () => {
 
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onOpenFiles}>
-                                <FileText className="h-3 w-3 text-foreground/80" />
+                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={onOpenFiles}>
+                                <FileText className="h-2 w-2 text-foreground/80" />
                                 <span className="sr-only">Files</span>
                             </Button>
                         </TooltipTrigger>
@@ -77,8 +85,8 @@ const ChannelHeader = () => {
                     </Tooltip>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onOpenLinks}>
-                                <Link className="h-3 w-3 text-foreground/80" />
+                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={onOpenLinks}>
+                                <Link className="h-2 w-2 text-foreground/80" />
                                 <span className="sr-only">Links</span>
                             </Button>
                         </TooltipTrigger>
@@ -88,8 +96,8 @@ const ChannelHeader = () => {
                     </Tooltip>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onOpenThreads}>
-                                <MessageSquareText className="h-3 w-3 text-foreground/80" />
+                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={onOpenThreads}>
+                                <MessageSquareText className="h-2 w-2 text-foreground/80" />
                                 <span className="sr-only">Threads</span>
                             </Button>
                         </TooltipTrigger>
@@ -99,8 +107,8 @@ const ChannelHeader = () => {
                     </Tooltip>
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="default" className="h-8 gap-2" onClick={onOpenPins}>
-                                <Pin className="h-3 w-3 text-foreground/80" />
+                            <Button variant="ghost" size="default" className="h-7 gap-2 rounded-sm" onClick={onOpenPins}>
+                                <Pin className="h-2 w-2 text-foreground/80" />
                                 <span className="sr-only">Pinned</span>
                                 <span className="text-muted-foreground text-sm font-normal">3</span>
                             </Button>
@@ -112,47 +120,50 @@ const ChannelHeader = () => {
                 </div>
             </div>
 
+            {/* Center - Search bar */}
+            <div className="flex items-center gap-2 flex-1 ml-2 mr-2">
+                {isSearchPage ? (
+                    <SearchBar value={searchValue || ""} onChange={onSearchChange || (() => { })} />
+                ) : (
+                    <SearchBar value={""} onChange={() => { }} />
+                )}
+            </div>
+
             {/* Right side */}
             <div className="flex items-center gap-1">
-                <Button variant="ghost" size="default" className="h-8 gap-2">
-                    <Headset className="size-3.5" />
-                    <span className="text-sm">Start call</span>
-                </Button>
+                {!isSearchPage && (
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 rounded-sm"
+                                onClick={() => navigate("/search")}
+                            >
+                                <Search className="h-3 w-3 text-foreground/80" />
+                                <span className="sr-only">Search</span>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Search</p>
+                        </TooltipContent>
+                    </Tooltip>
+                )}
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm">
+                            <Headset className="h-3 w-3 text-foreground/80" />
+                            <span className="sr-only">Start call</span>
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>Start call</p>
+                    </TooltipContent>
+                </Tooltip>
                 <ChannelMembers onClick={onOpenMembers} />
-
-                <ChannelInfoToggle />
-
             </div>
         </div>
     )
-}
-
-const ChannelInfoToggle = () => {
-
-    const channelID = useCurrentChannelID()
-
-    const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
-
-    const onOpenSettings = () => {
-        if (['info', 'files', 'links', 'threads', 'pins'].includes(drawerType)) setDrawerType('')
-        else setDrawerType('info')
-    }
-
-    return <Tooltip>
-        <TooltipTrigger asChild>
-            <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={onOpenSettings}>
-                <Info className="size-4" />
-                <span className="sr-only">Channel Info</span>
-            </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-            <p>Channel Info</p>
-        </TooltipContent>
-    </Tooltip>
 }
 
 export default ChannelHeader

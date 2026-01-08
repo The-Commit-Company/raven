@@ -1,16 +1,16 @@
 import { useState } from 'react'
-import { GripVertical } from 'lucide-react'
+import { MoreVertical } from 'lucide-react'
 import { Button } from '@components/ui/button'
 import {
     Dialog,
     DialogContent,
-    DialogTrigger,
 } from '@components/ui/dialog'
 import {
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger,
-} from '@components/ui/tooltip'
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@components/ui/dropdown-menu'
 import { CustomizeSidebarDialog } from './CustomizeSidebarDialog'
 import { ChannelSidebarData } from 'src/types/ChannelGroup'
 
@@ -20,35 +20,41 @@ interface CustomizeSidebarButtonProps {
 }
 
 export const CustomizeSidebarButton = ({ data, onSave }: CustomizeSidebarButtonProps) => {
-    const [isOpen, setIsOpen] = useState(false)
+    const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [showMyChannelsOnly, setShowMyChannelsOnly] = useState(false)
 
     return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <DialogTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6 mr-1"
-                            aria-label="Customize sidebar"
-                        >
-                            <GripVertical className="h-4 w-4" />
-                        </Button>
-                    </DialogTrigger>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" sideOffset={5} className="text-[11px]">
-                    <p>Customize sidebar</p>
-                </TooltipContent>
-            </Tooltip>
-            <DialogContent className="sm:max-w-[960px] max-h-[90vh] p-0 gap-0 flex flex-col overflow-hidden">
-                <CustomizeSidebarDialog
-                    initialData={data}
-                    onClose={() => setIsOpen(false)}
-                    onSave={onSave}
-                />
-            </DialogContent>
-        </Dialog>
+        <>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent className="sm:max-w-[960px] max-h-[90vh] p-0 gap-0 flex flex-col overflow-hidden">
+                    <CustomizeSidebarDialog
+                        initialData={data}
+                        onClose={() => setIsDialogOpen(false)}
+                        onSave={onSave}
+                    />
+                </DialogContent>
+            </Dialog>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 rounded-sm hover:bg-accent"
+                        aria-label="More options"
+                    >
+                        <MoreVertical className="h-3.5 w-3.5" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" side="right" sideOffset={4} className="w-48">
+                    <DropdownMenuItem onClick={() => setShowMyChannelsOnly(!showMyChannelsOnly)}>
+                        <span>Only show my channels</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>
+                        <span>Customize my sidebar</span>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </>
     )
 }
 

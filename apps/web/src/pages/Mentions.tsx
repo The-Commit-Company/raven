@@ -252,7 +252,7 @@ export default function Mentions() {
 
     return (
         <div className="flex flex-col h-full">
-            <header className="sticky top-(--app-header-height) flex items-center justify-between border-b bg-background py-2 px-2 z-20">
+            <header className="sticky top-0 flex items-center justify-between border-b bg-background py-1.5 px-2 z-20">
                 {/* Left side */}
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-1">

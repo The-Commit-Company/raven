@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Plus, MessageCircle } from "lucide-react"
+import { Plus, MessageCircle, AtSignIcon, MessageSquareText, BookmarkIcon } from "lucide-react"
 import { Label } from "@components/ui/label"
 import {
     Sidebar,
@@ -10,14 +10,15 @@ import {
     useSidebar,
 } from "@components/ui/sidebar"
 import { Switch } from "@components/ui/switch"
-import { SearchForm } from "./sidebar-search"
 import { cn } from "@lib/utils"
+import { useNavigate, useLocation } from "react-router-dom"
 import { UserFields } from "@raven/types/common/UserFields"
 import { DMListItem } from "./common/DMListItem/DMListItem"
 import { ChannelSidebar } from "./channel-sidebar/ChannelSidebar"
 import { ChannelListItem } from "@raven/types/common/ChannelListItem"
 import { ChannelSidebarData } from "../types/ChannelGroup"
 import { erpNextData, helpdeskData, frappeSchoolData, frappeHRData } from "../data/channelSidebarData"
+import NavUserMenu from "./features/header/NavUserMenu/NavUserMenu"
 
 // This is sample data
 interface MailItem extends UserFields {
@@ -166,6 +167,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const [mails] = React.useState<MailItem[]>(data.mails as MailItem[])
     const [activeDM, setActiveDM] = React.useState<string | null>(null)
     const { setOpen } = useSidebar()
+    const navigate = useNavigate()
+    const location = useLocation()
 
 
     // Get channel data based on active workspace
@@ -214,10 +217,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     }
 
     return (
-        <Sidebar collapsible="icon" className="overflow-hidden pt-[36px]" {...props}>
-            <div className="flex h-full [&>[data-sidebar=sidebar]]:flex-row">
-                <div className="w-[60px] border-r border-border/40 bg-sidebar flex-shrink-0 relative group/workspace-sidebar">
-                    <div className="flex flex-col items-center gap-3 py-4">
+        <Sidebar collapsible="icon" className="overflow-hidden" {...props}>
+            <div className="flex h-full *:data-[sidebar=sidebar]:flex-row">
+                <div className="w-[60px] border-r border-border/40 bg-sidebar shrink-0 relative group/workspace-sidebar flex flex-col">
+                    <div className="flex flex-col items-center gap-3 py-4 flex-1">
                         {data.workspaces.map((workspace) => (
                             <div
                                 key={workspace.name}
@@ -270,20 +273,62 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             </div>
                         </div>
                     </div>
+                    <div className="flex items-center justify-center pb-4">
+                        <NavUserMenu
+                            user={{
+                                name: "John Doe",
+                                email: "john.doe@example.com",
+                                avatar: "https://github.com/shadcn.png"
+                            }}
+                        />
+                    </div>
                 </div>
 
                 <div className="flex-1 flex flex-col">
-                    <SidebarHeader className="gap-1.5 pt-3">
-                        <div className="flex w-full items-center justify-between p-1">
-                            <div className="text-sm font-medium text-foreground truncate">
-                                {activeWorkspace?.name}
+                    <SidebarHeader className="gap-2 p-3 border-b">
+                        <div className="flex flex-col gap-2 w-full">
+                            <div className="flex items-center justify-between w-full">
+                                <div className="text-sm font-medium text-foreground truncate">
+                                    {activeWorkspace?.name}
+                                </div>
+                                <Label className="flex items-center gap-2 text-[12px]">
+                                    <span>Unreads</span>
+                                    <Switch className="shadow-none" />
+                                </Label>
                             </div>
-                            <Label className="flex items-center gap-2 text-[12px]">
-                                <span>Unreads</span>
-                                <Switch className="shadow-none" />
-                            </Label>
+                            <div className="flex items-center gap-1 w-full">
+                                <div
+                                    onClick={() => navigate("/threads")}
+                                    className={`flex-1 flex items-center justify-center gap-1 px-1.5 py-1 rounded-md border cursor-pointer transition-colors text-xs font-medium ${location.pathname === "/threads"
+                                        ? "bg-secondary border-border"
+                                        : "bg-background border-border hover:bg-accent hover:text-accent-foreground"
+                                        }`}
+                                >
+                                    <MessageSquareText className="h-3 w-3" />
+                                    <span>Threads</span>
+                                </div>
+                                <div
+                                    onClick={() => navigate("/saved-messages")}
+                                    className={`flex-1 flex items-center justify-center gap-1 px-1.5 py-1 rounded-md border cursor-pointer transition-colors text-xs font-medium ${location.pathname === "/saved-messages"
+                                        ? "bg-secondary border-border"
+                                        : "bg-background border-border hover:bg-accent hover:text-accent-foreground"
+                                        }`}
+                                >
+                                    <BookmarkIcon className="h-3 w-3" />
+                                    <span>Saved</span>
+                                </div>
+                                <div
+                                    onClick={() => navigate("/mentions")}
+                                    className={`flex-1 flex items-center justify-center gap-1 px-1.5 py-1 rounded-md border cursor-pointer transition-colors text-xs font-medium ${location.pathname === "/mentions"
+                                        ? "bg-secondary border-border"
+                                        : "bg-background border-border hover:bg-accent hover:text-accent-foreground"
+                                        }`}
+                                >
+                                    <AtSignIcon className="h-3 w-3" />
+                                    <span>Mentions</span>
+                                </div>
+                            </div>
                         </div>
-                        <SearchForm />
                     </SidebarHeader>
                     <SidebarContent>
                         <SidebarGroup className="p-0">

@@ -24,10 +24,10 @@ export const CreateChannelButton = () => {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6 mr-1"
+                            className="h-7 w-7 rounded-sm hover:bg-accent"
                             aria-label="Create a new channel"
                         >
-                            <PlusIcon className="h-4 w-4" />
+                            <PlusIcon className="h-3.5 w-3.5" />
                         </Button>
                     </DialogTrigger>
                 </TooltipTrigger>

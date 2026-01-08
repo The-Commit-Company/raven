@@ -3,13 +3,13 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
 import { channelDrawerAtom } from "@utils/channelAtoms"
 import { useSetAtom } from "jotai"
-import { BellOff, ChevronDown, Hash, LogOut, Settings, Users } from "lucide-react"
+import { BellOff, ChevronDown, Hash, Settings, Users } from "lucide-react"
 
 const ChannelMenu = () => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="default" className="h-8">
+                <Button variant="ghost" size="default" className="h-7 rounded-sm">
                     <div className="flex items-center gap-1">
                         <Hash className="size-3.5" strokeWidth={2.4} />
                         <span className="text-md font-medium">Channel Name</span>
@@ -23,10 +23,6 @@ const ChannelMenu = () => {
                 <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm">
                     <BellOff className="h-4 w-4" />
                     <span>Mute channel</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm">
-                    <LogOut className="h-4 w-4" />
-                    <span>Leave channel</span>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
