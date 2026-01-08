@@ -11,14 +11,28 @@ def execute():
 	)
 
 	for channel in dm_channels:
-		users = channel.channel_name.split(" _ ")
+		# Reason for using Raven Channel Member instead of channel_name:
+		# channel_name is a Data field, so in case of change of Raven User ID, then the data field becomes stale.
+		# users = channel.channel_name.split(" _ ")
+		users = frappe.get_all(
+			"Raven Channel Member",
+			filters={"channel_id": channel.name},
+			fields=["user_id"],
+			pluck=["user_id"],
+		)
+
 		if len(users) == 2:
 			if users[0] > users[1]:
 				dm_user_1, dm_user_2 = users[0], users[1]
 			else:
 				dm_user_1, dm_user_2 = users[1], users[0]
-		else:
+		elif len(users) == 1:
 			dm_user_1 = dm_user_2 = users[0]
+		else:
+			frappe.log_error(
+				f"DM channel {channel.name} has {len(users)} users, expected 1 or 2",
+				"Patch: populate_dm_user_fields",
+			)
 
 		frappe.db.set_value(
 			"Raven Channel",
