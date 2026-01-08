@@ -1,6 +1,4 @@
 [pre_model_sync]
-raven.patches.v2_6.populate_dm_user_fields
-raven.patches.v2_6.merge_duplicate_dm_channels
 
 [post_model_sync]
 raven.patches.v1_2.create_raven_users
@@ -17,3 +15,4 @@ raven.patches.v2_5.migrate_ai_bots_to_openai_provider
 raven.patches.v2_6.clean_duplicate_channel_members
 raven.patches.v2_6.add_unique_constraint_in_raven_channel_member
 raven.patches.v2_6.add_unique_constraint_on_dm_channels
+raven.patches.v2_6.fix_duplicate_dm_channels

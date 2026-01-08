@@ -209,7 +209,7 @@
    "read_only": 1
   },
   {
-   "depends_on": "eval: is_direct_message === 1",
+   "depends_on": "eval:doc.is_direct_message;",
    "fieldname": "dm_user_1",
    "fieldtype": "Link",
    "label": "DM User 1",
@@ -217,7 +217,7 @@
    "read_only": 1
   },
   {
-   "depends_on": "eval: is_direct_message === 1",
+   "depends_on": "eval:doc.is_direct_message;",
    "fieldname": "dm_user_2",
    "fieldtype": "Link",
    "label": "DM User 2",
