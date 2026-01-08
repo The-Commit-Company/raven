@@ -92,10 +92,23 @@ export function ChannelSidebar({
                             <SidebarMenuItem>
                                 <CollapsibleTrigger asChild>
                                     <SidebarMenuButton
-                                        tooltip={group.name}
+                                        tooltip={group.name.replace(/^[\p{Emoji}\u200d]+\s?/u, '')}
                                     >
                                         <ChevronRight className="w-4 h-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                                        <span className="truncate text-[13px]">{group.name}</span>
+                                        <span className="truncate text-[13px] flex items-center gap-1.5">
+                                            {(() => {
+                                                // Match emoji including compound emojis (with ZWJ)
+                                                const emojiMatch = group.name.match(/^[\p{Emoji}\u200d]+/u);
+                                                const emoji = emojiMatch ? emojiMatch[0] : null;
+                                                const nameWithoutEmoji = group.name.replace(/^[\p{Emoji}\u200d]+\s?/u, '');
+                                                return (
+                                                    <>
+                                                        {emoji && <span className="text-lg leading-none">{emoji}</span>}
+                                                        <span>{nameWithoutEmoji}</span>
+                                                    </>
+                                                );
+                                            })()}
+                                        </span>
                                         <div className="ml-auto flex items-center gap-2">
                                             {showUnreadBadges && totalUnread > 0 && (
                                                 <div className="badge-unread opacity-0 group-data-[state=closed]/collapsible:opacity-100 transition-opacity">

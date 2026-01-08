@@ -25,10 +25,7 @@ export default function Channel() {
 
     return (
         <div className="flex flex-col h-full">
-            <ChannelHeader
-                searchValue={isSearchPage ? searchValue : undefined}
-                onSearchChange={isSearchPage ? setSearchValue : undefined}
-            />
+            <ChannelHeader />
             <div className="flex flex-1 flex-row gap-0 p-0 overflow-hidden">
                 <ChannelContent channelID={channelID} />
                 <ChannelDrawer />

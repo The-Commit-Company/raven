@@ -2,25 +2,29 @@ import { Button } from "@components/ui/button"
 import { Separator } from "@components/ui/separator"
 import { SidebarTrigger } from "@components/ui/sidebar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
-import { FileText, Headset, Link, MessageSquareText, Pin, Star, Search } from "lucide-react"
+import { FileText, Headset, Link, MessageSquareText, Pin, Star } from "lucide-react"
 import ChannelMembers from "./ChannelMembers"
 import ChannelMenu from "./ChannelMenu"
 import { useAtom } from "jotai"
 import { channelDrawerAtom } from "@utils/channelAtoms"
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
-import SearchBar from "../../header/QuickSearch/SearchBar"
 import { useNavigate, useLocation } from "react-router-dom"
+import SearchBar from "../../header/QuickSearch/SearchBar"
+import { useState } from "react"
 
-interface ChannelHeaderProps {
-    searchValue?: string
-    onSearchChange?: (value: string) => void
-}
-
-const ChannelHeader = ({ searchValue, onSearchChange }: ChannelHeaderProps) => {
+const ChannelHeader = () => {
     const channelID = useCurrentChannelID()
     const navigate = useNavigate()
     const location = useLocation()
     const isSearchPage = location.pathname === "/search"
+    const [searchValue, setSearchValue] = useState("")
+
+    const handleSearchChange = (value: string) => {
+        setSearchValue(value)
+        if (value.trim()) {
+            navigate("/search")
+        }
+    }
 
     const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
 
@@ -120,34 +124,15 @@ const ChannelHeader = ({ searchValue, onSearchChange }: ChannelHeaderProps) => {
                 </div>
             </div>
 
-            {/* Center - Search bar */}
-            <div className="flex items-center gap-2 flex-1 ml-2 mr-2">
-                {isSearchPage ? (
-                    <SearchBar value={searchValue || ""} onChange={onSearchChange || (() => { })} />
-                ) : (
-                    <SearchBar value={""} onChange={() => { }} />
-                )}
-            </div>
-
             {/* Right side */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 ml-auto">
                 {!isSearchPage && (
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7 rounded-sm"
-                                onClick={() => navigate("/search")}
-                            >
-                                <Search className="h-3 w-3 text-foreground/80" />
-                                <span className="sr-only">Search</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>Search</p>
-                        </TooltipContent>
-                    </Tooltip>
+                    <div className="flex items-center gap-2 flex-1 max-w-md mr-2">
+                        <SearchBar
+                            value={searchValue}
+                            onChange={handleSearchChange}
+                        />
+                    </div>
                 )}
                 <Tooltip>
                     <TooltipTrigger asChild>
