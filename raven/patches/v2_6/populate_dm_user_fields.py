@@ -17,8 +17,7 @@ def execute():
 		users = frappe.get_all(
 			"Raven Channel Member",
 			filters={"channel_id": channel.name},
-			fields=["user_id"],
-			pluck=["user_id"],
+			pluck="user_id",
 		)
 
 		if len(users) == 2:
