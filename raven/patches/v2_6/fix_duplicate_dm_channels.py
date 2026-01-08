@@ -43,36 +43,20 @@ def execute():
 		dm_user_1, dm_user_2 = user_pair
 		pair_key = (dm_user_1, dm_user_2)
 
-		# check 1: already processed in this run
+		# if the pair has already been processed, merge the channel into the primary
 		if pair_key in processed_pairs:
+			# duplicate - merge into primary
 			primary_channel = processed_pairs[pair_key]
 			merge_channel_into_primary(channel.name, primary_channel)
-			continue
-
-		# check 2: already has dm_user fields set
-		if channel.dm_user_1 and channel.dm_user_2:
+		else:
+			# first occurrence - set dm_user fields and track as primary
+			frappe.db.set_value(
+				"Raven Channel",
+				channel.name,
+				{"dm_user_1": dm_user_1, "dm_user_2": dm_user_2},
+				update_modified=False,
+			)
 			processed_pairs[pair_key] = channel.name
-			continue
-
-		# check 3: another channel already has these dm_user values in DB
-		existing_primary = frappe.db.get_value(
-			"Raven Channel",
-			{"dm_user_1": dm_user_1, "dm_user_2": dm_user_2, "name": ("!=", channel.name)},
-			"name",
-		)
-		if existing_primary:
-			merge_channel_into_primary(channel.name, existing_primary)
-			processed_pairs[pair_key] = existing_primary
-			continue
-
-		# this is the first/primary channel for this pair - set dm_user fields
-		frappe.db.set_value(
-			"Raven Channel",
-			channel.name,
-			{"dm_user_1": dm_user_1, "dm_user_2": dm_user_2},
-			update_modified=False,
-		)
-		processed_pairs[pair_key] = channel.name
 
 
 def get_user_pair_from_members(channel_id: str) -> tuple | None:
