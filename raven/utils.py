@@ -182,11 +182,11 @@ def get_raven_user(user_id: str) -> str:
 	# TODO: Run this via cache
 	raven_user = frappe.qb.DocType("Raven User")
 	query = (
-			frappe.qb.from_(raven_user)
-			.select(raven_user.name)
-			.where((raven_user.user == user_id) | (raven_user.bot == user_id))
-			.limit(1)
-        )
+		frappe.qb.from_(raven_user)
+		.select(raven_user.name)
+		.where((raven_user.user == user_id) | (raven_user.bot == user_id))
+		.limit(1)
+	)
 
 	result = query.run(pluck=True)
 
