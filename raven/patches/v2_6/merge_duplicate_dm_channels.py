@@ -62,11 +62,12 @@ def merge_duplicate_group(dm_user_1: str, dm_user_2: str):
 	# Move all linked records from duplicates to primary
 	migrate_linked_records(primary_channel, duplicate_channels)
 
+	# Migrate channel members from duplicates to primary
+	migrate_channel_members(primary_channel, duplicate_channels)
+
 	# Delete the duplicate channels
-	frappe.db.sql(
-		"DELETE FROM `tabRaven Channel` WHERE name IN %s",
-		(duplicate_channels),
-	)
+	for channel in duplicate_channels:
+		frappe.delete_doc("Raven Channel", channel)
 
 
 def migrate_linked_records(primary_channel: str, duplicate_channels: list):
@@ -127,7 +128,5 @@ def migrate_channel_members(primary_channel: str, duplicate_channels: list):
 	)
 
 	# Delete remaining members from duplicates (they already exist in primary)
-	frappe.db.sql(
-		"DELETE FROM `tabRaven Channel Member` WHERE channel_id IN %s",
-		(duplicate_channels),
-	)
+	for channel in duplicate_channels:
+		frappe.delete_doc("Raven Channel Member", {"channel_id": channel})
