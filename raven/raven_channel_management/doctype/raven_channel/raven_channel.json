@@ -25,6 +25,8 @@
   "is_archived",
   "section_break_wlnt",
   "last_message_timestamp",
+  "dm_user_1",
+  "dm_user_2",
   "column_break_eckt",
   "last_message_details",
   "section_break_acpc",
@@ -205,6 +207,22 @@
    "fieldtype": "Check",
    "label": "Is DM Thread",
    "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.is_direct_message;",
+   "fieldname": "dm_user_1",
+   "fieldtype": "Link",
+   "label": "DM User 1",
+   "options": "Raven User",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.is_direct_message;",
+   "fieldname": "dm_user_2",
+   "fieldtype": "Link",
+   "label": "DM User 2",
+   "options": "Raven User",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -218,7 +236,7 @@
    "link_fieldname": "channel_id"
   }
  ],
- "modified": "2024-12-08 01:24:55.359995",
+ "modified": "2026-01-08 12:58:41.748067",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel",

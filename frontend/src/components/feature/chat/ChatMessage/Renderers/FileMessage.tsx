@@ -51,7 +51,7 @@ export const FileMessageBlock = memo(({ message, user, ...props }: FileMessageBl
                 title="Download"
                 color='gray'
                 target='_blank'>{fileName}</Link>
-            <video src={message.file} controls className="rounded-md shadow-md max-h-96 max-w-[620px]">
+            <video src={message.file} controls className="rounded-md shadow-md max-h-96 max-w-[620px]" preload="metadata">
 
             </video>
         </Flex> :

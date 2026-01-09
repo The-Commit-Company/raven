@@ -12,3 +12,7 @@ raven.patches.v2_0.create_default_workspace
 raven.patches.v2_0.create_default_company_workspace_mapping
 raven.patches.v2_4.add_unique_constraint_on_reactions #2
 raven.patches.v2_5.migrate_ai_bots_to_openai_provider
+raven.patches.v2_6.clean_duplicate_channel_members
+raven.patches.v2_6.add_unique_constraint_in_raven_channel_member
+raven.patches.v2_6.add_unique_constraint_on_dm_channels
+raven.patches.v2_6.fix_duplicate_dm_channels
