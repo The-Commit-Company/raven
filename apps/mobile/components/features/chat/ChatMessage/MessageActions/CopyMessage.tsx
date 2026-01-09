@@ -4,6 +4,7 @@ import { toast } from 'sonner-native'
 import { useColorScheme } from '@hooks/useColorScheme'
 import CopyIcon from "@assets/icons/CopyIcon.svg"
 import ActionButton from '@components/common/Buttons/ActionButton'
+import { useTranslation } from 'react-i18next'
 
 interface CopyMessageProps {
     message: Message
@@ -11,7 +12,7 @@ interface CopyMessageProps {
 }
 
 const CopyMessage = ({ message, onClose }: CopyMessageProps) => {
-
+    const { t } = useTranslation()
     const { colors } = useColorScheme()
     const copy = useMessageCopy(message)
 
@@ -19,14 +20,14 @@ const CopyMessage = ({ message, onClose }: CopyMessageProps) => {
         <ActionButton
             onPress={() => copy(onClose)}
             icon={<CopyIcon width={18} height={18} fill={colors.icon} />}
-            text='Copy'
+            text={t('messages.copy')}
         />
     )
 }
 
 export default CopyMessage
 
-export const useMessageCopy = (message: Message) => {
+export const useMessageCopy = (message: Message, t?: (key: string) => string) => {
 
     const copy = async (onSuccess: () => void) => {
         if (!message) return
@@ -40,10 +41,10 @@ export const useMessageCopy = (message: Message) => {
 
             if (plainText) {
                 await Clipboard.setStringAsync(plainText)
-                toast.success('Text copied to clipboard')
+                toast.success(t ? t('messages.textCopied') : 'Text copied to clipboard')
                 onSuccess()
             } else {
-                toast.error('Could not copy text')
+                toast.error(t ? t('messages.copyFailed') : 'Could not copy text')
             }
 
         }

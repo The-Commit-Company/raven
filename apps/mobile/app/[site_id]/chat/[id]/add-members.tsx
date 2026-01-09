@@ -20,9 +20,11 @@ import MemberList from '@components/features/channel-settings/Members/MemberList
 import { toast } from 'sonner-native';
 import SearchInput from '@components/common/SearchInput/SearchInput';
 import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
+import { useTranslation } from 'react-i18next';
 
 export default function AddNewChannelMembers() {
 
+    const { t } = useTranslation()
     const { colors } = useColorScheme()
 
     const { id: channelId } = useLocalSearchParams()
@@ -88,10 +90,10 @@ export default function AddNewChannelMembers() {
                 .then(() => {
                     mutate(["channel_members", channelId])
                     router.back()
-                    toast.success(`Member${selectedMembers.length > 0 ? 's' : ''} added`)
+                    toast.success(selectedMembers.length > 1 ? t('members.membersAdded', { count: selectedMembers.length }) : t('members.memberAdded'))
                 })
                 .catch((error) => {
-                    toast.error(`Error while adding member${selectedMembers.length > 0 ? 's' : ''}`)
+                    toast.error(selectedMembers.length > 1 ? t('members.addMembersFailed') : t('members.addMemberFailed'))
                 })
                 .finally(() => {
                     setSelectedMembers([])
@@ -112,7 +114,7 @@ export default function AddNewChannelMembers() {
                         </Link>
                     )
                 },
-                headerTitle: () => <Text className='ml-2 text-base font-semibold'>Add Members</Text>,
+                headerTitle: () => <Text className='ml-2 text-base font-semibold'>{t('members.addMembers')}</Text>,
                 headerRight() {
                     return (
                         <Button variant="plain" className="ios:px-0"
@@ -120,7 +122,7 @@ export default function AddNewChannelMembers() {
                             disabled={creatingDoc || !selectedMembers.length}>
                             {creatingDoc ?
                                 <ActivityIndicator size="small" color={colors.primary} /> :
-                                <Text className="text-primary dark:text-secondary">Add</Text>}
+                                <Text className="text-primary dark:text-secondary">{t('common.add')}</Text>}
                         </Button>
                     )
                 },
@@ -147,7 +149,7 @@ export default function AddNewChannelMembers() {
             {!filteredMembers.length && debouncedText.length ? (
                 <View className="absolute inset-0 items-center justify-center h-80">
                     <Text className="text-[15px] text-center text-muted-foreground">
-                        No results found for searched text <Text className='text-[15px] text-center text-muted-foreground font-medium'>'{debouncedText}'</Text>
+                        {t('search.noResultsFor', { query: debouncedText })}
                     </Text>
                 </View>
             ) : null}

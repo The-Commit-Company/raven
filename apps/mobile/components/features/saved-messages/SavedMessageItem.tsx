@@ -11,9 +11,11 @@ import { useRouteToChannel } from '@hooks/useRouting';
 import * as ContextMenu from 'zeego/context-menu';
 import { useColorScheme } from '@hooks/useColorScheme';
 import useSaveMessage from '@hooks/useSaveMessage';
+import { useTranslation } from 'react-i18next';
 
 const SavedMessageItem = ({ message }: { message: Message & { workspace?: string } }) => {
 
+    const { t } = useTranslation()
     const { save } = useSaveMessage(message)
 
     const { colors } = useColorScheme()
@@ -64,7 +66,7 @@ const SavedMessageItem = ({ message }: { message: Message & { workspace?: string
             </ContextMenu.Trigger>
             <ContextMenu.Content>
                 <ContextMenu.Item key="unsave" onSelect={save}>
-                    <ContextMenu.ItemTitle>Unsave message</ContextMenu.ItemTitle>
+                    <ContextMenu.ItemTitle>{t('messages.unsaveMessage')}</ContextMenu.ItemTitle>
                     <ContextMenu.ItemIcon
                         ios={{
                             name: 'bookmark.slash',

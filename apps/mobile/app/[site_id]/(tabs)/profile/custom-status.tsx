@@ -14,9 +14,11 @@ import { useColorScheme } from '@hooks/useColorScheme';
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import HeaderBackButton from '@components/common/Buttons/HeaderBackButton';
 import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
+import { useTranslation } from 'react-i18next';
 
 export default function CustomStatusScreen() {
 
+    const { t } = useTranslation()
     const { myProfile, mutate } = useCurrentRavenUser()
 
     const insets = useSafeAreaInsets()
@@ -28,11 +30,11 @@ export default function CustomStatusScreen() {
         call({
             custom_status: customStatus
         }).then(() => {
-            toast.success("Status updated")
+            toast.success(t('profile.statusUpdated'))
             mutate()
             router.back()
         }).catch(() => {
-            toast.error("Failed to update status")
+            toast.error(t('profile.statusUpdateFailed'))
         })
     }
 
@@ -47,7 +49,7 @@ export default function CustomStatusScreen() {
                             <HeaderBackButton />
                         )
                     },
-                    headerTitle: () => <Text className='ml-2 text-base font-semibold'>Custom Status</Text>,
+                    headerTitle: () => <Text className='ml-2 text-base font-semibold'>{t('profile.customStatus')}</Text>,
                     headerRight() {
                         return (
                             <Button variant="plain" className="ios:px-0"
@@ -55,7 +57,7 @@ export default function CustomStatusScreen() {
                                 disabled={loading}>
                                 {loading ?
                                     <ActivityIndicator size="small" color={colors.primary} /> :
-                                    <Text className="text-primary dark:text-secondary">Save</Text>}
+                                    <Text className="text-primary dark:text-secondary">{t('common.save')}</Text>}
                             </Button>
                         )
                     },
@@ -68,17 +70,17 @@ export default function CustomStatusScreen() {
                 contentInsetAdjustmentBehavior="automatic"
                 contentContainerStyle={{ paddingBottom: insets.bottom }}>
                 <Form className="gap-5 px-4 pt-8">
-                    <FormSection footnote="Share what you are up to.">
+                    <FormSection footnote={t('profile.customStatusFootnote')}>
                         <FormItem>
                             <TextField
                                 autoFocus
                                 className="pl-0.5"
                                 leftView={
                                     <View className="w-36 justify-between flex-row items-center pl-2">
-                                        <Text className="font-medium">Custom Status</Text>
+                                        <Text className="font-medium">{t('profile.customStatus')}</Text>
                                     </View>
                                 }
-                                placeholder="e.g. Out of Office"
+                                placeholder={t('profile.customStatusPlaceholder')}
                                 value={customStatus}
                                 onChangeText={setCustomStatus}
                             />

@@ -8,11 +8,13 @@ import { useSetAtom } from 'jotai';
 import { selectedWorkspaceFamily } from './useGetCurrentWorkspace';
 import useSiteContext from './useSiteContext';
 import { getMessaging } from '@react-native-firebase/messaging';
+import { useTranslation } from 'react-i18next';
 
 const messaging = getMessaging()
 
 
 export const useLogout = () => {
+    const { t } = useTranslation()
     const siteInformation = useSiteContext()
     const { tokenParams, call } = useContext(FrappeContext) as FrappeConfig
 
@@ -43,7 +45,7 @@ export const useLogout = () => {
             })
             .catch((error) => {
                 console.error(error)
-                toast.error('Failed to log out')
+                toast.error(t('auth.logoutFailed'))
             })
             .then(() => {
                 revokeAsync({

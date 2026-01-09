@@ -3,6 +3,7 @@ import { Text } from '@components/nativewindui/Text'
 import { useColorScheme } from '@hooks/useColorScheme'
 import EyeIcon from '@assets/icons/EyeIcon.svg'
 import { Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 
 interface ViewImageProps {
     uri: string
@@ -11,6 +12,7 @@ interface ViewImageProps {
 
 const ViewImage = ({ uri, onSheetClose }: ViewImageProps) => {
 
+    const { t } = useTranslation()
     const { colors } = useColorScheme()
 
     const openViewer = () => {
@@ -27,7 +29,7 @@ const ViewImage = ({ uri, onSheetClose }: ViewImageProps) => {
             className='flex flex-row w-full items-center gap-2 p-2 rounded-lg ios:active:bg-linkColor'
             android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
             <EyeIcon height={20} width={20} color={colors.icon} />
-            <Text className='text-base text-foreground'>View Image</Text>
+            <Text className='text-base text-foreground'>{t('media.viewImage')}</Text>
         </Pressable>
     )
 }

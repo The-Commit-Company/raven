@@ -11,9 +11,11 @@ import SearchInput from "@components/common/SearchInput/SearchInput"
 import { useDebounce } from "@raven/lib/hooks/useDebounce"
 import { Text } from "@components/nativewindui/Text"
 import { LegendList } from "@legendapp/list"
+import { useTranslation } from "react-i18next"
 
 const AllDMsList = () => {
 
+    const { t } = useTranslation()
     const { dm_channels, error, isLoading } = useContext(ChannelListContext) as ChannelListContextType
     const { unread_count } = useUnreadMessageCount()
 
@@ -51,6 +53,7 @@ const AllDMsList = () => {
                 <SearchInput
                     onChangeText={setSearchQuery}
                     value={searchQuery}
+                    placeholder={t('common.search') + '...'}
                 />
             </View>
             <View className='flex-1'>
@@ -73,17 +76,18 @@ const AllDMsList = () => {
 }
 
 const DMListEmptyState = ({ searchQuery }: { searchQuery?: string }) => {
+    const { t } = useTranslation()
     const { colors } = useColorScheme()
     return (
         <View className="flex flex-col gap-2 bg-background px-4 py-1">
             <View className="flex flex-row items-center gap-2">
                 <ChatOutlineIcon fill={colors.icon} height={20} width={20} />
                 <Text className="text-foreground text-base font-medium">
-                    {searchQuery ? `No DMs found with "${searchQuery}"` : 'No DMs found'}
+                    {searchQuery ? t('directMessages.noDMsFoundWithQuery', { query: searchQuery }) : t('directMessages.noDMsFound')}
                 </Text>
             </View>
             <Text className="text-sm text-foreground/60">
-                {searchQuery ? 'Try searching for a different user name, or invite this userto Raven' : `Start a new conversation with someone to see it here`}
+                {searchQuery ? t('directMessages.tryDifferentSearch') : t('directMessages.startConversation')}
             </Text>
         </View>
     )

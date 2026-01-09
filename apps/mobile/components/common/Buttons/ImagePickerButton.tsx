@@ -7,6 +7,7 @@ import { toast } from "sonner-native"
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator'
 import { Pressable } from "react-native"
 import { Text } from "@components/nativewindui/Text"
+import { useTranslation } from 'react-i18next'
 interface ImagePickerButtonProps {
     allowsMultipleSelection?: boolean
     mediaTypes?: ImagePicker.MediaType
@@ -16,6 +17,7 @@ interface ImagePickerButtonProps {
 
 const ImagePickerButton = ({ allowsMultipleSelection, mediaTypes, onPick, isLarge = false }: ImagePickerButtonProps) => {
 
+    const { t } = useTranslation()
     const { colors } = useColorScheme()
 
     const convertHEICtoJPEG = async (uri: string): Promise<string> => {
@@ -58,8 +60,8 @@ const ImagePickerButton = ({ allowsMultipleSelection, mediaTypes, onPick, isLarg
             }
         } catch (error) {
             console.error('Error picking images:', error)
-            toast.error("There was an error while selecting images", {
-                description: error instanceof Error ? error.message : "Unknown error"
+            toast.error(t('media.imageSelectionError'), {
+                description: error instanceof Error ? error.message : t('errors.unknownError')
             })
         }
     }
@@ -68,7 +70,7 @@ const ImagePickerButton = ({ allowsMultipleSelection, mediaTypes, onPick, isLarg
         isLarge ? (
             <ActionButtonLarge
                 icon={<ImageUpIcon height={20} width={20} color={colors.icon} />}
-                text="Gallery"
+                text={t('media.gallery')}
                 onPress={pickImage}
             />
         ) : (
@@ -77,7 +79,7 @@ const ImagePickerButton = ({ allowsMultipleSelection, mediaTypes, onPick, isLarg
                 className='flex flex-row w-full items-center gap-2 p-2 rounded-lg ios:active:bg-linkColor'
                 android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
                 <ImageUpIcon height={20} width={20} color={colors.icon} />
-                <Text className='text-base text-foreground'>Upload</Text>
+                <Text className='text-base text-foreground'>{t('media.upload')}</Text>
             </Pressable>
         )
     )

@@ -10,12 +10,14 @@ import CrossIcon from '@assets/icons/CrossIcon.svg'
 import { COLORS } from '@theme/colors'
 import { Divider } from '@components/layout/Divider'
 import SearchInput from '@components/common/SearchInput/SearchInput'
+import { useTranslation } from 'react-i18next'
 
 /**
  * Component for displaying other threads - where the user is not a member of the thread but is a member of the channel
  */
 const OtherThreads = () => {
 
+    const { t } = useTranslation()
     const [searchQuery, setSearchQuery] = useState("")
     const debouncedText = useDebounce(searchQuery, 200)
     const { colors } = useColorScheme()
@@ -29,6 +31,7 @@ const OtherThreads = () => {
                         <SearchInput
                             onChangeText={setSearchQuery}
                             value={searchQuery}
+                            placeholder={t('common.search') + '...'}
                         />
                     </View>
                     <ChannelFilter channel={channel} setChannel={setChannel} />
@@ -37,7 +40,7 @@ const OtherThreads = () => {
                     <TouchableOpacity onPress={() => setChannel('all')} className="self-start">
                         <View className='flex flex-row items-center gap-1 px-2 py-1.5 bg-primary/10 dark:bg-primary/30 rounded-full'>
                             <ChannelIcon fill={colors.foreground} size={14} type={'channel'} />
-                            <Text className='text-xs font-medium'>{channel === 'all' ? 'All' : channel}</Text>
+                            <Text className='text-xs font-medium'>{channel === 'all' ? t('common.all') : channel}</Text>
                             <View className='bg-slate-500 rounded-full p-0.5 ml-1'>
                                 <CrossIcon color={COLORS.white} height={10} width={10} />
                             </View>

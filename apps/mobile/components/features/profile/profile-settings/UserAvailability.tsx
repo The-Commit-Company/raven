@@ -6,11 +6,13 @@ import { toast } from 'sonner-native'
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
 import CircleIcon from '@assets/icons/CircleIcon.svg'
 import { useColorScheme } from '@hooks/useColorScheme'
+import { useTranslation } from 'react-i18next'
 
 export type AvailabilityStatus = 'Available' | 'Away' | 'Do not disturb' | 'Invisible' | ''
 
 const UserAvailability = () => {
 
+    const { t } = useTranslation()
     const { myProfile, mutate } = useCurrentRavenUser()
     const { call } = useFrappePostCall('raven.api.raven_users.update_raven_user')
 
@@ -18,12 +20,12 @@ const UserAvailability = () => {
         call({
             'availability_status': status
         }).then(() => {
-            toast.success("Availability updated!", {
+            toast.success(t('profile.availabilityUpdated'), {
                 duration: 600
             })
             mutate()
         }).catch((error) => {
-            toast.error('Error updating availability', {
+            toast.error(t('profile.availabilityUpdateFailed'), {
                 description: error.message
             })
         })
@@ -32,15 +34,15 @@ const UserAvailability = () => {
     const getStatusText = (status: AvailabilityStatus) => {
         switch (status) {
             case 'Available':
-                return 'Available'
+                return t('profile.statusAvailable')
             case 'Away':
-                return 'Away'
+                return t('profile.statusAway')
             case 'Do not disturb':
-                return 'Do Not Disturb'
+                return t('profile.statusDoNotDisturb')
             case 'Invisible':
-                return 'Invisible'
+                return t('profile.statusInvisible')
             default:
-                return 'Available'
+                return t('profile.statusAvailable')
         }
     }
 
@@ -51,7 +53,7 @@ const UserAvailability = () => {
             <View className='flex flex-row py-2.5 px-4 rounded-xl justify-between bg-background dark:bg-card'>
                 <View className='flex-row items-center gap-2.5'>
                     <CircleIcon height={15} width={15} color={colors.icon} strokeWidth={2.5} />
-                    <Text className='text-base'>Availability</Text>
+                    <Text className='text-base'>{t('profile.availability')}</Text>
                 </View>
                 <DropdownMenu.Root>
                     <DropdownMenu.Trigger>
@@ -70,7 +72,7 @@ const UserAvailability = () => {
                                     light: 'green',
                                 },
                             }} />
-                            <DropdownMenu.ItemTitle>Available</DropdownMenu.ItemTitle>
+                            <DropdownMenu.ItemTitle>{t('profile.statusAvailable')}</DropdownMenu.ItemTitle>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item key="away" onSelect={() => setAvailabilityStatus('Away')}>
                             <DropdownMenu.ItemIcon ios={{
@@ -82,7 +84,7 @@ const UserAvailability = () => {
                                     light: 'orange',
                                 },
                             }} />
-                            <DropdownMenu.ItemTitle>Away</DropdownMenu.ItemTitle>
+                            <DropdownMenu.ItemTitle>{t('profile.statusAway')}</DropdownMenu.ItemTitle>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item key="do-not-disturb" onSelect={() => setAvailabilityStatus('Do not disturb')}>
                             <DropdownMenu.ItemIcon ios={{
@@ -94,7 +96,7 @@ const UserAvailability = () => {
                                     light: '#D22B2B',
                                 },
                             }} />
-                            <DropdownMenu.ItemTitle>Do Not Disturb</DropdownMenu.ItemTitle>
+                            <DropdownMenu.ItemTitle>{t('profile.statusDoNotDisturb')}</DropdownMenu.ItemTitle>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item key="invisible" onSelect={() => setAvailabilityStatus('Invisible')}>
                             <DropdownMenu.ItemIcon ios={{
@@ -106,7 +108,7 @@ const UserAvailability = () => {
                                     light: '#BEBEBE',
                                 },
                             }} />
-                            <DropdownMenu.ItemTitle>Invisible</DropdownMenu.ItemTitle>
+                            <DropdownMenu.ItemTitle>{t('profile.statusInvisible')}</DropdownMenu.ItemTitle>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item key="reset" onSelect={() => setAvailabilityStatus('')}>
                             <DropdownMenu.ItemIcon ios={{
@@ -118,7 +120,7 @@ const UserAvailability = () => {
                                     light: 'gray',
                                 },
                             }} />
-                            <DropdownMenu.ItemTitle>Reset</DropdownMenu.ItemTitle>
+                            <DropdownMenu.ItemTitle>{t('profile.statusReset')}</DropdownMenu.ItemTitle>
                         </DropdownMenu.Item>
                     </DropdownMenu.Content>
                 </DropdownMenu.Root>

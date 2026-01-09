@@ -14,6 +14,7 @@ import { useGetUser } from '@raven/lib/hooks/useGetUser';
 import PinOutlineIcon from '@assets/icons/PinOutlineIcon.svg';
 import UserAvatar from '@components/layout/UserAvatar';
 import { useIsUserActive } from '@hooks/useIsUserActive';
+import { useTranslation } from 'react-i18next';
 
 type DMChannelInfoModalProps = {
     channel: DMChannelListItem
@@ -23,6 +24,7 @@ type DMChannelInfoModalProps = {
 
 const DMChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: DMChannelInfoModalProps) => {
 
+    const { t } = useTranslation()
     // Animation values
     const modalHeight = useSharedValue(0)
     const modalOpacity = useSharedValue(0)
@@ -86,7 +88,7 @@ const DMChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: DMChan
                         <View className='flex-row items-center justify-between px-2'>
                             <View className='flex-row items-center'>
                                 <HollowFilesIcon height={20} width={20} fill={colors.foreground} />
-                                <Text style={styles.modalOption}>Images and Files</Text>
+                                <Text style={styles.modalOption}>{t('media.imagesAndFiles')}</Text>
                             </View>
                             <ChevronRightIcon height={24} width={24} fill={colors.foreground} strokeWidth={'1px'} />
                         </View>
@@ -97,7 +99,7 @@ const DMChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: DMChan
                         <View className='flex-row items-center justify-between px-2'>
                             <View className='flex-row items-center'>
                                 <PinOutlineIcon height={20} width={20} stroke={colors.foreground} />
-                                <Text style={styles.modalOption}>Pins</Text>
+                                <Text style={styles.modalOption}>{t('messages.pins')}</Text>
                             </View>
                             <View className='flex-row items-center gap-1'>
                                 {pinnedMessages > 0 ?

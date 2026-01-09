@@ -2,9 +2,11 @@ import { Message } from "@raven/types/common/Message"
 import { FrappeContext, FrappeConfig } from "frappe-react-sdk"
 import { useContext, useState, useCallback } from "react"
 import { toast } from "sonner-native"
+import { useTranslation } from "react-i18next"
 
 const useSaveMessage = (message: Message, user?: string, saved = true) => {
 
+    const { t } = useTranslation()
     const { call } = useContext(FrappeContext) as FrappeConfig
 
     const [isSaved, setIsSaved] = useState(user ? JSON.parse(message?._liked_by ? message?._liked_by : '[]').includes(user) : saved)
@@ -23,16 +25,16 @@ const useSaveMessage = (message: Message, user?: string, saved = true) => {
             if (!response?.message) return
 
             if (isSaved) {
-                toast('Message unsaved')
+                toast(t('messages.messageUnsaved'))
             } else {
-                toast.success('Message saved')
+                toast.success(t('messages.messageSaved'))
             }
 
             setIsSaved(!isSaved)
 
         }).catch((e: unknown) => {
             console.error(e)
-            toast.error('Could not perform the action')
+            toast.error(t('messages.saveMessageFailed'))
         }).finally(() => {
             setIsLoading(false)
         })

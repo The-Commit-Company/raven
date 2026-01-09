@@ -17,6 +17,7 @@ import ReplyMessagePreview from "./ReplyMessagePreview"
 import AIEventIndicator from "./AIEventIndicator"
 import { useTyping } from "@raven/lib/hooks/useTypingIndicator"
 import * as ContextMenu from 'zeego/context-menu';
+import { useTranslation } from "react-i18next"
 
 interface ChatInputProps {
     channelID: string
@@ -25,6 +26,7 @@ interface ChatInputProps {
 
 const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
 
+    const { t } = useTranslation()
     const { onUserType, stopTyping } = useTyping(channelID)
 
     const [content, setContent] = useState('')
@@ -105,7 +107,7 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
                     value={content}
                     multiline
                     placeholderTextColor={colors.grey}
-                    placeholder="Type a message..."
+                    placeholder={t('messages.typeMessage')}
                     onChange={onContentChange}
                     partTypes={[
                         {
@@ -148,7 +150,7 @@ const ChatInput = ({ channelID, onSendMessage }: ChatInputProps) => {
                     </ContextMenu.Trigger>
                     <ContextMenu.Content>
                         <ContextMenu.Item key="star" onSelect={() => onSend(true)}>
-                            <ContextMenu.ItemTitle>Send without notification</ContextMenu.ItemTitle>
+                            <ContextMenu.ItemTitle>{t('messages.sendWithoutNotification')}</ContextMenu.ItemTitle>
                             <ContextMenu.ItemIcon
                                 ios={{
                                     name: 'bell.slash',

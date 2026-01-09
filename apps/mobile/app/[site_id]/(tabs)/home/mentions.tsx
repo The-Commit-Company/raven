@@ -16,6 +16,7 @@ import { BaseMessageItem } from '@components/features/chat-stream/BaseMessageIte
 import { Message } from '@raven/types/common/Message';
 import ChevronLeftIcon from '@assets/icons/ChevronLeftIcon.svg';
 import { useRouteToChannel } from '@hooks/useRouting';
+import { useTranslation } from 'react-i18next';
 
 interface MentionObject {
     /** ID of the message */
@@ -46,11 +47,12 @@ const PAGE_SIZE = 10
 
 export default function Mentions() {
 
+    const { t } = useTranslation()
     const { colors } = useColorScheme()
 
     return <>
         <Stack.Screen options={{
-            title: 'Mentions',
+            title: t('messages.mentions'),
             headerStyle: { backgroundColor: colors.background },
             headerLeft: Platform.OS === 'ios' ? () => {
                 return (
@@ -127,10 +129,12 @@ const MentionListItem = ({ message }: { message: MentionObject }) => {
         goToChannel(message.channel_id, 'push', message.is_thread === 0 ? 'Channel' : 'Thread')
     }
 
+    const { t } = useTranslation()
+
     const channelName = useMemo(() => {
 
         if (message.is_thread) {
-            return `Thread`
+            return t('messages.thread')
         }
 
         if (message.is_direct_message) {
@@ -138,7 +142,7 @@ const MentionListItem = ({ message }: { message: MentionObject }) => {
         }
 
         return message.channel_name
-    }, [message])
+    }, [message, t])
 
     const { colors } = useColorScheme()
 
@@ -166,15 +170,16 @@ const TimeStamp = ({ creation }: { creation: string }) => {
 }
 
 const MentionsEmptyState = () => {
+    const { t } = useTranslation()
     const { colors } = useColorScheme()
     return (
         <View className="flex flex-col p-4 gap-2 bg-background">
             <View className="flex flex-row items-center gap-2">
                 <AtSignIcon color={colors.icon} height={19} width={19} />
-                <Text className="text-foreground text-base font-medium">No mentions yet</Text>
+                <Text className="text-foreground text-base font-medium">{t('messages.noMentions')}</Text>
             </View>
             <Text className="text-sm text-foreground/60">
-                When someone mentions you in a message, you'll see it here.
+                {t('messages.noMentionsDescription')}
             </Text>
         </View>
     )

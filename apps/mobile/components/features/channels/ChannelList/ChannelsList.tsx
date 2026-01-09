@@ -10,6 +10,7 @@ import { router } from 'expo-router';
 import PlusIcon from '@assets/icons/PlusIcon.svg';
 import { ChannelListRow } from './ChannelListRow';
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
+import { useTranslation } from 'react-i18next';
 
 const ChannelsList = ({ channels }: { channels: ChannelListItem[] }) => {
 
@@ -27,7 +28,7 @@ const ChannelsList = ({ channels }: { channels: ChannelListItem[] }) => {
 }
 
 export const ChannelListUI = ({ channels }: { channels: ChannelListItem[] }) => {
-
+    const { t } = useTranslation();
     const [isExpanded, setIsExpanded] = useState(true)
     const { colors } = useColorScheme()
 
@@ -38,7 +39,7 @@ export const ChannelListUI = ({ channels }: { channels: ChannelListItem[] }) => 
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={toggleAccordion} style={styles.header} activeOpacity={0.7}>
-                <Text style={styles.headerText}>Channels</Text>
+                <Text style={styles.headerText}>{t('channels.channels')}</Text>
                 <View className="flex-row items-center gap-1">
                     <Pressable
                         hitSlop={10}
@@ -54,7 +55,7 @@ export const ChannelListUI = ({ channels }: { channels: ChannelListItem[] }) => 
                 <Pressable style={styles.addChannelButton} className='ios:active:bg-linkColor'
                     onPress={() => router.push('../home/create-channel', { relativeToDirectory: true })}>
                     <PlusIcon fill={colors.icon} height={18} width={18} />
-                    <Text style={styles.addChannelText}>Add channel</Text>
+                    <Text style={styles.addChannelText}>{t('channels.addChannel')}</Text>
                 </Pressable>
             </>}
         </View>

@@ -4,6 +4,7 @@ import { toast } from 'sonner-native'
 import { Text } from '@components/nativewindui/Text'
 import TrashIcon from '@assets/icons/TrashIcon.svg'
 import { useColorScheme } from '@hooks/useColorScheme'
+import { useTranslation } from 'react-i18next'
 
 interface RemoveImageProps {
     onSheetClose: (isMutate?: boolean) => void
@@ -11,6 +12,7 @@ interface RemoveImageProps {
 
 const RemoveImage = ({ onSheetClose }: RemoveImageProps) => {
 
+    const { t } = useTranslation()
     const { call } = useFrappePostCall('raven.api.raven_users.update_raven_user')
 
     const removeImage = async () => {
@@ -18,24 +20,24 @@ const RemoveImage = ({ onSheetClose }: RemoveImageProps) => {
             await call({
                 user_image: ''
             })
-            toast.success("Profile picture removed.")
+            toast.success(t('profile.imageRemoved'))
             onSheetClose()
         } catch (error) {
-            toast.error('Error removing profile picture')
+            toast.error(t('profile.imageRemoveFailed'))
         }
     }
 
     const deleteProfilePicAlert = () =>
         Alert.alert(
-            `Remove Image`,
-            `Are you sure you want to remove this image?`,
+            t('profile.removeImage'),
+            t('profile.removeImageConfirm'),
             [
                 {
-                    text: 'Cancel',
+                    text: t('common.cancel'),
                     style: 'cancel',
                 },
                 {
-                    text: 'Remove',
+                    text: t('common.remove'),
                     style: 'destructive',
                     onPress: removeImage
                 },
@@ -50,7 +52,7 @@ const RemoveImage = ({ onSheetClose }: RemoveImageProps) => {
             className='flex flex-row w-full items-center gap-2 p-2 rounded-lg ios:active:bg-red-50 dark:ios:active:bg-red-900/30'
             android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
             <TrashIcon height={20} width={20} fill={isDarkColorScheme ? '#f87171' : '#dc2626'} />
-            <Text className='text-base text-red-600 dark:text-red-400'>Remove Image</Text>
+            <Text className='text-base text-red-600 dark:text-red-400'>{t('profile.removeImage')}</Text>
         </Pressable>
     )
 }

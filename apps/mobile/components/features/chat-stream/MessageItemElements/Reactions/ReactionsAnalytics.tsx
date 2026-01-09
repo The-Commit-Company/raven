@@ -12,6 +12,7 @@ import { Sheet } from '@components/nativewindui/Sheet'
 import { ReactionObject } from './MessageReactions'
 import useFileURL from '@hooks/useFileURL'
 import { Image } from 'expo-image'
+import { useTranslation } from 'react-i18next'
 
 const { width } = Dimensions.get('window');
 
@@ -34,6 +35,7 @@ export default ReactionAnalytics;
 
 const ReactionAnalyticsContent = ({ reactions }: { reactions: ReactionObject[] }) => {
 
+    const { t } = useTranslation()
     const { colors } = useColorScheme()
 
     const activeTabShared = useSharedValue(0);
@@ -59,8 +61,8 @@ const ReactionAnalyticsContent = ({ reactions }: { reactions: ReactionObject[] }
                 }))
             }
         });
-        return [{ title: "All", is_custom: false, users: all_reacted_members }, ...reactionTabs];
-    }, [reactions, all_reacted_members]);
+        return [{ title: t('common.all'), is_custom: false, users: all_reacted_members }, ...reactionTabs];
+    }, [reactions, all_reacted_members, t]);
 
     const handleTabPress = useCallback((index: number) => {
         activeTabShared.value = index;

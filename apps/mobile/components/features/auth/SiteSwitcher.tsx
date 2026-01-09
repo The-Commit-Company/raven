@@ -11,9 +11,11 @@ import ChevronRightIcon from '@assets/icons/ChevronRightIconThin.svg'
 import { useColorScheme } from '@hooks/useColorScheme'
 import PlusIcon from '@assets/icons/PlusIcon.svg'
 import ServerIcon from '@assets/icons/ServerIcon.svg'
+import { useTranslation } from 'react-i18next'
 
 const SiteSwitcher = ({ openAddSiteSheet }: { openAddSiteSheet: () => void }) => {
 
+    const { t } = useTranslation()
     const currentSite = useSiteContext()
 
     const { sites, siteInformation, handleSitePress, clearSiteInformation, hasSites, bottomSheetRef } = useSiteSwitcher()
@@ -38,7 +40,7 @@ const SiteSwitcher = ({ openAddSiteSheet }: { openAddSiteSheet: () => void }) =>
     return (
         <>
             <View className='flex w-full gap-2'>
-                <Text className='text-muted-foreground text-sm font-medium'>Switch to Another Site</Text>
+                <Text className='text-muted-foreground text-sm font-medium'>{t('sites.switchToAnotherSite')}</Text>
                 {otherSites.map((siteInformation) => (
                     <Pressable key={siteInformation.sitename} onPress={() => handleSitePress(siteInformation.sitename)} className='bg-card dark:bg-card rounded-lg px-2 py-2 active:bg-card-background/50 dark:active:bg-card/80'>
                         <View className='flex flex-row pr-2 items-center justify-between'>
@@ -65,7 +67,7 @@ const SiteSwitcher = ({ openAddSiteSheet }: { openAddSiteSheet: () => void }) =>
                                 <ServerIcon height={22} width={22} color={colors.grey} />
                             </View>
 
-                            <Text className='text-base'>Add a new site</Text>
+                            <Text className='text-base'>{t('sites.addNewSite')}</Text>
                         </View>
                         <View className='flex-row h-10 items-center'>
                             <PlusIcon height={22} width={22} fill={colors.greyText} />

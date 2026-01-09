@@ -7,8 +7,10 @@ import { COLORS } from '@theme/colors';
 import SunIcon from '@assets/icons/SunIcon.svg';
 import MoonIcon from '@assets/icons/MoonIcon.svg';
 import SunMoonIcon from '@assets/icons/SunMoonIcon.svg';
+import { useTranslation } from 'react-i18next';
 
 export function ThemeToggle() {
+    const { t } = useTranslation();
     const { setColorScheme, themeValue } = useColorScheme();
 
     return (
@@ -54,7 +56,7 @@ export function ThemeToggle() {
                             light: 'gray',
                         },
                     }} />
-                    <DropdownMenu.ItemTitle>Light</DropdownMenu.ItemTitle>
+                    <DropdownMenu.ItemTitle>{t('settings.lightTheme')}</DropdownMenu.ItemTitle>
                 </DropdownMenu.Item>
                 <DropdownMenu.Item key="dark" onSelect={() => setColorScheme('dark')}>
                     <DropdownMenu.ItemIcon ios={{
@@ -66,7 +68,7 @@ export function ThemeToggle() {
                             light: 'gray',
                         },
                     }} />
-                    <DropdownMenu.ItemTitle>Dark</DropdownMenu.ItemTitle>
+                    <DropdownMenu.ItemTitle>{t('settings.darkTheme')}</DropdownMenu.ItemTitle>
                 </DropdownMenu.Item>
                 <DropdownMenu.Item key="system" onSelect={() => setColorScheme('system')}>
                     <DropdownMenu.ItemIcon ios={{
@@ -78,7 +80,7 @@ export function ThemeToggle() {
                             light: 'gray',
                         },
                     }} />
-                    <DropdownMenu.ItemTitle>System</DropdownMenu.ItemTitle>
+                    <DropdownMenu.ItemTitle>{t('settings.systemTheme')}</DropdownMenu.ItemTitle>
                 </DropdownMenu.Item>
             </DropdownMenu.Content>
         </DropdownMenu.Root>

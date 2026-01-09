@@ -13,6 +13,7 @@ import { useColorScheme } from '@hooks/useColorScheme'
 import { Platform } from 'react-native';
 import useUnreadThreadsCount from '@hooks/useUnreadThreadsCount';
 import useUnreadMessageCount from '@hooks/useUnreadMessageCount';
+import { useTranslation } from 'react-i18next';
 
 const tabBarBadgeStyle = {
     maxWidth: 8,
@@ -25,7 +26,7 @@ const tabBarBadgeStyle = {
 }
 
 export default function TabLayout() {
-
+    const { t } = useTranslation();
     const { colors, colorScheme } = useColorScheme()
     const dark = colorScheme == "dark"
 
@@ -100,7 +101,7 @@ export default function TabLayout() {
                 <Tabs.Screen
                     name="home"
                     options={{
-                        title: 'Home',
+                        title: t('channels.channels'),
                         headerShown: false,
                         headerStyle,
                         tabBarBadge: hasUnreadMessages ? '' : undefined,
@@ -111,7 +112,7 @@ export default function TabLayout() {
                 <Tabs.Screen
                     name="direct-messages"
                     options={{
-                        title: 'DMs',
+                        title: t('channels.directMessages'),
                         headerShown: false,
                         headerStyle,
                         tabBarBadge: hasUnreadDMs ? '' : undefined,
@@ -122,7 +123,7 @@ export default function TabLayout() {
                 <Tabs.Screen
                     name="threads"
                     options={{
-                        title: 'Threads',
+                        title: t('threads.threads'),
                         headerShown: false,
                         headerStyle,
                         tabBarBadge: hasUnreadThreads ? '' : undefined,
@@ -133,7 +134,7 @@ export default function TabLayout() {
                 <Tabs.Screen
                     name="profile"
                     options={{
-                        title: 'Profile',
+                        title: t('profile.profile'),
                         headerShown: false,
                         headerStyle,
                         tabBarIcon: getTabBarIcon(ProfileIcon, ProfileOutlineIcon),

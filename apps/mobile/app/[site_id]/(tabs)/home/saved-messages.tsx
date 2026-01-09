@@ -11,14 +11,16 @@ import SavedMessageItem from '@components/features/saved-messages/SavedMessageIt
 import ChevronLeftIcon from '@assets/icons/ChevronLeftIcon.svg';
 import { LegendList } from '@legendapp/list';
 import ErrorBanner from '@components/common/ErrorBanner';
+import { useTranslation } from 'react-i18next';
 
 export default function SavedMessages() {
 
+    const { t } = useTranslation()
     const { colors } = useColorScheme()
 
     return <>
         <Stack.Screen options={{
-            title: 'Saved Messages',
+            title: t('messages.savedMessages'),
             headerStyle: { backgroundColor: colors.background },
             headerLeft: Platform.OS === 'ios' ? () => {
                 return (
@@ -68,18 +70,19 @@ const SavedMessagesContent = () => {
 }
 
 const SavedMessagesEmptyState = () => {
+    const { t } = useTranslation()
     const { colors } = useColorScheme()
     return (
         <View className="flex flex-col p-4 gap-2 bg-background">
             <View className="flex flex-row items-center gap-2">
                 <BookMarkIcon fill={colors.icon} height={20} width={20} />
-                <Text className="text-foreground text-base font-medium">Your saved messages will appear here</Text>
+                <Text className="text-foreground text-base font-medium">{t('messages.noSavedMessagesTitle')}</Text>
             </View>
             <Text className="text-sm text-foreground/60">
-                Saved messages are a convenient way to keep track of important information or messages you want to refer back to later.
+                {t('messages.noSavedMessagesDescription')}
             </Text>
             <Text className="text-sm text-foreground/60">
-                You can save messages by simply clicking on the bookmark icon in message actions.
+                {t('messages.noSavedMessagesHint')}
             </Text>
         </View>
     )

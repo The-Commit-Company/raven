@@ -14,6 +14,7 @@ import { FormLabel } from '@components/layout/Form'
 import { useColorScheme } from '@hooks/useColorScheme'
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator'
 import HowToSetupMobile from './HowToSetupMobile'
+import { useTranslation } from 'react-i18next'
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -22,7 +23,7 @@ type Props = {
 }
 
 const AddSite = ({ useBottomSheet = false }: Props) => {
-
+    const { t } = useTranslation()
     const { colors } = useColorScheme()
 
     const [siteURL, setSiteURL] = useState('')
@@ -36,7 +37,7 @@ const AddSite = ({ useBottomSheet = false }: Props) => {
     const handleAddSite = () => {
         /**
          * When a user adds a site, we need to do the following:
-         * 
+         *
          * 1. Check if the site starts with https://. If not, add it.
          * 2. Lowercase the site URL
          * 3. TODO: Check if this site is already added (this will be done later)
@@ -62,13 +63,11 @@ const AddSite = ({ useBottomSheet = false }: Props) => {
                     })
                     bottomSheetRef.current?.present()
                 } else {
-                    // TODO: Show error message/toast
-                    Alert.alert('Error', 'Failed to fetch site information / OAuth client not set for Raven Mobile')
+                    Alert.alert(t('common.error'), t('auth.oauthNotConfigured'))
                 }
             })
             .catch(err => {
-                // TODO: Show error message/toast
-                Alert.alert('Error', 'Failed to fetch site information. Please check the URL and try again.')
+                Alert.alert(t('common.error'), t('auth.fetchSiteInfoFailed'))
                 console.error(err)
             })
             .finally(() => {
@@ -84,7 +83,7 @@ const AddSite = ({ useBottomSheet = false }: Props) => {
         <View className='flex-1 gap-3'>
             <View className="flex-col gap-2">
                 <View className="flex-row items-center gap-0">
-                    <FormLabel className='text-base'>Site URL</FormLabel>
+                    <FormLabel className='text-base'>{t('auth.siteUrl')}</FormLabel>
                 </View>
                 {useBottomSheet ?
                     <BottomSheetTextInput
@@ -92,7 +91,7 @@ const AddSite = ({ useBottomSheet = false }: Props) => {
                         numberOfLines={1}
                         inputMode='url'
                         autoCapitalize='none'
-                        placeholder='raven.frappe.cloud'
+                        placeholder={t('auth.siteUrlPlaceholder')}
                         placeholderTextColor={colors.grey2}
                         autoCorrect={false}
                         autoComplete='off'
@@ -105,7 +104,7 @@ const AddSite = ({ useBottomSheet = false }: Props) => {
                         numberOfLines={1}
                         inputMode='url'
                         autoCapitalize='none'
-                        placeholder='raven.frappe.cloud'
+                        placeholder={t('auth.siteUrlPlaceholder')}
                         placeholderTextColor={colors.grey2}
                         autoCorrect={false}
                         autoComplete='off'
@@ -115,7 +114,7 @@ const AddSite = ({ useBottomSheet = false }: Props) => {
                 }
             </View>
             <Button onPress={handleAddSite} disabled={isLoading}>
-                <Text>Add Site</Text>
+                <Text>{t('auth.addSite')}</Text>
             </Button>
             <Sheet snapPoints={[400]} ref={bottomSheetRef} onDismiss={clearSiteInformation}>
                 <BottomSheetView className='pb-16'>
@@ -129,6 +128,7 @@ const AddSite = ({ useBottomSheet = false }: Props) => {
 }
 
 export const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformation: SiteInformation, onDismiss: () => void }) => {
+    const { t } = useTranslation()
 
     const discoveryWithURL = {
         authorizationEndpoint: siteInformation.url + discovery.authorizationEndpoint,
@@ -163,10 +163,10 @@ export const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformat
                     }, discoveryWithURL).then(data => {
                         onAccessTokenReceived(data)
                     }).catch(err => {
-                        Alert.alert("Authentication Error", err.message)
+                        Alert.alert(t('auth.authenticationError'), err.message)
                     })
                 } else if (res.type === "error") {
-                    Alert.alert("Authentication Error", res.error?.message ?? "Unknown error")
+                    Alert.alert(t('auth.authenticationError'), res.error?.message ?? t('errors.somethingWentWrong'))
                 }
             })
             .finally(() => {
@@ -200,7 +200,7 @@ export const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformat
         <Button onPress={onLoginClick} style={{
             minHeight: 40
         }} disabled={!request || loading}>
-            {loading ? <ActivityIndicator color={"#FFFFFF"} /> : <Text>Login</Text>}
+            {loading ? <ActivityIndicator color={"#FFFFFF"} /> : <Text>{t('auth.login')}</Text>}
         </Button>
     </View>
 }

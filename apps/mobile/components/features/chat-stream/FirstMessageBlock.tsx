@@ -13,6 +13,7 @@ import { useColorScheme } from "@hooks/useColorScheme"
 import { useFrappeGetDoc } from "frappe-react-sdk"
 import { BaseMessageItem } from "./BaseMessageItem"
 import { formatDate } from "@raven/lib/utils/dateConversions"
+import { useTranslation } from 'react-i18next'
 
 const ChannelHistoryFirstMessage = ({ channelID, isThread }: { channelID: string, isThread: boolean }) => {
 
@@ -26,7 +27,7 @@ const ChannelHistoryFirstMessage = ({ channelID, isThread }: { channelID: string
 }
 
 const ChannelHeader = ({ channelID }: { channelID: string }) => {
-
+    const { t } = useTranslation()
     const { channel } = useCurrentChannelData(channelID)
 
     if (channel) {
@@ -40,13 +41,13 @@ const ChannelHeader = ({ channelID }: { channelID: string }) => {
     }
 
     return <View className="pt-8 p-3">
-        <Text>You're at the beginning of this channel.</Text>
+        <Text>{t('channels.channelBeginning')}</Text>
     </View>
 }
 
 
 const ThreadHeader = ({ threadID }: { threadID: string }) => {
-
+    const { t } = useTranslation()
     const { data } = useFrappeGetDoc("Raven Message", threadID)
 
     const threadMessage = useMemo(() => {
@@ -60,7 +61,7 @@ const ThreadHeader = ({ threadID }: { threadID: string }) => {
 
     return <View className="bg-card-background/30 py-2 rounded-lg">
         <View className='flex-1 flex-row items-center gap-2 pr-3 ml-3 py-2 border-b border-border/50'>
-            <Text className='text-base font-semibold text-foreground'>Start of Thread</Text>
+            <Text className='text-base font-semibold text-foreground'>{t('threads.startOfThread')}</Text>
         </View>
         <View className="pb-2">
             {threadMessage && <BaseMessageItem message={threadMessage} />}
@@ -70,7 +71,7 @@ const ThreadHeader = ({ threadID }: { threadID: string }) => {
 
 
 const FirstMessageBlockForDM = ({ channelData }: { channelData: DMChannelListItem }) => {
-
+    const { t } = useTranslation()
     const { myProfile: currentUserInfo } = useCurrentRavenUser()
     const peer = channelData.peer_user_id
     const peerData = useGetUser(peer)
@@ -102,19 +103,19 @@ const FirstMessageBlockForDM = ({ channelData }: { channelData: DMChannelListIte
                             <Text className="font-semibold">{userName}</Text>
                             <Text>
                                 {isBot ? <View className="bg-linkColor rounded-md px-2 py-0.5 opacity-70 dark:opacity-80">
-                                    <Text className="text-xs font-medium">Bot</Text>
+                                    <Text className="text-xs font-medium">{t('common.bot')}</Text>
                                 </View> : <Text className='text-sm text-muted-foreground'>{peer}</Text>}
                             </Text>
                         </View>
                     </View>
                     {channelData?.is_self_message == 1 ? (
-                        <Text className='text-[15px]'><Text className='text-[15px] font-semibold'>This space is all yours.</Text> Draft messages, list your to-dos, or keep links and files handy.</Text>
+                        <Text className='text-[15px]'>{t('messages.dmIntroSelf')}</Text>
                     ) : (
                         <View className="flex flex-row gap-2 items-center">
                             {peer || fullName ? (
-                                <Text className='text-[15px]'>This is a direct message channel between you and <Text className='text-[15px] font-semibold'>{fullName ?? peer}</Text>.</Text>
+                                <Text className='text-[15px]'>{t('messages.dmIntro')} <Text className='text-[15px] font-semibold'>{fullName ?? peer}</Text>.</Text>
                             ) : (
-                                <Text className='text-[15px]'>We could not find the user for this DM channel ({replaceCurrentUserFromDMChannelName(channelData.channel_name, currentUserInfo?.name ?? "")}).</Text>
+                                <Text className='text-[15px]'>{t('messages.dmUserNotFound')} ({replaceCurrentUserFromDMChannelName(channelData.channel_name, currentUserInfo?.name ?? "")}).</Text>
                             )}
                         </View>
                     )}
@@ -125,6 +126,7 @@ const FirstMessageBlockForDM = ({ channelData }: { channelData: DMChannelListIte
 }
 
 const FirstMessageBlockForChannel = ({ channelData }: { channelData: ChannelListItem }) => {
+    const { t } = useTranslation()
     const { colors } = useColorScheme()
     return (
         <View className="pt-6 p-3">
@@ -133,8 +135,8 @@ const FirstMessageBlockForChannel = ({ channelData }: { channelData: ChannelList
                     <ChannelIcon size={20} type={channelData?.type} fill={colors.foreground} />
                     <Text className="text-lg font-semibold">{channelData?.channel_name}</Text>
                 </View>
-                <Text className="text-[15px]">This is the very beginning of the <Text className="text-base font-semibold">{channelData?.channel_name}</Text> channel.</Text>
-                {channelData?.channel_description && <Text className="text-sm text-muted-foreground">Channel description: {channelData?.channel_description}</Text>}
+                <Text className="text-[15px]">{t('channels.channelIntro')} <Text className="text-base font-semibold">{channelData?.channel_name}</Text> {t('channels.channelIntroEnd')}</Text>
+                {channelData?.channel_description && <Text className="text-sm text-muted-foreground">{t('channels.channelDescriptionLabel')} {channelData?.channel_description}</Text>}
             </View>
         </View>
     )

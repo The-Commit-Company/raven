@@ -5,6 +5,7 @@ import { ChannelIcon } from '@components/features/channels/ChannelList/ChannelIc
 import { useColorScheme } from '@hooks/useColorScheme'
 import { CombinedChannel } from './ForwardMessage'
 import CrossIcon from '@assets/icons/CrossIcon.svg'
+import { useTranslation } from 'react-i18next'
 
 interface SelectedChannelsProps {
     selectedChannels: CombinedChannel[]
@@ -16,11 +17,12 @@ interface SelectedChannelsProps {
 
 export const SelectedChannels = ({ selectedChannels, searchInput, setSearchInput, handleRemoveChannel, handleBackspace }: SelectedChannelsProps) => {
 
+    const { t } = useTranslation()
     const { colors } = useColorScheme()
 
     return (
         <View className={`flex-row items-center gap-2.5 px-3 py-3`}>
-            <Text className="self-start text-base text-foreground">To:</Text>
+            <Text className="self-start text-base text-foreground">{t('forward.to')}</Text>
             <View className="flex-1 flex-row flex-wrap items-center gap-2 mr-5">
                 {selectedChannels.map((channel: CombinedChannel) => {
                     const isDMChannel = channel.is_direct_message
@@ -60,7 +62,7 @@ export const SelectedChannels = ({ selectedChannels, searchInput, setSearchInput
                 <TextInput
                     autoFocus
                     className="flex-1"
-                    placeholder={selectedChannels.length === 0 ? "Add a channel or DM" : ""}
+                    placeholder={selectedChannels.length === 0 ? t('forward.addChannelOrDM') : ""}
                     value={searchInput}
                     onChangeText={setSearchInput}
                     onKeyPress={({ nativeEvent }) => {

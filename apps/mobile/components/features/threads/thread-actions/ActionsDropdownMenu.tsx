@@ -7,9 +7,10 @@ import { useFrappeDeleteDoc, useFrappePostCall, useSWRConfig } from 'frappe-reac
 import { toast } from 'sonner-native';
 import { router } from 'expo-router';
 import { useColorScheme } from '@hooks/useColorScheme';
+import { useTranslation } from 'react-i18next';
 
 const ActionsDropdownMenu = ({ threadID, channelMember }: { threadID: string, channelMember: Member }) => {
-
+    const { t } = useTranslation()
     const { colors } = useColorScheme()
 
     const onToggleThreadNotifications = useToggleThreadNotifications(threadID, channelMember)
@@ -17,15 +18,15 @@ const ActionsDropdownMenu = ({ threadID, channelMember }: { threadID: string, ch
     const onLeaveThread = useLeaveThread(threadID)
     const showLeaveThreadAlert = () =>
         Alert.alert(
-            'Leave thread?',
-            `Are you sure you want to leave this thread?`,
+            t('threads.leaveThread'),
+            t('threads.leaveThreadMessage'),
             [
                 {
-                    text: 'Cancel',
+                    text: t('common.cancel'),
                     style: 'cancel',
                 },
                 {
-                    text: 'Leave',
+                    text: t('common.leave'),
                     style: 'destructive',
                     onPress: onLeaveThread
                 },
@@ -35,15 +36,15 @@ const ActionsDropdownMenu = ({ threadID, channelMember }: { threadID: string, ch
     const onDeleteThread = useDeleteThread(threadID)
     const showDeleteThreadAlert = () =>
         Alert.alert(
-            'Delete thread?',
-            `Are you sure you want to delete this thread?`,
+            t('threads.deleteThread'),
+            t('threads.deleteThreadMessage'),
             [
                 {
-                    text: 'Cancel',
+                    text: t('common.cancel'),
                     style: 'cancel',
                 },
                 {
-                    text: 'Delete',
+                    text: t('common.delete'),
                     style: 'destructive',
                     onPress: onDeleteThread
                 },
@@ -69,7 +70,7 @@ const ActionsDropdownMenu = ({ threadID, channelMember }: { threadID: string, ch
                         },
                     }} />
                     <DropdownMenu.ItemTitle>
-                        {channelMember?.allow_notifications ? 'Unmute' : 'Mute'}
+                        {channelMember?.allow_notifications ? t('common.unmute') : t('common.mute')}
                     </DropdownMenu.ItemTitle>
                 </DropdownMenu.Item>
                 <DropdownMenu.Item key="leave-thread" onSelect={showLeaveThreadAlert}>
@@ -82,7 +83,7 @@ const ActionsDropdownMenu = ({ threadID, channelMember }: { threadID: string, ch
                             light: 'red',
                         },
                     }} />
-                    <DropdownMenu.ItemTitle >Leave</DropdownMenu.ItemTitle>
+                    <DropdownMenu.ItemTitle >{t('common.leave')}</DropdownMenu.ItemTitle>
                 </DropdownMenu.Item>
                 {/* Only admins can delete threads */}
                 {channelMember.is_admin && <DropdownMenu.Item key="delete-thread" onSelect={showDeleteThreadAlert}>
@@ -95,7 +96,7 @@ const ActionsDropdownMenu = ({ threadID, channelMember }: { threadID: string, ch
                             light: 'red',
                         },
                     }} />
-                    <DropdownMenu.ItemTitle>Delete</DropdownMenu.ItemTitle>
+                    <DropdownMenu.ItemTitle>{t('common.delete')}</DropdownMenu.ItemTitle>
                 </DropdownMenu.Item>}
             </DropdownMenu.Content>
         </DropdownMenu.Root>
@@ -104,6 +105,7 @@ const ActionsDropdownMenu = ({ threadID, channelMember }: { threadID: string, ch
 
 const useToggleThreadNotifications = (threadID: string, channelMember: Member) => {
 
+    const { t } = useTranslation()
     const { mutate } = useSWRConfig()
     const { call, error } = useFrappePostCall('raven.api.notification.toggle_push_notification_for_channel')
 
@@ -128,9 +130,9 @@ const useToggleThreadNotifications = (threadID: string, channelMember: Member) =
                 })
             }
 
-            toast.success(`Thread ${channelMember?.allow_notifications ? 'unmuted' : 'muted'}`)
+            toast.success(channelMember?.allow_notifications ? t('threads.threadUnmuted') : t('threads.threadMuted'))
         }).catch(() => {
-            toast.error('Could not toggle thread notifications', {
+            toast.error(t('threads.muteThreadFailed'), {
                 description: error?.httpStatusText
             })
         })
@@ -141,18 +143,19 @@ const useToggleThreadNotifications = (threadID: string, channelMember: Member) =
 
 const useLeaveThread = (threadID: string) => {
 
+    const { t } = useTranslation()
     const { call, error } = useFrappePostCall('raven.api.raven_channel.leave_channel')
     const { mutate } = useSWRConfig()
 
     const onLeaveThread = async () => {
         return call({ channel_id: threadID })
             .then(() => {
-                toast.success(`You have left the thread`)
+                toast.success(t('threads.leftThread'))
                 router.back()
                 mutate(["channel_members", threadID])
             })
             .catch(() => {
-                toast.error('Could not leave thread', {
+                toast.error(t('threads.leaveThreadFailed'), {
                     description: error?.httpStatusText
                 })
             })
@@ -163,16 +166,17 @@ const useLeaveThread = (threadID: string) => {
 
 const useDeleteThread = (threadID: string) => {
 
+    const { t } = useTranslation()
     const { deleteDoc, error } = useFrappeDeleteDoc()
 
     const onDeleteThread = async () => {
         return deleteDoc('Raven Channel', threadID)
             .then(() => {
-                toast.success(`Thread has been deleted.`)
+                toast.success(t('threads.threadDeleted'))
                 router.back()
             })
             .catch(() => {
-                toast.error('Could not delete thread', {
+                toast.error(t('threads.deleteThreadFailed'), {
                     description: error?.httpStatusText
                 })
             })

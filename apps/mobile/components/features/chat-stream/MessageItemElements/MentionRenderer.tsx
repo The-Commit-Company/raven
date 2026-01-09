@@ -3,6 +3,7 @@ import { CustomTextualRenderer, CustomRendererProps, TText, TPhrasing } from 're
 import { router } from 'expo-router'
 import { FrappeContext, FrappeConfig } from 'frappe-react-sdk';
 import { toast } from 'sonner-native';
+import { useTranslation } from 'react-i18next';
 
 // Custom renderer for paragraph elements, it also checks for mentions
 export const CustomMentionRenderer: CustomTextualRenderer = ({
@@ -32,6 +33,7 @@ const UserMentionRenderer = ({
     ...props
 }: CustomRendererProps<TText | TPhrasing> & { userID: string }) => {
 
+    const { t } = useTranslation()
     const { call } = useContext(FrappeContext) as FrappeConfig
 
     const handleMentionPress = useCallback(() => {
@@ -40,9 +42,9 @@ const UserMentionRenderer = ({
         }).then((res) => {
             router.push(`../${res?.message}`, { relativeToDirectory: true })
         }).catch(err => {
-            toast.error('Could not create a DM channel')
+            toast.error(t('directMessages.createDMFailed'))
         })
-    }, [userID])
+    }, [userID, t])
 
     return (
         // @ts-ignore

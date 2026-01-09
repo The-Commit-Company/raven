@@ -14,9 +14,11 @@ import ReplyMessageBox from '../chat/ChatMessage/Renderers/ReplyMessageBox';
 import { Message } from '@raven/types/common/Message';
 import { View } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
+import { useTranslation } from 'react-i18next';
 
 export const BaseMessageItem = ({ message }: { message: Message }) => {
 
+    const { t } = useTranslation()
     const username = message.bot || message.owner
     const user = useGetUser(username)
     const userFullName = user?.full_name || username
@@ -42,13 +44,13 @@ export const BaseMessageItem = ({ message }: { message: Message }) => {
                     <View className='flex-row items-center gap-1'>
                         <ShareForward fill={'#6b7280'} width={12} height={12} />
                         <Text className='text-xs text-gray-500 dark:text-gray-400'>
-                            forwarded
+                            {t('messages.forwarded')}
                         </Text>
                     </View>}
                 {message.is_pinned === 1 &&
                     <View className='flex-row items-center gap-1'>
                         <PinIcon width={12} height={12} />
-                        <Text className='text-xs text-accent'>Pinned</Text>
+                        <Text className='text-xs text-accent'>{t('messages.pinned')}</Text>
                     </View>}
 
                 {linked_message && replied_message_details && <ReplyMessageBox message={message} />}
@@ -62,7 +64,7 @@ export const BaseMessageItem = ({ message }: { message: Message }) => {
                     <DocTypeLinkRenderer doctype={message.link_doctype} docname={message.link_document} />
                 </View>}
 
-                {message.is_edited === 1 && <Text className='text-xs text-muted-foreground'>(edited)</Text>}
+                {message.is_edited === 1 && <Text className='text-xs text-muted-foreground'>({t('messages.messageEdited')})</Text>}
                 {message.hide_link_preview === 0 && message.text && <MessageLinkRenderer message={message} />}
             </View>
         </View>

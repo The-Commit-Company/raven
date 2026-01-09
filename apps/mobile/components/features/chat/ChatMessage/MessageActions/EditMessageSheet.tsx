@@ -8,6 +8,7 @@ import { useRef } from 'react'
 import { useFrappeUpdateDoc } from 'frappe-react-sdk'
 import { toast } from 'sonner-native'
 import ErrorBanner from '@components/common/ErrorBanner'
+import { useTranslation } from 'react-i18next'
 
 interface EditMessageSheetProps {
     message: Message;
@@ -18,6 +19,7 @@ interface EditMessageSheetProps {
 
 const EditMessageSheet = ({ message, onClose }: EditMessageSheetProps) => {
 
+    const { t } = useTranslation()
     const { colors, isDarkColorScheme } = useColorScheme()
 
     const { updateDoc, error, loading: updatingDoc } = useFrappeUpdateDoc()
@@ -34,13 +36,13 @@ const EditMessageSheet = ({ message, onClose }: EditMessageSheetProps) => {
             { text: messageTextRef.current }).then((d) => {
                 Keyboard.dismiss()
                 onClose()
-                toast.success("Message updated")
+                toast.success(t('messages.messageUpdated'))
             })
     };
     return (
         <View className="flex flex-col gap-3 px-4 pt-2">
 
-            <Text className='text-lg font-cal-sans ml-0.5'>Edit Message</Text>
+            <Text className='text-lg font-cal-sans ml-0.5'>{t('messages.editMessage')}</Text>
 
             {error ? <ErrorBanner error={error} /> : null}
 
@@ -67,7 +69,7 @@ const EditMessageSheet = ({ message, onClose }: EditMessageSheetProps) => {
                 size='lg'
                 onPress={handleSave}
                 disabled={updatingDoc}>
-                <Text>{updatingDoc ? 'Updating...' : 'Update'}</Text>
+                <Text>{updatingDoc ? t('common.updating') : t('common.update')}</Text>
             </Button>
         </View>
     )

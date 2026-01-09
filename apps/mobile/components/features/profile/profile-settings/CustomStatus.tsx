@@ -4,9 +4,10 @@ import SmileIcon from '@assets/icons/SmileIcon.svg'
 import { useColorScheme } from '@hooks/useColorScheme'
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
 import { router } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 
 const CustomStatus = () => {
-
+    const { t } = useTranslation()
     const { colors } = useColorScheme()
     const { myProfile } = useCurrentRavenUser()
 
@@ -21,14 +22,14 @@ const CustomStatus = () => {
             <View className='flex flex-row py-2.5 px-4 rounded-xl justify-between bg-background dark:bg-card'>
                 <View className='flex-row items-center gap-2'>
                     <SmileIcon height={18} width={18} fill={colors.icon} />
-                    <Text className='text-base'>Status</Text>
+                    <Text className='text-base'>{t('common.status')}</Text>
                 </View>
                 <TouchableOpacity onPress={handleGoToCustomStatus}>
                     {myProfile?.custom_status ? <Text className='text-base text-muted-foreground' numberOfLines={1}
                         ellipsizeMode="tail" // Add ellipsis at the end
                         style={{ maxWidth: 200 }} >
                         {myProfile?.custom_status}
-                    </Text> : <Text className='text-base font-medium text-primary'>Add</Text>}
+                    </Text> : <Text className='text-base font-medium text-primary'>{t('common.add')}</Text>}
                 </TouchableOpacity>
             </View>
         </View>
