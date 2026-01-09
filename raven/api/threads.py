@@ -72,7 +72,7 @@ def get_all_threads(
 			(channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user)
 		)
 		.left_join(thread_messages)
-		.on(channel.name == thread_messages.channel_id)
+		.on((channel.name == thread_messages.channel_id) & (thread_messages.message_type != "System"))
 		.where(channel_member.user_id == frappe.session.user)
 		.where(channel.is_thread == 1)
 		.where(channel.is_ai_thread == is_ai_thread)
@@ -154,7 +154,7 @@ def get_other_threads(
 		.left_join(main_thread_message)
 		.on((main_thread_message.is_thread == 1) & (main_thread_message.name == thread_channel.name))
 		.left_join(thread_message)
-		.on(thread_channel.name == thread_message.channel_id)
+		.on((thread_channel.name == thread_message.channel_id) & (thread_message.message_type != "System"))
 		.left_join(channel_member)
 		.on(
 			(main_thread_message.channel_id == channel_member.channel_id)
