@@ -145,6 +145,7 @@ def create_direct_message_channel(user_id):
 	Creates a direct message channel between current user and the user with user_id
 	The user_id can be the peer or the user themself
 	1. Check if a channel already exists between the two users
+	- Use dm_user_1 and dm_user_2 to check if a channel exists to prevent race condition duplicates
 	2. If not, create a new channel
 	3. Check if the user_id is the current user and set is_self_message accordingly
 	"""
@@ -158,14 +159,18 @@ def create_direct_message_channel(user_id):
 		if not get_raven_user(user_id):
 			frappe.throw(_("The user you are trying to message is not a Raven User."))
 
+	# Get the canonical order of the users
+	if frappe.session.user > user_id:
+		dm_user_1, dm_user_2 = frappe.session.user, user_id
+	else:
+		dm_user_1, dm_user_2 = user_id, frappe.session.user
+
 	channel_name = frappe.db.get_value(
 		"Raven Channel",
 		filters={
 			"is_direct_message": 1,
-			"channel_name": [
-				"in",
-				[frappe.session.user + " _ " + user_id, user_id + " _ " + frappe.session.user],
-			],
+			"dm_user_1": dm_user_1,
+			"dm_user_2": dm_user_2,
 		},
 		fieldname="name",
 	)
@@ -176,7 +181,7 @@ def create_direct_message_channel(user_id):
 		channel = frappe.get_doc(
 			{
 				"doctype": "Raven Channel",
-				"channel_name": frappe.session.user + " _ " + user_id,
+				"channel_name": dm_user_1 + " _ " + dm_user_2,
 				"is_direct_message": 1,
 				"is_self_message": frappe.session.user == user_id,
 			}
