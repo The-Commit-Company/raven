@@ -15,12 +15,10 @@ import LockIcon from '@assets/icons/LockIcon.svg';
 import FilterIcon from '@assets/icons/FilterIcon.svg';
 import { LegendList } from '@legendapp/list';
 import { ChannelListItem } from '@raven/types/common/ChannelListItem';
-import { useTranslation } from 'react-i18next';
+import { __ } from '@lib/i18n';
 
 export default function BrowseChannels() {
-
-    const { t } = useTranslation()
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
     const { channels } = useGetChannels({ showArchived: true })
     const [searchQuery, setSearchQuery] = useState('')
     const [channelType, setChannelType] = useState('All')
@@ -43,7 +41,7 @@ export default function BrowseChannels() {
 
     return <>
         <Stack.Screen options={{
-            title: t('channels.browseChannels'),
+            title: __("Browse Channels"),
             headerLeft: Platform.OS === 'ios' ? () => {
                 return (
                     <Link asChild href="../" relativeToDirectory>
@@ -76,7 +74,7 @@ export default function BrowseChannels() {
                         <Text className="text-base">{item.channel_name}</Text>
                         {item.is_archived ?
                             <View className='px-1 mt-0.5 py-0.5 rounded-sm bg-red-100 dark:bg-red-900/40'>
-                                <Text className="text-[11px] text-red-700 dark:text-red-300">{t('common.archived')}</Text>
+                                <Text className="text-[11px] text-red-700 dark:text-red-300">{__("Archived")}</Text>
                             </View> : null}
                     </Pressable>
                 )}
@@ -84,7 +82,7 @@ export default function BrowseChannels() {
                 ListEmptyComponent={
                     <View className="p-2">
                         <Text className="text-sm text-muted-foreground">
-                            {t('channels.noMatchingChannels', { query: searchQuery })}
+                            {__("No matching channels found for \"{{query}}\"", { query: searchQuery })}
                         </Text>
                     </View>
                 }
@@ -96,8 +94,7 @@ export default function BrowseChannels() {
 }
 
 const ChannelFilter = ({ channel, setChannel }: { channel: string, setChannel: (channel: string) => void }) => {
-    const { t } = useTranslation()
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
     return <DropdownMenu.Root>
         <DropdownMenu.Trigger>
             <View className={`items-center p-2 border border-border rounded-lg w-fit ${channel !== 'All' ? 'border-primary bg-primary/5' : ''}`}>
@@ -114,25 +111,25 @@ const ChannelFilter = ({ channel, setChannel }: { channel: string, setChannel: (
         </DropdownMenu.Trigger>
         <DropdownMenu.Content>
             <DropdownMenu.Item key="All" onSelect={() => setChannel('All')}>
-                <DropdownMenu.ItemTitle>{t('channels.anyChannel')}</DropdownMenu.ItemTitle>
+                <DropdownMenu.ItemTitle>{__("Any Channel")}</DropdownMenu.ItemTitle>
             </DropdownMenu.Item>
             <DropdownMenu.Item
                 key="open"
                 textValue="Open"
                 onSelect={() => setChannel('Open')}>
-                <Text>{t('channels.openChannel')}</Text>
+                <Text>{__("Open")}</Text>
             </DropdownMenu.Item>
             <DropdownMenu.Item
                 key="private"
                 textValue="Private"
                 onSelect={() => setChannel('Private')}>
-                <Text>{t('channels.privateChannel')}</Text>
+                <Text>{__("Private")}</Text>
             </DropdownMenu.Item>
             <DropdownMenu.Item
                 key="public"
                 textValue="Public"
                 onSelect={() => setChannel('Public')}>
-                <Text>{t('channels.publicChannel')}</Text>
+                <Text>{__("Public")}</Text>
             </DropdownMenu.Item>
         </DropdownMenu.Content>
     </DropdownMenu.Root>

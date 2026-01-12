@@ -6,12 +6,9 @@ import { Sheet, useSheetRef } from '@components/nativewindui/Sheet'
 import { useCallback } from 'react'
 import { BottomSheetView } from '@gorhom/bottom-sheet'
 import { Button } from '@components/nativewindui/Button'
-import { useTranslation } from 'react-i18next'
-
+import { __ } from '@lib/i18n';
 const HowToSetupMobile = () => {
-
-    const { t } = useTranslation()
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
 
     const infoSheetRef = useSheetRef()
 
@@ -27,7 +24,7 @@ const HowToSetupMobile = () => {
         <View>
             <TouchableOpacity className='flex-row items-center gap-1' onPress={onPress}>
                 <InfoIcon height={16} width={16} fill={colors.icon} />
-                <Text className='text-sm text-muted-foreground'>{t('setup.howToSetupMobile')}</Text>
+                <Text className='text-sm text-muted-foreground'>{__("How do I setup my site for Raven mobile?")}</Text>
             </TouchableOpacity>
 
             <Sheet enableDynamicSizing ref={infoSheetRef}>
@@ -40,10 +37,7 @@ const HowToSetupMobile = () => {
 }
 
 const HowToSetupMobileContent = ({ onDismiss }: { onDismiss: () => void }) => {
-
-    const { t } = useTranslation()
-
-    const BoldText = ({ children }: { children: React.ReactNode }) => {
+const BoldText = ({ children }: { children: React.ReactNode }) => {
         return <Text className='text-base text-foreground font-medium'>{children}</Text>
     }
 
@@ -54,31 +48,31 @@ const HowToSetupMobileContent = ({ onDismiss }: { onDismiss: () => void }) => {
     }
 
     return <View className='p-4 flex gap-4'>
-        <Text className='text-lg text-foreground font-semibold'>{t('setup.title')}</Text>
+        <Text className='text-lg text-foreground font-semibold'>{__("Set up Raven mobile on your site")}</Text>
         <View className='flex gap-2'>
             <Text className='text-base text-foreground'>
-                <StepNumber number={1} /> {t('setup.step1')}
+                <StepNumber number={1} /> {__("Open Raven on your desktop browser")}
             </Text>
             <Text className='text-base text-foreground'>
-                <StepNumber number={2} /> {t('setup.step2')}
+                <StepNumber number={2} /> {__("Go to Settings > Mobile App")}
             </Text>
             <Text className='text-base text-foreground'>
-                <StepNumber number={3} /> {t('setup.step3')}
+                <StepNumber number={3} /> {__("Click on Configure OAuth Client")}
             </Text>
         </View>
 
         <View className='flex gap-2'>
             <Text className='text-base text-foreground'>
-                {t('setup.oauthDescription')}
+                {__("This will create an OAuth client that users can use to authenticate securely on the mobile app.")}
             </Text>
 
             <Text className='text-base text-muted-foreground'>
-                {t('setup.adminNote')}
+                {__("PS: Only System Administrators can do this.")}
             </Text>
         </View>
 
         <Button onPress={onDismiss}>
-            <Text>{t('common.close')}</Text>
+            <Text>{__("Close")}</Text>
         </Button>
     </View>
 

@@ -1,8 +1,7 @@
 import { Stack } from 'expo-router';
 import { TouchableOpacity, View } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
-import { useTranslation } from 'react-i18next';
-import { getAvailableLanguages, saveLanguage, getCurrentLanguage } from '@lib/i18n';
+import { getAvailableLanguages, saveLanguage, getCurrentLanguage, useTranslation } from '@lib/i18n';
 import { useState } from 'react';
 import { useColorScheme } from '@hooks/useColorScheme';
 import CheckIcon from '@assets/icons/CheckIcon.svg';
@@ -12,7 +11,8 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
 
 export default function LanguageScreen() {
-    const { t } = useTranslation();
+    // Use useTranslation hook to get __ function that triggers re-renders
+    const { t: __ } = useTranslation();
     const { colors } = useColorScheme();
     const insets = useSafeAreaInsets();
     const [currentLang, setCurrentLang] = useState(getCurrentLanguage());
@@ -32,7 +32,7 @@ export default function LanguageScreen() {
                     },
                     headerTitle: () => (
                         <Text className="ml-2 text-base font-semibold">
-                            {t('settings.selectLanguage')}
+                            {__("Select Language")}
                         </Text>
                     ),
                     headerStyle: { backgroundColor: colors.background },

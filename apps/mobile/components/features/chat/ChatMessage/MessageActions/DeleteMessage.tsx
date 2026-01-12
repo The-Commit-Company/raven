@@ -7,28 +7,25 @@ import TrashIcon from "@assets/icons/TrashIcon.svg"
 import { useColorScheme } from '@hooks/useColorScheme'
 import { GetMessagesResponse } from '@raven/types/common/ChatStream'
 import ActionButton from '@components/common/Buttons/ActionButton'
-import { useTranslation } from 'react-i18next'
-
+import { __ } from '@lib/i18n';
 interface DeleteMessageProps {
     message: Message
     onClose: () => void
 }
 
 const DeleteMessage = ({ message, onClose }: DeleteMessageProps) => {
-
-    const { t } = useTranslation()
-    const { deleteMessage, loading } = useMessageDelete(message, onClose)
+const { deleteMessage, loading } = useMessageDelete(message, onClose)
 
     const onDelete = () => {
         deleteMessage()
     }
 
     const onMessageDelete = useCallback(() => {
-        Alert.alert(t('messages.deleteMessageConfirm'), t('messages.deleteMessageWarning'), [
-            { text: t('common.cancel'), style: 'cancel' },
-            { text: t('common.delete'), style: 'destructive', onPress: onDelete },
+        Alert.alert(__("Delete message?"), __("Are you sure you want to delete this message? It will be deleted for all users."), [
+            { text: __("Cancel"), style: 'cancel' },
+            { text: __("Delete"), style: 'destructive', onPress: onDelete },
         ])
-    }, [t])
+    }, [])
 
     const { isDarkColorScheme } = useColorScheme()
 
@@ -36,7 +33,7 @@ const DeleteMessage = ({ message, onClose }: DeleteMessageProps) => {
         <ActionButton
             onPress={onMessageDelete}
             icon={<TrashIcon width={18} height={18} fill={isDarkColorScheme ? '#f87171' : '#dc2626'} />}
-            text={t('messages.deleteMessage')}
+            text={__("Delete message")}
             isDestructive={true}
             disabled={loading}
         />
@@ -46,9 +43,7 @@ const DeleteMessage = ({ message, onClose }: DeleteMessageProps) => {
 export default DeleteMessage
 
 const useMessageDelete = (message: Message, onDelete: () => void) => {
-
-    const { t } = useTranslation()
-    const { mutate } = useSWRConfig()
+const { mutate } = useSWRConfig()
 
     const { deleteDoc, loading } = useFrappeDeleteDoc()
 
@@ -81,7 +76,7 @@ const useMessageDelete = (message: Message, onDelete: () => void) => {
             // This is because we can close the bottom sheet since we have optimistic updates anyway
             onDelete()
             return deleteDoc('Raven Message', messageID).then(() => {
-                toast.success(t('messages.messageDeleted'), {
+                toast.success(__("Message deleted"), {
                     duration: 500,
                 })
             }).then(() => {
@@ -92,7 +87,7 @@ const useMessageDelete = (message: Message, onDelete: () => void) => {
             rollbackOnError: true,
             revalidate: false
         }).catch(() => {
-            toast.error(t('messages.deleteMessageFailed'))
+            toast.error(__("Failed to delete message"))
         })
     }
     return { deleteMessage, loading }

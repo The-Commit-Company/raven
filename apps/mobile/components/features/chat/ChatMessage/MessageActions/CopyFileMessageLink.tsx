@@ -5,17 +5,14 @@ import { toast } from 'sonner-native'
 import * as Clipboard from 'expo-clipboard'
 import useSiteContext from '@hooks/useSiteContext'
 import ActionButton from '@components/common/Buttons/ActionButton'
-import { useTranslation } from 'react-i18next'
-
+import { __ } from '@lib/i18n';
 interface CopyFileMessageLinkProps {
     message: FileMessage
     onClose: () => void
 }
 
 const CopyFileMessageLink = ({ message, onClose }: CopyFileMessageLinkProps) => {
-
-    const { t } = useTranslation()
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
 
     const siteData = useSiteContext()
 
@@ -26,7 +23,7 @@ const CopyFileMessageLink = ({ message, onClose }: CopyFileMessageLinkProps) => 
         else {
             Clipboard.setStringAsync(siteData?.url + message.file.split('?')[0])
         }
-        toast.success(t('messages.linkCopied'))
+        toast.success(__("Link copied to clipboard"))
         onClose()
     }
 
@@ -34,7 +31,7 @@ const CopyFileMessageLink = ({ message, onClose }: CopyFileMessageLinkProps) => 
         <ActionButton
             onPress={copyLink}
             icon={<PaperClipIcon width={18} height={18} fill={colors.icon} />}
-            text={t('media.copyFileLink')}
+            text={__("Copy file link")}
         />
     )
 }

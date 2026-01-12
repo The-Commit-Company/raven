@@ -13,7 +13,7 @@ import { useColorScheme } from '@hooks/useColorScheme'
 import { Platform } from 'react-native';
 import useUnreadThreadsCount from '@hooks/useUnreadThreadsCount';
 import useUnreadMessageCount from '@hooks/useUnreadMessageCount';
-import { useTranslation } from 'react-i18next';
+import { __ } from '@lib/i18n';
 
 const tabBarBadgeStyle = {
     maxWidth: 8,
@@ -26,8 +26,7 @@ const tabBarBadgeStyle = {
 }
 
 export default function TabLayout() {
-    const { t } = useTranslation();
-    const { colors, colorScheme } = useColorScheme()
+const { colors, colorScheme } = useColorScheme()
     const dark = colorScheme == "dark"
 
     // Common styles
@@ -101,7 +100,7 @@ export default function TabLayout() {
                 <Tabs.Screen
                     name="home"
                     options={{
-                        title: t('channels.channels'),
+                        title: __("Channels"),
                         headerShown: false,
                         headerStyle,
                         tabBarBadge: hasUnreadMessages ? '' : undefined,
@@ -112,7 +111,7 @@ export default function TabLayout() {
                 <Tabs.Screen
                     name="direct-messages"
                     options={{
-                        title: t('channels.directMessages'),
+                        title: __("Direct Messages"),
                         headerShown: false,
                         headerStyle,
                         tabBarBadge: hasUnreadDMs ? '' : undefined,
@@ -123,7 +122,7 @@ export default function TabLayout() {
                 <Tabs.Screen
                     name="threads"
                     options={{
-                        title: t('threads.threads'),
+                        title: __("Threads"),
                         headerShown: false,
                         headerStyle,
                         tabBarBadge: hasUnreadThreads ? '' : undefined,
@@ -134,7 +133,7 @@ export default function TabLayout() {
                 <Tabs.Screen
                     name="profile"
                     options={{
-                        title: t('profile.profile'),
+                        title: __("Profile"),
                         headerShown: false,
                         headerStyle,
                         tabBarIcon: getTabBarIcon(ProfileIcon, ProfileOutlineIcon),

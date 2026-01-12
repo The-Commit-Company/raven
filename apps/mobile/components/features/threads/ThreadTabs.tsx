@@ -4,8 +4,7 @@ import AIThreads from './AIThreads'
 import OtherThreads from './OtherThreads'
 import ParticipatingThreads from './ParticipatingThreads'
 import { SegmentedControl } from '@components/nativewindui/SegmentedControl/SegmentedControl'
-import { useTranslation } from 'react-i18next'
-
+import { __ } from '@lib/i18n';
 export type ThreadMessage = {
     bot: string,
     channel_id: string,
@@ -31,10 +30,8 @@ export type ThreadMessage = {
 }
 
 const ThreadTabs = () => {
-
-    const { t } = useTranslation()
-    const [selectedIndex, setSelectedIndex] = useState(0)
-    const values = [t('threads.participating'), t('threads.other'), t('threads.aiAgents')]
+const [selectedIndex, setSelectedIndex] = useState(0)
+    const values = [__("Participating"), __("Other"), __("AI Agents")]
 
     const handleIndexChange = (index: number) => {
         setSelectedIndex(index)

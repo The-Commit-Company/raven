@@ -14,13 +14,12 @@ import { Sheet, useSheetRef } from '@components/nativewindui/Sheet';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { Emoji } from '@components/common/EmojiPicker/Picker';
 import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
-import { useTranslation } from 'react-i18next';
+import { __ } from '@lib/i18n';
 
 const REACTION_PRESSABLE_STYLES = 'w-12 h-12 flex items-center justify-center p-2 bg-card dark:bg-card rounded-full active:bg-muted/20'
 
 export default function PreferencesScreen() {
-    const { t } = useTranslation();
-    const insets = useSafeAreaInsets()
+const insets = useSafeAreaInsets()
 
     const { colors } = useColorScheme()
 
@@ -61,7 +60,7 @@ export default function PreferencesScreen() {
                             <HeaderBackButton />
                         )
                     },
-                    headerTitle: () => <Text className='ml-2 text-base font-semibold'>{t('profile.preferences')}</Text>,
+                    headerTitle: () => <Text className='ml-2 text-base font-semibold'>{__("Preferences")}</Text>,
                     headerStyle: { backgroundColor: colors.background },
                 }} />
             <KeyboardAwareScrollView
@@ -71,14 +70,14 @@ export default function PreferencesScreen() {
                 contentInsetAdjustmentBehavior="automatic"
                 contentContainerStyle={{ paddingBottom: insets.bottom }}>
                 <Form className="gap-5 px-4 pt-8">
-                    <FormSection footnote={t('preferences.doubleTapFootnote')}>
+                    <FormSection footnote={__("Set your preferred emoji for reactions on double tap.")}>
                         <FormItem className='py-0.5'>
                             <Pressable onPress={() => openEmojiPicker('doubleTapMessageEmoji')}
                                 hitSlop={10}
                                 className='bg-card dark:bg-card rounded-xl active:bg-muted/20'>
                                 <View className='flex flex-row py-2.5 px-4 justify-between'>
                                     <View className='flex-row items-center gap-2'>
-                                        <Text className='text-base'>{t('preferences.reactOnDoubleTap')}</Text>
+                                        <Text className='text-base'>{__("React on Double Tap with")}</Text>
                                     </View>
                                     <View>
                                         <Text className='text-base text-muted-foreground/80'>{doubleTapMessageEmoji}</Text>
@@ -88,10 +87,10 @@ export default function PreferencesScreen() {
                         </FormItem>
                     </FormSection>
 
-                    <FormSection footnote={t('preferences.quickReactionsFootnote')}>
+                    <FormSection footnote={__("Tap an emoji to set it as your preferred reaction.")}>
                         <FormItem className='py-0.5'>
                             <View className='flex flex-col gap-2 px-2'>
-                                <Text className='text-base font-medium'>{t('preferences.preferredEmojis')}</Text>
+                                <Text className='text-base font-medium'>{__("Preferred Emojis for Reactions")}</Text>
                                 <View className='flex flex-row gap-2 justify-around'>
                                     <Pressable
                                         onPress={() => openEmojiPicker('quickReactionEmojis-1')}

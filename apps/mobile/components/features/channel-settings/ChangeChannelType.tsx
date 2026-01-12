@@ -10,12 +10,10 @@ import GlobeIcon from "@assets/icons/GlobeIcon.svg";
 import LockIcon from "@assets/icons/LockIcon.svg";
 import HashIcon from "@assets/icons/HashIcon.svg";
 import { useColorScheme } from "@hooks/useColorScheme";
-import { useTranslation } from 'react-i18next';
-import { TFunction } from 'i18next';
+import { __ } from '@lib/i18n';
 
 export const ChangeChannelType = ({ channelData }: { channelData: FrappeDoc<ChannelListItem> | undefined }) => {
-    const { t } = useTranslation()
-    const bottomSheetModalRef = useSheetRef()
+const bottomSheetModalRef = useSheetRef()
     const { colors } = useColorScheme()
     const changeChannelTypeButtons = channelData ? getChangeChannelType({
         channelData,
@@ -24,8 +22,7 @@ export const ChangeChannelType = ({ channelData }: { channelData: FrappeDoc<Chan
             'Public': <GlobeIcon height={18} width={18} fill={colors.icon} />,
             'Private': <LockIcon height={18} width={18} fill={colors.icon} />,
             'Open': <HashIcon height={18} width={18} fill={colors.icon} />
-        },
-        t
+        }
     }) : []
 
     return (
@@ -53,18 +50,17 @@ interface ChangeChannelTypeSheetProps {
 type ChannelType = 'Public' | 'Private' | 'Open';
 
 const ChangeChannelTypeSheet = ({ channelData, bottomSheetModalRef }: ChangeChannelTypeSheetProps) => {
-    const { t } = useTranslation()
-    const { mutate } = useSWRConfig()
+const { mutate } = useSWRConfig()
     const { updateDoc, loading: updatingDoc, error } = useFrappeUpdateDoc();
 
     const getAlertSubMessage = (newChannelType: ChannelType) => {
         switch (newChannelType) {
             case 'Public':
-                return t('channels.convertToPublicInfo');
+                return __("Anyone from your organisation can join this channel and view its message history. If you make this channel private, it will be visible to anyone who has joined the channel up until that point.");
             case 'Private':
-                return t('channels.convertToPrivateInfo');
+                return __("No changes will be made to the channel's history or members. All files shared in this channel will become private and will be accessible only to the channel members.");
             case 'Open':
-                return t('channels.convertToOpenInfo');
+                return __("Everyone from your organisation will become a channel member and will be able to view its message history. If you later intend to make this private you will have to manually remove members that should not have access to this channel.");
             default:
                 return '';
         }
@@ -73,13 +69,11 @@ const ChangeChannelTypeSheet = ({ channelData, bottomSheetModalRef }: ChangeChan
     const getChannelTypeName = (type: ChannelType) => {
         switch (type) {
             case 'Public':
-                return t('channels.public');
+                return __("public");
             case 'Private':
-                return t('channels.private');
+                return __("private");
             case 'Open':
-                return t('channels.open');
-            default:
-                return type.toLowerCase();
+                return __("open");
         }
     }
 
@@ -88,7 +82,7 @@ const ChangeChannelTypeSheet = ({ channelData, bottomSheetModalRef }: ChangeChan
             type: newChannelType
         }).then(() => {
             mutate(["channel_members", channelData?.name])
-            toast.success(t('channels.channelTypeChanged', { type: getChannelTypeName(newChannelType) }));
+            toast.success(__("Channel changed to {{type}}", { type: getChannelTypeName(newChannelType) }));
             handleClose();
         });
     };
@@ -104,9 +98,9 @@ const ChangeChannelTypeSheet = ({ channelData, bottomSheetModalRef }: ChangeChan
                     <BottomSheetView {...props}>
                         <View className="flex-col px-4 gap-3 mt-2 mb-20">
                             <Text className="text-xl font-cal-sans">
-                                {t('channels.convertToTypeConfirm', { type: getChannelTypeName(props.data?.newChannelType) })}
+                                {__("Convert to a {{type}} channel?", { type: getChannelTypeName(props.data?.newChannelType) })}
                             </Text>
-                            <Text className="text-sm">{t('channels.convertToTypeWarning', { channelName: channelData?.channel_name, type: getChannelTypeName(props.data?.newChannelType) })}
+                            <Text className="text-sm">{__("Please understand that when you make {{channelName}} a {{type}} channel:", { channelName: channelData?.channel_name, type: getChannelTypeName(props.data?.newChannelType) })}
                             </Text>
                             <Text className="text-sm">
                                 {getAlertSubMessage(props.data?.newChannelType)}
@@ -114,10 +108,10 @@ const ChangeChannelTypeSheet = ({ channelData, bottomSheetModalRef }: ChangeChan
                             <View className="flex-col gap-3 pt-1">
                                 <Button onPress={() => changeChannelType(props.data?.newChannelType)}
                                     disabled={updatingDoc}>
-                                    <Text>{updatingDoc ? t('channels.converting') : t('common.convert')}</Text>
+                                    <Text>{updatingDoc ? __("Converting...") : __("Convert")}</Text>
                                 </Button>
                                 <Button onPress={handleClose} variant="plain" className="border border-border">
-                                    <Text>{t('common.cancel')}</Text>
+                                    <Text>{__("Cancel")}</Text>
                                 </Button>
                             </View>
                         </View>
@@ -137,7 +131,7 @@ const ChangeChannelTypeSheet = ({ channelData, bottomSheetModalRef }: ChangeChan
  * For current type Open - it would return Public and Private
  * For current type Public - it would return Private and Open
 */
-const getChangeChannelType = ({ channelData, bottomSheetModalRef, iconMap, t }: { channelData: ChannelListItem, bottomSheetModalRef: React.RefObject<BottomSheetModal>, iconMap: Record<string, React.ReactNode>, t: TFunction }) => {
+const getChangeChannelType = ({ channelData, bottomSheetModalRef, iconMap }: { channelData: ChannelListItem, bottomSheetModalRef: React.RefObject<BottomSheetModal>, iconMap: Record<string, React.ReactNode> }) => {
 
     const channelType = channelData?.type as ChannelType
 
@@ -150,13 +144,11 @@ const getChangeChannelType = ({ channelData, bottomSheetModalRef, iconMap, t }: 
     const getChannelTypeName = (type: ChannelType) => {
         switch (type) {
             case 'Public':
-                return t('channels.public');
+                return __("public");
             case 'Private':
-                return t('channels.private');
+                return __("private");
             case 'Open':
-                return t('channels.open');
-            default:
-                return type.toLowerCase();
+                return __("open");
         }
     }
 
@@ -165,7 +157,7 @@ const getChangeChannelType = ({ channelData, bottomSheetModalRef, iconMap, t }: 
     const channelSettingsData = channelTypeList.map((type) => {
         return {
             id: type,
-            title: t('channels.convertToType', { type: getChannelTypeName(type) }),
+            title: __("Convert to a {{type}} channel", { type: getChannelTypeName(type) }),
             onPress: () => {
                 bottomSheetModalRef.current?.present({
                     newChannelType: type,

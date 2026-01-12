@@ -12,7 +12,7 @@ import { PollMessage } from '@raven/types/common/Message';
 import { toast } from 'sonner-native';
 import { Button } from '@components/nativewindui/Button';
 import ErrorBanner from '@components/common/ErrorBanner';
-import { useTranslation } from 'react-i18next';
+import { __ } from '@lib/i18n';
 
 type PollMessageBlockProps = {
     message: PollMessage,
@@ -50,11 +50,10 @@ export const PollMessageBlock = ({ message, ...props }: PollMessageBlockProps) =
 };
 
 const PollMessageBox = ({ data, messageID }: { data: Poll; messageID: string }) => {
-    const { t } = useTranslation()
-    return (
+return (
         <View className="bg-card/80 rounded-xl p-3">
             <View className="flex-col gap-1 pb-3">
-                <Text className="text-base font-medium">{data.poll.question} {data.poll.is_anonymous ? <Text className="text-primary dark:text-secondary font-medium text-xs py-1 px-2">({t('polls.anonymous')})</Text> : null}</Text>
+                <Text className="text-base font-medium">{data.poll.question} {data.poll.is_anonymous ? <Text className="text-primary dark:text-secondary font-medium text-xs py-1 px-2">({__("Make poll anonymous")})</Text> : null}</Text>
             </View>
             {data.current_user_votes.length > 0 ? (
                 <PollResults data={data} />
@@ -69,7 +68,7 @@ const PollMessageBox = ({ data, messageID }: { data: Poll; messageID: string }) 
             )}
 
             {data.poll.is_disabled ? (
-                <Text className="text-muted-foreground text-xs">{t('polls.pollClosed')}</Text>
+                <Text className="text-muted-foreground text-xs">{__("This poll is closed")}</Text>
             ) : null}
 
             {data.current_user_votes.length ? <View>
@@ -128,23 +127,20 @@ const PollOption = ({ data, option }: { data: Poll; option: RavenPollOption }) =
 }
 
 const PollResults = ({ data }: { data: Poll }) => {
-    const { t } = useTranslation()
-    return (
+return (
         <View className="w-full">
             {data.poll.options.map((option) => (
                 <PollOption key={option.name} data={data} option={option} />
             ))}
             <Text className="pl-2 text-sm font-medium text-muted-foreground">
-                {`${data.poll.total_votes || 0} ${data.poll.total_votes === 1 ? t('polls.vote') : t('polls.votes')}`}
+                {`${data.poll.total_votes || 0} ${data.poll.total_votes === 1 ? __("vote") : __("votes")}`}
             </Text>
         </View>
     )
 }
 
 const SingleChoicePoll = ({ data, messageID }: { data: Poll; messageID: string }) => {
-
-    const { t } = useTranslation()
-    const { call } = useFrappePostCall('raven.api.raven_poll.add_vote')
+const { call } = useFrappePostCall('raven.api.raven_poll.add_vote')
     const [selectedOption, setSelectedOption] = useState<string | null>(null)
 
     const onVoteSubmit = async (option: RavenPollOption) => {
@@ -152,9 +148,9 @@ const SingleChoicePoll = ({ data, messageID }: { data: Poll; messageID: string }
             'message_id': messageID,
             'option_id': option.name
         }).then(() => {
-            toast.success(t('polls.voteSubmitted'))
+            toast.success(__("Your vote has been submitted!"))
         }).catch((error) => {
-            toast.error(t('polls.voteSubmitFailed'))
+            toast.error(__("Could not submit your vote"))
         })
     }
 
@@ -187,9 +183,7 @@ const SingleChoicePoll = ({ data, messageID }: { data: Poll; messageID: string }
 }
 
 const MultiChoicePoll = ({ data, messageID }: { data: Poll; messageID: string }) => {
-
-    const { t } = useTranslation()
-    const [selectedOptions, setSelectedOptions] = useState<string[]>([])
+const [selectedOptions, setSelectedOptions] = useState<string[]>([])
     const { call } = useFrappePostCall('raven.api.raven_poll.add_vote')
 
     const handleCheckboxChange = (name: string, value: boolean | string) => {
@@ -205,9 +199,9 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll; messageID: string })
             'message_id': messageID,
             'option_id': selectedOptions
         }).then(() => {
-            toast.success(t('polls.voteSubmitted'))
+            toast.success(__("Your vote has been submitted!"))
         }).catch((error) => {
-            toast.error(t('polls.voteSubmitFailed'))
+            toast.error(__("Could not submit your vote"))
         })
     }
 
@@ -239,7 +233,7 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll; messageID: string })
 
             <View className="flex flex-col gap-3">
                 <Text className="text-sm text-muted-foreground">
-                    {t('polls.submitToViewResults')}
+                    {__("Submit your vote to view results")}
                 </Text>
                 <Button
                     variant='secondary'
@@ -248,7 +242,7 @@ const MultiChoicePoll = ({ data, messageID }: { data: Poll; messageID: string })
                     onPress={onVoteSubmit}
                     disabled={!!data.poll.is_disabled || selectedOptions.length === 0}>
                     <Text className='text-sm font-semibold'>
-                        {t('common.submit')}
+                        {__("Submit")}
                     </Text>
                 </Button>
             </View>

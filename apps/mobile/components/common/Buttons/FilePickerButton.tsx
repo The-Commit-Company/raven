@@ -5,16 +5,13 @@ import { CustomFile } from "@raven/types/common/File"
 import { Text } from '@components/nativewindui/Text'
 import { Pressable } from "react-native"
 import { toast } from "sonner-native"
-import { useTranslation } from 'react-i18next'
-
+import { __ } from '@lib/i18n';
 interface FilePickerButtonProps {
     onPick: (files: CustomFile[]) => void
 }
 
 const FilePickerButton = ({ onPick }: FilePickerButtonProps) => {
-
-    const { t } = useTranslation()
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
     const pickDocument = async () => {
         try {
             let result = await DocumentPicker.getDocumentAsync({
@@ -36,8 +33,8 @@ const FilePickerButton = ({ onPick }: FilePickerButtonProps) => {
             }
         } catch (error) {
             console.error('Error picking documents:', error)
-            toast.error(t('media.documentSelectionError'), {
-                description: error instanceof Error ? error.message : t('errors.unknownError')
+            toast.error(__("There was an error while selecting the document"), {
+                description: error instanceof Error ? error.message : __("Unknown error")
             })
         }
     }
@@ -49,7 +46,7 @@ const FilePickerButton = ({ onPick }: FilePickerButtonProps) => {
             className='flex flex-row w-full items-center gap-2 p-2 rounded-lg ios:active:bg-linkColor'
             android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
             <AddFileIcon height={20} width={20} color={colors.icon} />
-            <Text className='text-base text-foreground'>{t('media.uploadDocument')}</Text>
+            <Text className='text-base text-foreground'>{__("Upload Document")}</Text>
         </Pressable>
     )
 }

@@ -14,12 +14,10 @@ import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import { toast } from 'sonner-native';
 import HeaderBackButton from '@components/common/Buttons/HeaderBackButton';
 import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
-import { useTranslation } from 'react-i18next';
+import { __ } from '@lib/i18n';
 
 export default function FullNameScreen() {
-
-    const { t } = useTranslation()
-    const { myProfile, mutate } = useCurrentRavenUser()
+const { myProfile, mutate } = useCurrentRavenUser()
 
     const insets = useSafeAreaInsets()
     const [fullName, setFullName] = useState(myProfile?.full_name ?? '')
@@ -30,11 +28,11 @@ export default function FullNameScreen() {
         return updateDoc("Raven User", myProfile?.name ?? '', {
             full_name: fullName,
         }).then(() => {
-            toast.success(t('profile.nameUpdated'))
+            toast.success(__("User name updated"))
             mutate()
             router.back();
         }).catch(() => {
-            toast.error(t('profile.nameUpdateFailed'))
+            toast.error(__("Failed to update user name"))
         })
     }
 
@@ -49,7 +47,7 @@ export default function FullNameScreen() {
                             <HeaderBackButton />
                         )
                     },
-                    headerTitle: () => <Text className='ml-2 text-base font-semibold'>{t('profile.userName')}</Text>,
+                    headerTitle: () => <Text className='ml-2 text-base font-semibold'>{__("User Name")}</Text>,
                     headerRight() {
                         return (
                             <Button variant="plain" className="ios:px-0"
@@ -57,7 +55,7 @@ export default function FullNameScreen() {
                                 disabled={loading || !fullName.length}>
                                 {loading ?
                                     <ActivityIndicator size="small" color={colors.primary} /> :
-                                    <Text className="text-primary dark:text-secondary">{t('common.save')}</Text>}
+                                    <Text className="text-primary dark:text-secondary">{__("Save")}</Text>}
                             </Button>
                         )
                     },
@@ -70,17 +68,17 @@ export default function FullNameScreen() {
                 contentInsetAdjustmentBehavior="automatic"
                 contentContainerStyle={{ paddingBottom: insets.bottom }}>
                 <Form className="gap-5 px-4 pt-8">
-                    <FormSection footnote={t('profile.fullNameFootnote')}>
+                    <FormSection footnote={__("This name will be used to identify you in the app.")}>
                         <FormItem>
                             <TextField
                                 autoFocus
                                 className="pl-0.5"
                                 leftView={
                                     <View className="w-36 justify-between flex-row items-center pl-2">
-                                        <Text className="font-medium">{t('profile.fullName')}</Text>
+                                        <Text className="font-medium">{__("Full Name")}</Text>
                                     </View>
                                 }
-                                placeholder={t('profile.fullName')}
+                                placeholder={__("Full Name")}
                                 value={fullName}
                                 onChangeText={setFullName}
                             />

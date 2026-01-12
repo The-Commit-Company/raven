@@ -12,12 +12,10 @@ import EditChannelBaseDetailsForm, { EditChannelDetailsForm } from '@components/
 import { Platform, View } from 'react-native';
 import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useTranslation } from 'react-i18next';
+import { __ } from '@lib/i18n';
 
 export default function EditChannelDetails() {
-
-    const { t } = useTranslation()
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
 
     const { id: currentChannelID } = useLocalSearchParams()
     const { channel } = useCurrentChannelData(currentChannelID as string ?? '')
@@ -39,17 +37,17 @@ export default function EditChannelDetails() {
             channel_name: data.channel_name ? data.channel_name : currentChannelName,
             channel_description: data.channel_description ? data.channel_description : currentChannelDescription,
         }).then(() => {
-            toast.success(t('channels.channelUpdated'))
+            toast.success(__("Channel details updated"))
             router.back()
         }).catch((err) => {
             console.error(err)
-            toast.error(t('channels.channelUpdateFailed'))
+            toast.error(__("Error while updating channel details"))
         })
     }
 
     return <>
         <Stack.Screen options={{
-            title: t('channels.editChannelDetails'),
+            title: __("Edit Channel Details"),
             headerStyle: { backgroundColor: colors.background },
             headerLeft: Platform.OS === 'ios' ? () => {
                 return (
@@ -67,7 +65,7 @@ export default function EditChannelDetails() {
                         disabled={updatingChannel}>
                         {updatingChannel ?
                             <ActivityIndicator size="small" color={colors.primary} /> :
-                            <Text className="text-primary font-medium dark:text-secondary">{t('common.save')}</Text>}
+                            <Text className="text-primary font-medium dark:text-secondary">{__("Save")}</Text>}
                     </TouchableOpacity>
                 )
             },

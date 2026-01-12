@@ -14,8 +14,7 @@ import { FormLabel } from '@components/layout/Form'
 import { useColorScheme } from '@hooks/useColorScheme'
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator'
 import HowToSetupMobile from './HowToSetupMobile'
-import { useTranslation } from 'react-i18next'
-
+import { __ } from '@lib/i18n';
 WebBrowser.maybeCompleteAuthSession();
 
 type Props = {
@@ -23,8 +22,7 @@ type Props = {
 }
 
 const AddSite = ({ useBottomSheet = false }: Props) => {
-    const { t } = useTranslation()
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
 
     const [siteURL, setSiteURL] = useState('')
 
@@ -63,11 +61,11 @@ const AddSite = ({ useBottomSheet = false }: Props) => {
                     })
                     bottomSheetRef.current?.present()
                 } else {
-                    Alert.alert(t('common.error'), t('auth.oauthNotConfigured'))
+                    Alert.alert(__("Error"), __("Failed to fetch site information / OAuth client not set for Raven Mobile"))
                 }
             })
             .catch(err => {
-                Alert.alert(t('common.error'), t('auth.fetchSiteInfoFailed'))
+                Alert.alert(__("Error"), __("Failed to fetch site information. Please check the URL and try again."))
                 console.error(err)
             })
             .finally(() => {
@@ -83,7 +81,7 @@ const AddSite = ({ useBottomSheet = false }: Props) => {
         <View className='flex-1 gap-3'>
             <View className="flex-col gap-2">
                 <View className="flex-row items-center gap-0">
-                    <FormLabel className='text-base'>{t('auth.siteUrl')}</FormLabel>
+                    <FormLabel className='text-base'>{__("Site URL")}</FormLabel>
                 </View>
                 {useBottomSheet ?
                     <BottomSheetTextInput
@@ -91,7 +89,7 @@ const AddSite = ({ useBottomSheet = false }: Props) => {
                         numberOfLines={1}
                         inputMode='url'
                         autoCapitalize='none'
-                        placeholder={t('auth.siteUrlPlaceholder')}
+                        placeholder={__("raven.frappe.cloud")}
                         placeholderTextColor={colors.grey2}
                         autoCorrect={false}
                         autoComplete='off'
@@ -104,7 +102,7 @@ const AddSite = ({ useBottomSheet = false }: Props) => {
                         numberOfLines={1}
                         inputMode='url'
                         autoCapitalize='none'
-                        placeholder={t('auth.siteUrlPlaceholder')}
+                        placeholder={__("raven.frappe.cloud")}
                         placeholderTextColor={colors.grey2}
                         autoCorrect={false}
                         autoComplete='off'
@@ -114,7 +112,7 @@ const AddSite = ({ useBottomSheet = false }: Props) => {
                 }
             </View>
             <Button onPress={handleAddSite} disabled={isLoading}>
-                <Text>{t('auth.addSite')}</Text>
+                <Text>{__("Add Site")}</Text>
             </Button>
             <Sheet snapPoints={[400]} ref={bottomSheetRef} onDismiss={clearSiteInformation}>
                 <BottomSheetView className='pb-16'>
@@ -128,9 +126,7 @@ const AddSite = ({ useBottomSheet = false }: Props) => {
 }
 
 export const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformation: SiteInformation, onDismiss: () => void }) => {
-    const { t } = useTranslation()
-
-    const discoveryWithURL = {
+const discoveryWithURL = {
         authorizationEndpoint: siteInformation.url + discovery.authorizationEndpoint,
         tokenEndpoint: siteInformation.url + discovery.tokenEndpoint,
         revocationEndpoint: siteInformation.url + discovery.revocationEndpoint,
@@ -163,10 +159,10 @@ export const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformat
                     }, discoveryWithURL).then(data => {
                         onAccessTokenReceived(data)
                     }).catch(err => {
-                        Alert.alert(t('auth.authenticationError'), err.message)
+                        Alert.alert(__("Authentication Error"), err.message)
                     })
                 } else if (res.type === "error") {
-                    Alert.alert(t('auth.authenticationError'), res.error?.message ?? t('errors.somethingWentWrong'))
+                    Alert.alert(__("Authentication Error"), res.error?.message ?? __("Something went wrong"))
                 }
             })
             .finally(() => {
@@ -200,7 +196,7 @@ export const SiteAuthFlowSheet = ({ siteInformation, onDismiss }: { siteInformat
         <Button onPress={onLoginClick} style={{
             minHeight: 40
         }} disabled={!request || loading}>
-            {loading ? <ActivityIndicator color={"#FFFFFF"} /> : <Text>{t('auth.login')}</Text>}
+            {loading ? <ActivityIndicator color={"#FFFFFF"} /> : <Text>{__("Login")}</Text>}
         </Button>
     </View>
 }

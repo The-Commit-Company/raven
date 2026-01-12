@@ -4,11 +4,9 @@ import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
 import { useColorScheme } from '@hooks/useColorScheme'
 import UserIcon from '@assets/icons/UserIcon.svg'
 import { router } from 'expo-router'
-import { useTranslation } from 'react-i18next'
-
+import { __ } from '@lib/i18n';
 const UserFullName = () => {
-    const { t } = useTranslation()
-    const { myProfile } = useCurrentRavenUser()
+const { myProfile } = useCurrentRavenUser()
     const { colors } = useColorScheme()
 
     const handleGoToFullNameUpdate = () => {
@@ -22,7 +20,7 @@ const UserFullName = () => {
             <View className='flex flex-row py-2.5 px-4 rounded-xl items-center justify-between bg-background dark:bg-card'>
                 <View className='flex-row items-center gap-2'>
                     <UserIcon height={18} width={18} fill={colors.icon} />
-                    <Text className='text-base'>{t('common.name')}</Text>
+                    <Text className='text-base'>{__("Name")}</Text>
                 </View>
                 <TouchableOpacity onPress={handleGoToFullNameUpdate}>
                     <Text className='text-base text-foreground'>{myProfile?.full_name}</Text>

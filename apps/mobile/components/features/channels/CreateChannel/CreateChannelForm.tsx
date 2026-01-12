@@ -6,7 +6,7 @@ import { Text } from "@components/nativewindui/Text";
 import { ErrorText, FormLabel } from "@components/layout/Form";
 import { ChannelIcon } from "../ChannelList/ChannelIcon";
 import { useColorScheme } from "@hooks/useColorScheme";
-import { useTranslation } from "react-i18next";
+import { __ } from '@lib/i18n';
 
 export type ChannelCreationForm = {
     channel_name: string,
@@ -15,9 +15,7 @@ export type ChannelCreationForm = {
 }
 
 const CreateChannelForm = () => {
-
-    const { t } = useTranslation()
-    const { control, formState: { errors }, setValue, watch } = useFormContext<ChannelCreationForm>()
+const { control, formState: { errors }, setValue, watch } = useFormContext<ChannelCreationForm>()
 
     const handleNameChange = useCallback((text: string) => {
         setValue('channel_name', text?.toLowerCase().replace(' ', '-'))
@@ -29,21 +27,21 @@ const CreateChannelForm = () => {
         switch (channelType) {
             case 'Private':
                 return {
-                    header: t('channels.createPrivateChannel'),
-                    helperText: t('channels.privateChannelHelperText')
+                    header: __("Create a private channel"),
+                    helperText: __("When a channel is set to private, it can only be viewed or joined by invitation.")
                 }
             case 'Open':
                 return {
-                    header: t('channels.createOpenChannel'),
-                    helperText: t('channels.openChannelHelperText')
+                    header: __("Create an open channel"),
+                    helperText: __("When a channel is set to open, everyone is a member.")
                 }
             default:
                 return {
-                    header: t('channels.createPublicChannel'),
-                    helperText: t('channels.publicChannelHelperText')
+                    header: __("Create a public channel"),
+                    helperText: __("When a channel is set to public, anyone can join the channel and read messages, but only members can post messages.")
                 }
         }
-    }, [channelType, t])
+    }, [channelType])
 
     const { colors } = useColorScheme()
 
@@ -57,31 +55,31 @@ const CreateChannelForm = () => {
                 <Text className="text-xl font-cal-sans">
                     {header}
                 </Text>
-                <Text className="text-sm">{t('channels.channelTypeDescription')}</Text>
+                <Text className="text-sm">{__("Channels are where your team communicates. They are best when organized around a topic - #development, for example.")}</Text>
             </View>
 
             <View className="px-5 gap-6">
 
 
                 <View className="flex-col gap-2">
-                    <FormLabel isRequired>{t('common.name')}</FormLabel>
+                    <FormLabel isRequired>{__("Name")}</FormLabel>
                     <Controller
                         name="channel_name"
                         control={control}
                         rules={{
-                            required: t('channels.validation.nameRequired'),
+                            required: __("Please add a channel name"),
                             maxLength: {
                                 value: 50,
-                                message: t('channels.validation.nameTooLong'),
+                                message: __("Channel name cannot be more than 50 characters"),
                             },
                             minLength: {
                                 value: 3,
-                                message: t('channels.validation.nameTooShort'),
+                                message: __("Channel name cannot be less than 3 characters"),
                             },
                             pattern: {
                                 // no special characters allowed, cannot start with a space
                                 value: /^[a-zA-Z0-9][a-zA-Z0-9-]*$/,
-                                message: t('channels.validation.nameInvalid'),
+                                message: __("Channel name can only contain letters, numbers and hyphens"),
                             },
                         }}
                         render={({ field: { onBlur, value }, fieldState: { error } }) => (
@@ -92,14 +90,14 @@ const CreateChannelForm = () => {
                                 </View>
                                 <TextInput
                                     className={`flex-1 pt-2 pb-2 text-[16px] text-foreground`}
-                                    placeholder={t('channels.channelNamePlaceholder')}
+                                    placeholder={__("dev-team")}
                                     placeholderTextColor={colors.grey}
                                     maxLength={50}
                                     value={value}
                                     onBlur={onBlur}
                                     onChangeText={handleNameChange}
                                     autoFocus
-                                    accessibilityHint={error ? t('channels.validation.nameInvalid') : undefined}
+                                    accessibilityHint={error ? __("Channel name can only contain letters, numbers and hyphens") : undefined}
                                     aria-invalid={error ? "true" : "false"}
                                 />
                                 {/* Character counter */}
@@ -119,8 +117,8 @@ const CreateChannelForm = () => {
 
                 <View className="flex-col gap-2">
                     <View className="flex-row items-center gap-0">
-                        <FormLabel>{t('channels.channelDescription')}</FormLabel>
-                        <Text className="text-sm">({t('channels.optional')})</Text>
+                        <FormLabel>{__("Description")}</FormLabel>
+                        <Text className="text-sm">({__("optional")})</Text>
                     </View>
                     <Controller
                         control={control}
@@ -128,7 +126,7 @@ const CreateChannelForm = () => {
                         render={({ field: { onChange, onBlur, value } }) => (
                             <TextInput
                                 className="w-full border min-h-24 border-border rounded-lg px-3 pt-2 pb-2 text-[16px] leading-5 text-foreground"
-                                placeholder={t('channels.channelDescriptionPlaceholder')}
+                                placeholder={__("What is this channel about?")}
                                 placeholderTextColor={colors.grey}
                                 placeholderClassName="leading-5"
                                 textAlignVertical="top"
@@ -140,14 +138,14 @@ const CreateChannelForm = () => {
                             />
                         )}
                     />
-                    <Text className="text-sm text-muted-foreground">{t('channels.channelDescriptionHelper')}</Text>
+                    <Text className="text-sm text-muted-foreground">{__("What is this channel about?")}</Text>
                     {errors?.channel_description && (
                         <ErrorText>{errors.channel_description?.message}</ErrorText>
                     )}
                 </View>
 
                 <View className="flex-col gap-3">
-                    <FormLabel>{t('channels.channelType')}</FormLabel>
+                    <FormLabel>{__("Channel Type")}</FormLabel>
                     <Controller
                         control={control}
                         name="type"
@@ -155,7 +153,7 @@ const CreateChannelForm = () => {
                             <View className="flex-row flex-wrap gap-6">
                                 {(["Public", "Private", "Open"] as const).map((option) => {
                                     const isSelected = value === option;
-                                    const label = option === 'Public' ? t('channels.publicChannel') : option === 'Private' ? t('channels.privateChannel') : t('channels.openChannel');
+                                    const label = option === 'Public' ? __("Public") : option === 'Private' ? __("Private") : __("Open");
                                     return (
                                         <TouchableOpacity key={option} onPress={() => onChange(option)}>
                                             <View className="flex-row items-center gap-2">

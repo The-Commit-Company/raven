@@ -16,12 +16,10 @@ import ChannelMemberRow from '@components/features/channel-settings/Members/Chan
 import SearchInput from '@components/common/SearchInput/SearchInput';
 import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useTranslation } from 'react-i18next';
+import { __ } from '@lib/i18n';
 
 const ChannelMembers = () => {
-
-    const { t } = useTranslation()
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
     const insets = useSafeAreaInsets()
 
     const { id: channelId } = useLocalSearchParams()
@@ -54,10 +52,10 @@ const ChannelMembers = () => {
                         <ChevronLeftIcon stroke={colors.foreground} />
                     </TouchableOpacity>
                 ),
-                headerTitle: () => <Text className='ml-2 text-base text-foreground font-semibold'>{t('common.members')}</Text>,
+                headerTitle: () => <Text className='ml-2 text-base text-foreground font-semibold'>{__("Members")}</Text>,
                 headerRight: () => (
                     <TouchableOpacity onPress={() => router.push(`./add-members`)} hitSlop={10}>
-                        <Text className='text-base font-semibold text-primary dark:text-secondary'>{t('common.add')}</Text>
+                        <Text className='text-base font-semibold text-primary dark:text-secondary'>{__("Add")}</Text>
                     </TouchableOpacity>
                 )
             }} />
@@ -88,7 +86,7 @@ const ChannelMembers = () => {
                             return (
                                 <View className="flex-1 items-center justify-center">
                                     <Text className="text-[15px] text-center text-muted-foreground">
-                                        {t('members.noMembers')}
+                                        {__("No members")}
                                     </Text>
                                 </View>
                             )
@@ -100,7 +98,7 @@ const ChannelMembers = () => {
             {!filteredMembers.length && debouncedText.length ? (
                 <View className="absolute inset-0 items-center justify-center h-60">
                     <Text className="text-[15px] text-center text-muted-foreground">
-                        {t('search.noResultsFor', { query: debouncedText })}
+                        {__("No results found for \"{{query}}\"", { query: debouncedText })}
                     </Text>
                 </View>
             ) : null}

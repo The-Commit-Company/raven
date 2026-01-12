@@ -12,11 +12,10 @@ import { toast } from "sonner-native";
 import { SiteContext } from "@hooks/useSiteContext";
 import { AppState } from "react-native";
 import OfflineBanner from "@components/features/auth/OfflineBanner";
-import { useTranslation } from 'react-i18next';
+import { __ } from '@lib/i18n';
 
 export default function SiteLayout() {
-    const { t } = useTranslation()
-    //  Get the site ID from the route
+//  Get the site ID from the route
     const { site_id } = useLocalSearchParams<{ site_id: string }>()
 
     // If this page is loaded, we need to fetch the site information and the access token
@@ -108,7 +107,7 @@ export default function SiteLayout() {
                 } catch (error) {
                     console.error("Token refresh failed:", error);
                     if (isOnline) {
-                        toast.error(t('auth.loggedOut'))
+                        toast.error(__("You have been logged out of the site. Please login again."))
                         router.replace('/landing');
                     }
                 }
@@ -157,7 +156,7 @@ export default function SiteLayout() {
 
                     // Show the user a toast saying that the site is not found
                     clearDefaultSite()
-                    toast.error(t('auth.siteNotFound'))
+                    toast.error(__("We could not find the site you were looking for. Please login again."))
 
                     return null
                 }
@@ -178,7 +177,7 @@ export default function SiteLayout() {
                     // Show the user a toast saying that the site is not found
                     clearDefaultSite()
 
-                    toast.error(t('auth.credentialsNotFound'))
+                    toast.error(__("We could not find the stored credentials for this site. Please try logging in again."))
 
                     return null
                 }
@@ -225,7 +224,7 @@ export default function SiteLayout() {
                     // Show the user a toast saying that the site is not found
                     clearDefaultSite()
 
-                    toast.error(t('auth.credentialsNotFound'))
+                    toast.error(__("We could not find the stored credentials for this site. Please try logging in again."))
 
                     return
                 }

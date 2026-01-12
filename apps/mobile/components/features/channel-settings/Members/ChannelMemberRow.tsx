@@ -14,12 +14,10 @@ import { useCurrentChannelData } from '@hooks/useCurrentChannelData';
 import { toast } from 'sonner-native';
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import { COLORS } from '@theme/colors';
-import { useTranslation } from 'react-i18next';
+import { __ } from '@lib/i18n';
 
 const ChannelMemberRow = ({ member }: { member: Member }) => {
-
-    const { t } = useTranslation()
-    const { id: channelId } = useLocalSearchParams()
+const { id: channelId } = useLocalSearchParams()
     const { myProfile: currentUserInfo } = useCurrentRavenUser()
     const { channelMembers, mutate: updateMembers } = useFetchChannelMembers(channelId as string ?? "")
     const { updateDoc, loading: updatingMember, reset } = useFrappeUpdateDoc()
@@ -37,7 +35,7 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
 
     const updateAdminStatus = async (admin: 1 | 0) => {
         if (isBot) {
-            toast.error(t('members.botsCannotBeAdmins'))
+            toast.error(__("Bots cannot be made admins"))
             return
         }
         return updateDoc("Raven Channel Member", memberInfo?.message.name ?? "", {
@@ -46,12 +44,12 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
             updateMembers()
             reset()
             if (admin === 1) {
-                toast.success(t('members.madeAdmin', { name: member.full_name }))
+                toast.success(__("{{name}} has been made an admin", { name: member.full_name }))
             } else {
-                toast.warning(t('members.removedAdmin', { name: member.full_name }))
+                toast.warning(__("{{name}} is no longer an admin", { name: member.full_name }))
             }
         }).catch((e) => {
-            toast.error(t('members.updateMemberFailed'))
+            toast.error(__("Failed to update member status"))
             reset()
         })
     }
@@ -77,21 +75,21 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
 
         const deleteMember = async () => {
             return deleteDoc('Raven Channel Member', memberInfo?.message.name).then(() => {
-                toast.success(t('members.removedFromChannel', { name: member.full_name }))
+                toast.success(__("Removed {{name}} from the channel", { name: member.full_name }))
                 mutate(["channel_members", channelId])
             })
         }
 
         const showAlert = () =>
             Alert.alert(
-                t('members.removeMemberConfirm'),
-                t('members.removeMemberMessage', { name: member.full_name, channelName: channel?.channelData.channel_name }),
+                __("Remove Member?"),
+                __("{{name}} will no longer have access to {{channelName}} channel.", { name: member.full_name, channelName: channel?.channelData.channel_name }),
                 [
                     {
-                        text: t('common.cancel'),
+                        text: __("Cancel"),
                     },
                     {
-                        text: t('common.remove'),
+                        text: __("Remove"),
                         style: 'destructive',
                         onPress: deleteMember
                     },
@@ -111,7 +109,7 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
 
     const showActions = () => {
 
-        let options = [t('members.makeAdmin'), t('members.removeAdmin'), t('common.cancel')]
+        let options = [__("Make channel admin"), __("Dismiss channel admin"), __("Cancel")]
         const isAdmin = channelMembers[member.name].is_admin
 
         if (isAllowed) {
@@ -153,7 +151,7 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
                                     {member.full_name?.length > 40
                                         ? `${member.full_name.slice(0, 40)}...`
                                         : member.full_name}
-                                    {member.name === currentUserInfo?.name ? ` (${t('common.you')})` : ""}
+                                    {member.name === currentUserInfo?.name ? ` (${__("You")})` : ""}
                                 </Text>
                                 {channelMembers[member.name].is_admin ? <CrownIcon fill="#FFC53D" width={16} height={16} /> : null}
                             </View>

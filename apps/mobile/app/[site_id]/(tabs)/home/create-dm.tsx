@@ -14,12 +14,10 @@ import UserAvatar from '@components/layout/UserAvatar';
 import { Text } from '@components/nativewindui/Text';
 import ErrorBanner from '@components/common/ErrorBanner';
 import { LegendList } from '@legendapp/list';
-import { useTranslation } from 'react-i18next';
+import { __ } from '@lib/i18n';
 
 export default function CreateDM() {
-
-    const { t } = useTranslation()
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
     const { dmChannels } = useGetDirectMessageChannels()
     const { users } = useContext(UserListContext)
     const usersWithoutChannels = Array.from(users.values()).filter((user) => !dmChannels.find((channel) => channel.peer_user_id === user.name))
@@ -32,7 +30,7 @@ export default function CreateDM() {
 
     return <>
         <Stack.Screen options={{
-            title: t('directMessages.createDM'),
+            title: __("Create DM"),
             headerLeft: Platform.OS === 'ios' ? () => {
                 return (
                     <Link asChild href="../" relativeToDirectory>
@@ -63,9 +61,7 @@ export default function CreateDM() {
 }
 
 const UserWithoutDMItem = ({ userID }: { userID: string }) => {
-
-    const { t } = useTranslation()
-    const user = useGetUser(userID)
+const user = useGetUser(userID)
     const { call, error } = useFrappePostCall<{ message: string }>('raven.api.raven_channel.create_direct_message_channel')
 
     const onSelect = () => {
@@ -75,7 +71,7 @@ const UserWithoutDMItem = ({ userID }: { userID: string }) => {
             router.back()
             router.push(`../../chat/${res?.message}`)
         }).catch(err => {
-            toast.error(t('directMessages.createDMFailed'))
+            toast.error(__("Could not create a DM channel"))
         })
     }
 
@@ -96,7 +92,7 @@ const UserWithoutDMItem = ({ userID }: { userID: string }) => {
                 <Text className='text-base'>{user?.full_name}</Text>
                 {!user?.enabled ?
                     <View className='px-1 mt-0.5 py-0.5 rounded-sm bg-red-100'>
-                        <Text className="text-[11px] text-red-700">{t('common.disabled')}</Text>
+                        <Text className="text-[11px] text-red-700">{__("Disabled")}</Text>
                     </View>
                     : null}
             </Pressable>
@@ -105,17 +101,16 @@ const UserWithoutDMItem = ({ userID }: { userID: string }) => {
 }
 
 const EmptyState = ({ searchQuery }: { searchQuery: string }) => {
-    const { t } = useTranslation()
-    if (searchQuery.length > 0) {
+if (searchQuery.length > 0) {
         return (
             <Text className='p-2 text-sm text-muted-foreground'>
-                {t('directMessages.noUsersFoundWithQuery', { query: searchQuery })}
+                {__("No users found with '{{query}}' in their name", { query: searchQuery })}
             </Text>
         )
     }
     return (
         <Text className='p-2 text-sm text-muted-foreground'>
-            {t('directMessages.allUsersHaveDM')}
+            {__("There are no users that you do not already have a DM channel with")}
         </Text>
     )
 }

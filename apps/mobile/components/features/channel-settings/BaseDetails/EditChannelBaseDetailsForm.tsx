@@ -12,7 +12,7 @@ import { useColorScheme } from "@hooks/useColorScheme";
 import { useLocalSearchParams } from "expo-router";
 import { useCurrentChannelData } from "@hooks/useCurrentChannelData";
 import { TextInput } from "react-native-gesture-handler";
-import { useTranslation } from "react-i18next";
+import { __ } from '@lib/i18n';
 
 export type EditChannelDetailsForm = {
     channel_name: string
@@ -20,9 +20,7 @@ export type EditChannelDetailsForm = {
 }
 
 const EditChannelBaseDetailsForm = () => {
-
-    const { t } = useTranslation()
-    const { control, formState: { errors }, setValue } = useFormContext<EditChannelDetailsForm>()
+const { control, formState: { errors }, setValue } = useFormContext<EditChannelDetailsForm>()
 
     const handleNameChange = useCallback((text: string) => {
         setValue('channel_name', text?.toLowerCase().replace(' ', '-'))
@@ -45,24 +43,24 @@ const EditChannelBaseDetailsForm = () => {
             <Form className="p-4 pt-6">
 
                 <View className="flex-col gap-2">
-                    <FormLabel isRequired>{t('common.name')}</FormLabel>
+                    <FormLabel isRequired>{__("Name")}</FormLabel>
                     <Controller
                         name="channel_name"
                         control={control}
                         rules={{
-                            required: t('channels.validation.nameRequired'),
+                            required: __("Please add a channel name"),
                             maxLength: {
                                 value: 50,
-                                message: t('channels.validation.nameTooLong'),
+                                message: __("Channel name cannot be more than 50 characters"),
                             },
                             minLength: {
                                 value: 3,
-                                message: t('channels.validation.nameTooShort'),
+                                message: __("Channel name cannot be less than 3 characters"),
                             },
                             pattern: {
                                 // no special characters allowed, cannot start with a space
                                 value: /^[a-zA-Z0-9][a-zA-Z0-9-]*$/,
-                                message: t('channels.validation.nameInvalid'),
+                                message: __("Channel name can only contain letters, numbers and hyphens"),
                             },
                         }}
                         render={({ field: { onBlur, value }, fieldState: { error } }) => (
@@ -73,14 +71,14 @@ const EditChannelBaseDetailsForm = () => {
                                 </View>
                                 <TextInput
                                     className={`flex-1 pt-2 pb-2 text-[16px] text-foreground`}
-                                    placeholder={t('channels.channelNamePlaceholder')}
+                                    placeholder={__("dev-team")}
                                     placeholderTextColor={colors.grey}
                                     maxLength={50}
                                     value={value}
                                     onBlur={onBlur}
                                     onChangeText={handleNameChange}
                                     autoFocus
-                                    accessibilityHint={error ? t('channels.validation.nameInvalid') : undefined}
+                                    accessibilityHint={error ? __("Channel name can only contain letters, numbers and hyphens") : undefined}
                                     aria-invalid={error ? "true" : "false"}
                                 />
                                 {/* Character counter */}
@@ -100,8 +98,8 @@ const EditChannelBaseDetailsForm = () => {
 
                 <View className="flex-col gap-2">
                     <View className="flex-row items-center gap-0">
-                        <FormLabel>{t('channels.channelDescription')}</FormLabel>
-                        <Text className="text-sm">({t('channels.optional')})</Text>
+                        <FormLabel>{__("Description")}</FormLabel>
+                        <Text className="text-sm">({__("optional")})</Text>
                     </View>
                     <Controller
                         control={control}
@@ -109,7 +107,7 @@ const EditChannelBaseDetailsForm = () => {
                         render={({ field: { onChange, onBlur, value } }) => (
                             <TextInput
                                 className="w-full border min-h-24 border-border rounded-lg px-3 pt-2 pb-2 text-[16px] leading-5 text-foreground"
-                                placeholder={t('channels.channelDescriptionPlaceholder')}
+                                placeholder={__("What is this channel about?")}
                                 placeholderTextColor={colors.grey}
                                 placeholderClassName="leading-5"
                                 textAlignVertical="top"
@@ -121,7 +119,7 @@ const EditChannelBaseDetailsForm = () => {
                             />
                         )}
                     />
-                    <Text className="text-sm text-muted-foreground">{t('channels.channelDescriptionHelper')}</Text>
+                    <Text className="text-sm text-muted-foreground">{__("What is this channel about?")}</Text>
                     {errors?.channel_description && (
                         <ErrorText>{errors.channel_description?.message}</ErrorText>
                     )}

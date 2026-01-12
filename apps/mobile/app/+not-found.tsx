@@ -3,11 +3,10 @@ import { View } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { Button } from '@components/nativewindui/Button';
-import { useTranslation } from 'react-i18next';
+import { __ } from '@lib/i18n';
 
 export default function NotFoundScreen() {
-    const { t } = useTranslation()
-    const { getItem } = useAsyncStorage(`default-site`)
+const { getItem } = useAsyncStorage(`default-site`)
 
     const handleGoHome = () => {
         getItem().then(site => {
@@ -20,12 +19,12 @@ export default function NotFoundScreen() {
     }
     return (
         <>
-            <Stack.Screen options={{ title: t('errors.oops') }} />
+            <Stack.Screen options={{ title: __("Oops!") }} />
             <View className='flex-1 bg-background justify-center gap-3 items-center'>
-                <Text className='text-3xl text-foreground'>{t('errors.screenNotFound')}</Text>
+                <Text className='text-3xl text-foreground'>{__("This screen doesn't exist")}</Text>
                 <View className='h-2' />
                 <Button onPress={handleGoHome}>
-                    <Text>{t('common.goHome')}</Text>
+                    <Text>{__("Go Home")}</Text>
                 </Button>
             </View>
         </>

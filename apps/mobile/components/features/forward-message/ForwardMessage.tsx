@@ -17,8 +17,7 @@ import { Message } from "@raven/types/common/Message"
 import { UserFields } from "@raven/types/common/UserFields"
 import ForwardMessageIcon from '@assets/icons/HollowSendIcon.svg'
 import { Divider } from "@components/layout/Divider"
-import { useTranslation } from "react-i18next"
-
+import { __ } from '@lib/i18n';
 export type CombinedChannel = {
     name: string
     channel_name: string
@@ -32,8 +31,7 @@ interface ForwardMessageProps {
 }
 
 export function ForwardMessage({ message }: ForwardMessageProps) {
-    const { t } = useTranslation()
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
     const navigation = useNavigation()
     const { channels } = useChannelList()
     const [selectedChannels, setSelectedChannels] = useState<CombinedChannel[]>([])
@@ -113,18 +111,18 @@ export function ForwardMessage({ message }: ForwardMessageProps) {
                 'forwarded_message': message,
             })
                 .then(() => {
-                    toast.success(t('messages.messageForwarded'))
+                    toast.success(__("Message forwarded successfully!"))
                     router.back();
                 })
                 .catch(() => {
-                    toast.error(t('messages.forwardFailed'))
+                    toast.error(__("Failed to forward message"))
                 });
         }
     }, [selectedChannels, message, call]);
 
     useEffect(() => {
         navigation.setOptions({
-            headerTitle: t('messages.forwardMessage'),
+            headerTitle: __("Forward Message"),
             headerStyle: {
                 backgroundColor: colors.background
             },

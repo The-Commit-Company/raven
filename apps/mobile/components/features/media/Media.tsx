@@ -6,7 +6,7 @@ import { useDebounce } from '@raven/lib/hooks/useDebounce';
 import SearchInput from '@components/common/SearchInput/SearchInput';
 import MediaTabs from './MediaTabs';
 import HeaderBackButton from '@components/common/Buttons/HeaderBackButton';
-import { useTranslation } from 'react-i18next';
+import { __ } from '@lib/i18n';
 
 export type MediaInChannel = {
     name: string;
@@ -26,8 +26,7 @@ export type MediaInChannel = {
 };
 
 export default function Media() {
-    const { t } = useTranslation()
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
 
     const [searchText, setSearchText] = useState("")
     const debouncedText = useDebounce(searchText, 400)
@@ -35,7 +34,7 @@ export default function Media() {
     return (
         <>
             <Stack.Screen options={{
-                title: t('media.imagesAndFiles'),
+                title: __("Images and Files"),
                 headerLargeTitle: false,
                 headerStyle: { backgroundColor: colors.background },
                 headerLeft: () => <HeaderBackButton />,
@@ -45,7 +44,7 @@ export default function Media() {
                     <SearchInput
                         value={searchText}
                         onChangeText={setSearchText}
-                        placeholder={t('media.searchImagesAndFiles')}
+                        placeholder={__("Search images and files")}
                     />
                 </View>
                 <MediaTabs searchQuery={debouncedText} />

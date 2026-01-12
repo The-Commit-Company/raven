@@ -15,8 +15,7 @@ import SiteSwitcher from '../auth/SiteSwitcher'
 import { getSiteNameFromUrl } from '@raven/lib/utils/operations'
 import ServerIcon from '@assets/icons/ServerIcon.svg'
 import AddSite from '../auth/AddSite'
-import { useTranslation } from 'react-i18next'
-
+import { __ } from '@lib/i18n';
 const WorkspaceSwitcher = ({ workspace, setWorkspace }: { workspace: string, setWorkspace: (workspace: string) => Promise<void> }) => {
 
     const { data: workspaces } = useFetchWorkspaces()
@@ -34,8 +33,7 @@ const WorkspaceSwitcher = ({ workspace, setWorkspace }: { workspace: string, set
 }
 
 const WorkSpaceSwitcherMenu = ({ selectedWorkspace, workspaces, setWorkspace }: { selectedWorkspace: WorkspaceFields, workspaces: WorkspaceFields[], setWorkspace: (workspace: string) => Promise<void> }) => {
-    const { t } = useTranslation()
-    const bottomSheetRef = useSheetRef()
+const bottomSheetRef = useSheetRef()
 
     const onSetWorkspace = useCallback(async (workspace: string) => {
         await setWorkspace(workspace)
@@ -92,7 +90,7 @@ const WorkSpaceSwitcherMenu = ({ selectedWorkspace, workspaces, setWorkspace }: 
             <Sheet enableDynamicSizing ref={addSiteSheetRef}>
                 <BottomSheetView className='flex-1 pb-16'>
                     <View className='flex-1 gap-2 px-4'>
-                        <Text className='text-lg font-semibold'>{t('sites.addNewSite')}</Text>
+                        <Text className='text-lg font-semibold'>{__("Add a new site")}</Text>
                         <AddSite useBottomSheet={true} />
                     </View>
                 </BottomSheetView>
@@ -109,10 +107,7 @@ interface SelectWorkspaceSheetProps {
 }
 
 const SelectWorkspaceSheet = ({ selectedWorkspace, workspaces, setWorkspace }: SelectWorkspaceSheetProps) => {
-
-    const { t } = useTranslation()
-
-    const { myWorkspaces, otherWorkspaces } = useMemo(() => {
+const { myWorkspaces, otherWorkspaces } = useMemo(() => {
         const myWorkspaces: Workspace[] = []
         const otherWorkspaces: Workspace[] = []
 
@@ -160,7 +155,7 @@ const SelectWorkspaceSheet = ({ selectedWorkspace, workspaces, setWorkspace }: S
             </View>
             {otherWorkspaces.length > 0 &&
                 <View className='flex flex-col gap-2'>
-                    <Text className='text-sm font-medium text-muted-foreground'>{t('workspaces.otherWorkspaces')}</Text>
+                    <Text className='text-sm font-medium text-muted-foreground'>{__("Other workspaces")}</Text>
                     <View className='flex flex-col gap-2 border border-border p-2 rounded-xl'>
                         {otherWorkspaces.map((workspace, index) => (
                             <WorkspaceRow key={workspace.name}

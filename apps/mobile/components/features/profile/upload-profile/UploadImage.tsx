@@ -3,16 +3,13 @@ import { toast } from 'sonner-native'
 import ImagePickerButton from '@components/common/Buttons/ImagePickerButton'
 import { CustomFile } from '@raven/types/common/File'
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
-import { useTranslation } from 'react-i18next'
-
+import { __ } from '@lib/i18n';
 interface UploadImageProps {
     onSheetClose: () => void
 }
 
 const UploadImage = ({ onSheetClose }: UploadImageProps) => {
-
-    const { t } = useTranslation()
-    const { myProfile } = useCurrentRavenUser()
+const { myProfile } = useCurrentRavenUser()
 
     const { call } = useFrappePostCall('raven.api.raven_users.update_raven_user')
 
@@ -24,10 +21,10 @@ const UploadImage = ({ onSheetClose }: UploadImageProps) => {
                 await call({
                     user_image: file
                 })
-                toast.success(t('profile.imageUploaded'))
+                toast.success(__("Image uploaded successfully."))
                 onSheetClose()
             } catch (error) {
-                toast.error(t('profile.imageUploadFailed'))
+                toast.error(__("Error while uploading profile image"))
             }
         }
     }
@@ -50,7 +47,7 @@ const UploadImage = ({ onSheetClose }: UploadImageProps) => {
                 await uploadImage(res.file_url)
             } catch (error) {
                 console.error(error)
-                toast.error(t('profile.imageUploadFailed'))
+                toast.error(__("Error while uploading profile image"))
             }
 
         }

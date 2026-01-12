@@ -14,7 +14,7 @@ import Preferences from '@components/features/profile/profile-settings/Preferenc
 import SwitchSitesSetting from '@components/features/profile/profile-settings/SwitchSitesSetting';
 import LanguageSetting from '@components/features/profile/profile-settings/LanguageSetting';
 import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
-import { useTranslation } from 'react-i18next';
+import { __ } from '@lib/i18n';
 
 const SCREEN_OPTIONS = {
     title: 'Profile',
@@ -23,14 +23,13 @@ const SCREEN_OPTIONS = {
 } as const
 
 export default function Profile() {
-    const { t } = useTranslation();
-    const insets = useSafeAreaInsets()
+const insets = useSafeAreaInsets()
 
     return (
         <>
             <Stack.Screen options={{
                 ...SCREEN_OPTIONS,
-                title: t('profile.profile'),
+                title: __("Profile"),
             }} />
             <View className='flex-1 px-4'>
                 <ScrollView
@@ -40,13 +39,13 @@ export default function Profile() {
                     <View className='flex flex-col gap-4 mt-1.5'>
                         <ProfilePicture />
                         <View className='flex flex-col gap-0.5'>
-                            <Text className='pl-2 pb-1 text-xs text-muted-foreground/80'>{t('profile.personalInfo')}</Text>
+                            <Text className='pl-2 pb-1 text-xs text-muted-foreground/80'>{__("Personal Info")}</Text>
                             <UserFullName />
                             <CustomStatus />
                             <UserAvailability />
                         </View>
                         <View className='flex flex-col gap-0.5'>
-                            <Text className='pl-2 pb-1 text-xs text-muted-foreground/80'>{t('profile.preferences')}</Text>
+                            <Text className='pl-2 pb-1 text-xs text-muted-foreground/80'>{__("Preferences")}</Text>
                             <NotificationSetting />
                             <AppearanceSetting />
                             <LanguageSetting />
@@ -58,7 +57,7 @@ export default function Profile() {
                             <Text className='text-lg text-muted-foreground/90 font-cal-sans'>raven</Text>
                             <View className='flex flex-col items-center justify-center'>
                                 <Text className='text-xs text-muted-foreground/80'>by The Commit Company</Text>
-                                <Text className='text-xs text-muted-foreground/80'>{t('common.version')} {nativeApplicationVersion} ({nativeBuildVersion})</Text>
+                                <Text className='text-xs text-muted-foreground/80'>{__("Version")} {nativeApplicationVersion} ({nativeBuildVersion})</Text>
                             </View>
                         </View>
                     </View>

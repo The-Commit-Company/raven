@@ -5,6 +5,7 @@ import CreatePollForm from '@components/features/polls/CreatePollForm';
 import { CloseCreatePollButton, PollCreateButton, useCreatePoll } from '@components/features/polls/CreatePollComponents';
 import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
 import { Platform } from 'react-native';
+import { __ } from '@lib/i18n';
 
 export default function CreatePollPage() {
 
@@ -12,17 +13,17 @@ export default function CreatePollPage() {
 
     const { id: channelID } = useLocalSearchParams()
 
-    const { methods, onPress, creatingPoll, t } = useCreatePoll(channelID as string)
+    const { methods, onPress, creatingPoll } = useCreatePoll(channelID as string)
 
     return (
         <>
             <Stack.Screen options={{
                 headerStyle: { backgroundColor: colors.background },
                 headerLeft: () => Platform.OS === 'ios' ? <CloseCreatePollButton /> : undefined,
-                headerTitle: t('polls.createPoll'),
+                headerTitle: __("Create Poll"),
                 headerRight() {
                     return (
-                        <PollCreateButton onPress={onPress} isCreating={creatingPoll} t={t} />
+                        <PollCreateButton onPress={onPress} isCreating={creatingPoll} />
                     )
                 },
             }} />

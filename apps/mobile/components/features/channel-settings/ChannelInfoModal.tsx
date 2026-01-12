@@ -13,7 +13,7 @@ import { useEffect } from 'react';
 import { ChannelListItem } from '@raven/types/common/ChannelListItem';
 import PinOutlineIcon from '@assets/icons/PinOutlineIcon.svg';
 import ActionButton from '@components/common/Buttons/ActionButton';
-import { useTranslation } from 'react-i18next';
+import { __ } from '@lib/i18n';
 
 type ChannelInfoModalProps = {
     channel: ChannelListItem
@@ -22,10 +22,7 @@ type ChannelInfoModalProps = {
 }
 
 const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelInfoModalProps) => {
-
-    const { t } = useTranslation()
-
-    // Animation values
+// Animation values
     const modalHeight = useSharedValue(0)
     const modalOpacity = useSharedValue(0)
 
@@ -99,23 +96,23 @@ const ChannelInfoModal = ({ channel, isModalVisible, setModalVisible }: ChannelI
                     <ActionButton
                         onPress={handleGoToViewMembers}
                         icon={<MembersIcon height={20} width={20} color={colors.foreground} />}
-                        text={t('common.members')}
+                        text={__("Members")}
                         showChevron />
                     <ActionButton
                         onPress={handleGoToSettings}
                         icon={<SettingsIcon height={20} width={20} color={colors.foreground} />}
-                        text={t('channels.settingsAndDetails')}
+                        text={__("Settings & Details")}
                         showChevron />
                     <ActionButton
                         onPress={handleGoToPins}
                         icon={<PinOutlineIcon height={20} width={20} color={colors.foreground} />}
-                        text={t('messages.pinnedMessages')}
+                        text={__("Pinned Messages")}
                         count={pinnedMessages}
                         showChevron />
                     <ActionButton
                         onPress={handleGoToSharedMedia}
                         icon={<HollowFilesIcon height={20} width={20} fill={colors.foreground} />}
-                        text={t('media.imagesAndFiles')}
+                        text={__("Images and Files")}
                         showChevron />
                 </Animated.View>
             </TouchableOpacity>

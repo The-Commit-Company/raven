@@ -1,13 +1,11 @@
 import { Stack } from 'expo-router';
 import FullPageLoader from '@components/layout/FullPageLoader';
-import { useTranslation } from 'react-i18next';
+import { __ } from '@lib/i18n';
 
 export default function InitialScreen() {
-    const { t } = useTranslation()
-
-    return (
+return (
         <>
-            <Stack.Screen options={{ title: t('common.appName') }} />
+            <Stack.Screen options={{ title: __("Raven") }} />
             <FullPageLoader />
         </>
     );

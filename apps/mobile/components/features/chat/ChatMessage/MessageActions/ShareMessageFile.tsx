@@ -4,17 +4,14 @@ import useFileShare from '@hooks/useFileShare'
 import { toast } from 'sonner-native'
 import ShareIcon from "@assets/icons/ShareIcon.svg"
 import ActionButton from '@components/common/Buttons/ActionButton'
-import { useTranslation } from 'react-i18next'
-
+import { __ } from '@lib/i18n';
 interface DownloadMessageFileProps {
     message: FileMessage
     onClose: () => void
 }
 
 const ShareMessageFile = ({ message, onClose }: DownloadMessageFileProps) => {
-
-    const { t } = useTranslation()
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
 
     const { shareFile } = useFileShare(message.file)
 
@@ -24,14 +21,14 @@ const ShareMessageFile = ({ message, onClose }: DownloadMessageFileProps) => {
                 onClose()
             })
             .catch((error) => {
-                toast.error(t('media.shareFileFailed'))
+                toast.error(__("There was an error sharing the file. Please try again."))
             })
     }
 
     return (
         <ActionButton
             icon={<ShareIcon width={18} height={18} color={colors.icon} />}
-            text={t('messages.share')}
+            text={__("Share")}
             onPress={downloadFile}
         />
     )

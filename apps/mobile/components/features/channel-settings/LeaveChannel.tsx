@@ -8,11 +8,10 @@ import { Alert, Pressable } from 'react-native';
 import LeaveIcon from "@assets/icons/LeaveIcon.svg";
 import { useColorScheme } from '@hooks/useColorScheme';
 import { useRouteToHome } from '@hooks/useRouting';
-import { useTranslation } from 'react-i18next';
+import { __ } from '@lib/i18n';
 
 const LeaveChannel = ({ channel }: { channel: FrappeDoc<ChannelListItem> | undefined }) => {
-    const { t } = useTranslation()
-    const { call, error } = useFrappePostCall("raven.api.raven_channel.leave_channel")
+const { call, error } = useFrappePostCall("raven.api.raven_channel.leave_channel")
     const { mutate } = useContext(ChannelListContext) as ChannelListContextType
 
     const { colors } = useColorScheme()
@@ -22,21 +21,21 @@ const LeaveChannel = ({ channel }: { channel: FrappeDoc<ChannelListItem> | undef
     const onLeaveChannel = async () => {
         return call({ channel_id: channel?.name })
             .then(() => {
-                toast.success(t('channels.leftChannel', { channelName: channel?.channel_name }))
+                toast.success(__("You have left {{channelName}} channel", { channelName: channel?.channel_name }))
                 goToHome()
                 mutate()
             })
             .catch(() => {
-                toast.error(t('channels.leaveChannelFailed'), {
+                toast.error(__("Could not leave channel"), {
                     description: error?.httpStatusText
                 })
             })
     }
 
     const onLeaveChannelPressed = () => {
-        Alert.alert(t('channels.leaveChannelConfirm'), t('channels.leaveChannelMessage', { channelName: channel?.channel_name }), [
-            { text: t('common.cancel'), style: 'cancel' },
-            { text: t('common.leave'), style: 'destructive', onPress: onLeaveChannel },
+        Alert.alert(__("Leave channel?"), __("Are you sure you want to leave {{channelName}} channel?", { channelName: channel?.channel_name }), [
+            { text: __("Cancel"), style: 'cancel' },
+            { text: __("Leave"), style: 'destructive', onPress: onLeaveChannel },
         ])
     }
 
@@ -46,7 +45,7 @@ const LeaveChannel = ({ channel }: { channel: FrappeDoc<ChannelListItem> | undef
             className='flex flex-row items-center py-3 px-4 rounded-xl gap-3 bg-background dark:bg-card ios:active:bg-red-50 dark:ios:active:bg-red-100/10'
             android_ripple={{ color: 'rgba(0,0,0,0.1)', borderless: false }}>
             <LeaveIcon height={18} width={18} fill={colors.destructive} />
-            <Text className="text-base text-destructive">{t('channels.leaveChannel')}</Text>
+            <Text className="text-base text-destructive">{__("Leave Channel")}</Text>
         </Pressable>
     )
 }

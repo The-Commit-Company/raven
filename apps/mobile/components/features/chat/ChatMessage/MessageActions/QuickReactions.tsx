@@ -9,8 +9,7 @@ import EmojiPicker from '@components/common/EmojiPicker/EmojiPicker'
 import { toast } from 'sonner-native'
 import useReactToMessage from '@raven/lib/hooks/useReactToMessage'
 import { Emoji } from '@components/common/EmojiPicker/Picker'
-import { useTranslation } from 'react-i18next'
-
+import { __ } from '@lib/i18n';
 interface MessageReactionsProps {
     message: Message | null
     onClose: () => void
@@ -18,9 +17,7 @@ interface MessageReactionsProps {
 }
 
 const QuickReactions = ({ message, onClose, quickReactionEmojis }: MessageReactionsProps) => {
-
-    const { t } = useTranslation()
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
     const emojiBottomSheetRef = useSheetRef()
 
     const saveReaction = useReactToMessage()
@@ -31,7 +28,7 @@ const QuickReactions = ({ message, onClose, quickReactionEmojis }: MessageReacti
                 emojiBottomSheetRef.current?.close({ duration: 450 })
                 onClose();
             }).catch(() => {
-                toast.error(t('messages.reactionFailed'))
+                toast.error(__("Failed to add reaction"))
             })
         }
     }
@@ -45,7 +42,7 @@ const QuickReactions = ({ message, onClose, quickReactionEmojis }: MessageReacti
                         emojiBottomSheetRef.current?.close({ duration: 450 })
                         onClose();
                     }).catch(() => {
-                        toast.error(t('messages.reactionFailed'))
+                        toast.error(__("Failed to add reaction"))
                     })
             } else {
                 saveReaction(message, emoji?.src ?? "", true, emoji.id)
@@ -53,7 +50,7 @@ const QuickReactions = ({ message, onClose, quickReactionEmojis }: MessageReacti
                         emojiBottomSheetRef.current?.close({ duration: 450 })
                         onClose();
                     }).catch(() => {
-                        toast.error(t('messages.reactionFailed'))
+                        toast.error(__("Failed to add reaction"))
                     })
             }
         }

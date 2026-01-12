@@ -10,16 +10,14 @@ import { RavenPoll } from '@raven/types/RavenMessaging/RavenPoll';
 import { useForm } from 'react-hook-form';
 import { useFrappePostCall } from 'frappe-react-sdk';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useTranslation } from 'react-i18next';
-import { TFunction } from 'i18next';
+import { __ } from '@lib/i18n';
 
 type Props = {
     onPress: () => void,
-    isCreating: boolean,
-    t: TFunction
+    isCreating: boolean
 }
 
-export const PollCreateButton = ({ onPress, isCreating, t }: Props) => {
+export const PollCreateButton = ({ onPress, isCreating }: Props) => {
 
     const { colors } = useColorScheme()
 
@@ -29,7 +27,7 @@ export const PollCreateButton = ({ onPress, isCreating, t }: Props) => {
             disabled={isCreating}>
             {isCreating ?
                 <ActivityIndicator size="small" color={colors.primary} /> :
-                <Text className="text-primary font-medium dark:text-secondary">{t('polls.createPoll')}</Text>}
+                <Text className="text-primary font-medium dark:text-secondary">{__("Create Poll")}</Text>}
         </TouchableOpacity>
     )
 }
@@ -46,9 +44,7 @@ export const CloseCreatePollButton = () => {
 }
 
 export const useCreatePoll = (channelID: string) => {
-
-    const { t } = useTranslation()
-    const router = useRouter()
+const router = useRouter()
     const methods = useForm<RavenPoll>({
         defaultValues: {
             options: [{
@@ -86,11 +82,11 @@ export const useCreatePoll = (channelID: string) => {
             ...data,
             "channel_id": channelID
         }).then(() => {
-            toast.success(t('polls.pollCreated'))
+            toast.success(__("Poll created"))
             reset()
             router.back()
         }).catch((err) => {
-            toast.error(t('polls.pollCreationFailed'))
+            toast.error(__("Error while creating poll"))
         })
     }
 
@@ -101,7 +97,6 @@ export const useCreatePoll = (channelID: string) => {
     return {
         onPress,
         creatingPoll,
-        methods,
-        t
+        methods
     }
 }
