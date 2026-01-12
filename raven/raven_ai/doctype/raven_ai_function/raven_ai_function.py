@@ -131,7 +131,7 @@ class RavenAIFunction(Document):
 				if field.fieldtype == "Select":
 					if not param.options:
 						frappe.throw(_("Options are required for select fields"))
-					
+
 					# Sometimes options is not populated in the DocType meta so we do not need to validate it
 					if not field.options:
 						continue
