@@ -16,9 +16,14 @@ class RavenPollVote(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		from raven.raven_messaging.doctype.raven_poll_vote_selection.raven_poll_vote_selection import (
+			RavenPollVoteSelection,
+		)
+
 		option: DF.Data
 		poll_id: DF.Link
 		user_id: DF.Link
+		vote_selection: DF.Table[RavenPollVoteSelection]
 	# end: auto-generated types
 
 	def before_insert(self):
@@ -26,6 +31,8 @@ class RavenPollVote(Document):
 		poll = frappe.get_cached_doc("Raven Poll", self.poll_id)
 		if poll.is_disabled:
 			frappe.throw(_("This poll is closed."))
+
+		# TODO: maybe add a check for single select polls which allows selecting only one option
 
 		# check if the option is valid
 		if not frappe.db.exists(
