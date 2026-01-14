@@ -154,7 +154,9 @@ def get_other_threads(
 		.left_join(main_thread_message)
 		.on((main_thread_message.is_thread == 1) & (main_thread_message.name == thread_channel.name))
 		.left_join(thread_message)
-		.on((thread_channel.name == thread_message.channel_id) & (thread_message.message_type != "System"))
+		.on(
+			(thread_channel.name == thread_message.channel_id) & (thread_message.message_type != "System")
+		)
 		.left_join(channel_member)
 		.on(
 			(main_thread_message.channel_id == channel_member.channel_id)
