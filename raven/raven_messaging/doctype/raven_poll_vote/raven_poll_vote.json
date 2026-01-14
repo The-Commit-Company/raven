@@ -9,8 +9,6 @@
   "user_id",
   "section_break_poll",
   "poll_id",
-  "section_break_vote",
-  "option",
   "selections_section",
   "vote_selection"
  ],
@@ -42,17 +40,6 @@
    "reqd": 1
   },
   {
-   "fieldname": "section_break_vote",
-   "fieldtype": "Section Break",
-   "label": "Vote"
-  },
-  {
-   "fieldname": "option",
-   "fieldtype": "Data",
-   "label": "Option",
-   "reqd": 1
-  },
-  {
    "fieldname": "selections_section",
    "fieldtype": "Section Break",
    "label": "Selections"
@@ -66,7 +53,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-14 14:53:58.348618",
+ "modified": "2026-01-14 16:56:07.293805",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Poll Vote",

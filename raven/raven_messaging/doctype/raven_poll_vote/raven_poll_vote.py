@@ -20,7 +20,6 @@ class RavenPollVote(Document):
 			RavenPollVoteSelection,
 		)
 
-		option: DF.Data
 		poll_id: DF.Link
 		user_id: DF.Link
 		vote_selection: DF.Table[RavenPollVoteSelection]
