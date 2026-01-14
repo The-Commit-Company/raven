@@ -95,3 +95,16 @@ def update_poll_votes(poll_id):
 	poll.total_votes = total_votes
 
 	poll.notify_update()
+
+
+def on_doctype_update():
+	"""
+	Add unique constraint on (poll_id, user_id).
+	Only runs during fresh install - existing installs use patch.
+	"""
+	if frappe.flags.in_install:
+		frappe.db.add_unique(
+			"Raven Poll Vote",
+			fields=["poll_id", "user_id"],
+			constraint_name="unique_poll_vote_user",
+		)
