@@ -8,23 +8,9 @@ import ChannelMenu from "./ChannelMenu"
 import { useAtom } from "jotai"
 import { channelDrawerAtom } from "@utils/channelAtoms"
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
-import { useNavigate, useLocation } from "react-router-dom"
-import SearchBar from "../../header/QuickSearch/SearchBar"
-import { useState } from "react"
 
 const ChannelHeader = () => {
     const channelID = useCurrentChannelID()
-    const navigate = useNavigate()
-    const location = useLocation()
-    const isSearchPage = location.pathname === "/search"
-    const [searchValue, setSearchValue] = useState("")
-
-    const handleSearchChange = (value: string) => {
-        setSearchValue(value)
-        if (value.trim()) {
-            navigate("/search")
-        }
-    }
 
     const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
 
@@ -51,7 +37,7 @@ const ChannelHeader = () => {
     }
 
     return (
-        <div className="sticky top-0 flex items-center justify-between border-b bg-background py-1.5 px-2 z-50">
+        <div className="sticky top-[var(--app-header-height,36px)] flex items-center justify-between border-b bg-background py-1.5 px-2 z-50">
             {/* Left side */}
             <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1">
@@ -126,14 +112,6 @@ const ChannelHeader = () => {
 
             {/* Right side */}
             <div className="flex items-center gap-1 ml-auto">
-                {!isSearchPage && (
-                    <div className="flex items-center gap-2 flex-1 max-w-md mr-2">
-                        <SearchBar
-                            value={searchValue}
-                            onChange={handleSearchChange}
-                        />
-                    </div>
-                )}
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm">

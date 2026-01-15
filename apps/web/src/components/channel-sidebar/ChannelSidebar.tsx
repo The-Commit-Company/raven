@@ -51,7 +51,7 @@ export function ChannelSidebar({
     }
 
     return (
-        <SidebarGroup>
+        <SidebarGroup className="pt-1">
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
                     <SidebarGroupLabel className="text-muted-foreground/80 font-normal text-[11px]">Channels</SidebarGroupLabel>

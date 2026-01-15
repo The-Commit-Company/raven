@@ -1,5 +1,3 @@
-import { SidebarTrigger } from "@components/ui/sidebar";
-import { Separator } from "@components/ui/separator";
 import { useState } from "react"
 import { Search, X } from "lucide-react"
 import { Switch } from "@components/ui/switch"
@@ -130,18 +128,10 @@ export default function Threads() {
     const selectedChannel = allChannels.find(c => c.name === channel)
 
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col h-full">
             <header className="sticky top-0 flex items-center justify-between border-b bg-background py-1.5 px-2 z-30">
                 {/* Left side */}
                 <div className="flex items-center gap-4">
-
-                    <div className="flex items-center gap-1">
-                        <SidebarTrigger className="-ml-1" />
-                        <div className="h-6">
-                            <Separator orientation="vertical" />
-                        </div>
-                    </div>
-
                     <span className="text-md font-medium">Threads</span>
                 </div>
             </header>
@@ -249,7 +239,7 @@ export default function Threads() {
                             </div>
                         </div>
 
-                        <div className="flex-1 overflow-hidden">
+                        <div className="flex-1 overflow-y-auto">
                             {activeTab === 'all' && (
                                 <ParticipatingThreads
                                     threadType="all"

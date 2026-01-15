@@ -39,13 +39,13 @@ export const CustomizeSidebarButton = ({ data, onSave }: CustomizeSidebarButtonP
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 rounded-sm hover:bg-accent"
+                        className="h-6 w-6 rounded-sm hover:bg-accent"
                         aria-label="More options"
                     >
-                        <MoreVertical className="h-3.5 w-3.5" />
+                        <MoreVertical className="h-3 w-3" />
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" side="right" sideOffset={4} className="w-48">
+                <DropdownMenuContent align="end" side="bottom" sideOffset={4} className="w-48">
                     <DropdownMenuItem onClick={() => setShowMyChannelsOnly(!showMyChannelsOnly)}>
                         <span>Only show my channels</span>
                     </DropdownMenuItem>
