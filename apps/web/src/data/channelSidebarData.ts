@@ -4,7 +4,7 @@ export const erpNextData: ChannelSidebarData = {
     groups: [
         {
             id: 'general',
-            name: 'General',
+            name: '📋 General',
             channels: [
                 {
                     name: 'general',
@@ -72,7 +72,7 @@ export const erpNextData: ChannelSidebarData = {
         },
         {
             id: 'development',
-            name: 'Development',
+            name: '👩‍💻 Development',
             channels: [
                 {
                     name: 'bugs',
@@ -170,7 +170,7 @@ export const erpNextData: ChannelSidebarData = {
         },
         {
             id: 'support',
-            name: 'Support',
+            name: '🤝 Support',
             channels: [
                 {
                     name: 'help',
@@ -223,7 +223,7 @@ export const erpNextData: ChannelSidebarData = {
         },
         {
             id: 'design',
-            name: 'Design',
+            name: '🎨 Design',
             channels: [
                 {
                     name: 'ui-ux',
@@ -261,7 +261,7 @@ export const erpNextData: ChannelSidebarData = {
         },
         {
             id: 'marketing',
-            name: 'Marketing',
+            name: '📈 Marketing',
             channels: [
                 {
                     name: 'social-media',
@@ -351,7 +351,7 @@ export const helpdeskData: ChannelSidebarData = {
     groups: [
         {
             id: 'academic',
-            name: 'Academic',
+            name: '📚 Academic',
             channels: [
                 {
                     name: 'general',
@@ -380,7 +380,7 @@ export const frappeSchoolData: ChannelSidebarData = {
     groups: [
         {
             id: 'learning',
-            name: 'Learning',
+            name: '📖 Learning',
             channels: [
                 {
                     name: 'general',
@@ -425,7 +425,7 @@ export const frappeHRData: ChannelSidebarData = {
     groups: [
         {
             id: 'hr-general',
-            name: 'HR General',
+            name: '👥 HR General',
             channels: [
                 {
                     name: 'general',

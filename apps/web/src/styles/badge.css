@@ -1,8 +1,8 @@
 /* Badge component styles for consistent unread count badges */
 :root {
-    /* Badge colors */
-    --badge-bg: var(--muted);
-    --badge-text: var(--muted-foreground);
+    /* Badge colors - darker for better visibility */
+    --badge-bg: oklch(0.92 0.001 286.375);
+    --badge-text: oklch(0.32 0.016 285.938);
 
     /* Badge sizing */
     --badge-padding-x: 0.25rem;
@@ -19,6 +19,12 @@
     /* Badge typography */
     --badge-font-weight: 500;
     /* font-semibold */
+}
+
+.dark {
+    /* Darker badge colors for dark mode */
+    --badge-bg: oklch(0.32 0.006 286.033);
+    --badge-text: oklch(0.75 0.015 286.067);
 }
 
 /* Badge component class */

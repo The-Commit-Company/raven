@@ -61,7 +61,7 @@ const SettingsSidebarItem = ({
                         standalone && "gap-1.5"
                     )}
                 >
-                    {Icon && <Icon size={15} className="flex-shrink-0" />}
+                    {Icon && <Icon size={15} className="shrink-0" />}
                     <span>{title}</span>
                 </div>
             )}
@@ -71,7 +71,7 @@ const SettingsSidebarItem = ({
 
 export const SettingsSidebar = () => {
     return (
-        <div className="h-[calc(100vh-var(--app-header-height))] overflow-y-auto fixed w-64 border-r border-border pt-2 bg-sidebar">
+        <div className="h-screen overflow-y-auto fixed w-64 border-r border-border pt-2 bg-sidebar">
             <div className="flex flex-col gap-2 px-4">
                 <SettingsGroup title="My Account" icon={UserCircle}>
                     <SettingsSidebarItem title="Profile" to="profile" />
