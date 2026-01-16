@@ -103,7 +103,7 @@ export interface ColumnDef<TData> {
      * Column header content.
      * Can be a string for simple headers, or a function for custom rendering.
      */
-    header: string | ((context: HeaderContext<TData>) => ReactNode)
+    header?: string | ((context: HeaderContext<TData>) => ReactNode)
 
     /**
      * Custom cell renderer function.

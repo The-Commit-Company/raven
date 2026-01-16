@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { DataTable } from '@components/common/DataTable/DataTable'
 import { useFetchCustomEmojis, useFetchCustomEmojisCount } from '@hooks/fetchers/useFetchCustomEmojis'
 import { ColumnDef, SortingState } from 'src/types/DataTable'
@@ -11,9 +11,9 @@ import { getDateObject } from '@utils/date'
 import { EmptyState, EmptyStateDescription, EmptyStateIcon, EmptyStateTitle } from '@components/features/settings/EmptyDataTableState'
 import { SmilePlus } from 'lucide-react'
 import AddCustomEmojiDialog from '@pages/settings/CustomEmojiList/AddEmojiDialog'
+import DeleteEmojiDialog from '@pages/settings/CustomEmojiList/DeleteEmojiDialog'
 
 const CustomEmojiEmptyState = ({ setOpen }: { setOpen: (open: boolean) => void }) => {
-
     return (
         <EmptyState>
             <div className='flex flex-col items-center justify-center'>
@@ -36,7 +36,6 @@ const CustomEmojiEmptyState = ({ setOpen }: { setOpen: (open: boolean) => void }
 }
 
 const CustomEmojiList = () => {
-
     const { mutate: globalMutate } = useSWRConfig()
 
     const [sorting, setSorting] = useState<SortingState | null>(null)
@@ -73,6 +72,65 @@ const CustomEmojiList = () => {
         globalMutate('custom-emojis')
     }
 
+    // Define columns inside component so we can pass onDeleteEmoji
+    const columns: ColumnDef<RavenCustomEmoji>[] = useMemo(() => [
+        {
+            id: 'name',
+            header: 'Name',
+            accessorKey: 'name',
+            enableSorting: true,
+            cell: ({ row }) => (
+                <div className='flex items-center gap-2'>
+                    <img
+                        src={row.image}
+                        alt={row.emoji_name}
+                        className='w-8 h-8 rounded-md object-contain object-center'
+                    />
+                    <span className='text-sm font-medium'>:{row.emoji_name}:</span>
+                </div>
+            )
+        },
+        {
+            id: 'keywords',
+            header: 'Keywords',
+            accessorKey: 'keywords',
+            enableSorting: false,
+            cell: ({ value }) => (
+                <span className='text-sm text-muted-foreground'>
+                    {value as string || '—'}
+                </span>
+            )
+        },
+        {
+            id: 'owner',
+            header: 'Uploaded By',
+            accessorKey: 'owner',
+            enableSorting: false,
+        },
+        {
+            id: 'creation',
+            header: 'Added',
+            accessorKey: 'creation',
+            enableSorting: true,
+            cell: ({ row }) => (
+                <span className='text-sm'>
+                    {getDateObject(row.creation).format("MMM Do, YYYY")}
+                </span>
+            )
+        },
+        {
+            id: 'actions',
+            enableSorting: false,
+            cellClassName: 'w-[50px]',
+            cell: ({ row }) => (
+                <DeleteEmojiDialog
+                    emojiId={row.name}
+                    emojiName={row.emoji_name}
+                    onDelete={onDeleteEmoji}
+                />
+            )
+        }
+    ], [onDeleteEmoji])
 
     return (
         <SettingsContentContainer
@@ -84,9 +142,7 @@ const CustomEmojiList = () => {
                 </>
             }
             actions={
-                <Button
-                    size='sm'
-                    onClick={() => setOpen(true)}>
+                <Button size='sm' onClick={() => setOpen(true)}>
                     Upload
                 </Button>
             }
@@ -96,7 +152,7 @@ const CustomEmojiList = () => {
                 <CustomEmojiEmptyState setOpen={setOpen} />
             ) : (
                 <DataTable
-                    columns={customEmojiColumns}
+                        columns={columns}
                     data={data ?? []}
                     isLoading={isLoading}
                     error={error}
@@ -111,44 +167,5 @@ const CustomEmojiList = () => {
         </SettingsContentContainer>
     )
 }
-
-const customEmojiColumns: ColumnDef<RavenCustomEmoji>[] = [
-    {
-        id: 'name',
-        header: 'Name',
-        accessorKey: 'name',
-        enableSorting: true,
-        cell: ({ row }: { row: RavenCustomEmoji }) => {
-            return (
-                <div className='flex items-center gap-2'>
-                    <img src={row.image} alt={row.emoji_name} className='w-8 h-8 rounded-md object-contain object-center' />
-                    <p className='text-sm font-medium'>:{row.emoji_name}:</p>
-                </div>
-            )
-        }
-    },
-    {
-        id: 'keywords',
-        header: 'Keywords',
-        accessorKey: 'keywords'
-    },
-    {
-        id: 'owner',
-        header: 'Uploaded By',
-        accessorKey: 'owner'
-    },
-    {
-        id: 'creation',
-        header: 'Added',
-        accessorKey: 'creation',
-        enableSorting: true,
-        cell: ({ row }) => {
-            return (
-                <p className='text-sm font-medium'>{getDateObject(row.creation).format("MMM Do, YYYY")}</p>
-            )
-        }
-    }
-]
-
 
 export default CustomEmojiList

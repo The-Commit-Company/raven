@@ -261,7 +261,7 @@ export function DataTable<TData>({
                         <TableBody>
                             {data.length > 0 ? (
                                 data.map((row: TData, rowIndex: number) => (
-                                    <TableRow key={getRowKey(row, rowIndex)}>
+                                    <TableRow key={getRowKey(row, rowIndex)} className="group">
                                         {columns.map((column: ColumnDef<TData>) => (
                                             <TableCell
                                                 key={column.id}
