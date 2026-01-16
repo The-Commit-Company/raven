@@ -6,20 +6,14 @@ import useFetchWorkspaces, { WorkspaceFields } from "@hooks/fetchers/useFetchWor
 import { Link } from "react-router-dom"
 import { Globe, Lock } from "lucide-react"
 import type { ColumnDef } from "../../../types/DataTable"
+import SettingsContentContainer from "@components/features/settings/SettingsContentContainer"
 
 export default function WorkspaceList() {
 
     const { data: workspaces, isLoading, error } = useFetchWorkspaces()
 
     return (
-        <div className="flex flex-col gap-6 p-6">
-            <div className="space-y-1">
-                <h2 className="text-base font-semibold">Workspaces</h2>
-                <p className="text-sm text-muted-foreground">
-                    Workspaces allow you to organize your channels and teams.
-                </p>
-            </div>
-
+        <SettingsContentContainer title="Workspaces" description="Workspaces allow you to organize your channels and teams.">
             <DataTable
                 columns={workspaceColumns}
                 data={workspaces?.message ?? []}
@@ -28,7 +22,7 @@ export default function WorkspaceList() {
                 getRowId={(row) => row.name}
                 emptyState={<EmptyWorkspaceState />}
             />
-        </div>
+        </SettingsContentContainer>
     )
 }
 
