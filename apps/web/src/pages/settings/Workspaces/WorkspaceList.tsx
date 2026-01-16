@@ -1,18 +1,17 @@
-import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
+import { DataTable } from "@components/common/DataTable/DataTable"
 import WorkspaceActions from "@components/features/workspaces/WorkspaceActions"
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
 import { Badge } from "@components/ui/badge"
-import { HStack } from "@components/ui/stack"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@components/ui/table"
 import useFetchWorkspaces, { WorkspaceFields } from "@hooks/fetchers/useFetchWorkspaces"
 import { Link } from "react-router-dom"
-
+import { Globe, Lock } from "lucide-react"
+import type { ColumnDef } from "../../../types/DataTable"
 
 export default function WorkspaceList() {
 
     const { data: workspaces, isLoading, error } = useFetchWorkspaces()
-    return (
 
+    return (
         <div className="flex flex-col gap-6 p-6">
             <div className="space-y-1">
                 <h2 className="text-base font-semibold">Workspaces</h2>
@@ -20,76 +19,135 @@ export default function WorkspaceList() {
                     Workspaces allow you to organize your channels and teams.
                 </p>
             </div>
-            {/* {isLoading && !error && <TableLoader columns={4} />} */}
-            {/* Add ErrorBanner component here */}
-            {/* <ErrorBanner error={error} /> */}
-            {workspaces && <WorkspaceTable workspaces={workspaces.message} />}
 
-
+            <DataTable
+                columns={workspaceColumns}
+                data={workspaces?.message ?? []}
+                isLoading={isLoading}
+                error={error}
+                getRowId={(row) => row.name}
+                emptyState={<EmptyWorkspaceState />}
+            />
         </div>
-
     )
 }
 
-const WorkspaceTable = ({ workspaces }: { workspaces: WorkspaceFields[] }) => {
+/**
+ * Column definitions for the Workspace table.
+ * Defined outside the component to avoid recreation on every render.
+ */
+const workspaceColumns: ColumnDef<WorkspaceFields>[] = [
+    {
+        id: "name",
+        accessorKey: "workspace_name",
+        header: "Name",
+        enableSorting: true,
+        cell: ({ row }) => <WorkspaceNameCell workspace={row} />,
+    },
+    {
+        id: "type",
+        accessorKey: "type",
+        header: "Type",
+        enableSorting: false,
+        cell: ({ row }) => <WorkspaceTypeCell type={row.type} />,
+    },
+    {
+        id: "membership",
+        accessorKey: "workspace_member_name",
+        header: "Membership",
+        enableSorting: false,
+        cell: ({ row }) => <MembershipCell workspace={row} />,
+    },
+    {
+        id: "description",
+        accessorKey: "description",
+        header: "Description",
+        enableSorting: false,
+        cellClassName: "max-w-[250px]",
+        cell: ({ value }) => (
+            <span className="line-clamp-1 text-muted-foreground">
+                {value as string}
+            </span>
+        ),
+    },
+    {
+        id: "actions",
+        header: "",
+        enableSorting: false,
+        cellClassName: "w-[50px]",
+        cell: ({ row }) => <WorkspaceActions workspace={row} />,
+    },
+]
+
+/**
+ * Name column: Shows workspace logo, name, and links to settings if admin.
+ */
+function WorkspaceNameCell({ workspace }: { workspace: WorkspaceFields }) {
+    const content = (
+        <div className="flex items-center gap-2">
+            <Avatar className="h-8 w-8 rounded-md">
+                <AvatarImage src={workspace.logo} alt={workspace.workspace_name} />
+                <AvatarFallback className="rounded-md">
+                    {workspace.workspace_name?.charAt(0)?.toUpperCase()}
+                </AvatarFallback>
+            </Avatar>
+            <span className="font-medium">{workspace.workspace_name}</span>
+        </div>
+    )
+
+    // If user is admin, make it a link to workspace settings
+    if (workspace.is_admin) {
+        return (
+            <Link
+                to={workspace.name}
+                className="hover:underline underline-offset-4"
+            >
+                {content}
+            </Link>
+        )
+    }
+
+    return content
+}
+
+/**
+ * Type column: Shows badge with icon indicating Public/Private.
+ */
+function WorkspaceTypeCell({ type }: { type: WorkspaceFields["type"] }) {
+    const isPrivate = type === "Private"
+
     return (
-        <Table>
-            <TableHeader>
-                <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Membership</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead></TableHead>
-                </TableRow>
-            </TableHeader>
+        <Badge variant={isPrivate ? "secondary" : "outline"}>
+            {isPrivate ? (
+                <Lock className="mr-1 h-3 w-3" />
+            ) : (
+                <Globe className="mr-1 h-3 w-3" />
+            )}
+            {type}
+        </Badge>
+    )
+}
 
-            <TableBody>
-                {workspaces.map((workspace) => (
-                    <TableRow key={workspace.name}>
-                        <TableCell className="max-w-[150px]">
-                            {workspace.is_admin ? <Link to={`${workspace.name}`}>
-                                <HStack align='center'>
-                                    <Avatar className="rounded-md">
-                                        <AvatarImage src={workspace.logo} alt={workspace.workspace_name} />
-                                        <AvatarFallback>{workspace.workspace_name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <p className="text-sm font-medium hover:underline underline-offset-4">{workspace.workspace_name}</p>
-                                </HStack>
-                            </Link> :
-                                <HStack align='center'>
-                                    <Avatar>
-                                        <AvatarImage src={workspace.logo} alt={workspace.workspace_name} />
-                                        <AvatarFallback>{workspace.workspace_name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <p className="text-sm font-medium">{workspace.workspace_name}</p>
-                                </HStack>}
-                        </TableCell>
+/**
+ * Membership column: Shows user's role in the workspace.
+ */
+function MembershipCell({ workspace }: { workspace: WorkspaceFields }) {
+    if (workspace.is_admin) {
+        return <Badge variant="default">Admin</Badge>
+    }
+    if (workspace.workspace_member_name) {
+        return <Badge variant="secondary">Member</Badge>
+    }
+    return <Badge variant="outline">Not a member</Badge>
+}
 
-                        <TableCell>
-                            <Badge variant="secondary" className={workspace.type === 'Private' ? 'text-purple-500 border-purple-500' : 'text-green-500 border-green-500'}>
-                                <ChannelIcon type={workspace.type === 'Private' ? 'Private' : 'Open'} />
-                                {workspace.type}
-                                </Badge>
-                        </TableCell>
-
-                        <TableCell>
-                            <HStack>
-                                {workspace.is_admin ? <Badge variant="secondary" className="text-orange-500 border-orange-500">Admin</Badge> : workspace.workspace_member_name ? <Badge variant="secondary" className="text-blue-500 border-blue-500">Member</Badge> : <Badge variant="secondary" className="text-gray-500 border-gray-500">Not a member</Badge>}
-                            </HStack>
-                        </TableCell>
-
-                        <TableCell>
-                            <p className="text-sm text-muted-foreground line-clamp-1 text-ellipsis">{workspace.description}</p>
-                        </TableCell>
-
-                        <TableCell>
-                            <WorkspaceActions workspace={workspace} />
-                        </TableCell>
-                    </TableRow>
-                ))}
-            </TableBody>
-        </Table>
-
+/**
+ * Empty state when no workspaces exist.
+ */
+function EmptyWorkspaceState() {
+    return (
+        <div className="flex flex-col items-center gap-2 py-8">
+            <p className="text-muted-foreground">No workspaces found.</p>
+        </div>
     )
 }

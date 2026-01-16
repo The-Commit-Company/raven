@@ -7,6 +7,7 @@ export type WorkspaceFields = Pick<RavenWorkspace, 'name' | 'workspace_name' | '
 }
 
 const useFetchWorkspaces = () => {
+    //TODO: we use useFrappeGetDocList instead of useFrappeGetCall because we can then use sorting, pagination, and filtering/ read from cache
     return useFrappeGetCall<{ message: WorkspaceFields[] }>('raven.api.workspaces.get_list', undefined, 'workspaces_list', {
         revalidateOnFocus: false,
         keepPreviousData: true
