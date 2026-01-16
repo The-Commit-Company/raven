@@ -1,12 +1,43 @@
-import type { PropsWithChildren } from 'react'
+import type { PropsWithChildren, ReactNode } from "react"
+import SettingsPageHeader from "@components/features/settings/SettingsPageHeader"
 
-const SettingsContentContainer = ({ title, description, children }: PropsWithChildren<{ title: string, description: string }>) => {
+interface SettingsContentContainerProps {
+  /** Page title displayed in the header */
+  title: string
+  /** Description text below the title */
+  description?: ReactNode
+  /** Action buttons (e.g., "Create" button) displayed on the right */
+  actions?: ReactNode
+}
+
+/**
+ * Container component for settings pages.
+ * Provides consistent layout with header, description, and content area.
+ *
+ * @example
+ * ```tsx
+ * <SettingsContentContainer
+ *   title="Workspaces"
+ *   description="Manage your workspaces."
+ *   actions={<Button>Create</Button>}
+ * >
+ *   <DataTable ... />
+ * </SettingsContentContainer>
+ * ```
+ */
+function SettingsContentContainer({
+  title,
+  description,
+  actions,
+  children,
+}: PropsWithChildren<SettingsContentContainerProps>) {
   return (
     <div className="flex flex-col gap-6 p-6">
-        <div className="space-y-1">
-            <h2 className="text-base font-semibold">{title}</h2>
-            <p className="text-sm text-muted-foreground">{description}</p>
-        </div>
+      <SettingsPageHeader
+        title={title}
+        description={description}
+        actions={actions}
+      />
         {children}
     </div>
   )
