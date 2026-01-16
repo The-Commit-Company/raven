@@ -1,9 +1,8 @@
-import { GroupedAvatars } from "@components/ui/grouped-avatars"
 import { cn } from "@lib/utils"
 import type { PollMessage } from "@raven/types/common/Message"
-import type { RavenPollOption } from "@raven/types/RavenMessaging/RavenPollOption"
-import { CheckCircle, ArrowUpRight } from "lucide-react"
+import { ArrowUpRight } from "lucide-react"
 import { ChannelIcon } from "../ChannelIcon/ChannelIcon"
+import { PollOptionBar, getOptionPercentage, isUserVote, type PollOptionWithVoters } from "@components/features/message/renderers/poll-components"
 
 type PollListItem = {
     name: string
@@ -274,42 +273,6 @@ const POLLS: PollListItem[] = [
 
 const search_text = "abc"
 
-const PollOptionBar = ({ option, percentage, isCurrentUserVote }: { option: RavenPollOption & { voters?: { id: string, name: string, image: string }[] }, percentage: number, isCurrentUserVote: boolean }) => {
-    // Show a minimal bar (2%) for 0 votes
-    const barWidth = percentage > 0 ? percentage : 2
-    return (
-        <div className="relative flex items-center min-h-[1.25rem] rounded-md overflow-hidden group mb-1">
-            <div className={"absolute top-0 left-0 h-full w-full transition-all duration-300 ease-in-out rounded-md"} />
-
-            <div
-                className={cn(
-                    "absolute top-0 left-0 h-full bg-gray-100",
-                    "transition-all duration-300 ease-in-out rounded-md",
-                )}
-                style={{
-                    width: `${barWidth}%`
-                }}
-            />
-
-            <div className="relative z-10 flex items-center flex-1 px-4 py-1.5 gap-2">
-                <span className={cn("truncate text-[13px]", isCurrentUserVote ? "text-gray-900 font-medium" : "text-gray-700")}>
-                    {option.option}
-                </span>
-                {isCurrentUserVote && <CheckCircle className="w-3 h-3" />}
-            </div>
-
-            <div className="relative z-10 flex items-center gap-3 pr-4">
-                {option.votes !== undefined && (
-                    <span className="text-xs text-muted-foreground font-medium">
-                        {option.votes} vote{option.votes === 1 ? "" : "s"} • <span className="text-[11px]">{percentage.toFixed(0)}%</span>
-                    </span>
-                )}
-                {option.voters && option.voters.length > 0 && <GroupedAvatars users={option.voters} max={5} size="xs" />}
-            </div>
-        </div>
-    )
-}
-
 const SearchResultsPolls = () => {
     return (
         <div className="w-full">
@@ -342,15 +305,15 @@ const SearchResultsPolls = () => {
                             {/* Options */}
                             <div className="flex flex-col gap-1 mb-2 w-full">
                                 {pollItem.pollData.poll.options.map((option) => {
-                                    const totalVotes = pollItem.pollData.poll.total_votes
-                                    const percentage = totalVotes > 0 ? ((option.votes || 0) / totalVotes) * 100 : 0
-                                    const isCurrentUserVote = pollItem.pollData.current_user_votes.some((vote) => vote.option === option.name)
+                                    const percentage = getOptionPercentage(option, pollItem.pollData.poll)
+                                    const isCurrentUserVote = isUserVote(option.name, pollItem.pollData.current_user_votes)
                                     return (
                                         <PollOptionBar
                                             key={option.name}
-                                            option={option}
+                                            option={option as PollOptionWithVoters}
                                             percentage={percentage}
                                             isCurrentUserVote={isCurrentUserVote}
+                                            variant="compact"
                                         />
                                     )
                                 })}

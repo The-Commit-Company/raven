@@ -21,36 +21,34 @@ const ChannelMembersDrawer = () => {
 
     return (
         <div className="flex flex-col h-full max-w-md w-[380px]">
-            {/* Header */}
-            <div className="flex items-center justify-between px-4 py-2 border-b shrink-0">
-                <h2 className="text-sm font-medium">Channel Members</h2>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={handleClose}
-                    aria-label="Close drawer"
-                >
-                    <X className="h-3 w-3" />
-                </Button>
-            </div>
             <div className="flex-1 overflow-hidden p-3">
                 <ScrollArea className="h-full">
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 gap-1 px-1 mb-2 h-8">
-                        <TabsTrigger value="members" className="text-xs h-6">Members</TabsTrigger>
-                        <TabsTrigger value="add" className="text-xs h-6">Add Members</TabsTrigger>
-                    </TabsList>
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                        <div className="flex items-center justify-between">
+                            <TabsList className="grid flex-1 grid-cols-2 gap-1 px-1 h-8">
+                                <TabsTrigger value="members" className="text-xs h-6">Members</TabsTrigger>
+                                <TabsTrigger value="add" className="text-xs h-6">Add Members</TabsTrigger>
+                            </TabsList>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 ml-2 shrink-0"
+                                onClick={handleClose}
+                                aria-label="Close drawer"
+                            >
+                                <X className="h-3 w-3" />
+                            </Button>
+                        </div>
 
-                    <TabsContent value="members">
-                        <ChannelMembersList />
-                    </TabsContent>
+                        <TabsContent value="members">
+                            <ChannelMembersList />
+                        </TabsContent>
 
-                    <TabsContent value="add">
-                        <AddChannelMembers />
-                    </TabsContent>
-                </Tabs>
-            </ScrollArea>
+                        <TabsContent value="add">
+                            <AddChannelMembers />
+                        </TabsContent>
+                    </Tabs>
+                </ScrollArea>
             </div>
         </div>
     )

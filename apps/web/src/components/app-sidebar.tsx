@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Plus, MessageCircle } from "lucide-react"
+import { MessageCircle } from "lucide-react"
 import { Label } from "@components/ui/label"
 import {
     Sidebar,
@@ -7,17 +7,17 @@ import {
     SidebarGroup,
     SidebarGroupContent,
     SidebarHeader,
-    useSidebar,
 } from "@components/ui/sidebar"
 import { Switch } from "@components/ui/switch"
-import { SearchForm } from "./sidebar-search"
-import { cn } from "@lib/utils"
+import { useNavigate, useLocation } from "react-router-dom"
 import { UserFields } from "@raven/types/common/UserFields"
-import { DMListItem } from "./common/DMListItem/DMListItem"
 import { ChannelSidebar } from "./channel-sidebar/ChannelSidebar"
+import { DMSidebar } from "./dm-sidebar/DMSidebar"
 import { ChannelListItem } from "@raven/types/common/ChannelListItem"
 import { ChannelSidebarData } from "../types/ChannelGroup"
 import { erpNextData, helpdeskData, frappeSchoolData, frappeHRData } from "../data/channelSidebarData"
+import { useActiveWorkspace } from "../contexts/ActiveWorkspaceContext"
+import { WorkspaceSwitcher } from "./workspace-switcher/WorkspaceSwitcher"
 
 // This is sample data
 interface MailItem extends UserFields {
@@ -165,7 +165,33 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const [activeChannel, setActiveChannel] = React.useState(data.workspaces[0].channels[0])
     const [mails] = React.useState<MailItem[]>(data.mails as MailItem[])
     const [activeDM, setActiveDM] = React.useState<string | null>(null)
-    const { setOpen } = useSidebar()
+    const navigate = useNavigate()
+    const location = useLocation()
+    const { setActiveWorkspaceName } = useActiveWorkspace()
+
+    // Get workspace from URL params
+    const urlWorkspace = React.useMemo(() => {
+        const match = location.pathname.match(/^\/([^/]+)\/channel\//)
+        if (match) {
+            return decodeURIComponent(match[1])
+        }
+        return null
+    }, [location.pathname])
+
+    // Update active workspace based on URL
+    React.useEffect(() => {
+        if (urlWorkspace) {
+            const workspace = data.workspaces.find(w => w.name === urlWorkspace)
+            if (workspace) {
+                setActiveWorkspace(workspace)
+            }
+        }
+    }, [urlWorkspace])
+
+    // Update the active workspace name in context when it changes
+    React.useEffect(() => {
+        setActiveWorkspaceName(activeWorkspace?.name || null)
+    }, [activeWorkspace, setActiveWorkspaceName])
 
 
     // Get channel data based on active workspace
@@ -211,111 +237,60 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             type: channel.type || "Public",
             unread: channel.last_message_details?.unread_count || 0
         })
+        if (activeWorkspace) {
+            const workspaceSlug = encodeURIComponent(activeWorkspace.name)
+            const channelId = channel.name || channel.channel_name || "general"
+            navigate(`/${workspaceSlug}/channel/${channelId}`)
+        }
     }
 
     return (
-        <Sidebar collapsible="icon" className="overflow-hidden pt-[36px]" {...props}>
-            <div className="flex h-full [&>[data-sidebar=sidebar]]:flex-row">
-                <div className="w-[60px] border-r border-border/40 bg-sidebar flex-shrink-0 relative group/workspace-sidebar">
-                    <div className="flex flex-col items-center gap-3 py-4">
-                        {data.workspaces.map((workspace) => (
-                            <div
-                                key={workspace.name}
-                                className="relative group/workspace-item cursor-pointer w-full flex justify-center"
-                                onClick={() => {
-                                    setActiveWorkspace(workspace)
-                                    setActiveChannel(workspace.channels[0])
-                                    setOpen(true)
-                                }}
-                            >
-                                <div
-                                    className={cn(
-                                        "absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-r-full transition-all duration-200",
-                                        activeWorkspace?.name === workspace.name
-                                            ? "h-8 bg-foreground"
-                                            : "h-2 bg-transparent group-hover/workspace-item:bg-foreground/60 group-hover/workspace-item:h-2",
-                                    )}
-                                />
-
-                                <div
-                                    className={cn(
-                                        "relative flex items-center justify-center w-8 h-8 transition-all duration-200 shadow-sm rounded-md",
-                                        workspace.color,
-                                        activeWorkspace?.name === workspace.name && "shadow-md",
-                                    )}
-                                >
-                                    {typeof workspace.icon === 'string' ? (
-                                        <img
-                                            src={workspace.icon}
-                                            alt={workspace.name}
-                                            className="w-8 h-8 object-cover rounded-md"
-                                        />
-                                    ) : workspace.name === "Direct Messages" ? (
-                                        <span className={cn("text-[10px] font-semibold", workspace.textColor)}>
-                                            DMs
-                                        </span>
-                                    ) : (
-                                        <workspace.icon className={cn("w-3.5 h-3.5", workspace.textColor)} />
-                                    )}
-                                    {workspace.notificationCount > 0 && (
-                                        <div className="absolute -bottom-0.5 -right-0.5 bg-unread rounded-full w-2 h-2 shadow-lg border border-slate-200 dark:border-slate-800" />
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-
-                        <div className="relative group cursor-pointer mt-2">
-                            <div className="flex items-center justify-center w-8 h-8 bg-background border-2 border-dashed border-muted-foreground/25 text-muted-foreground rounded-md hover:border-muted-foreground/50 hover:text-foreground transition-all duration-200">
-                                <Plus className="w-3.5 h-3.5" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <Sidebar collapsible="icon" className="overflow-hidden h-full" {...props}>
+            <div className="flex h-full *:data-[sidebar=sidebar]:flex-row">
+                <WorkspaceSwitcher />
 
                 <div className="flex-1 flex flex-col">
-                    <SidebarHeader className="gap-1.5 pt-3">
-                        <div className="flex w-full items-center justify-between p-1">
-                            <div className="text-sm font-medium text-foreground truncate">
-                                {activeWorkspace?.name}
-                            </div>
-                            <Label className="flex items-center gap-2 text-[12px]">
-                                <span>Unreads</span>
-                                <Switch className="shadow-none" />
-                            </Label>
-                        </div>
-                        <SearchForm />
-                    </SidebarHeader>
-                    <SidebarContent>
-                        <SidebarGroup className="p-0">
-                            <SidebarGroupContent>
-                                {activeWorkspace?.name === "Direct Messages" ? (
-                                    // Direct Messages Layout
-                                    mails.map((mail) => (
-                                        <DMListItem
-                                            key={mail.email}
-                                            user={mail as UserFields}
-                                            date={mail.date}
-                                            teaser={mail.teaser}
-                                            unread={mail.unread}
-                                            isActive={activeDM === mail.email}
-                                            onClick={(e) => {
-                                                e.preventDefault()
-                                                setActiveDM(mail.email)
-                                            }}
+                    {location.pathname === "/threads" || location.pathname === "/mentions" ? null : location.pathname === "/direct-messages" ? (
+                        <DMSidebar
+                            workspaceName="Direct Messages"
+                            mails={mails}
+                            activeDM={activeDM}
+                            onDMClick={(email) => setActiveDM(email)}
+                        />
+                    ) : activeWorkspace?.name === "Direct Messages" ? (
+                        <DMSidebar
+                            workspaceName={activeWorkspace.name}
+                            mails={mails}
+                            activeDM={activeDM}
+                            onDMClick={(email) => setActiveDM(email)}
+                        />
+                    ) : (
+                        <>
+                            <SidebarHeader className="h-[36px] gap-2 px-3 border-b flex items-center">
+                                <div className="flex items-center justify-between w-full">
+                                    <div className="text-sm font-medium text-foreground truncate">
+                                        {activeWorkspace?.name}
+                                    </div>
+                                    <Label className="flex items-center gap-2 text-[12px]">
+                                        <span>Unreads</span>
+                                        <Switch className="shadow-none" />
+                                    </Label>
+                                </div>
+                            </SidebarHeader>
+                            <SidebarContent>
+                                <SidebarGroup className="p-0">
+                                    <SidebarGroupContent>
+                                        <ChannelSidebar
+                                            data={channelSidebarData}
+                                            activeChannelId={activeChannel?.name}
+                                            onChannelClick={handleChannelClick}
+                                            onDataChange={setChannelSidebarData}
                                         />
-                                    ))
-                                ) : (
-                                    // New Channel Sidebar with Groups
-                                    <ChannelSidebar
-                                        data={channelSidebarData}
-                                        activeChannelId={activeChannel?.name}
-                                        onChannelClick={handleChannelClick}
-                                        onDataChange={setChannelSidebarData}
-                                    />
-                                )}
-                            </SidebarGroupContent>
-                        </SidebarGroup>
-                    </SidebarContent>
+                                    </SidebarGroupContent>
+                                </SidebarGroup>
+                            </SidebarContent>
+                        </>
+                    )}
                 </div>
             </div>
         </Sidebar>

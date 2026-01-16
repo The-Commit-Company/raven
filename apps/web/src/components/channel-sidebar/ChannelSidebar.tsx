@@ -3,12 +3,6 @@ import { ChannelSidebarData } from "../../types/ChannelGroup"
 import { ChannelListItem } from "@raven/types/common/ChannelListItem"
 import { cn } from "@lib/utils"
 import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@components/ui/tooltip"
-import {
     Collapsible,
     CollapsibleContent,
     CollapsibleTrigger,
@@ -21,9 +15,15 @@ import {
     SidebarMenuItem,
     SidebarMenuSubItem,
 } from "@components/ui/sidebar"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@components/ui/tooltip"
 import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
-import { CreateChannelButton } from "@components/features/channel/CreateChannel/CreateChannelButton"
 import { CustomizeSidebarButton } from "@components/features/channel/CustomizeSidebar/CustomizeSidebarButton"
+import { CreateChannelButton } from "@components/features/channel/CreateChannel/CreateChannelButton"
 
 interface ChannelSidebarProps {
     data: ChannelSidebarData
@@ -51,10 +51,10 @@ export function ChannelSidebar({
     }
 
     return (
-        <SidebarGroup>
+        <SidebarGroup className="pt-1">
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                    <SidebarGroupLabel className="text-muted-foreground/80">Channels</SidebarGroupLabel>
+                    <SidebarGroupLabel className="text-muted-foreground/80 font-normal text-[11px]">Channels</SidebarGroupLabel>
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
@@ -73,14 +73,11 @@ export function ChannelSidebar({
                         </Tooltip>
                     </TooltipProvider>
                 </div>
-                {showActions && (
-                    <div className="flex items-center">
-                        <CustomizeSidebarButton data={data} onSave={onDataChange} />
-                        <CreateChannelButton />
-                    </div>
-                )}
+                <div className="flex items-center gap-1">
+                    <CustomizeSidebarButton data={data} onSave={onDataChange} />
+                    <CreateChannelButton />
+                </div>
             </div>
-
             <SidebarMenu>
                 {/* Channel Groups */}
                 {data.groups.map((group) => {
@@ -95,10 +92,23 @@ export function ChannelSidebar({
                             <SidebarMenuItem>
                                 <CollapsibleTrigger asChild>
                                     <SidebarMenuButton
-                                        tooltip={group.name}
+                                        tooltip={group.name.replace(/^[\p{Emoji}\u200d]+\s?/u, '')}
                                     >
                                         <ChevronRight className="w-4 h-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                                        <span className="text-xs">{group.name}</span>
+                                        <span className="truncate text-[13px] flex items-center gap-1.5">
+                                            {(() => {
+                                                // Match emoji including compound emojis (with ZWJ)
+                                                const emojiMatch = group.name.match(/^[\p{Emoji}\u200d]+/u);
+                                                const emoji = emojiMatch ? emojiMatch[0] : null;
+                                                const nameWithoutEmoji = group.name.replace(/^[\p{Emoji}\u200d]+\s?/u, '');
+                                                return (
+                                                    <>
+                                                        {emoji && <span className="text-lg leading-none">{emoji}</span>}
+                                                        <span>{nameWithoutEmoji}</span>
+                                                    </>
+                                                );
+                                            })()}
+                                        </span>
                                         <div className="ml-auto flex items-center gap-2">
                                             {showUnreadBadges && totalUnread > 0 && (
                                                 <div className="badge-unread opacity-0 group-data-[state=closed]/collapsible:opacity-100 transition-opacity">
@@ -122,9 +132,9 @@ export function ChannelSidebar({
                                                     <div className="flex items-center gap-2 w-full">
                                                         <ChannelIcon
                                                             type={channel.type || "Public"}
-                                                            className="w-4 h-4 flex-shrink-0"
+                                                            className="w-4 h-4 shrink-0"
                                                         />
-                                                        <span className={`truncate ${channel.last_message_details?.unread_count > 0 ? 'font-medium' : 'font-normal'}`}>
+                                                        <span className={`truncate text-[13px] ${channel.last_message_details?.unread_count > 0 ? 'font-medium' : 'font-normal'}`}>
                                                             {channel.channel_name}
                                                         </span>
                                                     </div>
@@ -148,18 +158,16 @@ export function ChannelSidebar({
                     <SidebarMenuItem key={channel.name}>
                         <SidebarMenuButton
                             asChild
-                            isActive={activeChannelId === channel.name}
-                        >
+                            isActive={activeChannelId === channel.name}>
                             <button
                                 onClick={() => onChannelClick(channel)}
-                                className="w-full hover:bg-sidebar-accent/80 hover:text-sidebar-accent-foreground"
-                            >
+                                className="w-full hover:bg-sidebar-accent/80 hover:text-sidebar-accent-foreground">
                                 <div className="flex items-center gap-2 w-full">
                                     <ChannelIcon
                                         type={channel.type || "Public"}
-                                        className="w-4 h-4 flex-shrink-0"
+                                        className="w-4 h-4 shrink-0"
                                     />
-                                    <span className={`truncate ${channel.last_message_details?.unread_count > 0 ? 'font-medium' : 'font-normal'}`}>
+                                    <span className={`truncate text-[13px] ${channel.last_message_details?.unread_count > 0 ? 'font-medium' : 'font-normal'}`}>
                                         {channel.channel_name}
                                     </span>
                                 </div>

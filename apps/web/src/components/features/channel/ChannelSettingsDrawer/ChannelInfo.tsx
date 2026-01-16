@@ -27,7 +27,7 @@ const ChannelInfo = () => {
     }
 
     return (
-        <div className="px-1 space-y-2 pb-4">
+        <div className="px-1 space-y-2 pb-4 pt-2">
             {/* About Section */}
             <div className="space-y-2">
                 <h3 className="font-semibold text-sm">About</h3>

@@ -15,6 +15,7 @@ import Cookies from 'js-cookie'
 import LoginPage from "@pages/auth/Login"
 import ForgotPassword from "@pages/auth/ForgotPassword"
 import Threads from "@pages/Threads"
+import DirectMessages from "@pages/DirectMessages"
 import WorkspaceList from "@pages/settings/Workspaces/WorkspaceList"
 
 const isDesktop = window.innerWidth > 768
@@ -50,11 +51,12 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/" element={<MainPage />}>
             <Route index element={<Channel />} />
-            <Route path="channel/:id" element={<Channel />} />
-            <Route path="channel/:id/thread/:threadID" element={<Channel />} />
-            <Route path="channel/:id/settings" element={<ChannelSettings />} />
+            <Route path=":workspace/channel/:id" element={<Channel />} />
+            <Route path=":workspace/channel/:id/thread/:threadID" element={<Channel />} />
+            <Route path=":workspace/channel/:id/settings" element={<ChannelSettings />} />
             <Route path="mentions" element={<Mentions />} />
             <Route path="threads" element={<Threads />} />
+            <Route path="direct-messages" element={<DirectMessages />} />
             <Route path="settings" element={<AppSettings />}>
               <Route index element={<Navigate to="profile" replace />} />
               <Route path="profile" element={<Profile />} />
@@ -143,12 +145,10 @@ init({
 })
 
 const getSiteName = () => {
-  // @ts-expect-error - Window exists
   if (window.frappe?.boot?.versions?.frappe.startsWith('14')) {
     return import.meta.env.VITE_SITE_NAME
   }
   else {
-    // @ts-expect-error - Window exists
     return window.frappe?.boot?.sitename ?? import.meta.env.VITE_SITE_NAME
   }
 }

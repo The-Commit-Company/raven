@@ -4,20 +4,24 @@ import ChannelMembersDrawer from '../components/features/channel/ChannelMembersD
 import ChatStream from "../components/features/message/ChatStream";
 import ChatInput from '@components/features/ChatInput/ChatInput';
 import ThreadDrawer from '@components/features/message/ThreadDrawer';
-import { useAtomValue } from 'jotai';
-import { channelDrawerAtom } from '@utils/channelAtoms';
+import { PollDrawer } from '@components/features/message/renderers/PollDrawer';
+import { useAtom, useAtomValue } from 'jotai';
+import { channelDrawerAtom, pollDrawerAtom } from '@utils/channelAtoms';
 import { useCurrentChannelID } from '@hooks/useCurrentChannelID';
 import { RefObject, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useOutletContext } from 'react-router-dom';
 import { useScrollToBottom } from '@hooks/useScrollToBottom';
 import { useInView } from 'react-intersection-observer';
 import { useGetMessages } from '@hooks/useGetMessages';
+import { useLocation } from 'react-router-dom';
 
 const SETTINGS_DRAWER_TYPES = ['info', 'files', 'links', 'threads', 'pins'] as const
 
 export default function Channel() {
-
     const channelID = useCurrentChannelID()
+    const location = useLocation()
+    const isSearchPage = location.pathname === "/search"
+    const { searchValue, setSearchValue } = useOutletContext<{ searchValue: string, setSearchValue: (v: string) => void }>()
 
     return (
         <div className="flex flex-col h-full">
@@ -84,8 +88,10 @@ const ChannelDrawer = () => {
     const channelID = useCurrentChannelID()
     const { threadID } = useParams<{ threadID?: string }>()
     const drawerType = useAtomValue(channelDrawerAtom(channelID))
+    const pollDrawerData = useAtomValue(pollDrawerAtom(channelID))
+    const [, setPollDrawerData] = useAtom(pollDrawerAtom(channelID))
 
-    if (!threadID && drawerType === '') {
+    if (!threadID && drawerType === '' && !pollDrawerData) {
         return <div className="w-0" />
     }
 
@@ -95,6 +101,13 @@ const ChannelDrawer = () => {
         <div className={`transition-all duration-300 h-full border-l bg-background flex flex-col ${width}`}>
             {threadID ? (
                 <ThreadDrawer />
+            ) : pollDrawerData ? (
+                <PollDrawer
+                    user={pollDrawerData.user}
+                    poll={pollDrawerData.poll}
+                    currentUserVotes={pollDrawerData.currentUserVotes}
+                    onClose={() => setPollDrawerData(null)}
+                />
             ) : drawerType === 'members' ? (
                 <ChannelMembersDrawer />
             ) : SETTINGS_DRAWER_TYPES.includes(drawerType as typeof SETTINGS_DRAWER_TYPES[number]) ? (

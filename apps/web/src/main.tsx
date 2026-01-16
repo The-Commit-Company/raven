@@ -49,10 +49,9 @@ if (import.meta.env.DEV) {
     .then(response => response.json())
     .then((values) => {
       const v = JSON.parse(values.message)
-      //@ts-expect-error - frappe is not defined
       if (!window.frappe) window.frappe = {};
-      //@ts-expect-error - frappe.boot is not defined
       window.frappe.boot = v
+      window.frappe._messages = window.frappe.boot["__messages"];
       registerServiceWorker()
       createRoot(document.getElementById('root')!).render(
         <StrictMode>

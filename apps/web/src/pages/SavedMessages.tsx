@@ -1,5 +1,3 @@
-import { SidebarTrigger } from "@components/ui/sidebar";
-import { Separator } from "@components/ui/separator";
 import { useState } from "react"
 import { Search, X, Plus } from "lucide-react"
 import { Input } from "@components/ui/input"
@@ -153,15 +151,9 @@ export default function SavedMessages() {
     }
 
     return (
-        <div className="flex flex-col">
-            <header className="sticky top-(--app-header-height) flex items-center justify-between border-b bg-background py-2 px-2">
+        <div className="flex flex-col h-full">
+            <header className="sticky top-0 flex items-center justify-between border-b bg-background py-1.5 px-2 z-30">
                 <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1">
-                        <SidebarTrigger className="-ml-1" />
-                        <div className="h-6">
-                            <Separator orientation="vertical" />
-                        </div>
-                    </div>
                     <span className="text-md font-medium">Saved Messages</span>
                 </div>
             </header>
