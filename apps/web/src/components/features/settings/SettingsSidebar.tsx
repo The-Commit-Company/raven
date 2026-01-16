@@ -80,6 +80,7 @@ export const SettingsSidebar = () => {
                 </SettingsGroup>
                 <SettingsGroup title="Workspaces" icon={Building2}>
                     <SettingsSidebarItem title="Workspaces" to="workspaces" />
+                    <SettingsSidebarItem title="Emojis" to="emojis" />
                 </SettingsGroup>
                 <SettingsSeparator />
             </div>
