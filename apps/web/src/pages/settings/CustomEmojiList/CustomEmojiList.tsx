@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { DataTable } from '@components/common/DataTable/DataTable'
-import { useFetchCustomEmojis } from '@hooks/fetchers/useFetchCustomEmojis'
-import { ColumnDef, PaginationState, SortingState } from 'src/types/DataTable'
+import { useFetchCustomEmojis, useFetchCustomEmojisCount } from '@hooks/fetchers/useFetchCustomEmojis'
+import { ColumnDef, SortingState } from 'src/types/DataTable'
 import { useSWRConfig } from 'frappe-react-sdk'
 import SettingsContentContainer from '@components/features/settings/SettingsContentContainer'
 import { Button } from '@components/ui/button'
@@ -40,27 +40,36 @@ const CustomEmojiList = () => {
     const { mutate: globalMutate } = useSWRConfig()
 
     const [sorting, setSorting] = useState<SortingState | null>(null)
-    const [pagination, setPagination] = useState<PaginationState>({
-        pageIndex: 0,
-        pageSize: 20,
-        totalCount: 0
-    })
-    // State for the add custom emoji dialog
+    const [pageIndex, setPageIndex] = useState(0)
+    const [pageSize, setPageSize] = useState(20)
     const [open, setOpen] = useState(false)
 
-    const { data, isLoading, error, mutate } = useFetchCustomEmojis(sorting ?? undefined, pagination)
+    // Fetch data with current page settings
+    const { data, isLoading, error, mutate } = useFetchCustomEmojis(
+        sorting ?? undefined,
+        { pageIndex, pageSize, totalCount: 0 }
+    )
+    const { count, mutate: mutateCount } = useFetchCustomEmojisCount()
+
+    const pagination = { pageIndex, pageSize, totalCount: count }
+
+    const handlePaginationChange = (newPagination: { pageIndex: number; pageSize: number; totalCount: number }) => {
+        setPageIndex(newPagination.pageIndex)
+        setPageSize(newPagination.pageSize)
+    }
 
     const onAddEmoji = (refresh: boolean = false) => {
         if (refresh) {
             mutate()
+            mutateCount()
             globalMutate('custom-emojis')
         }
         setOpen(false)
-
     }
 
     const onDeleteEmoji = () => {
         mutate()
+        mutateCount()
         globalMutate('custom-emojis')
     }
 
@@ -82,7 +91,10 @@ const CustomEmojiList = () => {
                 </Button>
             }
         >
-            {data && data.length > 0 ? (
+            {/* Show empty state only when not loading and count is 0 */}
+            {!isLoading && count === 0 ? (
+                <CustomEmojiEmptyState setOpen={setOpen} />
+            ) : (
                 <DataTable
                     columns={customEmojiColumns}
                     data={data ?? []}
@@ -92,10 +104,8 @@ const CustomEmojiList = () => {
                     sorting={sorting}
                     onSortingChange={setSorting}
                     pagination={pagination}
-                    onPaginationChange={setPagination}
-                />
-            ) : (
-                <CustomEmojiEmptyState setOpen={setOpen} />
+                        onPaginationChange={handlePaginationChange}
+                    />
             )}
             <AddCustomEmojiDialog open={open} onClose={onAddEmoji} />
         </SettingsContentContainer>
