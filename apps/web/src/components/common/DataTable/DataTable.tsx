@@ -9,9 +9,10 @@ import {
 import { Skeleton } from "@components/ui/skeleton"
 import ErrorBanner from "@components/ui/error-banner"
 import { cn } from "@lib/utils"
-import { ArrowUpIcon, ArrowDownIcon, ChevronsUpDownIcon } from "lucide-react"
-import type { DataTableProps, ColumnDef, CellContext, HeaderContext, SortingState } from "../../../types/DataTable"
+import { ArrowUpIcon, ArrowDownIcon, ChevronsUpDownIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import type { DataTableProps, ColumnDef, CellContext, HeaderContext, SortingState, PaginationState } from "../../../types/DataTable"
 import { Button } from "@components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@components/ui/select"
 
 /**
  * A reusable DataTable component for displaying tabular data.
@@ -48,7 +49,40 @@ export function DataTable<TData>({
     // Sorting props
     sorting = null,
     onSortingChange,
+    // Pagination props
+    pagination,
+    onPaginationChange,
 }: DataTableProps<TData>) {
+
+    const hasPagination = !!(pagination && onPaginationChange)
+    const totalPages = hasPagination ? Math.ceil(pagination.totalCount / pagination.pageSize) : 0
+    const canGoPrevious = hasPagination ? pagination.pageIndex > 0 : false
+    const canGoNext = hasPagination ? pagination.pageIndex < totalPages - 1 : false
+
+    const handlePreviousPage = () => {
+        if (!hasPagination || !canGoPrevious) return
+        onPaginationChange({
+            ...pagination,
+            pageIndex: pagination.pageIndex - 1,
+        })
+    }
+
+    const handleNextPage = () => {
+        if (!hasPagination || !canGoNext) return
+        onPaginationChange({
+            ...pagination,
+            pageIndex: pagination.pageIndex + 1,
+        })
+    }
+
+    const handlePageSizeChange = (newSize: string) => {
+        if (!hasPagination) return
+        onPaginationChange({
+            ...pagination,
+            pageSize: Number(newSize),
+            pageIndex: 0,
+        })
+    }
 
     /**
      * Checks if a column is sortable.
@@ -257,6 +291,108 @@ export function DataTable<TData>({
                     </Table>
                 </div>
             )}
+
+            {/* Pagination Controls */}
+            {hasPagination && pagination.totalCount > 0 && !isLoading && !error && (
+                <DataTablePagination
+                    pagination={pagination}
+                    totalPages={totalPages}
+                    canGoPrevious={canGoPrevious}
+                    canGoNext={canGoNext}
+                    onPreviousPage={handlePreviousPage}
+                    onNextPage={handleNextPage}
+                    onPageSizeChange={handlePageSizeChange}
+                />
+            )}
+        </div>
+    )
+}
+
+/**
+ * Pagination controls for the DataTable.
+ * Shows current page info, page size selector, and navigation buttons.
+ */
+interface DataTablePaginationProps {
+    pagination: PaginationState
+    totalPages: number
+    canGoPrevious: boolean
+    canGoNext: boolean
+    onPreviousPage: () => void
+    onNextPage: () => void
+    onPageSizeChange: (size: string) => void
+}
+
+function DataTablePagination({
+    pagination,
+    totalPages,
+    canGoPrevious,
+    canGoNext,
+    onPreviousPage,
+    onNextPage,
+    onPageSizeChange,
+}: DataTablePaginationProps) {
+    // Calculate display range: "1-10 of 100"
+    const start = pagination.pageIndex * pagination.pageSize + 1
+    const end = Math.min((pagination.pageIndex + 1) * pagination.pageSize, pagination.totalCount)
+
+    return (
+        <div className="flex items-center justify-between py-4">
+            {/* Left side: showing X-Y of Z */}
+            <p className="text-sm text-muted-foreground">
+                Showing {start}-{end} of {pagination.totalCount}
+            </p>
+
+            {/* Right side: page size + navigation */}
+            <div className="flex items-center gap-4">
+                {/* Page size selector */}
+                <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">Rows per page</span>
+                    <Select
+                        value={String(pagination.pageSize)}
+                        onValueChange={onPageSizeChange}
+                    >
+                        <SelectTrigger className="h-8 w-[70px]">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {[10, 20, 50, 100].map((size) => (
+                                <SelectItem key={size} value={String(size)}>
+                                    {size}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                {/* Page indicator */}
+                <span className="text-sm text-muted-foreground">
+                    Page {pagination.pageIndex + 1} of {totalPages}
+                </span>
+
+                {/* Navigation buttons */}
+                <div className="flex items-center gap-1">
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={onPreviousPage}
+                        disabled={!canGoPrevious}
+                    >
+                        <ChevronLeftIcon className="h-4 w-4" />
+                        <span className="sr-only">Previous page</span>
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={onNextPage}
+                        disabled={!canGoNext}
+                    >
+                        <ChevronRightIcon className="h-4 w-4" />
+                        <span className="sr-only">Next page</span>
+                    </Button>
+                </div>
+            </div>
         </div>
     )
 }
