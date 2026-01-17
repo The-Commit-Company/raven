@@ -28,9 +28,6 @@ def execute():
 		.having(Count(raven_poll_vote.name) > 1)
 	).run(as_dict=True)
 
-	if not exact_duplicates:
-		return
-
 	# Step 2: For each duplicate, get all votes and delete non-oldest
 	for dup in exact_duplicates:
 		votes = (
@@ -66,9 +63,6 @@ def execute():
 		.having(Count(raven_poll_vote.name) > 1)
 	).run(as_dict=True)
 
-	if not single_select_duplicates:
-		return
-
 	for dup in single_select_duplicates:
 		# Get all votes for the duplicate ordered by modified timestamp(newest first)
 		votes = (
@@ -84,6 +78,10 @@ def execute():
 			frappe.delete_doc("Raven Poll Vote", vote_name, delete_permanently=True)
 
 		affected_polls.add(dup.poll_id)
+
+	# NOTE: Multi-select poll duplicates (same poll, same user, different options) are handled
+	# in migrate_poll_votes_to_poll_vote_selection.py - that's where data model transformation
+	# and option consolidation happens.
 
 	# STEP 3: Recalculate counts for all affected polls
 	from raven.raven_messaging.doctype.raven_poll_vote.raven_poll_vote import update_poll_votes
