@@ -5,15 +5,14 @@ import { toast } from "sonner-native"
 import MessageIcon from "@assets/icons/MessageIcon.svg"
 import { router } from 'expo-router'
 import ActionButton from '@components/common/Buttons/ActionButton'
-
+import { __ } from '@lib/i18n';
 interface CreateThreadProps {
     message: Message
     onClose: () => void
 }
 
 const CreateThread = ({ message, onClose }: CreateThreadProps) => {
-
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
     const { createThread } = useCreateThread(message)
 
     const onPress = () => {
@@ -30,7 +29,7 @@ const CreateThread = ({ message, onClose }: CreateThreadProps) => {
         <ActionButton
             onPress={onPress}
             icon={<MessageIcon width={18} height={18} fill={colors.icon} />}
-            text='Create thread'
+            text={__("Create thread")}
         />
     )
 }
@@ -38,18 +37,17 @@ const CreateThread = ({ message, onClose }: CreateThreadProps) => {
 export default CreateThread
 
 const useCreateThread = (message: Message) => {
-
-    const { call, loading } = useFrappePostCall<{ message: { channel_id: string, thread_id: string } }>("raven.api.threads.create_thread")
+const { call, loading } = useFrappePostCall<{ message: { channel_id: string, thread_id: string } }>("raven.api.threads.create_thread")
 
     const handleCreateThread = () => {
         return call({ message_id: message?.name })
             .then((res) => {
-                toast.success("Thread created.")
+                toast.success(__("Thread created"))
 
                 return res.message
             })
             .catch((error) => {
-                toast.error("Failed to create thread")
+                toast.error(__("Failed to create thread"))
             })
     }
 

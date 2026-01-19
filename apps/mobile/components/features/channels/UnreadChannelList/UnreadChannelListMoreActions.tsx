@@ -5,10 +5,9 @@ import { Button } from '@components/nativewindui/Button'
 import * as DropdownMenu from 'zeego/dropdown-menu'
 import { useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
 import { toast } from 'sonner-native'
-
+import { __ } from '@lib/i18n';
 const UnreadChannelListMoreActions = ({ channelIDs }: { channelIDs: string[] }) => {
-
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
 
     const { mutate } = useSWRConfig()
     const { call } = useFrappePostCall('raven.api.raven_channel.mark_all_messages_as_read')
@@ -17,7 +16,7 @@ const UnreadChannelListMoreActions = ({ channelIDs }: { channelIDs: string[] }) 
         call({
             channel_ids: channelIDs
         }).then(() => {
-            toast.success('All messages marked as read')
+            toast.success(__("All channels marked as read"))
             mutate('unread_channel_count', (d: { message: UnreadCountData } | undefined) => {
                 if (d?.message) {
                     // Update all channels with unread count as 0
@@ -39,7 +38,7 @@ const UnreadChannelListMoreActions = ({ channelIDs }: { channelIDs: string[] }) 
                 revalidate: false
             })
         }).catch(() => {
-            toast.error('Failed to mark all messages as read')
+            toast.error(__("Failed to mark channels as read"))
         })
     }
 
@@ -52,7 +51,7 @@ const UnreadChannelListMoreActions = ({ channelIDs }: { channelIDs: string[] }) 
             </DropdownMenu.Trigger>
             <DropdownMenu.Content>
                 <DropdownMenu.Item key="mark-all-unread-as-read" onSelect={handleMarkAllAsRead}>
-                    <DropdownMenu.ItemTitle>Mark all as read</DropdownMenu.ItemTitle>
+                    <DropdownMenu.ItemTitle>{__("Mark all as read")}</DropdownMenu.ItemTitle>
                 </DropdownMenu.Item>
             </DropdownMenu.Content>
         </DropdownMenu.Root>

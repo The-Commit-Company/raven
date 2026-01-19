@@ -10,6 +10,7 @@ import { RavenPoll } from '@raven/types/RavenMessaging/RavenPoll';
 import { useForm } from 'react-hook-form';
 import { useFrappePostCall } from 'frappe-react-sdk';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { __ } from '@lib/i18n';
 
 type Props = {
     onPress: () => void,
@@ -26,7 +27,7 @@ export const PollCreateButton = ({ onPress, isCreating }: Props) => {
             disabled={isCreating}>
             {isCreating ?
                 <ActivityIndicator size="small" color={colors.primary} /> :
-                <Text className="text-primary font-medium dark:text-secondary">Create</Text>}
+                <Text className="text-primary font-medium dark:text-secondary">{__("Create Poll")}</Text>}
         </TouchableOpacity>
     )
 }
@@ -43,8 +44,7 @@ export const CloseCreatePollButton = () => {
 }
 
 export const useCreatePoll = (channelID: string) => {
-
-    const router = useRouter()
+const router = useRouter()
     const methods = useForm<RavenPoll>({
         defaultValues: {
             options: [{
@@ -82,11 +82,11 @@ export const useCreatePoll = (channelID: string) => {
             ...data,
             "channel_id": channelID
         }).then(() => {
-            toast.success("Poll created")
+            toast.success(__("Poll created"))
             reset()
             router.back()
         }).catch((err) => {
-            toast.error("Error while creating poll")
+            toast.error(__("Error while creating poll"))
         })
     }
 

@@ -11,13 +11,12 @@ import { COLORS } from '@theme/colors'
 import { Divider } from '@components/layout/Divider'
 import UnreadFilter from './thread-filters/UnreadFilter'
 import SearchInput from '@components/common/SearchInput/SearchInput'
-
+import { __ } from '@lib/i18n';
 /**
  * Component for displaying participating threads - where the user is a member of the thread
  */
 const ParticipatingThreads = () => {
-
-    const [onlyShowUnread, setOnlyShowUnread] = useState(false)
+const [onlyShowUnread, setOnlyShowUnread] = useState(false)
     const [searchQuery, setSearchQuery] = useState("")
     const debouncedText = useDebounce(searchQuery, 200)
     const { colors } = useColorScheme()
@@ -31,6 +30,7 @@ const ParticipatingThreads = () => {
                         <SearchInput
                             onChangeText={setSearchQuery}
                             value={searchQuery}
+                            placeholder={__("Search") + '...'}
                         />
                     </View>
                     <ChannelFilter channel={channel} setChannel={setChannel} />
@@ -40,7 +40,7 @@ const ParticipatingThreads = () => {
                     <TouchableOpacity onPress={() => setChannel('all')} className="self-start">
                         <View className='flex flex-row items-center gap-1 px-2 py-1.5 bg-primary/10 dark:bg-primary/30 rounded-full'>
                             <ChannelIcon fill={colors.foreground} size={14} type={'channel'} />
-                            <Text className='text-xs font-medium'>{channel === 'all' ? 'All' : channel}</Text>
+                            <Text className='text-xs font-medium'>{channel === 'all' ? __("All") : channel}</Text>
                             <View className='bg-slate-400 dark:bg-slate-600 rounded-full p-0.5 ml-1'>
                                 <CrossIcon color={COLORS.white} height={10} width={10} />
                             </View>

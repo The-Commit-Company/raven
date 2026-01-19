@@ -4,10 +4,9 @@ import * as ImagePicker from 'expo-image-picker'
 import VideoCameraIcon from "@assets/icons/VideoCameraIcon.svg"
 import { ActionButtonLarge } from "./ActionButtonLarge"
 import { toast } from "sonner-native"
-
+import { __ } from '@lib/i18n';
 const VideoButton = ({ onPick }: { onPick: (files: CustomFile[]) => void }) => {
-
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
 
     const takeVideo = async () => {
         try {
@@ -18,7 +17,7 @@ const VideoButton = ({ onPick }: { onPick: (files: CustomFile[]) => void }) => {
                         allowsEditing: true,
                     })
                 } else {
-                    toast.error("Camera permission not granted")
+                    toast.error(__("Camera permission not granted"))
                     return null
                 }
             })
@@ -38,8 +37,8 @@ const VideoButton = ({ onPick }: { onPick: (files: CustomFile[]) => void }) => {
             }
         } catch (error) {
             console.error('Error taking video:', error)
-            toast.error("There was an error while launching the camera", {
-                description: error instanceof Error ? error.message : "Unknown error"
+            toast.error(__("There was an error while launching the camera"), {
+                description: error instanceof Error ? error.message : __("Unknown error")
             })
         }
     }
@@ -47,7 +46,7 @@ const VideoButton = ({ onPick }: { onPick: (files: CustomFile[]) => void }) => {
     return (
         <ActionButtonLarge
             icon={<VideoCameraIcon height={20} width={20} color={colors.icon} />}
-            text="Video"
+            text={__("Video")}
             onPress={takeVideo}
         />
     )

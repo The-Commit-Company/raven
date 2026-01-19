@@ -12,9 +12,10 @@ import { toast } from 'sonner-native';
 import { useRouteToChannel } from '@hooks/useRouting';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Platform } from 'react-native';
-export default function CreateChannel() {
+import { __ } from '@lib/i18n';
 
-    const { colors } = useColorScheme()
+export default function CreateChannel() {
+const { colors } = useColorScheme()
     const methods = useForm<ChannelCreationForm>({
         defaultValues: {
             type: 'Public',
@@ -40,20 +41,20 @@ export default function CreateChannel() {
             workspace: workspace
         }).then(result => {
             if (result) {
-                toast.success("Channel created", result)
+                toast.success(__("Channel created"), result)
                 // Navigate to channel
                 goToChannel(result.name, 'replace')
                 reset()
                 resetForm()
             }
         }).catch(err => {
-            toast.error("Failed to create channel", err)
+            toast.error(__("Failed to create channel"), err)
         })
     }
 
     return <>
         <Stack.Screen options={{
-            title: 'Add Channel',
+            title: __("Add Channel"),
             headerLeft: Platform.OS === 'ios' ? () => {
                 return (
                     <Link asChild href="../" relativeToDirectory>
@@ -70,7 +71,7 @@ export default function CreateChannel() {
                         disabled={creatingChannel}>
                         {creatingChannel ?
                             <ActivityIndicator size="small" color={colors.primary} /> :
-                            <Text className="text-primary font-medium dark:text-secondary">Add</Text>}
+                            <Text className="text-primary font-medium dark:text-secondary">{__("Add")}</Text>}
                     </TouchableOpacity>
                 )
             },

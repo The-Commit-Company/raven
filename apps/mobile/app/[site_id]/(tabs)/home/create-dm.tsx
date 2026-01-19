@@ -14,10 +14,10 @@ import UserAvatar from '@components/layout/UserAvatar';
 import { Text } from '@components/nativewindui/Text';
 import ErrorBanner from '@components/common/ErrorBanner';
 import { LegendList } from '@legendapp/list';
+import { __ } from '@lib/i18n';
 
 export default function CreateDM() {
-
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
     const { dmChannels } = useGetDirectMessageChannels()
     const { users } = useContext(UserListContext)
     const usersWithoutChannels = Array.from(users.values()).filter((user) => !dmChannels.find((channel) => channel.peer_user_id === user.name))
@@ -30,7 +30,7 @@ export default function CreateDM() {
 
     return <>
         <Stack.Screen options={{
-            title: 'Create DM',
+            title: __("Create DM"),
             headerLeft: Platform.OS === 'ios' ? () => {
                 return (
                     <Link asChild href="../" relativeToDirectory>
@@ -61,8 +61,7 @@ export default function CreateDM() {
 }
 
 const UserWithoutDMItem = ({ userID }: { userID: string }) => {
-
-    const user = useGetUser(userID)
+const user = useGetUser(userID)
     const { call, error } = useFrappePostCall<{ message: string }>('raven.api.raven_channel.create_direct_message_channel')
 
     const onSelect = () => {
@@ -72,7 +71,7 @@ const UserWithoutDMItem = ({ userID }: { userID: string }) => {
             router.back()
             router.push(`../../chat/${res?.message}`)
         }).catch(err => {
-            toast.error('Could not create a DM channel')
+            toast.error(__("Could not create a DM channel"))
         })
     }
 
@@ -93,7 +92,7 @@ const UserWithoutDMItem = ({ userID }: { userID: string }) => {
                 <Text className='text-base'>{user?.full_name}</Text>
                 {!user?.enabled ?
                     <View className='px-1 mt-0.5 py-0.5 rounded-sm bg-red-100'>
-                        <Text className="text-[11px] text-red-700">Disabled</Text>
+                        <Text className="text-[11px] text-red-700">{__("Disabled")}</Text>
                     </View>
                     : null}
             </Pressable>
@@ -102,16 +101,16 @@ const UserWithoutDMItem = ({ userID }: { userID: string }) => {
 }
 
 const EmptyState = ({ searchQuery }: { searchQuery: string }) => {
-    if (searchQuery.length > 0) {
+if (searchQuery.length > 0) {
         return (
             <Text className='p-2 text-sm text-muted-foreground'>
-                No users found with '{searchQuery}' in their name
+                {__("No users found with '{{query}}' in their name", { query: searchQuery })}
             </Text>
         )
     }
     return (
-        <Text className='p-2text-sm text-muted-foreground'>
-            There are no users that you do not already have a DM channel with
+        <Text className='p-2 text-sm text-muted-foreground'>
+            {__("There are no users that you do not already have a DM channel with")}
         </Text>
     )
 }
