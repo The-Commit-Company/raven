@@ -16,6 +16,8 @@ import LoginPage from "@pages/auth/Login"
 import ForgotPassword from "@pages/auth/ForgotPassword"
 import Threads from "@pages/Threads"
 import DirectMessages from "@pages/DirectMessages"
+import WorkspaceList from "@pages/settings/Workspaces/WorkspaceList"
+import CustomEmojiList from "@pages/settings/CustomEmojiList/CustomEmojiList"
 
 const isDesktop = window.innerWidth > 768
 
@@ -61,6 +63,8 @@ function App() {
               <Route path="profile" element={<Profile />} />
               <Route path="appearance" element={<Appearance />} />
               <Route path="preferences" element={<Preferences />} />
+              <Route path="workspaces" element={<WorkspaceList />} />
+              <Route path="emojis" element={<CustomEmojiList />} />
             </Route>
             <Route path="saved-messages" element={<SavedMessages />} />
             <Route path="search" element={<Search />} />

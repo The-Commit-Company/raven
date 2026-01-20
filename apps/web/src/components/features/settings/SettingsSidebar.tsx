@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom"
 import { cn } from "@lib/utils"
 import { Separator } from "@components/ui/separator"
-import { UserCircle } from "lucide-react"
+import { UserCircle, Building2 } from "lucide-react"
 
 interface SettingsGroupProps {
     title: string
@@ -77,6 +77,10 @@ export const SettingsSidebar = () => {
                     <SettingsSidebarItem title="Profile" to="profile" />
                     <SettingsSidebarItem title="Appearance" to="appearance" />
                     <SettingsSidebarItem title="Preferences" to="preferences" />
+                </SettingsGroup>
+                <SettingsGroup title="Workspaces" icon={Building2}>
+                    <SettingsSidebarItem title="Workspaces" to="workspaces" />
+                    <SettingsSidebarItem title="Emojis" to="emojis" />
                 </SettingsGroup>
                 <SettingsSeparator />
             </div>
