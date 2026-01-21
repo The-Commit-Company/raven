@@ -185,7 +185,12 @@ def handle_bot_dm_with_assistants(message, bot):
 	# Send event to automatically open the thread
 	publish_ai_thread_created_event(message, message.channel_id)
 
-	stream_response(ai_thread_id=ai_thread.id, bot=bot, channel_id=thread_channel.name)
+	stream_response(
+		ai_thread_id=ai_thread.id,
+		bot=bot,
+		channel_id=thread_channel.name,
+		current_message_id=message.name,
+	)
 
 
 def handle_ai_thread_message(message, channel):
@@ -303,7 +308,12 @@ def handle_ai_thread_message_with_assistants(message, channel, bot):
 		docname=channel.name,
 	)
 
-	stream_response(ai_thread_id=channel.openai_thread_id, bot=bot, channel_id=channel.name)
+	stream_response(
+		ai_thread_id=channel.openai_thread_id,
+		bot=bot,
+		channel_id=channel.name,
+		current_message_id=message.name,
+	)
 
 
 def extract_file_content_for_agent(file_url: str, file_extension: str, bot, file_handler):
