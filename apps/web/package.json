@@ -39,6 +39,7 @@
     "@raven/lib": "*",
     "@tailwindcss/vite": "^4.1.14",
     "@tiptap/extension-blockquote": "^3.13.0",
+    "@tiptap/extension-bubble-menu": "^3.16.0",
     "@tiptap/extension-code-block-lowlight": "^3.13.0",
     "@tiptap/extension-details": "^3.13.0",
     "@tiptap/extension-emoji": "^3.13.0",

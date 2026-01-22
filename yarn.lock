@@ -3991,6 +3991,13 @@
   dependencies:
     "@floating-ui/dom" "^1.0.0"
 
+"@tiptap/extension-bubble-menu@^3.16.0":
+  version "3.16.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-bubble-menu/-/extension-bubble-menu-3.16.0.tgz#b51989469ecda7518bedd13da3339841a66330dc"
+  integrity sha512-nFL7FMu1LjZ5ZGf4U3tw56JLj/SpLysZvHQ1EneGB+90TEI/WReOvTY9VwH1egGWwrl7/OvQuGKclbuLIsy+BA==
+  dependencies:
+    "@floating-ui/dom" "^1.0.0"
+
 "@tiptap/extension-bullet-list@^3.13.0":
   version "3.13.0"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-bullet-list/-/extension-bullet-list-3.13.0.tgz#277c9380704f618d71b63278da7bba45ed2b7905"
