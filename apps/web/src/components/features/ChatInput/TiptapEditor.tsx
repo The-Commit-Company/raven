@@ -13,6 +13,7 @@ import { Placeholder } from '@tiptap/extensions'
 import Mention from '@tiptap/extension-mention'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import Image from '@tiptap/extension-image'
+import FileHandler from '@tiptap/extension-file-handler'
 import { PluginKey } from '@tiptap/pm/state'
 import css from 'highlight.js/lib/languages/css'
 import js from 'highlight.js/lib/languages/javascript'
@@ -24,6 +25,7 @@ import python from 'highlight.js/lib/languages/python'
 import { common, createLowlight } from 'lowlight'
 import { createMentionSuggestion } from './createMentionSuggestion'
 import { MentionItem } from './MentionList'
+import { EmojiSuggestion } from './EmojiSuggestion'
 import './tiptap.css'
 
 // Lowlight setup for syntax highlighting
@@ -50,6 +52,8 @@ export interface TiptapEditorProps {
     users?: MentionItem[]
     /** Channels available for #mentions */
     channels?: MentionItem[]
+    /** Handler for file uploads (paste/drop) */
+    onAddFile?: (files: FileList) => void
 }
 
 // Base mention extension configs (without suggestion data)
@@ -59,7 +63,7 @@ const ChannelMention = Mention.extend({ name: 'channelMention' })
 /**
  * Creates extensions array with data-bound mention suggestions
  */
-function createExtensions(users: MentionItem[], channels: MentionItem[]) {
+function createExtensions(users: MentionItem[], channels: MentionItem[], onAddFile: (files: FileList) => void) {
     return [
         StarterKit.configure({
             heading: false,
@@ -138,13 +142,25 @@ function createExtensions(users: MentionItem[], channels: MentionItem[]) {
         Image.configure({
             inline: true,
         }),
-        // 6. FileHandler - NEW in v3, handles drag/drop and paste
-        //    Already installed: @tiptap/extension-file-handler
-        //
-        // 7. Custom KeyboardHandler - Enter to send, Shift+Enter for newline
-        //    Will be a custom extension
-        //
-        // 8. Emoji - v3 has native emoji extension
+        FileHandler.configure({
+            // TODO: configure allowed mime types later
+            allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+            onPaste: (editor, files, htmlContent) => {
+                if (files.length > 0) {
+                    const dataTransfer = new DataTransfer()
+                    files.forEach(file => dataTransfer.items.add(file))
+                    onAddFile(dataTransfer.files)
+                }
+            },
+            onDrop: (editor, files, pos) => {
+                if (files.length > 0) {
+                    const dataTransfer = new DataTransfer()
+                    files.forEach(file => dataTransfer.items.add(file))
+                    onAddFile(dataTransfer.files)
+                }
+            },
+        }),
+        EmojiSuggestion,
     ]
 }
 
@@ -157,12 +173,13 @@ const TiptapEditor = ({
     children,
     users = [],
     channels = [],
+    onAddFile,
 }: TiptapEditorProps) => {
 
     // Memoize extensions - recreate only when data sources change
     const extensions = useMemo(
-        () => createExtensions(users, channels),
-        [users, channels]
+        () => createExtensions(users, channels, onAddFile || (() => { })),
+        [users, channels, onAddFile]
     )
 
     const editor = useEditor({

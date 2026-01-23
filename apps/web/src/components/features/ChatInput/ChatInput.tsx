@@ -11,6 +11,7 @@ import SendButton from "./SendButton"
 import { CreatePollDialog } from "./CreatePollDialog"
 import { JSONContent } from "@tiptap/core"
 import { MentionItem } from "./MentionList"
+import { useAttachFile } from "./useFileInput"
 
 interface ChatInputProps {
     channelID: string
@@ -21,6 +22,8 @@ interface ChatInputProps {
 }
 
 const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID, users = [], channels = [] }, ref) => {
+
+    const onAddFile = useAttachFile(channelID)
 
     const onSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -55,6 +58,7 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID, user
                         onUpdate={onEditorUpdate}
                         users={users}
                         channels={channels}
+                        onAddFile={onAddFile}
                     >
                         {/* BubbleMenu - appears when text is selected */}
                         <TextFormattingBubbleMenu />
