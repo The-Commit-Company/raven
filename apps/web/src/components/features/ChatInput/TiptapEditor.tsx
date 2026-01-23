@@ -12,6 +12,7 @@ import StarterKit from '@tiptap/starter-kit'
 import { Placeholder } from '@tiptap/extensions'
 import Mention from '@tiptap/extension-mention'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import Image from '@tiptap/extension-image'
 import { PluginKey } from '@tiptap/pm/state'
 import css from 'highlight.js/lib/languages/css'
 import js from 'highlight.js/lib/languages/javascript'
@@ -64,9 +65,9 @@ function createExtensions(users: MentionItem[], channels: MentionItem[]) {
             heading: false,
             codeBlock: false,
             link: {
-            openOnClick: false,      // Don't navigate on click in editor
-            autolink: true,          // Auto-detect URLs as user types
-            linkOnPaste: true,       // Convert pasted URLs to links
+                openOnClick: false,      // Don't navigate on click in editor
+                autolink: true,          // Auto-detect URLs as user types
+                linkOnPaste: true,       // Convert pasted URLs to links
             },
         }),
 
@@ -77,7 +78,7 @@ function createExtensions(users: MentionItem[], channels: MentionItem[]) {
         CodeBlockLowlight.extend({
             addKeyboardShortcuts() {
                 return {
-                // this extends existing shortcuts instead of overwriting
+                    // this extends existing shortcuts instead of overwriting
                     ...this.parent?.(),
                     'Mod-Shift-E': () => this.editor.commands.toggleCodeBlock(),
                 }
@@ -134,17 +135,16 @@ function createExtensions(users: MentionItem[], channels: MentionItem[]) {
                 }),
             },
         }),
-
-        // 5. Image - for inline images and GIFs
-    //    Already installed: @tiptap/extension-image
-    //
-    // 6. FileHandler - NEW in v3, handles drag/drop and paste
-    //    Already installed: @tiptap/extension-file-handler
-    //
-    // 7. Custom KeyboardHandler - Enter to send, Shift+Enter for newline
-    //    Will be a custom extension
-    //
-    // 8. Emoji - v3 has native emoji extension
+        Image.configure({
+            inline: true,
+        }),
+        // 6. FileHandler - NEW in v3, handles drag/drop and paste
+        //    Already installed: @tiptap/extension-file-handler
+        //
+        // 7. Custom KeyboardHandler - Enter to send, Shift+Enter for newline
+        //    Will be a custom extension
+        //
+        // 8. Emoji - v3 has native emoji extension
     ]
 }
 
