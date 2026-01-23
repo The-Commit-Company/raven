@@ -10,7 +10,9 @@ import {
 } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { Placeholder } from '@tiptap/extensions'
+import Mention from '@tiptap/extension-mention'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import { PluginKey } from '@tiptap/pm/state'
 import css from 'highlight.js/lib/languages/css'
 import js from 'highlight.js/lib/languages/javascript'
 import ts from 'highlight.js/lib/languages/typescript'
@@ -19,29 +21,11 @@ import json from 'highlight.js/lib/languages/json'
 import python from 'highlight.js/lib/languages/python'
 // load all languages with "all" or common languages with "common"
 import { common, createLowlight } from 'lowlight'
+import { createMentionSuggestion } from './createMentionSuggestion'
+import { MentionItem } from './MentionList'
 import './tiptap.css'
 
-
-export interface TiptapEditorProps {
-    /** Channel ID for draft persistence - key for scoping editor state */
-    channelID: string
-
-    /** Placeholder text shown when editor is empty */
-    placeholder?: string
-
-    /** Initial content - can be HTML string or Tiptap JSON */
-    defaultContent?: string | JSONContent
-
-    /** Callback fired on every content change - receives both HTML and JSON */
-    onUpdate?: (html: string, json: JSONContent) => void
-
-    /** Whether editor accepts input - useful for "sending" state */
-    editable?: boolean
-
-    /** Slot for components that need editor context (toolbar, formatting menu) */
-    children?: React.ReactNode
-}
-
+// Lowlight setup for syntax highlighting
 const lowlight = createLowlight(common)
 lowlight.register('html', html)
 lowlight.register('css', css)
@@ -50,37 +34,108 @@ lowlight.register('ts', ts)
 lowlight.register('json', json)
 lowlight.register('python', python)
 
-const extensions = [
-    StarterKit.configure({
-        heading: false,
-        codeBlock: false,
-        link: {
+export interface TiptapEditorProps {
+    channelID: string
+
+    /** Placeholder text shown when editor is empty */
+    placeholder?: string
+    defaultContent?: string | JSONContent
+    onUpdate?: (html: string, json: JSONContent) => void
+
+    /** Whether editor accepts input - useful for "sending" state */
+    editable?: boolean
+    children?: React.ReactNode
+    /** Users available for @mentions */
+    users?: MentionItem[]
+    /** Channels available for #mentions */
+    channels?: MentionItem[]
+}
+
+// Base mention extension configs (without suggestion data)
+const UserMention = Mention.extend({ name: 'userMention' })
+const ChannelMention = Mention.extend({ name: 'channelMention' })
+
+/**
+ * Creates extensions array with data-bound mention suggestions
+ */
+function createExtensions(users: MentionItem[], channels: MentionItem[]) {
+    return [
+        StarterKit.configure({
+            heading: false,
+            codeBlock: false,
+            link: {
             openOnClick: false,      // Don't navigate on click in editor
             autolink: true,          // Auto-detect URLs as user types
             linkOnPaste: true,       // Convert pasted URLs to links
-        },
-    }),
-    Placeholder.configure({
-        placeholder: 'Type a message...'
-    }),
-    CodeBlockLowlight.extend({
-        addKeyboardShortcuts() {
-            return {
-                // this extends existing shortcuts instead of overwriting
-                ...this.parent?.(),
-                'Mod-Shift-E': () => this.editor.commands.toggleCodeBlock(),
-            }
-        }
-    }).configure({
-        lowlight
-    }),
+            },
+        }),
 
-    // 3. Mention (user) - for @username mentions
-    //    Already installed: @tiptap/extension-mention
-    //
-    // 4. Mention (channel) - for #channel mentions (extend Mention)
-    //
-    // 5. Image - for inline images and GIFs
+        Placeholder.configure({
+            placeholder: 'Type a message...'
+        }),
+
+        CodeBlockLowlight.extend({
+            addKeyboardShortcuts() {
+                return {
+                // this extends existing shortcuts instead of overwriting
+                    ...this.parent?.(),
+                    'Mod-Shift-E': () => this.editor.commands.toggleCodeBlock(),
+                }
+            }
+        }).configure({ lowlight }),
+
+        UserMention.configure({
+            HTMLAttributes: { class: 'mention' },
+            renderHTML({ options, node }) {
+                return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`
+            },
+            suggestion: {
+                char: '@',
+                pluginKey: new PluginKey('userMention'),
+                allowedPrefixes: null,
+                // Prevent mentions after alphanumeric chars (e.g. "test@" shouldn't trigger)
+                allow: ({ state, range }) => {
+                    // Do not allow mentions if the preceding character is a letter or digit
+                    const precedingCharacter = state.doc.textBetween(range.from - 1, range.from, '')
+                    return !/[a-zA-Z0-9]/.test(precedingCharacter)
+                },
+                ...createMentionSuggestion({
+                    getItems: (query) => {
+                        const q = query.toLowerCase()
+                        return users
+                            .filter((u) => u.label.toLowerCase().includes(q))
+                            .slice(0, 8)
+                    },
+                }),
+            },
+        }),
+
+        ChannelMention.configure({
+            HTMLAttributes: { class: 'mention' },
+            renderHTML({ options, node }) {
+                return `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`
+            },
+            suggestion: {
+                char: '#',
+                pluginKey: new PluginKey('channelMention'),
+                allowedPrefixes: null,
+                allow: ({ state, range }) => {
+                    // Do not allow mentions if the preceding character is a letter or digit
+                    const precedingCharacter = state.doc.textBetween(range.from - 1, range.from, '')
+                    return !/[a-zA-Z0-9]/.test(precedingCharacter)
+                },
+                ...createMentionSuggestion({
+                    getItems: (query) => {
+                        const q = query.toLowerCase()
+                        return channels
+                            .filter((c) => c.label.toLowerCase().includes(q))
+                            .slice(0, 8)
+                    },
+                }),
+            },
+        }),
+
+        // 5. Image - for inline images and GIFs
     //    Already installed: @tiptap/extension-image
     //
     // 6. FileHandler - NEW in v3, handles drag/drop and paste
@@ -90,7 +145,8 @@ const extensions = [
     //    Will be a custom extension
     //
     // 8. Emoji - v3 has native emoji extension
-]
+    ]
+}
 
 const TiptapEditor = ({
     channelID,
@@ -99,8 +155,15 @@ const TiptapEditor = ({
     onUpdate,
     editable = true,
     children,
+    users = [],
+    channels = [],
 }: TiptapEditorProps) => {
 
+    // Memoize extensions - recreate only when data sources change
+    const extensions = useMemo(
+        () => createExtensions(users, channels),
+        [users, channels]
+    )
 
     const editor = useEditor({
         extensions,

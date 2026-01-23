@@ -10,12 +10,17 @@ import { TextFormattingBubbleMenu } from "./TextFormattingBubbleMenu"
 import SendButton from "./SendButton"
 import { CreatePollDialog } from "./CreatePollDialog"
 import { JSONContent } from "@tiptap/core"
+import { MentionItem } from "./MentionList"
 
 interface ChatInputProps {
     channelID: string
+    /** Users for @mention suggestions */
+    users?: MentionItem[]
+    /** Channels for #mention suggestions */
+    channels?: MentionItem[]
 }
 
-const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, ref) => {
+const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID, users = [], channels = [] }, ref) => {
 
     const onSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -48,6 +53,8 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
                         channelID={channelID}
                         placeholder="Type a message..."
                         onUpdate={onEditorUpdate}
+                        users={users}
+                        channels={channels}
                     >
                         {/* BubbleMenu - appears when text is selected */}
                         <TextFormattingBubbleMenu />
