@@ -12,7 +12,7 @@ import { Button } from '@components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@components/ui/tooltip'
 import { ToolSeparator, ICON_SIZE } from './ToolBar'
 import { AtSign, Hash, Smile } from 'lucide-react'
-
+import EmojiPickerButton from './EmojiPickerButton'
 interface LeftToolbarButtonsProps {
     onEmojiClick?: () => void
 }
@@ -39,11 +39,15 @@ export const LeftToolbarButtons = ({ onEmojiClick }: LeftToolbarButtonsProps) =>
                 icon={<AtSign size={ICON_SIZE} />}
                 tooltip="Mention user"
                 onClick={() => insertTriggerChar('@')}
+                aria-label="Mention user"
+                disabled={!editor.can().chain().focus().insertContent('@').run() || !editor.isEditable}
             />
             <ActionButton
                 icon={<Hash size={ICON_SIZE} />}
                 tooltip="Mention channel"
                 onClick={() => insertTriggerChar('#')}
+                aria-label="Mention channel"
+                disabled={!editor.can().chain().focus().insertContent('#').run() || !editor.isEditable}
             />
 
             <ToolSeparator />
@@ -51,22 +55,27 @@ export const LeftToolbarButtons = ({ onEmojiClick }: LeftToolbarButtonsProps) =>
             <ActionButton
                 icon={<Smile size={ICON_SIZE} />}
                 tooltip="Add emoji"
-                onClick={() => {
-                    onEmojiClick?.()
-                }}
+                children={<EmojiPickerButton />}
+                aria-label="Add emoji"
             />
         </div>
     )
 }
 
 interface ActionButtonProps {
-    icon: React.ReactNode
     tooltip: string
-    onClick: () => void
+    icon?: React.ReactNode
+    onClick?: () => void
     disabled?: boolean
+    ariaLabel?: string
+    children?: React.ReactNode
 }
 
-const ActionButton = ({ icon, tooltip, onClick, disabled }: ActionButtonProps) => {
+// ActionButton component takes in either children to render a component directly or default
+
+const ActionButton = ({ icon, tooltip, onClick, disabled, ariaLabel, children }: ActionButtonProps) => {
+    if (children) return children
+
     return (
         <Tooltip>
             <TooltipTrigger asChild>
@@ -77,6 +86,7 @@ const ActionButton = ({ icon, tooltip, onClick, disabled }: ActionButtonProps) =
                     className="h-7 w-7 text-muted-foreground hover:text-foreground"
                     onClick={onClick}
                     disabled={disabled}
+                    aria-label={ariaLabel}
                 >
                     {icon}
                 </Button>
