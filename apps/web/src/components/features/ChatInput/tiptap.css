@@ -64,7 +64,7 @@
 }
 
 .tiptap p + p {
-    margin-top: 0.5rem;
+    margin-top: 0;
 }
 
 
@@ -103,7 +103,7 @@
 .tiptap blockquote {
     border-left: 3px solid var(--border);
     padding-left: 0.8rem;
-    margin: 0.5rem 0;
+    margin: 1rem;
     color: var(--muted-foreground);
 }
 
@@ -112,8 +112,8 @@
 
 .tiptap ul,
 .tiptap ol {
-    padding-left: 1.25rem;
-    margin: 0.5rem 0;
+    padding-left: var(--space-5, 1.25rem);
+    margin: 0;
 }
 
 .tiptap ul {
@@ -125,12 +125,12 @@
 }
 
 .tiptap li {
-    margin: 0.25rem 0;
+    margin: 0;
 }
 
 .tiptap li > ul,
 .tiptap li > ol {
-    margin: 0.25rem 0;
+    margin: 0;
 }
 
 

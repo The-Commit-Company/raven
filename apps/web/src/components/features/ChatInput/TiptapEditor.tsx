@@ -1,32 +1,36 @@
 /**
  * TiptapEditor.tsx - Core Rich Text Editor for Raven v3
  */
-import { useMemo } from 'react'
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import FileHandler from '@tiptap/extension-file-handler'
+import Image from '@tiptap/extension-image'
+import Mention from '@tiptap/extension-mention'
+import { Placeholder } from '@tiptap/extensions'
+import { PluginKey } from '@tiptap/pm/state'
 import {
-    useEditor,
     EditorContent,
     EditorContext,
-    JSONContent
+    JSONContent,
+    useEditor
 } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { Placeholder } from '@tiptap/extensions'
-import Mention from '@tiptap/extension-mention'
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-import Image from '@tiptap/extension-image'
-import FileHandler from '@tiptap/extension-file-handler'
-import { PluginKey } from '@tiptap/pm/state'
 import css from 'highlight.js/lib/languages/css'
 import js from 'highlight.js/lib/languages/javascript'
-import ts from 'highlight.js/lib/languages/typescript'
-import html from 'highlight.js/lib/languages/xml'
 import json from 'highlight.js/lib/languages/json'
 import python from 'highlight.js/lib/languages/python'
+import ts from 'highlight.js/lib/languages/typescript'
+import html from 'highlight.js/lib/languages/xml'
+import { useMemo } from 'react'
 // load all languages with "all" or common languages with "common"
-import { common, createLowlight } from 'lowlight'
+import { EmojiSuggestion } from '@components/features/ChatInput/Emoji/EmojiSuggestion'
+import { createKeyboardHandler } from '@components/features/ChatInput/KeyboardHandler/createKeyboardHandler'
 import { createMentionSuggestion } from '@components/features/ChatInput/Mentions/createMentionSuggestion'
 import { MentionItem } from '@components/features/ChatInput/Mentions/MentionList'
-import { EmojiSuggestion } from '@components/features/ChatInput/Emoji/EmojiSuggestion'
 import TimestampRenderer from '@components/features/message/renderers/TimestampRenderer'
+import { EnterKeyBehaviourAtom } from '@utils/preferences'
+import { useAtom } from 'jotai'
+import { common, createLowlight } from 'lowlight'
+
 import './tiptap.css'
 
 // Lowlight setup for syntax highlighting
@@ -55,6 +59,12 @@ export interface TiptapEditorProps {
     channels?: MentionItem[]
     /** Handler for file uploads (paste/drop) */
     onAddFile?: (files: FileList) => void
+    /** Callback when message should be sent (Enter or Mod-Enter) */
+    onMessageSend?: (html: string, json: JSONContent) => Promise<void>
+    /** Callback when editor is empty and backspace is pressed (to clear reply) */
+    clearReplyMessage?: () => void
+    /** Callback when editor is empty and up arrow is pressed */
+    onUpArrow?: () => void
 }
 
 // Base mention extension configs (without suggestion data)
@@ -64,7 +74,15 @@ const ChannelMention = Mention.extend({ name: 'channelMention' })
 /**
  * Creates extensions array with data-bound mention suggestions
  */
-function createExtensions(users: MentionItem[], channels: MentionItem[], onAddFile: (files: FileList) => void) {
+function createExtensions(
+    users: MentionItem[],
+    channels: MentionItem[],
+    onAddFile: (files: FileList) => void,
+    onMessageSend?: (html: string, json: JSONContent) => Promise<void>,
+    clearReplyMessage?: () => void,
+    onUpArrow?: () => void,
+    enterKeyBehaviour?: "new-line" | "send-message"
+) {
     return [
         StarterKit.configure({
             heading: false,
@@ -217,7 +235,8 @@ function createExtensions(users: MentionItem[], channels: MentionItem[], onAddFi
             },
         }),
         EmojiSuggestion,
-        TimestampRenderer
+        TimestampRenderer,
+        createKeyboardHandler(onMessageSend, clearReplyMessage, onUpArrow, enterKeyBehaviour)
     ]
 }
 
@@ -231,12 +250,25 @@ const TiptapEditor = ({
     users = [],
     channels = [],
     onAddFile,
+    onMessageSend,
+    clearReplyMessage,
+    onUpArrow,
 }: TiptapEditorProps) => {
+
+    const [enterKeyBehaviour] = useAtom(EnterKeyBehaviourAtom)
 
     // Memoize extensions - recreate only when data sources change
     const extensions = useMemo(
-        () => createExtensions(users, channels, onAddFile || (() => { })),
-        [users, channels, onAddFile]
+        () => createExtensions(
+            users,
+            channels,
+            onAddFile || (() => { }),
+            onMessageSend,
+            clearReplyMessage,
+            onUpArrow,
+            enterKeyBehaviour
+        ),
+        [users, channels, onAddFile, onMessageSend, clearReplyMessage, onUpArrow]
     )
 
     const editor = useEditor({
