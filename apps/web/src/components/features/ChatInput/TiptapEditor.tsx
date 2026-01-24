@@ -26,6 +26,7 @@ import { common, createLowlight } from 'lowlight'
 import { createMentionSuggestion } from './createMentionSuggestion'
 import { MentionItem } from './MentionList'
 import { EmojiSuggestion } from './EmojiSuggestion'
+import TimestampRenderer from '@components/features/message/renderers/TimestampRenderer'
 import './tiptap.css'
 
 // Lowlight setup for syntax highlighting
@@ -161,6 +162,7 @@ function createExtensions(users: MentionItem[], channels: MentionItem[], onAddFi
             },
         }),
         EmojiSuggestion,
+        TimestampRenderer
     ]
 }
 
