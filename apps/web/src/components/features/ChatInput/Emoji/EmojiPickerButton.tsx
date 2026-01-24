@@ -1,7 +1,7 @@
 import { useCurrentEditor } from '@tiptap/react'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import { Button } from '@components/ui/button'
-import { ICON_SIZE } from './ToolBar'
+import { ICON_SIZE } from '@components/features/ChatInput/ToolBar/ToolBar'
 import { Smile } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@components/ui/tooltip'
 import EmojiPicker from '@components/common/EmojiPicker/EmojiPicker'

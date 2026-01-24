@@ -4,13 +4,13 @@
 import { forwardRef, useCallback } from "react"
 import { InputFileList, AddFileButton } from "./InputFiles"
 import TiptapEditor from "./TiptapEditor"
-import { ToolBar } from "./ToolBar"
-import { LeftToolbarButtons } from "./LeftToolbarButtons"
-import { TextFormattingBubbleMenu } from "./TextFormattingBubbleMenu"
+import { ToolBar } from "./ToolBar/ToolBar"
+import { LeftToolbarButtons } from "./ToolBar/LeftToolbarButtons"
+import { TextFormattingBubbleMenu } from "./FormattingMenu/TextFormattingBubbleMenu"
 import SendButton from "./SendButton"
 import { CreatePollDialog } from "./CreatePollDialog"
 import { JSONContent } from "@tiptap/core"
-import { MentionItem } from "./MentionList"
+import { MentionItem } from "./Mentions/MentionList"
 import { useAttachFile } from "./useFileInput"
 
 interface ChatInputProps {

@@ -26,7 +26,7 @@ import {
     Clock7
 } from 'lucide-react'
 import { useState } from 'react'
-import LinkEmbeddingModal from '@components/features/ChatInput/LinkEmbeddingModal'
+import LinkEmbeddingModal from '@components/features/ChatInput/FormattingMenu/LinkEmbeddingModal'
 
 const ICON_SIZE = 14
 

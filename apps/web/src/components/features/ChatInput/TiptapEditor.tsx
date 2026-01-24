@@ -23,9 +23,9 @@ import json from 'highlight.js/lib/languages/json'
 import python from 'highlight.js/lib/languages/python'
 // load all languages with "all" or common languages with "common"
 import { common, createLowlight } from 'lowlight'
-import { createMentionSuggestion } from './createMentionSuggestion'
-import { MentionItem } from './MentionList'
-import { EmojiSuggestion } from './EmojiSuggestion'
+import { createMentionSuggestion } from '@components/features/ChatInput/Mentions/createMentionSuggestion'
+import { MentionItem } from '@components/features/ChatInput/Mentions/MentionList'
+import { EmojiSuggestion } from '@components/features/ChatInput/Emoji/EmojiSuggestion'
 import TimestampRenderer from '@components/features/message/renderers/TimestampRenderer'
 import './tiptap.css'
 

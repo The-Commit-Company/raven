@@ -10,9 +10,9 @@
 import { useCurrentEditor } from '@tiptap/react'
 import { Button } from '@components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@components/ui/tooltip'
-import { ToolSeparator, ICON_SIZE } from './ToolBar'
+import { ToolSeparator, ICON_SIZE } from '@components/features/ChatInput/ToolBar/ToolBar'
 import { AtSign, Hash, Smile } from 'lucide-react'
-import EmojiPickerButton from './EmojiPickerButton'
+import EmojiPickerButton from '@components/features/ChatInput/Emoji/EmojiPickerButton'
 interface LeftToolbarButtonsProps {
     onEmojiClick?: () => void
 }
