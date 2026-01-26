@@ -342,12 +342,11 @@ const sampleUnreadMessages: UnreadMessageObject[] = [
     }
 ];
 
-type NotificationTab = 'mentions' | 'reactions' | 'unread'
+type NotificationTab = 'mentions' | 'reactions'
 
 const TABS: { key: NotificationTab; label: string }[] = [
     { key: 'mentions', label: 'Mentions' },
     { key: 'reactions', label: 'Reactions' },
-    { key: 'unread', label: 'Unread' },
 ]
 
 const MentionItem = ({ mention }: { mention: MentionObject }) => {
@@ -529,7 +528,6 @@ export default function Notifications() {
     const getCurrentData = () => {
         if (activeTab === 'mentions') return sampleMentions
         if (activeTab === 'reactions') return sampleReactions
-        if (activeTab === 'unread') return sampleUnreadMessages
         return []
     }
 
@@ -613,9 +611,6 @@ export default function Notifications() {
                             ))}
                             {activeTab === 'reactions' && currentData.map((item) => (
                                 <ReactionItem key={item.name} reaction={item as ReactionObject} />
-                            ))}
-                            {activeTab === 'unread' && currentData.map((item) => (
-                                <UnreadMessageItem key={item.name} message={item as UnreadMessageObject} />
                             ))}
                         </div>
                     )}

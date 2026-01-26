@@ -26,7 +26,7 @@ export default function Channel() {
     return (
         <div className="flex flex-col h-full">
             <ChannelHeader />
-            <div className="flex flex-1 flex-row gap-0 p-0 overflow-hidden">
+            <div className="flex flex-1 flex-row gap-0 p-0 overflow-hidden" style={{ paddingTop: "calc(var(--app-header-height, 36px) + 36px)" }}>
                 <ChannelContent channelID={channelID} />
                 <ChannelDrawer />
             </div>
