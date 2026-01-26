@@ -4,30 +4,44 @@ import {
     SidebarProvider,
 } from "@components/ui/sidebar"
 import AppHeader from "@components/features/header/AppHeader"
-import { Outlet, useLocation } from "react-router-dom"
-import React, { useState } from "react"
+import { Outlet, useLocation, useParams } from "react-router-dom"
+import React, { useState, useMemo } from "react"
 import { useLoadUsers } from "@hooks/useLoadUsers"
 import { ActiveWorkspaceProvider, useActiveWorkspace } from "../contexts/ActiveWorkspaceContext"
 import { WorkspaceSwitcher } from "@components/workspace-switcher/WorkspaceSwitcher"
+import { MainPageSkeleton } from "@components/features/main-page/MainPageSkeleton"
 
 
 const MainPageContent = () => {
     const location = useLocation()
-    const isSearchPage = location.pathname === "/search"
+    const params = useParams()
+    const isSearchPage = location.pathname.includes("/search")
     const [searchValue, setSearchValue] = useState("")
     const { activeWorkspaceName } = useActiveWorkspace()
+    
+    // Derive workspace from URL params (single source of truth)
+    // Note: WorkspaceSwitcher and AppSidebar handle syncing URL workspace to context
+    const urlWorkspace = useMemo(() => {
+        if (params.workspaceID) {
+            return decodeURIComponent(params.workspaceID)
+        }
+        return null
+    }, [params.workspaceID])
 
     const isReady = useLoadUsers()
-    // TODO: Add a loading state
-    if (!isReady) return <div>Loading users...</div>
+    if (!isReady) return <MainPageSkeleton />
 
-    const isDMWorkspace = activeWorkspaceName === "Direct Messages"
+    // Use URL workspace as source of truth, fallback to context for non-workspace routes
+    const currentWorkspace = urlWorkspace || activeWorkspaceName
+    const isDMWorkspace = currentWorkspace === "Direct Messages"
     const isDirectMessagesPage = location.pathname === "/direct-messages"
     const isThreadsPage = location.pathname === "/threads"
-    const isMentionsPage = location.pathname === "/mentions"
+    const isNotificationsPage = location.pathname === "/notifications"
     const isSavedMessagesPage = location.pathname === "/saved-messages"
     const isSettingsPage = location.pathname.startsWith("/settings")
-    const isSidebarLessPage = isThreadsPage || isMentionsPage || isSavedMessagesPage || isSettingsPage
+    const isSidebarLessPage = isThreadsPage || isNotificationsPage || isSavedMessagesPage || isSettingsPage
+    // Direct messages page should not show AppHeader (it has its own header)
+    const shouldShowAppHeader = !isSidebarLessPage && !isDirectMessagesPage
     // Sidebar width is the total width including workspace switcher (60px) + content area
     // Regular: 60px (workspace switcher) + 280px (content) = 340px
     // DMs: 60px (workspace switcher) + 360px (content) = 420px
@@ -47,7 +61,7 @@ const MainPageContent = () => {
                         "--workspace-switcher-width": "60px",
                     } as React.CSSProperties
                 }>
-                {!isSidebarLessPage && <AppHeader searchValue={isSearchPage ? searchValue : undefined} onSearchChange={isSearchPage ? setSearchValue : undefined} />}
+                {shouldShowAppHeader && <AppHeader searchValue={isSearchPage ? searchValue : undefined} onSearchChange={isSearchPage ? setSearchValue : undefined} />}
                 {!isSidebarLessPage && <AppSidebar />}
                 <SidebarInset
                     className="overflow-hidden"
