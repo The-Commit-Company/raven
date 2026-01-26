@@ -4,18 +4,19 @@ import {
     SidebarProvider,
 } from "@components/ui/sidebar"
 import AppHeader from "@components/features/header/AppHeader"
-import { Outlet, useLocation, useParams } from "react-router-dom"
+import { Outlet, useParams, useLocation } from "react-router-dom"
 import React, { useState, useMemo } from "react"
 import { useLoadUsers } from "@hooks/useLoadUsers"
 import { ActiveWorkspaceProvider, useActiveWorkspace } from "../contexts/ActiveWorkspaceContext"
 import { WorkspaceSwitcher } from "@components/workspace-switcher/WorkspaceSwitcher"
 import { MainPageSkeleton } from "@components/features/main-page/MainPageSkeleton"
+import { SIDEBAR_LESS_ROUTES } from "@utils/routes"
 
 
 const MainPageContent = () => {
-    const location = useLocation()
     const params = useParams()
-    const isSearchPage = location.pathname.includes("/search")
+    const location = useLocation()
+    const pathname = location.pathname
     const [searchValue, setSearchValue] = useState("")
     const { activeWorkspaceName } = useActiveWorkspace()
     
@@ -34,12 +35,10 @@ const MainPageContent = () => {
     // Use URL workspace as source of truth, fallback to context for non-workspace routes
     const currentWorkspace = urlWorkspace || activeWorkspaceName
     const isDMWorkspace = currentWorkspace === "Direct Messages"
-    const isDirectMessagesPage = location.pathname === "/direct-messages"
-    const isThreadsPage = location.pathname === "/threads"
-    const isNotificationsPage = location.pathname === "/notifications"
-    const isSavedMessagesPage = location.pathname === "/saved-messages"
-    const isSettingsPage = location.pathname.startsWith("/settings")
-    const isSidebarLessPage = isThreadsPage || isNotificationsPage || isSavedMessagesPage || isSettingsPage
+    const isSearchPage = pathname === "/search"
+    const isDirectMessagesPage = pathname === "/direct-messages"
+    const isSettingsPage = pathname.startsWith("/settings")
+    const isSidebarLessPage = SIDEBAR_LESS_ROUTES.has(pathname) || isSettingsPage
     // Direct messages page should not show AppHeader (it has its own header)
     const shouldShowAppHeader = !isSidebarLessPage && !isDirectMessagesPage
     // Sidebar width is the total width including workspace switcher (60px) + content area
