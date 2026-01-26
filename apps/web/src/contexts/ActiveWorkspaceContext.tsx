@@ -13,7 +13,28 @@ const ActiveWorkspaceContext = createContext<ActiveWorkspaceContextType>({
 export const useActiveWorkspace = () => useContext(ActiveWorkspaceContext)
 
 export const ActiveWorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [activeWorkspaceName, setActiveWorkspaceName] = useState<string | null>(null)
+    // Initialize from localStorage if available
+    const [activeWorkspaceName, setActiveWorkspaceNameState] = useState<string | null>(() => {
+        try {
+            const stored = localStorage.getItem('ravenLastWorkspace')
+            if (stored) {
+                return JSON.parse(stored)
+            }
+        } catch {
+            // Ignore parse errors
+        }
+        return null
+    })
+
+    // Persist to localStorage when it changes
+    const setActiveWorkspaceName = (name: string | null) => {
+        setActiveWorkspaceNameState(name)
+        if (name) {
+            localStorage.setItem('ravenLastWorkspace', JSON.stringify(name))
+        } else {
+            localStorage.removeItem('ravenLastWorkspace')
+        }
+    }
 
     return (
         <ActiveWorkspaceContext.Provider value={{ activeWorkspaceName, setActiveWorkspaceName }}>

@@ -2,82 +2,20 @@ import * as React from "react"
 import { Plus, MessagesSquare, Bell, MessageSquareText, BookmarkIcon, Settings } from "lucide-react"
 import { Button } from "@components/ui/button"
 import { cn } from "@lib/utils"
-import { useNavigate, useLocation } from "react-router-dom"
+import { useNavigate, useLocation, useParams } from "react-router-dom"
 import NavUserMenu from "@components/features/header/NavUserMenu/NavUserMenu"
 import { useActiveWorkspace } from "../../contexts/ActiveWorkspaceContext"
+import useFetchWorkspaces, { WorkspaceFields } from "@hooks/fetchers/useFetchWorkspaces"
+import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
 
-const data = {
-    user: {
-        name: "shadcn",
-        email: "m@example.com",
-        avatar: "/avatars/shadcn.jpg",
-    },
-    workspaces: [
-        {
-            name: "ERPNext",
-            icon: "https://frappe.io/files/erpnext53456f.png",
-            isActive: true,
-            color: "bg-white",
-            textColor: "text-gray-900",
-            notificationCount: 4,
-            channels: [
-                { id: "general", name: "general", type: "channel", channelType: "Public", unread: 5 },
-                { id: "bugs", name: "bugs", type: "channel", channelType: "Open", unread: 0 },
-                { id: "features", name: "features", type: "channel", channelType: "Private", unread: 12 },
-                { id: "releases", name: "releases", type: "channel", channelType: "Public", unread: 0 },
-            ],
-        },
-        {
-            name: "Helpdesk",
-            icon: "https://frappe.io/files/helpdesk8109cf.png",
-            isActive: false,
-            color: "bg-white",
-            textColor: "text-gray-900",
-            notificationCount: 5,
-            channels: [
-                { id: "general", name: "general", type: "channel", channelType: "Public", unread: 0 },
-                { id: "academics", name: "academics", type: "channel", channelType: "Open", unread: 3 },
-                { id: "research", name: "research", type: "channel", channelType: "Private", unread: 0 },
-            ],
-        },
-        {
-            name: "Frappe School",
-            icon: "https://frappe.io/files/school.png",
-            isActive: false,
-            color: "bg-white",
-            textColor: "text-gray-900",
-            notificationCount: 2,
-            channels: [
-                { id: "general", name: "general", type: "channel", channelType: "Open", unread: 0 },
-                { id: "standup", name: "standup", type: "channel", channelType: "Public", unread: 7 },
-                { id: "random", name: "random", type: "channel", channelType: "Private", unread: 0 },
-            ],
-        },
-        {
-            name: "Frappe HR",
-            icon: "https://frappe.io/files/hrbde4d8.png",
-            isActive: false,
-            color: "bg-white",
-            textColor: "text-gray-900",
-            notificationCount: 0,
-            channels: [
-                { id: "general", name: "general", type: "channel", channelType: "Public", unread: 0 },
-                { id: "projects", name: "projects", type: "channel", channelType: "Open", unread: 0 },
-            ],
-        },
-        {
-            name: "Direct Messages",
-            icon: MessagesSquare,
-            isActive: false,
-            color: "bg-slate-900 dark:bg-slate-100",
-            textColor: "text-slate-100 dark:text-slate-900",
-            notificationCount: 0,
-            channels: [
-                { id: "alice", name: "Alice", type: "dm", unread: 0 },
-                { id: "bob", name: "Bob", type: "dm", unread: 2 },
-            ],
-        },
-    ],
+const getLogo = (workspace: WorkspaceFields) => {
+    let logo = workspace.logo || ''
+
+    if (!logo && workspace.workspace_name === 'Raven') {
+        logo = '/assets/raven/raven-logo.png'
+    }
+
+    return logo
 }
 
 interface WorkspaceSwitcherProps {
@@ -87,35 +25,61 @@ interface WorkspaceSwitcherProps {
 export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps = {}) {
     const navigate = useNavigate()
     const location = useLocation()
-    const { setActiveWorkspaceName } = useActiveWorkspace()
-    const [activeWorkspace, setActiveWorkspace] = React.useState(data.workspaces[0])
+    const params = useParams()
+    const { setActiveWorkspaceName, activeWorkspaceName } = useActiveWorkspace()
+    const { data: workspacesData } = useFetchWorkspaces()
     
-    // Get workspace from URL params
+    // Get workspace from URL params or from context/localStorage
     const urlWorkspace = React.useMemo(() => {
-        const match = location.pathname.match(/^\/([^/]+)\/channel\//)
+        // Check if we're in a workspace route (from params - most reliable)
+        if (params.workspaceID) {
+            return decodeURIComponent(params.workspaceID)
+        }
+        // Fallback to pathname matching for channel routes (workspace-specific routes)
+        const match = location.pathname.match(/^\/([^/]+)\/(channel|search)/)
         if (match) {
             return decodeURIComponent(match[1])
         }
+        // Also check if path is just /:workspaceID
+        const workspaceMatch = location.pathname.match(/^\/([^/]+)$/)
+        if (workspaceMatch && workspaceMatch[1] !== 'workspace-explorer' && workspaceMatch[1] !== 'settings') {
+            return decodeURIComponent(workspaceMatch[1])
+        }
         return null
-    }, [location.pathname])
+    }, [location.pathname, params.workspaceID])
+
+    // Get the workspace to use for navigation (from URL, context, or localStorage)
+    const getWorkspaceForNavigation = () => {
+        if (urlWorkspace) return urlWorkspace
+        if (activeWorkspaceName) return activeWorkspaceName
+        // Fallback to last workspace from localStorage
+        try {
+            const lastWorkspace = JSON.parse(localStorage.getItem('ravenLastWorkspace') ?? '""') ?? ''
+            return lastWorkspace || null
+        } catch {
+            return null
+        }
+    }
     
     // Update active workspace based on URL
     React.useEffect(() => {
-        if (urlWorkspace) {
-            const workspace = data.workspaces.find(w => w.name === urlWorkspace)
+        if (urlWorkspace && workspacesData?.message) {
+            const workspace = workspacesData.message.find(w => w.name === urlWorkspace)
             if (workspace) {
-                setActiveWorkspace(workspace)
                 setActiveWorkspaceName(workspace.name)
+                // Save to localStorage
+                localStorage.setItem('ravenLastWorkspace', JSON.stringify(workspace.name))
             }
         }
-    }, [urlWorkspace, setActiveWorkspaceName])
+    }, [urlWorkspace, setActiveWorkspaceName, workspacesData])
 
-    const handleWorkspaceClick = (workspace: typeof data.workspaces[0]) => {
-        setActiveWorkspace(workspace)
+    const handleWorkspaceClick = (workspace: WorkspaceFields) => {
         setActiveWorkspaceName(workspace.name)
-        const workspaceSlug = encodeURIComponent(workspace.name)
-        const channelId = workspace.channels[0]?.id || workspace.channels[0]?.name || "general"
-        navigate(`/${workspaceSlug}/channel/${channelId}`)
+        // Save to localStorage
+        localStorage.setItem('ravenLastWorkspace', JSON.stringify(workspace.name))
+        localStorage.removeItem('ravenLastChannel')
+        // Navigate to workspace (MainPage will handle default channel)
+        navigate(`/${encodeURIComponent(workspace.name)}`)
     }
 
     return (
@@ -131,13 +95,13 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                 <div
                     className="relative group/notifications-item cursor-pointer w-full flex justify-center"
                     onClick={() => {
-                        navigate("/mentions")
+                        navigate("/notifications")
                     }}
                 >
                     <div
                         className={cn(
                             "absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-r-full transition-all duration-300 ease-out",
-                            location.pathname === "/mentions"
+                            location.pathname === "/notifications"
                                 ? "h-8 bg-foreground"
                                 : "h-2 bg-transparent group-hover/notifications-item:bg-foreground/40 group-hover/notifications-item:h-2",
                         )}
@@ -146,7 +110,7 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                                 className={cn(
                                     "relative flex items-center justify-center w-8 h-8 rounded-md transition-all duration-250 ease-out",
                                     "bg-[oklch(0.99_0_0)] dark:bg-[oklch(0.25_0_0)] border border-border/80 dark:border-border/60",
-                                    location.pathname === "/mentions"
+                                    location.pathname === "/notifications"
                                 ? "shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.05),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.05)] dark:shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.15),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.02)]"
                                 : "shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.03),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] dark:shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.1),-0.5px_-0.5px_1px_rgba(255,255,255,0.01)]",
                             "group-hover/notifications-item:-translate-y-px group-hover/notifications-item:scale-[1.02]",
@@ -156,59 +120,50 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                         <Bell 
                             className={cn(
                                 "relative w-3.5 h-3.5 text-foreground transition-all duration-250 ease-out",
-                                location.pathname === "/mentions" ? "opacity-100" : "opacity-70 dark:opacity-100",
+                                location.pathname === "/notifications" ? "opacity-100" : "opacity-70 dark:opacity-100",
                                 "group-hover/notifications-item:scale-105 group-hover/notifications-item:opacity-85 dark:group-hover/notifications-item:opacity-100"
                             )}
-                            fill={location.pathname === "/mentions" ? "currentColor" : "none"}
+                            fill={location.pathname === "/notifications" ? "currentColor" : "none"}
                         />
                     </div>
                 </div>
 
                 {/* DMs button - second item */}
-                {(() => {
-                    const dmWorkspace = data.workspaces.find(w => w.name === "Direct Messages")
-                    if (!dmWorkspace) return null
-                    return (
-                        <div
-                            className="relative group/dm-item cursor-pointer w-full flex justify-center"
-                            onClick={() => {
-                                navigate("/direct-messages")
-                            }}
-                        >
-                            <div
-                                className={cn(
-                                    "absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-r-full transition-all duration-250 ease-out",
-                                    location.pathname === "/direct-messages"
-                                        ? "h-8 bg-foreground"
-                                        : "h-2 bg-transparent group-hover/dm-item:bg-foreground/40 group-hover/dm-item:h-2",
-                                )}
-                            />
-                            <div
-                                className={cn(
-                                    "relative flex items-center justify-center w-8 h-8 rounded-md transition-all duration-250 ease-out",
-                                    "bg-[oklch(0.99_0_0)] dark:bg-[oklch(0.25_0_0)] border border-border/80 dark:border-border/60",
+                <div
+                    className="relative group/dm-item cursor-pointer w-full flex justify-center"
+                    onClick={() => {
+                        navigate("/direct-messages")
+                    }}
+                >
+                    <div
+                        className={cn(
+                            "absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-r-full transition-all duration-250 ease-out",
+                            location.pathname === "/direct-messages"
+                                ? "h-8 bg-foreground"
+                                : "h-2 bg-transparent group-hover/dm-item:bg-foreground/40 group-hover/dm-item:h-2",
+                        )}
+                    />
+                    <div
+                        className={cn(
+                            "relative flex items-center justify-center w-8 h-8 rounded-md transition-all duration-250 ease-out",
+                            "bg-[oklch(0.99_0_0)] dark:bg-[oklch(0.25_0_0)] border border-border/80 dark:border-border/60",
                                     location.pathname === "/direct-messages" 
                                         ? "shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.05),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.05)] dark:shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.15),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.02)]"
                                         : "shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.03),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] dark:shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.1),-0.5px_-0.5px_1px_rgba(255,255,255,0.01)]",
-                                    "group-hover/dm-item:-translate-y-px group-hover/dm-item:scale-[1.02]",
-                                    "group-hover/dm-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.05),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.05)] dark:group-hover/dm-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.13),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.018)]"
-                                )}
-                            >
-                                <MessagesSquare 
-                                    className={cn(
-                                        "relative w-3.5 h-3.5 text-foreground transition-all duration-250 ease-out",
-                                        location.pathname === "/direct-messages" ? "opacity-100" : "opacity-70 dark:opacity-100",
-                                        "group-hover/dm-item:scale-105 group-hover/dm-item:opacity-85 dark:group-hover/dm-item:opacity-100"
-                                    )}
-                                    fill={location.pathname === "/direct-messages" ? "currentColor" : "none"}
-                                />
-                                {dmWorkspace.notificationCount > 0 && (
-                                    <div className="absolute -bottom-0.5 -right-0.5 bg-unread rounded-full w-2 h-2 shadow-lg border border-slate-200 dark:border-slate-800" />
-                                )}
-                            </div>
-                        </div>
-                    )
-                })()}
+                            "group-hover/dm-item:-translate-y-px group-hover/dm-item:scale-[1.02]",
+                            "group-hover/dm-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.05),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.05)] dark:group-hover/dm-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.13),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.018)]"
+                        )}
+                    >
+                        <MessagesSquare 
+                            className={cn(
+                                "relative w-3.5 h-3.5 text-foreground transition-all duration-250 ease-out",
+                                location.pathname === "/direct-messages" ? "opacity-100" : "opacity-70 dark:opacity-100",
+                                "group-hover/dm-item:scale-105 group-hover/dm-item:opacity-85 dark:group-hover/dm-item:opacity-100"
+                            )}
+                            fill={location.pathname === "/direct-messages" ? "currentColor" : "none"}
+                        />
+                    </div>
+                </div>
 
                 {/* Threads button - third item */}
                 <div
@@ -247,12 +202,14 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                     </div>
                 </div>
 
-                {/* Rest of workspace items (excluding Direct Messages) */}
-                {data.workspaces
-                    .filter(workspace => workspace.name !== "Direct Messages")
+                {/* Rest of workspace items */}
+                {workspacesData?.message
+                    ?.filter((workspace) => workspace.workspace_member_name) // Only show workspaces user is a member of
                     .map((workspace) => {
-                        const isOnSpecialPage = location.pathname === "/mentions" || location.pathname === "/direct-messages" || location.pathname === "/threads"
-                        const isActive = !isOnSpecialPage && (urlWorkspace === workspace.name || activeWorkspace?.name === workspace.name)
+                        const isOnSpecialPage = location.pathname === "/notifications" || location.pathname === "/direct-messages" || location.pathname === "/threads"
+                        const isActive = !isOnSpecialPage && urlWorkspace === workspace.name
+                        const logo = getLogo(workspace)
+                        
                         return (
                             <div
                                 key={workspace.name}
@@ -270,31 +227,53 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
 
                                 <div
                                     className={cn(
-                                        "relative flex items-center justify-center w-8 h-8 transition-all duration-200 shadow-sm rounded-md",
-                                        workspace.color,
+                                        "relative flex items-center justify-center w-8 h-8 transition-all duration-200 shadow-sm rounded-md bg-white dark:bg-gray-800",
                                         isActive && "shadow-md",
                                     )}
                                 >
-                                    {typeof workspace.icon === 'string' ? (
-                                        <img
-                                            src={workspace.icon}
-                                            alt={workspace.name}
-                                            className="w-8 h-8 object-cover rounded-md"
-                                        />
-                                    ) : (
-                                        <workspace.icon className={cn("w-3.5 h-3.5", workspace.textColor, isActive ? "opacity-100" : "opacity-70 dark:opacity-100")} />
-                                    )}
-                                    {workspace.notificationCount > 0 && (
-                                        <div className="absolute -bottom-0.5 -right-0.5 bg-unread rounded-full w-2 h-2 shadow-lg border border-slate-200 dark:border-slate-800" />
-                                    )}
+                                    <Avatar className="w-8 h-8 rounded-md">
+                                        <AvatarImage src={logo} alt={workspace.workspace_name} />
+                                        <AvatarFallback className="text-xs">{workspace.workspace_name.charAt(0)}</AvatarFallback>
+                                    </Avatar>
                                 </div>
                             </div>
                         )
                     })}
 
-                <div className="relative group cursor-pointer mt-2">
-                    <div className="flex items-center justify-center w-8 h-8 bg-background border-2 border-dashed border-muted-foreground/25 text-muted-foreground/70 dark:text-muted-foreground rounded-md hover:border-muted-foreground/35 hover:text-foreground/80 dark:hover:text-foreground transition-all duration-200">
-                        <Plus className="w-3.5 h-3.5" />
+                {/* Add workspace button */}
+                <div
+                    className="relative group/add-workspace-item cursor-pointer w-full flex justify-center"
+                    onClick={() => {
+                        navigate("/workspace-explorer")
+                    }}
+                >
+                    <div
+                        className={cn(
+                            "absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-r-full transition-all duration-300 ease-out",
+                            location.pathname === "/workspace-explorer"
+                                ? "h-8 bg-foreground"
+                                : "h-2 bg-transparent group-hover/add-workspace-item:bg-foreground/40 group-hover/add-workspace-item:h-2",
+                        )}
+                    />
+                    <div
+                        className={cn(
+                            "relative flex items-center justify-center w-8 h-8 rounded-md transition-all duration-250 ease-out",
+                            "bg-[oklch(0.99_0_0)] dark:bg-[oklch(0.25_0_0)] border-2 border-dashed border-muted-foreground/25 dark:border-muted-foreground/40",
+                            location.pathname === "/workspace-explorer"
+                                ? "shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.05),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.05)] dark:shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.15),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.02)] border-muted-foreground/50"
+                                : "shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.03),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] dark:shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.1),-0.5px_-0.5px_1px_rgba(255,255,255,0.01)]",
+                            "group-hover/add-workspace-item:-translate-y-px group-hover/add-workspace-item:scale-[1.02]",
+                            "group-hover/add-workspace-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.05),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.05)] dark:group-hover/add-workspace-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.13),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.018)]",
+                            "group-hover/add-workspace-item:border-muted-foreground/35"
+                        )}
+                    >
+                        <Plus 
+                            className={cn(
+                                "relative w-3.5 h-3.5 text-muted-foreground/70 dark:text-muted-foreground transition-all duration-250 ease-out",
+                                location.pathname === "/workspace-explorer" ? "opacity-100 text-foreground" : "opacity-70 dark:opacity-100",
+                                "group-hover/add-workspace-item:scale-105 group-hover/add-workspace-item:opacity-85 dark:group-hover/add-workspace-item:opacity-100 group-hover/add-workspace-item:text-foreground/80 dark:group-hover/add-workspace-item:text-foreground"
+                            )}
+                        />
                     </div>
                 </div>
             </div>
@@ -303,19 +282,37 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 rounded-sm"
-                        onClick={() => navigate("/saved-messages")}
+                        className={cn(
+                            "h-8 w-8 rounded-sm transition-all duration-200",
+                            location.pathname === "/saved-messages"
+                                ? "bg-muted dark:bg-muted/80"
+                                : ""
+                        )}
+                        onClick={() => {
+                            navigate("/saved-messages")
+                        }}
                     >
-                        <BookmarkIcon className="h-3.5 w-3.5 opacity-70 dark:opacity-100" />
+                        <BookmarkIcon className={cn(
+                            "h-3.5 w-3.5",
+                            location.pathname === "/saved-messages" ? "opacity-100" : "opacity-70 dark:opacity-100"
+                        )} />
                         <span className="sr-only">Saved</span>
                     </Button>
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 rounded-sm"
-                        onClick={() => navigate("/settings")}
+                        className={cn(
+                            "h-8 w-8 rounded-sm transition-all duration-200",
+                            location.pathname.startsWith("/settings")
+                                ? "bg-muted dark:bg-muted/80"
+                                : ""
+                        )}
+                        onClick={() => navigate("/settings/profile")}
                     >
-                        <Settings className="h-3.5 w-3.5 opacity-70 dark:opacity-100" />
+                        <Settings className={cn(
+                            "h-3.5 w-3.5",
+                            location.pathname.startsWith("/settings") ? "opacity-100" : "opacity-70 dark:opacity-100"
+                        )} />
                         <span className="sr-only">Settings</span>
                     </Button>
                 </div>
