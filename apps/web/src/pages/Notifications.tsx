@@ -357,7 +357,7 @@ const MentionItem = ({ mention }: { mention: MentionObject }) => {
 
     return (
         <Link
-            to={`/channel/${mention.channel_id}?message_id=${mention.name}`}
+            to={`/channel/${encodeURIComponent(mention.channel_id)}?message_id=${encodeURIComponent(mention.name)}`}
             className={`group block px-6 py-4 hover:bg-accent/50 transition-colors relative ${!mention.is_read ? 'bg-muted/10' : ''
                 }`}
         >
@@ -407,7 +407,7 @@ const ReactionItem = ({ reaction }: { reaction: ReactionObject }) => {
 
     return (
         <Link
-            to={`/channel/${reaction.channel_id}?message_id=${reaction.name}`}
+            to={`/channel/${encodeURIComponent(reaction.channel_id)}?message_id=${encodeURIComponent(reaction.name)}`}
             className={`group block px-6 py-4 hover:bg-accent/50 transition-colors relative ${!reaction.is_read ? 'bg-muted/10' : ''
                 }`}
         >
@@ -460,7 +460,7 @@ const UnreadMessageItem = ({ message }: { message: UnreadMessageObject }) => {
 
     return (
         <Link
-            to={`/channel/${message.channel_id}?message_id=${message.name}`}
+            to={`/channel/${encodeURIComponent(message.channel_id)}?message_id=${encodeURIComponent(message.name)}`}
             className={`group block px-6 py-4 hover:bg-accent/50 transition-colors relative ${!message.is_read ? 'bg-muted/10' : ''
                 }`}
         >
@@ -520,7 +520,9 @@ const EmptyState = () => (
     </div>
 )
 
-export default function Mentions() {
+import { WorkspaceSwitcher } from "@components/workspace-switcher/WorkspaceSwitcher"
+
+export default function Notifications() {
     const [activeTab, setActiveTab] = useState<NotificationTab>('mentions')
 
     // Get data based on active tab
@@ -539,9 +541,21 @@ export default function Mentions() {
         console.log("Marking all mentions as read")
     }
 
+    // Notifications page is a sidebar-less page, so it only has the workspace switcher (60px)
+    const headerLeft = "var(--workspace-switcher-width, 60px)"
+    const headerWidth = "calc(100% - var(--workspace-switcher-width, 60px))"
+
     return (
-        <div className="flex flex-col h-full">
-            <header className="sticky top-0 flex items-center justify-between border-b bg-background py-1.5 px-2 z-30">
+        <div className="flex flex-col h-full overflow-hidden" style={{ "--workspace-switcher-width": "60px" } as React.CSSProperties}>
+            <WorkspaceSwitcher standalone />
+            <div className="flex flex-col h-full overflow-hidden" style={{ marginLeft: "var(--workspace-switcher-width, 60px)", width: "calc(100% - var(--workspace-switcher-width, 60px))" } as React.CSSProperties}>
+                <header 
+                    className="flex items-center justify-between border-b bg-background py-1.5 px-2 z-10 fixed top-0 h-[36px] transition-[left,width] duration-200 ease-linear"
+                    style={{
+                        left: headerLeft,
+                        width: headerWidth,
+                    }}
+                >
                 {/* Left side */}
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
@@ -566,7 +580,7 @@ export default function Mentions() {
                 )}
             </header>
 
-            <div className="flex flex-1 flex-col overflow-hidden">
+            <div className="pt-[36px] flex flex-1 flex-col overflow-hidden">
                 {/* Tabs */}
                 <div className="px-4 pt-4 shrink-0">
                     <div className="flex gap-2 items-center">
@@ -606,6 +620,7 @@ export default function Mentions() {
                         </div>
                     )}
                 </div>
+            </div>
             </div>
         </div>
     )
