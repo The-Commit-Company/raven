@@ -3,7 +3,6 @@ import TextMessage from "./renderers/TextMessage"
 import ThreadMessage from "./renderers/ThreadMessage"
 import PollMessage from "./renderers/PollMessage"
 import SystemMessage from "./renderers/SystemMessage"
-import ReplyMessage from "./renderers/ReplyMessage"
 import ImageMessage from "./renderers/ImageMessage"
 import FileMessageRenderer from "./renderers/FileMessage"
 import { MessageReactions } from "./MessageReactions"
@@ -1046,7 +1045,7 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
     }, [messages])
 
     return (
-        <div className="flex flex-col px-8 pb-8 space-y-5">
+        <div className="flex flex-col px-8 pb-8 space-y-5 w-full overflow-hidden">
 
             {formattedMessages.map((message) => (
                 <div key={message.name}>
@@ -1058,33 +1057,8 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 </div>
             ))}
 
-            <DateSeparator label="10th November 2024" />
 
-            <SystemMessage message="Desirae Lipshutz created this channel" time="05:27" />
-            <SystemMessage message="Desirae Lipshutz added Brandon Franci, Alfonso Vaccarol and 3 others to this channel" time="05:29" />
-            <SystemMessage message="Sarah Chen joined the channel" time="05:30" />
-            <SystemMessage message="Mike Rodriguez joined the channel" time="05:31" />
 
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Hi, everyone! Welcome to our new project channel!"
-                time="08:00 PM"
-                name="msg-1"
-            />
-
-            <ReplyMessage
-                user={dummyUser2}
-                message="Hi Desirae, thanks for the warm welcome! Excited to be here"
-                time="08:01 PM"
-                repliedTo={{ user: dummyUser1, message: "Hi, everyone! Welcome to our new project channel!" }}
-                name="msg-68"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-                message="Great! Let's start by discussing our Q4 goals. I found this interesting article about team productivity: https://github.com/frappe/frappe"
-                time="08:05 PM"
-                name="msg-2"
-            />
 
             <PollMessage
                 user={dummyUser1}
@@ -1092,123 +1066,6 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 currentUserVotes={dummyCurrentUserVotes}
                 time="08:06 PM"
                 name="msg-69"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="I voted for The Overstory! Heard great things about it. Also check out this YouTube tutorial: https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                time="08:10 PM"
-                name="msg-3"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="I went with The Nature Fix - love outdoor books! Here's a great video about nature: https://www.youtube.com/watch?v=9bZkp7q19f0"
-                time="08:11 PM"
-                name="msg-70"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Perfect! I think we'll have a great discussion about that one"
-                time="08:12 PM"
-                name="msg-5"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Should we schedule the book club meeting for next week?"
-                time="08:15 PM"
-                name="msg-6"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Absolutely! How about Thursday at 3 PM?"
-                time="08:16 PM"
-                name="msg-7"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Works for me! I'll send out a calendar invite"
-                time="08:17 PM"
-                name="msg-8"
-            />
-
-            <DateSeparator label="11th November 2024" />
-
-            <SystemMessage message="Sarah Chen joined the channel" time="09:15" />
-            <SystemMessage message="Mike Rodriguez joined the channel" time="09:16" />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Good morning team! Welcome Sarah and Mike!"
-                time="09:20 AM"
-                name="msg-9"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Morning everyone! Welcome aboard Sarah and Mike!"
-                time="09:22 AM"
-                name="msg-10"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Thanks for the welcome! Excited to be part of the team!"
-                time="09:23 AM"
-                name="msg-11"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Morning team! Looking forward to working with everyone"
-                time="09:24 AM"
-                name="msg-12"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Let's have a quick standup. What's everyone working on today?"
-                time="09:25 AM"
-                name="msg-13"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="I'm finishing up the design mockups for the new dashboard"
-                time="09:26 AM"
-                name="msg-14"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="I'm working on the mobile app wireframes"
-                time="09:26 AM"
-                name="msg-15"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="I'm setting up the database schema for the new features"
-                time="09:27 AM"
-                name="msg-16"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="I'm reviewing the security protocols for the API"
-                time="09:27 AM"
-                name="msg-17"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Great! I'm reviewing the API documentation"
-                time="09:28 AM"
-                name="msg-18"
             />
 
             <div>
@@ -1375,9 +1232,6 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
 
             <DateSeparator label="Today" />
 
-            <SystemMessage message="Channel name updated to: Q4 Project Planning & Development" time="09:00" />
-            <SystemMessage message="Channel description updated" time="09:01" />
-
             <TextMessage userID="tina.torres@raven.com"
 
                 message="Welcome, @Alfonso Vaccarol! We're glad to have you join us"
@@ -1425,14 +1279,6 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 />
             </div>
 
-            <ReplyMessage
-                user={dummyUser3}
-                message="I've been using TypeScript for the mobile app too - it's been a lifesaver for catching bugs early!"
-                time="10:21 AM"
-                repliedTo={{ user: dummyUser2, message: "TypeScript all the way! The type safety is a game changer" }}
-                name="msg-39"
-            />
-
             <div>
                 <TextMessage userID="tina.torres@raven.com"
 
@@ -1454,14 +1300,6 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 message="Exactly! And the IDE support is incredible"
                 time="10:23 AM"
                 name="msg-41"
-            />
-
-            <ReplyMessage
-                user={dummyUser4}
-                message="The autocomplete and refactoring tools are amazing. Saves so much time!"
-                time="10:24 AM"
-                repliedTo={{ user: dummyUser2, message: "Exactly! And the IDE support is incredible" }}
-                name="msg-42"
             />
 
             <ThreadMessage
@@ -1550,13 +1388,6 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 />
             </div>
 
-            <ReplyMessage
-                user={dummyUser3}
-                message="Pizza sounds amazing! I'm in for that"
-                time="11:32 AM"
-                repliedTo={{ user: dummyUser2, message: "I'm craving pizza!" }}
-                name="msg-52"
-            />
 
             <TextMessage userID="tina.torres@raven.com"
 
@@ -1635,14 +1466,6 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 name="msg-poll-5"
             />
 
-            <ReplyMessage
-                user={dummyUser5}
-                message="I've heard great things about their wood-fired oven too!"
-                time="11:35 AM"
-                repliedTo={{ user: dummyUser2, message: "Yes! Their margherita is amazing" }}
-                name="msg-55"
-            />
-
             <ImageMessage
                 user={dummyUser1}
                 images={dummySingleImage}
@@ -1679,28 +1502,11 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 time="11:42 AM"
                 name="msg-60"
             />
-
-            <ReplyMessage
-                user={dummyUser3}
-                message="The color scheme is much more modern too!"
-                time="11:42 AM"
-                repliedTo={{ user: dummyUser1, message: "Incredible improvement! The new design is much cleaner" }}
-                name="msg-61"
-            />
-
             <TextMessage userID="tina.torres@raven.com"
 
                 message="Thanks! The user feedback really helped guide the redesign"
                 time="11:43 AM"
                 name="msg-62"
-            />
-
-            <ReplyMessage
-                user={dummyUser4}
-                message="The user research sessions were really valuable for this"
-                time="11:44 AM"
-                repliedTo={{ user: dummyUser2, message: "Thanks! The user feedback really helped guide the redesign" }}
-                name="msg-63"
             />
 
             <ThreadMessage
@@ -1819,27 +1625,11 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 name="msg-79"
             />
 
-            <ReplyMessage
-                user={dummyUser3}
-                message="Great! I've been waiting to see the Q4 numbers"
-                time="12:01 PM"
-                repliedTo={{ user: dummyUser1, message: "I'll upload the Q4 financial report now" }}
-                name="msg-80"
-            />
-
             <TextMessage userID="tina.torres@raven.com"
 
                 message="Same here! The Q3 report was really promising"
                 time="12:02 PM"
                 name="msg-81"
-            />
-
-            <ReplyMessage
-                user={dummyUser5}
-                message="The growth metrics from Q3 were impressive. Looking forward to Q4!"
-                time="12:03 PM"
-                repliedTo={{ user: dummyUser4, message: "Same here! The Q3 report was really promising" }}
-                name="msg-82"
             />
 
             {/* Single File */}
@@ -1858,14 +1648,6 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 message="Thanks! I'll also share the updated project proposal and sales data"
                 time="12:03 PM"
                 name="msg-83"
-            />
-
-            <ReplyMessage
-                user={dummyUser1}
-                message="Perfect! I've been waiting to see the updated proposal"
-                time="12:04 PM"
-                repliedTo={{ user: dummyUser2, message: "Thanks! I'll also share the updated project proposal and sales data" }}
-                name="msg-84"
             />
 
             {/* Two Files - 2x1 Grid */}
@@ -1898,14 +1680,6 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 message="Looking forward to seeing the presentation!"
                 time="12:09 PM"
                 name="msg-86"
-            />
-
-            <ReplyMessage
-                user={dummyUser3}
-                message="The demo recording will be really helpful for the client meeting"
-                time="12:10 PM"
-                repliedTo={{ user: dummyUser2, message: "Looking forward to seeing the presentation!" }}
-                name="msg-87"
             />
 
             {/* Three Files - 3x1 Grid */}
