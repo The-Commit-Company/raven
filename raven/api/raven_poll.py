@@ -71,17 +71,23 @@ def get_poll(message_id):
 
 	poll = frappe.get_cached_doc("Raven Poll", poll_id)
 
-	# Check if the current user has already voted in the poll, if so, return the poll with the user's vote.
-	current_user_vote = frappe.get_all(
-		"Raven Poll Vote",
-		filters={"poll_id": poll_id, "user_id": frappe.session.user},
-		fields=["option"],
-	)
+	# Check if the current user has already voted in the poll, if so, return the poll with the user's vote from the child table vote_selection.
+	raven_poll_vote_selection = frappe.qb.DocType("Raven Poll Vote Selection")
+	raven_poll_vote = frappe.qb.DocType("Raven Poll Vote")
 
-	if current_user_vote:
-		poll.current_user_vote = current_user_vote
+	current_user_votes = (
+		frappe.qb.from_(raven_poll_vote_selection)
+		.join(raven_poll_vote)
+		.on(raven_poll_vote_selection.parent == raven_poll_vote.name)
+		.select(
+			raven_poll_vote_selection.option,
+			raven_poll_vote_selection.name,
+		)
+		.where(raven_poll_vote.poll_id == poll_id)
+		.where(raven_poll_vote.user_id == frappe.session.user)
+	).run(as_dict=True)
 
-	return {"poll": poll, "current_user_votes": current_user_vote}
+	return {"poll": poll, "current_user_votes": current_user_votes}
 
 
 @frappe.whitelist(methods=["POST"])
@@ -99,25 +105,23 @@ def add_vote(message_id, option_id):
 	if is_disabled:
 		frappe.throw(_("This poll is closed and no longer accepting votes"), frappe.PermissionError)
 
-	if is_poll_multi_choice:
-		for option in option_id:
-			frappe.get_doc(
-				{
-					"doctype": "Raven Poll Vote",
-					"poll_id": poll_id,
-					"option": option,
-					"user_id": frappe.session.user,
-				}
-			).insert()
-	else:
-		frappe.get_doc(
-			{
-				"doctype": "Raven Poll Vote",
-				"poll_id": poll_id,
-				"option": option_id,
-				"user_id": frappe.session.user,
-			}
-		).insert()
+	# Normalize option_id to list (backward compatible)
+	options = option_id if isinstance(option_id, list) else [option_id]
+
+	# For single-select, ensure only one option
+	if not is_poll_multi_choice and len(options) > 1:
+		frappe.throw(_("This poll only allows one selection."))
+
+	# Create ONE vote record with selections in child table
+	vote = frappe.get_doc(
+		{
+			"doctype": "Raven Poll Vote",
+			"poll_id": poll_id,
+			"user_id": frappe.session.user,
+			"vote_selection": [{"option": opt} for opt in options],
+		}
+	)
+	vote.insert()
 
 	return "Vote added successfully."
 
@@ -159,10 +163,19 @@ def get_all_votes(poll_id):
 			frappe.PermissionError,
 		)
 	else:
-		# Get all votes for this poll
-		votes = frappe.get_all(
-			"Raven Poll Vote", filters={"poll_id": poll_id}, fields=["name", "option", "user_id"]
-		)
+		# Get all votes for this poll from the child table vote_selection.
+		raven_poll_vote_selection = frappe.qb.DocType("Raven Poll Vote Selection")
+		raven_poll_vote = frappe.qb.DocType("Raven Poll Vote")
+
+		votes = (
+			frappe.qb.from_(raven_poll_vote_selection)
+			.join(raven_poll_vote)
+			.on(raven_poll_vote_selection.parent == raven_poll_vote.name)
+			.select(
+				raven_poll_vote_selection.option, raven_poll_vote_selection.name, raven_poll_vote.user_id
+			)
+			.where(raven_poll_vote.poll_id == poll_id)
+		).run(as_dict=True)
 
 		# Initialize results dictionary
 		results = {
