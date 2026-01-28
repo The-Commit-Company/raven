@@ -6,6 +6,8 @@ import { useMemo } from "react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
 import { ForwardIcon, PinIcon } from "lucide-react"
 import ReplyMessage from "./ReplyMessage"
+import { ThreadButton, ThreadHeader } from "./ThreadMessage"
+import { cn } from "@lib/utils"
 
 /**
  * Anatomy of a message
@@ -70,11 +72,19 @@ export const MessageItem = ({ message }: { message: Message }) => {
         }
     }, [message.creation])
 
-    return <div data-message-id={message.name} className="group/message-item w-full overflow-hidden">
+    return <div data-message-id={message.name} className="group/message-item w-full overflow-hidden relative hover:bg-muted/50 py-3 rounded-md px-3.5 transition-all duration-200">
+        {message.is_thread === 1 && <ThreadHeader displayName={"TODO: Wire this up"} threadTitle={"Do not forget"} />}
+        {message.is_thread === 1 && <div className={cn("absolute left-7.5 w-7 border-l border-b border-border rounded-bl-lg z-0", message.is_continuation ? 'top-[36px] h-[calc(100%-64px)]' : 'top-[42px] h-[calc(100%-72px)]')} />}
         {message.is_continuation === 0 ? <NonContinuationMessageHeader
             message={message} shortTime={shortTime} longTime={longTime}
         /> :
             <ContinuationMessageHeader message={message} />}
+
+        {message.is_thread === 1 && <ThreadButton
+            participants={[{ name: "TODO:", full_name: "TODO:", type: "User", user_image: "TODO: Wire this up" }]}
+            messageCount={5}
+            threadID={message.name}
+        />}
     </div>
 }
 

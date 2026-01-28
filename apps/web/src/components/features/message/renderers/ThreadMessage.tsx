@@ -1,5 +1,4 @@
 import { Hash } from "lucide-react"
-import { UserAvatar } from "../UserAvatar"
 import { GroupedAvatars } from "@components/ui/grouped-avatars"
 import type { UserFields } from "@raven/types/common/UserFields"
 import { useAtom } from "jotai"
@@ -7,56 +6,12 @@ import { channelDrawerAtom } from "@utils/channelAtoms"
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
 import { useNavigate, useLocation } from "react-router-dom"
 
-interface ThreadMessageProps {
-    user: UserFields
-    message: string
-    time: string
-    threadTitle: string
-    participants?: UserFields[]
-    messageCount?: number
-    name: string
-    threadID?: string
-}
-
-export default function ThreadMessage({
-    user,
-    message,
-    time,
-    threadTitle,
-    participants = [],
-    messageCount = 3,
-    name,
-    threadID,
-}: ThreadMessageProps) {
-    const displayName = user?.full_name || user?.name || "User"
-
-    return (
-        <div className="relative" data-message-id={name}>
-            <ThreadHeader displayName={displayName} threadTitle={threadTitle} />
-            <div className="absolute top-[42px] left-4 w-7 h-[calc(100%-60px)] border-l border-b border-border rounded-bl-lg z-0" />
-
-            <div className="flex items-start gap-3 relative z-10">
-                <div className="shrink-0">
-                    <UserAvatar user={user} size="md" />
-                </div>
-                <MessageContent displayName={displayName} time={time} message={message} />
-            </div>
-
-            <ThreadButton
-                participants={participants}
-                messageCount={messageCount}
-                threadID={threadID || name}
-            />
-        </div>
-    )
-}
-
 interface ThreadHeaderProps {
     displayName: string
     threadTitle: string
 }
 
-const ThreadHeader = ({ displayName, threadTitle }: ThreadHeaderProps) => (
+export const ThreadHeader = ({ displayName, threadTitle }: ThreadHeaderProps) => (
     <div className="flex items-center gap-1 text-xs mb-3">
         <div className="flex items-center gap-0.5">
             <Hash className="h-3 w-3" />
@@ -91,7 +46,7 @@ interface ThreadButtonProps {
     threadID?: string
 }
 
-const ThreadButton = ({ participants, messageCount, threadID }: ThreadButtonProps) => {
+export const ThreadButton = ({ participants, messageCount, threadID }: ThreadButtonProps) => {
     const navigate = useNavigate()
     const location = useLocation()
     const channelID = useCurrentChannelID()
