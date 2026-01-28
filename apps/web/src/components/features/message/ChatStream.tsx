@@ -7,10 +7,12 @@ import { MessageReactions } from "./MessageReactions"
 import { ReactionObject } from "@raven/types/common/ChatStream"
 import { UserFields } from "@raven/types/common/UserFields"
 import { Message } from "@raven/types/common/Message"
-import { useMemo } from "react"
+import { useMemo, useRef } from "react"
 import { formatMessages } from "@hooks/useGetMessages"
 import { MessageItem } from "./renderers/MessageItem"
 import { PollVotingMessage } from "./renderers/PollVotingMessage"
+import { getDateObject } from "@utils/date"
+import dayjs from "dayjs"
 
 
 const dummyUser1 = {
@@ -1038,23 +1040,38 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
         console.log("Add reaction clicked")
     }
 
+    const latestMessageTimestamp = useRef<dayjs.Dayjs | null>(null)
+
     const formattedMessages = useMemo(() => {
         return formatMessages(messages)
     }, [messages])
+
+    // We need to track when a message comes in view - this is to track the "Last Seen" timestamp for the user
+    const onMessageInView = (message: Message) => {
+        const creation = getDateObject(message.creation)
+        // Compare the timestamp of the message to the latest message timestamp
+        if (!latestMessageTimestamp.current) {
+            latestMessageTimestamp.current = creation
+        }
+        if (creation.isAfter(latestMessageTimestamp.current)) {
+            latestMessageTimestamp.current = creation
+
+            // TODO: Message entered viewport — use for last-seen, read receipts, analytics, etc.
+            console.log("Message in view", message.content)
+        }
+    }
 
     return (
         <div className="flex flex-col px-3 pb-8 w-full">
 
             {formattedMessages.map((message) => (
-                <>
-                    {message.message_type === 'date' ? (
-                        <DateSeparator label={message.creation} key={message.name} />
-                    ) : message.message_type === "System" ? (
+                message.message_type === 'date' ?
+                    <DateSeparator label={message.creation} key={message.name} />
+                    : message.message_type === "System" ?
                         <SystemMessage message={message.text ?? ''} key={message.name} time={message.creation} />
-                    ) : <MessageItem message={message} key={message.name} />}
-                </>
-            ))}
-
+                        : <MessageItem message={message} key={message.name} onInView={onMessageInView} />
+            )
+            )}
 
             <PollMessage
                 user={dummyUser1}

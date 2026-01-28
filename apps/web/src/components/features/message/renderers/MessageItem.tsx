@@ -9,6 +9,7 @@ import ReplyMessage from "./ReplyMessage"
 import { ThreadButton, ThreadHeader } from "./ThreadMessage"
 import { cn } from "@lib/utils"
 import { ContextMenu, ContextMenuContent, ContextMenuGroup, ContextMenuItem, ContextMenuTrigger } from "@components/ui/context-menu"
+import { useIntersectionObserver } from "usehooks-ts"
 
 /**
  * Anatomy of a message
@@ -55,7 +56,7 @@ import { ContextMenu, ContextMenuContent, ContextMenuGroup, ContextMenuItem, Con
  *
  */
 
-export const MessageItem = ({ message }: { message: Message }) => {
+export const MessageItem = ({ message, onInView }: { message: Message; onInView?: (message: Message) => void }) => {
 
     const [isMenuOpen, setIsMenuOpen] = useState(false)
 
@@ -75,8 +76,18 @@ export const MessageItem = ({ message }: { message: Message }) => {
         }
     }, [message.creation])
 
+    const { ref } = useIntersectionObserver({
+        onChange: (isIntersecting) => {
+            if (onInView && isIntersecting) {
+                onInView(message)
+            }
+        }
+    })
+
+
     return <ContextMenu onOpenChange={setIsMenuOpen}>
         <ContextMenuTrigger
+            ref={ref}
             data-message-id={message.name}
             className={cn("group/message-item w-full overflow-hidden relative hover:bg-muted/30 py-3 rounded-md px-3.5 transition-all duration-200",
                 "data-[state=open]:bg-muted/50"
