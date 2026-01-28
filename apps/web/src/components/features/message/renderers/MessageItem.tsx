@@ -4,7 +4,7 @@ import { UserAvatar } from "../UserAvatar"
 import { getDateObject } from "@utils/date"
 import { useMemo } from "react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
-import { ForwardIcon, PinIcon } from "lucide-react"
+import { ForwardIcon, LucideIcon, PencilIcon, PinIcon } from "lucide-react"
 import ReplyMessage from "./ReplyMessage"
 import { ThreadButton, ThreadHeader } from "./ThreadMessage"
 import { cn } from "@lib/utils"
@@ -145,21 +145,25 @@ const MessageContent = ({ message }: { message: Message }) => {
 
     return <div className="flex-1 space-y-1">
 
+        {message.is_pinned === 1 && <MessageAttributeIndicator attribute="Pinned" Icon={PinIcon} />}
 
-        {message.is_forwarded === 1 && <div className="text-muted-foreground flex items-center gap-1">
-            <ForwardIcon className="w-4 h-4 pb-0.5" />
-            <span className="text-xs">forwarded</span>
-        </div>}
+        {message.is_forwarded === 1 && <MessageAttributeIndicator attribute="forwarded" Icon={ForwardIcon} />}
 
-        {message.is_pinned === 1 && <div className="text-muted-foreground flex items-center gap-1">
-            <PinIcon className="w-4 h-4 pb-0.5" />
-            <span className="text-xs">Pinned</span>
-        </div>}
+        {message.is_edited === 1 && <MessageAttributeIndicator attribute="edited" Icon={PencilIcon} />}
 
         {message.linked_message && repliedMessageDetails &&
             <ReplyMessage repliedMessage={repliedMessageDetails} />}
 
 
         {message.text && <div className="text-[13px] text-primary">{message.content}</div>}
+
+
+    </div>
+}
+
+const MessageAttributeIndicator = ({ attribute, Icon }: { attribute: string, Icon: LucideIcon }) => {
+    return <div className="text-muted-foreground flex items-center gap-1 py-0.5">
+        <Icon className={"w-4 h-4 pb-0.5"} />
+        <span className="text-xs">{attribute}</span>
     </div>
 }

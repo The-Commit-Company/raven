@@ -1,5 +1,4 @@
 import DateSeparator from "./renderers/DateSeparator"
-import TextMessage from "./renderers/TextMessage"
 import PollMessage from "./renderers/PollMessage"
 import SystemMessage from "./renderers/SystemMessage"
 import ImageMessage from "./renderers/ImageMessage"
@@ -1057,8 +1056,6 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
             ))}
 
 
-
-
             <PollMessage
                 user={dummyUser1}
                 poll={dummyPoll}
@@ -1068,12 +1065,7 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
             />
 
             <div>
-                <TextMessage userID="tina.torres@raven.com"
 
-                    message="Perfect! Let me know if you need any clarification on the design specs. I've shared the Figma file: https://figma.com/file/abc123"
-                    time="09:29 AM"
-                    name="msg-19"
-                />
                 <MessageReactions
                     reactions={dummyReactions1}
                     allUsers={dummyUsers}
@@ -1083,36 +1075,11 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 />
             </div>
 
-            <TextMessage userID="tina.torres@raven.com"
 
-                message="I'll share the mobile wireframes once they're ready for review"
-                time="09:30 AM"
-                name="msg-20"
-            />
 
             <DateSeparator label="Yesterday" />
 
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Hello, everyone! ⭐ How's everyone doing today? I hope you're all having a fantastic day!"
-                time="07:20 PM"
-                name="msg-21"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Doing great! Just finished reviewing the latest design mockups"
-                time="07:25 PM"
-                name="msg-22"
-            />
-
             <div>
-                <TextMessage userID="tina.torres@raven.com"
-
-                    message="That's awesome! Can't wait to see them"
-                    time="07:27 PM"
-                    name="msg-23"
-                />
                 <MessageReactions
                     reactions={dummyReactions2}
                     allUsers={dummyUsers}
@@ -1139,26 +1106,8 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 />
             </div>
 
-            <TextMessage userID="tina.torres@raven.com"
 
-                message="These look amazing! I especially love the dashboard design"
-                time="07:32 PM"
-                name="msg-25"
-            />
 
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Thanks! The dashboard was the most challenging part to get right"
-                time="07:33 PM"
-                name="msg-26"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="You nailed it! The user flow looks really intuitive"
-                time="07:35 PM"
-                name="msg-27"
-            />
 
             <div>
                 <MessageReactions
@@ -1170,79 +1119,13 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 />
             </div>
 
-            <TextMessage userID="tina.torres@raven.com"
 
-                message="Sounds great! Looking forward to the discussion. I think we should focus on LinkedIn and Twitter first since our target audience is primarily B2B professionals. We could share industry insights, product updates, and behind-the-scenes content about our development process."
-                time="07:42 PM"
-                name="msg-29"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="I love the idea of behind-the-scenes content! We could showcase our design process, user research findings, and even some of the challenges we've overcome. It would make us more relatable and humanize our brand."
-                time="07:43 PM"
-                name="msg-30"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Perfect! I'll prepare a strategy document for our next meeting. I'm thinking we should create a content calendar with themes for each day of the week - maybe Monday insights, Wednesday wireframes, Friday features. What do you think?"
-                time="07:45 PM"
-                name="msg-31"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Should we also consider Instagram for visual content? I know it's more B2C focused, but we could use it to showcase our UI/UX work and attract design talent to our team."
-                time="07:47 PM"
-                name="msg-32"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Definitely! Instagram would be perfect for showcasing our design work. We could post wireframes, prototypes, and even short videos of our design process. Plus, it's a great way to build our employer brand and attract top design talent."
-                time="07:48 PM"
-                name="msg-33"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="From a technical perspective, we should also consider YouTube for longer-form content. We could create tutorials, product demos, and even share our development process. It would help with SEO and establish us as thought leaders in the space."
-                time="07:50 PM"
-                name="msg-34"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Great points everyone! I'd also suggest we create a content approval workflow to ensure all posts align with our brand guidelines and security policies. We should probably set up some automated tools for scheduling and analytics tracking too."
-                time="07:52 PM"
-                name="msg-35"
-            />
 
             <DateSeparator label="Today" />
 
-            <TextMessage userID="tina.torres@raven.com"
 
-                message="Welcome, @Alfonso Vaccarol! We're glad to have you join us"
-                time="10:09 AM"
-                name="msg-36"
-            />
 
-            <div>
-                <TextMessage userID="tina.torres@raven.com"
 
-                    message="Morning team! Quick question - what's your favorite programming language for building scalable web applications? I found this comparison: https://stackoverflow.com/questions/2348046"
-                    time="10:15 AM"
-                    name="msg-35"
-                />
-                <MessageReactions
-                    reactions={dummyReactions1}
-                    allUsers={dummyUsers}
-                    currentUserId={currentUserId}
-                    onReactionClick={handleReactionClick}
-                    onAddReaction={handleAddReaction}
-                />
-            </div>
 
             <PollMessage
                 user={dummyUser1}
@@ -1252,133 +1135,12 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 name="msg-37"
             />
 
-            <div>
-                <TextMessage userID="tina.torres@raven.com"
-
-                    message="TypeScript all the way! The type safety is a game changer"
-                    time="10:20 AM"
-                    name="msg-38"
-                />
-                <MessageReactions
-                    reactions={dummyReactions2}
-                    allUsers={dummyUsers}
-                    currentUserId={currentUserId}
-                    onReactionClick={handleReactionClick}
-                    onAddReaction={handleAddReaction}
-                />
-            </div>
-
-            <div>
-                <TextMessage userID="tina.torres@raven.com"
-
-                    message="Agreed! The refactoring experience is so much better with TypeScript"
-                    time="10:22 AM"
-                    name="msg-40"
-                />
-                <MessageReactions
-                    reactions={dummyReactions4}
-                    allUsers={dummyUsers}
-                    currentUserId={currentUserId}
-                    onReactionClick={handleReactionClick}
-                    onAddReaction={handleAddReaction}
-                />
-            </div>
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Exactly! And the IDE support is incredible"
-                time="10:23 AM"
-                name="msg-41"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Great point Mike! I've been researching this too. WebSockets would definitely be better for real-time features, but we need to consider the security implications. We should implement proper authentication and rate limiting to prevent abuse. Also, what about fallback mechanisms if WebSocket connections fail?"
-                time="10:27 AM"
-                name="msg-44"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="From a frontend perspective, I'm concerned about browser compatibility and connection stability. We should probably implement a hybrid approach - WebSockets for real-time features but keep REST APIs as fallback. This way we maintain functionality even if WebSocket connections drop."
-                time="10:29 AM"
-                name="msg-45"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="I agree with Brandon's hybrid approach. For mobile apps, we'll need to handle connection state changes and reconnection logic. We should also consider using a library like Socket.io that handles these edge cases automatically. What do you think about the database design for real-time collaboration?"
-                time="10:31 AM"
-                name="msg-46"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Excellent points everyone! For the database, I'm thinking we need to implement operational transformation or conflict-free replicated data types (CRDTs) to handle concurrent edits. We could use PostgreSQL with its JSONB support for storing the document state. Alfonso, what's your take on the security architecture?"
-                time="10:33 AM"
-                name="msg-47"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Perfect! For security, I recommend implementing JWT tokens for WebSocket authentication, with automatic token refresh. We should also add connection pooling and implement proper session management. I'll create a security audit checklist and we can review it together next week."
-                time="10:35 AM"
-                name="msg-48"
-            />
-
-            <div>
-                <TextMessage userID="tina.torres@raven.com"
-
-                    message="Now, let's talk lunch - what's everyone feeling?"
-                    time="11:30 AM"
-                    name="msg-49"
-                />
-                <MessageReactions
-                    reactions={dummyReactions3}
-                    allUsers={dummyUsers}
-                    currentUserId={currentUserId}
-                    onReactionClick={handleReactionClick}
-                    onAddReaction={handleAddReaction}
-                />
-            </div>
-
             <PollMessage
                 user={dummyUser1}
                 poll={dummyPoll3}
                 currentUserVotes={dummyCurrentUserVotes3}
                 time="11:31 AM"
                 name="msg-50"
-            />
-
-            <div>
-                <TextMessage userID="tina.torres@raven.com"
-
-                    message="I'm craving pizza!"
-                    time="11:32 AM"
-                    name="msg-51"
-                />
-                <MessageReactions
-                    reactions={dummyReactions4}
-                    allUsers={dummyUsers}
-                    currentUserId={currentUserId}
-                    onReactionClick={handleReactionClick}
-                    onAddReaction={handleAddReaction}
-                />
-            </div>
-
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Pizza sounds perfect! Should we order from that new place downtown?"
-                time="11:33 AM"
-                name="msg-53"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Yes! Their margherita is amazing"
-                time="11:34 AM"
-                name="msg-54"
             />
 
             {/* Example 1: Anonymous single choice poll (user hasn't voted) */}
@@ -1452,20 +1214,6 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 name="msg-56"
             />
 
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="That looks perfect! Can you share the before and after comparison?"
-                time="11:37 AM"
-                name="msg-57"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Sure! Let me dig that up for you"
-                time="11:38 AM"
-                name="msg-58"
-            />
-
             <ImageMessage
                 user={dummyUser2}
                 images={dummyTwoImages}
@@ -1474,60 +1222,6 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 name="msg-59"
             />
 
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Incredible improvement! The new design is much cleaner"
-                time="11:42 AM"
-                name="msg-60"
-            />
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Thanks! The user feedback really helped guide the redesign"
-                time="11:43 AM"
-                name="msg-62"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="That's a really important insight Sarah! 8 minutes is definitely too long for onboarding. I've been looking at some successful apps and they typically get users to their first 'aha moment' within 2-3 minutes. We should probably implement a progressive disclosure approach - show only what's essential upfront."
-                time="11:47 AM"
-                name="msg-65"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="I completely agree! We should also consider implementing a 'skip tutorial' option for power users who might be migrating from other platforms. What about the user feedback on the navigation? Are they finding it intuitive?"
-                time="11:49 AM"
-                name="msg-66"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Great question! The navigation feedback is mixed. Users love the bottom tab bar for main sections, but they're getting lost when trying to access secondary features. I think we need to implement a more discoverable menu system, maybe with contextual help or tooltips for new users."
-                time="11:51 AM"
-                name="msg-67"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="From a technical perspective, we could implement analytics tracking to see exactly where users are dropping off in the onboarding flow. We could use tools like Mixpanel or Amplitude to create funnels and identify the specific pain points. This would give us data-driven insights to guide our redesign."
-                time="11:53 AM"
-                name="msg-68"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Good idea Mike! We should also consider accessibility in our redesign. I've been reading about WCAG guidelines for mobile apps, and we need to ensure our onboarding flow works well with screen readers and other assistive technologies. This could actually help us simplify the flow too."
-                time="11:55 AM"
-                name="msg-69"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Excellent points everyone! I think we should create a cross-functional working group to tackle this. We need input from design, engineering, and product. Let me schedule a workshop next week where we can map out the user journey and identify opportunities for improvement. Should we also consider A/B testing different onboarding approaches?"
-                time="11:57 AM"
-                name="msg-70"
-            />
 
             <ImageMessage
                 user={dummyUser1}
@@ -1535,20 +1229,6 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 time="11:45 AM"
                 message="UI design progress - wireframes and prototype for the mobile app"
                 name="msg-71"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Love the wireframes! The user flow looks intuitive"
-                time="11:47 AM"
-                name="msg-72"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Thanks! I spent a lot of time on the user journey mapping"
-                time="11:48 AM"
-                name="msg-73"
             />
 
             <ImageMessage
@@ -1559,18 +1239,6 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 name="msg-74"
             />
 
-            <TextMessage userID="tina.torres@raven.com"
-                message="Excellent numbers! Let me share the complete project documentation"
-                time="11:52 AM"
-                name="msg-75"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-                message="The growth metrics are really impressive this quarter"
-                time="11:53 AM"
-                name="msg-76"
-            />
-
             <ImageMessage
                 user={dummyUser1}
                 images={dummyTenImages}
@@ -1579,25 +1247,7 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 name="msg-77"
             />
 
-            <TextMessage userID="tina.torres@raven.com"
-                message="Perfect! Now let's share the financial reports"
-                time="12:00 PM"
-                name="msg-78"
-            />
 
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="I'll upload the Q4 financial report now"
-                time="12:01 PM"
-                name="msg-79"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Same here! The Q3 report was really promising"
-                time="12:02 PM"
-                name="msg-81"
-            />
 
             {/* Single File */}
             <FileMessageRenderer
@@ -1611,11 +1261,7 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 message="Here's the quarterly financial report for review"
             />
 
-            <TextMessage userID="tina.torres@raven.com"
-                message="Thanks! I'll also share the updated project proposal and sales data"
-                time="12:03 PM"
-                name="msg-83"
-            />
+
 
             {/* Two Files - 2x1 Grid */}
             <FileMessageRenderer
@@ -1635,20 +1281,6 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 time="12:05 PM"
                 message="Updated project proposal and sales data"
             />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Great work! I have the presentation and meeting recording to share"
-                time="12:08 PM"
-                name="msg-85"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-                message="Looking forward to seeing the presentation!"
-                time="12:09 PM"
-                name="msg-86"
-            />
-
             {/* Three Files - 3x1 Grid */}
             <FileMessageRenderer
                 user={dummyUser1}
@@ -1671,19 +1303,6 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 ]}
                 time="12:10 PM"
                 message="Presentation, recording, and background music for the demo"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-                message="Perfect! Let me add the technical documentation and project assets"
-                time="12:12 PM"
-                name="msg-88"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="That will complete our project documentation nicely"
-                time="12:13 PM"
-                name="msg-89"
             />
 
             {/* Four Files - 3x2 Grid */}
@@ -1713,77 +1332,6 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 ]}
                 time="12:15 PM"
                 message="All project files and documentation for the team"
-            />
-
-            <div>
-                <TextMessage userID="tina.torres@raven.com"
-
-                    message="Excellent! We have everything we need. Great work everyone!"
-                    time="12:18 PM"
-                    name="msg-90"
-                />
-                <MessageReactions
-                    reactions={dummyReactions5}
-                    allUsers={dummyUsers}
-                    currentUserId={currentUserId}
-                    onReactionClick={handleReactionClick}
-                    onAddReaction={handleAddReaction}
-                />
-            </div>
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Absolutely! This has been super productive"
-                time="12:19 PM"
-                name="msg-91"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Couldn't agree more! The team is really hitting its stride"
-                time="12:19 PM"
-                name="msg-92"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-                message="This has been a productive morning! Should we schedule a review meeting?"
-                time="12:20 PM"
-                name="msg-93"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Absolutely! How about tomorrow at 2 PM?"
-                time="12:21 PM"
-                name="msg-94"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Perfect! I'll send out the calendar invite"
-                time="12:22 PM"
-                name="msg-95"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Quick reminder: Don't forget about the client demo tomorrow at 10 AM! Here's the meeting link: https://meet.google.com/abc-defg-hij"
-                time="14:35 PM"
-                name="msg-96"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Thanks for the reminder! I'll make sure everything is ready"
-                time="14:36 PM"
-                name="msg-97"
-            />
-
-            <TextMessage userID="tina.torres@raven.com"
-
-                message="Great! Let's make sure we have all the demo materials prepared"
-                time="14:37 PM"
-                name="msg-98"
             />
         </div>
     )
