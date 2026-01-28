@@ -2,12 +2,13 @@ import { useUser } from "@hooks/useUser"
 import { Message } from "@raven/types/common/Message"
 import { UserAvatar } from "../UserAvatar"
 import { getDateObject } from "@utils/date"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
 import { ForwardIcon, LucideIcon, PencilIcon, PinIcon } from "lucide-react"
 import ReplyMessage from "./ReplyMessage"
 import { ThreadButton, ThreadHeader } from "./ThreadMessage"
 import { cn } from "@lib/utils"
+import { ContextMenu, ContextMenuContent, ContextMenuGroup, ContextMenuItem, ContextMenuTrigger } from "@components/ui/context-menu"
 
 /**
  * Anatomy of a message
@@ -56,6 +57,8 @@ import { cn } from "@lib/utils"
 
 export const MessageItem = ({ message }: { message: Message }) => {
 
+    const [isMenuOpen, setIsMenuOpen] = useState(false)
+
     const { shortTime, longTime } = useMemo(() => {
         try {
             const dateObj = getDateObject(message.creation)
@@ -72,20 +75,37 @@ export const MessageItem = ({ message }: { message: Message }) => {
         }
     }, [message.creation])
 
-    return <div data-message-id={message.name} className="group/message-item w-full overflow-hidden relative hover:bg-muted/50 py-3 rounded-md px-3.5 transition-all duration-200">
-        {message.is_thread === 1 && <ThreadHeader displayName={"TODO: Wire this up"} threadTitle={"Do not forget"} />}
-        {message.is_thread === 1 && <div className={cn("absolute left-7.5 w-7 border-l border-b border-border rounded-bl-lg z-0", message.is_continuation ? 'top-[36px] h-[calc(100%-64px)]' : 'top-[42px] h-[calc(100%-72px)]')} />}
-        {message.is_continuation === 0 ? <NonContinuationMessageHeader
-            message={message} shortTime={shortTime} longTime={longTime}
-        /> :
-            <ContinuationMessageHeader message={message} />}
+    return <ContextMenu onOpenChange={setIsMenuOpen}>
+        <ContextMenuTrigger
+            data-message-id={message.name}
+            className={cn("group/message-item w-full overflow-hidden relative hover:bg-muted/30 py-3 rounded-md px-3.5 transition-all duration-200",
+                "data-[state=open]:bg-muted/50"
+            )}
+        >
+            <div>
+                {message.is_thread === 1 && <ThreadHeader displayName={"TODO: Wire this up"} threadTitle={"Do not forget"} />}
+                {message.is_thread === 1 && <div className={cn("absolute left-7.5 w-7 border-l border-b border-border rounded-bl-lg z-0", message.is_continuation ? 'top-[36px] h-[calc(100%-64px)]' : 'top-[42px] h-[calc(100%-72px)]')} />}
+                {message.is_continuation === 0 ? <NonContinuationMessageHeader
+                    message={message} shortTime={shortTime} longTime={longTime}
+                /> :
+                    <ContinuationMessageHeader message={message} />}
 
-        {message.is_thread === 1 && <ThreadButton
-            participants={[{ name: "TODO:", full_name: "TODO:", type: "User", user_image: "TODO: Wire this up" }]}
-            messageCount={5}
-            threadID={message.name}
-        />}
-    </div>
+                {message.is_thread === 1 && <ThreadButton
+                    participants={[{ name: "TODO:", full_name: "TODO:", type: "User", user_image: "TODO: Wire this up" }]}
+                    messageCount={5}
+                    threadID={message.name}
+                />}
+            </div>
+        </ContextMenuTrigger>
+        <ContextMenuContent loop>
+            <ContextMenuGroup>
+                <ContextMenuItem>Back</ContextMenuItem>
+                <ContextMenuItem disabled>Forward</ContextMenuItem>
+                <ContextMenuItem>Reload</ContextMenuItem>
+            </ContextMenuGroup>
+        </ContextMenuContent>
+
+    </ContextMenu>
 }
 
 const NonContinuationMessageHeader = ({ message, shortTime, longTime }: { message: Message, shortTime: string, longTime: string }) => {
