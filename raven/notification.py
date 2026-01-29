@@ -206,13 +206,15 @@ def make_post_call_for_notification(messages, raven_settings):
 		api_secret=raven_settings.get_password("push_notification_api_secret"),
 	)
 
-	client.post_api(
+	res = client.post_api(
 		"raven_cloud.api.notification.send_to_users",
 		params={
 			"messages": json.dumps(messages),
 			"site_name": urlparse(frappe.utils.get_url()).hostname,
 		},
 	)
+
+	frappe.log_error(title="Raven Cloud Push Notification Response", message=str(res))
 
 
 # The below functions are used to send push notifications via the Frappe Push Notification Service
