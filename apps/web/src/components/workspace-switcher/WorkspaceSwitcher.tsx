@@ -231,7 +231,7 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                                         isActive && "shadow-md",
                                     )}
                                 >
-                                    <Avatar className="w-8 h-8 rounded-md">
+                                <Avatar className="w-8 h-8 rounded-md border border-[#F0F0F380] dark:border-[#2D2D3180]">
                                         <AvatarImage src={logo} alt={workspace.workspace_name} />
                                         <AvatarFallback className="text-xs">{workspace.workspace_name.charAt(0)}</AvatarFallback>
                                     </Avatar>

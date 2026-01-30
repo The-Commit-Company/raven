@@ -109,7 +109,7 @@ const MyWorkspaceItem = ({ workspace, onOpen }: { workspace: WorkspaceFields; on
                 className="block p-4"
             >
                 <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10">
+                    <Avatar className="h-10 w-10 border border-border/80 dark:border-border/60">
                         <AvatarImage src={logo} alt={workspace.workspace_name} />
                         <AvatarFallback>{workspace.workspace_name.charAt(0)}</AvatarFallback>
                     </Avatar>
@@ -163,7 +163,7 @@ const OtherWorkspaceItem = ({ workspace }: { workspace: WorkspaceFields }) => {
                 className="p-4"
             >
                 <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10">
+                    <Avatar className="h-10 w-10 border border-border/80 dark:border-border/60">
                         <AvatarImage src={logo} alt={workspace.workspace_name} />
                         <AvatarFallback>{workspace.workspace_name.charAt(0)}</AvatarFallback>
                     </Avatar>
