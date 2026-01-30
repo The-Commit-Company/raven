@@ -132,6 +132,10 @@ class RavenAIFunction(Document):
 					if not param.options:
 						frappe.throw(_("Options are required for select fields"))
 
+					# Sometimes options is not populated in the DocType meta so we do not need to validate it
+					if not field.options:
+						continue
+
 					select_options = field.options.split("\n")
 					for option in param.options.split("\n"):
 						if option not in select_options:

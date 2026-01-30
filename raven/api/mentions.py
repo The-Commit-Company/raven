@@ -18,6 +18,7 @@ def get_mentions(limit: int = 10, start: int = 0):
 	message = frappe.qb.DocType("Raven Message")
 	channel = frappe.qb.DocType("Raven Channel")
 	channel_member = frappe.qb.DocType("Raven Channel Member")
+	workspace_member = frappe.qb.DocType("Raven Workspace Member")
 
 	query = (
 		frappe.qb.from_(mention)
@@ -42,9 +43,17 @@ def get_mentions(limit: int = 10, start: int = 0):
 		.on(
 			(channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user)
 		)
+		.left_join(workspace_member)
+		.on(
+			(channel.workspace == workspace_member.workspace)
+			& (workspace_member.user == frappe.session.user)
+		)
 		.where(mention.user == frappe.session.user)
 		.where(message.owner != frappe.session.user)
-		.where(channel_member.user_id == frappe.session.user)
+		.where(
+			(channel_member.user_id == frappe.session.user)
+			| ((workspace_member.user == frappe.session.user) & (channel.type != "Private"))
+		)
 		.orderby(message.creation, order=Order.desc)
 		.limit(limit)
 		.offset(start)
@@ -81,6 +90,7 @@ def get_unread_mention_count():
 	message = frappe.qb.DocType("Raven Message")
 	channel = frappe.qb.DocType("Raven Channel")
 	channel_member = frappe.qb.DocType("Raven Channel Member")
+	workspace_member = frappe.qb.DocType("Raven Workspace Member")
 
 	# Join mention with message and message with channel.
 	# Only fetch count for where the user is a member of the channel
@@ -96,8 +106,16 @@ def get_unread_mention_count():
 		.on(
 			(channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user)
 		)
+		.left_join(workspace_member)
+		.on(
+			(channel.workspace == workspace_member.workspace)
+			& (workspace_member.user == frappe.session.user)
+		)
 		.where(mention.user == frappe.session.user)
-		.where(channel_member.user_id == frappe.session.user)
+		.where(
+			(channel_member.user_id == frappe.session.user)
+			| ((workspace_member.user == frappe.session.user) & (channel.type != "Private"))
+		)
 		.where(message.creation > last_mention_viewed_date)
 		.where(message.owner != frappe.session.user)
 	)

@@ -64,6 +64,7 @@
     "firebase": "10.9.0",
     "frappe-react-sdk": "^1.13.0",
     "highlight.js": "^11.11.1",
+    "html-react-parser": "^5.2.12",
     "jotai": "^2.15.2",
     "js-cookie": "^3.0.5",
     "lowlight": "^3.3.0",

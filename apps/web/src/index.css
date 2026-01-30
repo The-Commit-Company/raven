@@ -50,7 +50,7 @@
 
 :root {
   --radius: 0.625rem;
-  --app-header-height: 40px;
+  --app-header-height: 36px;
   --sidebar-width: 360px;
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
