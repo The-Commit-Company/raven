@@ -16,9 +16,13 @@ class RavenPollVote(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		option: DF.Data
+		from raven.raven_messaging.doctype.raven_poll_vote_selection.raven_poll_vote_selection import (
+			RavenPollVoteSelection,
+		)
+
 		poll_id: DF.Link
 		user_id: DF.Link
+		vote_selection: DF.Table[RavenPollVoteSelection]
 	# end: auto-generated types
 
 	def before_insert(self):
@@ -27,26 +31,21 @@ class RavenPollVote(Document):
 		if poll.is_disabled:
 			frappe.throw(_("This poll is closed."))
 
-		# check if the option is valid
-		if not frappe.db.exists(
-			"Raven Poll Option",
-			{
-				"parent": self.poll_id,
-				"name": self.option,
-			},
-		):
-			frappe.throw(_("Invalid option selected."))
+		if not self.vote_selection:
+			frappe.throw(_("Please select at least one option."))
 
-		# check if the user has already voted for this option in this poll
-		if frappe.db.exists(
-			"Raven Poll Vote",
-			{
-				"poll_id": self.poll_id,
-				"user_id": self.user_id,
-				"option": self.option,
-			},
-		):
-			frappe.throw(_("You have already voted for this option."))
+		# Single-select: only one option allowed
+		if not poll.is_multi_choice and len(self.vote_selection) > 1:
+			frappe.throw(_("This poll only allows one selection."))
+
+		# check duplicate vote on application level with same option selection
+		selected_options = [s.option for s in self.vote_selection]
+		if len(selected_options) != len(set(selected_options)):
+			frappe.throw(_("Cannot select the same option multiple times."))
+
+		# Check user hasn't already voted (matches UNIQUE(poll_id, user_id))
+		if frappe.db.exists("Raven Poll Vote", {"poll_id": self.poll_id, "user_id": self.user_id}):
+			frappe.throw(_("You have already voted in this poll."))
 
 	def validate(self):
 		# Check if the user_id is the same as the logged in user
@@ -67,34 +66,44 @@ def update_poll_votes(poll_id):
 	poll = frappe.get_doc("Raven Poll", poll_id, for_update=True)
 	# get votes for each option
 	poll_vote = frappe.qb.DocType("Raven Poll Vote")
+	poll_vote_selection = frappe.qb.DocType("Raven Poll Vote Selection")
 
 	poll_votes = (
 		frappe.qb.from_(poll_vote)
-		.select(poll_vote.option, Count(poll_vote.name).as_("votes"))
+		.inner_join(poll_vote_selection)
+		.on(poll_vote.name == poll_vote_selection.parent)
+		.select(poll_vote_selection.option, Count(poll_vote.name).as_("votes"))
 		.where(poll_vote.poll_id == poll_id)
-		.groupby(poll_vote.option)
+		.groupby(poll_vote_selection.option)
 		.run(as_dict=True)
 	)
 
-	users = frappe.get_all(
-		"Raven Poll Vote", filters={"poll_id": poll_id}, group_by="user_id", fields=["user_id"]
-	)
+	vote_map = {v.option: v.votes for v in poll_votes}
 
-	total_votes = len(users) if users else 0
-
-	# update the votes for each option in the poll
+	# Update each option
 	for option in poll.options:
-		option.votes = 0
-		for vote in poll_votes:
-			if option.name == vote.option:
-				option.votes = vote.votes
-				break
-
+		option.votes = vote_map.get(option.name, 0)
 		frappe.db.set_value(
 			"Raven Poll Option", option.name, "votes", option.votes, update_modified=False
 		)
+
+	# Count total unique voters (each Raven Poll Vote = 1 voter)
+	total_votes = frappe.db.count("Raven Poll Vote", filters={"poll_id": poll_id})
 
 	frappe.db.set_value("Raven Poll", poll_id, "total_votes", total_votes, update_modified=False)
 	poll.total_votes = total_votes
 
 	poll.notify_update()
+
+
+def on_doctype_update():
+	"""
+	Add unique constraint on (poll_id, user_id).
+	Only runs during fresh install - existing installs use patch.
+	"""
+	if frappe.flags.in_install:
+		frappe.db.add_unique(
+			"Raven Poll Vote",
+			fields=["poll_id", "user_id"],
+			constraint_name="unique_poll_vote_user",
+		)

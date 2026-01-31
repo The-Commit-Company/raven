@@ -1,5 +1,4 @@
 import frappe
-from frappe.custom.doctype.property_setter.property_setter import delete_property_setter
 from frappe.desk.utils import slug
 from frappe.model import no_value_fields, table_fields
 from frappe.utils import get_url
@@ -133,3 +132,19 @@ def update_preview_fields(doctype: str, fields: list[str]):
 			},
 			is_system_generated=False,
 		)
+
+
+def delete_property_setter(doc_type, property=None, field_name=None, row_name=None):
+	"""delete other property setters on this, if this is new"""
+	filters = {"doc_type": doc_type}
+	if property:
+		filters["property"] = property
+
+	if field_name:
+		filters["field_name"] = field_name
+	if row_name:
+		filters["row_name"] = row_name
+
+	property_setters = frappe.db.get_values("Property Setter", filters)
+	for ps in property_setters:
+		frappe.get_doc("Property Setter", ps).delete(force=True)

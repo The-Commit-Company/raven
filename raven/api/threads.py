@@ -154,7 +154,9 @@ def get_other_threads(
 		.left_join(main_thread_message)
 		.on((main_thread_message.is_thread == 1) & (main_thread_message.name == thread_channel.name))
 		.left_join(thread_message)
-		.on((thread_channel.name == thread_message.channel_id) & (thread_message.message_type != "System"))
+		.on(
+			(thread_channel.name == thread_message.channel_id) & (thread_message.message_type != "System")
+		)
 		.left_join(channel_member)
 		.on(
 			(main_thread_message.channel_id == channel_member.channel_id)
@@ -233,7 +235,7 @@ def get_unread_threads(workspace: str = None, thread_id: str = None):
 
 
 @frappe.whitelist(methods=["POST"])
-def create_thread(message_id):
+def create_thread(message_id: str):
 	"""
 	A thread can be created by any user with read access to the channel in which the message has been sent.
 	The thread will be created with this user as the first participant.

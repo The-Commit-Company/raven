@@ -10,6 +10,8 @@ import { useFrappeGetCall, useFrappePostCall } from 'frappe-react-sdk'
 import { useState } from 'react'
 import { ProcessorTypesResponse, ExistingProcessorsResponse, ExistingProcessor } from '@/components/feature/settings/ai/bots/BotDocumentProcessorsForm'
 import { toast } from 'sonner'
+import useRavenSettings from '@/hooks/fetchers/useRavenSettings'
+import GoogleAPINotEnabledCallout from '@/components/feature/settings/ai/GoogleAPINotEnabled'
 
 const DocumentProcessors = () => {
     const isRavenAdmin = hasRavenAdminRole() || isSystemManager()
@@ -40,6 +42,10 @@ const DocumentProcessors = () => {
                 description: 'The processor has been created and is now available to use.'
             })
             setSelectedProcessorType('')
+        }).catch((error) => {
+            toast.error('Failed to create processor', {
+                description: error.message
+            })
         })
     }
 
@@ -74,6 +80,11 @@ const DocumentProcessors = () => {
         )
     }
 
+    // if AI is not enabled then do not show the ExistingProcessorsList or ProcessorTypeSelector
+    const { ravenSettings } = useRavenSettings()
+    const isAIEnabled = ravenSettings?.enable_ai_integration === 1
+    const hasGoogleApis = ravenSettings?.enable_google_apis === 1
+
     return (
         <PageContainer>
             <SettingsContentContainer>
@@ -92,9 +103,10 @@ const DocumentProcessors = () => {
                     }
                 />
                 <AINotEnabledCallout />
-
+                <GoogleAPINotEnabledCallout />
+                {isAIEnabled && hasGoogleApis && (
                 <Stack gap='6'>
-                    <ExistingProcessorsList 
+                        <ExistingProcessorsList
                         processors={existingProcessors?.message || []}
                         isLoading={loadingExisting}
                         error={existingError}
@@ -107,14 +119,15 @@ const DocumentProcessors = () => {
                         setSelectedProcessorType={setSelectedProcessorType}
                     />
                 </Stack>
+                )}
             </SettingsContentContainer>
         </PageContainer>
     )
 }
 
-const ExistingProcessorsList = ({ 
+const ExistingProcessorsList = ({
     processors,
-    isLoading, 
+    isLoading,
     error,
     onDeleteProcessor,
     isDeletingProcessor
@@ -179,13 +192,13 @@ const ExistingProcessorsList = ({
                                         <BiTrash />
                                     </IconButton>
                                 </Flex>
-                               
+
                                 <Text size="1" color="gray" className="truncate">
                                     {processor.type}
                                 </Text>
-                                <Badge 
-                                    color={processor.state ? 'green' : 'red'} 
-                                    variant="soft" 
+                                <Badge
+                                    color={processor.state ? 'green' : 'red'}
+                                    variant="soft"
                                     size="1"
                                     className="self-start"
                                 >
@@ -198,8 +211,8 @@ const ExistingProcessorsList = ({
             </Stack>
 
             {/* Delete Confirmation Dialog */}
-            <AlertDialog.Root 
-                open={!!processorToDelete} 
+            <AlertDialog.Root
+                open={!!processorToDelete}
                 onOpenChange={(open) => !open && setProcessorToDelete(null)}
             >
                 <AlertDialog.Content style={{ maxWidth: 450 }}>
@@ -222,8 +235,8 @@ const ExistingProcessorsList = ({
                             </Button>
                         </AlertDialog.Cancel>
                         <AlertDialog.Action>
-                            <Button 
-                                variant="solid" 
+                            <Button
+                                variant="solid"
                                 color="red"
                                 loading={isDeletingProcessor}
                                 onClick={() => {
