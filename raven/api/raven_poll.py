@@ -57,7 +57,7 @@ def create_poll(
 
 
 @frappe.whitelist()
-def get_poll(message_id):
+def get_poll(message_id: str):
 	"""
 	Get the poll data from the Raven Poll doctype.
 	(Including the poll options, the number of votes for each option and the total number of votes.)
@@ -91,7 +91,7 @@ def get_poll(message_id):
 
 
 @frappe.whitelist(methods=["POST"])
-def add_vote(message_id, option_id):
+def add_vote(message_id: str, option_id: str | list):
 
 	# Check if the current user has access to the message.
 	if not frappe.has_permission(doctype="Raven Message", doc=message_id, ptype="read"):
@@ -127,7 +127,7 @@ def add_vote(message_id, option_id):
 
 
 @frappe.whitelist(methods=["POST"])
-def retract_vote(poll_id):
+def retract_vote(poll_id: str):
 	# delete all votes by the user for the poll (this takes care of the case where the user has voted for multiple options in the same poll)
 	user = frappe.session.user
 
@@ -149,7 +149,7 @@ def retract_vote(poll_id):
 
 
 @frappe.whitelist()
-def get_all_votes(poll_id):
+def get_all_votes(poll_id: str):
 
 	# Check if the current user has access to the poll
 	if not frappe.has_permission(doctype="Raven Poll", doc=poll_id, ptype="read"):
@@ -201,7 +201,7 @@ def get_all_votes(poll_id):
 
 
 @frappe.whitelist(methods=["POST"])
-def close_poll(poll_id):
+def close_poll(poll_id: str):
 	"""
 	Close a poll by setting is_disabled to 1 (only poll owner can close the poll)
 	"""
