@@ -43,7 +43,7 @@ def add_channel_members(channel_id: str, members: list[str]):
 		member_doc.insert()
 	
 	if not members:
-		True
+		return True
 
 	delete_channel_members_cache(channel_id)
 	return True
