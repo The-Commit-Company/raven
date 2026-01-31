@@ -374,6 +374,12 @@ def raven_workspace_member_query(user):
 	else:
 		return f"`tabRaven Workspace Member`.owner = {frappe.db.escape(user)}"
 
+def raven_channel_member_query(user):
+	if not user:
+		user = frappe.session.user
+
+	return f"`tabRaven Channel Member`.user_id = {frappe.db.escape(user)}"
+
 
 def raven_channel_query(user):
 	if not user:
