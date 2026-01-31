@@ -235,7 +235,7 @@ def get_unread_threads(workspace: str = None, thread_id: str = None):
 
 
 @frappe.whitelist(methods=["POST"])
-def create_thread(message_id):
+def create_thread(message_id: str):
 	"""
 	A thread can be created by any user with read access to the channel in which the message has been sent.
 	The thread will be created with this user as the first participant.
