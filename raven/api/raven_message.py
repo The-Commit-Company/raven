@@ -12,7 +12,12 @@ from raven.utils import get_channel_member, is_channel_member, track_channel_vis
 
 @frappe.whitelist(methods=["POST"])
 def send_message(
-	channel_id: str, text: str, is_reply=False, linked_message=None, json_content=None, send_silently=False
+	channel_id: str,
+	text: str,
+	is_reply=False,
+	linked_message=None,
+	json_content=None,
+	send_silently=False,
 ):
 	if is_reply:
 		doc = frappe.get_doc(
