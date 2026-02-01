@@ -24,7 +24,12 @@ def raven_user_has_permission(doc, user=None, ptype=None):
 	if doc.type == "Bot":
 		# Anyone with Raven User role can change the bot details
 		if user != "Guest":
-			return True
+			if ptype == "read":
+				return True
+			else:
+				roles = frappe.get_roles()
+				if "Raven Admin" in roles:
+					return True
 	else:
 		# Only the user can change their own details
 		if doc.user == user:

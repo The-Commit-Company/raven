@@ -27,7 +27,8 @@
    "label": "Channel",
    "options": "Raven Channel",
    "reqd": 1,
-   "search_index": 1
+   "search_index": 1,
+   "set_only_once": 1
   },
   {
    "fieldname": "user_id",
@@ -36,7 +37,8 @@
    "label": "User",
    "options": "Raven User",
    "reqd": 1,
-   "search_index": 1
+   "search_index": 1,
+   "set_only_once": 1
   },
   {
    "default": "0",
@@ -90,7 +92,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-29 17:31:35.446387",
+ "modified": "2026-02-01 14:46:49.892355",
  "modified_by": "Administrator",
  "module": "Raven Channel Management",
  "name": "Raven Channel Member",
@@ -122,6 +124,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
