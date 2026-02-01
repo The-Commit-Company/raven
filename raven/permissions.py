@@ -27,7 +27,7 @@ def raven_user_has_permission(doc, user=None, ptype=None):
 			return True
 
 		# Raven Admins can change the bot details
-		roles = frappe.get_roles(user=user)
+		roles = frappe.get_roles(user)
 		if "Raven Admin" in roles:
 			return True
 	else:
@@ -158,7 +158,7 @@ def channel_has_permission(doc, user=None, ptype=None):
 				if channel_member.get("is_admin"):
 					return True
 				# If the user is a Raven Admin, they can update or delete the channel
-				roles = frappe.get_roles(user=user)
+				roles = frappe.get_roles(user)
 				if "Raven Admin" in roles:
 					return True
 
@@ -257,7 +257,7 @@ def channel_member_has_permission(doc, user=None, ptype=None):
 			if channel_member.get("is_admin"):
 				return True
 			# If the user is a Raven Admin, they can update the channel member
-			roles = frappe.get_roles(user=user)
+			roles = frappe.get_roles(user)
 			if "Raven Admin" in roles:
 				return True
 
