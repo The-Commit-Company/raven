@@ -24,7 +24,12 @@ def raven_user_has_permission(doc, user=None, ptype=None):
 	if doc.type == "Bot":
 		# Anyone with Raven User role can change the bot details
 		if user != "Guest":
-			return True
+			if ptype == "read":
+				return True
+			else:
+				roles = frappe.get_roles()
+				if "Raven Admin" in roles:
+					return True
 	else:
 		# Only the user can change their own details
 		if doc.user == user:
@@ -373,6 +378,7 @@ def raven_workspace_member_query(user):
 		return f"`tabRaven Workspace Member`.workspace in ({', '.join(workspace_names)})"
 	else:
 		return f"`tabRaven Workspace Member`.owner = {frappe.db.escape(user)}"
+
 
 def raven_channel_member_query(user):
 	if not user:
