@@ -18,7 +18,8 @@
    "in_list_view": 1,
    "label": "User",
    "options": "Raven User",
-   "reqd": 1
+   "reqd": 1,
+   "set_only_once": 1
   },
   {
    "fieldname": "column_break_nuhn",
@@ -31,7 +32,8 @@
    "label": "Workspace",
    "options": "Raven Workspace",
    "reqd": 1,
-   "search_index": 1
+   "search_index": 1,
+   "set_only_once": 1
   },
   {
    "default": "0",
@@ -42,7 +44,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-15 13:11:09.674714",
+ "modified": "2026-02-01 14:46:24.931204",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven Workspace Member",
@@ -88,6 +90,7 @@
   }
  ],
  "quick_entry": 1,
+ "row_format": "Dynamic",
  "sort_field": "creation",
  "sort_order": "DESC",
  "states": []

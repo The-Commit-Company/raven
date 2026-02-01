@@ -41,7 +41,7 @@ def add_channel_members(channel_id: str, members: list[str]):
 		)
 		member_doc.flags.ignore_cache_invalidation = True
 		member_doc.insert()
-	
+
 	if not members:
 		return True
 
