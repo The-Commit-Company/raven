@@ -1,8 +1,8 @@
 import 'expo-dev-client';
-import { router, Slot, usePathname } from 'expo-router';
+import { router, Slot } from 'expo-router';
 import { ThemeProvider } from '@react-navigation/native';
 import "../global.css";
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { setNavigationBar, themeAtom } from '@hooks/useColorScheme';
@@ -23,6 +23,9 @@ import advancedFormat from 'dayjs/plugin/advancedFormat'
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useAtom } from 'jotai';
 import { useColorScheme } from 'nativewind';
+import * as SplashScreen from 'expo-splash-screen';
+import * as SystemUI from 'expo-system-ui';
+import { Appearance } from 'react-native';
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -40,46 +43,77 @@ if (__DEV__) {
     ]);
 }
 
+// Prevent splash from auto-hiding before app is ready
+SplashScreen.preventAutoHideAsync()
+
+SplashScreen.setOptions({
+    duration: 200,
+    fade: true,
+});
+
 const messaging = getMessaging()
 
 export default function RootLayout() {
 
-    // const path = usePathname()
-    // console.log(path)
 
-    const { getItem } = useAsyncStorage(`default-site`)
+    const [appIsReady, setAppIsReady] = useState(false);
+    const { getItem } = useAsyncStorage(`default-site`);
+    const { colorScheme, setColorScheme } = useColorScheme();
+    const isDarkColorScheme = colorScheme === 'dark';
+    const [theme] = useAtom(themeAtom);
+
+    // Set system UI background color early to prevent flash
+    useEffect(() => {
+        const setSystemBackground = async () => {
+            const scheme = Appearance.getColorScheme();
+            const bgColor = scheme === 'dark' ? '#121212' : '#ffffff';
+            await SystemUI.setBackgroundColorAsync(bgColor);
+        };
+        setSystemBackground();
+    }, []);
 
 
     useEffect(() => {
 
         const onMount = async () => {
-            // Get the defualt site from the async storage
-            // Also check if the app was started by a notification
-            const initialNotification = await messaging.getInitialNotification();
 
-            if (initialNotification) {
-                if (initialNotification.data?.channel_id && initialNotification.data?.sitename) {
-                    setDefaultSite(initialNotification.data.sitename as string)
-                    let path = 'chat'
-                    if (initialNotification.data.is_thread) {
-                        path = 'thread'
+            try {
+                // Get the defualt site from the async storage
+                // Also check if the app was started by a notification
+                const initialNotification = await messaging.getInitialNotification();
+
+                if (initialNotification) {
+                    if (initialNotification.data?.channel_id && initialNotification.data?.sitename) {
+                        setDefaultSite(initialNotification.data.sitename as string)
+                        let path = 'chat'
+                        if (initialNotification.data.is_thread) {
+                            path = 'thread'
+                        }
+                        router.navigate(`/${initialNotification.data.sitename}/${path}/${initialNotification.data.channel_id}`, {
+                            withAnchor: true
+                        })
+
+                        return
                     }
-                    router.navigate(`/${initialNotification.data.sitename}/${path}/${initialNotification.data.channel_id}`, {
-                        withAnchor: true
-                    })
-
-                    return
                 }
+
+                // If not started by notification
+                // On load, check if the user has a site set
+                const defaultSite = await getItem()
+                if (defaultSite) {
+                    router.replace(`/${defaultSite}`)
+                } else {
+                    router.replace('/landing')
+                }
+
+            } catch (error) {
+                console.warn('Error during app initialization:', error);
+                router.replace('/landing');
+            } finally {
+                // mark app as ready regardless of success or failure
+                setAppIsReady(true);
             }
 
-            // If not started by notification
-            // On load, check if the user has a site set
-            const defaultSite = await getItem()
-            if (defaultSite) {
-                router.replace(`/${defaultSite}`)
-            } else {
-                router.replace('/landing')
-            }
         }
 
         // Handle notification open when app is in background
@@ -104,11 +138,12 @@ export default function RootLayout() {
         };
     }, []);
 
-    const { colorScheme, setColorScheme } = useColorScheme();
-
-    const isDarkColorScheme = colorScheme === 'dark'
-
-    const [theme] = useAtom(themeAtom);
+    // Hide splash screen when app is ready
+    useEffect(() => {
+        if (appIsReady) {
+            SplashScreen.hide();
+        }
+    }, [appIsReady]);
 
     useEffect(() => {
         if (theme.state === 'hasData') {
