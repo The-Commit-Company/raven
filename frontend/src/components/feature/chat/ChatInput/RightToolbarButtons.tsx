@@ -1,10 +1,10 @@
 import { useCurrentEditor } from '@tiptap/react'
-import { BiAt, BiHash, BiSmile, BiPaperclip, BiSolidSend, BiChevronDown, BiBellOff } from 'react-icons/bi'
+import { BiAt, BiHash, BiSmile, BiPaperclip, BiSolidSend, BiChevronDown, BiBellOff, BiMicrophone, BiCheck } from 'react-icons/bi'
 import { DEFAULT_BUTTON_STYLE, ICON_PROPS } from './ToolPanel'
 import { ToolbarFileProps } from './Tiptap'
 import { Dialog, DropdownMenu, Flex, FlexProps, IconButton, Inset, Popover, Separator } from '@radix-ui/themes'
 import { Loader } from '@/components/common/Loader'
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useState } from 'react'
 import { HiOutlineGif } from "react-icons/hi2";
 import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button'
 import { useBoolean } from '@/hooks/useBoolean'
@@ -15,10 +15,10 @@ import DocumentLinkButton from './DocumentLinkButton'
 import { HStack } from '@/components/layout/Stack'
 import clsx from 'clsx'
 
-
 const EmojiPicker = lazy(() => import('@/components/common/EmojiPicker/EmojiPicker'))
 const CreatePollContent = lazy(() => import('@/components/feature/polls/CreatePoll'))
 const GIFPicker = lazy(() => import('@/components/common/GIFPicker/GIFPicker'))
+const VoiceRecorder = lazy(() => import('@/components/common/VoiceRecorder'))
 
 export type RightToolbarButtonsProps = {
     fileProps?: ToolbarFileProps,
@@ -56,6 +56,7 @@ export const RightToolbarButtons = ({ fileProps, channelID, isEdit, ...sendProps
                 <EmojiPickerButton />
                 <GIFPickerButton />
                 {fileProps && <FilePickerButton fileProps={fileProps} />}
+                {fileProps && <VoiceNoteButton fileProps={fileProps} />}
             </Flex>
             <Separator orientation='vertical' />
             <SendButton {...sendProps} />
@@ -195,6 +196,33 @@ const FilePickerButton = ({ fileProps }: { fileProps: ToolbarFileProps }) => {
         aria-label={"attach file"}>
         <BiPaperclip {...ICON_PROPS} />
     </IconButton>
+}
+
+const VoiceNoteButton = ({ fileProps }: { fileProps: ToolbarFileProps }) => {
+    const { editor } = useCurrentEditor()
+    const [isRecording, setIsRecording] = useState(false)
+
+    return (
+        <Popover.Root open={isRecording} onOpenChange={setIsRecording}>
+            <Popover.Trigger>
+                <IconButton
+                    size='1'
+                    variant='ghost'
+                    className={isRecording ? 'text-accent-a11 ring-accent-a11 ring-2 ring-inset rounded-radius2' : DEFAULT_BUTTON_STYLE}
+                    disabled={editor?.isEditable === false}
+                    title={isRecording ? 'Stop recording' : 'Record voice message'}
+                    aria-label={isRecording ? 'stop recording' : 'record voice message'}
+                >
+                    {isRecording ? <BiCheck {...ICON_PROPS} /> : <BiMicrophone {...ICON_PROPS} />}
+                </IconButton>
+            </Popover.Trigger>
+            <Popover.Content side="top" align="center">
+                <Suspense fallback={<Loader />}>
+                    <VoiceRecorder fileProps={fileProps} isRecording={isRecording} setIsRecording={setIsRecording} />
+                </Suspense>
+            </Popover.Content>
+        </Popover.Root>
+    )
 }
 
 interface SendButtonProps extends IconButtonProps {
