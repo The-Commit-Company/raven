@@ -39,7 +39,10 @@
   "file_sources",
   "document_parsing_tab",
   "use_google_document_parser",
-  "google_document_processor_id"
+  "google_document_processor_id",
+  "marketplace_tab",
+  "marketplace_id",
+  "mapped_functions"
  ],
  "fields": [
   {
@@ -244,6 +247,23 @@
    "fieldtype": "Data",
    "label": "Google Document Processor ID",
    "length": 400
+  },
+  {
+   "fieldname": "marketplace_tab",
+   "fieldtype": "Tab Break",
+   "label": "Marketplace"
+  },
+  {
+   "fieldname": "marketplace_id",
+   "fieldtype": "Data",
+   "label": "Marketplace ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "mapped_functions",
+   "fieldtype": "JSON",
+   "label": "Mapped Functions",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
