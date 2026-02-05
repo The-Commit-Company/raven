@@ -4,11 +4,14 @@ import Profile from "./pages/settings/Profile"
 import Appearance from "./pages/settings/Appearance"
 import Preferences from "./pages/settings/Preferences"
 import Channel from "@pages/Channel"
-import Mentions from "@pages/Mentions"
+import Notifications from "@pages/Notifications"
 import SavedMessages from "@pages/SavedMessages"
 import Search from "@pages/Search"
 import ChannelSettings from "@components/features/channel/ChannelSettings/ChannelSettings"
 import MainPage from "@pages/MainPage"
+import WorkspaceSwitcher from "@pages/WorkspaceSwitcher"
+import { WorkspaceSwitcherGrid } from "@components/workspace-switcher/WorkspaceSwitcherGrid"
+import { WorkspaceRedirect } from "@components/workspace-switcher/WorkspaceRedirect"
 import { FrappeProvider } from 'frappe-react-sdk'
 import { init } from 'emoji-mart'
 import Cookies from 'js-cookie'
@@ -50,14 +53,9 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/" element={<MainPage />}>
-            <Route index element={<Channel />} />
-            <Route path=":workspace/channel/:id" element={<Channel />} />
-            <Route path=":workspace/channel/:id/thread/:threadID" element={<Channel />} />
-            <Route path=":workspace/channel/:id/settings" element={<ChannelSettings />} />
-            <Route path="mentions" element={<Mentions />} />
-            <Route path="threads" element={<Threads />} />
-            <Route path="direct-messages" element={<DirectMessages />} />
+          <Route path="/" element={<WorkspaceSwitcher />}>
+            <Route index element={lastWorkspace && lastChannel && isDesktop ? <Navigate to={`/${encodeURIComponent(lastWorkspace)}/channel/${encodeURIComponent(lastChannel)}`} replace /> : lastWorkspace ? <Navigate to={`/${encodeURIComponent(lastWorkspace)}`} replace /> : <WorkspaceSwitcherGrid />} />
+            <Route path="workspace-explorer" element={<WorkspaceSwitcherGrid />} />
             <Route path="settings" element={<AppSettings />}>
               <Route index element={<Navigate to="profile" replace />} />
               <Route path="profile" element={<Profile />} />
@@ -66,8 +64,17 @@ function App() {
               <Route path="workspaces" element={<WorkspaceList />} />
               <Route path="emojis" element={<CustomEmojiList />} />
             </Route>
+            <Route path="notifications" element={<Notifications />} />
+            <Route path="threads" element={<Threads />} />
+            <Route path="direct-messages" element={<DirectMessages />} />
             <Route path="saved-messages" element={<SavedMessages />} />
-            <Route path="search" element={<Search />} />
+            <Route path=":workspaceID" element={<MainPage />}>
+              <Route index element={<WorkspaceRedirect />} />
+              <Route path="channel/:id" element={<Channel />} />
+              <Route path="channel/:id/thread/:threadID" element={<Channel />} />
+              <Route path="channel/:id/settings" element={<ChannelSettings />} />
+              <Route path="search" element={<Search />} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>

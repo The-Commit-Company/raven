@@ -1,6 +1,4 @@
 import { Button } from "@components/ui/button"
-import { Separator } from "@components/ui/separator"
-import { SidebarTrigger } from "@components/ui/sidebar"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
 import { FileText, Headset, Link, MessageSquareText, Pin, Star } from "lucide-react"
 import ChannelMembers from "./ChannelMembers"
@@ -8,9 +6,18 @@ import ChannelMenu from "./ChannelMenu"
 import { useAtom } from "jotai"
 import { channelDrawerAtom } from "@utils/channelAtoms"
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
+import { useSidebar } from "@components/ui/sidebar"
+import { useLocation } from "react-router-dom"
+import { SIDEBAR_LESS_ROUTES } from "@utils/routes"
 
 const ChannelHeader = () => {
     const channelID = useCurrentChannelID()
+    const location = useLocation()
+    const pathname = location.pathname
+    const isSettingsPage = pathname.startsWith("/settings")
+    const isSidebarLessPage = SIDEBAR_LESS_ROUTES.has(pathname) || isSettingsPage
+    const { state } = useSidebar()
+    const isCollapsed = state === "collapsed"
 
     const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
 
@@ -37,16 +44,24 @@ const ChannelHeader = () => {
     }
 
     return (
-        <div className="sticky top-[var(--app-header-height,36px)] flex items-center justify-between border-b bg-background py-1.5 px-2 z-50">
+        <div 
+            className="fixed flex items-center justify-between border-b bg-background py-1.5 px-2 z-40 transition-[left,width,top] duration-200 ease-linear"
+            style={{
+                top: "var(--app-header-height, 36px)",
+                left: isSidebarLessPage
+                    ? "var(--workspace-switcher-width, 60px)"
+                    : (isCollapsed
+                        ? "var(--sidebar-width-icon, 60px)"
+                        : "var(--sidebar-width, 340px)"),
+                width: isSidebarLessPage
+                    ? "calc(100% - var(--workspace-switcher-width, 60px))"
+                    : (isCollapsed
+                        ? "calc(100% - var(--sidebar-width-icon, 60px))"
+                        : "calc(100% - var(--sidebar-width, 340px))"),
+            }}
+        >
             {/* Left side */}
             <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1">
-                    <SidebarTrigger className="-ml-1" />
-                    <div className="h-6">
-                        <Separator orientation="vertical" />
-                    </div>
-                </div>
-
                 <div className="flex items-center gap-0.5">
                     <Tooltip>
                         <TooltipTrigger asChild>

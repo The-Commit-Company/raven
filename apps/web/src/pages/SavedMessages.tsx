@@ -9,6 +9,7 @@ import SavedMessagesList from "@components/features/saved-messages/SavedMessages
 import { ReminderDialog } from "@components/features/saved-messages/ReminderDialog"
 import { SavedMessage, SavedMessageStatus } from "../types/SavedMessage"
 import { RavenChannel } from "@raven/types/RavenChannelManagement/RavenChannel"
+import { WorkspaceSwitcher } from "@components/workspace-switcher/WorkspaceSwitcher"
 
 const TABS: { key: SavedMessageStatus; label: string }[] = [
     { key: 'in_progress', label: 'In progress' },
@@ -150,15 +151,27 @@ export default function SavedMessages() {
         return 0
     }
 
+    // Saved messages page is a sidebar-less page, so it only has the workspace switcher (60px)
+    const headerLeft = "var(--workspace-switcher-width, 60px)"
+    const headerWidth = "calc(100% - var(--workspace-switcher-width, 60px))"
+
     return (
-        <div className="flex flex-col h-full">
-            <header className="sticky top-0 flex items-center justify-between border-b bg-background py-1.5 px-2 z-30">
+        <div className="flex flex-col h-full overflow-hidden" style={{ "--workspace-switcher-width": "60px" } as React.CSSProperties}>
+            <WorkspaceSwitcher standalone />
+            <div className="flex flex-col h-full overflow-hidden" style={{ marginLeft: "var(--workspace-switcher-width, 60px)", width: "calc(100% - var(--workspace-switcher-width, 60px))" } as React.CSSProperties}>
+                <header 
+                    className="flex items-center justify-between border-b bg-background py-1.5 px-2 z-10 fixed top-0 h-[36px] transition-[left,width] duration-200 ease-linear"
+                    style={{
+                        left: headerLeft,
+                        width: headerWidth,
+                    }}
+                >
                 <div className="flex items-center gap-4">
                     <span className="text-md font-medium">Saved Messages</span>
                 </div>
             </header>
 
-            <div className="flex flex-1 overflow-hidden">
+            <div className="pt-[36px] flex flex-1 overflow-hidden">
                 <div className="flex-1 flex flex-col overflow-hidden">
                     <div className="px-4 pt-4 shrink-0 space-y-3">
                         {/* Tabs */}
@@ -274,15 +287,16 @@ export default function SavedMessages() {
                 </div>
             </div>
 
-            {/* Reminder Dialog */}
-            <ReminderDialog
-                open={reminderDialogOpen}
-                onOpenChange={setReminderDialogOpen}
-                onSave={handleReminderSave}
-                initialDate={reminderMessage?.reminder_date ? new Date(reminderMessage.reminder_date) : undefined}
-                initialTime={reminderMessage?.reminder_time}
-                initialDescription={reminderMessage?.reminder_description}
-            />
+                {/* Reminder Dialog */}
+                <ReminderDialog
+                    open={reminderDialogOpen}
+                    onOpenChange={setReminderDialogOpen}
+                    onSave={handleReminderSave}
+                    initialDate={reminderMessage?.reminder_date ? new Date(reminderMessage.reminder_date) : undefined}
+                    initialTime={reminderMessage?.reminder_time}
+                    initialDescription={reminderMessage?.reminder_description}
+                />
+            </div>
         </div>
     )
 }
