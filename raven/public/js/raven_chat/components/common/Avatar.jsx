@@ -22,8 +22,8 @@ export const generateAvatarColor = (id) => {
 
 export const getInitials = (name) => {
     if (!name) return ''
-    const [firstName, lastName] = name.split(' ')
-    return firstName[0] + (lastName?.[0] ?? '')
+    const [firstName, lastName] = name.trim().split(' ')
+    return ((firstName?.[0] ?? '') + (lastName?.[0] ?? '')).toUpperCase()
 }
 //TODO: isActive is not implemented
 const Avatar = ({ user, fallback, isActive }) => {
