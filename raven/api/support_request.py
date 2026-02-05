@@ -7,11 +7,11 @@ from frappe import _
 
 @frappe.whitelist(methods=["POST"])
 def submit_support_request(
-	email,
-	ticket_type,
-	subject,
-	description,
-	status="Open",
+	email: str,
+	ticket_type: str,
+	subject: str,
+	description: str,
+	status: str = "Open",
 ):
 	"""
 	Submit a support ticket using Frappe's web form API.

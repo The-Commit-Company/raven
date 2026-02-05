@@ -18,12 +18,12 @@ def get_number_of_replies(thread_id: str):
 @frappe.whitelist(methods=["GET"])
 def get_all_threads(
 	workspace: str = None,
-	content=None,
-	channel_id=None,
-	is_ai_thread=0,
-	start_after=0,
-	limit=10,
-	only_show_unread=False,
+	content: str = None,
+	channel_id: str = None,
+	is_ai_thread: int = 0,
+	start_after: int = 0,
+	limit: int = 10,
+	only_show_unread: bool = False,
 ):
 	"""
 	Get all the threads in which the user is a participant
@@ -111,7 +111,12 @@ def get_all_threads(
 
 @frappe.whitelist(methods=["GET"])
 def get_other_threads(
-	workspace: str = None, content=None, channel_id=None, is_ai_thread=0, start_after=0, limit=10
+	workspace: str = None,
+	content: str = None,
+	channel_id: str = None,
+	is_ai_thread: int = 0,
+	start_after: int = 0,
+	limit: int = 10,
 ):
 	"""
 	Get all the threads in which the user is not a participant, but is a member of the channel
