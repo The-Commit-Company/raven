@@ -14,10 +14,10 @@ from raven.utils import get_channel_member, is_channel_member, track_channel_vis
 def send_message(
 	channel_id: str,
 	text: str,
-	is_reply=False,
-	linked_message=None,
-	json_content=None,
-	send_silently=False,
+	is_reply: bool = False,
+	linked_message: str | None = None,
+	json_content: dict | str | None = None,
+	send_silently: bool = False,
 ):
 	if is_reply:
 		doc = frappe.get_doc(
@@ -104,10 +104,13 @@ def get_messages(channel_id: str):
 
 
 @frappe.whitelist()
-def save_message(message_id: str, add=False):
+def save_message(message_id: str, add: str | bool = False):
 	"""
 	Save the message as a bookmark
 	"""
+
+	if isinstance(add, str):
+		add = add.lower() == "yes" or add == "1"
 
 	if not frappe.has_permission(doctype="Raven Message", doc=message_id, ptype="read"):
 		frappe.throw(_("You don't have permission to save this message"), frappe.PermissionError)
@@ -428,7 +431,11 @@ file_extensions = {
 
 @frappe.whitelist()
 def get_all_files_shared_in_channel(
-	channel_id: str, file_name=None, file_type=None, start_after=0, page_length=None
+	channel_id: str,
+	file_name: str | None = None,
+	file_type: str | None = None,
+	start_after: int = 0,
+	page_length: int | None = None,
 ):
 
 	# check if the user has permission to view the channel
@@ -494,7 +501,9 @@ def get_all_files_shared_in_channel(
 
 
 @frappe.whitelist()
-def get_count_for_pagination_of_files(channel_id: str, file_name=None, file_type=None):
+def get_count_for_pagination_of_files(
+	channel_id: str, file_name: str | None = None, file_type: str | None = None
+):
 
 	# check if the user has permission to view the channel
 	check_permission(channel_id)
@@ -534,7 +543,7 @@ def get_count_for_pagination_of_files(channel_id: str, file_name=None, file_type
 
 
 @frappe.whitelist(methods=["POST"])
-def forward_message(message_receivers, forwarded_message):
+def forward_message(message_receivers: list[dict], forwarded_message: dict):
 	"""
 	Forward a message to multiple users/ or in multiple channels
 	"""
@@ -551,7 +560,7 @@ def forward_message(message_receivers, forwarded_message):
 	return "messages forwarded"
 
 
-def add_forwarded_message_to_channel(channel_id, forwarded_message):
+def add_forwarded_message_to_channel(channel_id: str, forwarded_message: dict):
 	"""
 	Forward a message to a channel - copy over the message,
 	change the owner to the current user and timestamp to now,

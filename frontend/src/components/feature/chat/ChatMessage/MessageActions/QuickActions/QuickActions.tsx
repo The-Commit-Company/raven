@@ -72,7 +72,7 @@ export const QuickActions = ({ message, onReply, onEdit, isEmojiPickerOpen, setI
                 CHAT_STYLE === "Left-Right" ? alignToRight ? "-top-10 right-0" : "-top-10 left-0" : "-top-6 right-4"
             )}>
             <Flex gap='1'>
-                {quickEmojis.map((emoji) => {
+                {(quickEmojis ?? ["👍", "✅", "👀", "🎉"]).map((emoji) => {
                     return <QuickActionButton
                         key={emoji}
                         className={'text-base'}
