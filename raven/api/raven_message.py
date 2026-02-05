@@ -104,10 +104,13 @@ def get_messages(channel_id: str):
 
 
 @frappe.whitelist()
-def save_message(message_id: str, add: bool = False):
+def save_message(message_id: str, add: str | bool = False):
 	"""
 	Save the message as a bookmark
 	"""
+
+	if isinstance(add, str):
+		add = add.lower() == "yes" or add == "1"
 
 	if not frappe.has_permission(doctype="Raven Message", doc=message_id, ptype="read"):
 		frappe.throw(_("You don't have permission to save this message"), frappe.PermissionError)
