@@ -7,7 +7,7 @@ import { RiRobot2Fill } from 'react-icons/ri'
 interface UserAvatarProps {
     user: UserFields,
     isActive?: boolean,
-    size?: 'xs' | 'sm' | 'md' | 'lg',
+    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl',
     className?: string,
     showStatusIndicator?: boolean,
     showBotIndicator?: boolean
@@ -46,11 +46,11 @@ export const getStatusIndicatorColor = (status: string) => {
     }
 }
 
-const getSizeClasses = (size: 'xs' | 'sm' | 'md' | 'lg') => {
+const getSizeClasses = (size: 'xs' | 'sm' | 'md' | 'lg' | 'xl') => {
     switch (size) {
         case 'xs':
             return {
-                avatar: 'h-4 w-4',
+                avatar: 'h-4 w-4 rounded-full',
                 indicator: 'h-1 w-1 -bottom-0.5 -right-0.5',
                 bot: 'h-1.5 w-1.5',
                 botContainer: 'h-2 w-2 bottom-0.5 right-0.5',
@@ -58,7 +58,7 @@ const getSizeClasses = (size: 'xs' | 'sm' | 'md' | 'lg') => {
             }
         case 'sm':
             return {
-                avatar: 'h-6 w-6',
+                avatar: 'h-6 w-6 rounded-full',
                 indicator: 'h-2 w-2 -bottom-0.5 -right-0.5',
                 bot: 'h-2 w-2',
                 botContainer: 'h-2.5 w-2.5 bottom-1 right-1',
@@ -66,7 +66,7 @@ const getSizeClasses = (size: 'xs' | 'sm' | 'md' | 'lg') => {
             }
         case 'md':
             return {
-                avatar: 'h-8 w-8',
+                avatar: 'h-8 w-8 rounded-full',
                 indicator: 'h-2.5 w-2.5 -bottom-0.5 -right-0.5',
                 bot: 'h-3 w-3',
                 botContainer: 'h-3 w-3 bottom-1.5 right-1.5',
@@ -74,15 +74,24 @@ const getSizeClasses = (size: 'xs' | 'sm' | 'md' | 'lg') => {
             }
         case 'lg':
             return {
-                avatar: 'h-12 w-12',
+                avatar: 'h-12 w-12 rounded-full',
                 indicator: 'h-3 w-3 -bottom-1 -right-1',
                 bot: 'h-5 w-5',
                 botContainer: 'h-4 w-4 bottom-1.5 right-1.5',
                 font: 'text-md'
             }
+        case 'xl':
+            return {
+                avatar: 'h-[160px] w-[160px] rounded-lg shadow-none',
+                indicator: 'h-3.5 w-3.5 -bottom-0 right-0 border-2 border-background',
+                bot: 'h-5 w-5',
+                botContainer: 'h-4 w-4 bottom-1.5 right-1.5',
+                font: 'text-3xl font-semibold',
+                fallbackRound: 'rounded-lg'
+            }
         default:
             return {
-                avatar: 'h-8 w-8',
+                avatar: 'h-8 w-8 rounded-full',
                 indicator: 'h-2.5 w-2.5 bottom-1 right-1',
                 bot: 'h-3 w-3',
                 botContainer: 'h-3 w-3 bottom-1.5 right-1.5',
@@ -124,14 +133,14 @@ export const UserAvatar = memo<UserAvatarProps>(({
 
     return (
         <div className={cn("relative inline-block", className)}>
-            <Avatar className={cn(sizeClasses.avatar, "rounded-full")}>
+            <Avatar className={sizeClasses.avatar}>
                 <AvatarImage
                     src={user.user_image}
                     alt={`${displayName}'s profile picture`}
                     loading="lazy"
                 />
                 <AvatarFallback
-                    className={cn("text-white font-medium select-none border-0", sizeClasses.font)}
+                    className={cn("text-white font-medium select-none border-0", sizeClasses.font, sizeClasses.fallbackRound)}
                     style={fallbackStyle}
                     aria-label={`${displayName} (initials)`}
                 >

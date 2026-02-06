@@ -2,83 +2,99 @@ import * as React from "react"
 import { SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader } from "@components/ui/sidebar"
 import { Label } from "@components/ui/label"
 import { Switch } from "@components/ui/switch"
+import { Skeleton } from "@components/ui/skeleton"
 import { DMListItem } from "../common/DMListItem/DMListItem"
 import { UserFields } from "@raven/types/common/UserFields"
+import type { DMChannelListItem } from "@raven/types/common/ChannelListItem"
+import { useUser } from "@hooks/useUser"
+import { formatSidebarDate } from "@lib/date"
+import { getMessageTeaser } from "@utils/messageUtils"
 
-// Sample data for direct messages (TODO: Replace with real API data)
-interface MailItem extends UserFields {
-    email: string
-    date: string
-    teaser: string
-    unread: number
+/** Skeleton rows for DM list when channels are loading */
+function DMSidebarSkeleton() {
+    return (
+        <>
+            {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                    key={i}
+                    className="flex items-start gap-3 border-b px-4 py-3.5 last:border-b-0"
+                >
+                    <Skeleton className="h-9 w-9 rounded-full shrink-0" />
+                    <div className="flex-1 min-w-0 space-y-1.5">
+                        <div className="flex justify-between items-center gap-2">
+                            <Skeleton className="h-4 w-24" />
+                            <Skeleton className="h-3 w-12 shrink-0" />
+                        </div>
+                        <Skeleton
+                            className="h-3"
+                            style={{ width: `${55 + (i % 3) * 15}%` }}
+                        />
+                    </div>
+                </div>
+            ))}
+        </>
+    )
 }
 
-const sampleMails: MailItem[] = [
-    {
-        name: "Sarah Chen",
-        full_name: "Sarah Chen",
-        user_image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
-        email: "sarah.chen@company.com",
-        type: "User",
-        date: "09:34 AM",
-        teaser:
-            "Hi team, just a reminder about our meeting tomorrow at 10 AM.\nPlease come prepared with your project updates.",
-        unread: 3,
-    },
-    {
-        name: "Marcus Rodriguez",
-        full_name: "Marcus Rodriguez",
-        user_image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-        email: "marcus.rodriguez@company.com",
-        type: "User",
-        date: "Yesterday",
-        teaser:
-            "Thanks for the update, this is a good start.\nLet's schedule a call to discuss the next steps.",
-        unread: 0,
-    },
-    {
-        name: "Priya Patel",
-        full_name: "Priya Patel",
-        user_image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-        email: "priya.patel@company.com",
-        type: "User",
-        date: "2 days ago",
-        teaser:
-            "Hey everyone! I'm thinking of organizing a team outing this weekend.\nWould you be interested in a hiking trip or a beach day?",
-        unread: 15,
-    },
-    {
-        name: "David Kim",
-        full_name: "David Kim",
-        user_image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-        email: "david.kim@company.com",
-        type: "User",
-        date: "2 days ago",
-        teaser:
-            "I've reviewed the budget numbers you sent over.\nCan we set up a quick call to discuss some potential adjustments?",
-        unread: 0,
-    },
-    {
-        name: "Lisa Thompson",
-        full_name: "Lisa Thompson",
-        user_image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face",
-        email: "lisa.thompson@company.com",
-        type: "User",
-        date: "1 week ago",
-        teaser:
-            "Please join us for an all-hands meeting this Friday at 3 PM.\nWe have some exciting news to share about the company's future.",
-        unread: 1,
-    },
-]
+/** Single DM row when using API data; resolves peer via useUser(peer_user_id) */
+function DMChannelRow({
+    dmChannel,
+    activeDMChannelId,
+    onDMClick,
+}: {
+    dmChannel: DMChannelListItem
+    activeDMChannelId: string | null
+    onDMClick: (channelId: string) => void
+}) {
+    const { data: peerUser } = useUser(dmChannel.peer_user_id)
+    const user: UserFields = React.useMemo(
+        () =>
+            peerUser ?? {
+                name: dmChannel.peer_user_id,
+                full_name: dmChannel.peer_user_id,
+                type: "User",
+            },
+        [peerUser, dmChannel.peer_user_id]
+    )
+    const date = formatSidebarDate(dmChannel.last_message_timestamp)
+    const teaser = getMessageTeaser(dmChannel.last_message_details)
+    const unread = typeof dmChannel.last_message_details === "object" && dmChannel.last_message_details?.unread_count != null
+        ? Number(dmChannel.last_message_details.unread_count)
+        : 0
+
+    return (
+        <DMListItem
+            user={user}
+            date={date}
+            teaser={teaser}
+            unread={unread}
+            isActive={activeDMChannelId === dmChannel.name}
+            onClick={(e) => {
+                e.preventDefault()
+                onDMClick(dmChannel.name)
+            }}
+        />
+    )
+}
 
 interface DMSidebarProps {
     workspaceName: string
-    mails?: MailItem[]
-    activeDM: string | null
-    onDMClick: (email: string) => void
+    activeDMChannelId: string | null
+    onDMClick: (dmChannelId: string) => void
+    /** DM channels from API (e.g. raven.api.raven_channel.get_all_channels) */
+    dmChannelsFromAPI?: DMChannelListItem[]
+    isLoadingChannels?: boolean
 }
 
-export function DMSidebar({ workspaceName, mails = sampleMails, activeDM, onDMClick }: DMSidebarProps) {
+export function DMSidebar({
+    workspaceName,
+    activeDMChannelId,
+    onDMClick,
+    dmChannelsFromAPI,
+    isLoadingChannels = false,
+}: DMSidebarProps) {
+    const useAPI = Array.isArray(dmChannelsFromAPI) && dmChannelsFromAPI.length > 0
+
     return (
         <>
             <SidebarHeader className="h-[36px] gap-2 px-3 border-b flex items-center">
@@ -95,20 +111,20 @@ export function DMSidebar({ workspaceName, mails = sampleMails, activeDM, onDMCl
             <SidebarContent>
                 <SidebarGroup className="p-0">
                     <SidebarGroupContent>
-                        {mails.map((mail) => (
-                            <DMListItem
-                                key={mail.email}
-                                user={mail as UserFields}
-                                date={mail.date}
-                                teaser={mail.teaser}
-                                unread={mail.unread}
-                                isActive={activeDM === mail.email}
-                                onClick={(e) => {
-                                    e.preventDefault()
-                                    onDMClick(mail.email)
-                                }}
-                            />
-                        ))}
+                        {isLoadingChannels ? (
+                            <DMSidebarSkeleton />
+                        ) : useAPI ? (
+                            dmChannelsFromAPI!.map((dm) => (
+                                <DMChannelRow
+                                    key={dm.name}
+                                    dmChannel={dm}
+                                    activeDMChannelId={activeDMChannelId}
+                                    onDMClick={onDMClick}
+                                />
+                            ))
+                        ) : (
+                            <div className="px-4 py-3 text-sm text-muted-foreground">No conversations yet</div>
+                        )}
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>

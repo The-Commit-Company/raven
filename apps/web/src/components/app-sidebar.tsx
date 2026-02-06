@@ -8,7 +8,7 @@ import {
     SidebarHeader,
 } from "@components/ui/sidebar"
 import { Switch } from "@components/ui/switch"
-import { useNavigate, useLocation, useParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { ChannelSidebar } from "./channel-sidebar/ChannelSidebar"
 import { DMSidebar } from "./dm-sidebar/DMSidebar"
 import { ChannelListItem } from "@raven/types/common/ChannelListItem"
@@ -19,10 +19,7 @@ import { WorkspaceSwitcher } from "./workspace-switcher/WorkspaceSwitcher"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const [activeChannel, setActiveChannel] = React.useState<{ id: string; name: string; type: string; unread: number } | null>(null)
-    const [activeDM, setActiveDM] = React.useState<string | null>(null)
     const navigate = useNavigate()
-    const location = useLocation()
-    const params = useParams()
     const { activeWorkspaceName } = useActiveWorkspace()
 
     // Get channel data based on active workspace
@@ -63,17 +60,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <WorkspaceSwitcher />
 
                 <div className="flex-1 flex flex-col">
-                    {location.pathname === "/threads" || location.pathname === "/notifications" ? null : location.pathname === "/direct-messages" ? (
+                    {location.pathname === "/threads" || location.pathname === "/notifications" ? null : location.pathname.startsWith("/direct-messages") || activeWorkspaceName === "Direct Messages" ? (
                         <DMSidebar
                             workspaceName="Direct Messages"
-                            activeDM={activeDM}
-                            onDMClick={(email) => setActiveDM(email)}
-                        />
-                    ) : activeWorkspaceName === "Direct Messages" ? (
-                        <DMSidebar
-                            workspaceName={activeWorkspaceName}
-                            activeDM={activeDM}
-                            onDMClick={(email) => setActiveDM(email)}
+                            activeDMChannelId={null}
+                            onDMClick={(dmChannelId) => navigate(`/direct-messages/${encodeURIComponent(dmChannelId)}`)}
                         />
                     ) : (
                         <>
