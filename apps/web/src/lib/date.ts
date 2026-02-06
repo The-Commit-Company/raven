@@ -158,6 +158,15 @@ export const getTimeago = (date?: string) => {
     return ''
 }
 
+/** Format timestamp for sidebar/list (e.g. "9:34 AM", "Yesterday", or relative like "2 days ago") */
+export const formatSidebarDate = (timestamp?: string) => {
+    if (!timestamp) return ''
+    const d = toUserTimezone(timestamp)
+    if (d.isAfter(dayjs().startOf('day'))) return d.format('h:mm A')
+    if (d.isAfter(dayjs().subtract(1, 'day').startOf('day'))) return 'Yesterday'
+    return d.fromNow()
+}
+
 export const formatDate = (date?: string | Date, format?: string) => {
 
     if (!format) {

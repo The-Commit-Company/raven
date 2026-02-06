@@ -18,7 +18,8 @@ import Cookies from 'js-cookie'
 import LoginPage from "@pages/auth/Login"
 import ForgotPassword from "@pages/auth/ForgotPassword"
 import Threads from "@pages/Threads"
-import DirectMessages from "@pages/DirectMessages"
+import DirectMessages, { DirectMessagesEmptyState } from "@pages/DirectMessages"
+import DirectMessage from "@pages/DirectMessage"
 import WorkspaceList from "@pages/settings/Workspaces/WorkspaceList"
 import CustomEmojiList from "@pages/settings/CustomEmojiList/CustomEmojiList"
 
@@ -66,7 +67,10 @@ function App() {
             </Route>
             <Route path="notifications" element={<Notifications />} />
             <Route path="threads" element={<Threads />} />
-            <Route path="direct-messages" element={<DirectMessages />} />
+            <Route path="direct-messages" element={<DirectMessages />}>
+              <Route index element={<DirectMessagesEmptyState />} />
+              <Route path=":dm_channel_id" element={<DirectMessage />} />
+            </Route>
             <Route path="saved-messages" element={<SavedMessages />} />
             <Route path=":workspaceID" element={<MainPage />}>
               <Route index element={<WorkspaceRedirect />} />

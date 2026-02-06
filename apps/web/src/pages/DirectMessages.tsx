@@ -1,43 +1,36 @@
-import { useState } from "react"
+import { useNavigate, useParams, Outlet } from "react-router-dom"
 import { WorkspaceSwitcher } from "@components/workspace-switcher/WorkspaceSwitcher"
-import { Sidebar, SidebarProvider, SidebarInset, useSidebar } from "@components/ui/sidebar"
+import { Sidebar, SidebarProvider, SidebarInset } from "@components/ui/sidebar"
 import { DMSidebar } from "@components/dm-sidebar/DMSidebar"
+import { DMTopBar } from "@components/features/dm-channel/DMTopBar"
+import { useChannelList } from "@hooks/useChannelList"
 
-const DirectMessagesHeader = () => {
-    // Direct messages sidebar is always expanded (not collapsible)
-    // Total sidebar width: Workspace switcher (60px) + DMSidebar (360px) = 420px
-    const headerLeft = "420px"
-    const headerWidth = "calc(100% - 420px)"
-
+export function DirectMessagesEmptyState() {
     return (
-        <>
-            <header 
-                className="flex items-center justify-between border-b bg-background py-1.5 px-2 z-10 fixed top-0 h-[36px]"
-                style={{
-                    left: headerLeft,
-                    width: headerWidth,
-                }}
-            >
-                <div className="flex items-center gap-4">
-                    <span className="text-md font-medium">Direct Messages</span>
-                </div>
-            </header>
-            <div className="pt-[36px] flex-1 overflow-auto">
-                {/* Content area - add your direct messages content here */}
-            </div>
-        </>
+        <div className="flex flex-1 flex-col items-center justify-center gap-2 p-6 text-center text-muted-foreground">
+            <p className="text-sm font-medium">Select a conversation</p>
+            <p className="text-xs">Choose a direct message from the sidebar to start chatting.</p>
+        </div>
     )
 }
 
 export default function DirectMessages() {
-    const [activeDM, setActiveDM] = useState<string | null>(null)
+    const navigate = useNavigate()
+    const { dm_channel_id } = useParams<{ dm_channel_id?: string }>()
+    const { dm_channels, isLoading } = useChannelList()
+
+    const handleDMClick = (channelId: string) => {
+        navigate(`/direct-messages/${encodeURIComponent(channelId)}`)
+    }
 
     return (
-        <div className="flex flex-col h-full overflow-hidden" style={{ "--workspace-switcher-width": "60px", "--sidebar-width": "420px" } as React.CSSProperties}>
+        <div className="flex flex-col h-screen min-h-0 overflow-hidden" style={{ "--workspace-switcher-width": "60px", "--sidebar-width": "380px" } as React.CSSProperties}>
             <SidebarProvider
+                className="flex-1 min-h-0 min-w-0"
                 style={{
-                    "--sidebar-width": "420px",
+                    "--sidebar-width": "380px",
                     "--sidebar-width-icon": "60px",
+                    "--app-header-height": "36px",
                 } as React.CSSProperties}
             >
                 <Sidebar className="overflow-hidden h-full" data-state="expanded">
@@ -46,14 +39,19 @@ export default function DirectMessages() {
                         <div className="flex-1 flex flex-col">
                             <DMSidebar
                                 workspaceName="Direct Messages"
-                                activeDM={activeDM}
-                                onDMClick={(email) => setActiveDM(email)}
+                                activeDMChannelId={dm_channel_id ?? null}
+                                onDMClick={handleDMClick}
+                                dmChannelsFromAPI={dm_channels}
+                                isLoadingChannels={isLoading}
                             />
                         </div>
                     </div>
                 </Sidebar>
-                <SidebarInset className="flex flex-col overflow-hidden">
-                    <DirectMessagesHeader />
+                <SidebarInset className="flex flex-1 flex-col min-h-0 overflow-hidden">
+                    <DMTopBar />
+                    <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                        <Outlet />
+                    </div>
                 </SidebarInset>
             </SidebarProvider>
         </div>
