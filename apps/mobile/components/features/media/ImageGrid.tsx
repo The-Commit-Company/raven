@@ -12,6 +12,7 @@ import useFileURL from '@hooks/useFileURL';
 import { WebViewSourceUri } from 'react-native-webview/lib/WebViewTypes';
 import { Text } from '@components/nativewindui/Text';
 import ErrorBanner from '@components/common/ErrorBanner';
+import { __ } from '@lib/i18n';
 
 const PAGE_SIZE = 18
 
@@ -152,10 +153,10 @@ const ImageListItem = ({ file }: { file: MediaInChannel }) => {
 }
 
 const EmptyStateForImageGrid = () => {
-    return (
+return (
         <View className="flex flex-row items-center gap-2 py-6 px-3">
             <Text className="text-muted-foreground text-center w-full text-base font-medium">
-                No images found
+                {__("No images found")}
             </Text>
         </View>
     )

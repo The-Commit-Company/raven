@@ -9,6 +9,7 @@ import { formatDate } from '@raven/lib/utils/dateConversions'
 import useSiteContext from './useSiteContext'
 import { GetMessagesResponse } from '@raven/types/common/ChatStream'
 import { useTrackChannelVisit } from './useUnreadMessageCount'
+import { useRouteToThread } from './useRouting'
 
 dayjs.extend(utc)
 dayjs.extend(advancedFormat)
@@ -42,6 +43,7 @@ export type MessageDateBlock = Message | DateBlock | HeaderBlock
 const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRef>, isThread: boolean = false, pinnedMessagesString?: string) => {
 
     const siteInformation = useSiteContext()
+    const goToThread = useRouteToThread()
 
     const isDataFetched = useRef(false)
     const latestMessagesLoaded = useRef(false)
@@ -278,6 +280,39 @@ const useChatStream = (channelID: string, listRef?: React.RefObject<LegendListRe
             revalidate: false
         })
 
+    })
+
+    // If an AI thread is created, update the parent message's is_thread flag and auto-navigate
+    useFrappeEventListener('ai_thread_created', (event) => {
+        if (event.channel_id === channelID && event.thread_id) {
+            // Update is_thread flag on the parent message
+            mutate((d) => {
+                if (d) {
+                    const newMessages = d.message.messages.map((message) => {
+                        if (message.name === event.thread_id) {
+                            return {
+                                ...message,
+                                is_thread: 1,
+                            }
+                        }
+                        return message
+                    })
+                    return ({
+                        message: {
+                            messages: newMessages,
+                            has_old_messages: d.message.has_old_messages,
+                            has_new_messages: d.message.has_new_messages
+                        }
+                    })
+                }
+                return d
+            }, { revalidate: false })
+
+            // Auto-navigate to thread if we're in a channel (not already in a thread)
+            if (!isThread && event.is_ai_thread) {
+                goToThread(event.thread_id)
+            }
+        }
     })
 
     const trackVisit = useTrackChannelVisit(channelID, isThread)

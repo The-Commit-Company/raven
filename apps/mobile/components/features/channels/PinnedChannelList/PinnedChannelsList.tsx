@@ -8,7 +8,7 @@ import ChevronDownIcon from '@assets/icons/ChevronDownIcon.svg'
 import ChevronRightIcon from '@assets/icons/ChevronRightIcon.svg'
 import { Text } from '@components/nativewindui/Text';
 import { Divider } from "@components/layout/Divider"
-
+import { __ } from '@lib/i18n';
 const PinnedChannelsList = ({ channels }: { channels: ChannelListItem[] }) => {
 
     const { myProfile } = useCurrentRavenUser()
@@ -38,8 +38,7 @@ const PinnedChannelsList = ({ channels }: { channels: ChannelListItem[] }) => {
 export default PinnedChannelsList
 
 const PinnedChannelListUI = ({ channels }: { channels: ChannelListItem[] }) => {
-
-    const [isExpanded, setIsExpanded] = useState(true)
+const [isExpanded, setIsExpanded] = useState(true)
     const { colors } = useColorScheme()
 
     const toggleAccordion = () => {
@@ -49,7 +48,7 @@ const PinnedChannelListUI = ({ channels }: { channels: ChannelListItem[] }) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={toggleAccordion} style={styles.header} activeOpacity={0.7}>
-                <Text style={styles.headerText}>Favourites</Text>
+                <Text style={styles.headerText}>{__("Pinned Channels")}</Text>
                 {isExpanded ? <ChevronDownIcon fill={colors.icon} /> : <ChevronRightIcon fill={colors.icon} />}
             </TouchableOpacity>
             {isExpanded && <>

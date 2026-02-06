@@ -3,7 +3,7 @@ import { Button } from "@components/nativewindui/Button"
 import ErrorBanner from "@components/common/ErrorBanner"
 import { Text } from "@components/nativewindui/Text"
 import { View } from "react-native"
-
+import { __ } from '@lib/i18n';
 interface JoinChannelBoxProps {
     channelID: string,
     isThread: boolean,
@@ -11,8 +11,7 @@ interface JoinChannelBoxProps {
 }
 
 export const JoinChannelBox = ({ channelID, isThread, user }: JoinChannelBoxProps) => {
-
-    const { mutate } = useSWRConfig()
+const { mutate } = useSWRConfig()
 
     const { createDoc, error, loading } = useFrappeCreateDoc()
 
@@ -28,7 +27,7 @@ export const JoinChannelBox = ({ channelID, isThread, user }: JoinChannelBoxProp
     return (
         <View className="flex-col gap-2 items-center border-t border-l border-r border-border rounded-2xl px-4 py-4">
             {error && <ErrorBanner error={error} />}
-            <Text className="text-sm text-muted-foreground">You are not a member of this {isThread ? 'thread' : 'channel'}.</Text>
+            <Text className="text-sm text-muted-foreground">{isThread ? __("You are not a member of this thread") : __("You are not a member of this channel")}</Text>
             <Button
                 onPress={joinChannel}
                 size="md"
@@ -36,8 +35,8 @@ export const JoinChannelBox = ({ channelID, isThread, user }: JoinChannelBoxProp
                 className="w-full rounded-lg"
                 disabled={loading}
             >
-                {loading ? <Text className="gap-1 text-center w-full font-semibold text-base">Joining</Text> :
-                    <Text className="gap-1 text-center w-full font-semibold text-base">Join</Text>}
+                {loading ? <Text className="gap-1 text-center w-full font-semibold text-base">{__("Joining")}</Text> :
+                    <Text className="gap-1 text-center w-full font-semibold text-base">{__("Join")}</Text>}
             </Button>
         </View>
     )

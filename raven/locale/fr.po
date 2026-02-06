@@ -1,0 +1,1068 @@
+# Raven Mobile Translations - French
+# Single source of truth for mobile app translations
+# Edit this file to add/update translations
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Raven Mobile\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "1 reply"
+msgstr "1 réponse"
+
+msgid "AI Agents"
+msgstr "Agents IA"
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Add Channel"
+msgstr "Ajouter un canal"
+
+msgid "Add Members"
+msgstr "Ajouter des membres"
+
+msgid "Add Option"
+msgstr "Ajouter une option"
+
+msgid "Add Site"
+msgstr "Ajouter un site"
+
+msgid "Add a channel or DM"
+msgstr "Ajouter un canal ou un DM"
+
+msgid "Add a new site"
+msgstr "Ajouter un nouveau site"
+
+msgid "All"
+msgstr "Tout"
+
+msgid "All channels marked as read"
+msgstr "Tous les canaux marqués comme lus"
+
+msgid "All messages, including files and images will be removed."
+msgstr "Tous les messages, y compris les fichiers et images seront supprimés."
+
+msgid "Allow multiple choices"
+msgstr "Autoriser les choix multiples"
+
+msgid "An unexpected error occurred"
+msgstr "Une erreur inattendue s'est produite"
+
+msgid "Any Channel"
+msgstr "Tous les canaux"
+
+msgid "Anyone from your organisation can join this channel and view its message history. If you make this channel private, it will be visible to anyone who has joined the channel up until that point."
+msgstr "Tous les membres de votre organisation peuvent rejoindre ce canal et voir son historique de messages. Si vous rendez ce canal privé, il sera visible par tous ceux qui l'ont rejoint jusqu'à ce moment."
+
+msgid "Appearance"
+msgstr "Apparence"
+
+msgid "Archive"
+msgstr "Archiver"
+
+msgid "Archive Channel"
+msgstr "Archiver le canal"
+
+msgid "Archive channel?"
+msgstr "Archiver le canal ?"
+
+msgid "Archived"
+msgstr "Archivé"
+
+msgid "Archiving..."
+msgstr "Archivage..."
+
+msgid "Are you sure you want to archive {{channelName}} channel?"
+msgstr "Êtes-vous sûr de vouloir archiver le canal {{channelName}} ?"
+
+msgid "Are you sure you want to delete this message? It will be deleted for all users."
+msgstr "Êtes-vous sûr de vouloir supprimer ce message ? Il sera supprimé pour tous les utilisateurs."
+
+msgid "Are you sure you want to delete this thread?"
+msgstr "Êtes-vous sûr de vouloir supprimer ce fil ?"
+
+msgid "Are you sure you want to leave this thread?"
+msgstr "Êtes-vous sûr de vouloir quitter ce fil ?"
+
+msgid "Are you sure you want to leave {{channelName}} channel?"
+msgstr "Êtes-vous sûr de vouloir quitter le canal {{channelName}} ?"
+
+msgid "Are you sure you want to remove this image?"
+msgstr "Êtes-vous sûr de vouloir supprimer votre photo de profil ?"
+
+msgid "Ask a question"
+msgstr "Posez une question"
+
+msgid "Authentication Error"
+msgstr "Erreur d'authentification"
+
+msgid "Availability"
+msgstr "Disponibilité"
+
+msgid "Availability updated!"
+msgstr "Disponibilité mise à jour"
+
+msgid "Available"
+msgstr "Disponible"
+
+msgid "Away"
+msgstr "Absent"
+
+msgid "Bot"
+msgstr "Bot"
+
+msgid "Bots cannot be made admins"
+msgstr "Les bots ne peuvent pas être administrateurs"
+
+msgid "Browse Channels"
+msgstr "Parcourir les canaux"
+
+msgid "Camera"
+msgstr "Caméra"
+
+msgid "Camera permission not granted"
+msgstr "Permission de la caméra refusée"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Cannot open this URL"
+msgstr "Impossible d'ouvrir cette URL"
+
+msgid "Channel Info"
+msgstr "Infos du canal"
+
+msgid "Channel Type"
+msgstr "Type de canal"
+
+msgid "Channel archived"
+msgstr "Canal archivé"
+
+msgid "Channel changed to {{type}}"
+msgstr "Canal converti en {{type}}"
+
+msgid "Channel created"
+msgstr "Canal créé"
+
+msgid "Channel description:"
+msgstr "Description du canal :"
+
+msgid "Channel details updated"
+msgstr "Détails du canal mis à jour"
+
+msgid "Channel name can only contain letters, numbers and hyphens"
+msgstr "Le nom du canal ne peut contenir que des lettres, des chiffres et des tirets"
+
+msgid "Channel name cannot be less than 3 characters"
+msgstr "Le nom du canal doit contenir au moins 3 caractères"
+
+msgid "Channel name cannot be more than 50 characters"
+msgstr "Le nom du canal ne peut pas dépasser 50 caractères"
+
+msgid "Channel restored"
+msgstr "Canal restauré"
+
+msgid "Channel {{channelName}} has been deleted"
+msgstr "Le canal {{channelName}} a été supprimé"
+
+msgid "Channels"
+msgstr "Canaux"
+
+msgid "Channels are where your team communicates. They are best when organized around a topic - #development, for example."
+msgstr "Les canaux sont l'espace de communication de votre équipe. Choisissez le type adapté à vos besoins."
+
+msgid "Click on Configure OAuth Client"
+msgstr "Cliquez sur Configurer le client OAuth"
+
+msgid "Close"
+msgstr "Fermer"
+
+msgid "Convert"
+msgstr "Convertir"
+
+msgid "Convert to a {{type}} channel"
+msgstr "Convertir en canal {{type}}"
+
+msgid "Convert to a {{type}} channel?"
+msgstr "Convertir en canal {{type}} ?"
+
+msgid "Converting..."
+msgstr "Conversion..."
+
+msgid "Copied to clipboard"
+msgstr "Copié dans le presse-papiers"
+
+msgid "Copy"
+msgstr "Copier"
+
+msgid "Copy Error"
+msgstr "Copier l'erreur"
+
+msgid "Copy Link"
+msgstr "Copier le lien"
+
+msgid "Copy file link"
+msgstr "Copier le lien du fichier"
+
+msgid "Could not archive channel"
+msgstr "Impossible d'archiver le canal"
+
+msgid "Could not copy text"
+msgstr "Impossible de copier le texte"
+
+msgid "Could not create a DM channel"
+msgstr "Impossible de créer le canal de messages directs"
+
+msgid "Could not delete channel"
+msgstr "Impossible de supprimer le canal"
+
+msgid "Could not delete thread"
+msgstr "Impossible de supprimer le fil"
+
+msgid "Could not leave channel"
+msgstr "Impossible de quitter le canal"
+
+msgid "Could not leave thread"
+msgstr "Impossible de quitter le fil"
+
+msgid "Could not perform the action"
+msgstr "Impossible d'effectuer l'action"
+
+msgid "Could not retract vote"
+msgstr "Impossible de retirer le vote"
+
+msgid "Could not submit your vote"
+msgstr "Impossible d'enregistrer votre vote"
+
+msgid "Could not toggle thread notifications"
+msgstr "Impossible de modifier les notifications du fil"
+
+msgid "Couldn't open image"
+msgstr "Impossible d'ouvrir l'image"
+
+msgid "Create DM"
+msgstr "Créer un message direct"
+
+msgid "Create Poll"
+msgstr "Créer un sondage"
+
+msgid "Create a private channel"
+msgstr "Créer un canal privé"
+
+msgid "Create a public channel"
+msgstr "Créer un canal public"
+
+msgid "Create a quick poll to get everyone's thoughts on a topic."
+msgstr "Créez un sondage rapide pour recueillir l'avis de tous sur un sujet."
+
+msgid "Create an open channel"
+msgstr "Créer un canal ouvert"
+
+msgid "Create thread"
+msgstr "Créer un fil"
+
+msgid "Current Site"
+msgstr "Site actuel"
+
+msgid "Custom Status"
+msgstr "Statut personnalisé"
+
+msgid "Danger Zone"
+msgstr "Zone de danger"
+
+msgid "Dark"
+msgstr "Sombre"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Delete Channel"
+msgstr "Supprimer le canal"
+
+msgid "Delete message"
+msgstr "Supprimer le message"
+
+msgid "Delete message?"
+msgstr "Supprimer le message ?"
+
+msgid "Delete this Channel?"
+msgstr "Supprimer ce canal ?"
+
+msgid "Delete thread?"
+msgstr "Supprimer le fil ?"
+
+msgid "Deleting..."
+msgstr "Suppression..."
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Direct Messages"
+msgstr "Messages directs"
+
+msgid "Disabled"
+msgstr "Désactivé"
+
+msgid "Dismiss channel admin"
+msgstr "Retirer les droits admin"
+
+msgid "Do Not Disturb"
+msgstr "Ne pas déranger"
+
+msgid "Edit"
+msgstr "Modifier"
+
+msgid "Edit Channel Details"
+msgstr "Modifier les détails du canal"
+
+msgid "Edit Message"
+msgstr "Modifier le message"
+
+msgid "English string"
+msgstr ""
+
+msgid "Error"
+msgstr "Erreur"
+
+msgid "Error copied to clipboard"
+msgstr "Erreur copiée dans le presse-papiers"
+
+msgid "Error removing profile picture"
+msgstr "Échec de la suppression de l'image"
+
+msgid "Error updating availability"
+msgstr "Échec de la mise à jour de la disponibilité"
+
+msgid "Error while adding member"
+msgstr "Erreur lors de l'ajout du membre"
+
+msgid "Error while adding members"
+msgstr "Erreur lors de l'ajout des membres"
+
+msgid "Error while creating poll"
+msgstr "Erreur lors de la création du sondage"
+
+msgid "Error while updating channel details"
+msgstr "Erreur lors de la mise à jour du canal"
+
+msgid "Error while uploading profile image"
+msgstr "Échec du téléchargement de l'image"
+
+msgid "Everyone from your organisation will become a channel member and will be able to view its message history. If you later intend to make this private you will have to manually remove members that should not have access to this channel."
+msgstr "Tous les membres de votre organisation deviendront membres du canal et pourront voir son historique de messages. Si vous souhaitez le rendre privé plus tard, vous devrez retirer manuellement les membres qui ne devraient pas y avoir accès."
+
+msgid "Failed to add reaction"
+msgstr "Échec de l'ajout de la réaction"
+
+msgid "Failed to copy"
+msgstr "Échec de la copie"
+
+msgid "Failed to copy link"
+msgstr "Échec de la copie du lien"
+
+msgid "Failed to create channel"
+msgstr "Échec de la création du canal"
+
+msgid "Failed to create thread"
+msgstr "Échec de la création du fil"
+
+msgid "Failed to delete message"
+msgstr "Échec de la suppression du message"
+
+msgid "Failed to fetch site information / OAuth client not set for Raven Mobile"
+msgstr "Impossible de récupérer les informations du site / Client OAuth non configuré pour Raven Mobile"
+
+msgid "Failed to fetch site information. Please check the URL and try again."
+msgstr "Impossible de récupérer les informations du site. Veuillez vérifier l'URL et réessayer."
+
+msgid "Failed to forward message"
+msgstr "Échec du transfert du message"
+
+msgid "Failed to log out"
+msgstr "Échec de la déconnexion"
+
+msgid "Failed to mark channels as read"
+msgstr "Échec du marquage des canaux comme lus"
+
+msgid "Failed to open link"
+msgstr "Échec de l'ouverture du lien"
+
+msgid "Failed to update member status"
+msgstr "Échec de la mise à jour du membre"
+
+msgid "Failed to update notification settings"
+msgstr "Échec de la mise à jour des notifications"
+
+msgid "Failed to update status"
+msgstr "Échec de la mise à jour du statut"
+
+msgid "Failed to update user name"
+msgstr "Échec de la mise à jour du nom"
+
+msgid "Forward"
+msgstr "Transférer"
+
+msgid "Forward Message"
+msgstr "Transférer le message"
+
+msgid "Forwarded"
+msgstr "Transféré"
+
+msgid "Full Name"
+msgstr "Nom complet"
+
+msgid "Gallery"
+msgstr "Galerie"
+
+msgid "Go Home"
+msgstr "Retour à l'accueil"
+
+msgid "Go to Settings > Mobile App"
+msgstr "Allez dans Paramètres > Application mobile"
+
+msgid "Hello World"
+msgstr ""
+
+msgid "How do I setup my site for Raven mobile?"
+msgstr "Comment configurer mon site pour Raven mobile ?"
+
+msgid "Image uploaded successfully."
+msgstr "Image téléchargée avec succès"
+
+msgid "Images and Files"
+msgstr "Images et fichiers"
+
+msgid "Invisible"
+msgstr "Invisible"
+
+msgid "Join"
+msgstr "Rejoindre"
+
+msgid "Joining"
+msgstr "Connexion en cours"
+
+msgid "Jump to or search..."
+msgstr "Accéder ou rechercher..."
+
+msgid "Language"
+msgstr "Langue"
+
+msgid "Leave"
+msgstr "Quitter"
+
+msgid "Leave Channel"
+msgstr "Quitter le canal"
+
+msgid "Leave channel?"
+msgstr "Quitter le canal ?"
+
+msgid "Leave thread?"
+msgstr "Quitter le fil ?"
+
+msgid "Light"
+msgstr "Clair"
+
+msgid "Link copied to clipboard"
+msgstr "Lien copié dans le presse-papiers"
+
+msgid "Log Out"
+msgstr "Déconnexion"
+
+msgid "Login"
+msgstr "Connexion"
+
+msgid "Make channel admin"
+msgstr "Nommer administrateur"
+
+msgid "Make poll anonymous"
+msgstr "Sondage anonyme"
+
+msgid "Mark all as read"
+msgstr "Tout marquer comme lu"
+
+msgid "Maximum of 10 options allowed"
+msgstr "Maximum de 10 options autorisées"
+
+msgid "Member added"
+msgstr "Membre ajouté"
+
+msgid "Members"
+msgstr "Membres"
+
+msgid "Mentions"
+msgstr "Mentions"
+
+msgid "Message deleted"
+msgstr "Message supprimé"
+
+msgid "Message forwarded successfully!"
+msgstr "Message transféré avec succès !"
+
+msgid "Message pinned"
+msgstr "Message épinglé"
+
+msgid "Message saved"
+msgstr "Message enregistré"
+
+msgid "Message unpinned"
+msgstr "Message désépinglé"
+
+msgid "Message unsaved"
+msgstr "Message retiré des enregistrés"
+
+msgid "Message updated"
+msgstr "Message mis à jour"
+
+msgid "Move to starred"
+msgstr "Ajouter aux favoris"
+
+msgid "Mute"
+msgstr "Mettre en sourdine"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "New Channel"
+msgstr "Nouveau canal"
+
+msgid "No DMs found"
+msgstr "Aucun message direct"
+
+msgid "No changes will be made to the channel's history or members. All files shared in this channel will become private and will be accessible only to the channel members."
+msgstr "Aucune modification ne sera apportée à l'historique ou aux membres du canal. Tous les fichiers partagés dans ce canal deviendront privés et ne seront accessibles qu'aux membres du canal."
+
+msgid "No images found"
+msgstr "Aucune image trouvée"
+
+msgid "No members"
+msgstr "Aucun membre"
+
+msgid "No mentions yet"
+msgstr "Aucune mention pour le moment"
+
+msgid "No pinned messages"
+msgstr "Aucun message épinglé"
+
+msgid "No results found"
+msgstr "Aucun résultat trouvé"
+
+msgid "No threads yet"
+msgstr "Pas encore de fils"
+
+msgid "No users found with '{{query}}' in their name"
+msgstr "Aucun utilisateur trouvé avec '{{query}}' dans son nom"
+
+msgid "Oops!"
+msgstr "Oups !"
+
+msgid "Open"
+msgstr "Ouvert"
+
+msgid "Open Document"
+msgstr "Ouvrir le document"
+
+msgid "Open Raven on your desktop browser"
+msgstr "Ouvrez Raven dans votre navigateur de bureau"
+
+msgid "Option {{number}}"
+msgstr "Option {{number}}"
+
+msgid "Option {{number}} is required"
+msgstr "L'option {{number}} est requise"
+
+msgid "Options"
+msgstr "Options"
+
+msgid "Other"
+msgstr "Autres"
+
+msgid "Other workspaces"
+msgstr "Autres espaces de travail"
+
+msgid "PS: Only System Administrators can do this."
+msgstr "PS : Seuls les administrateurs système peuvent faire cela."
+
+msgid "Participating"
+msgstr "Participations"
+
+msgid "Personal Info"
+msgstr "Informations personnelles"
+
+msgid "Pin"
+msgstr "Épingler"
+
+msgid "Pinned"
+msgstr "Épinglé"
+
+msgid "Pinned Channels"
+msgstr "Canaux épinglés"
+
+msgid "Pinned Messages"
+msgstr "Messages épinglés"
+
+msgid "Pins"
+msgstr "Épingles"
+
+msgid "Please add a channel name"
+msgstr "Veuillez ajouter un nom de canal"
+
+msgid "Please understand that when you delete {{channelName}}"
+msgstr "Veuillez comprendre que lorsque vous supprimez {{channelName}}"
+
+msgid "Please understand that when you make {{channelName}} a {{type}} channel:"
+msgstr "Veuillez comprendre que lorsque vous convertissez {{channelName}} en canal {{type}} :"
+
+msgid "Poll Votes"
+msgstr "Votes du sondage"
+
+msgid "Poll created"
+msgstr "Sondage créé"
+
+msgid "Poll question is required"
+msgstr "La question du sondage est requise"
+
+msgid "Preferences"
+msgstr "Préférences"
+
+msgid "Preferred Emojis for Reactions"
+msgstr "Émojis préférés pour les réactions"
+
+msgid "Private"
+msgstr "Privé"
+
+msgid "Profile"
+msgstr "Profil"
+
+msgid "Profile picture removed."
+msgstr "Photo de profil supprimée"
+
+msgid "Public"
+msgstr "Public"
+
+msgid "Push Notifications"
+msgstr "Notifications push"
+
+msgid "Question"
+msgstr "Question"
+
+msgid "Quick Search"
+msgstr "Recherche rapide"
+
+msgid "Raven"
+msgstr "Raven"
+
+msgid "React on Double Tap with"
+msgstr "Réagir en double-tap avec"
+
+msgid "Realtime events are not working."
+msgstr "Les événements en temps réel ne fonctionnent pas."
+
+msgid "Reload App"
+msgstr "Recharger l'application"
+
+msgid "Reload Page"
+msgstr "Recharger la page"
+
+msgid "Remove"
+msgstr "Retirer"
+
+msgid "Remove Image"
+msgstr "Supprimer l'image"
+
+msgid "Remove Member?"
+msgstr "Retirer le membre ?"
+
+msgid "Remove from starred"
+msgstr "Retirer des favoris"
+
+msgid "Removed {{name}} from the channel"
+msgstr "{{name}} a été retiré du canal"
+
+msgid "Reply"
+msgstr "Répondre"
+
+msgid "Report Issue"
+msgstr "Signaler un problème"
+
+msgid "Reset"
+msgstr "Réinitialiser le statut"
+
+msgid "Restore Channel"
+msgstr "Restaurer le canal"
+
+msgid "Restoring"
+msgstr "Restauration"
+
+msgid "Retract Vote"
+msgstr "Retirer le vote"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Saved Messages"
+msgstr "Messages enregistrés"
+
+msgid "Saved messages are a convenient way to keep track of important information or messages you want to refer back to later."
+msgstr "Les messages enregistrés sont un moyen pratique de garder une trace des informations importantes ou des messages auxquels vous souhaitez revenir."
+
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "Search for a GIF"
+msgstr "Rechercher un GIF"
+
+msgid "Search images and files"
+msgstr "Rechercher images et fichiers"
+
+msgid "Select Language"
+msgstr "Choisir la langue"
+
+msgid "Select an existing site"
+msgstr "Sélectionner un site existant"
+
+msgid "Send GIF"
+msgstr "Envoyer un GIF"
+
+msgid "Send without notification"
+msgstr "Envoyer sans notification"
+
+msgid "Set up Raven mobile on your site"
+msgstr "Configurer Raven mobile sur votre site"
+
+msgid "Set your preferred emoji for reactions on double tap."
+msgstr "Définissez votre émoji préféré pour les réactions en double-tap."
+
+msgid "Setting up your workspace..."
+msgstr "Configuration de votre espace de travail..."
+
+msgid "Settings"
+msgstr "Paramètres"
+
+msgid "Settings & Details"
+msgstr "Paramètres et détails"
+
+msgid "Share"
+msgstr "Partager"
+
+msgid "Share what you are up to."
+msgstr "Partagez ce que vous faites."
+
+msgid "Site URL"
+msgstr "URL du site"
+
+msgid "Sites"
+msgstr "Sites"
+
+msgid "Something went wrong"
+msgstr "Une erreur s'est produite"
+
+msgid "Start a new conversation with someone to see it here"
+msgstr "Démarrez une nouvelle conversation pour la voir ici"
+
+msgid "Start of Thread"
+msgstr "Début du fil"
+
+msgid "Status"
+msgstr "Statut"
+
+msgid "Status updated"
+msgstr "Statut mis à jour"
+
+msgid "Submit"
+msgstr "Soumettre"
+
+msgid "Submit your vote to view results"
+msgstr "Soumettez votre vote pour voir les résultats"
+
+msgid "Switch to Another Site"
+msgstr "Changer de site"
+
+msgid "System"
+msgstr "Système"
+
+msgid "Tap an emoji to set it as your preferred reaction."
+msgstr "Appuyez sur un émoji pour le définir comme votre réaction préférée."
+
+msgid "Text copied to clipboard"
+msgstr "Texte copié dans le presse-papiers"
+
+msgid "The app is offline. Please check your internet connection."
+msgstr "L'application est hors ligne. Veuillez vérifier votre connexion internet."
+
+msgid "There are no unread threads to show. Clear the filter to see all threads."
+msgstr "Vous avez lu tous les fils de discussion."
+
+msgid "There are no users that you do not already have a DM channel with"
+msgstr "Il n'y a pas d'utilisateurs avec lesquels vous n'avez pas déjà un canal de messages directs"
+
+msgid "There was an error loading preview data."
+msgstr "Une erreur s'est produite lors du chargement de l'aperçu."
+
+msgid "There was an error sharing the file. Please try again."
+msgstr "Une erreur s'est produite lors du partage du fichier. Veuillez réessayer."
+
+msgid "There was an error while launching the camera"
+msgstr "Une erreur s'est produite lors du lancement de la caméra"
+
+msgid "There was an error while loading the channel list."
+msgstr "Une erreur s'est produite lors du chargement de la liste des canaux."
+
+msgid "There was an error while loading the user list."
+msgstr "Une erreur s'est produite lors du chargement de la liste des utilisateurs."
+
+msgid "There was an error while selecting images"
+msgstr "Une erreur s'est produite lors de la sélection des images"
+
+msgid "There was an error while selecting the document"
+msgstr "Une erreur s'est produite lors de la sélection du document"
+
+msgid "This is a direct message channel between you and"
+msgstr "Ceci est un canal de messages directs entre vous et"
+
+msgid "This is the very beginning of the"
+msgstr "Ceci est le tout début du canal"
+
+msgid "This name will be used to identify you in the app."
+msgstr "Ce nom sera utilisé pour vous identifier dans l'application."
+
+msgid "This poll is closed"
+msgstr "Ce sondage est terminé"
+
+msgid "This screen doesn't exist"
+msgstr "Cette page n'existe pas"
+
+msgid "This space is all yours. Draft messages, list your to-dos, or keep links and files handy."
+msgstr "Cet espace est tout à vous. Rédigez des brouillons, listez vos tâches ou gardez vos liens et fichiers à portée de main."
+
+msgid "This will create an OAuth client that users can use to authenticate securely on the mobile app."
+msgstr "Cela créera un client OAuth que les utilisateurs peuvent utiliser pour s'authentifier de manière sécurisée sur l'application mobile."
+
+msgid "Thread"
+msgstr "Fil"
+
+msgid "Thread created"
+msgstr "Fil créé"
+
+msgid "Thread has been deleted"
+msgstr "Le fil a été supprimé"
+
+msgid "Thread muted"
+msgstr "Fil mis en sourdine"
+
+msgid "Thread unmuted"
+msgstr "Fil réactivé"
+
+msgid "Threads"
+msgstr "Fils"
+
+msgid "Threads help keep conversations organized. Reply to any message to start a new thread or use the thread icon on messages to join existing discussions."
+msgstr "Créez un fil de discussion en répondant à un message."
+
+msgid "To:"
+msgstr "À :"
+
+msgid "Try searching for a different user name"
+msgstr "Essayez de rechercher un autre nom d'utilisateur"
+
+msgid "Type a message..."
+msgstr "Écrivez un message..."
+
+msgid "Unknown error"
+msgstr "Erreur inconnue"
+
+msgid "Unmute"
+msgstr "Réactiver"
+
+msgid "Unpin"
+msgstr "Désépingler"
+
+msgid "Unpin message"
+msgstr "Désépingler le message"
+
+msgid "Unread"
+msgstr "Non lu"
+
+msgid "Unread Threads"
+msgstr "Fils non lus"
+
+msgid "Unsave"
+msgstr "Retirer des favoris"
+
+msgid "Unsave message"
+msgstr "Retirer des favoris"
+
+msgid "Update"
+msgstr "Mettre à jour"
+
+msgid "Update profile picture"
+msgstr "Modifier la photo de profil"
+
+msgid "Updating..."
+msgstr "Mise à jour..."
+
+msgid "Upload"
+msgstr "Télécharger"
+
+msgid "Upload Document"
+msgstr "Télécharger un document"
+
+msgid "User Name"
+msgstr "Nom d'utilisateur"
+
+msgid "User name updated"
+msgstr "Nom mis à jour"
+
+msgid "Version"
+msgstr "Version"
+
+msgid "Video"
+msgstr "Vidéo"
+
+msgid "View Channels"
+msgstr "Voir les canaux"
+
+msgid "View Image"
+msgstr "Voir l'image"
+
+msgid "View Votes"
+msgstr "Voir les votes"
+
+msgid "View all"
+msgstr "Voir tout"
+
+msgid "View thread"
+msgstr "Voir le fil"
+
+msgid "Vote retracted"
+msgstr "Vote retiré"
+
+msgid "We could not find the site you were looking for. Please login again."
+msgstr "Nous n'avons pas trouvé le site recherché. Veuillez vous reconnecter."
+
+msgid "We could not find the stored credentials for this site. Please try logging in again."
+msgstr "Nous n'avons pas trouvé les identifiants enregistrés pour ce site. Veuillez vous reconnecter."
+
+msgid "We could not find the user for this DM channel"
+msgstr "Nous n'avons pas trouvé l'utilisateur pour ce canal de messages directs"
+
+msgid "What is this channel about?"
+msgstr "Donnez à votre canal une description pour aider les autres à comprendre son but."
+
+msgid "When a channel is set to open, everyone is a member."
+msgstr "Tout le monde peut voir et poster des messages dans ce canal"
+
+msgid "When a channel is set to private, it can only be viewed or joined by invitation."
+msgstr "Seules les personnes invitées peuvent voir et rejoindre ce canal"
+
+msgid "When a channel is set to public, anyone can join the channel and read messages, but only members can post messages."
+msgstr "Tout le monde peut voir et rejoindre ce canal"
+
+msgid "When someone mentions you in a message, you'll see it here."
+msgstr "Lorsque quelqu'un vous mentionne dans un message, vous le verrez ici."
+
+msgid "Yes, I understand, permanently delete this channel"
+msgstr "Oui, je comprends, supprimer définitivement ce canal"
+
+msgid "Yesterday"
+msgstr "Hier"
+
+msgid "You"
+msgstr "Vous"
+
+msgid "You are not a member of this channel"
+msgstr "Vous n'êtes pas membre de ce canal"
+
+msgid "You are not a member of this thread"
+msgstr "Vous n'êtes pas membre de ce fil"
+
+msgid "You can archive this channel instead to preserve your messages"
+msgstr "Vous pouvez archiver ce canal à la place pour conserver vos messages"
+
+msgid "You can save messages by simply clicking on the bookmark icon in message actions."
+msgstr "Vous pouvez enregistrer des messages en cliquant simplement sur l'icône de signet dans les actions du message."
+
+msgid "You have been logged out of the site. Please login again."
+msgstr "Vous avez été déconnecté du site. Veuillez vous reconnecter."
+
+msgid "You have left the thread"
+msgstr "Vous avez quitté le fil"
+
+msgid "You have left {{channelName}} channel"
+msgstr "Vous avez quitté le canal {{channelName}}"
+
+msgid "You're all caught up"
+msgstr "Vous êtes à jour !"
+
+msgid "You're at the beginning of this channel."
+msgstr "Vous êtes au début de ce canal."
+
+msgid "Your saved messages will appear here"
+msgstr "Vos messages enregistrés apparaîtront ici"
+
+msgid "Your vote has been submitted!"
+msgstr "Votre vote a été enregistré !"
+
+msgid "channel."
+msgstr "."
+
+msgid "dev-team"
+msgstr "equipe-dev"
+
+msgid "e.g. Out of Office"
+msgstr "ex. Absent du bureau"
+
+msgid "edited"
+msgstr "modifié"
+
+msgid "just now"
+msgstr "à l'instant"
+
+msgid "open"
+msgstr "ouvert"
+
+msgid "optional"
+msgstr "Optionnel"
+
+msgid "or"
+msgstr "ou"
+
+msgid "private"
+msgstr "privé"
+
+msgid "public"
+msgstr "public"
+
+msgid "raven.frappe.cloud"
+msgstr "raven.frappe.cloud"
+
+msgid "vote"
+msgstr "vote"
+
+msgid "votes"
+msgstr "votes"
+
+msgid "{{channelName}} added to favorites"
+msgstr "{{channelName}} ajouté aux favoris"
+
+msgid "{{channelName}} removed from favorites"
+msgstr "{{channelName}} retiré des favoris"
+
+msgid "{{count}} members added"
+msgstr "{{count}} membres ajoutés"
+
+msgid "{{count}} replies"
+msgstr "{{count}} réponses"
+
+msgid "{{name}} has been made an admin"
+msgstr "{{name}} est maintenant administrateur"
+
+msgid "{{name}} is no longer an admin"
+msgstr "{{name}} n'est plus administrateur"
+
+msgid "{{name}} will no longer have access to {{channelName}} channel."
+msgstr "Êtes-vous sûr de vouloir retirer {{name}} du canal {{channelName}} ?"
+
