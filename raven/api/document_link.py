@@ -17,7 +17,7 @@ def get_new_app_document_links(doctype, docname):
 
 
 @frappe.whitelist(methods=["GET"])
-def get(doctype: str, docname: str, with_site_url: bool = True):
+def get(doctype: str, docname: str | int, with_site_url: bool = True):
 
 	document_link_override = frappe.get_hooks("raven_document_link_override")
 	if document_link_override and len(document_link_override) > 0:
@@ -37,7 +37,7 @@ def get(doctype: str, docname: str, with_site_url: bool = True):
 
 
 @frappe.whitelist(methods=["GET"])
-def get_preview_data(doctype: str, docname: str):
+def get_preview_data(doctype: str, docname: str | int):
 	preview_fields = []
 	meta = frappe.get_meta(doctype)
 
