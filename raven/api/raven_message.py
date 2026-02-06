@@ -327,7 +327,7 @@ def get_unread_count_for_channel(channel_id: str):
 
 
 @frappe.whitelist()
-def get_timeline_message_content(doctype: str, docname: str):
+def get_timeline_message_content(doctype: str, docname: str | int):
 	channel = frappe.qb.DocType("Raven Channel")
 	channel_member = frappe.qb.DocType("Raven Channel Member")
 	message = frappe.qb.DocType("Raven Message")
