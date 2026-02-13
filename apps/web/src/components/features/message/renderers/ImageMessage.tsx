@@ -116,7 +116,7 @@ const ImageCarousel = ({ images, onImageClick }: { images: ImageFile[], onImageC
 
                 {/* Image counter */}
                 {images.length > 1 && (
-                    <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded z-20">
+                    <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded z-10">
                         {currentIndex + 1} / {images.length}
                     </div>
                 )}
@@ -129,7 +129,7 @@ const ImageCarousel = ({ images, onImageClick }: { images: ImageFile[], onImageC
                         <div
                             key={image.name}
                             className={cn(
-                                "flex-shrink-0 cursor-pointer border-2 rounded overflow-hidden transition-all duration-200",
+                                "shrink-0 cursor-pointer border-2 rounded overflow-hidden transition-all duration-200",
                                 index === currentIndex
                                     ? "border-blue-500"
                                     : "border-transparent hover:border-border"

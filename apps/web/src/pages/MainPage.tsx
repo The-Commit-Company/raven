@@ -43,8 +43,8 @@ const MainPageContent = () => {
     const shouldShowAppHeader = !isSidebarLessPage && !isDirectMessagesPage
     // Sidebar width is the total width including workspace switcher (60px) + content area
     // Regular: 60px (workspace switcher) + 280px (content) = 340px
-    // DMs: 60px (workspace switcher) + 360px (content) = 420px
-    const sidebarWidth = (isDMWorkspace || isDirectMessagesPage) ? "420px" : "340px"
+    // DMs: 60px (workspace switcher) + 320px (content) = 380px
+    const sidebarWidth = (isDMWorkspace || isDirectMessagesPage) ? "380px" : "340px"
 
     return (
         <div className="flex flex-col h-screen" style={{ "--workspace-switcher-width": "60px" } as React.CSSProperties}>
