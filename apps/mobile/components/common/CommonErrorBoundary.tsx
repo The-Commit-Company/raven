@@ -6,33 +6,33 @@ import { useColorScheme } from '@hooks/useColorScheme';
 import { Divider } from '@components/layout/Divider';
 import { toast } from 'sonner-native';
 import * as Clipboard from 'expo-clipboard'
+import { __ } from '@lib/i18n';
 
 export function CommonErrorBoundary({ error, retry }: ErrorBoundaryProps) {
-
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
 
     const onCopy = async () => {
         await Clipboard.setStringAsync(error.message + '\n' + error.stack)
-        toast.success('Error trace copied to clipboard.')
+        toast.success(__("Error copied to clipboard"))
     }
 
     return (
         <View className='flex-1 gap-2 py-8 px-4 justify-center items-center bg-background'>
             <ErrorIcon width={100} height={100} fill={colors.icon} />
-            <Text className='text-foreground text-xl font-semibold'>There was an unexpected error</Text>
+            <Text className='text-foreground text-xl font-semibold'>{__("An unexpected error occurred")}</Text>
             <Text className='text-foreground'>{error.message}</Text>
             <View className='flex items-center gap-2 pt-4'>
                 <TouchableOpacity onPress={retry} className='bg-foreground rounded-lg px-4 py-2'>
-                    <Text className='text-background text-sm font-medium'>Reload This Page</Text>
+                    <Text className='text-background text-sm font-medium'>{__("Reload Page")}</Text>
                 </TouchableOpacity>
 
                 <View className='flex gap-2 items-center'>
                     <Link href="https://github.com/The-Commit-Company/raven/issues" target='_blank' className='bg-card-background rounded-lg px-4 py-2'>
-                        <Text className='text-foreground text-sm font-medium'>Report Issue on GitHub</Text>
+                        <Text className='text-foreground text-sm font-medium'>{__("Report Issue")}</Text>
                     </Link>
                     <TouchableOpacity onPress={onCopy} className='bg-card-background rounded-lg px-4 py-2'>
                         <Text className='text-foreground text-center w-full text-sm font-medium'>
-                            Copy Error
+                            {__("Copy Error")}
                         </Text>
                     </TouchableOpacity>
                 </View>

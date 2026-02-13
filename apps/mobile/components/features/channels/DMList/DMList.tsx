@@ -9,14 +9,14 @@ import { useGetUser } from '@raven/lib/hooks/useGetUser';
 import UserAvatar from '@components/layout/UserAvatar';
 import { Link } from 'expo-router';
 import { useIsUserActive } from '@hooks/useIsUserActive';
+import { __ } from '@lib/i18n';
 
 const DMList = ({ dms }: { dms: DMChannelListItem[] }) => {
     return <DMListUI dms={dms} />
 }
 
 const DMListUI = ({ dms }: { dms: DMChannelListItem[] }) => {
-
-    const [isExpanded, setIsExpanded] = useState(true)
+const [isExpanded, setIsExpanded] = useState(true)
     const { colors } = useColorScheme()
 
     const toggleAccordion = () => {
@@ -26,7 +26,7 @@ const DMListUI = ({ dms }: { dms: DMChannelListItem[] }) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={toggleAccordion} style={styles.header} activeOpacity={0.7}>
-                <Text style={styles.headerText}>Direct Messages</Text>
+                <Text style={styles.headerText}>{__("Direct Messages")}</Text>
                 {isExpanded ? <ChevronDownIcon fill={colors.icon} /> : <ChevronRightIcon fill={colors.icon} />}
             </TouchableOpacity>
             {isExpanded && <>

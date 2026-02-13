@@ -3,6 +3,7 @@ import { Pressable, View } from 'react-native';
 import { Text } from '@components/nativewindui/Text';
 import { ChannelIcon } from '@components/features/channels/ChannelList/ChannelIcon';
 import { ChannelListItem } from '@raven/types/common/ChannelListItem';
+import { __ } from '@lib/i18n';
 
 interface ChannelRowItemProps {
     channel: ChannelListItem
@@ -10,8 +11,7 @@ interface ChannelRowItemProps {
 }
 
 const ChannelRowItem = ({ channel, onPress }: ChannelRowItemProps) => {
-
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
 
     return (
         <Pressable
@@ -22,7 +22,7 @@ const ChannelRowItem = ({ channel, onPress }: ChannelRowItemProps) => {
             <Text className="text-base">{channel.channel_name}</Text>
             {channel.is_archived ? (
                 <View className='px-1 mt-0.5 py-0.5 rounded-sm bg-red-100'>
-                    <Text className="text-[11px] text-red-700">Archived</Text>
+                    <Text className="text-[11px] text-red-700">{__("Archived")}</Text>
                 </View>
             ) : null}
         </Pressable>

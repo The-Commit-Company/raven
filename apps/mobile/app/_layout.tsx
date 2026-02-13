@@ -23,6 +23,8 @@ import advancedFormat from 'dayjs/plugin/advancedFormat'
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useAtom } from 'jotai';
 import { useColorScheme } from 'nativewind';
+import '@lib/i18n';
+import { loadSavedLanguage } from '@lib/i18n';
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -53,6 +55,9 @@ export default function RootLayout() {
     useEffect(() => {
 
         const onMount = async () => {
+            // Load saved language preference
+            await loadSavedLanguage();
+
             // Get the defualt site from the async storage
             // Also check if the app was started by a notification
             const initialNotification = await messaging.getInitialNotification();

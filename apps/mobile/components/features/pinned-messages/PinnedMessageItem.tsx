@@ -6,10 +6,9 @@ import { BaseMessageItem } from "../chat-stream/BaseMessageItem"
 import * as ContextMenu from 'zeego/context-menu';
 import { useColorScheme } from "@hooks/useColorScheme";
 import { useTogglePinMessage } from "@hooks/useTogglePinMessage"
-
+import { __ } from '@lib/i18n';
 const PinnedMessageItem = ({ message }: { message: Message }) => {
-
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
 
     const { TogglePin } = useTogglePinMessage({ ...message, is_pinned: 1 })
 
@@ -27,7 +26,7 @@ const PinnedMessageItem = ({ message }: { message: Message }) => {
             </ContextMenu.Trigger>
             <ContextMenu.Content>
                 <ContextMenu.Item key="unpin" onSelect={TogglePin}>
-                    <ContextMenu.ItemTitle>Unpin message</ContextMenu.ItemTitle>
+                    <ContextMenu.ItemTitle>{__("Unpin message")}</ContextMenu.ItemTitle>
                     <ContextMenu.ItemIcon
                         ios={{
                             name: 'pin.slash',
