@@ -362,6 +362,29 @@ def process_message_with_agent(
 	This function handles both new conversations and existing threads.
 	"""
 
+	# Check if the task has been cancelled
+	try:
+		import rq
+
+		job = rq.get_current_job()
+		if job and hasattr(job, "is_cancelled") and job.is_cancelled:
+			# Task was cancelled, clean up and return
+			frappe.cache().hdel("ai_job_ids", channel_id)
+			frappe.publish_realtime(
+				"ai_event_clear",
+				{
+					"channel_id": channel_id,
+					"cancelled": True,
+				},
+				doctype="Raven Channel",
+				docname=channel_id,
+				after_commit=True,
+			)
+			return
+	except Exception:
+		# If we can't check the job status, continue with processing
+		pass
+
 	# Track files in conversation
 	from raven.ai.conversation_file_handler import ConversationFileHandler
 
@@ -530,6 +553,10 @@ def process_message_with_agent(
 			docname=channel_id,
 			after_commit=True,
 		)
+
+		# Clean up job_id from cache after successful completion
+		frappe.cache().hdel("ai_job_ids", channel_id)
+
 	except Exception as e:
 		import traceback
 
@@ -554,6 +581,9 @@ def process_message_with_agent(
 			docname=channel_id,
 			after_commit=True,
 		)
+
+		# Clean up job_id from cache after error
+		frappe.cache().hdel("ai_job_ids", channel_id)
 
 
 def check_if_bot_has_file_search(bot, channel_id):

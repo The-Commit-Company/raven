@@ -463,6 +463,23 @@ async def handle_ai_request_async(
 ):
 	"""Handle AI request asynchronously"""
 	try:
+		# Check if the task has been cancelled
+		try:
+			import rq
+
+			job = rq.get_current_job()
+			if job and hasattr(job, "is_cancelled") and job.is_cancelled:
+				# Task was cancelled, clean up and return
+				frappe.cache().hdel("ai_job_ids", channel_id)
+				return {
+					"response": None,
+					"success": False,
+					"error": "Request cancelled by user",
+					"cancelled": True,
+				}
+		except Exception:
+			# If we can't check the job status, continue with processing
+			pass
 
 		manager = RavenAgentManager(bot, file_handler=file_handler)
 
