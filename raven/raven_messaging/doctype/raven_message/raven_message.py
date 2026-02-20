@@ -138,6 +138,21 @@ class RavenMessage(Document):
 				)
 				unique_mentions.add(mention_id)
 
+	def extract_channel_mentions(self):
+		"""
+		Extract all channel mentions from the HTML content
+		"""
+		soup = BeautifulSoup(self.text, "html.parser")
+		channel_mentions = []
+		unique_channel_mentions = set()
+		for d in soup.find_all("span", attrs={"data-type": "channelMention"}):
+			channel_id = d.get("data-id")
+			if channel_id and channel_id not in unique_channel_mentions:
+				channel_mentions.append(channel_id)
+				unique_channel_mentions.add(channel_id)
+
+		return channel_mentions
+
 	def remove_empty_trailing_paragraphs(self, soup):
 		"""
 		Remove p, br tags that are at the end with no content
