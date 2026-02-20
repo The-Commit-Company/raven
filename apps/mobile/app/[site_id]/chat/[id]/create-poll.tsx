@@ -5,6 +5,7 @@ import CreatePollForm from '@components/features/polls/CreatePollForm';
 import { CloseCreatePollButton, PollCreateButton, useCreatePoll } from '@components/features/polls/CreatePollComponents';
 import CommonErrorBoundary from '@components/common/CommonErrorBoundary';
 import { Platform } from 'react-native';
+import { __ } from '@lib/i18n';
 
 export default function CreatePollPage() {
 
@@ -19,7 +20,7 @@ export default function CreatePollPage() {
             <Stack.Screen options={{
                 headerStyle: { backgroundColor: colors.background },
                 headerLeft: () => Platform.OS === 'ios' ? <CloseCreatePollButton /> : undefined,
-                headerTitle: "Create Poll",
+                headerTitle: __("Create Poll"),
                 headerRight() {
                     return (
                         <PollCreateButton onPress={onPress} isCreating={creatingPoll} />

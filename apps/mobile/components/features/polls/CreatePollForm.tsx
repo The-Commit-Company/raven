@@ -7,6 +7,7 @@ import { useColorScheme } from '@hooks/useColorScheme';
 import TrashIcon from "@assets/icons/TrashIcon.svg"
 import PlusIcon from "@assets/icons/PlusIcon.svg"
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { __ } from '@lib/i18n';
 
 type PollFormData = {
     question: string,
@@ -16,8 +17,7 @@ type PollFormData = {
 }
 
 const CreatePollForm = () => {
-
-    const { colors } = useColorScheme();
+const { colors } = useColorScheme();
     const { control, formState: { errors }, setValue } = useFormContext<PollFormData>()
 
     const { fields, append, remove } = useFieldArray({
@@ -49,19 +49,19 @@ const CreatePollForm = () => {
 
             <View className='p-5 gap-5'>
                 <Text className="text-base">
-                    Create a quick poll to get everyone's thoughts on a topic.
+                    {__("Create a quick poll to get everyone's thoughts on a topic.")}
                 </Text>
 
                 <View className='flex-col gap-2'>
-                    <FormLabel isRequired>Question</FormLabel>
+                    <FormLabel isRequired>{__("Question")}</FormLabel>
                     <Controller
                         name="question"
                         control={control}
-                        rules={{ required: 'Poll question is required' }}
+                        rules={{ required: __("Poll question is required") }}
                         render={({ field }) => (
                             <TextInput
                                 className="w-full border border-border rounded-lg px-3 py-3 text-[16px] leading-5 text-foreground"
-                                placeholder="Ask a question"
+                                placeholder={__("Ask a question")}
                                 placeholderTextColor={colors.grey}
                                 placeholderClassName="leading-5"
                                 textAlignVertical="top"
@@ -77,18 +77,18 @@ const CreatePollForm = () => {
                 </View>
 
                 <View className='flex-col gap-2'>
-                    <FormLabel isRequired>Options</FormLabel>
+                    <FormLabel isRequired>{__("Options")}</FormLabel>
                     {fields.map((field, index) => (
                         <View key={field.id} className="flex-col gap-1">
                             <View className='flex-row justify-between items-center gap-2'>
                                 <Controller
                                     name={`options.${index}.option`}
                                     control={control}
-                                    rules={{ required: `Option ${index + 1} is required` }}
+                                    rules={{ required: __("Option {{number}} is required", { number: index + 1 }) }}
                                     render={({ field }) => (
                                         <TextInput
                                             className="flex-1 border border-border rounded-lg px-3 py-3 text-[16px] leading-5 text-foreground"
-                                            placeholder={`Option ${index + 1}`}
+                                            placeholder={__("Option {{number}}", { number: index + 1 })}
                                             placeholderTextColor={colors.grey}
                                             placeholderClassName="leading-5"
                                             textAlignVertical="top"
@@ -114,17 +114,17 @@ const CreatePollForm = () => {
                             <View className='flex flex-row items-center'>
                                 <PlusIcon width={18} height={18} fill={`${fields.length >= 10 ? colors.grey : colors.primary}`} />
                                 <Text className={`text-sm pl-0.5 ${fields.length >= 10 ? 'text-muted-foreground/80' : 'font-semibold text-primary dark:text-secondary'}`}>
-                                    Add Option
+                                    {__("Add Option")}
                                 </Text>
                             </View>
                         </TouchableOpacity>
 
-                        <Text className="text-muted-foreground/80 text-sm">Maximum of 10 options allowed</Text>
+                        <Text className="text-muted-foreground/80 text-sm">{__("Maximum of 10 options allowed")}</Text>
                     </View>
                 </View>
 
                 <View className='flex-col gap-2'>
-                    <FormLabel>Settings</FormLabel>
+                    <FormLabel>{__("Settings")}</FormLabel>
                     <Controller
                         name="is_multi_choice"
                         control={control}
@@ -132,7 +132,7 @@ const CreatePollForm = () => {
                         render={({ field: { value, name } }) => (
                             <Pressable onPress={() => onCheckedChange(!value, name)} className="flex-row items-center gap-2">
                                 <Checkbox checked={value} />
-                                <Text className='text-base'>Allow multiple choices</Text>
+                                <Text className='text-base'>{__("Allow multiple choices")}</Text>
                             </Pressable>
                         )}
                     />
@@ -143,7 +143,7 @@ const CreatePollForm = () => {
                         render={({ field: { value, name } }) => (
                             <Pressable onPress={() => onCheckedChange(!value, name)} className="flex-row items-center gap-2">
                                 <Checkbox checked={value} />
-                                <Text className='text-base'>Make poll anonymous</Text>
+                                <Text className='text-base'>{__("Make poll anonymous")}</Text>
                             </Pressable>
                         )}
                     />

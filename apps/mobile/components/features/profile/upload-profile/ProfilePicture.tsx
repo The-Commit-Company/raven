@@ -8,10 +8,10 @@ import RemoveImage from '@components/features/profile/upload-profile/RemoveImage
 import ViewImage from '@components/features/profile/upload-profile/ViewImage';
 import UploadImage from '@components/features/profile/upload-profile/UploadImage';
 import UserAvatar from '@components/layout/UserAvatar';
+import { __ } from '@lib/i18n';
 
 const ProfilePicture = () => {
-
-    const { myProfile, mutate } = useCurrentRavenUser()
+const { myProfile, mutate } = useCurrentRavenUser()
     const source = useFileURL(myProfile?.user_image ?? "")
     const bottomSheetRef = useSheetRef()
 
@@ -41,7 +41,7 @@ const ProfilePicture = () => {
             <Sheet ref={bottomSheetRef}>
                 <BottomSheetView className='pb-16'>
                     <View className="flex-col gap-3">
-                        <Text className="text-xl font-cal-sans px-5">Update profile picture</Text>
+                        <Text className="text-xl font-cal-sans px-5">{__("Update profile picture")}</Text>
                         <View className="flex-col justify-start items-start px-3 w-full">
                             <UploadImage onSheetClose={onSheetClose} />
                             {source ? <ViewImage uri={source?.uri ?? ""} onSheetClose={onSheetClose} /> : null}

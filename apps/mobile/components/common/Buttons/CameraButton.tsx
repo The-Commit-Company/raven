@@ -4,10 +4,9 @@ import { CustomFile } from "@raven/types/common/File"
 import * as ImagePicker from 'expo-image-picker'
 import { ActionButtonLarge } from "./ActionButtonLarge"
 import { toast } from "sonner-native"
-
+import { __ } from '@lib/i18n';
 const CameraButton = ({ onPick }: { onPick: (files: CustomFile[]) => void }) => {
-
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
 
     const takePicture = async () => {
         try {
@@ -17,7 +16,7 @@ const CameraButton = ({ onPick }: { onPick: (files: CustomFile[]) => void }) => 
                         mediaTypes: 'images',
                     })
                 } else {
-                    toast.error("Camera permission not granted")
+                    toast.error(__("Camera permission not granted"))
                     return null
                 }
             })
@@ -38,8 +37,8 @@ const CameraButton = ({ onPick }: { onPick: (files: CustomFile[]) => void }) => 
             }
         } catch (error) {
             console.error('Error taking picture:', error)
-            toast.error("There was an error while launching the camera", {
-                description: error instanceof Error ? error.message : "Unknown error"
+            toast.error(__("There was an error while launching the camera"), {
+                description: error instanceof Error ? error.message : __("Unknown error")
             })
         }
     }
@@ -47,7 +46,7 @@ const CameraButton = ({ onPick }: { onPick: (files: CustomFile[]) => void }) => 
     return (
         <ActionButtonLarge
             icon={<CameraIcon height={20} width={20} color={colors.icon} />}
-            text="Camera"
+            text={__("Camera")}
             onPress={takePicture}
         />
     )

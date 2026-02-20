@@ -17,6 +17,7 @@ import clsx from 'clsx';
 import { Divider } from '@components/layout/Divider';
 import { useColorScheme } from '@hooks/useColorScheme';
 import useSiteContext from '@hooks/useSiteContext';
+import { __ } from '@lib/i18n';
 
 export const DocTypeLinkRenderer = ({ doctype, docname }: { doctype: string, docname: string }) => {
 
@@ -178,8 +179,7 @@ const FieldData = ({ fields, size = 'sm', className }: { fields: [string, any][]
 }
 
 const Actions = ({ data, doctype, docname }: { data: Record<string, any>, doctype: string, docname: string }) => {
-
-    const siteInfo = useSiteContext()
+const siteInfo = useSiteContext()
 
     const route = useMemo(() => {
         if (data && data.raven_document_link) {
@@ -192,9 +192,9 @@ const Actions = ({ data, doctype, docname }: { data: Record<string, any>, doctyp
     const copyLink = useCallback(async () => {
         try {
             await Clipboard.setStringAsync(route);
-            toast.success('Link copied to clipboard');
+            toast.success(__("Link copied to clipboard"));
         } catch (error) {
-            toast.error('Failed to copy link');
+            toast.error(__("Failed to copy link"));
             console.error('Copy error:', error);
         }
     }, []);
@@ -206,10 +206,10 @@ const Actions = ({ data, doctype, docname }: { data: Record<string, any>, doctyp
             if (canOpen) {
                 await Linking.openURL(route);
             } else {
-                toast.error('Cannot open this URL');
+                toast.error(__("Cannot open this URL"));
             }
         } catch (error) {
-            toast.error('Failed to open link');
+            toast.error(__("Failed to open link"));
             console.error('Open link error:', error);
         }
     }, []);
@@ -217,9 +217,9 @@ const Actions = ({ data, doctype, docname }: { data: Record<string, any>, doctyp
     const copyToClipboard = async (text: string) => {
         try {
             await Clipboard.setStringAsync(text);
-            toast.success(`Copied to clipboard`);
+            toast.success(__("Copied to clipboard"));
         } catch {
-            toast.error('Failed to copy');
+            toast.error(__("Failed to copy"));
         }
     };
 
@@ -243,7 +243,7 @@ const Actions = ({ data, doctype, docname }: { data: Record<string, any>, doctyp
             onPress={openLink}>
             <LinkExternalIcon fill={colors.icon} width={20} height={20} />
 
-            <Text className='text-foreground text-sm font-medium'>Open Document</Text>
+            <Text className='text-foreground text-sm font-medium'>{__("Open Document")}</Text>
         </Pressable>
         <View className='flex flex-row gap-2'>
             <Pressable
@@ -315,7 +315,7 @@ const DocTypeCardError = ({
     docname: string,
     error: FrappeError
 }) => {
-    return (
+return (
         <View className="bg-background dark:bg-card-background/40 shadow-card border border-border dark:border-border/50 rounded-lg gap-1 p-2.5">
             {/* TODO: Insert Error Banner  here later*/}
             <View className='flex gap-1'>
@@ -329,7 +329,7 @@ const DocTypeCardError = ({
                 </Text>
             </View>
             <Text className='text-sm text-error-heading'>
-                There was an error loading preview data.
+                {__("There was an error loading preview data.")}
             </Text>
         </View>
     )

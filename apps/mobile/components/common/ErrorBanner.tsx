@@ -1,5 +1,6 @@
 import { View, Text } from 'react-native';
 import { FrappeError } from 'frappe-react-sdk'
+import i18n from '@lib/i18n'
 
 interface BaseProps {
     heading?: string
@@ -36,7 +37,7 @@ const getErrorMessages = (error?: FrappeError | null): ParsedErrorMessage[] => {
             if (exception) {
                 eMessages = [{
                     message: exception,
-                    title: "Error"
+                    title: i18n.t('common.error')
                 }]
             }
         }
@@ -44,7 +45,7 @@ const getErrorMessages = (error?: FrappeError | null): ParsedErrorMessage[] => {
         if (eMessages.length === 0) {
             eMessages = [{
                 message: error?.message,
-                title: "Error",
+                title: i18n.t('common.error'),
                 indicator: "red"
             }]
         }

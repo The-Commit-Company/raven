@@ -9,14 +9,14 @@ import { Text } from '@components/nativewindui/Text';
 import { toast } from 'sonner-native';
 import BellOutlineIcon from '@assets/icons/BellOutlineIcon.svg'
 import { useColorScheme } from '@hooks/useColorScheme';
+import { __ } from '@lib/i18n';
 
 interface PushNotifications {
     channelID: string
 }
 
 const PushNotifications = ({ channelID }: PushNotifications) => {
-
-    const { mutate } = useSWRConfig()
+const { mutate } = useSWRConfig()
 
     const isPushAvailable = useIsPushNotificationEnabled()
 
@@ -60,7 +60,7 @@ const PushNotifications = ({ channelID }: PushNotifications) => {
                     }
                 })
                 .catch(() => {
-                    toast.error('Failed to update notification settings')
+                    toast.error(__("Failed to update notification settings"))
                 })
         }
     }
@@ -70,7 +70,7 @@ const PushNotifications = ({ channelID }: PushNotifications) => {
             <View className='flex flex-row py-2.5 px-4 rounded-xl justify-between bg-background dark:bg-card'>
                 <View className='flex-row items-center gap-2'>
                     <BellOutlineIcon height={18} width={18} fill={colors.icon} />
-                    <Text className='text-base'>Push Notifications</Text>
+                    <Text className='text-base'>{__("Push Notifications")}</Text>
                 </View>
                 <Toggle value={channelMember?.allow_notifications ? true : false} onValueChange={onToggle} disabled={!isPushAvailable} />
             </View>

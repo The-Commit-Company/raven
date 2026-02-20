@@ -11,10 +11,9 @@ import SearchInput from "@components/common/SearchInput/SearchInput"
 import { useDebounce } from "@raven/lib/hooks/useDebounce"
 import { Text } from "@components/nativewindui/Text"
 import { LegendList } from "@legendapp/list"
-
+import { __ } from '@lib/i18n';
 const AllDMsList = () => {
-
-    const { dm_channels, error, isLoading } = useContext(ChannelListContext) as ChannelListContextType
+const { dm_channels, error, isLoading } = useContext(ChannelListContext) as ChannelListContextType
     const { unread_count } = useUnreadMessageCount()
 
     const allDMs = useMemo(() => {
@@ -51,6 +50,7 @@ const AllDMsList = () => {
                 <SearchInput
                     onChangeText={setSearchQuery}
                     value={searchQuery}
+                    placeholder={__("Search") + '...'}
                 />
             </View>
             <View className='flex-1'>
@@ -73,17 +73,17 @@ const AllDMsList = () => {
 }
 
 const DMListEmptyState = ({ searchQuery }: { searchQuery?: string }) => {
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
     return (
         <View className="flex flex-col gap-2 bg-background px-4 py-1">
             <View className="flex flex-row items-center gap-2">
                 <ChatOutlineIcon fill={colors.icon} height={20} width={20} />
                 <Text className="text-foreground text-base font-medium">
-                    {searchQuery ? `No DMs found with "${searchQuery}"` : 'No DMs found'}
+                    {searchQuery ? __("No DMs found with \"{{query}}\"", { query: searchQuery }) : __("No DMs found")}
                 </Text>
             </View>
             <Text className="text-sm text-foreground/60">
-                {searchQuery ? 'Try searching for a different user name, or invite this userto Raven' : `Start a new conversation with someone to see it here`}
+                {searchQuery ? __("Try searching for a different user name") : __("Start a new conversation with someone to see it here")}
             </Text>
         </View>
     )

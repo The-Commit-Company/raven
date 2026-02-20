@@ -25,13 +25,13 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { runOnJS } from 'react-native-reanimated';
 import ViewThreadButton from './MessageItemElements/ViewThreadButton';
 import { useColorScheme } from '@hooks/useColorScheme';
+import { __ } from '@lib/i18n';
 type Props = {
     message: FileMessage | PollMessage | TextMessage | ImageMessage
 }
 
 const MessageItem = memo(({ message }: Props) => {
-
-    const { colors, isDarkColorScheme } = useColorScheme()
+const { colors, isDarkColorScheme } = useColorScheme()
 
     const { linked_message, replied_message_details } = message
 
@@ -123,13 +123,13 @@ const MessageItem = memo(({ message }: Props) => {
                                 <View className='flex-row items-center gap-1'>
                                     <ShareForward fill={'#6b7280'} width={12} height={12} />
                                     <Text className='text-sm text-muted-foreground'>
-                                        forwarded
+                                        {__("Forwarded")}
                                     </Text>
                                 </View>}
                             {message.is_pinned === 1 &&
                                 <View className='flex-row items-center gap-1'>
                                     <PinIcon width={12} height={12} fill={isDarkColorScheme ? '#5753C6' : '#787BE3'} />
-                                    <Text className='text-sm text-primary dark:text-secondary'>Pinned</Text>
+                                    <Text className='text-sm text-primary dark:text-secondary'>{__("Pinned")}</Text>
                                 </View>}
 
                             {linked_message && replied_message_details && <ReplyMessageBox
@@ -148,7 +148,7 @@ const MessageItem = memo(({ message }: Props) => {
                                 <DocTypeLinkRenderer doctype={message.link_doctype} docname={message.link_document} />
                             </View>}
 
-                            {message.is_edited === 1 && <Text className='text-xs text-muted-foreground'>(edited)</Text>}
+                            {message.is_edited === 1 && <Text className='text-xs text-muted-foreground'>({__("edited")})</Text>}
                             {message.hide_link_preview === 0 && message.text && <MessageLinkRenderer message={message} />}
                             <MessageReactions message={message} longPressGesture={longPressGesture} />
                             {message.is_thread === 1 && <View className='flex self-start mt-1'><ViewThreadButton message={message} /></View>}

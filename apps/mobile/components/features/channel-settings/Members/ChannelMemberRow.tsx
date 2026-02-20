@@ -14,10 +14,10 @@ import { useCurrentChannelData } from '@hooks/useCurrentChannelData';
 import { toast } from 'sonner-native';
 import { ActivityIndicator } from '@components/nativewindui/ActivityIndicator';
 import { COLORS } from '@theme/colors';
+import { __ } from '@lib/i18n';
 
 const ChannelMemberRow = ({ member }: { member: Member }) => {
-
-    const { id: channelId } = useLocalSearchParams()
+const { id: channelId } = useLocalSearchParams()
     const { myProfile: currentUserInfo } = useCurrentRavenUser()
     const { channelMembers, mutate: updateMembers } = useFetchChannelMembers(channelId as string ?? "")
     const { updateDoc, loading: updatingMember, reset } = useFrappeUpdateDoc()
@@ -35,7 +35,7 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
 
     const updateAdminStatus = async (admin: 1 | 0) => {
         if (isBot) {
-            toast.error("Bots cannot be made admins")
+            toast.error(__("Bots cannot be made admins"))
             return
         }
         return updateDoc("Raven Channel Member", memberInfo?.message.name ?? "", {
@@ -44,12 +44,12 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
             updateMembers()
             reset()
             if (admin === 1) {
-                toast.success(`${member.full_name} has been made an admin`)
+                toast.success(__("{{name}} has been made an admin", { name: member.full_name }))
             } else {
-                toast.warning(`${member.full_name} is no longer an admin`)
+                toast.warning(__("{{name}} is no longer an admin", { name: member.full_name }))
             }
         }).catch((e) => {
-            toast.error("Failed to update member status")
+            toast.error(__("Failed to update member status"))
             reset()
         })
     }
@@ -75,21 +75,21 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
 
         const deleteMember = async () => {
             return deleteDoc('Raven Channel Member', memberInfo?.message.name).then(() => {
-                toast.success(`Removed ${member.full_name} from the channel`)
+                toast.success(__("Removed {{name}} from the channel", { name: member.full_name }))
                 mutate(["channel_members", channelId])
             })
         }
 
         const showAlert = () =>
             Alert.alert(
-                `Remove Member?`,
-                `${member.full_name} will no longer have access to ${channel?.channelData.channel_name} channel.`,
+                __("Remove Member?"),
+                __("{{name}} will no longer have access to {{channelName}} channel.", { name: member.full_name, channelName: channel?.channelData.channel_name }),
                 [
                     {
-                        text: 'Cancel',
+                        text: __("Cancel"),
                     },
                     {
-                        text: 'Remove',
+                        text: __("Remove"),
                         style: 'destructive',
                         onPress: deleteMember
                     },
@@ -109,7 +109,7 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
 
     const showActions = () => {
 
-        let options = ['Make channel admin', 'Dismiss channel admin', 'Cancel']
+        let options = [__("Make channel admin"), __("Dismiss channel admin"), __("Cancel")]
         const isAdmin = channelMembers[member.name].is_admin
 
         if (isAllowed) {
@@ -151,7 +151,7 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
                                     {member.full_name?.length > 40
                                         ? `${member.full_name.slice(0, 40)}...`
                                         : member.full_name}
-                                    {member.name === currentUserInfo?.name ? " (You)" : ""}
+                                    {member.name === currentUserInfo?.name ? ` (${__("You")})` : ""}
                                 </Text>
                                 {channelMembers[member.name].is_admin ? <CrownIcon fill="#FFC53D" width={16} height={16} /> : null}
                             </View>

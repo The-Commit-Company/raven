@@ -5,15 +5,14 @@ import { useSetAtom } from 'jotai'
 import { selectedReplyMessageAtomFamily } from '@lib/ChatInputUtils'
 import useSiteContext from '@hooks/useSiteContext'
 import { ActionButtonLarge } from '@components/common/Buttons/ActionButtonLarge'
-
+import { __ } from '@lib/i18n';
 interface ReplyToMessageProps {
     message: Message
     onClose: () => void
 }
 
 const ReplyToMessage = ({ message, onClose }: ReplyToMessageProps) => {
-
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
 
     const siteInfo = useSiteContext()
 
@@ -26,7 +25,7 @@ const ReplyToMessage = ({ message, onClose }: ReplyToMessageProps) => {
     return (
         <ActionButtonLarge
             icon={<ReplyIcon width={18} height={18} color={colors.icon} />}
-            text="Reply"
+            text={__("Reply")}
             onPress={onReplyToMessage}
         />
     )
