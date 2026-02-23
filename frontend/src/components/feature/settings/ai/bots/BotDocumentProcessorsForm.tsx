@@ -68,37 +68,9 @@ export const BotDocumentProcessorsForm = () => {
         }
     )
 
-    const hasExistingProcessors = existingProcessors?.message && existingProcessors.message.length > 0
-
-    return (
-        <Stack gap='4'>
-            {/* Local LLM vision toggle — always visible, no Google APIs required */}
-            <Stack className='max-w-prose'>
-                <Text as="label" size="2">
-                    <HStack align='center'>
-                        <Controller
-                            control={control}
-                            name='enable_vision_base64'
-                            render={({ field }) => (
-                                <Checkbox
-                                    checked={field.value ? true : false}
-                                    onCheckedChange={(v) => field.onChange(v ? 1 : 0)}
-                                />
-                            )}
-                        />
-                        <span>Enable base64 image encoding for Local LLM vision</span>
-                    </HStack>
-                </Text>
-                <HelperText>
-                    When images are sent to a Local LLM agent, encode them as base64 and include them directly
-                    in the request. Enable this for vision-capable local models (Ollama, LM Studio, etc.).
-                </HelperText>
-            </Stack>
-
-            <Separator className='w-full' />
-
-            {/* Google Document AI section */}
-            {!isGoogleApisEnabled ? (
+    if (!isGoogleApisEnabled) {
+        return (
+            <Stack gap='4'>
                 <Callout.Root color="red" size="1">
                     <Callout.Icon>
                         <BiInfoCircle />
@@ -107,7 +79,14 @@ export const BotDocumentProcessorsForm = () => {
                         Document Processors require Google Cloud APIs to be enabled in your Raven settings.
                     </Callout.Text>
                 </Callout.Root>
-            ) : (
+            </Stack>
+        )
+    }
+
+    const hasExistingProcessors = existingProcessors?.message && existingProcessors.message.length > 0
+
+    return (
+        <Stack gap='4'>
             <Stack className='max-w-prose'>
                 <Text as="label" size="2">
                     <HStack align='center'>
@@ -129,7 +108,6 @@ export const BotDocumentProcessorsForm = () => {
                     to process the document and send its results to the agent for better context.
                 </HelperText>
             </Stack>
-            )}
 
             {useDocumentParser ? (
                 <>
