@@ -483,7 +483,7 @@ def process_message_with_agent(
 			if message.text or message.content:
 				user_text += message.text or message.content
 
-			if bot.model_provider == "Local LLM":
+			if bot.model_provider == "Local LLM" and getattr(bot, "enable_vision_base64", 1):
 				# Encode image as base64 so local vision models (Ollama etc.) can see it
 				content = _build_vision_content(file_url, user_text or None)
 			else:
@@ -505,7 +505,7 @@ def process_message_with_agent(
 			file_extension = file_url.split(".")[-1].lower() if "." in file_url else ""
 			extracted_content = extract_file_content_for_agent(file_url, file_extension, bot, file_handler)
 
-			if recent_file_message.message_type == "Image" and bot.model_provider == "Local LLM":
+			if recent_file_message.message_type == "Image" and bot.model_provider == "Local LLM" and getattr(bot, "enable_vision_base64", 1):
 				# Encode image as base64 for local vision models, combining with the user's text
 				vision_text = ""
 				if extracted_content:
