@@ -246,7 +246,7 @@
    "length": 400
   },
   {
-   "default": "1",
+   "default": "0",
    "description": "When images are sent to a Local LLM agent, encode them as base64 and include them directly in the request. Enable this for vision-capable local models (Ollama, LM Studio, etc.).",
    "fieldname": "enable_vision_base64",
    "fieldtype": "Check",
