@@ -45,7 +45,7 @@ export function GroupedAvatars({
                         borderColorClass,
                     )}
                 >
-                    <AvatarImage src={user.image || "/placeholder.svg"} alt={user.name} />
+                    <AvatarImage src={user.image} alt={user.name} />
                     <AvatarFallback>
                         {user.name
                             .split(" ")
