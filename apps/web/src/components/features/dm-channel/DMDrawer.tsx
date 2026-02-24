@@ -5,6 +5,7 @@ import { X } from "lucide-react"
 import { dmDrawerAtom } from "@utils/channelAtoms"
 import { DMFilesDrawer } from "./DMFilesDrawer"
 import { DMLinksDrawer } from "./DMLinksDrawer"
+import { DMThreads } from "./DMThreads"
 
 interface DMDrawerProps {
     channelId: string
@@ -18,7 +19,7 @@ export function DMDrawer({ channelId }: DMDrawerProps) {
     }
 
     const onTabChange = (value: string) => {
-        setDrawerType(value as "files" | "links")
+        setDrawerType(value as "files" | "links" | "threads")
     }
 
     const handleClose = () => {
@@ -30,12 +31,15 @@ export function DMDrawer({ channelId }: DMDrawerProps) {
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-3">
                 <Tabs value={drawerType} onValueChange={onTabChange} className="flex min-h-0 flex-1 flex-col">
                     <div className="mb-2 flex shrink-0 items-center justify-between">
-                        <TabsList className="grid h-8 flex-1 grid-cols-2 gap-1 px-1">
+                        <TabsList className="grid h-8 flex-1 grid-cols-3 gap-1 px-1">
                             <TabsTrigger value="files" className="h-6 text-xs">
                                 Files
                             </TabsTrigger>
                             <TabsTrigger value="links" className="h-6 text-xs">
                                 Links
+                            </TabsTrigger>
+                            <TabsTrigger value="threads" className="h-6 text-xs">
+                                Threads
                             </TabsTrigger>
                         </TabsList>
                         <Button
@@ -54,6 +58,9 @@ export function DMDrawer({ channelId }: DMDrawerProps) {
                         </TabsContent>
                         <TabsContent value="links" className="mt-0 h-full data-[state=inactive]:hidden">
                             <DMLinksDrawer />
+                        </TabsContent>
+                        <TabsContent value="threads" className="mt-0 h-full data-[state=inactive]:hidden">
+                            <DMThreads channelId={channelId} />
                         </TabsContent>
                     </div>
                 </Tabs>
