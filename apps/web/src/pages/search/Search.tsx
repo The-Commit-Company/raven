@@ -1,5 +1,3 @@
-import { SidebarTrigger } from "@components/ui/sidebar"
-import { Separator } from "@components/ui/separator"
 import { SearchFilters } from '@components/common/SearchFilters/types'
 import { SearchFilters as SearchFiltersComponent } from '@components/common/SearchFilters/SearchFilters'
 import { useState } from 'react'
@@ -277,21 +275,24 @@ export default function Search() {
         ...filters
     }
 
+    // Match Settings / Saved Messages / Threads: fixed header with workspace-switcher offset
+    const headerLeft = "var(--workspace-switcher-width, 60px)"
+    const headerWidth = "calc(100% - var(--workspace-switcher-width, 60px))"
+
     return (
-        <div className="flex flex-col h-full">
-            <header className="sticky top-[var(--app-header-height,36px)] flex items-center justify-between border-b bg-background py-2 px-2 z-20">
-                {/* Left side */}
+        <div className="flex flex-col h-full overflow-hidden" style={{ "--workspace-switcher-width": "60px" } as React.CSSProperties}>
+            <header
+                className="flex items-center justify-between border-b bg-background py-1.5 px-2 z-20 fixed top-0 h-[36px] transition-[left,width] duration-200 ease-linear"
+                style={{
+                    left: headerLeft,
+                    width: headerWidth,
+                }}
+            >
                 <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1">
-                        <SidebarTrigger className="-ml-1" />
-                        <div className="h-6">
-                            <Separator orientation="vertical" />
-                        </div>
-                    </div>
                     <span className="text-md font-medium">Search</span>
                 </div>
             </header>
-            <div className="flex flex-1 flex-row gap-0 p-0 overflow-hidden">
+            <div className="pt-[36px] flex flex-1 flex-row gap-0 p-0 overflow-hidden">
                 {/* Main Content */}
                 <div className={`transition-all duration-300 ${isDrawerOpen ? 'w-[calc(100%-340px)]' : 'w-full'} h-full flex flex-col p-4`}>
                     {/* Tabs Bar */}

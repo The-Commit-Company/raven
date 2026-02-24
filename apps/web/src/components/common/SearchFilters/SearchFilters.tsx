@@ -10,12 +10,13 @@ import { UserFields } from '@raven/types/common/UserFields'
 import { SearchFilters as SearchFiltersType } from './types'
 
 interface SearchFiltersProps {
-    filters: SearchFiltersType,
-    availableChannels: RavenChannel[],
-    availableUsers: UserFields[],
+    filters: SearchFiltersType
+    availableChannels: RavenChannel[]
+    availableUsers: UserFields[]
     onOpenMoreFilters: () => void
+    onChannelChange?: (value: string) => void
 }
-export function SearchFilters({ filters, availableChannels, availableUsers = [], onOpenMoreFilters }: SearchFiltersProps) {
+export function SearchFilters({ filters, availableChannels, availableUsers = [], onOpenMoreFilters, onChannelChange }: SearchFiltersProps) {
     return (
         <div className="space-y-2">
             {/* Filter Controls */}
@@ -30,12 +31,13 @@ export function SearchFilters({ filters, availableChannels, availableUsers = [],
                     filters={filters}
                     availableChannels={availableChannels}
                     availableUsers={availableUsers}
+                    onChannelChange={onChannelChange}
                     showLabel={false}
                     size="sm"
                     dropdownClassName="w-[320px]"
                 />
                 <DateFilter
-                    className="flex-shrink-0"
+                    className="shrink-0"
                     dropdownClassName="w-[260px]"
                     value={filters.dateRange}
                     onValueChange={(range) => console.log('dateRange', range)}
