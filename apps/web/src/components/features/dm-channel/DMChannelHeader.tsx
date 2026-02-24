@@ -7,7 +7,7 @@ import {
     DropdownMenuTrigger,
 } from "@components/ui/dropdown-menu"
 import { UserAvatar } from "@components/features/message/UserAvatar"
-import { BellOff, ChevronDown, FileText, Headset, Link, Star, User } from "lucide-react"
+import { BellOff, ChevronDown, FileText, Headset, Link, MessageSquareText, Star, User } from "lucide-react"
 import { useAtom } from "jotai"
 import { dmDrawerAtom } from "@utils/channelAtoms"
 import type { UserFields } from "@raven/types/common/UserFields"
@@ -30,6 +30,7 @@ export function DMChannelHeader({ peer, channelId, onViewProfile }: DMChannelHea
 
     const onOpenFiles = () => setDrawerType(drawerType === "files" ? "" : "files")
     const onOpenLinks = () => setDrawerType(drawerType === "links" ? "" : "links")
+    const onOpenThreads = () => setDrawerType(drawerType === "threads" ? "" : "threads")
     const handleViewProfile = () => onViewProfile?.()
 
     return (
@@ -118,6 +119,22 @@ export function DMChannelHeader({ peer, channelId, onViewProfile }: DMChannelHea
                         </TooltipTrigger>
                         <TooltipContent side="bottom">
                             <p>Links</p>
+                        </TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className={`h-7 w-7 rounded-sm ${drawerType === "threads" ? "bg-muted" : ""}`}
+                                onClick={onOpenThreads}
+                            >
+                                <MessageSquareText className="h-3 w-3 text-foreground/80" />
+                                <span className="sr-only">Threads</span>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">
+                            <p>Threads</p>
                         </TooltipContent>
                     </Tooltip>
                 </div>
