@@ -18,8 +18,6 @@ class RavenChannelGroups(Document):
 		parent: DF.Data
 		parentfield: DF.Data
 		parenttype: DF.Data
-	# end: auto-generated types		
+	# end: auto-generated types
 
 	pass
-
-
