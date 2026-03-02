@@ -1,4 +1,6 @@
 import { RavenPinnedChannels } from './RavenPinnedChannels'
+import { RavenChannelGroups } from '../RavenChannelManagement/RavenChannelGroups'
+import { RavenGroupedChannels } from './RavenGroupedChannels'
 
 export interface RavenUser{
 	creation: string
@@ -19,16 +21,24 @@ export interface RavenUser{
 	bot?: string
 	/**	Enabled : Check	*/
 	enabled?: 0 | 1
+	/**	Last Mention Viewed On : Datetime	*/
+	last_mention_viewed_on?: string
 	/**	Full Name : Data	*/
 	full_name: string
 	/**	First Name : Data	*/
 	first_name?: string
 	/**	User Image : Attach Image	*/
 	user_image?: string
-	/**	 : Table - Raven Pinned Channels	*/
+	/**	Pinned Channels : Table - Raven Pinned Channels	*/
 	pinned_channels?: RavenPinnedChannels[]
+	/**	Channel Groups : Table - Raven Channel Groups	*/
+	channel_groups?: RavenChannelGroups[]
+	/**	Grouped Channels : Table - Raven Grouped Channels	*/
+	grouped_channels?: RavenGroupedChannels[]
 	/**	Availability Status : Select	*/
 	availability_status?: "" | "Available" | "Away" | "Do not disturb" | "Invisible"
 	/**	Custom Status : Data	*/
 	custom_status?: string
+	/**	Chat Style : Select	*/
+	chat_style?: "Simple" | "Left-Right"
 }

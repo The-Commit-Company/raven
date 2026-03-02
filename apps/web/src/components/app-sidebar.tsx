@@ -14,8 +14,6 @@ import { UserFields } from "@raven/types/common/UserFields"
 import { ChannelSidebar } from "./channel-sidebar/ChannelSidebar"
 import { DMSidebar } from "./dm-sidebar/DMSidebar"
 import { ChannelListItem } from "@raven/types/common/ChannelListItem"
-import { ChannelSidebarData } from "../types/ChannelGroup"
-import { erpNextData, helpdeskData, frappeSchoolData, frappeHRData } from "../data/channelSidebarData"
 import { useActiveWorkspace } from "../contexts/ActiveWorkspaceContext"
 import { WorkspaceSwitcher } from "./workspace-switcher/WorkspaceSwitcher"
 
@@ -27,7 +25,7 @@ interface MailItem extends UserFields {
     unread: number
 }
 
-const data = {
+export const data = {
     user: {
         name: "shadcn",
         email: "m@example.com",
@@ -193,43 +191,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         setActiveWorkspaceName(activeWorkspace?.name || null)
     }, [activeWorkspace, setActiveWorkspaceName])
 
-
-    // Get channel data based on active workspace
-    const [channelSidebarData, setChannelSidebarData] = React.useState<ChannelSidebarData>(() => {
-        switch (activeWorkspace?.name) {
-            case 'ERPNext':
-                return erpNextData
-            case 'Helpdesk':
-                return helpdeskData
-            case 'Frappe School':
-                return frappeSchoolData
-            case 'Frappe HR':
-                return frappeHRData
-            default:
-                return erpNextData
-        }
-    })
-
-    // Update channel data when workspace changes
-    React.useEffect(() => {
-        switch (activeWorkspace?.name) {
-            case 'ERPNext':
-                setChannelSidebarData(erpNextData)
-                break
-            case 'Helpdesk':
-                setChannelSidebarData(helpdeskData)
-                break
-            case 'Frappe School':
-                setChannelSidebarData(frappeSchoolData)
-                break
-            case 'Frappe HR':
-                setChannelSidebarData(frappeHRData)
-                break
-            default:
-                setChannelSidebarData(erpNextData)
-        }
-    }, [activeWorkspace?.name])
-
     const handleChannelClick = (channel: ChannelListItem) => {
         setActiveChannel({
             id: channel.name,
@@ -249,7 +210,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <div className="flex h-full *:data-[sidebar=sidebar]:flex-row">
                 <WorkspaceSwitcher />
 
-                <div className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col overflow-hidden">
                     {location.pathname === "/threads" || location.pathname === "/mentions" ? null : location.pathname === "/direct-messages" ? (
                         <DMSidebar
                             workspaceName="Direct Messages"
@@ -281,10 +242,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                 <SidebarGroup className="p-0">
                                     <SidebarGroupContent>
                                         <ChannelSidebar
-                                            data={channelSidebarData}
                                             activeChannelId={activeChannel?.name}
                                             onChannelClick={handleChannelClick}
-                                            onDataChange={setChannelSidebarData}
                                         />
                                     </SidebarGroupContent>
                                 </SidebarGroup>

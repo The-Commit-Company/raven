@@ -1,5 +1,4 @@
 import { ChevronRight, Info } from "lucide-react"
-import { ChannelSidebarData } from "../../types/ChannelGroup"
 import { ChannelListItem } from "@raven/types/common/ChannelListItem"
 import { cn } from "@lib/utils"
 import {
@@ -22,32 +21,50 @@ import {
     TooltipTrigger,
 } from "@components/ui/tooltip"
 import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
-import { CustomizeSidebarButton } from "@components/features/channel/CustomizeSidebar/CustomizeSidebarButton"
 import { CreateChannelButton } from "@components/features/channel/CreateChannel/CreateChannelButton"
+import { useGroupedChannels } from "@raven/lib/hooks/useGroupedChannels"
+import { useLocalStorage } from 'usehooks-ts'
+import { CustomizeSidebarButton } from "@components/features/channel/CustomizeSidebar/CustomizeSidebarButton"
+import { useChannels } from "@hooks/useChannels"
+import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
+
 
 interface ChannelSidebarProps {
-    data: ChannelSidebarData
     activeChannelId?: string
     onChannelClick: (channel: ChannelListItem) => void
-    onDataChange?: (data: ChannelSidebarData) => void
-    showActions?: boolean
     showUnreadBadges?: boolean
 }
 
+interface GroupsState {
+    [key: string]: boolean
+}
+
 export function ChannelSidebar({
-    data,
     activeChannelId,
     onChannelClick,
-    onDataChange,
-    showActions = true,
     showUnreadBadges = true
 }: ChannelSidebarProps) {
+
+    const { channels } = useChannels()
+    const { myProfile } = useCurrentRavenUser()
+    const channelSidebarData = useGroupedChannels(channels, myProfile)
+
 
     // Calculate total unread count for a group
     const getGroupUnreadCount = (channels: ChannelListItem[]) => {
         return channels.reduce((total, channel) => {
             return total + (channel.last_message_details?.unread_count || 0)
         }, 0)
+    }
+
+    const [groupsState, setGroupsState] = useLocalStorage<GroupsState>('channel-sidebar-groups-state', {})
+
+    const handleGroupStateChange = (groupName: string, open: boolean) => {
+        setGroupsState(prev => ({ ...prev, [groupName]: open }))
+    }
+
+    if (!myProfile) {
+        return null
     }
 
     return (
@@ -74,42 +91,40 @@ export function ChannelSidebar({
                     </TooltipProvider>
                 </div>
                 <div className="flex items-center gap-1">
-                    <CustomizeSidebarButton data={data} onSave={onDataChange} />
+                    <CustomizeSidebarButton />
                     <CreateChannelButton />
                 </div>
             </div>
             <SidebarMenu>
                 {/* Channel Groups */}
-                {data.groups.map((group) => {
-                    const totalUnread = getGroupUnreadCount(group.channels)
+                {channelSidebarData.groupedChannels.map(([groupName, channels]) => {
+                    const totalUnread = getGroupUnreadCount(channels)
                     return (
                         <Collapsible
-                            key={group.id}
+                            key={groupName}
                             asChild
-                            defaultOpen={!group.isCollapsed}
+                            open={groupsState[groupName] ?? false}
                             className="group/collapsible"
                         >
                             <SidebarMenuItem>
-                                <CollapsibleTrigger asChild>
-                                    <SidebarMenuButton
-                                        tooltip={group.name.replace(/^[\p{Emoji}\u200d]+\s?/u, '')}
-                                    >
-                                        <ChevronRight className="w-4 h-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                                        <span className="truncate text-[13px] flex items-center gap-1.5">
+                                <CollapsibleTrigger onClick={() => handleGroupStateChange(groupName, !groupsState[groupName])} asChild>
+                                    <SidebarMenuButton>
+                                        <ChevronRight className="w-4 h-4 shrink-0 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                        <span className="text-[13px] flex items-center gap-1.5 min-w-0 overflow-hidden">
                                             {(() => {
                                                 // Match emoji including compound emojis (with ZWJ)
-                                                const emojiMatch = group.name.match(/^[\p{Emoji}\u200d]+/u);
+                                                const emojiMatch = groupName.match(/^[\p{Emoji}\u200d]+/u);
                                                 const emoji = emojiMatch ? emojiMatch[0] : null;
-                                                const nameWithoutEmoji = group.name.replace(/^[\p{Emoji}\u200d]+\s?/u, '');
+                                                const nameWithoutEmoji = groupName.replace(/^[\p{Emoji}\u200d]+\s?/u, '');
                                                 return (
                                                     <>
-                                                        {emoji && <span className="text-lg leading-none">{emoji}</span>}
-                                                        <span>{nameWithoutEmoji}</span>
+                                                        {emoji && <span className="text-lg leading-none shrink-0">{emoji}</span>}
+                                                        <span className="truncate">{nameWithoutEmoji}</span>
                                                     </>
                                                 );
                                             })()}
                                         </span>
-                                        <div className="ml-auto flex items-center gap-2">
+                                        <div className="ml-auto shrink-0 flex items-center gap-2">
                                             {showUnreadBadges && totalUnread > 0 && (
                                                 <div className="badge-unread opacity-0 group-data-[state=closed]/collapsible:opacity-100 transition-opacity">
                                                     {totalUnread > 9 ? '9+' : totalUnread}
@@ -120,7 +135,7 @@ export function ChannelSidebar({
                                 </CollapsibleTrigger>
                                 <CollapsibleContent>
                                     <ul className="border-sidebar-border ml-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l px-2 py-0.5">
-                                        {group.channels.map((channel) => (
+                                        {channels.map((channel) => (
                                             <SidebarMenuSubItem key={channel.name}>
                                                 <button
                                                     onClick={() => onChannelClick(channel)}
@@ -154,7 +169,7 @@ export function ChannelSidebar({
                 })}
 
                 {/* Ungrouped Channels */}
-                {data.ungroupedChannels.map((channel) => (
+                {channelSidebarData.ungroupedChannels.map((channel) => (
                     <SidebarMenuItem key={channel.name}>
                         <SidebarMenuButton
                             asChild

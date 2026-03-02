@@ -17,8 +17,10 @@
   "first_name",
   "user_image",
   "html_xuuw",
-  "pinned_channels_section",
+  "channels_section",
   "pinned_channels",
+  "channel_groups",
+  "grouped_channels",
   "user_status_section",
   "availability_status",
   "custom_status",
@@ -96,13 +98,9 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "pinned_channels_section",
-   "fieldtype": "Section Break",
-   "label": "Pinned Channels"
-  },
-  {
    "fieldname": "pinned_channels",
    "fieldtype": "Table",
+   "label": "Pinned Channels",
    "options": "Raven Pinned Channels"
   },
   {
@@ -140,12 +138,29 @@
    "fieldname": "last_mention_viewed_on",
    "fieldtype": "Datetime",
    "label": "Last Mention Viewed On"
+  },
+  {
+   "fieldname": "channels_section",
+   "fieldtype": "Section Break",
+   "label": "Channels"
+  },
+  {
+   "fieldname": "channel_groups",
+   "fieldtype": "Table",
+   "label": "Channel Groups",
+   "options": "Raven Channel Groups"
+  },
+  {
+   "fieldname": "grouped_channels",
+   "fieldtype": "Table",
+   "label": "Grouped Channels",
+   "options": "Raven Grouped Channels"
   }
  ],
  "grid_page_length": 50,
  "image_field": "user_image",
  "links": [],
- "modified": "2025-02-28 15:48:53.835541",
+ "modified": "2026-01-27 14:52:54.594231",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven User",

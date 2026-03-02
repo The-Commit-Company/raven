@@ -14,16 +14,19 @@ class RavenUser(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
-
+		from raven.raven.doctype.raven_grouped_channels.raven_grouped_channels import RavenGroupedChannels
 		from raven.raven.doctype.raven_pinned_channels.raven_pinned_channels import RavenPinnedChannels
+		from raven.raven_channel_management.doctype.raven_channel_groups.raven_channel_groups import RavenChannelGroups
 
 		availability_status: DF.Literal["", "Available", "Away", "Do not disturb", "Invisible"]
 		bot: DF.Link | None
+		channel_groups: DF.Table[RavenChannelGroups]
 		chat_style: DF.Literal["Simple", "Left-Right"]
 		custom_status: DF.Data | None
 		enabled: DF.Check
 		first_name: DF.Data | None
 		full_name: DF.Data
+		grouped_channels: DF.Table[RavenGroupedChannels]
 		last_mention_viewed_on: DF.Datetime | None
 		pinned_channels: DF.Table[RavenPinnedChannels]
 		type: DF.Literal["User", "Bot"]
