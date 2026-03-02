@@ -254,6 +254,7 @@ permission_query_conditions = {
 	"Raven Poll Vote": "raven.permissions.raven_poll_vote_query",
 	"Raven Workspace": "raven.permissions.raven_workspace_query",
 	"Raven Workspace Member": "raven.permissions.raven_workspace_member_query",
+	"Raven Channel Member": "raven.permissions.raven_channel_member_query",
 }
 
 has_permission = {
@@ -271,6 +272,7 @@ on_session_creation = "raven.api.user_availability.set_user_active"
 on_logout = "raven.api.user_availability.set_user_inactive"
 
 export_python_type_annotations = True
+require_type_annotated_api_methods = True
 
 raven_document_link_override = "raven.api.document_link.get_new_app_document_links"
 

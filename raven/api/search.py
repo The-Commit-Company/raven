@@ -4,16 +4,16 @@ from pypika import JoinType
 
 @frappe.whitelist()
 def get_search_result(
-	filter_type,
-	search_text=None,
-	from_user=None,
-	in_channel=None,
-	saved=False,
-	date=None,
-	file_type=None,
-	message_type=None,
-	channel_type=None,
-	my_channel_only=False,
+	filter_type: str,
+	search_text: str | None = None,
+	from_user: str | None = None,
+	in_channel: str | None = None,
+	saved: bool = False,
+	date: str | None = None,
+	file_type: str | None = None,
+	message_type: str | None = None,
+	channel_type: str | None = None,
+	my_channel_only: bool = False,
 ):
 	# Define the necessary document types
 	channel_member = frappe.qb.DocType("Raven Channel Member")

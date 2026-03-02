@@ -108,7 +108,7 @@ export const LeftRightLayout = ({ message, user, isActive, isHighlighted, onRepl
                     >
                         <Stack gap={'0'} align={'end'}>
                             {alignToRight && !is_continuation && <Box className="text-right pr-1 pb-0.5"><DateTooltip timestamp={timestamp} /></Box>}
-                            <Flex direction={'column'} className={clsx("relative w-fit sm:max-w-[32rem] max-w-[80vw] bg-gray-2 dark:bg-gray-3 p-3 gap-1 rounded-md",
+                            <Flex direction={'column'} className={clsx("relative w-fit max-w-[32rem] sm:max-w-[60vw] bg-gray-2 dark:bg-gray-3 p-3 gap-1 rounded-md",
                                 isHighlighted ? 'bg-yellow-50 hover:bg-yellow-50 dark:bg-yellow-300/20 dark:hover:bg-yellow-300/20' : !isDesktop && isHovered ? 'bg-gray-2 dark:bg-gray-3' : ''
                             )}>
                                 {!is_continuation && !alignToRight ? <Flex align='center' gap='2'>

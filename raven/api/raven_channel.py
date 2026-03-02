@@ -7,7 +7,7 @@ from raven.utils import get_channel_members, get_raven_user, is_channel_member, 
 
 
 @frappe.whitelist()
-def get_all_channels(hide_archived=True):
+def get_all_channels(hide_archived: bool | str = True):
 	"""
 	Fetches all channels where current user is a member - both channels and DMs
 	To be used on the web app.
@@ -39,7 +39,7 @@ def get_all_channels(hide_archived=True):
 	return {"channels": channel_list, "dm_channels": dm_list}
 
 
-def get_channel_list(hide_archived=False):
+def get_channel_list(hide_archived: bool = False):
 	"""
 	get List of all channels where current user is a member (all includes public, private, open, and DM channels)
 	"""
@@ -94,7 +94,7 @@ def get_channel_list(hide_archived=False):
 
 
 @frappe.whitelist()
-def get_channels(hide_archived=False):
+def get_channels(hide_archived: bool | str = False):
 	channels = get_channel_list(hide_archived)
 	for channel in channels:
 		peer_user_id = get_peer_user_id(
@@ -140,7 +140,7 @@ def get_peer_user_id(
 
 
 @frappe.whitelist(methods=["POST"])
-def create_direct_message_channel(user_id):
+def create_direct_message_channel(user_id: str):
 	"""
 	Creates a direct message channel between current user and the user with user_id
 	The user_id can be the peer or the user themself
@@ -191,7 +191,7 @@ def create_direct_message_channel(user_id):
 
 
 @frappe.whitelist(methods=["POST"])
-def toggle_pinned_channel(channel_id):
+def toggle_pinned_channel(channel_id: str):
 	"""
 	Toggles the pinned status of the channel
 	"""
@@ -214,7 +214,7 @@ def toggle_pinned_channel(channel_id):
 
 
 @frappe.whitelist()
-def leave_channel(channel_id):
+def leave_channel(channel_id: str):
 	"""
 	Leave a channel
 	"""
@@ -230,7 +230,7 @@ def leave_channel(channel_id):
 
 
 @frappe.whitelist()
-def toggle_pin_message(channel_id, message_id):
+def toggle_pin_message(channel_id: str, message_id: str):
 	"""
 	Toggle pin/unpin a message in a channel.
 	"""

@@ -19,9 +19,14 @@ export const useActiveSocketConnection = () => {
             console.log("Socket connection failed", socketConnectionCount.current)
             // If the socket connection fails more than 2 times, then show an error message
             if (socketConnectionCount.current === 2) {
-                toast.error("Realtime events are not working. Please try refreshing the page.", {
-                    duration: 5000
-                })
+                const isToastActive = toast.getToasts().some(toast => toast.id === "socket-connection-error")
+                if (!isToastActive) {
+                    toast.error("Realtime events are not working. Please try refreshing the page.", {
+                        duration: 5000,
+                        closeButton: true,
+                        id: "socket-connection-error"
+                    })
+                }
             } else {
                 // Else try to connect to socket
                 socket?.connect()

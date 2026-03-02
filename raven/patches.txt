@@ -16,3 +16,6 @@ raven.patches.v2_6.clean_duplicate_channel_members
 raven.patches.v2_6.add_unique_constraint_in_raven_channel_member
 raven.patches.v2_6.add_unique_constraint_on_dm_channels
 raven.patches.v2_6.fix_duplicate_dm_channels
+raven.patches.v2_7.clean_duplicate_poll_votes
+raven.patches.v2_7.migrate_poll_votes_to_poll_vote_selection
+raven.patches.v2_7.add_unique_constraint_on_poll_votes

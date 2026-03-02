@@ -19,7 +19,7 @@ def get_messages(channel_id: str, limit: int = 20, base_message: str | None = No
 		frappe.throw(_("You do not have permission to access this channel"), frappe.PermissionError)
 
 	# Fetch messages for the channel
-	if base_message:
+	if base_message and frappe.db.exists("Raven Message", base_message):
 		return get_messages_around_base(channel_id, base_message)
 
 	# Cannot use `get_all` as it does not apply the `order_by` clause to multiple fields

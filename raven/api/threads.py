@@ -18,12 +18,12 @@ def get_number_of_replies(thread_id: str):
 @frappe.whitelist(methods=["GET"])
 def get_all_threads(
 	workspace: str = None,
-	content=None,
-	channel_id=None,
-	is_ai_thread=0,
-	start_after=0,
-	limit=10,
-	only_show_unread=False,
+	content: str = None,
+	channel_id: str = None,
+	is_ai_thread: int = 0,
+	start_after: int = 0,
+	limit: int = 10,
+	only_show_unread: bool = False,
 ):
 	"""
 	Get all the threads in which the user is a participant
@@ -72,7 +72,7 @@ def get_all_threads(
 			(channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user)
 		)
 		.left_join(thread_messages)
-		.on(channel.name == thread_messages.channel_id)
+		.on((channel.name == thread_messages.channel_id) & (thread_messages.message_type != "System"))
 		.where(channel_member.user_id == frappe.session.user)
 		.where(channel.is_thread == 1)
 		.where(channel.is_ai_thread == is_ai_thread)
@@ -111,7 +111,12 @@ def get_all_threads(
 
 @frappe.whitelist(methods=["GET"])
 def get_other_threads(
-	workspace: str = None, content=None, channel_id=None, is_ai_thread=0, start_after=0, limit=10
+	workspace: str = None,
+	content: str = None,
+	channel_id: str = None,
+	is_ai_thread: int = 0,
+	start_after: int = 0,
+	limit: int = 10,
 ):
 	"""
 	Get all the threads in which the user is not a participant, but is a member of the channel
@@ -154,7 +159,9 @@ def get_other_threads(
 		.left_join(main_thread_message)
 		.on((main_thread_message.is_thread == 1) & (main_thread_message.name == thread_channel.name))
 		.left_join(thread_message)
-		.on(thread_channel.name == thread_message.channel_id)
+		.on(
+			(thread_channel.name == thread_message.channel_id) & (thread_message.message_type != "System")
+		)
 		.left_join(channel_member)
 		.on(
 			(main_thread_message.channel_id == channel_member.channel_id)
@@ -233,7 +240,7 @@ def get_unread_threads(workspace: str = None, thread_id: str = None):
 
 
 @frappe.whitelist(methods=["POST"])
-def create_thread(message_id):
+def create_thread(message_id: str):
 	"""
 	A thread can be created by any user with read access to the channel in which the message has been sent.
 	The thread will be created with this user as the first participant.

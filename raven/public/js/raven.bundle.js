@@ -3,7 +3,7 @@ $(document).on('app_ready', function () {
 
         try {
             // If on mobile or on frappe v16, do not show the chat
-            if (frappe.is_mobile() || frappe.boot.versions["frappe"].startsWith('16')) {
+            if (frappe.is_mobile() || frappe.boot.versions["frappe"].startsWith('16') || frappe.boot.versions["frappe"].startsWith('17')) {
                 return;
             }
             let main_section = $(document).find('.main-section');
