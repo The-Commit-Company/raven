@@ -14,6 +14,7 @@ import { DMSidebar } from "./dm-sidebar/DMSidebar"
 import { ChannelListItem } from "@raven/types/common/ChannelListItem"
 import { useActiveWorkspace } from "../contexts/ActiveWorkspaceContext"
 import { WorkspaceSwitcher } from "./workspace-switcher/WorkspaceSwitcher"
+import _ from "@lib/translate"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const [activeChannel, setActiveChannel] = React.useState<{ id: string; name: string; type: string; unread: number } | null>(null)
@@ -67,7 +68,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                         {activeWorkspaceName}
                                     </div>
                                     <Label className="flex items-center gap-2 text-[12px]">
-                                        <span>Unreads</span>
+                                        <span>{_("Unreads")}</span>
                                         <Switch className="shadow-none" />
                                     </Label>
                                 </div>
