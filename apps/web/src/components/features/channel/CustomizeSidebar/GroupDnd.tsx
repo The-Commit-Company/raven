@@ -37,6 +37,11 @@ export const GroupDnd = () => {
         name: 'channel_groups'
     })
 
+    const { fields: groupedChannels, update: updateGroupedChannel } = useFieldArray<RavenUser, 'grouped_channels'>({
+        control,
+        name: 'grouped_channels'
+    })
+
     const sensors = useSensors(
         useSensor(PointerSensor),
         useSensor(KeyboardSensor, {
@@ -66,9 +71,19 @@ export const GroupDnd = () => {
 
     const handleGroup = (name: string, index?: number) => {
         if (typeof index === 'number') {
+            const oldName = groups[index].group_name
             updateGroup(index, {
                 ...groups[index],
                 group_name: name
+            })
+
+            groupedChannels.forEach((gc, i) => {
+                if (gc.channel_group === oldName) {
+                    updateGroupedChannel(i, {
+                        ...gc,
+                        channel_group: name
+                    })
+                }
             })
         } else {
             appendGroup({
