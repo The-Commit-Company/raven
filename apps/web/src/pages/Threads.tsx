@@ -12,6 +12,7 @@ import ThreadViewDrawer from "@components/features/threads/ThreadViewDrawer"
 import { ThreadMessage } from "../types/ThreadMessage"
 import { RavenChannel } from "@raven/types/RavenChannelManagement/RavenChannel"
 import { cn } from "@lib/utils"
+import { WorkspaceSwitcher } from "@components/workspace-switcher/WorkspaceSwitcher"
 
 type ThreadTab = 'all' | 'participating' | 'ai' | 'other'
 
@@ -127,23 +128,35 @@ export default function Threads() {
     const channels = allChannels.filter(c => !c.is_direct_message)
     const selectedChannel = allChannels.find(c => c.name === channel)
 
+    // Threads page is a sidebar-less page, so it only has the workspace switcher (60px)
+    const headerLeft = "var(--workspace-switcher-width, 60px)"
+    const headerWidth = "calc(100% - var(--workspace-switcher-width, 60px))"
+
     return (
-        <div className="flex flex-col h-full">
-            <header className="sticky top-0 flex items-center justify-between border-b bg-background py-1.5 px-2 z-30">
+        <div className="flex flex-col h-full overflow-hidden" style={{ "--workspace-switcher-width": "60px" } as React.CSSProperties}>
+            <WorkspaceSwitcher standalone />
+            <div className="flex flex-col h-full overflow-hidden" style={{ marginLeft: "var(--workspace-switcher-width, 60px)", width: "calc(100% - var(--workspace-switcher-width, 60px))" } as React.CSSProperties}>
+                <header 
+                    className="flex items-center justify-between border-b bg-background py-1.5 px-2 z-20 fixed top-0 h-[36px] transition-[left,width] duration-200 ease-linear"
+                    style={{
+                        left: headerLeft,
+                        width: headerWidth,
+                    }}
+                >
                 {/* Left side */}
                 <div className="flex items-center gap-4">
                     <span className="text-md font-medium">Threads</span>
                 </div>
             </header>
 
-            <div className="flex flex-1 overflow-hidden">
+            <div className="pt-[36px] flex flex-1 overflow-hidden">
                 {/* Main content area */}
                 <div className={cn(
                     "flex-1 flex flex-col transition-all duration-300",
                     selectedThreadID && "w-1/2 border-r border-border"
                 )}>
                     <div className="flex flex-col flex-1 overflow-hidden">
-                        <div className="px-4 pt-4 shrink-0 space-y-3">
+                        <div className="px-4 pt-4 shrink-0 space-y-3 z-0">
                             <div className="flex items-center justify-between gap-4">
                                 <div className="flex gap-2">
                                     {TABS.map(tab => (
@@ -281,6 +294,7 @@ export default function Threads() {
                         />
                     </div>
                 )}
+            </div>
             </div>
         </div>
     )

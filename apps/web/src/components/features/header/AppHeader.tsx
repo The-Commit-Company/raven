@@ -1,7 +1,8 @@
 import UserHelpMenu from "./UserHelpMenu/UserHelpMenu";
 import SearchBar from "./QuickSearch/SearchBar";
-import { useLocation } from "react-router-dom";
 import { useSidebar } from "@components/ui/sidebar";
+import { useLocation } from "react-router-dom";
+import { SIDEBAR_LESS_ROUTES } from "@utils/routes";
 
 interface AppHeaderProps {
     searchValue?: string
@@ -9,10 +10,11 @@ interface AppHeaderProps {
 }
 
 const AppHeader = ({ searchValue, onSearchChange }: AppHeaderProps) => {
-
     const location = useLocation()
-    const isSearchPage = location.pathname === "/search"
-    const isThreadsPage = location.pathname === "/threads"
+    const pathname = location.pathname
+    const isSearchPage = pathname === "/search"
+    const isSettingsPage = pathname.startsWith("/settings")
+    const isSidebarLessPage = SIDEBAR_LESS_ROUTES.has(pathname) || isSettingsPage
     const { state } = useSidebar()
     const isCollapsed = state === "collapsed"
 
@@ -20,12 +22,12 @@ const AppHeader = ({ searchValue, onSearchChange }: AppHeaderProps) => {
         <header
             className="flex items-center justify-between border-b bg-background z-10 px-2 fixed top-0 h-[36px] transition-[left,width] duration-200 ease-linear"
             style={{
-                left: isThreadsPage
+                left: isSidebarLessPage
                     ? "var(--workspace-switcher-width, 60px)"
                     : (isCollapsed
                         ? "var(--sidebar-width-icon, 60px)"
                         : "var(--sidebar-width, 340px)"),
-                width: isThreadsPage
+                width: isSidebarLessPage
                     ? "calc(100% - var(--workspace-switcher-width, 60px))"
                     : (isCollapsed
                         ? "calc(100% - var(--sidebar-width-icon, 60px))"

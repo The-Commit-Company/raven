@@ -25,7 +25,7 @@ const SystemMessage: React.FC<SystemMessageProps> = ({ message, time }) => {
         }
     }, [time])
     return (
-        <div className="flex flex-row gap-3 items-baseline">
+        <div className="flex flex-row gap-3 px-3.5 items-baseline">
             <Tooltip delayDuration={300}>
                 <TooltipTrigger>
                     <span className="text-xs text-muted-foreground font-light text-left tabular-nums">{shortTime}</span>

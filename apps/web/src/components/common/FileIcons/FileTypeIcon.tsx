@@ -2,7 +2,7 @@ import { cn } from '@lib/utils'
 
 interface FileTypeIconProps {
     fileType: string
-    size?: 'sm' | 'md' | 'lg' | 'xl'
+    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
     className?: string
     showBackground?: boolean
 }
@@ -14,6 +14,7 @@ const FileTypeIcon = ({
     showBackground = true
 }: FileTypeIconProps) => {
     const sizeClasses = {
+        xs: 'h-6 w-6',
         sm: 'h-8 w-8',
         md: 'h-10 w-10',
         lg: 'h-12 w-12',
@@ -21,6 +22,7 @@ const FileTypeIcon = ({
     }
 
     const iconSizeClasses = {
+        xs: 'h-5 w-5',
         sm: 'h-5 w-5',
         md: 'h-6 w-6',
         lg: 'h-8 w-8',
@@ -29,6 +31,7 @@ const FileTypeIcon = ({
 
     // Special sizing for PowerPoint icon due to different viewBox
     const pptIconSizeClasses = {
+        xs: 'h-2.5 w-2.5',
         sm: 'h-3.5 w-3.5',
         md: 'h-4 w-4',
         lg: 'h-5 w-5',

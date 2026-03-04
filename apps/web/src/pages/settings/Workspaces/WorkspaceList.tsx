@@ -79,7 +79,7 @@ const workspaceColumns: ColumnDef<WorkspaceFields>[] = [
 function WorkspaceNameCell({ workspace }: { workspace: WorkspaceFields }) {
     const content = (
         <div className="flex items-center gap-2">
-            <Avatar className="h-8 w-8 rounded-md">
+            <Avatar className="h-8 w-8 rounded-md border border-border/80 dark:border-border/60">
                 <AvatarImage src={workspace.logo} alt={workspace.workspace_name} />
                 <AvatarFallback className="rounded-md">
                     {workspace.workspace_name?.charAt(0)?.toUpperCase()}
