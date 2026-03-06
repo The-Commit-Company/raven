@@ -12,25 +12,18 @@ import {
     DropdownMenuTrigger,
 } from '@components/ui/dropdown-menu'
 import { CustomizeSidebarDialog } from './CustomizeSidebarDialog'
-import { ChannelSidebarData } from 'src/types/ChannelGroup'
+import _ from "@lib/translate"
 
-interface CustomizeSidebarButtonProps {
-    data: ChannelSidebarData
-    onSave?: (data: ChannelSidebarData) => void
-}
-
-export const CustomizeSidebarButton = ({ data, onSave }: CustomizeSidebarButtonProps) => {
+export const CustomizeSidebarButton = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [showMyChannelsOnly, setShowMyChannelsOnly] = useState(false)
 
     return (
         <>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="sm:max-w-[960px] max-h-[90vh] p-0 gap-0 flex flex-col overflow-hidden">
+                <DialogContent className="sm:max-w-[960px] h-[90vh] p-0 gap-0 flex flex-col overflow-hidden">
                     <CustomizeSidebarDialog
-                        initialData={data}
                         onClose={() => setIsDialogOpen(false)}
-                        onSave={onSave}
                     />
                 </DialogContent>
             </Dialog>
@@ -47,10 +40,10 @@ export const CustomizeSidebarButton = ({ data, onSave }: CustomizeSidebarButtonP
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" side="bottom" sideOffset={4} className="w-48">
                     <DropdownMenuItem onClick={() => setShowMyChannelsOnly(!showMyChannelsOnly)}>
-                        <span>Only show my channels</span>
+                        <span>{_("Only show my channels")}</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>
-                        <span>Customize my sidebar</span>
+                        <span>{_("Customize my sidebar")}</span>
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>

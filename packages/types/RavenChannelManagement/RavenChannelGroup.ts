@@ -1,7 +1,7 @@
 
-export interface RavenPollVoteSelection{
-	name: string
+export interface RavenChannelGroup{
 	creation: string
+	name: string
 	modified: string
 	owner: string
 	modified_by: string
@@ -10,4 +10,8 @@ export interface RavenPollVoteSelection{
 	parentfield?: string
 	parenttype?: string
 	idx?: number
+	/**	Group Name : Data	*/
+	group_name: string
+	/**	Raven User : Link - Raven User	*/
+	raven_user: string
 }

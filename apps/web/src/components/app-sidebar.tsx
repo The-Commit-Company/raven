@@ -8,38 +8,23 @@ import {
     SidebarHeader,
 } from "@components/ui/sidebar"
 import { Switch } from "@components/ui/switch"
-import { useNavigate, useLocation, useParams } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import { ChannelSidebar } from "./channel-sidebar/ChannelSidebar"
 import { DMSidebar } from "./dm-sidebar/DMSidebar"
 import { ChannelListItem } from "@raven/types/common/ChannelListItem"
-import { ChannelSidebarData } from "../types/ChannelGroup"
-import { erpNextData } from "../data/channelSidebarData"
 import { useActiveWorkspace } from "../contexts/ActiveWorkspaceContext"
 import { WorkspaceSwitcher } from "./workspace-switcher/WorkspaceSwitcher"
+import _ from "@lib/translate"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const [activeChannel, setActiveChannel] = React.useState<{ id: string; name: string; type: string; unread: number } | null>(null)
     const [activeDM, setActiveDM] = React.useState<string | null>(null)
     const navigate = useNavigate()
     const location = useLocation()
-    const params = useParams()
     const { activeWorkspaceName } = useActiveWorkspace()
 
     // Get channel data based on active workspace
     // TODO: Replace with real API call to fetch channels for workspace
-    const getChannelDataForWorkspace = (workspaceName: string | undefined): ChannelSidebarData => {
-        // For now, use default data. In production, fetch channels from API based on workspaceName
-        return erpNextData
-    }
-
-    const [channelSidebarData, setChannelSidebarData] = React.useState<ChannelSidebarData>(() =>
-        getChannelDataForWorkspace(activeWorkspaceName ?? undefined)
-    )
-
-    // Update channel data when workspace changes
-    React.useEffect(() => {
-        setChannelSidebarData(getChannelDataForWorkspace(activeWorkspaceName ?? undefined))
-    }, [activeWorkspaceName])
 
     const handleChannelClick = (channel: ChannelListItem) => {
         setActiveChannel({
@@ -62,8 +47,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <div className="flex h-full *:data-[sidebar=sidebar]:flex-row">
                 <WorkspaceSwitcher />
 
-                <div className="flex-1 flex flex-col">
-                    {location.pathname === "/threads" || location.pathname === "/notifications" ? null : location.pathname === "/direct-messages" ? (
+                <div className="flex-1 flex flex-col overflow-hidden">
+                    {location.pathname === "/threads" || location.pathname === "/mentions" ? null : location.pathname === "/direct-messages" ? (
                         <DMSidebar
                             workspaceName="Direct Messages"
                             activeDM={activeDM}
@@ -83,7 +68,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                         {activeWorkspaceName}
                                     </div>
                                     <Label className="flex items-center gap-2 text-[12px]">
-                                        <span>Unreads</span>
+                                        <span>{_("Unreads")}</span>
                                         <Switch className="shadow-none" />
                                     </Label>
                                 </div>
@@ -92,10 +77,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                 <SidebarGroup className="p-0">
                                     <SidebarGroupContent>
                                         <ChannelSidebar
-                                            data={channelSidebarData}
                                             activeChannelId={activeChannel?.name}
                                             onChannelClick={handleChannelClick}
-                                            onDataChange={setChannelSidebarData}
                                         />
                                     </SidebarGroupContent>
                                 </SidebarGroup>
