@@ -11,7 +11,7 @@
   "license": "AGPL-3.0-only",
   "dependencies": {
     "@tiptap/extension-highlight": "2.5.9",
-    "@tiptap/extension-link": "2.5.9",
+    "@tiptap/extension-link": "2.10.4",
     "@tiptap/extension-mention": "2.5.9",
     "@tiptap/extension-placeholder": "2.5.9",
     "@tiptap/extension-underline": "2.5.9",
