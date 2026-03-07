@@ -231,7 +231,7 @@ class RavenMessage(Document):
 		is_ai_thread = channel_doc.is_ai_thread
 
 		if is_ai_thread:
-			frappe.enqueue(
+			job = frappe.enqueue(
 				method=handle_ai_thread_message,
 				message=self,
 				timeout=600,
@@ -239,6 +239,9 @@ class RavenMessage(Document):
 				at_front=True,
 				job_name="handle_ai_thread_message",
 			)
+
+			# Store job_id in cache for potential cancellation
+			frappe.cache().hset("ai_job_ids", self.channel_id, job.id)
 
 			return
 
@@ -268,7 +271,7 @@ class RavenMessage(Document):
 		if not bot.is_ai_bot:
 			return
 
-		frappe.enqueue(
+		job = frappe.enqueue(
 			method=handle_bot_dm,
 			message=self,
 			bot=bot,
@@ -276,6 +279,9 @@ class RavenMessage(Document):
 			job_name="handle_bot_dm",
 			at_front=True,
 		)
+
+		# Store job_id in cache for potential cancellation
+		frappe.cache().hset("ai_job_ids", self.channel_id, job.id)
 
 	def set_last_message_timestamp(self):
 
