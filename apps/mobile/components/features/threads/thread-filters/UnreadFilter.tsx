@@ -2,10 +2,10 @@ import { View } from 'react-native';
 import * as DropdownMenu from 'zeego/dropdown-menu';
 import FilterIcon from '@assets/icons/FilterIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
+import { __ } from '@lib/i18n';
 
 const UnreadFilter = ({ onlyShowUnread, setOnlyShowUnread }: { onlyShowUnread: boolean, setOnlyShowUnread: (onlyShowUnread: boolean) => void }) => {
-
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
 
     return (
         <View>
@@ -17,10 +17,10 @@ const UnreadFilter = ({ onlyShowUnread, setOnlyShowUnread }: { onlyShowUnread: b
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content side='bottom' align='end'>
                     <DropdownMenu.Item key="all" onSelect={() => setOnlyShowUnread(false)}>
-                        <DropdownMenu.ItemTitle>All</DropdownMenu.ItemTitle>
+                        <DropdownMenu.ItemTitle>{__("All")}</DropdownMenu.ItemTitle>
                     </DropdownMenu.Item>
                     <DropdownMenu.Item key="unread" onSelect={() => setOnlyShowUnread(true)}>
-                        <DropdownMenu.ItemTitle>Unread</DropdownMenu.ItemTitle>
+                        <DropdownMenu.ItemTitle>{__("Unread Threads")}</DropdownMenu.ItemTitle>
                     </DropdownMenu.Item>
                 </DropdownMenu.Content>
             </DropdownMenu.Root>

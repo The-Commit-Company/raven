@@ -1,11 +1,11 @@
 import { Stack } from 'expo-router';
 import FullPageLoader from '@components/layout/FullPageLoader';
+import { __ } from '@lib/i18n';
 
 export default function InitialScreen() {
-
-    return (
+return (
         <>
-            <Stack.Screen options={{ title: 'Raven' }} />
+            <Stack.Screen options={{ title: __("Raven") }} />
             <FullPageLoader />
         </>
     );

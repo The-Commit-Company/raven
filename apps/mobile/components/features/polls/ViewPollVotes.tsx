@@ -8,6 +8,7 @@ import { useGetUser } from '@raven/lib/hooks/useGetUser';
 import UserAvatar from '@components/layout/UserAvatar';
 import { Divider } from '@components/layout/Divider';
 import ErrorBanner from '@components/common/ErrorBanner';
+import { __ } from '@lib/i18n';
 
 type VoteData = {
     users: string[],
@@ -22,8 +23,7 @@ interface ViewPollVotesProps {
 }
 
 const ViewPollVotes = ({ poll }: ViewPollVotesProps) => {
-
-    const bottomSheetRef = useSheetRef()
+const bottomSheetRef = useSheetRef()
 
     return (
         <View>
@@ -32,7 +32,7 @@ const ViewPollVotes = ({ poll }: ViewPollVotesProps) => {
                 onPress={() => bottomSheetRef.current?.present()}
                 activeOpacity={0.6}>
                 <Text className="text-center text-sm text-primary dark:text-secondary font-medium">
-                    View votes
+                    {__("View Votes")}
                 </Text>
             </TouchableOpacity>
 
@@ -70,12 +70,12 @@ const ViewPollVotesModalContent = ({ poll }: ViewPollVotesModalContentProps) => 
 }
 
 const VotesBlock = ({ votesData, poll }: { votesData: PollVotesResponse; poll: Poll }) => {
-    return (
+return (
         <View>
             <View className="flex-row justify-between items-baseline mb-4">
-                <Text className="text-xl font-cal-sans">Poll Votes</Text>
+                <Text className="text-xl font-cal-sans">{__("Poll Votes")}</Text>
                 <Text className="text-sm text-muted-foreground">
-                    {poll.poll.total_votes} vote{poll.poll.total_votes > 1 ? 's' : ''}
+                    {poll.poll.total_votes} {poll.poll.total_votes === 1 ? __("vote") : __("votes")}
                 </Text>
             </View>
 
@@ -96,7 +96,7 @@ const VotesBlock = ({ votesData, poll }: { votesData: PollVotesResponse; poll: P
                                 </Text>
                             </View>
                             <Text className="text-sm text-muted-foreground">
-                                {option.count} vote{option.count > 1 ? 's' : ''}
+                                {option.count} {option.count === 1 ? __("vote") : __("votes")}
                             </Text>
                         </View>
                         <View className="bg-card rounded-lg p-2.5">

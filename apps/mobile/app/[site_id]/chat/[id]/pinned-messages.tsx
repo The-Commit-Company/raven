@@ -7,9 +7,10 @@ import { Platform, View } from "react-native";
 import PinnedMessageList from "@components/features/pinned-messages/PinnedMessageList";
 import PinOutlineIcon from "@assets/icons/PinOutlineIcon.svg";
 import CommonErrorBoundary from "@components/common/CommonErrorBoundary";
-const PinnedMessages = () => {
+import { __ } from '@lib/i18n';
 
-    const { colors } = useColorScheme()
+const PinnedMessages = () => {
+const { colors } = useColorScheme()
 
     return (
         <>
@@ -28,7 +29,7 @@ const PinnedMessages = () => {
                     headerTitle: () => (
                         <View className='flex-row items-center'>
                             <PinOutlineIcon height={18} width={18} stroke={colors.foreground} />
-                            <Text className='ml-2 text-base font-semibold'>Pinned messages</Text>
+                            <Text className='ml-2 text-base font-semibold'>{__("Pinned Messages")}</Text>
                         </View>
                     ),
                 }} />

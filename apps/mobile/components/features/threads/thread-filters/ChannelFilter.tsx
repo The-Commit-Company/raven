@@ -4,10 +4,10 @@ import * as DropdownMenu from 'zeego/dropdown-menu';
 import useGetChannels from '@raven/lib/hooks/useGetChannels';
 import HashIcon from '@assets/icons/HashIcon.svg';
 import { useColorScheme } from '@hooks/useColorScheme';
+import { __ } from '@lib/i18n';
 
 const ChannelFilter = ({ channel, setChannel }: { channel: string, setChannel: (channel: string) => void }) => {
-
-    const { channels } = useGetChannels({ showArchived: false })
+const { channels } = useGetChannels({ showArchived: false })
     const { colors } = useColorScheme()
 
     return (
@@ -20,7 +20,7 @@ const ChannelFilter = ({ channel, setChannel }: { channel: string, setChannel: (
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content side='bottom' align='end'>
                     <DropdownMenu.Item key="all" onSelect={() => setChannel('all')}>
-                        <DropdownMenu.ItemTitle>Any Channel</DropdownMenu.ItemTitle>
+                        <DropdownMenu.ItemTitle>{__("Any Channel")}</DropdownMenu.ItemTitle>
                     </DropdownMenu.Item>
                     {channels.map((channelItem) => (
                         <DropdownMenu.Item

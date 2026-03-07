@@ -4,10 +4,9 @@ import SettingsIcon from '@assets/icons/SettingsIcon.svg'
 import { useColorScheme } from '@hooks/useColorScheme'
 import ChevronRightIconThin from '@assets/icons/ChevronRightIconThin.svg'
 import { router } from 'expo-router'
-
+import { __ } from '@lib/i18n';
 const Preferences = () => {
-
-    const { colors } = useColorScheme()
+const { colors } = useColorScheme()
 
     const handleGoToCustomStatus = () => {
         router.push('./preferences', {
@@ -20,7 +19,7 @@ const Preferences = () => {
             <View className='flex flex-row py-0 pl-4 pr-2 items-center justify-between'>
                 <View className='flex-row items-center gap-2 py-2.5'>
                     <SettingsIcon height={18} width={18} color={colors.icon} />
-                    <Text className='text-base'>Preferences</Text>
+                    <Text className='text-base'>{__("Preferences")}</Text>
                 </View>
                 <View className='flex-row h-10 items-center'>
                     <ChevronRightIconThin height={22} width={22} color={colors.grey} />
