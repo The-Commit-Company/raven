@@ -8,11 +8,6 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#000000"
-    },
     "ios": {
       "supportsTablet": false,
       "appleTeamId": "W6346TTZQX",
@@ -46,6 +41,19 @@
     "plugins": [
       [
         "expo-router"
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#ffffff",
+          "image": "./assets/splash.png",
+          "imageWidth": 400,
+          "resizeMode": "contain",
+          "dark": {
+            "backgroundColor": "#121212",
+            "image": "./assets/splash.png"
+          }
+        }
       ],
       [
         "expo-secure-store"
