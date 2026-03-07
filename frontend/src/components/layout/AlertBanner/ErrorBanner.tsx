@@ -32,7 +32,15 @@ const getErrorMessages = (error?: FrappeError | null): ParsedErrorMessage[] => {
         }
     })
 
-    if (eMessages.length === 0) {
+    // Filter out messages with empty content - Frappe sometimes returns messages with empty string
+    eMessages = eMessages.filter(m => m.message && m.message.trim() !== '')
+    // Check _error_message first - Frappe often puts the actual error here for PermissionError
+    if ((error as any)?._error_message) {
+        eMessages = [{
+            message: (error as any)._error_message,
+            title: error.exc_type || "Error"
+        }]
+    } else {
         // Get the message from the exception by removing the exc_type
         const indexOfFirstColon = error?.exception?.indexOf(':')
         if (indexOfFirstColon) {
@@ -75,7 +83,16 @@ export const ErrorBanner = ({ error, overrideHeading, children }: ErrorBannerPro
             }
         })
 
-        if (eMessages.length === 0) {
+        // Filter out messages with empty content - Frappe sometimes returns messages with empty string
+        eMessages = eMessages.filter(m => m.message && m.message.trim() !== '')
+        // Check _error_message first - Frappe often puts the actual error here for PermissionError
+        if ((error as any)?._error_message) {
+            eMessages = [{
+                message: (error as any)._error_message,
+                title: error.exc_type || "Error"
+            }]
+        } else {
+            if (eMessages.length === 0) {
             // Get the message from the exception by removing the exc_type
             const indexOfFirstColon = error?.exception?.indexOf(':')
             if (indexOfFirstColon) {
@@ -95,6 +112,8 @@ export const ErrorBanner = ({ error, overrideHeading, children }: ErrorBannerPro
                     indicator: "red"
                 }]
             }
+        }
+
         }
         return eMessages
     }, [error])
