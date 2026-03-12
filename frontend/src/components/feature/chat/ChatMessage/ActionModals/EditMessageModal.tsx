@@ -1,4 +1,4 @@
-import { useFrappeUpdateDoc } from "frappe-react-sdk"
+import { useFrappeDeleteDoc, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { useEffect } from "react"
 import { ErrorBanner } from "../../../../layout/AlertBanner/ErrorBanner"
 import { IconButton, Dialog, Flex, Text, VisuallyHidden } from "@radix-ui/themes"
@@ -15,12 +15,21 @@ interface EditMessageModalProps {
 export const EditMessageModal = ({ onClose, message }: EditMessageModalProps) => {
 
     const { updateDoc, error, loading: updatingDoc, reset } = useFrappeUpdateDoc()
+    const { deleteDoc, error: deleteError, loading: deletingDoc } = useFrappeDeleteDoc()
 
     useEffect(() => {
         reset()
     }, [reset])
 
     const onSubmit = async (html: string, json: any) => {
+
+        // If the edited message is empty, delete the message
+        if (html.trim() === '' && message.is_thread === 0 && message.message_type === "Text") {
+            return deleteDoc('Raven Message', message.name).then((d) => {
+                onClose(true)
+                toast.success("Message deleted")
+            })
+        }
         return updateDoc('Raven Message', message.name,
             { text: html, json }).then((d) => {
                 onClose(true)
@@ -44,7 +53,8 @@ export const EditMessageModal = ({ onClose, message }: EditMessageModalProps) =>
 
             <Flex gap='2' direction='column'>
                 <ErrorBanner error={error} />
-                <Tiptap onMessageSend={onSubmit} isEdit disableSessionStorage messageSending={updatingDoc} defaultText={message.text} />
+                <ErrorBanner error={deleteError} />
+                <Tiptap onMessageSend={onSubmit} isEdit disableSessionStorage messageSending={updatingDoc || deletingDoc} defaultText={message.text} />
                 <Flex justify='end' className="hidden sm:block">
                     <Text size='1' color='gray'>Press <b>Enter</b> to save</Text>
                 </Flex>
