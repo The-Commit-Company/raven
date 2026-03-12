@@ -1,4 +1,4 @@
-import { Box, Checkbox, Flex, Text, RadioGroup, Button, Badge, BoxProps } from "@radix-ui/themes"
+import { Box, Checkbox, Flex, Text, RadioGroup, Button, Badge, BoxProps, Tooltip } from "@radix-ui/themes"
 import { useEffect, useMemo, useState } from "react"
 import { UserFields } from "../../../../../utils/users/UserListProvider"
 import { PollMessage } from "../../../../../../../types/Messaging/Message"
@@ -124,20 +124,22 @@ const PollOption = ({ data, option }: { data: Poll, option: RavenPollOption }) =
     const width = `${percentage}%`
 
     return (
-        <Flex key={option.name} justify='between' align='center' className={'relative'}>
-            <Box position='absolute' top='0' left='0'
-                data-is-current-user-vote={isCurrentUserVote}
-                className={`bg-gray-5
+        <Tooltip content={`${option.votes} vote${option.votes && option.votes === 1 ? '' : 's'}`}>
+            <Flex key={option.name} justify='between' align='center' className={'relative'}>
+                <Box position='absolute' top='0' left='0'
+                    data-is-current-user-vote={isCurrentUserVote}
+                    className={`bg-gray-5
                             dark:bg-gray-6
                             h-full
                             rounded-sm
                             data-[is-current-user-vote=true]:bg-accent-a5
                             dark:data-[is-current-user-vote=true]:bg-accent-a6`}
-                style={{ width: triggerAnimation ? width : 0, transition: 'width 0.5s ease-in-out' }}>
-            </Box>
-            <Text as='span' size='2' className="px-2 py-1 z-10 overflow-hidden text-ellipsis" weight={isCurrentUserVote ? 'bold' : 'regular'}>{option.option}</Text>
-            <Text as='span' size='2' className="px-2 py-1 z-10 w-[6ch] text-right" weight={isCurrentUserVote ? 'bold' : 'regular'}>{percentage.toFixed(1)}%</Text>
-        </Flex>
+                    style={{ width: triggerAnimation ? width : 0, transition: 'width 0.5s ease-in-out' }}>
+                </Box>
+                <Text as='span' size='2' className="px-2 py-1 z-10 overflow-hidden text-ellipsis" weight={isCurrentUserVote ? 'bold' : 'regular'}>{option.option}</Text>
+                <Text as='span' size='2' className="px-2 py-1 z-10 w-[6ch] text-right" weight={isCurrentUserVote ? 'bold' : 'regular'}>{percentage.toFixed(1)}%</Text>
+            </Flex>
+        </Tooltip>
     )
 }
 
