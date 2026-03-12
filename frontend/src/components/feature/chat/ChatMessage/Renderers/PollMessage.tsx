@@ -59,10 +59,10 @@ const PollMessageBox = ({ data, messageID }: { data: Poll, messageID: string }) 
                         <Text size='2' weight={'medium'}>{data.poll.question}</Text>
                         {data.poll.is_anonymous ? <Badge color='blue' className={'w-fit'}>Anonymous</Badge> : null}
                     </Flex>
-                    {data.poll.is_disabled ? <Badge color="gray" className={'w-fit mb-2'}>
+                    {data.poll.is_disabled ? <Text color="gray" size='1'>
                         <IoLockClosed />
                         Poll is now closed. No more votes will be accepted.
-                    </Badge> : null}
+                    </Text> : null}
                     {data.poll.end_date && !data.poll.is_disabled && (
                         <Text size='1' color='gray'>
                             This poll will end on {new Date(data.poll.end_date).toLocaleString()}.

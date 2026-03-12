@@ -58,8 +58,9 @@ const UserList = ({ text }: { text: string }) => {
             filteredUsersWithChannels: usersWithChannels.filter((userWithChannel) => {
                 if (userWithChannel.user) {
                     return userWithChannel.user.full_name.toLowerCase().includes(text.toLowerCase())
+                } else {
+                    return userWithChannel.channel.peer_user_id?.toLowerCase()?.includes(text.toLowerCase()) ?? false
                 }
-                return userWithChannel.channel.peer_user_id.toLowerCase().includes(text.toLowerCase())
             }),
             filteredUsersWithoutChannels: usersWithoutChannels.filter((user) => user.full_name.toLowerCase().includes(text.toLowerCase()))
         }
