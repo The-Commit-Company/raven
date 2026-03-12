@@ -1,5 +1,5 @@
 import { FileMessage } from "../../../../../../../types/Messaging/Message"
-import { getFileExtension, getFileName, isVideoFile } from "../../../../../utils/operations"
+import { getAudioSource, getFileExtension, getFileName, isAudioFile, isVideoFile } from "../../../../../utils/operations"
 import { UserFields } from "@/utils/users/UserListProvider"
 import { Box, BoxProps, Button, Dialog, Flex, IconButton, Link, Text } from "@radix-ui/themes"
 import { BiDownload, BiLink, BiShow } from "react-icons/bi"
@@ -26,6 +26,8 @@ export const FileMessageBlock = memo(({ message, user, ...props }: FileMessageBl
 
     const isVideo = isVideoFile(fileExtension)
 
+    const isAudio = isAudioFile(fileExtension)
+
     const isPDF = fileExtension === 'pdf'
 
     const copyLink = () => {
@@ -51,9 +53,13 @@ export const FileMessageBlock = memo(({ message, user, ...props }: FileMessageBl
                 title="Download"
                 color='gray'
                 target='_blank'>{fileName}</Link>
-            <video src={message.file} controls className="rounded-md shadow-md max-h-96 max-w-[620px]" preload="metadata">
+            <video src={message.file} controls className="rounded-md shadow-md max-h-96 max-w-[620px]" preload="auto">
 
             </video>
+        </Flex> : isAudio ? <Flex gap='2' py='2' direction='column'>
+            <audio controls preload="auto">
+                <source src={message.file} type={getAudioSource(fileExtension)} />
+            </audio>
         </Flex> :
 
 
