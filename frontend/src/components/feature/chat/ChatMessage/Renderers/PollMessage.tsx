@@ -60,7 +60,6 @@ const PollMessageBox = ({ data, messageID }: { data: Poll, messageID: string }) 
                         {data.poll.is_anonymous ? <Badge color='blue' className={'w-fit'}>Anonymous</Badge> : null}
                     </Flex>
                     {data.poll.is_disabled ? <Text color="gray" size='1'>
-                        <IoLockClosed />
                         Poll is now closed. No more votes will be accepted.
                     </Text> : null}
                     {data.poll.end_date && !data.poll.is_disabled && (
