@@ -24,7 +24,6 @@ class RavenBot(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
-
 		from raven.raven_ai.doctype.raven_ai_bot_files.raven_ai_bot_files import RavenAIBotFiles
 		from raven.raven_ai.doctype.raven_bot_functions.raven_bot_functions import RavenBotFunctions
 
@@ -42,6 +41,8 @@ class RavenBot(Document):
 		instruction: DF.LongText | None
 		is_ai_bot: DF.Check
 		is_standard: DF.Check
+		mapped_functions: DF.JSON | None
+		marketplace_id: DF.Data | None
 		model: DF.Data | None
 		model_provider: DF.Literal["OpenAI", "Local LLM"]
 		module: DF.Link | None
