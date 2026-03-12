@@ -71,7 +71,7 @@ export const TiptapRenderer = ({ message, user, isScrolling = false, showMiniIma
         },
         bulletList: {
           HTMLAttributes: {
-            class: 'list-disc pl-4'
+            class: 'pl-4'
           }
         },
         listItem: {
