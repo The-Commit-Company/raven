@@ -4,6 +4,7 @@
 export const SIDEBAR_LESS_ROUTES = new Set<string>([
     "/threads",
     "/notifications",
-    "/direct-messages",
+    "/search",
+    "/dm-channel",
     "/saved-messages"
 ])
