@@ -7,7 +7,7 @@ import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
 import { cn } from "@lib/utils"
 import SavedMessagesList from "@components/features/saved-messages/SavedMessagesList"
 import { ReminderDialog } from "@components/features/saved-messages/ReminderDialog"
-import { SavedMessage, SavedMessageStatus } from "../types/SavedMessage"
+import { SavedMessage, SavedMessageStatus } from "../../types/SavedMessage"
 import { RavenChannel } from "@raven/types/RavenChannelManagement/RavenChannel"
 import { WorkspaceSwitcher } from "@components/workspace-switcher/WorkspaceSwitcher"
 

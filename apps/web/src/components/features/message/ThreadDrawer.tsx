@@ -1,4 +1,4 @@
-import { X, MoreVertical, Bell, LogOut, Trash2 } from "lucide-react"
+import { X, MoreVertical, Bell, LogOut, Trash2, Forward } from "lucide-react"
 import { Button } from "@components/ui/button"
 import { ScrollArea } from "@components/ui/scroll-area"
 import {
@@ -10,13 +10,36 @@ import {
 import ChatInput from "@components/features/ChatInput/ChatInput"
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
 import { useRef } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
+import { useNavigate, useLocation, useParams } from "react-router-dom"
+import { useSetAtom } from "jotai"
+import { forwardThreadModalAtom } from "@utils/channelAtoms"
 
 export default function ThreadDrawer() {
     const channelID = useCurrentChannelID()
     const threadInputRef = useRef<HTMLFormElement>(null)
     const navigate = useNavigate()
     const location = useLocation()
+    const setForwardThread = useSetAtom(forwardThreadModalAtom)
+    const { threadID } = useParams<{ threadID?: string }>()
+
+    const isDM = location.pathname.includes("/dm-channel/")
+    const workspaceMatch = location.pathname.match(/^\/([^/]+)\/channel\//)
+    const sourceWorkspace = workspaceMatch ? workspaceMatch[1] : null
+
+    const handleForward = () => {
+        if (!threadID) return
+        setForwardThread({
+            threadId: threadID,
+            sourceChannelId: channelID,
+            isSourceDm: isDM,
+            sourceWorkspace: isDM ? null : sourceWorkspace ?? null,
+            title: "",
+            messageCount: 0,
+            rootMessageSnippet: "",
+            lastActivity: "",
+            lastMessageOwnerName: "",
+        })
+    }
 
     const handleClose = () => {
         // Navigate back to channel (remove /thread/:threadID from URL)
@@ -42,6 +65,10 @@ export default function ThreadDrawer() {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="min-w-48">
+                            <DropdownMenuItem onClick={handleForward}>
+                                <Forward className="h-4 w-4 mr-2" />
+                                Forward thread
+                            </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => console.log("Toggle notifications")}>
                                 <Bell className="h-4 w-4 mr-2" />
                                 Enable Notifications

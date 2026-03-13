@@ -36,7 +36,7 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
             return decodeURIComponent(params.workspaceID)
         }
         // Fallback to pathname matching for channel routes (workspace-specific routes)
-        const match = location.pathname.match(/^\/([^/]+)\/(channel|search)/)
+        const match = location.pathname.match(/^\/([^/]+)\/channel\//)
         if (match) {
             return decodeURIComponent(match[1])
         }
@@ -132,13 +132,13 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                 <div
                     className="relative group/dm-item cursor-pointer w-full flex justify-center"
                     onClick={() => {
-                        navigate("/direct-messages")
+                        navigate("/dm-channel")
                     }}
                 >
                     <div
                         className={cn(
                             "absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-r-full transition-all duration-250 ease-out",
-                            location.pathname === "/direct-messages"
+                            location.pathname.startsWith("/dm-channel")
                                 ? "h-8 bg-foreground"
                                 : "h-2 bg-transparent group-hover/dm-item:bg-foreground/40 group-hover/dm-item:h-2",
                         )}
@@ -147,7 +147,7 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                         className={cn(
                             "relative flex items-center justify-center w-8 h-8 rounded-md transition-all duration-250 ease-out",
                             "bg-[oklch(0.99_0_0)] dark:bg-[oklch(0.25_0_0)] border border-border/80 dark:border-border/60",
-                                    location.pathname === "/direct-messages" 
+                                    location.pathname.startsWith("/dm-channel")
                                         ? "shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.05),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.05)] dark:shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.15),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.02)]"
                                         : "shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.03),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] dark:shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.1),-0.5px_-0.5px_1px_rgba(255,255,255,0.01)]",
                             "group-hover/dm-item:-translate-y-px group-hover/dm-item:scale-[1.02]",
@@ -157,10 +157,10 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                         <MessagesSquare 
                             className={cn(
                                 "relative w-3.5 h-3.5 text-foreground transition-all duration-250 ease-out",
-                                location.pathname === "/direct-messages" ? "opacity-100" : "opacity-70 dark:opacity-100",
+                                location.pathname.startsWith("/dm-channel") ? "opacity-100" : "opacity-70 dark:opacity-100",
                                 "group-hover/dm-item:scale-105 group-hover/dm-item:opacity-85 dark:group-hover/dm-item:opacity-100"
                             )}
-                            fill={location.pathname === "/direct-messages" ? "currentColor" : "none"}
+                            fill={location.pathname.startsWith("/dm-channel") ? "currentColor" : "none"}
                         />
                     </div>
                 </div>
@@ -206,7 +206,7 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                 {workspacesData?.message
                     ?.filter((workspace) => workspace.workspace_member_name) // Only show workspaces user is a member of
                     .map((workspace) => {
-                        const isOnSpecialPage = location.pathname === "/notifications" || location.pathname === "/direct-messages" || location.pathname === "/threads"
+                        const isOnSpecialPage = location.pathname === "/notifications" || location.pathname.startsWith("/dm-channel") || location.pathname === "/threads" || location.pathname === "/search"
                         const isActive = !isOnSpecialPage && urlWorkspace === workspace.name
                         const logo = getLogo(workspace)
                         

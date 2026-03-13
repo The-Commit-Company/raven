@@ -3,12 +3,15 @@ import AppSettings from "./pages/AppSettings"
 import Profile from "./pages/settings/Profile"
 import Appearance from "./pages/settings/Appearance"
 import Preferences from "./pages/settings/Preferences"
-import Channel from "@pages/Channel"
-import Notifications from "@pages/Notifications"
-import SavedMessages from "@pages/SavedMessages"
-import Search from "@pages/Search"
-import ChannelSettings from "@components/features/channel/ChannelSettings/ChannelSettings"
-import MainPage from "@pages/MainPage"
+import Channel from "@pages/workspace/Channel"
+import ChannelSettings from "@pages/workspace/ChannelSettings"
+import MainPage from "@pages/workspace/MainPage"
+import Notifications from "@pages/notifications/Notifications"
+import SavedMessages from "@pages/saved-messages/SavedMessages"
+import Search from "@pages/search/Search"
+import Threads from "@pages/threads/Threads"
+import DirectMessages, { DirectMessagesEmptyState } from "@pages/dm-channel/DirectMessages"
+import DirectMessage from "@pages/dm-channel/DirectMessage"
 import WorkspaceSwitcher from "@pages/WorkspaceSwitcher"
 import { WorkspaceSwitcherGrid } from "@components/workspace-switcher/WorkspaceSwitcherGrid"
 import { WorkspaceRedirect } from "@components/workspace-switcher/WorkspaceRedirect"
@@ -17,9 +20,8 @@ import { init } from 'emoji-mart'
 import Cookies from 'js-cookie'
 import LoginPage from "@pages/auth/Login"
 import ForgotPassword from "@pages/auth/ForgotPassword"
-import Threads from "@pages/Threads"
-import DirectMessages from "@pages/DirectMessages"
 import WorkspaceList from "@pages/settings/Workspaces/WorkspaceList"
+import { SearchLayout } from "@components/layout/SearchLayout"
 import CustomEmojiList from "@pages/settings/CustomEmojiList/CustomEmojiList"
 
 const isDesktop = window.innerWidth > 768
@@ -66,14 +68,21 @@ function App() {
             </Route>
             <Route path="notifications" element={<Notifications />} />
             <Route path="threads" element={<Threads />} />
-            <Route path="direct-messages" element={<DirectMessages />} />
+            <Route path="search" element={<SearchLayout />}>
+              <Route index element={<Search />} />
+            </Route>
+            <Route path="dm-channel" element={<DirectMessages />}>
+              <Route index element={<DirectMessagesEmptyState />} />
+              <Route path=":id" element={<DirectMessage />} />
+              <Route path=":id/thread/:threadID" element={<DirectMessage />} />
+            </Route>
             <Route path="saved-messages" element={<SavedMessages />} />
+            {/* Workspace: channels and settings only; search is global at /search above */}
             <Route path=":workspaceID" element={<MainPage />}>
               <Route index element={<WorkspaceRedirect />} />
               <Route path="channel/:id" element={<Channel />} />
               <Route path="channel/:id/thread/:threadID" element={<Channel />} />
               <Route path="channel/:id/settings" element={<ChannelSettings />} />
-              <Route path="search" element={<Search />} />
             </Route>
           </Route>
         </Routes>
