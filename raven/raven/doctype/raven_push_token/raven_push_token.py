@@ -23,6 +23,9 @@ class RavenPushToken(Document):
 		user: DF.Link
 	# end: auto-generated types
 
+	def before_validate(self):
+		self.user = frappe.session.user
+
 	def after_insert(self):
 		"""
 		If the push service is Frappe Cloud and is enabled, then send the token to the Frappe Cloud API

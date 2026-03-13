@@ -51,12 +51,12 @@ export const MessageContextMenu = ({ message, onDelete, onEdit, onReply, onForwa
                     </Flex>
                 </ContextMenu.Item>
 
-                <ContextMenu.Item onSelect={onForward}>
+                {message.message_type !== 'Poll' && <ContextMenu.Item onSelect={onForward}>
                     <Flex gap='2' width='100%'>
                         <LuForward size='18' />
                         Forward
                     </Flex>
-                </ContextMenu.Item>
+                </ContextMenu.Item>}
                 {message && !message.is_thread && showThreadButton && <CreateThreadContextItem messageID={message.name} />}
                 <CopyMessageLink message={message} />
                 <ContextMenu.Separator />

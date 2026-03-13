@@ -11,10 +11,10 @@ import { useNavigate, useLocation } from "react-router-dom"
 import { ChannelSidebar } from "./channel-sidebar/ChannelSidebar"
 import { DMSidebar } from "./dm-sidebar/DMSidebar"
 import { ChannelListItem } from "@raven/types/common/ChannelListItem"
-import { ChannelSidebarData } from "../types/ChannelGroup"
-import { erpNextData } from "../data/channelSidebarData"
 import { useActiveWorkspace } from "../contexts/ActiveWorkspaceContext"
 import { SidebarShell } from "@components/layout/SidebarShell"
+import { WorkspaceSwitcher } from "./workspace-switcher/WorkspaceSwitcher"
+import _ from "@lib/translate"
 
 export function AppSidebar(props: React.ComponentProps<typeof SidebarShell>) {
     const [activeChannel, setActiveChannel] = React.useState<{ id: string; name: string; type: string; unread: number } | null>(null)
@@ -24,19 +24,6 @@ export function AppSidebar(props: React.ComponentProps<typeof SidebarShell>) {
 
     // Get channel data based on active workspace
     // TODO: Replace with real API call to fetch channels for workspace
-    const getChannelDataForWorkspace = (workspaceName: string | undefined): ChannelSidebarData => {
-        // For now, use default data. In production, fetch channels from API based on workspaceName
-        return erpNextData
-    }
-
-    const [channelSidebarData, setChannelSidebarData] = React.useState<ChannelSidebarData>(() =>
-        getChannelDataForWorkspace(activeWorkspaceName ?? undefined)
-    )
-
-    // Update channel data when workspace changes
-    React.useEffect(() => {
-        setChannelSidebarData(getChannelDataForWorkspace(activeWorkspaceName ?? undefined))
-    }, [activeWorkspaceName])
 
     const handleChannelClick = (channel: ChannelListItem) => {
         setActiveChannel({
@@ -56,11 +43,17 @@ export function AppSidebar(props: React.ComponentProps<typeof SidebarShell>) {
 
     return (
         <SidebarShell collapsible="icon" className="overflow-hidden h-full" {...props}>
+    <div className="flex h-full *:data-[sidebar=sidebar]:flex-row">
+        <WorkspaceSwitcher />
+
+        <div className="flex-1 flex flex-col overflow-hidden">
             {location.pathname === "/threads" || location.pathname === "/notifications" ? null : location.pathname.startsWith("/dm-channel") || activeWorkspaceName === "Direct Messages" ? (
                 <DMSidebar
                     workspaceName="Direct Messages"
                     activeDMChannelId={null}
-                    onDMClick={(dmChannelId) => navigate(`/dm-channel/${encodeURIComponent(dmChannelId)}`)}
+                    onDMClick={(dmChannelId) =>
+                        navigate(`/dm-channel/${encodeURIComponent(dmChannelId)}`)
+                    }
                 />
             ) : (
                 <>
@@ -70,11 +63,12 @@ export function AppSidebar(props: React.ComponentProps<typeof SidebarShell>) {
                                 {activeWorkspaceName}
                             </div>
                             <Label className="flex items-center gap-2 text-[12px]">
-                                <span>Unreads</span>
+                                <span>{_("Unreads")}</span>
                                 <Switch className="shadow-none" />
                             </Label>
                         </div>
                     </SidebarHeader>
+
                     <SidebarContent>
                         <SidebarGroup className="p-0">
                             <SidebarGroupContent>
@@ -89,6 +83,8 @@ export function AppSidebar(props: React.ComponentProps<typeof SidebarShell>) {
                     </SidebarContent>
                 </>
             )}
-        </SidebarShell>
+        </div>
+    </div>
+</SidebarShell>
     )
 }

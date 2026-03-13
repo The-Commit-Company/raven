@@ -24,6 +24,28 @@ export const isVideoFile = (ext: string) => {
     return VIDEO_FORMATS.includes(ext)
 }
 
+export const AUDIO_FORMATS = ['mp3', 'ogg', 'wav']
+
+/**
+ * Function to check if a file is an audio file
+ * @param extension extension of the file
+ * @returns boolean
+ */
+export const isAudioFile = (ext: string) => {
+    return AUDIO_FORMATS.includes(ext)
+}
+
+export const getAudioSource = (ext: string) => {
+    if (ext === 'mp3') {
+        return 'audio/mpeg'
+    } else if (ext === 'ogg') {
+        return 'audio/ogg'
+    } else if (ext === 'wav') {
+        return 'audio/wav'
+    }
+    return 'audio/mpeg'
+}
+
 /**
  * Function to return name of a file name without extension
  * @param filename name of the file with extension

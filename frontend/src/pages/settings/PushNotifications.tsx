@@ -98,10 +98,10 @@ const PushNotifications = () => {
                             <br />
                             <ol className='list-decimal list-inside'>
                                 <li>
-                                    <Strong>Raven Cloud</Strong> - this is recommended. If you are self hosting, this is the only option.
+                                    <Strong>Raven Cloud</Strong> - recommended for all users, including those on Frappe Cloud. For self-hosted instances, this is the only option.
                                 </li>
                                 <li>
-                                    <Strong>Frappe Cloud</Strong> - if you are using Frappe Cloud, you can use this option.
+                                    <Strong>Frappe Cloud</Strong> - alternative option available only for Frappe Cloud users.
                                 </li>
                             </ol>
                         </Text>
