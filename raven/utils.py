@@ -126,6 +126,7 @@ def get_channel_members(channel_id: str):
 			raven_user.type,
 		)
 		.where(raven_channel_member.channel_id == channel_id)
+		.where(raven_user.enabled == 1)
 	)
 
 	members = query.run(as_dict=True)

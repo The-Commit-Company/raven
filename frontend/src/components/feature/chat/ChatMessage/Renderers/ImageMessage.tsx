@@ -1,9 +1,9 @@
 import { getFileName } from '@/utils/operations'
 import { ImageMessage } from '../../../../../../../types/Messaging/Message'
 import { Box, Button, Dialog, Flex, IconButton, Link } from '@radix-ui/themes'
-import { Suspense, lazy, memo, useState, useRef, useMemo } from 'react'
+import { Suspense, lazy, memo, useState, useMemo } from 'react'
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
-import { BiDownload, BiChevronDown, BiChevronRight, BiX } from 'react-icons/bi'
+import { BiDownload, BiX } from 'react-icons/bi'
 import { UserFields } from '@/utils/users/UserListProvider'
 import { DateMonthAtHourMinuteAmPm } from '@/utils/dateConversions'
 import { clsx } from 'clsx'
@@ -49,46 +49,14 @@ export const ImageMessageBlock = memo(({ message, isScrolling = false, user }: I
         return { height, width }
     }, [message.thumbnail_height, message.thumbnail_width, isMobile, isVisible])
 
-    const contentRef = useRef<HTMLDivElement | null>(null);
-
-    const showImage = () => {
-        setIsVisible(true)
-        setTimeout(() => {
-            if (contentRef.current) {
-                contentRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }, 200);
-    }
-
     const [isImageLoaded, setIsImageLoaded] = useState(false)
     const onLoad = () => {
         setIsImageLoaded(true)
     }
 
     return (
-        <Flex direction='column' gap='1'>
-            <Flex className='py-1 items-center'>
-                <IconButton
-                    size='1'
-                    variant="ghost"
-                    color="gray"
-                    radius='large'
-                    className='pl-0 pr-[6px] font-bold hover:bg-transparent text-accent-a11 hover:text-gray-12'
-                    aria-label={`Click to ${isVisible ? "hide" : "show"} image`}
-                    title={`${isVisible ? "Hide" : "Show"} image`}
-                    onClick={() => isVisible ? setIsVisible(false) : showImage()}
-                >
-                    {isVisible ? <BiChevronDown size='20' className='pt-[1px]' /> : <BiChevronRight size='20' className='pt-[1px]' />}
-                </IconButton>
-                <Link
-                    href={message.file}
-                    size='1'
-                    color='gray'
-                    target='_blank'>{fileName}
-                </Link>
-            </Flex>
+        <Flex direction='column' gap='1' py='1'>
             <Box
-                ref={contentRef}
                 className={`relative rounded-md cursor-pointer transition-all duration-300 ease-ease-out-circ overflow-hidden`}
                 role='button'
                 onClick={() => setIsOpen(!isScrolling && true)}

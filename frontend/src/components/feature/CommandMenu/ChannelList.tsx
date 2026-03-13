@@ -3,7 +3,7 @@ import { Command } from 'cmdk'
 import ChannelItem from './ChannelItem'
 import { useMemo } from 'react'
 
-const ChannelList = () => {
+const ChannelList = ({ text }: { text: string }) => {
 
     const { channels } = useChannelList()
 
@@ -18,9 +18,19 @@ const ChannelList = () => {
         return sortedChannels
     }, [channels])
 
+    const { filteredChannels } = useMemo(() => {
+        return {
+            filteredChannels: sortedChannels.filter((channel) => channel.channel_name.toLowerCase().includes(text.toLowerCase()))
+        }
+    }, [sortedChannels, text])
+
+    if (filteredChannels.length === 0) {
+        return null
+    }
+
     return (
         <Command.Group heading="Channels">
-            {sortedChannels.map((channel) => (
+            {filteredChannels.map((channel) => (
                 <ChannelItem key={channel.name} channel={channel} />
             ))}
         </Command.Group>
