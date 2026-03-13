@@ -13,7 +13,6 @@ import { DMSidebar } from "./dm-sidebar/DMSidebar"
 import { ChannelListItem } from "@raven/types/common/ChannelListItem"
 import { useActiveWorkspace } from "../contexts/ActiveWorkspaceContext"
 import { SidebarShell } from "@components/layout/SidebarShell"
-import { WorkspaceSwitcher } from "./workspace-switcher/WorkspaceSwitcher"
 import _ from "@lib/translate"
 
 export function AppSidebar(props: React.ComponentProps<typeof SidebarShell>) {
@@ -43,10 +42,7 @@ export function AppSidebar(props: React.ComponentProps<typeof SidebarShell>) {
 
     return (
         <SidebarShell collapsible="icon" className="overflow-hidden h-full" {...props}>
-    <div className="flex h-full *:data-[sidebar=sidebar]:flex-row">
-        <WorkspaceSwitcher />
-
-        <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 flex flex-col overflow-hidden">
             {location.pathname === "/threads" || location.pathname === "/notifications" ? null : location.pathname.startsWith("/dm-channel") || activeWorkspaceName === "Direct Messages" ? (
                 <DMSidebar
                     workspaceName="Direct Messages"
@@ -73,18 +69,15 @@ export function AppSidebar(props: React.ComponentProps<typeof SidebarShell>) {
                         <SidebarGroup className="p-0">
                             <SidebarGroupContent>
                                 <ChannelSidebar
-                                    data={channelSidebarData}
                                     activeChannelId={activeChannel?.name}
                                     onChannelClick={handleChannelClick}
-                                    onDataChange={setChannelSidebarData}
                                 />
                             </SidebarGroupContent>
                         </SidebarGroup>
                     </SidebarContent>
                 </>
             )}
-        </div>
-    </div>
-</SidebarShell>
+            </div>
+        </SidebarShell>
     )
 }
