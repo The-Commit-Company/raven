@@ -6,12 +6,12 @@ export type WorkspaceFields = Pick<RavenWorkspace, 'name' | 'workspace_name' | '
     is_admin?: 0 | 1
 }
 
-const useFetchWorkspaces = () => {
+export const useWorkspaces = () => {
     //TODO: we use useFrappeGetDocList instead of useFrappeGetCall because we can then use sorting, pagination, and filtering/ read from cache
-    return useFrappeGetCall<{ message: WorkspaceFields[] }>('raven.api.workspaces.get_list', undefined, 'workspaces_list', {
+    const { data, error, isLoading, mutate } = useFrappeGetCall<{ message: WorkspaceFields[] }>('raven.api.workspaces.get_list', undefined, 'workspaces_list', {
         revalidateOnFocus: false,
         keepPreviousData: true
     })
-}
 
-export default useFetchWorkspaces
+    return { workspaces: data?.message ?? [], error, isLoading, mutate }
+}

@@ -23,6 +23,7 @@ import ForgotPassword from "@pages/auth/ForgotPassword"
 import WorkspaceList from "@pages/settings/Workspaces/WorkspaceList"
 import { SearchLayout } from "@components/layout/SearchLayout"
 import CustomEmojiList from "@pages/settings/CustomEmojiList/CustomEmojiList"
+import { ManageChannels } from "@pages/settings/Channels/ManageChannels"
 
 const isDesktop = window.innerWidth > 768
 
@@ -64,6 +65,7 @@ function App() {
               <Route path="appearance" element={<Appearance />} />
               <Route path="preferences" element={<Preferences />} />
               <Route path="workspaces" element={<WorkspaceList />} />
+              <Route path="channels" element={<ManageChannels />} />
               <Route path="emojis" element={<CustomEmojiList />} />
             </Route>
             <Route path="notifications" element={<Notifications />} />

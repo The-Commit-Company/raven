@@ -1,6 +1,6 @@
 import React from "react"
 import { Outlet, useLocation } from "react-router-dom"
-import useFetchWorkspaces from "@hooks/fetchers/useFetchWorkspaces"
+import { useWorkspaces } from "@hooks/useWorkspaces"
 import { WorkspaceSwitcher as WorkspaceSwitcherSidebar } from "@components/workspace-switcher/WorkspaceSwitcher"
 
 // Routes that need the workspace switcher sidebar wrapper
@@ -8,9 +8,9 @@ import { WorkspaceSwitcher as WorkspaceSwitcherSidebar } from "@components/works
 const ROUTES_NEEDING_WORKSPACE_SWITCHER = ["/", "/workspace-explorer"]
 
 const WorkspaceSwitcher = () => {
-    const { data, isLoading, error } = useFetchWorkspaces()
+    const { workspaces, isLoading, error } = useWorkspaces()
     const location = useLocation()
-    
+
     const shouldShowWorkspaceSwitcher = ROUTES_NEEDING_WORKSPACE_SWITCHER.includes(location.pathname)
 
     if (isLoading) {
@@ -35,7 +35,7 @@ const WorkspaceSwitcher = () => {
         )
     }
 
-    if (data && data?.message.length === 0) {
+    if (workspaces && workspaces.length === 0) {
         return (
             <div className="flex justify-center items-center h-screen w-screen animate-fadein">
                 <div className="text-center">
@@ -46,7 +46,7 @@ const WorkspaceSwitcher = () => {
         )
     }
 
-    if (data) {
+    if (workspaces) {
         // Only wrap with workspace switcher layout for specific routes
         if (shouldShowWorkspaceSwitcher) {
             return (
@@ -58,7 +58,7 @@ const WorkspaceSwitcher = () => {
                 </div>
             )
         }
-        
+
         // For other routes, just render the outlet (they handle their own layouts)
         return <Outlet />
     }

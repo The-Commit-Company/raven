@@ -13,6 +13,7 @@ import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { toast } from "sonner"
 import _ from "@lib/translate"
 import { GroupDnd } from "./GroupDnd"
+import { useParams } from "react-router"
 
 export const CustomizeSidebarDialog = ({ onClose }: { onClose: () => void }) => {
 
@@ -31,7 +32,8 @@ export const CustomizeSidebarDialog = ({ onClose }: { onClose: () => void }) => 
     const ravenUser = useWatch<RavenUser>({
         control: methods.control
     })
-    const channelSidebarData = useGroupedChannels(channels, ravenUser as RavenUser)
+    const { workspaceID } = useParams()
+    const channelSidebarData = useGroupedChannels(channels, ravenUser as RavenUser, workspaceID)
 
     const { handleSubmit } = methods
 
