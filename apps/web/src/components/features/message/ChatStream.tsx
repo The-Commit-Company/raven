@@ -1003,6 +1003,104 @@ const dummyReactions5: ReactionObject[] = [
     }
 ]
 
+// Dummy: message that contains a forwarded thread preview (thread forwarded to this channel)
+const dummyForwardedThreadMessage: Message = {
+    name: "dummy-msg-forwarded-thread",
+    owner: dummyUser2.name,
+    _liked_by: "",
+    channel_id: "current-channel",
+    creation: new Date().toISOString().slice(0, 19).replace("T", " "),
+    modified: new Date().toISOString().slice(0, 19).replace("T", " "),
+    message_type: "Text",
+    is_continuation: 0,
+    is_reply: 0,
+    is_edited: 0,
+    is_forwarded: 1,
+    is_thread: 0,
+    is_pinned: 0,
+    text: "Sharing this thread from design-team for visibility — would love your input on the layout decisions.",
+    content: "Sharing this thread from design-team for visibility — would love your input on the layout decisions.",
+    json: JSON.stringify({
+        forwarded_thread: {
+            thread_id: "thread-abc123",
+            source_channel_id: "design-team",
+            is_source_dm: false,
+            source_workspace: "Raven",
+            title: "Header layout and mobile nav",
+            message_count: 12,
+            root_message_snippet: "Should we go with the sidebar nav on mobile or keep the bottom tab bar? I'm leaning sidebar for consistency with desktop.",
+            last_activity: "2 hours ago",
+            last_message_owner_name: dummyUser3.full_name,
+            root_message_owner_name: dummyUser3.full_name,
+            root_message_owner_image: dummyUser3.user_image,
+            participants: [
+                { name: "sarah", full_name: dummyUser3.full_name, user_image: dummyUser3.user_image },
+                { name: "brandon", full_name: dummyUser2.full_name, user_image: dummyUser2.user_image },
+                { name: "desirae", full_name: dummyUser1.full_name, user_image: dummyUser1.user_image },
+                { name: "mike", full_name: dummyUser4.full_name, user_image: dummyUser4.user_image },
+            ],
+            preview_replies: [
+                {
+                    owner_name: dummyUser2.full_name,
+                    owner_image: dummyUser2.user_image,
+                    snippet: "I'd vote for bottom tab — better thumb reach on large phones.",
+                },
+                {
+                    owner_name: dummyUser1.full_name,
+                    owner_image: dummyUser1.user_image,
+                    snippet: "Sidebar could work if we add a swipe gesture to open it. Thoughts?",
+                },
+            ],
+        },
+    }),
+} as Message
+
+// Dummy: thread that has been converted to a channel (preview with badge + link)
+const dummyConvertedThreadMessage: Message = {
+    name: "dummy-msg-converted-thread",
+    owner: dummyUser1.name,
+    _liked_by: "",
+    channel_id: "current-channel",
+    creation: new Date().toISOString().slice(0, 19).replace("T", " "),
+    modified: new Date().toISOString().slice(0, 19).replace("T", " "),
+    message_type: "Text",
+    is_continuation: 0,
+    is_reply: 0,
+    is_edited: 0,
+    is_forwarded: 0,
+    is_thread: 1,
+    is_pinned: 0,
+    text: "We should move the Q1 planning discussion into its own channel so everyone can follow along.",
+    content: "We should move the Q1 planning discussion into its own channel so everyone can follow along.",
+    json: JSON.stringify({
+        converted_to_channel_id: "Raven-q1-planning",
+        converted_to_channel_workspace: "Raven",
+        converted_channel_preview: {
+            root_message_owner_name: dummyUser1.full_name,
+            root_message_owner_image: dummyUser1.user_image,
+            root_message_snippet: "We should move the Q1 planning discussion into its own channel so everyone can follow along.",
+            message_count: 5,
+            participants: [
+                { name: "desirae", full_name: dummyUser1.full_name, user_image: dummyUser1.user_image },
+                { name: "brandon", full_name: dummyUser2.full_name, user_image: dummyUser2.user_image },
+                { name: "sarah", full_name: dummyUser3.full_name, user_image: dummyUser3.user_image },
+            ],
+            preview_replies: [
+                {
+                    owner_name: dummyUser2.full_name,
+                    owner_image: dummyUser2.user_image,
+                    snippet: "Agreed — I'll set up the channel and add the doc links.",
+                },
+                {
+                    owner_name: dummyUser3.full_name,
+                    owner_image: dummyUser3.user_image,
+                    snippet: "We can use the same agenda from the last sync.",
+                },
+            ],
+        },
+    }),
+} as Message
+
 
 
 const dummyReactionsImage: ReactionObject[] = [
@@ -1062,7 +1160,7 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
     }
 
     return (
-        <div className="flex flex-col px-3 pb-8 w-full">
+        <div className="flex min-w-0 flex-col px-3 pb-8 w-full">
 
             {formattedMessages.map((message) => (
                 message.message_type === 'date' ?
@@ -1072,6 +1170,11 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                         : <MessageItem message={message} key={message.name} onInView={onMessageInView} />
             )
             )}
+
+            {/* Thread preview demos — shown at top of stream so they're visible */}
+            <DateSeparator label="Today" />
+            <MessageItem message={dummyForwardedThreadMessage} key={dummyForwardedThreadMessage.name} />
+            <MessageItem message={dummyConvertedThreadMessage} key={dummyConvertedThreadMessage.name} />
 
             <PollMessage
                 user={dummyUser1}
@@ -1135,12 +1238,6 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                     onAddReaction={handleAddReaction}
                 />
             </div>
-
-
-
-            <DateSeparator label="Today" />
-
-
 
 
 

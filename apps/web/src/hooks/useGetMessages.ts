@@ -18,7 +18,7 @@ export const useGetMessages = (channelID: string) => {
     const { data, isLoading, error } = useFrappeGetCall<GetMessagesResponse>('raven.api.chat_stream.get_messages', {
         'channel_id': channelID,
         // 'base_message': selected_message ? selected_message : undefined
-    }, {
+    }, `get_messages_for_channel_${channelID}`, {
         revalidateOnFocus: isMobile ? true : false,
     })
 

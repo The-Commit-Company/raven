@@ -13,7 +13,7 @@ export const useGetFilePreviewUrl = (file: CustomFile): string => {
     useEffect(() => {
 
         let objectUrl = ""
-        const validPreviewTypes = ['image/gif', 'image/jpeg', 'image/png', 'image/svg+xml', 'image/webp', 'image/jpg', 'audio/mpeg', 'audio/mp3', 'audio/m4a'];
+        const validPreviewTypes = ['image/gif', 'image/jpeg', 'image/png', 'image/svg+xml', 'image/webp', 'image/jpg'];
 
         //Only create a URL for images/audios
         if (validPreviewTypes.includes(file.type)) {

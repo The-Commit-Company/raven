@@ -9,7 +9,7 @@ import ParticipatingThreads from "@components/features/threads/ParticipatingThre
 import OtherThreads from "@components/features/threads/OtherThreads"
 import AIThreads from "@components/features/threads/AIThreads"
 import ThreadViewDrawer from "@components/features/threads/ThreadViewDrawer"
-import { ThreadMessage } from "../types/ThreadMessage"
+import { ThreadMessage } from "../../types/ThreadMessage"
 import { RavenChannel } from "@raven/types/RavenChannelManagement/RavenChannel"
 import { cn } from "@lib/utils"
 import { WorkspaceSwitcher } from "@components/workspace-switcher/WorkspaceSwitcher"

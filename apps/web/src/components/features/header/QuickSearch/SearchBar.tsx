@@ -6,10 +6,11 @@ interface SearchBarProps {
     value: string;
     onChange: (value: string) => void;
     onBlur?: () => void;
+    onFocus?: () => void;
     onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(({ value, onChange, onBlur, onKeyDown }, ref) => {
+const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(({ value, onChange, onBlur, onFocus, onKeyDown }, ref) => {
     return (
         <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -21,6 +22,7 @@ const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(({ value, onChang
                 value={value}
                 onChange={e => onChange(e.target.value)}
                 onBlur={onBlur}
+                onFocus={onFocus}
                 onKeyDown={onKeyDown}
             />
             {value && (
