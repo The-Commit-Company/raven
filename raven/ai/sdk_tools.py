@@ -6,7 +6,35 @@ import frappe
 
 # Import the SDK directly - no fallback needed
 from agents import FunctionTool
-from frappe import client
+from frappe import _, client
+
+from raven.ai.function_types import DOCTYPE_SCOPED_FUNCTION_TYPES
+from raven.ai.functions import (
+	cancel_document,
+	create_document,
+	create_documents,
+	delete_document,
+	delete_documents,
+	get_amended_document,
+	get_documents,
+	get_value,
+	set_value,
+	submit_document,
+	update_document,
+	update_documents,
+)
+
+STANDARD_FUNCTION_PATHS = {
+	function_type: f"raven.ai.sdk_tools.handle_{frappe.scrub(function_type)}"
+	for function_type in DOCTYPE_SCOPED_FUNCTION_TYPES
+}
+
+FUNCTIONS_USING_RAVEN_CONFIG = {
+	"Create Document",
+	"Create Multiple Documents",
+	"Update Document",
+	"Update Multiple Documents",
+}
 
 
 def create_raven_tools(bot) -> list[FunctionTool]:
@@ -41,18 +69,8 @@ def create_raven_tools(bot) -> list[FunctionTool]:
 					function_path = function_doc.function_path
 				else:
 					# For standard types like "Get List", generate a function path for built-in handlers
-					if function_doc.type == "Get List":
-						function_path = "raven.ai.sdk_tools.handle_get_list"
-					elif function_doc.type == "Get Document":
-						function_path = "raven.ai.sdk_tools.handle_get_document"
-					elif function_doc.type == "Update Document":
-						function_path = "raven.ai.sdk_tools.handle_update_document"
-					elif function_doc.type == "Create Document":
-						function_path = "raven.ai.sdk_tools.handle_create_document"
-					elif function_doc.type == "Delete Document":
-						function_path = "raven.ai.sdk_tools.handle_delete_document"
-					# Add other standard types as needed
-					else:
+					function_path = STANDARD_FUNCTION_PATHS.get(function_doc.type)
+					if not function_path:
 						continue
 
 				# Create a function tool for this function
@@ -76,22 +94,17 @@ def create_raven_tools(bot) -> list[FunctionTool]:
 					# Check if this is a standard type that needs reference_doctype
 					extra_args = {}
 					if (
-						function_doc.type
-						in [
-							"Get Document",
-							"Get Multiple Documents",
-							"Get List",
-							"Create Document",
-							"Create Multiple Documents",
-							"Update Document",
-							"Update Multiple Documents",
-							"Delete Document",
-							"Delete Multiple Documents",
-						]
+						function_doc.type in DOCTYPE_SCOPED_FUNCTION_TYPES
 						and hasattr(function_doc, "reference_doctype")
 						and function_doc.reference_doctype
 					):
 						extra_args["reference_doctype"] = function_doc.reference_doctype
+
+					if getattr(function_doc, "allow_any_doctype", 0):
+						extra_args["allow_any_doctype"] = True
+
+					if function_doc.type in FUNCTIONS_USING_RAVEN_CONFIG:
+						extra_args["raven_function_name"] = function_doc.name
 
 					tool = create_function_tool(
 						function_doc.function_name,
@@ -231,7 +244,7 @@ def get_function_from_name(function_name: str) -> Callable:
 		# Split module and function
 		try:
 			module_name, func_name = function_name.rsplit(".", 1)
-		except ValueError as ve:
+		except ValueError:
 			frappe.log_error(
 				"SDK Functions Debug",
 				f"Invalid function name format: {function_name}. Should be 'module.function'",
@@ -247,7 +260,7 @@ def get_function_from_name(function_name: str) -> Callable:
 
 		# Check for available attributes in the module
 		try:
-			available_attrs = dir(module)
+			dir(module)
 		except Exception as e:
 			frappe.log_error("SDK Functions Debug", f"Error getting module attributes: {str(e)}")
 
@@ -483,41 +496,74 @@ def create_list_function(doctype: str) -> Callable:
 # Built-in handlers for standard function types
 
 
-def handle_get_list(
-	filters=None, fields=None, limit=20, order_by="modified desc", reference_doctype=None
-):
-	"""
-	Get a list of documents from a doctype
+def resolve_function_doctype(doctype=None, reference_doctype=None, allow_any_doctype=False):
+	"""Resolve the target DocType for a function call."""
+	# Get the reference doctype from function configuration
+	resolved_doctype = reference_doctype or frappe.flags.get("current_function_doctype")
 
-	Args:
-	    filters (dict): Filters to apply
-	    fields (list): Fields to include in the result
-	    limit (int): Maximum number of documents to return
-	    order_by (str): Order by clause
-	    reference_doctype (str): DocType to get list from (provided by function configuration)
+	if allow_any_doctype:
+		resolved_doctype = doctype or resolved_doctype
+	elif doctype and doctype != resolved_doctype:
+		return None, _("This function is restricted to DocType '{0}'.").format(resolved_doctype)
 
-	Returns:
-	    list: List of documents
-	"""
+	if not resolved_doctype:
+		return None, _("No DocType provided. Please specify a valid DocType.")
+
+	# Validate the doctype exists
+	if not frappe.db.exists("DocType", resolved_doctype):
+		return None, _("DocType '{0}' does not exist.").format(resolved_doctype)
+
+	return resolved_doctype, None
+
+
+def get_raven_function_config(raven_function_name=None):
+	"""Fetch the Raven AI Function document when handlers need its metadata."""
+	if not raven_function_name:
+		return None
 
 	try:
-		# Get the reference doctype from function configuration
-		if not reference_doctype:
-			# Try to get from context
-			reference_doctype = frappe.flags.get("current_function_doctype")
+		return frappe.get_cached_doc("Raven AI Function", raven_function_name)
+	except Exception:
+		return None
 
-		if not reference_doctype:
-			return {
-				"success": False,
-				"error": "No reference doctype provided. Please specify a valid DocType.",
-			}
 
-		# Validate the doctype exists
-		if not frappe.db.exists("DocType", reference_doctype):
-			return {"success": False, "error": f"DocType '{reference_doctype}' does not exist."}
+def build_payload_from_kwargs(data=None, excluded_keys=None, **kwargs):
+	"""Build a payload from keyword args when the schema is field-based."""
+	# If data is not provided, build it from kwargs
+	if data is not None:
+		return data
+
+	excluded_keys = set(excluded_keys or [])
+	payload = {}
+	for key, value in kwargs.items():
+		if key not in excluded_keys:
+			payload[key] = value
+
+	return payload
+
+
+def handle_get_list(
+	filters=None,
+	fields=None,
+	limit=20,
+	order_by="modified desc",
+	doctype=None,
+	reference_doctype=None,
+	allow_any_doctype=False,
+):
+	"""Get a list of documents from a doctype."""
+
+	try:
+		resolved_doctype, error = resolve_function_doctype(
+			doctype=doctype,
+			reference_doctype=reference_doctype,
+			allow_any_doctype=allow_any_doctype,
+		)
+		if error:
+			return {"success": False, "error": error}
 
 		# Get the meta for this doctype to validate fields
-		meta = frappe.get_meta(reference_doctype)
+		meta = frappe.get_meta(resolved_doctype)
 		valid_fields = ["name", "creation", "modified", "modified_by", "owner", "docstatus"]
 		for df in meta.fields:
 			valid_fields.append(df.fieldname)
@@ -537,7 +583,9 @@ def handle_get_list(
 
 		if invalid_fields:
 			# Add a warning but continue with valid fields
-			warning = f"Fields {', '.join(invalid_fields)} do not exist in DocType '{reference_doctype}' and were ignored."
+			warning = _("Fields {0} do not exist in DocType '{1}' and were ignored.").format(
+				", ".join(invalid_fields), resolved_doctype
+			)
 
 			# If all fields are invalid, use name and modified
 			if not filtered_fields:
@@ -561,14 +609,15 @@ def handle_get_list(
 
 			if invalid_filter_fields:
 				filters = cleaned_filters
-
 				# Add to warning message
-				filter_warning = f"Filter fields {', '.join(invalid_filter_fields)} do not exist in DocType '{reference_doctype}' and were ignored."
+				filter_warning = _("Filter fields {0} do not exist in DocType '{1}' and were ignored.").format(
+					", ".join(invalid_filter_fields), resolved_doctype
+				)
 				warning = f"{warning}\n{filter_warning}" if warning else filter_warning
 
 		# Get list of documents with validated fields
 		result = frappe.get_all(
-			reference_doctype,
+			resolved_doctype,
 			filters=filters,
 			fields=filtered_fields,
 			limit_page_length=limit,
@@ -600,135 +649,29 @@ def handle_get_list(
 		return {"success": False, "error": str(e)}
 
 
-def handle_update_document(document_id=None, data=None, reference_doctype=None, **kwargs):
-	"""
-	Update a document
-
-	Args:
-	    document_id (str): ID of the document to update
-	    data (dict): Fields to update
-	    reference_doctype (str): DocType of the document (provided by function configuration)
-	    **kwargs: Additional parameters from function schema
-
-	Returns:
-	    dict: Updated document data
-	"""
-
-	# Handle different parameter formats
-	# If data is not provided, build it from kwargs
-	if data is None:
-		data = {}
-		# Extract update fields from kwargs
-		for key, value in kwargs.items():
-			if key not in ["document_id", "item_code", "reference_doctype"]:
-				data[key] = value
-
-	# Try to get document_id from different sources
-	if not document_id:
-		# Check if item_code was provided
-		if "item_code" in kwargs:
-			document_id = kwargs["item_code"]
-		elif "item_name" in kwargs:
-			document_id = kwargs["item_name"]
-
+def handle_get_document(
+	document_id, doctype=None, reference_doctype=None, allow_any_doctype=False
+):
+	"""Get a document by ID."""
 	try:
-		# Get the reference doctype from function configuration
-		if not reference_doctype:
-			# Try to get from context
-			reference_doctype = frappe.flags.get("current_function_doctype")
-
-		if not reference_doctype:
-			return {
-				"success": False,
-				"error": "No reference doctype provided. Please specify a valid DocType.",
-			}
-
-		# Validate the doctype exists
-		if not frappe.db.exists("DocType", reference_doctype):
-			return {"success": False, "error": f"DocType '{reference_doctype}' does not exist."}
+		resolved_doctype, error = resolve_function_doctype(
+			doctype=doctype,
+			reference_doctype=reference_doctype,
+			allow_any_doctype=allow_any_doctype,
+		)
+		if error:
+			return {"success": False, "error": error}
 
 		# Validate document exists
-		if not frappe.db.exists(reference_doctype, document_id):
+		if not frappe.db.exists(resolved_doctype, document_id):
 			return {
 				"success": False,
-				"error": f"Document '{document_id}' not found in DocType '{reference_doctype}'.",
+				"error": _("Document '{0}' not found in DocType '{1}'.").format(document_id, resolved_doctype),
 			}
 
 		try:
 			# Get document
-			doc = frappe.get_doc(reference_doctype, document_id)
-
-			# Update fields
-			for field, value in data.items():
-				if hasattr(doc, field):
-					setattr(doc, field, value)
-
-			# Save document
-			doc.save()
-
-			# Ensure datetime objects are converted to strings
-			import datetime
-
-			doc_dict = doc.as_dict()
-			for key, value in doc_dict.items():
-				if isinstance(value, (datetime.datetime, datetime.date, datetime.time)):
-					doc_dict[key] = str(value)
-
-			return {
-				"success": True,
-				"result": doc_dict,
-				"message": f"Document '{document_id}' updated successfully.",
-			}
-
-		except frappe.DoesNotExistError:
-			return {
-				"success": False,
-				"error": f"Document '{document_id}' not found in DocType '{reference_doctype}'.",
-			}
-
-	except Exception as e:
-		frappe.log_error("SDK Functions Debug", f"Error in handle_update_document: {str(e)}")
-		return {"success": False, "error": str(e)}
-
-
-def handle_get_document(document_id, reference_doctype=None):
-	"""
-	Get a document by ID
-
-	Args:
-	    document_id (str): ID of the document to retrieve
-	    reference_doctype (str): DocType of the document (provided by function configuration)
-
-	Returns:
-	    dict: Document data
-	"""
-
-	try:
-		# Get the reference doctype from function configuration
-		if not reference_doctype:
-			# Try to get from context
-			reference_doctype = frappe.flags.get("current_function_doctype")
-
-		if not reference_doctype:
-			return {
-				"success": False,
-				"error": "No reference doctype provided. Please specify a valid DocType.",
-			}
-
-		# Validate the doctype exists
-		if not frappe.db.exists("DocType", reference_doctype):
-			return {"success": False, "error": f"DocType '{reference_doctype}' does not exist."}
-
-		# Validate document exists
-		if not frappe.db.exists(reference_doctype, document_id):
-			return {
-				"success": False,
-				"error": f"Document '{document_id}' not found in DocType '{reference_doctype}'.",
-			}
-
-		try:
-			# Get document
-			doc = frappe.get_doc(reference_doctype, document_id)
+			doc = frappe.get_doc(resolved_doctype, document_id)
 			doc.check_permission()
 			doc.apply_fieldlevel_read_permissions()
 
@@ -743,7 +686,7 @@ def handle_get_document(document_id, reference_doctype=None):
 				}
 
 			# Get valid fields for reference
-			meta = frappe.get_meta(reference_doctype)
+			meta = frappe.get_meta(resolved_doctype)
 			valid_fields = ["name", "creation", "modified", "modified_by", "owner", "docstatus"]
 			for df in meta.fields:
 				valid_fields.append(df.fieldname)
@@ -751,14 +694,262 @@ def handle_get_document(document_id, reference_doctype=None):
 			return {
 				"success": True,
 				"result": doc_dict,
-				"valid_fields": valid_fields[:20],  # Show first 20 fields
+				# Show first 20 fields to avoid overflow
+				"valid_fields": valid_fields[:20],
 			}
 		except frappe.DoesNotExistError:
 			return {
 				"success": False,
-				"error": f"Document '{document_id}' not found in DocType '{reference_doctype}'.",
+				"error": _("Document '{0}' not found in DocType '{1}'.").format(document_id, resolved_doctype),
 			}
-
 	except Exception as e:
 		frappe.log_error("SDK Functions Debug", f"Error in handle_get_document: {str(e)}")
 		return {"success": False, "error": str(e)}
+
+
+def handle_get_multiple_documents(
+	document_ids, doctype=None, reference_doctype=None, allow_any_doctype=False
+):
+	"""Get multiple documents by ID."""
+	resolved_doctype, error = resolve_function_doctype(
+		doctype=doctype,
+		reference_doctype=reference_doctype,
+		allow_any_doctype=allow_any_doctype,
+	)
+	if error:
+		return {"success": False, "error": error}
+
+	return get_documents(resolved_doctype, document_ids)
+
+
+def handle_get_value(
+	filters=None, fieldname="name", doctype=None, reference_doctype=None, allow_any_doctype=False
+):
+	"""Get one or more field values from a document."""
+	resolved_doctype, error = resolve_function_doctype(
+		doctype=doctype,
+		reference_doctype=reference_doctype,
+		allow_any_doctype=allow_any_doctype,
+	)
+	if error:
+		return {"success": False, "error": error}
+
+	return get_value(resolved_doctype, filters=filters, fieldname=fieldname)
+
+
+def handle_set_value(
+	document_id=None,
+	fieldname=None,
+	value=None,
+	doctype=None,
+	reference_doctype=None,
+	allow_any_doctype=False,
+):
+	"""Set one or more field values on a document."""
+	resolved_doctype, error = resolve_function_doctype(
+		doctype=doctype,
+		reference_doctype=reference_doctype,
+		allow_any_doctype=allow_any_doctype,
+	)
+	if error:
+		return {"success": False, "error": error}
+
+	return set_value(resolved_doctype, document_id, fieldname, value)
+
+
+def handle_create_document(
+	data=None,
+	doctype=None,
+	reference_doctype=None,
+	allow_any_doctype=False,
+	raven_function_name=None,
+	**kwargs,
+):
+	"""Create a document."""
+	resolved_doctype, error = resolve_function_doctype(
+		doctype=doctype,
+		reference_doctype=reference_doctype,
+		allow_any_doctype=allow_any_doctype,
+	)
+	if error:
+		return {"success": False, "error": error}
+
+	data = build_payload_from_kwargs(
+		data=data,
+		excluded_keys=["doctype", "reference_doctype", "allow_any_doctype", "raven_function_name"],
+		**kwargs,
+	)
+	function_doc = get_raven_function_config(raven_function_name)
+	return create_document(resolved_doctype, data, function_doc)
+
+
+def handle_create_multiple_documents(
+	data=None,
+	doctype=None,
+	reference_doctype=None,
+	allow_any_doctype=False,
+	raven_function_name=None,
+):
+	"""Create multiple documents."""
+	resolved_doctype, error = resolve_function_doctype(
+		doctype=doctype,
+		reference_doctype=reference_doctype,
+		allow_any_doctype=allow_any_doctype,
+	)
+	if error:
+		return {"success": False, "error": error}
+
+	if data is None:
+		return {
+			"success": False,
+			"error": _("No data provided. Please specify documents to create."),
+		}
+
+	function_doc = get_raven_function_config(raven_function_name)
+	return create_documents(resolved_doctype, data, function_doc)
+
+
+def handle_update_document(
+	document_id=None,
+	data=None,
+	doctype=None,
+	reference_doctype=None,
+	allow_any_doctype=False,
+	raven_function_name=None,
+	**kwargs,
+):
+	"""Update a document."""
+	# Handle different parameter formats
+	data = build_payload_from_kwargs(
+		data=data,
+		excluded_keys=[
+			"document_id",
+			"item_code",
+			"item_name",
+			"doctype",
+			"reference_doctype",
+			"allow_any_doctype",
+			"raven_function_name",
+		],
+		**kwargs,
+	)
+
+	# Try to get document_id from different sources
+	if not document_id:
+		# Check if item_code was provided
+		if "item_code" in kwargs:
+			document_id = kwargs["item_code"]
+		elif "item_name" in kwargs:
+			document_id = kwargs["item_name"]
+
+	resolved_doctype, error = resolve_function_doctype(
+		doctype=doctype,
+		reference_doctype=reference_doctype,
+		allow_any_doctype=allow_any_doctype,
+	)
+	if error:
+		return {"success": False, "error": error}
+
+	function_doc = get_raven_function_config(raven_function_name)
+	return update_document(resolved_doctype, document_id, data, function_doc)
+
+
+def handle_update_multiple_documents(
+	data=None,
+	doctype=None,
+	reference_doctype=None,
+	allow_any_doctype=False,
+	raven_function_name=None,
+):
+	"""Update multiple documents."""
+	resolved_doctype, error = resolve_function_doctype(
+		doctype=doctype,
+		reference_doctype=reference_doctype,
+		allow_any_doctype=allow_any_doctype,
+	)
+	if error:
+		return {"success": False, "error": error}
+
+	if data is None:
+		return {
+			"success": False,
+			"error": _("No data provided. Please specify documents to update."),
+		}
+
+	function_doc = get_raven_function_config(raven_function_name)
+	return update_documents(resolved_doctype, data, function_doc)
+
+
+def handle_delete_document(
+	document_id, doctype=None, reference_doctype=None, allow_any_doctype=False
+):
+	"""Delete a document."""
+	resolved_doctype, error = resolve_function_doctype(
+		doctype=doctype,
+		reference_doctype=reference_doctype,
+		allow_any_doctype=allow_any_doctype,
+	)
+	if error:
+		return {"success": False, "error": error}
+
+	return delete_document(resolved_doctype, document_id)
+
+
+def handle_delete_multiple_documents(
+	document_ids, doctype=None, reference_doctype=None, allow_any_doctype=False
+):
+	"""Delete multiple documents."""
+	resolved_doctype, error = resolve_function_doctype(
+		doctype=doctype,
+		reference_doctype=reference_doctype,
+		allow_any_doctype=allow_any_doctype,
+	)
+	if error:
+		return {"success": False, "error": error}
+
+	return delete_documents(resolved_doctype, document_ids)
+
+
+def handle_submit_document(
+	document_id, doctype=None, reference_doctype=None, allow_any_doctype=False
+):
+	"""Submit a document."""
+	resolved_doctype, error = resolve_function_doctype(
+		doctype=doctype,
+		reference_doctype=reference_doctype,
+		allow_any_doctype=allow_any_doctype,
+	)
+	if error:
+		return {"success": False, "error": error}
+
+	return submit_document(resolved_doctype, document_id)
+
+
+def handle_cancel_document(
+	document_id, doctype=None, reference_doctype=None, allow_any_doctype=False
+):
+	"""Cancel a document."""
+	resolved_doctype, error = resolve_function_doctype(
+		doctype=doctype,
+		reference_doctype=reference_doctype,
+		allow_any_doctype=allow_any_doctype,
+	)
+	if error:
+		return {"success": False, "error": error}
+
+	return cancel_document(resolved_doctype, document_id)
+
+
+def handle_get_amended_document(
+	document_id, doctype=None, reference_doctype=None, allow_any_doctype=False
+):
+	"""Get the amended version of a document."""
+	resolved_doctype, error = resolve_function_doctype(
+		doctype=doctype,
+		reference_doctype=reference_doctype,
+		allow_any_doctype=allow_any_doctype,
+	)
+	if error:
+		return {"success": False, "error": error}
+
+	return get_amended_document(resolved_doctype, document_id)
