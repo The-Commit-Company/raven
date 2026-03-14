@@ -65,8 +65,21 @@ def sync_users_tokens_to_raven_cloud():
 	raven_settings = frappe.get_single("Raven Settings")
 	tokens = frappe.db.get_all("Raven Push Token", fields=["user", "fcm_token"], order_by="user")
 
-	# We need to divide these into chunks of 10
-	chunks = [tokens[i : i + 10] for i in range(0, len(tokens), 10)]
+	# Group tokens by user to ensure all tokens for a user are in the same chunk
+	user_tokens = {}
+	for token in tokens:
+		user_tokens.setdefault(token["user"], []).append(token)
+
+		# Build chunks where all tokens for a user stay together
+	chunks = []
+	current_chunk = []
+	for user, user_token_list in user_tokens.items():
+		if len(current_chunk) + len(user_token_list) > 10 and current_chunk:
+			chunks.append(current_chunk)
+			current_chunk = []
+		current_chunk.extend(user_token_list)
+	if current_chunk:
+		chunks.append(current_chunk)
 
 	for chunk in chunks:
 		client = FrappeClient(

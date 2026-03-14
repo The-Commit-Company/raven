@@ -215,15 +215,7 @@ const PushNotifications = () => {
                                 <RegisterSiteButton mutate={mutate} ravenSettings={ravenSettings} />}
 
                             {isRavenCloud && ravenSettings?.push_notification_service === "Raven"
-                                && ravenSettings?.push_notification_server_url && ravenSettings?.vapid_public_key && <Button
-                                    onClick={() => call.post('raven.api.notification.sync_user_tokens_to_raven_cloud').then(() => {
-                                        toast.success('Data syncing to Raven Cloud...')
-                                    })}
-                                    type='button'
-                                    variant='soft'
-                                    className='not-cal'>
-                                    Sync Data to Raven Cloud
-                                </Button>}
+                                && ravenSettings?.push_notification_server_url && ravenSettings?.vapid_public_key && <SyncDataButton />}
 
                             {!isRavenCloud && <Button
                                 asChild
@@ -268,6 +260,27 @@ const RegisterSiteButton = ({ mutate, ravenSettings }: { mutate: VoidFunction, r
         type='button'
         className='not-cal'>{ravenSettings.vapid_public_key ? "Re-Register Site on Raven Cloud" : "Register Site on Raven Cloud"}</Button>
 
+}
+
+const SyncDataButton = () => {
+    const { call, loading } = useFrappePostCall('raven.api.notification.sync_user_tokens_to_raven_cloud')
+
+    const syncData = () => {
+        toast.promise(call({}), {
+            loading: 'Syncing data to Raven Cloud...',
+            success: 'Data synced to Raven Cloud.',
+            error: (error) => 'Failed to sync data to Raven Cloud. ' + (getErrorMessage(error))
+        })
+    }
+
+    return <Button
+        onClick={syncData}
+        disabled={loading}
+        variant='soft'
+        type='button'
+        className='not-cal'>
+        {loading ? "Syncing Data to Raven Cloud..." : "Sync Data to Raven Cloud"}
+    </Button>
 }
 
 export const Component = PushNotifications
