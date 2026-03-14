@@ -20,7 +20,7 @@ export const AddMembersStep = ({ selectedUsers, onSelectUsers }: AddMembersStepP
 
     const { myProfile } = useCurrentRavenUser()
     const [searchQuery, setSearchQuery] = useState('')
-    const debouncedText = useDebounce(searchQuery, 200)
+    const debouncedText = useDebounce(searchQuery, 100)
 
     const filteredUsers = useLiveQuery(() => db.users
         .where('enabled')
@@ -29,7 +29,7 @@ export const AddMembersStep = ({ selectedUsers, onSelectUsers }: AddMembersStepP
         .and((user) => user.name.toLowerCase().includes(debouncedText.toLowerCase()) || user.full_name.toLowerCase().includes(debouncedText.toLowerCase()))
         .and((user) => !selectedUsers.some((selected) => selected.name === user.name))
         .toArray(),
-        [searchQuery, selectedUsers])
+        [debouncedText, selectedUsers])
 
     const [announcement, setAnnouncement] = useState('')
     const searchInputRef = useRef<HTMLInputElement>(null)
