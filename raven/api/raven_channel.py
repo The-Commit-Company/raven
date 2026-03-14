@@ -279,8 +279,11 @@ def mark_all_messages_as_read(channel_ids: list):
 
 	return "Ok"
 
+
 @frappe.whitelist()
-def create_channel(channel_name: str, channel_description: str, type: str, workspace: str, members: list = []):
+def create_channel(
+	channel_name: str, channel_description: str, type: str, workspace: str, members: list = None
+):
 	"""
 	Create a new channel
 	"""
