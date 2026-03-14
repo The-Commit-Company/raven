@@ -20,16 +20,17 @@ export const AddMembersStep = ({ selectedUsers, onSelectUsers }: AddMembersStepP
 
     const { myProfile } = useCurrentRavenUser()
     const [searchQuery, setSearchQuery] = useState('')
-    const debouncedText = useDebounce(searchQuery, 100)
+    const debouncedText = useDebounce(searchQuery, 200)
+    const filterText = searchQuery === '' ? '' : debouncedText
 
     const filteredUsers = useLiveQuery(() => db.users
         .where('enabled')
         .equals(1)
         .and((user) => user.name !== myProfile?.name)
-        .and((user) => user.name.toLowerCase().includes(debouncedText.toLowerCase()) || user.full_name.toLowerCase().includes(debouncedText.toLowerCase()))
+        .and((user) => user.name.toLowerCase().includes(filterText.toLowerCase()) || user.full_name.toLowerCase().includes(filterText.toLowerCase()))
         .and((user) => !selectedUsers.some((selected) => selected.name === user.name))
         .toArray(),
-        [debouncedText, selectedUsers])
+        [filterText, selectedUsers])
 
     const [announcement, setAnnouncement] = useState('')
     const searchInputRef = useRef<HTMLInputElement>(null)
@@ -175,7 +176,7 @@ export const AddMembersStep = ({ selectedUsers, onSelectUsers }: AddMembersStepP
                     ))}
                 </div>
 
-                {filteredUsers?.length === 0 && searchQuery && (
+                {filteredUsers?.length === 0 && filterText && (
                     <div className="text-center py-8 pr-4">
                         <p className="text-sm text-muted-foreground">
                             {_('No users found matching your search.')}
@@ -183,7 +184,7 @@ export const AddMembersStep = ({ selectedUsers, onSelectUsers }: AddMembersStepP
                     </div>
                 )}
 
-                {filteredUsers?.length === 0 && !searchQuery && selectedUsers.length > 0 && (
+                {filteredUsers?.length === 0 && !filterText && selectedUsers.length > 0 && (
                     <div className="text-center py-8 pr-4">
                         <p className="text-sm text-muted-foreground">
                             {_('All available users have been selected.')}
