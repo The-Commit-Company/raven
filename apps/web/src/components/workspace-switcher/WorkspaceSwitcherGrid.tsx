@@ -1,11 +1,11 @@
 import { useMemo } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import useFetchWorkspaces, { WorkspaceFields } from "@hooks/fetchers/useFetchWorkspaces"
 import { useFrappeGetCall, useFrappePostCall, useSWRConfig } from "frappe-react-sdk"
 import { toast } from "sonner"
 import { Card } from "@components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
 import { ArrowUpRight } from "lucide-react"
+import { useWorkspaces, WorkspaceFields } from "@hooks/useWorkspaces"
 
 const getLogo = (workspace: WorkspaceFields) => {
     let logo = workspace.logo || ''
@@ -36,15 +36,15 @@ const WorkspaceMemberCount = ({ workspace }: { workspace: string }) => {
 }
 
 export const WorkspaceSwitcherGrid = () => {
-    const { data } = useFetchWorkspaces()
+    const { workspaces } = useWorkspaces()
     const navigate = useNavigate()
 
     const { myWorkspaces, otherWorkspaces } = useMemo(() => {
         const myWorkspaces: WorkspaceFields[] = []
         const otherWorkspaces: WorkspaceFields[] = []
 
-        if (data) {
-            data.message.forEach((workspace) => {
+        if (workspaces) {
+            workspaces.forEach((workspace) => {
                 if (workspace.workspace_member_name) {
                     myWorkspaces.push(workspace)
                 } else {
@@ -54,7 +54,7 @@ export const WorkspaceSwitcherGrid = () => {
         }
 
         return { myWorkspaces, otherWorkspaces }
-    }, [data])
+    }, [workspaces])
 
     const openWorkspace = (workspaceName: string) => {
         // Save to localStorage

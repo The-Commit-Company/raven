@@ -27,6 +27,7 @@ import { useLocalStorage } from 'usehooks-ts'
 import { CustomizeSidebarButton } from "@components/features/channel/CustomizeSidebar/CustomizeSidebarButton"
 import { useChannels } from "@hooks/useChannels"
 import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
+import { useParams } from "react-router"
 
 
 interface ChannelSidebarProps {
@@ -47,7 +48,8 @@ export function ChannelSidebar({
 
     const { channels } = useChannels()
     const { myProfile } = useCurrentRavenUser()
-    const channelSidebarData = useGroupedChannels(channels, myProfile)
+    const { workspaceID } = useParams()
+    const channelSidebarData = useGroupedChannels(channels, myProfile, workspaceID)
 
 
     // Calculate total unread count for a group

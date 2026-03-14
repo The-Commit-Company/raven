@@ -7,7 +7,7 @@ export const useChannels = () => {
     }>(
         'raven.api.raven_channel.get_all_channels',
         undefined,
-        'channels-list',
+        'channel_list',
         {
             revalidateOnFocus: false,
             // revalidateOnMount: false,

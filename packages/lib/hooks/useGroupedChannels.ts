@@ -9,15 +9,17 @@ export interface ChannelSidebarData {
 
 export const useGroupedChannels = (
     channels: ChannelListItem[],
-    myProfile?: RavenUser
+    myProfile?: RavenUser,
+    workspaceID?: string
 ): ChannelSidebarData => {
     return useMemo(() => {
-        if (!myProfile || !channels.length) {
+        const workspaceChannels = channels.filter((ch) => ch.workspace === workspaceID)
+        if (!myProfile || !workspaceChannels.length) {
             return { groupedChannels: [], ungroupedChannels: [] }
         }
 
         const groups = new Map<string, ChannelListItem[]>()
-        const remainingChannels = new Set(channels)
+        const remainingChannels = new Set(workspaceChannels)
 
         const pinnedChannelIds = new Set(myProfile.pinned_channels?.map(pin => pin.channel_id) || [])
         const groupedChannelMap = new Map(
@@ -33,7 +35,7 @@ export const useGroupedChannels = (
             })
         }
 
-        channels.forEach(ch => {
+        workspaceChannels.forEach(ch => {
             if (pinnedChannelIds.has(ch.name)) {
                 groups.get('⭐️ Favorites')?.push(ch)
                 remainingChannels.delete(ch)
@@ -54,5 +56,5 @@ export const useGroupedChannels = (
         const ungroupedChannels = Array.from(remainingChannels)
 
         return { groupedChannels, ungroupedChannels }
-    }, [channels, myProfile?.channel_groups, myProfile?.pinned_channels, myProfile?.grouped_channels])
+    }, [channels, workspaceID, myProfile?.channel_groups, myProfile?.pinned_channels, myProfile?.grouped_channels])
 }

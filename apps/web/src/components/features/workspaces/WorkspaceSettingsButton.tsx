@@ -1,13 +1,13 @@
 import { DropdownMenuItem } from "@components/ui/dropdown-menu"
 import { Link } from "react-router-dom"
 import { Settings } from "lucide-react"
-import { WorkspaceFields } from "@hooks/fetchers/useFetchWorkspaces"
+import { WorkspaceFields } from "@hooks/useWorkspaces"
 
 type Props = {
     workspace: WorkspaceFields
 }
 
-export default function WorkspaceSettingsButton (props: Props) {
+export default function WorkspaceSettingsButton(props: Props) {
     return (
         <DropdownMenuItem asChild>
             <Link to={`${props.workspace.name}`}>

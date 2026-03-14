@@ -1,6 +1,6 @@
 import { DropdownMenuItem } from '@components/ui/dropdown-menu'
 import { LogIn } from 'lucide-react'
-import { WorkspaceFields } from '@hooks/fetchers/useFetchWorkspaces'
+import { WorkspaceFields } from '@hooks/useWorkspaces'
 import { useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
 import { toast } from 'sonner'
 

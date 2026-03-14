@@ -21,6 +21,7 @@ import Threads from "@pages/Threads"
 import DirectMessages from "@pages/DirectMessages"
 import WorkspaceList from "@pages/settings/Workspaces/WorkspaceList"
 import CustomEmojiList from "@pages/settings/CustomEmojiList/CustomEmojiList"
+import { ManageChannels } from "@pages/settings/Channels/ManageChannels"
 
 const isDesktop = window.innerWidth > 768
 
@@ -62,6 +63,7 @@ function App() {
               <Route path="appearance" element={<Appearance />} />
               <Route path="preferences" element={<Preferences />} />
               <Route path="workspaces" element={<WorkspaceList />} />
+              <Route path="channels" element={<ManageChannels />} />
               <Route path="emojis" element={<CustomEmojiList />} />
             </Route>
             <Route path="notifications" element={<Notifications />} />

@@ -13,15 +13,17 @@ import {
 } from '@components/ui/dropdown-menu'
 import { CustomizeSidebarDialog } from './CustomizeSidebarDialog'
 import _ from "@lib/translate"
+import { useNavigate } from 'react-router-dom'
 
 export const CustomizeSidebarButton = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [showMyChannelsOnly, setShowMyChannelsOnly] = useState(false)
+    const navigate = useNavigate()
 
     return (
         <>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="sm:max-w-[960px] h-[90vh] p-0 gap-0 flex flex-col overflow-hidden">
+                <DialogContent className="md:max-w-[70vw] h-[90vh] p-0 gap-0 flex flex-col overflow-hidden">
                     <CustomizeSidebarDialog
                         onClose={() => setIsDialogOpen(false)}
                     />
@@ -44,6 +46,9 @@ export const CustomizeSidebarButton = () => {
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>
                         <span>{_("Customize my sidebar")}</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/settings/channels')}>
+                        <span>{_("Manage Channels")}</span>
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>

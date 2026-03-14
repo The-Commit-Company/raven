@@ -2,7 +2,7 @@ import { DataTable } from "@components/common/DataTable/DataTable"
 import WorkspaceActions from "@components/features/workspaces/WorkspaceActions"
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
 import { Badge } from "@components/ui/badge"
-import useFetchWorkspaces, { WorkspaceFields } from "@hooks/fetchers/useFetchWorkspaces"
+import { useWorkspaces, WorkspaceFields } from "@hooks/useWorkspaces"
 import { Link } from "react-router-dom"
 import { Globe, Lock } from "lucide-react"
 import type { ColumnDef } from "../../../types/DataTable"
@@ -10,13 +10,13 @@ import SettingsContentContainer from "@components/features/settings/SettingsCont
 
 export default function WorkspaceList() {
 
-    const { data: workspaces, isLoading, error } = useFetchWorkspaces()
+    const { workspaces, isLoading, error } = useWorkspaces()
 
     return (
         <SettingsContentContainer title="Workspaces" description="Workspaces allow you to organize your channels and teams.">
             <DataTable
                 columns={workspaceColumns}
-                data={workspaces?.message ?? []}
+                data={workspaces ?? []}
                 isLoading={isLoading}
                 error={error}
                 getRowId={(row) => row.name}

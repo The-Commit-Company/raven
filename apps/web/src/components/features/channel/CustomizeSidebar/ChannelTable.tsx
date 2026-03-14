@@ -5,9 +5,9 @@ import { ChannelSidebarData } from "@raven/lib/hooks/useGroupedChannels"
 import { RavenGroupedChannels } from "@raven/types/Raven/RavenGroupedChannels"
 import { RavenPinnedChannels } from "@raven/types/Raven/RavenPinnedChannels"
 import { RavenUser } from "@raven/types/Raven/RavenUser"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { useFieldArray, useFormContext } from "react-hook-form"
-import { ColumnDef } from "src/types/DataTable"
+import { ColumnDef, SortingState } from "src/types/DataTable"
 import _ from "@lib/translate"
 
 interface ChannelTable {
@@ -19,6 +19,8 @@ interface ChannelTable {
 }
 
 export const ChannelTable = ({ data }: { data: ChannelSidebarData }) => {
+
+  const [sorting, setSorting] = useState<SortingState | null>(null)
 
   const tableData = useMemo<ChannelTable[]>(() => {
 
@@ -57,13 +59,14 @@ export const ChannelTable = ({ data }: { data: ChannelSidebarData }) => {
       header: _('Name'),
       accessorKey: 'channel_name',
       enableSorting: true,
+      headerClassName: 'w-[30%]',
       cell: ({ row }) => (
         <div className='flex items-center gap-2'>
           <ChannelIcon
             type={row.type || "Public"}
             className="w-4 h-4 shrink-0"
           />
-          <span className='text-sm font-medium'>{row.channel_name}</span>
+          <span className='text-sm font-medium line-clamp-1 text-ellipsis'>{row.channel_name}</span>
         </div>
       )
     },
@@ -72,8 +75,9 @@ export const ChannelTable = ({ data }: { data: ChannelSidebarData }) => {
       header: _('Description'),
       accessorKey: 'channel_description',
       enableSorting: false,
+      headerClassName: 'w-[40%]',
       cell: ({ value }) => (
-        <span className='text-sm text-muted-foreground line-clamp-1 text-ellipsis w-70'>
+        <span className='text-sm text-muted-foreground line-clamp-1 text-ellipsis'>
           {value as string || '—'}
         </span>
       )
@@ -82,18 +86,33 @@ export const ChannelTable = ({ data }: { data: ChannelSidebarData }) => {
       id: 'channel_group',
       header: _('Group'),
       accessorKey: 'channel_group',
-      enableSorting: false,
+      enableSorting: true,
+      headerClassName: 'w-[30%]',
       cell: ({ row }) => (
         <ChannelGroupDropdown channel={row} />
       )
     }
   ], [])
 
+  const sortedData = useMemo(() => {
+    if (!sorting) return tableData
+    const { field, order } = sorting
+    return [...tableData].sort((a, b) => {
+      const aVal = a[field as keyof ChannelTable] ?? ''
+      const bVal = b[field as keyof ChannelTable] ?? ''
+      const cmp = aVal.localeCompare(bVal)
+      return order === 'desc' ? -cmp : cmp
+    })
+  }, [tableData, sorting])
+
   return (
     <DataTable
       columns={columns}
-      data={tableData}
+      data={sortedData}
       getRowId={(row) => row.name}
+      sorting={sorting}
+      onSortingChange={setSorting}
+      tableClassName="table-fixed"
     />
   )
 }
@@ -166,7 +185,7 @@ const ChannelGroupDropdown = ({ channel }: { channel: ChannelTable }) => {
     value={channel.channel_group}
     onValueChange={handleGroupChange}
   >
-    <SelectTrigger className="w-56 **:data-[slot=select-value]:truncate **:data-[slot=select-value]:block">
+    <SelectTrigger className="w-52 **:data-[slot=select-value]:truncate **:data-[slot=select-value]:block">
       <SelectValue placeholder={_('Select a group')} />
     </SelectTrigger>
     <SelectContent className="min-w-56 max-w-72">
