@@ -172,7 +172,10 @@ scheduler_events = {
 	# "monthly": [
 	# 	"raven.scheduler.monthly"
 	# ],
-	"daily_maintenance": ["raven.scheduler.daily.sync_invalid_tokens"],
+	"daily_maintenance": [
+		"raven.scheduler.daily.sync_invalid_tokens",
+		"raven.raven_cloud_notifications.sync_users_tokens_to_raven_cloud",
+	],
 	"cron": {
 		# run every 5 minutes
 		"*/5 * * * *": ["raven.scheduler.close_expired_polls.close_expired_polls"]
