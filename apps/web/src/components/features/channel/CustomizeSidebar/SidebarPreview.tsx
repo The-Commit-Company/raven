@@ -16,6 +16,7 @@ import { cn } from '@lib/utils'
 import { ChannelSidebarData } from '@raven/lib/hooks/useGroupedChannels'
 import { ChannelListItem } from '@raven/types/common/ChannelListItem'
 import { useEffect, useState } from 'react'
+import { ScrollArea } from '@components/ui/scroll-area'
 
 interface SidebarPreviewProps {
     data: ChannelSidebarData
@@ -46,7 +47,7 @@ export const SidebarPreview = ({ data }: SidebarPreviewProps) => {
     return (
         <div className="min-h-full bg-sidebar/50 px-3 py-4 text-[13px]">
             <SidebarGroup className="gap-3 pb-12">
-                <SidebarMenu>
+                <SidebarMenu className='overflow-y-auto max-h-[65vh]'>
                     {data.groupedChannels.map(([groupName, channels]) => (
                         <Collapsible
                             open={isGroupOpen(groupName, channels.length > 0)}
@@ -114,6 +115,6 @@ export const SidebarPreview = ({ data }: SidebarPreviewProps) => {
                     ))}
                 </SidebarMenu>
             </SidebarGroup>
-        </div>
+        </div >
     )
 }

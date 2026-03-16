@@ -5,8 +5,8 @@ import { cn } from "@lib/utils"
 import { useNavigate, useLocation, useParams } from "react-router-dom"
 import NavUserMenu from "@components/features/header/NavUserMenu/NavUserMenu"
 import { useActiveWorkspace } from "../../contexts/ActiveWorkspaceContext"
-import useFetchWorkspaces, { WorkspaceFields } from "@hooks/fetchers/useFetchWorkspaces"
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
+import { useWorkspaces, WorkspaceFields } from "@hooks/useWorkspaces"
 
 const getLogo = (workspace: WorkspaceFields) => {
     let logo = workspace.logo || ''
@@ -27,8 +27,8 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
     const location = useLocation()
     const params = useParams()
     const { setActiveWorkspaceName, activeWorkspaceName } = useActiveWorkspace()
-    const { data: workspacesData } = useFetchWorkspaces()
-    
+    const { workspaces } = useWorkspaces()
+
     // Get workspace from URL params or from context/localStorage
     const urlWorkspace = React.useMemo(() => {
         // Check if we're in a workspace route (from params - most reliable)
@@ -60,18 +60,18 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
             return null
         }
     }
-    
+
     // Update active workspace based on URL
     React.useEffect(() => {
-        if (urlWorkspace && workspacesData?.message) {
-            const workspace = workspacesData.message.find(w => w.name === urlWorkspace)
+        if (urlWorkspace && workspaces) {
+            const workspace = workspaces.find(w => w.name === urlWorkspace)
             if (workspace) {
                 setActiveWorkspaceName(workspace.name)
                 // Save to localStorage
                 localStorage.setItem('ravenLastWorkspace', JSON.stringify(workspace.name))
             }
         }
-    }, [urlWorkspace, setActiveWorkspaceName, workspacesData])
+    }, [urlWorkspace, setActiveWorkspaceName, workspaces])
 
     const handleWorkspaceClick = (workspace: WorkspaceFields) => {
         setActiveWorkspaceName(workspace.name)
@@ -83,7 +83,7 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
     }
 
     return (
-        <div 
+        <div
             className={cn(
                 "border-r border-border/40 bg-sidebar shrink-0 relative group/workspace-sidebar flex flex-col h-full",
                 standalone && "fixed top-0 left-0 z-10"
@@ -106,18 +106,18 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                                 : "h-2 bg-transparent group-hover/notifications-item:bg-foreground/40 group-hover/notifications-item:h-2",
                         )}
                     />
-                            <div
-                                className={cn(
-                                    "relative flex items-center justify-center w-8 h-8 rounded-md transition-all duration-250 ease-out",
-                                    "bg-[oklch(0.99_0_0)] dark:bg-[oklch(0.25_0_0)] border border-border/80 dark:border-border/60",
-                                    location.pathname === "/notifications"
+                    <div
+                        className={cn(
+                            "relative flex items-center justify-center w-8 h-8 rounded-md transition-all duration-250 ease-out",
+                            "bg-[oklch(0.99_0_0)] dark:bg-[oklch(0.25_0_0)] border border-border/80 dark:border-border/60",
+                            location.pathname === "/notifications"
                                 ? "shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.05),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.05)] dark:shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.15),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.02)]"
                                 : "shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.03),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] dark:shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.1),-0.5px_-0.5px_1px_rgba(255,255,255,0.01)]",
                             "group-hover/notifications-item:-translate-y-px group-hover/notifications-item:scale-[1.02]",
                             "group-hover/notifications-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.05),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.05)] dark:group-hover/notifications-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.13),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.018)]"
                         )}
                     >
-                        <Bell 
+                        <Bell
                             className={cn(
                                 "relative w-3.5 h-3.5 text-foreground transition-all duration-250 ease-out",
                                 location.pathname === "/notifications" ? "opacity-100" : "opacity-70 dark:opacity-100",
@@ -154,7 +154,7 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                             "group-hover/dm-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.05),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.05)] dark:group-hover/dm-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.13),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.018)]"
                         )}
                     >
-                        <MessagesSquare 
+                        <MessagesSquare
                             className={cn(
                                 "relative w-3.5 h-3.5 text-foreground transition-all duration-250 ease-out",
                                 location.pathname.startsWith("/dm-channel") ? "opacity-100" : "opacity-70 dark:opacity-100",
@@ -180,18 +180,18 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                                 : "h-2 bg-transparent group-hover/threads-item:bg-foreground/40 group-hover/threads-item:h-2",
                         )}
                     />
-                            <div
-                                className={cn(
-                                    "relative flex items-center justify-center w-8 h-8 rounded-md transition-all duration-250 ease-out",
-                                    "bg-[oklch(0.99_0_0)] dark:bg-[oklch(0.25_0_0)] border border-border/80 dark:border-border/60",
-                                    location.pathname === "/threads"
+                    <div
+                        className={cn(
+                            "relative flex items-center justify-center w-8 h-8 rounded-md transition-all duration-250 ease-out",
+                            "bg-[oklch(0.99_0_0)] dark:bg-[oklch(0.25_0_0)] border border-border/80 dark:border-border/60",
+                            location.pathname === "/threads"
                                 ? "shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.05),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.05)] dark:shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.15),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.02)]"
                                 : "shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.03),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] dark:shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.1),-0.5px_-0.5px_1px_rgba(255,255,255,0.01)]",
                             "group-hover/threads-item:-translate-y-px group-hover/threads-item:scale-[1.02]",
                             "group-hover/threads-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.05),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.05)] dark:group-hover/threads-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.13),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.018)]"
                         )}
                     >
-                        <MessageSquareText 
+                        <MessageSquareText
                             className={cn(
                                 "relative w-3.5 h-3.5 text-foreground transition-all duration-250 ease-out",
                                 location.pathname === "/threads" ? "opacity-100" : "opacity-70 dark:opacity-100",
@@ -203,13 +203,13 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                 </div>
 
                 {/* Rest of workspace items */}
-                {workspacesData?.message
+                {workspaces
                     ?.filter((workspace) => workspace.workspace_member_name) // Only show workspaces user is a member of
                     .map((workspace) => {
                         const isOnSpecialPage = location.pathname === "/notifications" || location.pathname.startsWith("/dm-channel") || location.pathname === "/threads" || location.pathname === "/search"
                         const isActive = !isOnSpecialPage && urlWorkspace === workspace.name
                         const logo = getLogo(workspace)
-                        
+
                         return (
                             <div
                                 key={workspace.name}
@@ -231,7 +231,7 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                                         isActive && "shadow-md",
                                     )}
                                 >
-                                <Avatar className="w-8 h-8 rounded-md border border-[#F0F0F380] dark:border-[#2D2D3180]">
+                                    <Avatar className="w-8 h-8 rounded-md border border-[#F0F0F380] dark:border-[#2D2D3180]">
                                         <AvatarImage src={logo} alt={workspace.workspace_name} />
                                         <AvatarFallback className="text-xs">{workspace.workspace_name.charAt(0)}</AvatarFallback>
                                     </Avatar>
@@ -267,7 +267,7 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                             "group-hover/add-workspace-item:border-muted-foreground/35"
                         )}
                     >
-                        <Plus 
+                        <Plus
                             className={cn(
                                 "relative w-3.5 h-3.5 text-muted-foreground/70 dark:text-muted-foreground transition-all duration-250 ease-out",
                                 location.pathname === "/workspace-explorer" ? "opacity-100 text-foreground" : "opacity-70 dark:opacity-100",

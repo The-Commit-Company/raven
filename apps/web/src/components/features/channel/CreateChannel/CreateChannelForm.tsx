@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { Button } from '@components/ui/button'
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react'
 import {
+    DialogDescription,
     DialogHeader,
     DialogTitle,
 } from '@components/ui/dialog'
@@ -22,9 +23,13 @@ import { AddMembersStep } from './AddMembersStep'
 import { Stepper } from './Stepper'
 import { useChannelTypeInfo } from './useChannelTypeInfo'
 import { ChannelCreationForm, CreateChannelStep } from './types'
+import { useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
+import { useNavigate, useParams } from 'react-router'
+import { ChannelList, ChannelListItem } from '@raven/types/common/ChannelListItem'
 
 interface CreateChannelFormProps {
     onClose: () => void
+    selectedWorkspace?: string
 }
 
 const STEPS = [
@@ -32,9 +37,29 @@ const STEPS = [
     { id: 2, title: 'Add Members' },
 ]
 
-export const CreateChannelForm = ({ onClose }: CreateChannelFormProps) => {
+export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace = '' }: CreateChannelFormProps) => {
+
+    const { workspaceID } = useParams()
+    const navigate = useNavigate()
+    const { mutate } = useSWRConfig()
+
+    const { call, loading: isSubmitting, error: createChannelError, reset: resetCreateHook } = useFrappePostCall<{ message: ChannelListItem }>('raven.api.raven_channel.create_channel')
+
+    const reset = () => {
+        resetCreateHook()
+        resetForm()
+    }
+
+    const onClose = (channel_name?: string, workspace?: string) => {
+        if (channel_name) {
+            navigate(`/${workspace}/channel/${channel_name}`)
+        }
+        onCloseCallback()
+
+        reset()
+    }
+
     const [currentStep, setCurrentStep] = useState<CreateChannelStep>(1)
-    const [isSubmitting, setIsSubmitting] = useState(false)
     const stepContentRef = useRef<HTMLDivElement>(null)
 
     const form = useForm<ChannelCreationForm>({
@@ -46,14 +71,15 @@ export const CreateChannelForm = ({ onClose }: CreateChannelFormProps) => {
         },
     })
 
-    const channelType = form.watch('type')
-    const selectedMembers = form.watch('members') || []
+    const { handleSubmit, control, setValue, reset: resetForm, trigger } = form
+
+    const [channelType, selectedMembers = []] = useWatch({ control, name: ['type', 'members'] })
     const { header } = useChannelTypeInfo(channelType)
 
     const handleNext = async () => {
         // Validate step 1 before proceeding
         if (currentStep === 1) {
-            const isValid = await form.trigger(['channel_name', 'channel_description', 'type'])
+            const isValid = await trigger(['channel_name', 'channel_description', 'type'])
             if (isValid) {
                 setCurrentStep(2)
             }
@@ -90,26 +116,36 @@ export const CreateChannelForm = ({ onClose }: CreateChannelFormProps) => {
     }, [onClose, isSubmitting])
 
     const onSubmit = async (data: ChannelCreationForm) => {
-        try {
-            setIsSubmitting(true)
-            // TODO: Implement actual channel creation API call
-            console.log('Creating channel:', data)
-            console.log('Selected members:', data.members?.map((m) => m.name))
+        call({
+            type: data.type,
+            channel_name: data.channel_name,
+            channel_description: data.channel_description,
+            members: data.members?.map((member) => member.name),
+            workspace: selectedWorkspace || workspaceID
+        }).then((result) => {
+            if (result) {
+                mutate("channel_list", (data: { message: ChannelList } | undefined) => {
+                    if (data) {
+                        return {
+                            message: {
+                                ...data.message,
+                                channels: [
+                                    ...data.message.channels,
+                                    {
+                                        ...result.message,
+                                    }
+                                ]
+                            }
+                        }
+                    }
 
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1000))
-
-            // Close dialog and reset form on success
-            onClose()
-            form.reset()
-            setCurrentStep(1)
-        } catch (error) {
-            console.error('Error creating channel:', error)
-        } finally {
-            setIsSubmitting(false)
-        }
+                }, {
+                    revalidate: false
+                })
+                onClose(result.message.name, selectedWorkspace || workspaceID)
+            }
+        })
     }
-
 
     return (
         <>
@@ -119,6 +155,9 @@ export const CreateChannelForm = ({ onClose }: CreateChannelFormProps) => {
                     <DialogTitle className="text-xl" id={currentStep === 1 ? 'step-1-title' : 'step-2-title'}>
                         {currentStep === 1 ? header : 'Add Members'}
                     </DialogTitle>
+                    <DialogDescription className="sr-only">
+                        {currentStep === 1 ? "Create a new channel" : "Add members to the channel"}
+                    </DialogDescription>
                 </DialogHeader>
 
                 {/* Stepper */}
@@ -128,7 +167,7 @@ export const CreateChannelForm = ({ onClose }: CreateChannelFormProps) => {
             </div>
 
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0" aria-label="Create channel form">
+                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0" aria-label="Create channel form">
                     {/* Step Content - Fixed Height */}
                     <div
                         ref={stepContentRef}
@@ -139,7 +178,7 @@ export const CreateChannelForm = ({ onClose }: CreateChannelFormProps) => {
                         {currentStep === 1 && (
                             <div className="space-y-6 h-full overflow-y-auto px-6" role="group" aria-labelledby="step-1-title">
                                 <FormField
-                                    control={form.control}
+                                    control={control}
                                     name="channel_name"
                                     rules={{
                                         required: 'Please add a channel name',
@@ -177,7 +216,7 @@ export const CreateChannelForm = ({ onClose }: CreateChannelFormProps) => {
                                 />
 
                                 <FormField
-                                    control={form.control}
+                                    control={control}
                                     name="channel_description"
                                     render={({ field }) => (
                                         <FormItem>
@@ -202,7 +241,7 @@ export const CreateChannelForm = ({ onClose }: CreateChannelFormProps) => {
                                 />
 
                                 <FormField
-                                    control={form.control}
+                                    control={control}
                                     name="type"
                                     render={({ field }) => (
                                         <ChannelTypeSelector
@@ -215,10 +254,10 @@ export const CreateChannelForm = ({ onClose }: CreateChannelFormProps) => {
                         )}
 
                         {currentStep === 2 && (
-                            <div role="group" aria-labelledby="step-2-title">
+                            <div role="group" aria-labelledby="step-2-title" className="h-full">
                                 <AddMembersStep
-                                    selectedUsers={selectedMembers}
-                                    onSelectUsers={(users) => form.setValue('members', users)}
+                                    selectedUsers={selectedMembers || []}
+                                    onSelectUsers={(users) => setValue('members', users)}
                                 />
                             </div>
                         )}
@@ -232,7 +271,7 @@ export const CreateChannelForm = ({ onClose }: CreateChannelFormProps) => {
                                     <Button
                                         type="button"
                                         variant="ghost"
-                                        onClick={onClose}
+                                        onClick={() => onClose()}
                                         disabled={isSubmitting}
                                         className="text-sm px-4"
                                         aria-label="Cancel channel creation"
@@ -243,7 +282,7 @@ export const CreateChannelForm = ({ onClose }: CreateChannelFormProps) => {
                                         <Button
                                             type="button"
                                             onClick={handleNext}
-                                            className="text-sm !pl-5 !pr-4"
+                                            className="text-sm pl-5 pr-4"
                                             aria-label="Proceed to add members step"
                                         >
                                             Add Members
@@ -258,14 +297,14 @@ export const CreateChannelForm = ({ onClose }: CreateChannelFormProps) => {
                                         variant="ghost"
                                         onClick={handleBack}
                                         disabled={isSubmitting}
-                                        className="text-sm !pl-3 !pr-4"
+                                        className="text-sm pl-3 pr-4"
                                         aria-label="Go back to channel details"
                                     >
                                         <ArrowLeftIcon className="mr-2 h-4 w-4" aria-hidden="true" />
                                         Back
                                     </Button>
                                     <Button
-                                        type="submit"
+                                        onClick={handleSubmit(onSubmit)}
                                         disabled={isSubmitting}
                                         className="text-sm px-5"
                                         aria-label={`Create channel with ${selectedMembers.length + 1} member${selectedMembers.length + 1 !== 1 ? 's' : ''}`}

@@ -1,4 +1,4 @@
-import { WorkspaceFields } from '@hooks/fetchers/useFetchWorkspaces'
+import { WorkspaceFields } from '@hooks/useWorkspaces'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@components/ui/dropdown-menu'
 import { Button } from '@components/ui/button'
 import { EllipsisVertical } from 'lucide-react'

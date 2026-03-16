@@ -65,6 +65,8 @@ def get_channel_list(hide_archived: bool = False):
 			channel.pinned_messages_string,
 			channel.workspace,
 			channel_member.name.as_("member_id"),
+			channel_member.is_admin,
+			channel_member.allow_notifications,
 		)
 		.left_join(channel_member)
 		.on(
@@ -276,3 +278,26 @@ def mark_all_messages_as_read(channel_ids: list):
 		track_channel_visit(channel_id, user=user)
 
 	return "Ok"
+
+
+@frappe.whitelist()
+def create_channel(
+	channel_name: str, channel_description: str, type: str, workspace: str, members: list = None
+):
+	"""
+	Create a new channel
+	"""
+	channel = frappe.get_doc(
+		{
+			"doctype": "Raven Channel",
+			"channel_name": channel_name,
+			"channel_description": channel_description,
+			"type": type,
+			"workspace": workspace,
+		}
+	).insert()
+
+	if members:
+		channel.add_members(members)
+
+	return channel.as_dict()
