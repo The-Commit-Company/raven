@@ -10,7 +10,7 @@ import {
 import { Button } from "@components/ui/button"
 import { ThreadPreviewCard } from "./ThreadPreviewCard"
 import { ChannelSelect } from "@components/common/ChannelSelect/ChannelSelect"
-import { useChannelList } from "@hooks/useChannelList"
+import { useChannels } from "@hooks/useChannels"
 import { useAllUsers } from "@hooks/useAllUsers"
 import { useFrappePostCall } from "frappe-react-sdk"
 import { toast } from "sonner"
@@ -44,7 +44,7 @@ export function ForwardThreadModal({
 }: ForwardThreadModalProps) {
     const [optionalText, setOptionalText] = useState("")
     const [selectedChannelId, setSelectedChannelId] = useState("")
-    const { channels, dm_channels } = useChannelList()
+    const { channels, dm_channels } = useChannels()
     const availableUsers = useAllUsers({ enabled: open })
     const { call, loading } = useFrappePostCall("raven.api.raven_message.forward_thread")
 

@@ -6,7 +6,7 @@ import { DirectMessagePageSkeleton } from "@components/features/dm-channel/Direc
 import { ChatContentView } from "@components/features/message/ChatContentView"
 import { useGetMessages } from "@hooks/useGetMessages"
 import { useMemo, useState } from "react"
-import { useChannelList } from "@hooks/useChannelList"
+import { useChannels } from "@hooks/useChannels"
 import { useUser } from "@hooks/useUser"
 import { useAtomValue } from "jotai"
 import { dmDrawerAtom } from "@utils/channelAtoms"
@@ -16,7 +16,7 @@ import type { UserFields } from "@raven/types/common/UserFields"
 export default function DirectMessage() {
     const { id } = useParams<{ id: string; threadID?: string }>()
     const channelId = id ?? ""
-    const { dm_channels, isLoading: isLoadingChannelList } = useChannelList()
+    const { dm_channels, isLoading: isLoadingChannelList } = useChannels()
     const dmDrawerType = useAtomValue(dmDrawerAtom(channelId))
 
     const peer = useMemo((): DMChannelPeer | null => {
@@ -35,11 +35,11 @@ export default function DirectMessage() {
     const { data: peerUser } = useUser(peer?.name ?? "")
     const peerForHeader: DMChannelPeer | null = peer
         ? ({
-              name: peer.name,
-              full_name: peerUser?.full_name ?? peer.full_name ?? peer.name,
-              user_image: peerUser?.user_image ?? peer.user_image,
-              type: (peerUser?.type ?? peer.type) as "User" | "Bot",
-          } as DMChannelPeer)
+            name: peer.name,
+            full_name: peerUser?.full_name ?? peer.full_name ?? peer.name,
+            user_image: peerUser?.user_image ?? peer.user_image,
+            type: (peerUser?.type ?? peer.type) as "User" | "Bot",
+        } as DMChannelPeer)
         : null
 
     const { data, isLoading } = useGetMessages(channelId)

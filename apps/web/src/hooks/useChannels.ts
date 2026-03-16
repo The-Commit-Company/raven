@@ -1,16 +1,18 @@
 import { ChannelList } from "@raven/types/common/ChannelListItem"
 import { useFrappeGetCall } from "frappe-react-sdk"
+import { useIsMobile } from "./use-mobile"
 
 export const useChannels = () => {
+    const isMobile = useIsMobile()
     const { data, error, isLoading, mutate } = useFrappeGetCall<{
         message: ChannelList
     }>(
         'raven.api.raven_channel.get_all_channels',
-        undefined,
+        { hide_archived: false },
         'channel_list',
         {
-            revalidateOnFocus: false,
-            // revalidateOnMount: false,
+            revalidateOnFocus: isMobile,
+            revalidateOnMount: false,
             revalidateIfStale: false,
             revalidateOnReconnect: true
         }

@@ -3,7 +3,7 @@ import { DMSidebar } from "@components/dm-sidebar/DMSidebar"
 import AppHeader from "@components/features/header/AppHeader"
 import { AppLayout } from "@components/layout/AppLayout"
 import { SidebarShell } from "@components/layout/SidebarShell"
-import { useChannelList } from "@hooks/useChannelList"
+import { useChannels } from "@hooks/useChannels"
 
 export function DirectMessagesEmptyState() {
     return (
@@ -18,7 +18,7 @@ export default function DirectMessages() {
     const navigate = useNavigate()
     const { id } = useParams<{ id?: string }>()
     const activeDMChannelId = id ?? null
-    const { dm_channels, isLoading } = useChannelList()
+    const { dm_channels, isLoading } = useChannels()
 
     const handleDMClick = (channelId: string) => {
         navigate(`/dm-channel/${encodeURIComponent(channelId)}`)
