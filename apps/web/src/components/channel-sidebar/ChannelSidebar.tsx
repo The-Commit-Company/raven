@@ -28,6 +28,7 @@ import { CustomizeSidebarButton } from "@components/features/channel/CustomizeSi
 import { useChannels } from "@hooks/useChannels"
 import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
 import { useParams } from "react-router"
+import { useState } from "react"
 
 
 interface ChannelSidebarProps {
@@ -49,8 +50,8 @@ export function ChannelSidebar({
     const { channels } = useChannels()
     const { myProfile } = useCurrentRavenUser()
     const { workspaceID } = useParams()
-    const channelSidebarData = useGroupedChannels(channels, myProfile, workspaceID)
-
+    const [showMyChannelsOnly, setShowMyChannelsOnly] = useState(false)
+    const channelSidebarData = useGroupedChannels(channels, myProfile, workspaceID, showMyChannelsOnly)
 
     // Calculate total unread count for a group
     const getGroupUnreadCount = (channels: ChannelListItem[]) => {
@@ -93,7 +94,7 @@ export function ChannelSidebar({
                     </TooltipProvider>
                 </div>
                 <div className="flex items-center gap-1">
-                    <CustomizeSidebarButton />
+                    <CustomizeSidebarButton showMyChannelsOnly={showMyChannelsOnly} setShowMyChannelsOnly={setShowMyChannelsOnly} />
                     <CreateChannelButton />
                 </div>
             </div>

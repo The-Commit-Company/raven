@@ -10,10 +10,11 @@ export interface ChannelSidebarData {
 export const useGroupedChannels = (
     channels: ChannelListItem[],
     myProfile?: RavenUser,
-    workspaceID?: string
+    workspaceID?: string,
+    showMyChannelsOnly?: boolean
 ): ChannelSidebarData => {
     return useMemo(() => {
-        const workspaceChannels = channels.filter((ch) => ch.workspace === workspaceID)
+        const workspaceChannels = channels.filter((ch) => ch.workspace === workspaceID && (!showMyChannelsOnly || !!ch.member_id))
         if (!myProfile || !workspaceChannels.length) {
             return { groupedChannels: [], ungroupedChannels: [] }
         }
@@ -56,5 +57,5 @@ export const useGroupedChannels = (
         const ungroupedChannels = Array.from(remainingChannels)
 
         return { groupedChannels, ungroupedChannels }
-    }, [channels, workspaceID, myProfile?.channel_groups, myProfile?.pinned_channels, myProfile?.grouped_channels])
+    }, [channels, workspaceID, myProfile?.channel_groups, myProfile?.pinned_channels, myProfile?.grouped_channels, showMyChannelsOnly])
 }
