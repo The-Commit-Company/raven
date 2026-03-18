@@ -104,6 +104,14 @@ def unsubscribe(fcm_token: str) -> None:
 	Remove the FCM token from the database
 	"""
 
-	frappe.db.delete("Raven Push Token", {"fcm_token": fcm_token, "user": frappe.session.user})
+	# Check if the FCM token exists
+	token_name = frappe.db.exists(
+		"Raven Push Token", {"fcm_token": fcm_token, "user": frappe.session.user}
+	)
+	if not token_name:
+		frappe.throw(_("FCM token not found"))
+
+	# Delete the FCM token from the database using delete_doc to ensure that on_trash method gets called to delete the token from RC/FCP.
+	frappe.delete_doc("Raven Push Token", token_name)
 
 	return "Unsubscribed"
