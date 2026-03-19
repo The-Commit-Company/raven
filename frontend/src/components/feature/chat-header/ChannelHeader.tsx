@@ -2,7 +2,7 @@ import { PageHeader } from "@/components/layout/Heading/PageHeader"
 import { ChannelIcon } from "@/utils/layout/channelIcon"
 import { ChannelListItem } from "@/utils/channel/ChannelListProvider"
 import { EditChannelNameButton } from "../channel-details/rename-channel/EditChannelNameButton"
-import { Flex, Heading } from "@radix-ui/themes"
+import { Button, Flex, Heading } from "@radix-ui/themes"
 import ChannelHeaderMenu from "./ChannelHeaderMenu"
 import { ViewChannelMemberAvatars } from "./ViewChannelMemberAvatars"
 import { BiChevronLeft } from "react-icons/bi"
@@ -10,12 +10,21 @@ import { Link } from "react-router-dom"
 import { ViewPinnedMessagesButton } from "../pinned-messages/ViewPinnedMessagesButton"
 import { useAtomValue } from "jotai"
 import { lastWorkspaceAtom } from "@/utils/lastVisitedAtoms"
+import { BiPulse } from "react-icons/bi"
 
 interface ChannelHeaderProps {
     channelData: ChannelListItem
+    canShowOpsRail?: boolean
+    showOpsRail?: boolean
+    onToggleOpsRail?: () => void
 }
 
-export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
+export const ChannelHeader = ({
+    channelData,
+    canShowOpsRail = false,
+    showOpsRail = false,
+    onToggleOpsRail,
+}: ChannelHeaderProps) => {
 
     // The channel header has the channel name, the channel type icon, edit channel name button, and the view or add members button
 
@@ -43,6 +52,21 @@ export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
             </Flex>
 
             <Flex gap='2' align='center' className="animate-fadein">
+                {canShowOpsRail && onToggleOpsRail ? (
+                    <Button
+                        type='button'
+                        size='2'
+                        variant={showOpsRail ? 'solid' : 'soft'}
+                        color='gray'
+                        onClick={onToggleOpsRail}
+                        data-raven-ops-toggle
+                    >
+                        <Flex align='center' gap='1'>
+                            <BiPulse size='16' />
+                            Ops
+                        </Flex>
+                    </Button>
+                ) : null}
                 <ViewChannelMemberAvatars channelData={channelData} />
                 <ChannelHeaderMenu channelData={channelData} />
             </Flex>

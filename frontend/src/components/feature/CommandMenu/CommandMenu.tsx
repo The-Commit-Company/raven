@@ -12,6 +12,7 @@ import { Drawer, DrawerContent } from '@/components/layout/Drawer'
 import SettingsList from './SettingsList'
 import ToggleThemeCommand from './ToggleThemeCommand'
 import { useDebounce } from '@/hooks/useDebounce'
+import OpsCommandList from './OpsCommandList'
 
 export const commandMenuOpenAtom = atom(false)
 
@@ -88,6 +89,7 @@ export const CommandList = () => {
             <Command.Empty>No results found.</Command.Empty>
             <ChannelList text={debouncedText} />
             <UserList text={debouncedText} />
+            <OpsCommandList text={debouncedText} />
             <SettingsList text={debouncedText} />
             <Command.Group heading="Commands">
                 <ToggleThemeCommand />

@@ -6,15 +6,28 @@ import { useParams } from 'react-router-dom'
 
 interface ChannelSpaceProps {
     channelData: ChannelListItem
+    canShowOpsRail?: boolean
+    showOpsRail?: boolean
+    onToggleOpsRail?: () => void
 }
 
-export const ChannelSpace = ({ channelData }: ChannelSpaceProps) => {
+export const ChannelSpace = ({
+    channelData,
+    canShowOpsRail = false,
+    showOpsRail = false,
+    onToggleOpsRail,
+}: ChannelSpaceProps) => {
 
     // const { threadID } = useParams()
 
     return (
         <Box>
-            <ChannelHeader channelData={channelData} />
+            <ChannelHeader
+                channelData={channelData}
+                canShowOpsRail={canShowOpsRail}
+                showOpsRail={showOpsRail}
+                onToggleOpsRail={onToggleOpsRail}
+            />
             <ChatBoxBody channelData={channelData} />
         </Box>
     )

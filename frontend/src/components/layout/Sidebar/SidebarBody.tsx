@@ -5,7 +5,7 @@ import { AccessibleIcon, Box, Flex, ScrollArea, Text } from '@radix-ui/themes'
 import { useFetchUnreadMessageCount } from '@/hooks/useUnreadMessageCount'
 import PinnedChannels from './PinnedChannels'
 import React, { useContext, useMemo } from 'react'
-import { BiBookmark, BiMessageAltDetail } from 'react-icons/bi'
+import { BiBookmark, BiMessageAltDetail, BiPulse } from 'react-icons/bi'
 import { __ } from '@/utils/translations'
 import { UnreadList } from '@/components/feature/channel-groups/UnreadList'
 import { ChannelListContext, ChannelListContextType } from '@/utils/channel/ChannelListProvider'
@@ -13,6 +13,7 @@ import { useGetChannelUnreadCounts } from './useGetChannelUnreadCounts'
 import { useParams } from 'react-router-dom'
 import { atomWithStorage } from 'jotai/utils'
 import useUnreadThreadsCount from '@/hooks/useUnreadThreadsCount'
+import { buildOpsRailHref, useRavenOpsFeed } from '@/hooks/useOpsMaturity'
 
 export const showOnlyMyChannelsAtom = atomWithStorage('showOnlyMyChannels', false)
 
@@ -48,6 +49,7 @@ export const SidebarBody = () => {
                         label='Saved'
                         icon={<BiBookmark className='text-gray-12 dark:text-gray-300 mt-0.5 sm:text-sm text-base' />}
                         iconLabel='Saved Message' />
+                    <OpsFeedButton />
                 </Flex>
                 <PinnedChannels unread_count={unread_count?.message} />
                 {(unreadChannels.length > 0 || unreadDMs.length > 0) && <UnreadList unreadChannels={unreadChannels} unreadDMs={unreadDMs} />}
@@ -104,6 +106,51 @@ const SidebarItemForPage = ({ to, label, icon, iconLabel, unreadCount }: Sidebar
                 </div>
 
                 {unreadCount && unreadCount > 0 ? <SidebarBadge>{unreadCount}</SidebarBadge> : null}
+            </SidebarItem>
+        </Box>
+    )
+}
+
+const OpsFeedButton = () => {
+    const { workspaceID } = useParams()
+    const { data } = useRavenOpsFeed(workspaceID, undefined, 5)
+    const feed = data?.message
+
+    if (!feed?.ops_channel_route_info) {
+        return null
+    }
+
+    const href = buildOpsRailHref(feed.ops_channel_route_info, feed.events?.[0]?.name)
+    if (!href) {
+        return null
+    }
+
+    return (
+        <Box>
+            <SidebarItem
+                to={href.replace(/^\/raven/, '') || '/'}
+                data-raven-ops-sidebar
+                className='py-1 px-[10px] flex items-center justify-between'
+            >
+                <div className='flex items-center gap-2'>
+                    <BiPulse className='text-gray-12 dark:text-gray-300 mt-0.5 sm:text-sm text-base' />
+                    <Box>
+                        <Text
+                            size={{
+                                initial: '3',
+                                md: '2',
+                            }}
+                            className='text-gray-12 dark:text-gray-300 font-semibold'
+                        >
+                            Ops Activity
+                        </Text>
+                        <Text size='1' color='gray' className='block'>
+                            {feed.channels?.[0]?.latest_summary || 'Recent delivery signals'}
+                        </Text>
+                    </Box>
+                </div>
+
+                {feed.events?.length ? <SidebarBadge>{feed.events.length}</SidebarBadge> : null}
             </SidebarItem>
         </Box>
     )
