@@ -50,7 +50,7 @@ const ChannelSettingsDrawer = () => {
                         </div>
 
                         <TabsContent value="info">
-                            <ChannelInfo />
+                            <ChannelInfo channelID={channelID} />
                         </TabsContent>
 
                         <TabsContent value="threads">

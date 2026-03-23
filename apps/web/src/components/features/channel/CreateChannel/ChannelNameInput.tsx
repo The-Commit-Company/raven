@@ -2,14 +2,16 @@ import { useCallback } from 'react'
 import { Input } from '@components/ui/input'
 import { RavenChannel } from '@raven/types/RavenChannelManagement/RavenChannel'
 import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
+import _ from '@lib/translate'
 
 interface ChannelNameInputProps {
     value: string
     onChange: (value: string) => void
     channelType: RavenChannel['type']
+    disabled?: boolean
 }
 
-export const ChannelNameInput = ({ value, onChange, channelType }: ChannelNameInputProps) => {
+export const ChannelNameInput = ({ value, onChange, channelType, disabled }: ChannelNameInputProps) => {
     const handleChange = useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
             // Convert to lowercase and replace spaces with hyphens
@@ -42,8 +44,9 @@ export const ChannelNameInput = ({ value, onChange, channelType }: ChannelNameIn
                 placeholder="e.g. marketing, design-team, project-alpha"
                 className="pl-9 pr-12"
                 autoFocus
+                disabled={disabled}
                 aria-describedby="channel-name-counter"
-                aria-label={`Channel name (${channelType})`}
+                aria-label={_('Channel name')}
             />
             <div
                 id="channel-name-counter"
@@ -51,7 +54,7 @@ export const ChannelNameInput = ({ value, onChange, channelType }: ChannelNameIn
                 aria-live="polite"
                 aria-atomic="true"
             >
-                <span className="sr-only">{50 - value.length} characters remaining</span>
+                <span className="sr-only">{50 - value.length} {_('characters remaining')}</span>
                 <span aria-hidden="true">{50 - value.length}</span>
             </div>
         </div>

@@ -7,7 +7,7 @@ import { DMListItem } from "../common/DMListItem/DMListItem"
 import { UserFields } from "@raven/types/common/UserFields"
 import type { DMChannelListItem } from "@raven/types/common/ChannelListItem"
 import { useUser } from "@hooks/useUser"
-import { formatSidebarDate } from "@lib/date"
+import { formatRelativeDate } from "@utils/date"
 import { getMessageTeaser } from "@utils/messageUtils"
 
 /** Skeleton rows for DM list when channels are loading */
@@ -56,7 +56,7 @@ function DMChannelRow({
             },
         [peerUser, dmChannel.peer_user_id]
     )
-    const date = formatSidebarDate(dmChannel.last_message_timestamp)
+    const date = formatRelativeDate(dmChannel.last_message_timestamp)
     const teaser = getMessageTeaser(dmChannel.last_message_details)
     const unread = typeof dmChannel.last_message_details === "object" && dmChannel.last_message_details?.unread_count != null
         ? Number(dmChannel.last_message_details.unread_count)

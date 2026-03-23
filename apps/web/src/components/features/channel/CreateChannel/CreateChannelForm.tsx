@@ -26,6 +26,7 @@ import { ChannelCreationForm, CreateChannelStep } from './types'
 import { useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
 import { useNavigate, useParams } from 'react-router'
 import { ChannelList, ChannelListItem } from '@raven/types/common/ChannelListItem'
+import _ from '@lib/translate'
 
 interface CreateChannelFormProps {
     onClose: () => void
@@ -153,10 +154,10 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
             <div className="px-6 pt-6 pb-4">
                 <DialogHeader className="space-y-3">
                     <DialogTitle className="text-xl" id={currentStep === 1 ? 'step-1-title' : 'step-2-title'}>
-                        {currentStep === 1 ? header : 'Add Members'}
+                        {currentStep === 1 ? header : _('Add Members')}
                     </DialogTitle>
                     <DialogDescription className="sr-only">
-                        {currentStep === 1 ? "Create a new channel" : "Add members to the channel"}
+                        {currentStep === 1 ? _("Create a new channel") : _("Add members to the channel")}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -181,27 +182,27 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                                     control={control}
                                     name="channel_name"
                                     rules={{
-                                        required: 'Please add a channel name',
+                                        required: _('Please add a channel name'),
                                         maxLength: {
                                             value: 50,
                                             message:
-                                                'Channel name cannot be more than 50 characters.',
+                                                _('Channel name cannot be more than 50 characters.'),
                                         },
                                         minLength: {
                                             value: 3,
                                             message:
-                                                'Channel name cannot be less than 3 characters.',
+                                                _('Channel name cannot be less than 3 characters.'),
                                         },
                                         pattern: {
                                             value: /^[a-zA-Z0-9][a-zA-Z0-9-]*$/,
                                             message:
-                                                'Channel name can only contain letters, numbers and hyphens.',
+                                                _('Channel name can only contain letters, numbers and hyphens.'),
                                         },
                                     }}
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>
-                                                Name <span className="text-destructive">*</span>
+                                                {_('Name')} <span className="text-destructive">*</span>
                                             </FormLabel>
                                             <FormControl>
                                                 <ChannelNameInput
@@ -221,9 +222,8 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>
-                                                Description{' '}
-                                                <span className="font-light text-muted-foreground">
-                                                    (optional)
+                                                {_('Description')} <span className="font-light text-muted-foreground">
+                                                    ({_('optional')})
                                                 </span>
                                             </FormLabel>
                                             <FormControl>
@@ -233,7 +233,7 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                                                 />
                                             </FormControl>
                                             <FormDescription>
-                                                What is this channel about?
+                                                {_('What is this channel about?')}
                                             </FormDescription>
                                             <FormMessage />
                                         </FormItem>
@@ -276,7 +276,7 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                                         className="text-sm px-4"
                                         aria-label="Cancel channel creation"
                                     >
-                                        Cancel
+                                        {_('Cancel')}
                                     </Button>
                                     <div className="flex items-center">
                                         <Button
@@ -285,7 +285,7 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                                             className="text-sm pl-5 pr-4"
                                             aria-label="Proceed to add members step"
                                         >
-                                            Add Members
+                                            {_('Add Members')}
                                             <ArrowRightIcon className="ml-2 h-4 w-4" aria-hidden="true" />
                                         </Button>
                                     </div>
@@ -301,7 +301,7 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                                         aria-label="Go back to channel details"
                                     >
                                         <ArrowLeftIcon className="mr-2 h-4 w-4" aria-hidden="true" />
-                                        Back
+                                        {_('Back')}
                                     </Button>
                                     <Button
                                         onClick={handleSubmit(onSubmit)}
@@ -309,7 +309,7 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                                         className="text-sm px-5"
                                         aria-label={`Create channel with ${selectedMembers.length + 1} member${selectedMembers.length + 1 !== 1 ? 's' : ''}`}
                                     >
-                                        {isSubmitting ? 'Creating...' : `Create Channel with ${selectedMembers.length + 1} member${selectedMembers.length + 1 !== 1 ? 's' : ''}`}
+                                        {isSubmitting ? _('Creating...') : _(`Create Channel with ${selectedMembers.length + 1} member${selectedMembers.length + 1 !== 1 ? 's' : ''}`)}
                                     </Button>
                                 </div>
                             )}

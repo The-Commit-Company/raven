@@ -1,19 +1,22 @@
 import { Textarea } from '@components/ui/textarea'
+import _ from '@lib/translate'
 
 interface ChannelDescriptionInputProps {
     value: string
     onChange: (value: string) => void
+    disabled?: boolean
 }
 
-export const ChannelDescriptionInput = ({ value, onChange }: ChannelDescriptionInputProps) => {
+export const ChannelDescriptionInput = ({ value, onChange, disabled }: ChannelDescriptionInputProps) => {
     return (
         <Textarea
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            placeholder="Add a description to help others understand what this channel is for..."
+            placeholder={_('Add a description to help others understand what this channel is for...')}
             className="resize-none"
             rows={3}
-            aria-label="Channel description"
+            disabled={disabled}
+            aria-label={_('Channel description')}
         />
     )
 }

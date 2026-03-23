@@ -14,7 +14,7 @@ export const useGroupedChannels = (
     showMyChannelsOnly?: boolean
 ): ChannelSidebarData => {
     return useMemo(() => {
-        const workspaceChannels = channels.filter((ch) => ch.workspace === workspaceID && (!showMyChannelsOnly || !!ch.member_id))
+        const workspaceChannels = channels.filter((ch) => ch.workspace === workspaceID && (!showMyChannelsOnly || !!ch.member_id) && !ch.is_archived)
         if (!myProfile || !workspaceChannels.length) {
             return { groupedChannels: [], ungroupedChannels: [] }
         }
@@ -53,7 +53,7 @@ export const useGroupedChannels = (
             }
         })
 
-        const groupedChannels = Array.from(groups)
+        const groupedChannels = Array.from(groups).filter(([, channels]) => channels.length > 0)
         const ungroupedChannels = Array.from(remainingChannels)
 
         return { groupedChannels, ungroupedChannels }
