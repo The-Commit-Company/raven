@@ -172,7 +172,7 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                     {/* Step Content - Fixed Height */}
                     <div
                         ref={stepContentRef}
-                        className="py-4 h-[400px] overflow-hidden"
+                        className="pt-4 h-[400px] overflow-hidden"
                         tabIndex={-1}
                         aria-label={currentStep === 1 ? 'Channel details step' : 'Add members step'}
                     >
