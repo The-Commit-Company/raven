@@ -135,6 +135,7 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                                     ...data.message.channels,
                                     {
                                         ...result.message,
+                                        is_admin: '1',
                                     }
                                 ]
                             }
