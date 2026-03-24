@@ -30,19 +30,19 @@ export const ChannelTypeSelector = ({ value, onChange }: ChannelTypeSelectorProp
                     aria-label="Select channel type"
                 >
                     <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Public" id="public" aria-describedby="channel-type-description" />
+                        <RadioGroupItem value="Public" id="public" aria-describedby="channel-type-description" className='cursor-pointer'/>
                         <Label htmlFor="public" className="font-normal cursor-pointer">
                             {_('Public')}
                         </Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Private" id="private" aria-describedby="channel-type-description" />
+                        <RadioGroupItem value="Private" id="private" aria-describedby="channel-type-description" className='cursor-pointer'/>
                         <Label htmlFor="private" className="font-normal cursor-pointer">
                             {_('Private')}
                         </Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Open" id="open" aria-describedby="channel-type-description" />
+                        <RadioGroupItem value="Open" id="open" aria-describedby="channel-type-description" className='cursor-pointer'/>
                         <Label htmlFor="open" className="font-normal cursor-pointer">
                             {_('Open')}
                         </Label>

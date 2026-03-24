@@ -27,6 +27,7 @@ import { useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
 import { useNavigate, useParams } from 'react-router'
 import { ChannelList, ChannelListItem } from '@raven/types/common/ChannelListItem'
 import _ from '@lib/translate'
+import ErrorBanner from '@components/ui/error-banner'
 
 interface CreateChannelFormProps {
     onClose: () => void
@@ -159,11 +160,12 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                     <DialogDescription className="sr-only">
                         {currentStep === 1 ? _("Create a new channel") : _("Add members to the channel")}
                     </DialogDescription>
+                    {createChannelError ? <ErrorBanner error={createChannelError} /> : null}
                 </DialogHeader>
 
                 {/* Stepper */}
                 <div className="mt-6">
-                    <Stepper steps={STEPS} currentStep={currentStep - 1} />
+                    {channelType !== "Open" ? <Stepper steps={STEPS} currentStep={currentStep - 1} /> : <span className='text-sm'>{_('Channel Details')}</span>}
                 </div>
             </div>
 
@@ -266,7 +268,8 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                     {/* Footer - Sticky at Bottom */}
                     <div className="border-t bg-background">
                         <div className="px-4 py-4">
-                            {currentStep === 1 ? (
+                            {channelType !== "Open" ? 
+                            (currentStep === 1 ? (
                                 <div className="flex items-center justify-between gap-3" role="group" aria-label="Form navigation">
                                     <Button
                                         type="button"
@@ -312,7 +315,28 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                                         {isSubmitting ? _('Creating...') : _(`Create Channel with ${selectedMembers.length + 1} member${selectedMembers.length + 1 !== 1 ? 's' : ''}`)}
                                     </Button>
                                 </div>
-                            )}
+                            )) : (
+                                <div className="flex items-center justify-between gap-3" role="group" aria-label="Form navigation">
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        onClick={() => onClose()}
+                                        disabled={isSubmitting}
+                                        className="text-sm px-4"
+                                        aria-label="Cancel channel creation"
+                                    >
+                                        {_('Cancel')}
+                                    </Button>
+                                    <Button
+                                        onClick={handleSubmit(onSubmit)}
+                                        disabled={isSubmitting}
+                                        className="text-sm px-5"
+                                        aria-label={`Create channel with ${selectedMembers.length + 1} member${selectedMembers.length + 1 !== 1 ? 's' : ''}`}
+                                    >
+                                        {isSubmitting ? _('Creating...') : _(`Create Channel`)}
+                                    </Button>
+                                </div>
+                            )}    
                         </div>
                     </div>
                 </form>

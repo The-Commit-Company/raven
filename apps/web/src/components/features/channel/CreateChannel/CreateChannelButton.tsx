@@ -4,6 +4,7 @@ import { Button } from '@components/ui/button'
 import {
     Dialog,
     DialogContent,
+    DialogTitle,
     DialogTrigger,
 } from '@components/ui/dialog'
 import {
@@ -37,6 +38,7 @@ export const CreateChannelButton = () => {
                 </TooltipContent>
             </Tooltip>
             <DialogContent className="sm:max-w-[680px] max-h-[90vh] p-0 gap-0 flex flex-col overflow-hidden">
+                <DialogTitle className='sr-only'>{_('Create a new channel')}</DialogTitle>
                 <CreateChannelForm onClose={() => setIsOpen(false)} />
             </DialogContent>
         </Dialog>
