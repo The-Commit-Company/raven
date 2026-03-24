@@ -9,6 +9,7 @@ import {
 } from '@components/ui/form'
 import { RavenChannel } from '@raven/types/RavenChannelManagement/RavenChannel'
 import { useChannelTypeInfo } from './useChannelTypeInfo'
+import _ from '@lib/translate'
 
 interface ChannelTypeSelectorProps {
     value: RavenChannel['type']
@@ -20,7 +21,7 @@ export const ChannelTypeSelector = ({ value, onChange }: ChannelTypeSelectorProp
 
     return (
         <FormItem>
-            <FormLabel>Channel Type</FormLabel>
+            <FormLabel>{_('Channel Type')}</FormLabel>
             <FormControl>
                 <RadioGroup
                     onValueChange={onChange}
@@ -31,24 +32,24 @@ export const ChannelTypeSelector = ({ value, onChange }: ChannelTypeSelectorProp
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Public" id="public" aria-describedby="channel-type-description" />
                         <Label htmlFor="public" className="font-normal cursor-pointer">
-                            Public
+                            {_('Public')}
                         </Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Private" id="private" aria-describedby="channel-type-description" />
                         <Label htmlFor="private" className="font-normal cursor-pointer">
-                            Private
+                            {_('Private')}
                         </Label>
                     </div>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value="Open" id="open" aria-describedby="channel-type-description" />
                         <Label htmlFor="open" className="font-normal cursor-pointer">
-                            Open
+                            {_('Open')}
                         </Label>
                     </div>
                 </RadioGroup>
             </FormControl>
-            <FormDescription className="min-h-[3rem]" id="channel-type-description">{helperText}</FormDescription>
+            <FormDescription className="min-h-12" id="channel-type-description">{helperText}</FormDescription>
             <FormMessage />
         </FormItem>
     )
