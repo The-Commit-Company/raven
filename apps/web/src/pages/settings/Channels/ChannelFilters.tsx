@@ -1,11 +1,36 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@components/ui/select"
 import _ from "@lib/translate"
 import { WorkspaceFields } from "@hooks/useWorkspaces"
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
+import { Search } from "lucide-react"
+import { Input } from "@components/ui/input"
 
 export const ChannelFilters = ({ filters, setFilters, workspaces }: { filters: any, setFilters: (filters: any) => void, workspaces: WorkspaceFields[] }) => {
     return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full">
+            <div className="relative w-full">
+                <Search
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"
+                    aria-hidden="true"
+                />
+                <Input
+                    placeholder={_("Search for channels")}
+                    value={filters.searchQuery ?? ""}
+                    onChange={(e) =>
+                        setFilters({ ...filters, searchQuery: e.target.value })
+                    }
+                    className="pl-9"
+                    type="text"
+                    aria-label={_("Search channels")}
+                    aria-describedby="search-description"
+                />
+            </div>
             <WorkspaceFilter filters={filters} setFilters={setFilters} workspaces={workspaces} />
             <MyChannelsFilter filters={filters} setFilters={setFilters} />
             <ChannelTypeFilter filters={filters} setFilters={setFilters} />

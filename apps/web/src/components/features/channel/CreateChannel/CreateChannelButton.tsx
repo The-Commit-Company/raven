@@ -12,6 +12,7 @@ import {
     TooltipTrigger,
 } from '@components/ui/tooltip'
 import { CreateChannelForm } from './CreateChannelForm'
+import _ from '@lib/translate'
 
 export const CreateChannelButton = () => {
     const [isOpen, setIsOpen] = useState(false)
@@ -32,7 +33,7 @@ export const CreateChannelButton = () => {
                     </DialogTrigger>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" sideOffset={5} className="text-[11px]">
-                    <p>Create a new channel</p>
+                    <p>{_('Create a new channel')}</p>
                 </TooltipContent>
             </Tooltip>
             <DialogContent className="sm:max-w-[680px] max-h-[90vh] p-0 gap-0 flex flex-col overflow-hidden">

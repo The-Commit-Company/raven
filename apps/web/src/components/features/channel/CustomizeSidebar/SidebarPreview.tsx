@@ -16,7 +16,6 @@ import { cn } from '@lib/utils'
 import { ChannelSidebarData } from '@raven/lib/hooks/useGroupedChannels'
 import { ChannelListItem } from '@raven/types/common/ChannelListItem'
 import { useEffect, useState } from 'react'
-import { ScrollArea } from '@components/ui/scroll-area'
 
 interface SidebarPreviewProps {
     data: ChannelSidebarData

@@ -1,130 +1,127 @@
-import { Switch } from '@components/ui/switch';
-import { User, Edit, Lock, Globe, Archive, Trash2, Bell } from 'lucide-react';
-import { UserAvatar } from '@components/features/message/UserAvatar';
+import { Bell, BellOff, BellRing } from 'lucide-react'
+import { UserAvatar } from '@components/features/message/UserAvatar'
+import { useChannel } from '@hooks/useChannel'
+import _ from '@lib/translate'
+import { useUser } from '@hooks/useUser'
+import { Button } from '@components/ui/button'
+import { SettingsSection } from './SettingsSection'
+import { LeaveChannelButton } from "./LeaveChannelButton"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@components/ui/dropdown-menu'
+import { EditChannelDescriptionButton } from './EditChannelDescriptionButton'
+import { useMemo } from 'react'
+import { hasRole } from '@lib/permissions'
 
-const ChannelInfo = () => {
+const ChannelInfo = ({ channelID }: { channelID: string }) => {
+    const { channel } = useChannel(channelID)
+    const { data: user } = useUser(channel?.owner ?? "")
 
-    const mockCreator = {
-        name: 'janhvi.patil',
-        full_name: 'Janhvi Patil',
-        user_image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-        type: 'User' as const,
-        availability_status: '' as const,
-        custom_status: '',
-        enabled: 1 as const,
-        first_name: 'Janhvi',
+    if (!channel) {
+        return null
     }
 
-    const mockChannel = {
-        name: 'v3-ui-updates',
-        description: 'A channel where you can critique the new UI and suggest improvements',
-        creation: '2024-07-13',
-        status: 'Active',
-        type: 'Public',
-        tags: 13,
-        tasks: 4,
-        pushNotifications: true,
+    const allowSettingChange = useMemo(() => {
+    if (channel.is_admin == 1) {
+      return true;
     }
+    if (channel.member_id && hasRole("Raven Admin")) {
+      return true;
+    }
+    return false;
+    }, [channel]);
 
     return (
         <div className="px-1 space-y-2 pb-4 pt-2">
             {/* About Section */}
             <div className="space-y-2">
-                <h3 className="font-semibold text-sm">About</h3>
+                <h3 className="font-semibold text-sm">{_("About")}</h3>
 
                 {/* Channel Name and Description */}
-                <div className="p-3 border border-border/70 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+                <div className="p-3 border border-border/70 rounded-lg hover:bg-muted/50 transition-colors cursor-default">
                     <div className="space-y-3">
                         <div className="flex items-start justify-between">
-                            <div className="flex-1">
+                            <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
-                                    <span className="text-sm font-medium">Channel name</span>
+                                    <span className="text-sm font-medium">
+                                        {channel.channel_name}
+                                    </span>
                                 </div>
-                                <div className="text-sm text-muted-foreground/90 mb-3.5">{mockChannel.name}</div>
+                                <div className="text-sm text-muted-foreground/90">
+                                    {channel.name}
+                                </div>
 
-                                <div className="flex items-center gap-2 mb-1">
-                                    <span className="text-sm font-medium">Channel description</span>
-                                </div>
-                                <p className="text-sm text-muted-foreground/90 line-clamp-2">{mockChannel.description}</p>
+                                {channel.channel_description && (
+                                    <>
+                                        <div className="flex items-center gap-2 mb-1 mt-3.5">
+                                            <span className="text-sm font-medium">
+                                                {_("Channel description")}
+                                            </span>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground/90 max-h-20 overflow-y-auto">
+                                            {channel.channel_description}
+                                        </p>
+                                    </>
+                                )}
                             </div>
-                            <Edit className="w-4 h-4 text-muted-foreground hover:text-foreground flex-shrink-0 mt-1" />
+                            {allowSettingChange && (<EditChannelDescriptionButton channel={channel} />)}
                         </div>
-
+                        {user && user.name !== "Administrator" && (
+                            <>
                         <div className="border-t border-border/50"></div>
-
                         <div className="flex items-center gap-2">
-                            <UserAvatar user={mockCreator} size="xs" className="w-5 h-5 rounded-full" showStatusIndicator={false} showBotIndicator={false} />
+                            <UserAvatar user={user} size="xs" className="w-5 h-5 rounded-full" showStatusIndicator={false} showBotIndicator={false} />
                             <span className="text-[13px] text-muted-foreground/80">
-                                Created by {mockCreator.full_name} on {mockChannel.creation}
+                                {_(`Created by {0} on {1}`, [user.full_name, channel.creation.split(" ")[0]])}
                             </span>
                         </div>
+                        </>)}
                     </div>
                 </div>
 
                 {/* Push Notifications */}
-                <div className="p-3 border border-border/70 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <Bell className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm">Push Notifications</span>
-                        </div>
-                        <Switch checked={mockChannel.pushNotifications} />
-                    </div>
-                </div>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button
+                            variant="ghost"
+                            className="w-full justify-start p-3 h-auto cursor-pointer font-normal bg-transparent border border-border/70 rounded-lg hover:bg-muted/50 transition-colors"
+                        >
+                            <div className="flex items-center gap-3">
+                                <Bell className="w-4 h-4 text-muted-foreground" />
+                                <span className="text-sm">{_("Push Notifications")}</span>
+                            </div>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-40">
+                        <DropdownMenuItem onClick={() => {}}>
+                            <div className="flex items-center gap-2">
+                                <BellRing className="h-3 w-3 text-foreground/80" />
+                                <span>{_("All Notifications")}</span>
+                            </div>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => {}}>
+                            <div className="flex items-center gap-2">
+                                <Bell className="h-3 w-3 text-foreground/80" />
+                                <span>{_("Mentions Only")}</span>
+                            </div>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => {}}>
+                            <div className="flex items-center gap-2">
+                                <BellOff className="h-3 w-3 text-foreground/80" />
+                                <span>{_("Mute Channel")}</span>
+                            </div>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            {/* Leave Channel */}
+            {channel.type !== "Open" && <LeaveChannelButton channel={channel} />}
             </div>
 
             {/* Settings Section */}
-            <div className="space-y-2 mt-6">
-                <h3 className="font-semibold text-sm">Settings</h3>
-
-                <div className="space-y-2">
-                    {/* Change to Private Channel */}
-                    <div className="p-3 border border-border/70 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-                        <div className="flex items-center gap-3">
-                            <Lock className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm">Change to a private channel</span>
-                        </div>
-                    </div>
-
-                    {/* Change to Open Channel */}
-                    <div className="p-3 border border-border/70 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-                        <div className="flex items-center gap-3">
-                            <Globe className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm">Change to an open channel</span>
-                        </div>
-                    </div>
-
-                    {/* Archive Channel */}
-                    <div className="p-3 border border-border/70 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-                        <div className="flex items-center gap-3">
-                            <Archive className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm">Archive channel</span>
-                        </div>
-                    </div>
-
-                    {/* Leave Channel */}
-                    <div className="p-3 border border-border/70 rounded-lg hover:bg-red-200/20 transition-colors cursor-pointer">
-                        <div className="flex items-center gap-3">
-                            <User className="w-4 h-4 text-destructive" />
-                            <span className="text-sm text-destructive">Leave channel</span>
-                        </div>
-                    </div>
-
-                    {/* Delete Channel */}
-                    <div className="p-3 border border-border/70 rounded-lg hover:bg-red-200/20 transition-colors cursor-pointer">
-                        <div className="flex items-center gap-3">
-                            <Trash2 className="w-4 h-4 text-destructive" />
-                            <span className="text-sm text-destructive">Delete channel</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Permissions Info */}
-                <div className="space-y-1 px-1">
-                    <p className="text-xs text-muted-foreground">Only channel admins are allowed to change the channel settings</p>
-                    <p className="text-xs text-muted-foreground">General channel cannot be modified/ removed</p>
-                </div>
-            </div>
+            <SettingsSection channel={channel} allowSettingChange={allowSettingChange} />
         </div>
     )
 }

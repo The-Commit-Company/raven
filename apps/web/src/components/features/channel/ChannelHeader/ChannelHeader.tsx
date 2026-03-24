@@ -9,6 +9,7 @@ import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
 import { useSidebar } from "@components/ui/sidebar"
 import { useLocation } from "react-router-dom"
 import { SIDEBAR_LESS_ROUTES } from "@utils/routes"
+import { useChannel } from "@hooks/useChannel"
 
 const ChannelHeader = () => {
     const channelID = useCurrentChannelID()
@@ -18,6 +19,7 @@ const ChannelHeader = () => {
     const isSidebarLessPage = SIDEBAR_LESS_ROUTES.has(pathname) || isSettingsPage
     const { state } = useSidebar()
     const isCollapsed = state === "collapsed"
+    const { toggleStarChannel, isStarred } = useChannel(channelID)
 
     const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
 
@@ -50,14 +52,14 @@ const ChannelHeader = () => {
                 top: "var(--app-header-height, 36px)",
                 left: isSidebarLessPage
                     ? "var(--workspace-switcher-width, 60px)"
-                    : (isCollapsed
+                    : isCollapsed
                         ? "var(--sidebar-width-icon, 60px)"
-                        : "var(--sidebar-width, 340px)"),
+                        : "var(--sidebar-width, 340px)",
                 width: isSidebarLessPage
                     ? "calc(100% - var(--workspace-switcher-width, 60px))"
-                    : (isCollapsed
+                    : isCollapsed
                         ? "calc(100% - var(--sidebar-width-icon, 60px))"
-                        : "calc(100% - var(--sidebar-width, 340px))"),
+                        : "calc(100% - var(--sidebar-width, 340px))",
             }}
         >
             {/* Left side */}
@@ -65,8 +67,8 @@ const ChannelHeader = () => {
                 <div className="flex items-center gap-0.5">
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm">
-                                <Star className="h-3 w-3 text-foreground/80" />
+                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={toggleStarChannel}>
+                                <Star className={`h-3 w-3 text-foreground/80 ${isStarred ? "fill-foreground" : ""}`} />
                                 <span className="sr-only">Star</span>
                             </Button>
                         </TooltipTrigger>
@@ -75,7 +77,7 @@ const ChannelHeader = () => {
                         </TooltipContent>
                     </Tooltip>
 
-                    <ChannelMenu />
+                    <ChannelMenu channelID={channelID} />
 
                     <Tooltip>
                         <TooltipTrigger asChild>

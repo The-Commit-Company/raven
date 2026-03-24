@@ -7,9 +7,7 @@ import { Dialog, DialogTrigger, DialogContent } from "@components/ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@components/ui/dropdown-menu"
 import { useChannels } from "@hooks/useChannels"
 import _ from "@lib/translate"
-import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
 import { ChannelListItem } from "@raven/types/common/ChannelListItem"
-import { useFrappeCreateDoc, useFrappePostCall } from "frappe-react-sdk"
 import { Bell, BellOff, BellRing, Loader2, Plus } from "lucide-react"
 import { useMemo, useState } from "react"
 import { useNavigate } from "react-router"
@@ -17,13 +15,18 @@ import { ColumnDef, SortingState } from "src/types/DataTable"
 import { ChannelFilters } from "./ChannelFilters"
 import { useWorkspaces } from "@hooks/useWorkspaces"
 import { ScrollArea } from "@components/ui/scroll-area"
+import { Badge } from "@components/ui/badge"
+import { useJoinChannel } from "@hooks/useJoinChannel"
+import { useLeaveChannel } from "@hooks/useLeaveChannel"
+import { toast } from "sonner"
+import { getErrorMessage } from "@lib/frappe"
 
 export const ManageChannels = () => {
 
-    const { channels, mutate } = useChannels()
+    const { channels } = useChannels()
     const { workspaces } = useWorkspaces()
     const [sorting, setSorting] = useState<SortingState | null>(null)
-    const [filters, setFilters] = useState<{ myChannels: string, channelType: string, workspace: string }>({ myChannels: 'All Channels', channelType: 'All Types', workspace: workspaces?.[0]?.name ?? '' })
+    const [filters, setFilters] = useState<{ myChannels: string, channelType: string, workspace: string, searchQuery: string }>({ myChannels: 'All Channels', channelType: 'All Types', workspace: workspaces?.[0]?.name ?? '', searchQuery: '' })
 
     const navigate = useNavigate()
 
@@ -35,12 +38,24 @@ export const ManageChannels = () => {
 
             const workspaceMatch = !filters?.workspace || channel.workspace === filters?.workspace;
 
-            return myChannelsMatch && channelTypeMatch && workspaceMatch;
+            const searchMatch = !filters?.searchQuery || channel.channel_name.toLowerCase().includes(filters.searchQuery.toLowerCase()) || (channel.channel_description ?? "").toLowerCase().includes(filters.searchQuery.toLowerCase());
+
+            return myChannelsMatch && channelTypeMatch && workspaceMatch && searchMatch;
+        });
+
+        // Sort archived channels to the bottom
+        filteredChannels.sort((a, b) => {
+            if (a.is_archived && !b.is_archived) return 1;
+            if (!a.is_archived && b.is_archived) return -1;
+            return 0;
         });
 
         if (!sorting) return filteredChannels
         const { field, order } = sorting
         return filteredChannels.sort((a, b) => {
+            // Keep archived channels at bottom even when sorting
+            if (a.is_archived && !b.is_archived) return 1
+            if (!a.is_archived && b.is_archived) return -1
             const aVal = a[field as keyof ChannelListItem] ?? ''
             const bVal = b[field as keyof ChannelListItem] ?? ''
             const cmp = aVal.localeCompare(bVal)
@@ -57,10 +72,7 @@ export const ManageChannels = () => {
             headerClassName: 'w-[20%]',
             cell: ({ row }) => (
                 <div className='flex items-center gap-2 hover:cursor-pointer w-full' onClick={() => navigate(`/${row.workspace}/channel/${row.name}`)}>
-                    <ChannelIcon
-                        type={row.type || "Public"}
-                        className="w-4 h-4 shrink-0"
-                    />
+                    <ChannelIcon type={row.type || "Public"} className="w-4 h-4 shrink-0" />
                     <span className='text-sm font-medium line-clamp-1 text-ellipsis'>{row.channel_name}</span>
                 </div>
             )
@@ -82,14 +94,14 @@ export const ManageChannels = () => {
             enableSorting: false,
             accessorKey: 'member_id',
             cellClassName: 'w-0',
-            cell: ({ row }) => { return row.type !== 'Open' ? <ChannelJoinButton channel={row} mutate={mutate} /> : null }
+            cell: ({ row }) => { return row.type !== 'Open' ? <ChannelJoinButton channel={row} /> : null }
         },
         {
-            id: 'allow_notifications',
-            accessorKey: 'allow_notifications',
+            id: "allow_notifications",
+            accessorKey: "allow_notifications",
             enableSorting: false,
             cell: ({ row }) => (
-                <ChannelNotificationsButton channel={row} mutate={mutate} />
+                <ChannelNotificationsButton channel={row} />
             )
         }
     ]
@@ -100,9 +112,7 @@ export const ManageChannels = () => {
             description={_("Manage channels you have access to.")}
             actions={<CreateChannelButton selectedWorkspace={filters?.workspace ?? ''} />}
         >
-            <div className="flex items-center justify-between">
-                <ChannelFilters filters={filters} setFilters={setFilters} workspaces={workspaces} />
-            </div>
+            <ChannelFilters filters={filters} setFilters={setFilters} workspaces={workspaces} />
             <ScrollArea className="h-[calc(100vh-220px)]">
                 <DataTable
                     columns={columns}
@@ -117,36 +127,38 @@ export const ManageChannels = () => {
     )
 }
 
-const ChannelJoinButton = ({ channel, mutate }: { channel: ChannelListItem, mutate: () => void }) => {
+const ChannelJoinButton = ({channel}: {channel: ChannelListItem}) => {
+    
+    const { joinChannel, loading: joinChannelLoading } = useJoinChannel(channel.name)
+    const { leaveChannel, loading: leaveChannelLoading } = useLeaveChannel(channel.name)
 
-    const { call, loading: deletingDoc, error: leaveChannelError } = useFrappePostCall('raven.api.raven_channel.leave_channel')
-    const { myProfile } = useCurrentRavenUser()
+    const isLoading = joinChannelLoading || leaveChannelLoading
 
-    const { createDoc, error: joinChannelError, loading: joinChannelLoading } = useFrappeCreateDoc()
-
-    const isLoading = deletingDoc || joinChannelLoading
-
-    const joinChannel = async () => {
-        return createDoc('Raven Channel Member', {
-            channel_id: channel?.name,
-            user_id: myProfile?.name ?? ''
-        }).then(() => {
-            mutate()
-        })
-    }
-
-    const leaveChannel = async () => {
-        return call({ channel_id: channel?.name }).then(() => {
-            mutate()
-        })
-    }
-
-    const toggleJoin = (action: 'join' | 'leave') => {
-        if (action === 'join') {
-            return joinChannel()
+    const toggleJoin = (action: "join" | "leave") => {
+        if (action === "join") {
+            return joinChannel().catch((e) => {
+                toast.error("Could not join channel", {
+                    description: getErrorMessage(e),
+                })
+            })
         } else {
-            return leaveChannel()
+            return leaveChannel().catch((e) => {
+                toast.error("Could not leave channel", {
+                    description: getErrorMessage(e),
+                })
+            })
         }
+    }
+
+    if (channel.is_archived) {
+        return (
+            <Badge
+                variant="outline"
+                className="text-sm px-1 rounded-md w-20 h-8 bg-destructive/10 text-destructive cursor-default border-transparent"
+            >
+                {_("Archived")}
+            </Badge>
+        )
     }
 
     return (
@@ -167,7 +179,7 @@ const ChannelJoinButton = ({ channel, mutate }: { channel: ChannelListItem, muta
     )
 }
 
-const ChannelNotificationsButton = ({ channel, mutate }: { channel: ChannelListItem, mutate: () => void }) => {
+const ChannelNotificationsButton = ({ channel }: { channel: ChannelListItem }) => {
 
     // TODO: Once we have the options in DocType, wire them up here
 
@@ -182,7 +194,7 @@ const ChannelNotificationsButton = ({ channel, mutate }: { channel: ChannelListI
         }
     }
 
-    if (!channel.member_id) {
+    if (!channel.member_id || channel.is_archived) {
         return null
     }
 

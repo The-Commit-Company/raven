@@ -4,7 +4,7 @@ import _ from "@lib/translate"
 import { Input } from "./input"
 import { ComponentProps, useState } from "react"
 import { parseDate } from "chrono-node"
-import { formatDate, getUserDateFormat, toDate } from "@lib/date"
+import { formatDate, toDate, USER_DATE_FORMAT } from "@utils/date"
 import { Popover, PopoverContent, PopoverTrigger } from "./popover"
 import { Button } from "./button"
 import { CalendarIcon } from "lucide-react"
@@ -95,7 +95,6 @@ export const DateField = ({ name, rules, label, isRequired, formDescription, inp
 
     const DatePicker = ({ field }: { field: FieldValues }) => {
 
-        const userDateFormat = getUserDateFormat()
         const [open, setOpen] = useState(false)
 
         const [value, setValue] = useState<string | undefined>(field.value ? formatDate(field.value) : undefined)
@@ -110,13 +109,13 @@ export const DateField = ({ name, rules, label, isRequired, formDescription, inp
                         setValue(formatDate(field.value))
                         field.onBlur()
                     }}
-                    placeholder={userDateFormat}
+                    placeholder={USER_DATE_FORMAT}
                     value={value}
                     onChange={(e) => {
                         setValue(e.target.value)
                         if (e.target.value) {
                             // On change in value, try computing date usning standard formats first
-                            const dateObj = toDate(e.target.value, userDateFormat)
+                            const dateObj = toDate(e.target.value, USER_DATE_FORMAT)
                             // If we find a valid date, use it
                             if (dateObj && !isNaN(dateObj.getTime())) {
                                 field.onChange(formatDate(dateObj, "YYYY-MM-DD"))
