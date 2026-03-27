@@ -85,12 +85,14 @@ export const CustomizeSidebarDialog = ({ onClose }: { onClose: () => void }) => 
                                 </button>
                             ))}
                         </div>
-                        <div className="flex-1 overflow-y-auto p-4">
+                        <div className="flex-1 flex flex-col min-h-0 p-4">
                             {activeTab === 'channels' && (
                                 <ChannelTable data={channelSidebarData} />
                             )}
                             {activeTab === 'groups' && (
-                                <GroupDnd />
+                                <div className="flex-1 overflow-y-auto pr-2">
+                                    <GroupDnd />
+                                </div>
                             )}
                         </div>
                     </div>

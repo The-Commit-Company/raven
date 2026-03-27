@@ -13,6 +13,8 @@ import { ArrowUpIcon, ArrowDownIcon, ChevronsUpDownIcon, ChevronLeftIcon, Chevro
 import type { DataTableProps, ColumnDef, CellContext, HeaderContext, SortingState, PaginationState } from "../../../types/DataTable"
 import { Button } from "@components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@components/ui/select"
+import { TableVirtuoso } from "react-virtuoso"
+import { forwardRef, useMemo } from "react"
 
 /**
  * A reusable DataTable component for displaying tabular data.
@@ -232,8 +234,15 @@ export function DataTable<TData>({
         return String(index)
     }
 
+    const virtuosoComponents = useMemo(() => ({
+        Table: (props: any) => <Table {...props} className={tableClassName} />,
+        TableHead: forwardRef<HTMLTableSectionElement, any>((props, ref) => <TableHeader {...props} ref={ref} />),
+        TableBody: forwardRef<HTMLTableSectionElement, any>((props, ref) => <TableBody {...props} ref={ref} />),
+        TableRow: (props: any) => <TableRow {...props} className="group" />,
+    }), [tableClassName])
+
     return (
-        <div className={cn("w-full", className)}>
+        <div className={cn("w-full flex flex-col", className)}>
             {/* Error Banner - displayed above the table when there's an error */}
             {error && <ErrorBanner error={error} />}
 
@@ -244,51 +253,78 @@ export function DataTable<TData>({
 
             {/* Table Content */}
             {!isLoading && !error && (
-                <div className="overflow-hidden rounded-md border">
-                    <Table className={tableClassName}>
-                        <TableHeader>
-                            <TableRow>
-                                {columns.map((column: ColumnDef<TData>) => (
-                                    <TableHead
-                                        key={column.id}
-                                        className={column.headerClassName}
-                                    >
-                                        {renderHeader(column)}
-                                    </TableHead>
-                                ))}
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {data.length > 0 ? (
-                                data.map((row: TData, rowIndex: number) => (
-                                    <TableRow key={getRowKey(row, rowIndex)} className="group">
-                                        {columns.map((column: ColumnDef<TData>) => (
-                                            <TableCell
-                                                key={column.id}
-                                                className={column.cellClassName}
-                                            >
-                                                {renderCell(row, column, rowIndex)}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))
-                            ) : (
-                                // Empty state when no data
+                <div className={cn("overflow-hidden rounded-md border bg-background", !hasPagination && "flex flex-col h-full")}>
+                    {hasPagination ? (
+                        <Table className={tableClassName}>
+                            <TableHeader>
                                 <TableRow>
-                                    <TableCell
-                                        colSpan={columns.length}
-                                        className="h-24 text-center"
-                                    >
-                                        {emptyState ?? (
-                                            <span className="text-muted-foreground">
-                                                No data available.
-                                            </span>
-                                        )}
-                                    </TableCell>
+                                    {columns.map((column: ColumnDef<TData>) => (
+                                        <TableHead
+                                            key={column.id}
+                                            className={column.headerClassName}
+                                        >
+                                            {renderHeader(column)}
+                                        </TableHead>
+                                    ))}
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {data.length > 0 ? (
+                                    data.map((row: TData, rowIndex: number) => (
+                                        <TableRow key={getRowKey(row, rowIndex)} className="group">
+                                            {columns.map((column: ColumnDef<TData>) => (
+                                                <TableCell
+                                                    key={column.id}
+                                                    className={column.cellClassName}
+                                                >
+                                                    {renderCell(row, column, rowIndex)}
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    // Empty state when no data
+                                    <TableRow>
+                                        <TableCell
+                                            colSpan={columns.length}
+                                            className="h-24 text-center"
+                                        >
+                                            {emptyState ?? (
+                                                <span className="text-muted-foreground">
+                                                    No data available.
+                                                </span>
+                                            )}
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    ) : (
+                        <TableVirtuoso
+                            data={data.length > 0 ? data : []}
+                            className={cn("flex-1 w-full", tableClassName)}
+                            components={virtuosoComponents}
+                            overscan={100}
+                            fixedHeaderContent={() => (
+                                <TableRow className="bg-background hover:bg-background">
+                                    {columns.map((column: ColumnDef<TData>) => (
+                                        <TableHead key={column.id} className={column.headerClassName}>
+                                            {renderHeader(column)}
+                                        </TableHead>
+                                    ))}
                                 </TableRow>
                             )}
-                        </TableBody>
-                    </Table>
+                            itemContent={(index, row) => (
+                                <>
+                                    {columns.map((column: ColumnDef<TData>) => (
+                                        <TableCell key={column.id} className={column.cellClassName}>
+                                            {renderCell(row, column, index)}
+                                        </TableCell>
+                                    ))}
+                                </>
+                            )}
+                        />
+                    )}
                 </div>
             )}
 

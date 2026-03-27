@@ -73,8 +73,8 @@ export interface ConvertedChannelPreview {
     root_message_owner_image?: string
     root_message_snippet?: string
     message_count?: number
-    participants?: { name: string; full_name?: string; user_image?: string }[]
-    preview_replies?: { owner_name?: string; owner_image?: string; snippet?: string }[]
+    participants?: { name: string; full_name: string; user_image?: string }[]
+    preview_replies?: { owner_name: string; owner_image?: string; snippet?: string }[]
 }
 
 /** Dummy type for UI-only forwarded-thread metadata. Backend shape TBD. */
@@ -90,7 +90,7 @@ export interface ForwardedThreadMetadata {
     last_message_owner_name: string
     root_message_owner_name?: string
     root_message_owner_image?: string
-    participants?: { name: string; full_name?: string; user_image?: string }[]
+    participants?: { name: string; full_name: string; user_image?: string }[]
     preview_replies?: { owner_name?: string; owner_image?: string; snippet?: string }[]
 }
 

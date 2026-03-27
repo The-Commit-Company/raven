@@ -52,12 +52,6 @@ export const ThreadButton = ({ participants, messageCount, threadID }: ThreadBut
     const channelID = useCurrentChannelID()
     const [, setDrawerType] = useAtom(channelDrawerAtom(channelID))
 
-    const participantAvatars = participants.map(p => ({
-        id: p.name,
-        name: p.full_name || p.name,
-        image: p.user_image
-    }))
-
     const handleClick = () => {
         if (!threadID) return
 
@@ -72,7 +66,7 @@ export const ThreadButton = ({ participants, messageCount, threadID }: ThreadBut
                 className="inline-flex items-center gap-2 bg-card border border-border rounded-lg px-3 py-1.5 hover:bg-accent/50 shadow-xs cursor-pointer"
                 onClick={handleClick}
             >
-                <GroupedAvatars users={participantAvatars} max={3} size="xs" />
+                <GroupedAvatars users={participants} max={3} size="xs" />
                 <span className="text-xs font-medium text-primary">
                     {messageCount} Messages
                 </span>

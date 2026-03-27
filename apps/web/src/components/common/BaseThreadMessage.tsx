@@ -3,9 +3,9 @@ import { UserFields } from "@raven/types/common/UserFields"
 import { GroupedAvatars } from "@components/ui/grouped-avatars"
 
 interface ParticipantUser {
-    id: string
     name: string
-    image?: string
+    full_name: string
+    user_image?: string
 }
 
 interface BaseThreadMessageProps {

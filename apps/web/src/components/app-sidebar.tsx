@@ -1,4 +1,3 @@
-import * as React from "react"
 import { Label } from "@components/ui/label"
 import {
     SidebarContent,
@@ -14,9 +13,10 @@ import { ChannelListItem } from "@raven/types/common/ChannelListItem"
 import { useActiveWorkspace } from "../contexts/ActiveWorkspaceContext"
 import { SidebarShell } from "@components/layout/SidebarShell"
 import _ from "@lib/translate"
+import { useState } from "react"
 
 export function AppSidebar(props: React.ComponentProps<typeof SidebarShell>) {
-    const [activeChannel, setActiveChannel] = React.useState<{ id: string; name: string; type: string; unread: number } | null>(null)
+    const [activeChannel, setActiveChannel] = useState<{ id: string; name: string; type: string; unread: number } | null>(null)
     const navigate = useNavigate()
     const location = useLocation()
     const { activeWorkspaceName } = useActiveWorkspace()
@@ -43,40 +43,40 @@ export function AppSidebar(props: React.ComponentProps<typeof SidebarShell>) {
     return (
         <SidebarShell collapsible="icon" className="overflow-hidden h-full" {...props}>
             <div className="flex-1 flex flex-col overflow-hidden">
-            {location.pathname === "/threads" || location.pathname === "/notifications" ? null : location.pathname.startsWith("/dm-channel") || activeWorkspaceName === "Direct Messages" ? (
-                <DMSidebar
-                    workspaceName="Direct Messages"
-                    activeDMChannelId={null}
-                    onDMClick={(dmChannelId) =>
-                        navigate(`/dm-channel/${encodeURIComponent(dmChannelId)}`)
-                    }
-                />
-            ) : (
-                <>
-                    <SidebarHeader className="h-[36px] gap-2 px-3 border-b flex items-center">
-                        <div className="flex items-center justify-between w-full">
-                            <div className="text-sm font-medium text-foreground truncate">
-                                {activeWorkspaceName}
+                {location.pathname === "/threads" || location.pathname === "/notifications" ? null : location.pathname.startsWith("/dm-channel") || activeWorkspaceName === "Direct Messages" ? (
+                    <DMSidebar
+                        workspaceName="Direct Messages"
+                        activeDMChannelId={null}
+                        onDMClick={(dmChannelId) =>
+                            navigate(`/dm-channel/${encodeURIComponent(dmChannelId)}`)
+                        }
+                    />
+                ) : (
+                    <>
+                        <SidebarHeader className="h-[36px] gap-2 px-3 border-b flex items-center">
+                            <div className="flex items-center justify-between w-full">
+                                <div className="text-sm font-medium text-foreground truncate">
+                                    {activeWorkspaceName}
+                                </div>
+                                <Label className="flex items-center gap-2 text-[12px]">
+                                    <span>{_("Unreads")}</span>
+                                    <Switch className="shadow-none" />
+                                </Label>
                             </div>
-                            <Label className="flex items-center gap-2 text-[12px]">
-                                <span>{_("Unreads")}</span>
-                                <Switch className="shadow-none" />
-                            </Label>
-                        </div>
-                    </SidebarHeader>
+                        </SidebarHeader>
 
-                    <SidebarContent>
-                        <SidebarGroup className="p-0">
-                            <SidebarGroupContent>
-                                <ChannelSidebar
-                                    activeChannelId={activeChannel?.name}
-                                    onChannelClick={handleChannelClick}
-                                />
-                            </SidebarGroupContent>
-                        </SidebarGroup>
-                    </SidebarContent>
-                </>
-            )}
+                        <SidebarContent className="overflow-hidden">
+                            <SidebarGroup className="p-0 flex-1 min-h-0">
+                                <SidebarGroupContent className="flex-1 min-h-0 flex flex-col">
+                                    <ChannelSidebar
+                                        activeChannelId={activeChannel?.name}
+                                        onChannelClick={handleChannelClick}
+                                    />
+                                </SidebarGroupContent>
+                            </SidebarGroup>
+                        </SidebarContent>
+                    </>
+                )}
             </div>
         </SidebarShell>
     )

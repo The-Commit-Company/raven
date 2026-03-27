@@ -5,7 +5,7 @@ import { formatVoteCountWithPercentage } from "./pollUtils"
 export interface PollVoteCountProps {
     votes: number
     percentage: number
-    voters?: { id: string; name: string; image: string; full_name?: string }[]
+    voters?: { name: string; full_name: string; user_image?: string }[]
     showAvatars?: boolean
     className?: string
 }

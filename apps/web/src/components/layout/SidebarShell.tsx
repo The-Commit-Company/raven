@@ -18,7 +18,7 @@ export function SidebarShell({ children, className, ...props }: SidebarShellProp
         <Sidebar className={className} {...props}>
             <div className="flex h-full *:data-[sidebar=sidebar]:flex-row">
                 <WorkspaceSwitcher />
-                <div className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
                     {children}
                 </div>
             </div>

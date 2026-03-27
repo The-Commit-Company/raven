@@ -43,11 +43,6 @@ export function ConvertedThreadPreviewCard({
         ? `/${encodeURIComponent(workspace)}/channel/${encodeURIComponent(channelId)}`
         : "#"
 
-    const participantAvatars = (preview?.participants ?? []).map((p) => ({
-        id: p.name,
-        name: p.full_name || p.name,
-        image: avatarSrc(p.user_image) ?? p.user_image,
-    }))
     const replyCount = preview?.message_count ?? 0
     const previewReplies = preview?.preview_replies ?? []
 
@@ -69,15 +64,15 @@ export function ConvertedThreadPreviewCard({
                 </div>
                 <span className="text-muted-foreground">—</span>
                 <span className="text-muted-foreground">Converted to channel</span>
-                {participantAvatars.length > 0 && (
+                {preview?.participants && preview?.participants.length > 0 && (
                     <>
-                        <GroupedAvatars users={participantAvatars} max={4} size="xs" />
+                        <GroupedAvatars users={preview.participants} max={4} size="xs" />
                         <span className="text-muted-foreground">
                             {replyCount} {replyCount === 1 ? "reply" : "replies"}
                         </span>
                     </>
                 )}
-                {participantAvatars.length === 0 && replyCount > 0 && (
+                {preview?.participants?.length === 0 && replyCount > 0 && (
                     <span className="text-muted-foreground">
                         {replyCount} {replyCount === 1 ? "reply" : "replies"}
                     </span>

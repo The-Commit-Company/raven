@@ -58,11 +58,6 @@ export function ThreadPreviewCard({
     const startedByName = meta.root_message_owner_name || meta.last_message_owner_name || "Someone"
     const participants = meta.participants ?? []
     const previewReplies = meta.preview_replies ?? []
-    const participantAvatars = participants.map((p) => ({
-        id: p.name,
-        name: p.full_name || p.name,
-        image: avatarSrc(p.user_image) ?? p.user_image,
-    }))
 
     const content = (
         <div
@@ -82,15 +77,15 @@ export function ThreadPreviewCard({
                     <span className="font-semibold">Thread</span>
                 </div>
                 <span className="text-muted-foreground">—</span>
-                {participantAvatars.length > 0 && (
+                {participants.length > 0 && (
                     <>
-                        <GroupedAvatars users={participantAvatars} max={4} size="xs" />
+                        <GroupedAvatars users={participants} max={4} size="xs" />
                         <span className="text-muted-foreground">
                             {meta.message_count} {meta.message_count === 1 ? "reply" : "replies"}
                         </span>
                     </>
                 )}
-                {participantAvatars.length === 0 && (
+                {participants.length === 0 && (
                     <span className="text-muted-foreground">
                         {meta.message_count} {meta.message_count === 1 ? "reply" : "replies"}
                     </span>

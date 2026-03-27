@@ -10,6 +10,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { useDebounce } from '@raven/lib/hooks/useDebounce';
 import _ from '@lib/translate'
 import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
+import { Virtuoso } from 'react-virtuoso'
 
 interface AddMembersStepProps {
     selectedUsers: UserData[]
@@ -50,13 +51,6 @@ export const AddMembersStep = ({ selectedUsers, onSelectUsers }: AddMembersStepP
         onSelectUsers(selectedUsers.filter((user) => user.name !== userName))
         if (removedUser) {
             setAnnouncement(`${removedUser.full_name} removed from channel`)
-        }
-    }
-
-    const handleKeyDownOnUser = (e: React.KeyboardEvent, user: UserData) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault()
-            handleSelectUser(user)
         }
     }
 
@@ -144,54 +138,50 @@ export const AddMembersStep = ({ selectedUsers, onSelectUsers }: AddMembersStepP
             </div>
 
             {/* Available Users */}
-            <ScrollArea className="flex-1 min-h-10">
-                <div className="space-y-1 p-0.5" role="list" aria-label="Available team members">
-                    {filteredUsers?.map((user) => (
-                        <Button
-                            key={user.name}
-                            type="button"
-                            variant='ghost'
-                            className="flex items-center gap-2.5 hover:bg-accent/50 transition-colors cursor-pointer group w-full text-left h-12"
-                            onClick={() => handleSelectUser(user)}
-                            onKeyDown={(e) => handleKeyDownOnUser(e, user)}
-                            aria-label={_(`Add ${user.full_name} (${user.name}) to channel`)}
-                            role="listitem"
-                        >
-                            <UserAvatar
-                                user={user as UserFields}
-                                size="sm"
-                                className="shrink-0"
-                                showStatusIndicator={false}
-                            />
-                            <div className="flex-1 min-w-0">
-                                <div className="text-sm font-medium truncate leading-tight">
-                                    {user.full_name}
+            <div className="flex-1 min-h-0">
+                {(filteredUsers?.length ?? 0) > 0 ? (
+                    <Virtuoso
+                        style={{ height: '100%', width: '100%' }}
+                        data={filteredUsers!}
+                        overscan={200}
+                        itemContent={(index, user) => (
+                            <div
+                                key={user.name}
+                                className="flex items-center gap-2.5 hover:bg-accent/50 transition-colors cursor-pointer group p-2 rounded-lg mb-1"
+                                onClick={() => handleSelectUser(user)}
+                            >
+                                <UserAvatar
+                                    user={user as UserFields}
+                                    size="sm"
+                                    className="shrink-0"
+                                    showStatusIndicator={false}
+                                />
+                                <div className="flex-1 min-w-0">
+                                    <div className="text-sm font-medium truncate leading-tight">
+                                        {user.full_name}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground truncate leading-tight">
+                                        {user.name}
+                                    </div>
                                 </div>
-                                <div className="text-xs text-muted-foreground truncate leading-tight">
-                                    {user.name}
-                                </div>
+                                <UserPlus className="h-3.5 w-3.5 text-muted-foreground/60 group-hover:text-muted-foreground shrink-0 transition-colors mr-2" aria-hidden="true" />
                             </div>
-                            <UserPlus className="h-3.5 w-3.5 text-muted-foreground/60 group-hover:text-muted-foreground shrink-0 transition-colors mr-2" aria-hidden="true" />
-                        </Button>
-                    ))}
-                </div>
-
-                {filteredUsers?.length === 0 && filterText && (
+                        )}
+                    />
+                ) : filterText ? (
                     <div className="text-center py-8 pr-4">
                         <p className="text-sm text-muted-foreground">
                             {_('No users found matching your search.')}
                         </p>
                     </div>
-                )}
-
-                {filteredUsers?.length === 0 && !filterText && selectedUsers.length > 0 && (
+                ) : selectedUsers.length > 0 ? (
                     <div className="text-center py-8 pr-4">
                         <p className="text-sm text-muted-foreground">
                             {_('All available users have been selected.')}
                         </p>
                     </div>
-                )}
-            </ScrollArea>
+                ) : null}
+            </div>
         </div>
     )
 }

@@ -1,6 +1,6 @@
-import * as React from "react"
 import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
 import { cn } from "@lib/utils"
+import { forwardRef } from "react"
 
 interface ChannelListItemProps {
     name: string
@@ -10,7 +10,7 @@ interface ChannelListItemProps {
     className?: string
 }
 
-export const ChannelListItem = React.forwardRef<
+export const ChannelListItem = forwardRef<
     HTMLAnchorElement,
     ChannelListItemProps & React.ComponentProps<"a">
 >(({ name, type = "Public", unread = 0, onClick, className, ...props }, ref) => {

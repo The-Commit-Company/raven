@@ -107,6 +107,7 @@ export const ChannelTable = ({ data }: { data: ChannelSidebarData }) => {
 
   return (
     <DataTable
+      className="flex-1 min-h-0 h-full"
       columns={columns}
       data={sortedData}
       getRowId={(row) => row.name}

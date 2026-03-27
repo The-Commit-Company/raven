@@ -2,162 +2,43 @@ import { useState } from 'react';
 import { Button } from '@components/ui/button';
 import { Input } from '@components/ui/input';
 import { UserAvatar } from '@components/features/message/UserAvatar';
-import { Search, MoreVertical, Crown, UserMinus } from 'lucide-react';
+import { Search, MoreVertical, Crown, UserMinus, X } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@components/ui/tooltip';
+import _ from '@lib/translate';
+import { ChannelMemberData } from '@hooks/useChannelMembers';
+import { Virtuoso } from 'react-virtuoso';
 
-import type { RavenUser } from '@raven/types/Raven/RavenUser';
-import type { UserFields } from '@raven/types/common/UserFields';
-
-const ChannelMembersList = () => {
+const ChannelMembersList = ({ members, allowSettingChange, showCloseButton, onClose }: { members: ChannelMemberData[], allowSettingChange: boolean, showCloseButton: boolean, onClose: () => void }) => {
 
     const [searchQuery, setSearchQuery] = useState('')
 
-    const mockMembers: (RavenUser & { is_admin?: boolean; last_visit?: string })[] = [
-        {
-            name: 'alex.johnson@company.com',
-            full_name: 'Alex Johnson',
-            user_image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-            type: 'User',
-            availability_status: 'Available',
-            custom_status: '',
-            enabled: 1,
-            first_name: 'Alex',
-            creation: '2024-01-01',
-            modified: '2024-01-01',
-            owner: 'admin',
-            modified_by: 'admin',
-            docstatus: 0,
-            is_admin: true,
-            last_visit: '2024-01-15T10:30:00Z'
-        },
-        {
-            name: 'sam.smith@company.com',
-            full_name: 'Sam Smith',
-            user_image: undefined,
-            type: 'User',
-            availability_status: 'Away',
-            custom_status: 'In a meeting',
-            enabled: 1,
-            first_name: 'Sam',
-            creation: '2024-01-01',
-            modified: '2024-01-01',
-            owner: 'admin',
-            modified_by: 'admin',
-            docstatus: 0,
-            is_admin: false,
-            last_visit: '2024-01-15T09:15:00Z'
-        },
-        {
-            name: 'taylor.reed@company.com',
-            full_name: 'Taylor Reed',
-            user_image: undefined,
-            type: 'User',
-            availability_status: 'Do not disturb',
-            custom_status: 'Focus mode',
-            enabled: 1,
-            first_name: 'Taylor',
-            creation: '2024-01-01',
-            modified: '2024-01-01',
-            owner: 'admin',
-            modified_by: 'admin',
-            docstatus: 0,
-            is_admin: false,
-            last_visit: '2024-01-15T08:45:00Z'
-        },
-        {
-            name: 'john.doe@company.com',
-            full_name: 'John Doe',
-            user_image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-            type: 'User',
-            availability_status: 'Available',
-            custom_status: '',
-            enabled: 1,
-            first_name: 'John',
-            creation: '2024-01-01',
-            modified: '2024-01-01',
-            owner: 'admin',
-            modified_by: 'admin',
-            docstatus: 0,
-            is_admin: false,
-            last_visit: '2024-01-15T11:20:00Z'
-        },
-        {
-            name: 'jane.smith@company.com',
-            full_name: 'Jane Smith',
-            user_image: 'https://images.unsplash.com/photo-1494790108755-2616b612b5c3?w=150&h=150&fit=crop&crop=face',
-            type: 'User',
-            availability_status: 'Available',
-            custom_status: 'Working on new features',
-            enabled: 1,
-            first_name: 'Jane',
-            creation: '2024-01-01',
-            modified: '2024-01-01',
-            owner: 'admin',
-            modified_by: 'admin',
-            docstatus: 0,
-            is_admin: true,
-            last_visit: '2024-01-15T10:45:00Z'
-        },
-        {
-            name: 'desirae.lipshutz@company.com',
-            full_name: 'Desirae Lipshutz',
-            user_image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-            type: 'User',
-            availability_status: 'Available',
-            custom_status: '',
-            enabled: 1,
-            first_name: 'Desirae',
-            creation: '2024-01-01',
-            modified: '2024-01-01',
-            owner: 'admin',
-            modified_by: 'admin',
-            docstatus: 0,
-            is_admin: false,
-            last_visit: '2024-01-15T09:30:00Z'
-        },
-        {
-            name: 'brandon.franci@company.com',
-            full_name: 'Brandon Franci',
-            user_image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-            type: 'User',
-            availability_status: 'Available',
-            custom_status: '',
-            enabled: 1,
-            first_name: 'Brandon',
-            creation: '2024-01-01',
-            modified: '2024-01-01',
-            owner: 'admin',
-            modified_by: 'admin',
-            docstatus: 0,
-            is_admin: false,
-            last_visit: '2024-01-15T11:00:00Z'
-        }
-    ]
-
-    const filteredMembers = mockMembers.filter(member =>
-        member.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        member.name.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredMembers = members.filter(member =>
+        member.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        member.name?.toLowerCase().includes(searchQuery.toLowerCase())
     )
 
-    const handleRemoveMember = (memberName: string) => {
-        console.log('Remove member:', memberName);
-    }
-
-    const handleToggleAdmin = (memberName: string, isAdmin: boolean) => {
-        console.log(`${isAdmin ? 'Remove' : 'Make'} admin:`, memberName);
-    }
-
     return (
-        <div className="px-1 space-y-3">
+        <div className="space-y-2 h-full flex flex-col">
             {/* Member count */}
-            <div className="text-xs text-muted-foreground pl-1">
-                {filteredMembers.length} member{filteredMembers.length !== 1 ? 's' : ''}
+            <div className="flex items-center justify-between">
+                <div className="text-xs text-muted-foreground p-2 shrink-0">
+                    {_(`${filteredMembers.length} member${filteredMembers.length !== 1 ? 's' : ''}`)}
+                </div>
+                {showCloseButton && <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 ml-2 shrink-0"
+                    onClick={onClose}
+                    aria-label="Close drawer"
+                >
+                    <X className="h-3 w-3" />
+                </Button>}
             </div>
 
             {/* Search */}
-            <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <div className="relative px-1">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                     placeholder="Search members..."
                     value={searchQuery}
@@ -167,90 +48,111 @@ const ChannelMembersList = () => {
             </div>
 
             {/* Members List */}
-            <div className="space-y-1">
-                {filteredMembers.map((member) => (
-                    <div
-                        key={member.name}
-                        className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors group"
-                    >
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <UserAvatar
-                                user={member as UserFields}
-                                size="md"
-                                className="shrink-0"
-                                showStatusIndicator={false}
-                            />
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm font-medium truncate">
-                                        {member.full_name}
-                                    </span>
-                                    {member.is_admin && (
-                                        <Tooltip>
-                                            <TooltipTrigger asChild>
-                                                <Crown className="h-3 w-3 text-yellow-500 flex-shrink-0" />
-                                            </TooltipTrigger>
-                                            <TooltipContent>
-                                                <p>Channel Admin</p>
-                                            </TooltipContent>
-                                        </Tooltip>
-                                    )}
-                                </div>
-                                <div className="text-xs text-muted-foreground">
-                                    {member.name}
-                                </div>
-                            </div>
-                        </div>
-
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                    <MoreVertical className="h-3 w-3" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                {member.is_admin ? (
-                                    <DropdownMenuItem
-                                        onClick={() => handleToggleAdmin(member.name, true)}
-                                    >
-                                        <Crown className="h-4 w-4 mr-2" />
-                                        Remove admin
-                                    </DropdownMenuItem>
-                                ) : (
-                                    <>
-                                        <DropdownMenuItem
-                                            onClick={() => handleToggleAdmin(member.name, false)}
-                                        >
-                                            <Crown className="h-4 w-4 mr-2" />
-                                            Make admin
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                            className="text-destructive focus:text-destructive"
-                                            onClick={() => handleRemoveMember(member.name)}
-                                        >
-                                            <UserMinus className="h-4 w-4 mr-2" />
-                                            Remove from channel
-                                        </DropdownMenuItem>
-                                    </>
-                                )}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </div>
-                ))}
+            <div className="flex-1 min-h-0 h-[calc(100vh-16rem)] px-1">
+                <MembersList filteredMembers={filteredMembers} allowSettingChange={allowSettingChange} />
             </div>
 
             {filteredMembers.length === 0 && (
-                <div className="text-center py-8">
+                <div className="text-center py-8 shrink-0">
                     <p className="text-sm text-muted-foreground">
                         {searchQuery ? 'No members found matching your search.' : 'No members in this channel.'}
                     </p>
                 </div>
             )}
         </div>
+    )
+}
+
+const MembersList = ({ filteredMembers, allowSettingChange }: { filteredMembers: ChannelMemberData[], allowSettingChange: boolean }) => {
+    const handleRemoveMember = (memberName: string) => {
+        console.log('Remove member:', memberName);
+    }
+
+    const handleToggleAdmin = (memberName: string, isAdmin: boolean) => {
+        console.log(`${isAdmin ? 'Remove' : 'Make'} admin:`, memberName);
+    }
+
+    if (filteredMembers.length === 0) return null;
+
+    return (
+        <Virtuoso
+            style={{ height: '100%', width: '100%' }}
+            data={filteredMembers}
+            overscan={200}
+            itemContent={(index, member) => (
+                <div
+                    key={member.name}
+                    className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors group mb-1"
+                >
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <UserAvatar
+                            user={member}
+                            size="md"
+                            className="shrink-0"
+                            showStatusIndicator={false}
+                        />
+                        <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium truncate">
+                                    {member.full_name}
+                                </span>
+                                {member.is_admin === 1 && (
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Crown className="h-3 w-3 text-yellow-500 shrink-0" />
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>{_('Channel Admin')}</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                )}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                                {member.name}
+                            </div>
+                        </div>
+                    </div>
+
+                    {allowSettingChange && <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                                <MoreVertical className="h-3 w-3" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {member.is_admin ? (
+                                <DropdownMenuItem
+                                    onClick={() => handleToggleAdmin(member.name, true)}
+                                >
+                                    <Crown className="h-4 w-4 mr-2" />
+                                    {_('Remove admin')}
+                                </DropdownMenuItem>
+                            ) : (
+                                <>
+                                    <DropdownMenuItem
+                                        onClick={() => handleToggleAdmin(member.name, false)}
+                                    >
+                                        <Crown className="h-4 w-4 mr-2" />
+                                        {_('Make admin')}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        className="text-destructive focus:text-destructive"
+                                        onClick={() => handleRemoveMember(member.name)}
+                                    >
+                                        <UserMinus className="h-4 w-4 mr-2" />
+                                        {_('Remove from channel')}
+                                    </DropdownMenuItem>
+                                </>
+                            )}
+                        </DropdownMenuContent>
+                    </DropdownMenu>}
+                </div>
+            )}
+        />
     )
 }
 
