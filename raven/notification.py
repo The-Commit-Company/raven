@@ -199,19 +199,27 @@ def make_post_call_for_notification(messages, raven_settings):
 	"""
 	Make a post call to the push notification server to send the notification
 	"""
+	from base64 import b64encode
 
-	client = FrappeClient(
-		url=raven_settings.push_notification_server_url,
-		api_key=raven_settings.push_notification_api_key,
-		api_secret=raven_settings.get_password("push_notification_api_secret"),
-	)
+	import requests
 
-	client.post_api(
-		"raven_cloud.api.notification.send_to_users",
-		params={
+	# instead of using the frappe client, we will use the requests library to make the post call
+	# reason: FrappeClient's post_api method sends data in params which is not ideal for large payloads(Proxy returns JSON Decode errors as the URL is too long)
+	# and post_request method uses "cmd" based key in it's payload which is weird semantically
+
+	api_key = raven_settings.push_notification_api_key
+	api_secret = raven_settings.get_password("push_notification_api_secret")
+
+	token = b64encode(f"{api_key}:{api_secret}".encode()).decode()
+	auth_header = {"Authorization": f"Basic {token}"}
+
+	requests.post(
+		f"{raven_settings.push_notification_server_url}/api/method/raven_cloud.api.notification.send_to_users",
+		json={
 			"messages": json.dumps(messages),
 			"site_name": urlparse(frappe.utils.get_url()).hostname,
 		},
+		headers=auth_header,
 	)
 
 
