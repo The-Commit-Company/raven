@@ -15,6 +15,7 @@ export default function WorkspaceList() {
     return (
         <SettingsContentContainer title="Workspaces" description="Workspaces allow you to organize your channels and teams.">
             <DataTable
+                className="h-[calc(100vh-160px)]"
                 columns={workspaceColumns}
                 data={workspaces ?? []}
                 isLoading={isLoading}

@@ -250,11 +250,7 @@ const SearchResultsChannelListItem = ({ channels, search_text }: { channels: Cha
                                     </div>
                                     {channel.members.length > 0 && (
                                         <GroupedAvatars
-                                            users={channel.members.map(member => ({
-                                                id: member.name,
-                                                name: member.full_name,
-                                                image: member.user_image
-                                            }))}
+                                            users={channel.members}
                                             max={3}
                                             size="xs"
                                         />
@@ -307,11 +303,7 @@ const SearchResultsThreadListItem = ({ threads, search_text }: { threads: Thread
                                     </div>
                                     {thread.members.length > 0 && (
                                         <GroupedAvatars
-                                            users={thread.members.map(member => ({
-                                                id: member.name,
-                                                name: member.full_name,
-                                                image: member.user_image
-                                            }))}
+                                            users={thread.members}
                                             max={3}
                                             size="xs"
                                         />

@@ -14,7 +14,6 @@ import { useNavigate } from "react-router"
 import { ColumnDef, SortingState } from "src/types/DataTable"
 import { ChannelFilters } from "./ChannelFilters"
 import { useWorkspaces } from "@hooks/useWorkspaces"
-import { ScrollArea } from "@components/ui/scroll-area"
 import { Badge } from "@components/ui/badge"
 import { useJoinChannel } from "@hooks/useJoinChannel"
 import { useLeaveChannel } from "@hooks/useLeaveChannel"
@@ -113,22 +112,24 @@ export const ManageChannels = () => {
             actions={<CreateChannelButton selectedWorkspace={filters?.workspace ?? ''} />}
         >
             <ChannelFilters filters={filters} setFilters={setFilters} workspaces={workspaces} />
-            <ScrollArea className="h-[calc(100vh-220px)]">
-                <DataTable
-                    columns={columns}
-                    data={filteredChannels}
-                    getRowId={(row) => row.name}
-                    sorting={sorting}
-                    onSortingChange={setSorting}
-                    tableClassName="table-fixed"
-                />
-            </ScrollArea>
+            {filteredChannels.length > 0 ? <DataTable
+                className="h-[calc(100vh-220px)]"
+                columns={columns}
+                data={filteredChannels}
+                getRowId={(row) => row.name}
+                sorting={sorting}
+                onSortingChange={setSorting}
+                tableClassName="table-fixed"
+            /> : <div className="flex flex-col items-center justify-center h-full gap-2 py-10">
+                <p className="text-muted-foreground">{_("No channels found")}</p>
+                <p className="text-muted-foreground text-sm">{_("You may want to try adjusting your filters.")}</p>
+            </div>}
         </SettingsContentContainer>
     )
 }
 
-const ChannelJoinButton = ({channel}: {channel: ChannelListItem}) => {
-    
+const ChannelJoinButton = ({ channel }: { channel: ChannelListItem }) => {
+
     const { joinChannel, loading: joinChannelLoading } = useJoinChannel(channel.name)
     const { leaveChannel, loading: leaveChannelLoading } = useLeaveChannel(channel.name)
 

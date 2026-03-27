@@ -5,7 +5,7 @@ import { GroupedAvatars } from "@components/ui/grouped-avatars"
 import type { RavenPollOption } from "@raven/types/RavenMessaging/RavenPollOption"
 
 export interface PollOptionWithVoters extends RavenPollOption {
-    voters?: { id: string; name: string; image: string; full_name?: string }[]
+    voters?: { name: string; full_name: string; user_image?: string }[]
 }
 
 export interface PollOptionBarProps {

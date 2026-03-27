@@ -46,7 +46,7 @@ const ChannelHeader = () => {
     }
 
     return (
-        <div 
+        <div
             className="fixed flex items-center justify-between border-b bg-background py-1.5 px-2 z-40 transition-[left,width,top] duration-200 ease-linear"
             style={{
                 top: "var(--app-header-height, 36px)",
@@ -140,7 +140,7 @@ const ChannelHeader = () => {
                         <p>Start call</p>
                     </TooltipContent>
                 </Tooltip>
-                <ChannelMembers onClick={onOpenMembers} />
+                <ChannelMembers onClick={onOpenMembers} channelID={channelID} />
             </div>
         </div>
     )

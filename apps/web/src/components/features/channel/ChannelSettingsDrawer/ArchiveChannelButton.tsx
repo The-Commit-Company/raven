@@ -56,7 +56,7 @@ export function ArchiveChannelButton({
         },
         { revalidate: false },
       );
-      toast.success(_("Channel archived"));
+      toast.success(_(`${channel.is_archived === 0 ? "Archived" : "Unarchived"} channel`));
       navigate(`/${channel.workspace}`);
     });
   };

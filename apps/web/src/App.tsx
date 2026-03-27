@@ -24,6 +24,7 @@ import WorkspaceList from "@pages/settings/Workspaces/WorkspaceList"
 import { SearchLayout } from "@components/layout/SearchLayout"
 import CustomEmojiList from "@pages/settings/CustomEmojiList/CustomEmojiList"
 import { ManageChannels } from "@pages/settings/Channels/ManageChannels"
+import { Toaster } from "@components/ui/sonner"
 
 const isDesktop = window.innerWidth > 768
 
@@ -88,6 +89,7 @@ function App() {
             </Route>
           </Route>
         </Routes>
+        <Toaster richColors />
       </BrowserRouter>
     </FrappeProvider>
   )
