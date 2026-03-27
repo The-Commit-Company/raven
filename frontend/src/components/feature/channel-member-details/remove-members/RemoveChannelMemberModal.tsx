@@ -24,17 +24,9 @@ export const RemoveChannelMemberModal = ({ onClose, member }: RemoveChannelMembe
     const { mutate } = useSWRConfig()
     const channelData = channel?.channelData
 
-    const { data: memberInfo, error: errorFetchingChannelMember } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
-        doctype: "Raven Channel Member",
-        filters: JSON.stringify({ channel_id: channelID, user_id: member?.name }),
-        fieldname: JSON.stringify(["name"])
-    }, undefined, {
-        revalidateOnFocus: false
-    })
-
     const onSubmit = async () => {
-        return deleteDoc('Raven Channel Member', memberInfo?.message.name).then(() => {
-            toast.success(`Removed`)
+        return deleteDoc('Raven Channel Member', member?.channel_member_name).then(() => {
+            toast.success(`Removed ${member?.full_name} from ${channelData?.channel_name}`)
             onClose()
             mutate(["channel_members", channelID])
         })
@@ -54,7 +46,6 @@ export const RemoveChannelMemberModal = ({ onClose, member }: RemoveChannelMembe
                 </AlertDialog.Title>
 
                 <Flex direction={'column'} gap='2'>
-                    <ErrorBanner error={errorFetchingChannelMember} />
                     <ErrorBanner error={error} />
                     <Text size='2'>This person will no longer have access to the channel.</Text>
                 </Flex>
@@ -85,7 +76,6 @@ export const RemoveChannelMemberModal = ({ onClose, member }: RemoveChannelMembe
             </Dialog.Title>
 
             <Flex direction={'column'} gap='2'>
-                <ErrorBanner error={errorFetchingChannelMember} />
                 <ErrorBanner error={error} />
                 <Text size='1'>This person will no longer have access to the channel and can only rejoin by invitation.</Text>
             </Flex>

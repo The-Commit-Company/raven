@@ -55,7 +55,7 @@ export const ViewPollVotes = ({ poll }: ViewPollVotesProps) => {
                 <Button variant='ghost' size={'1'} className='bg-transparent hover:text-accent-10 w-full'>{buttonText}</Button>
             </DrawerTrigger>
             <DrawerContent>
-                <div className='h-[80vh]'>
+                <div className='h-[80vh] overflow-y-auto'>
                     <ViewPollVotesModalContent
                         onClose={onClose}
                         poll={poll} />
@@ -91,6 +91,7 @@ const ViewPollVotesModalContent = ({ onClose, poll }: ViewPollVotesModalContentP
 }
 
 const VotesBlock = ({ votesData, poll }: { votesData: PollVotesResponse, poll: Poll }) => {
+
     return (
         <Flex direction={'column'}>
             <Dialog.Title>
@@ -101,11 +102,10 @@ const VotesBlock = ({ votesData, poll }: { votesData: PollVotesResponse, poll: P
             </Dialog.Title>
 
             <Separator className='w-full' />
-            <ScrollArea className='h-[76vh]' type='scroll'>
                 <Flex direction={'column'} className='py-4 pr-3' gap={'2'}>
                     <Text size={'3'} weight={'bold'}>{poll.poll.question}</Text>
-                    {votesData && Object.keys(votesData).map((opt) => {
-                        const option = votesData[opt]
+                {votesData && Object.keys(votesData).map((opt) => {
+                    const option = votesData[opt]
                         const optionName = poll.poll.options.find(o => o.name === opt)?.option
                         return (
                             <div>
@@ -127,7 +127,6 @@ const VotesBlock = ({ votesData, poll }: { votesData: PollVotesResponse, poll: P
                         )
                     })}
                 </Flex>
-            </ScrollArea>
         </Flex>
     )
 }

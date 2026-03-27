@@ -3,7 +3,7 @@ import { useGetUser } from '@/hooks/useGetUser'
 import { useChannelList } from '@/utils/channel/ChannelListProvider'
 import { UserListContext } from '@/utils/users/UserListProvider'
 import { Command } from 'cmdk'
-import { useContext } from 'react'
+import { useContext, useMemo } from 'react'
 import DMChannelItem from './DMChannelItem'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useSetAtom } from 'jotai'
@@ -14,18 +14,66 @@ import { Loader } from '@/components/common/Loader'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@/components/layout/AlertBanner/ErrorBanner'
 
-const UserList = () => {
+const UserList = ({ text }: { text: string }) => {
 
     const { dm_channels } = useChannelList()
 
     const { users } = useContext(UserListContext)
 
-    const usersWithoutChannels = users.filter((user) => !dm_channels.find((channel) => channel.peer_user_id === user.name))
+    const { usersWithChannels, usersWithoutChannels } = useMemo(() => {
+
+        const usersWithChannels = []
+        const usersWithoutChannels = []
+
+        for (const user of users) {
+            const dmChannel = dm_channels.find((channel) => channel.peer_user_id === user.name)
+            if (dmChannel) {
+                usersWithChannels.push({
+                    user,
+                    channel: dmChannel
+                })
+            } else {
+                usersWithoutChannels.push(user)
+            }
+        }
+
+        const deletedUserChannels = dm_channels.filter((channel) => !users.find((user) => user.name === channel.peer_user_id))
+        for (const channel of deletedUserChannels) {
+            usersWithChannels.push({
+                user: null,
+                channel: channel
+            })
+        }
+
+        return {
+            usersWithChannels,
+            usersWithoutChannels
+        }
+
+    }, [users, dm_channels])
+
+
+    const { filteredUsersWithChannels, filteredUsersWithoutChannels } = useMemo(() => {
+        return {
+            filteredUsersWithChannels: usersWithChannels.filter((userWithChannel) => {
+                if (userWithChannel.user) {
+                    return userWithChannel.user.full_name.toLowerCase().includes(text.toLowerCase())
+                } else {
+                    return userWithChannel.channel.peer_user_id?.toLowerCase()?.includes(text.toLowerCase()) ?? false
+                }
+            }),
+            filteredUsersWithoutChannels: usersWithoutChannels.filter((user) => user.full_name.toLowerCase().includes(text.toLowerCase()))
+        }
+    }, [usersWithChannels, usersWithoutChannels, text])
+
+    if (filteredUsersWithChannels.length === 0 && filteredUsersWithoutChannels.length === 0) {
+        return null
+    }
 
     return (
         <Command.Group heading="Members">
-            {dm_channels.map((channel) => <DMChannelItem key={channel.name} channelID={channel.name} channelName={channel.channel_name} peer_user_id={channel.peer_user_id} />)}
-            {usersWithoutChannels.map((user) => <UserWithoutDMItem key={user.name} userID={user.name} />)}
+            {filteredUsersWithChannels.map((userWithChannel) => <DMChannelItem key={userWithChannel.channel.name} user={userWithChannel.user} channel={userWithChannel.channel} />)}
+            {filteredUsersWithoutChannels.map((user) => <UserWithoutDMItem key={user.name} userID={user.name} />)}
         </Command.Group>
     )
 }

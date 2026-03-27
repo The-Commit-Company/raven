@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import React, { forwardRef, ReactNode } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Flex, FlexProps, IconButton, Text, TextProps, Theme } from '@radix-ui/themes';
 import { IconButtonProps } from '@radix-ui/themes/dist/cjs/components/icon-button';
@@ -67,7 +67,7 @@ type SidebarItemProps = FlexProps & {
     activeStyles?: Record<string, string>
 }
 
-export const SidebarItem = ({ to, children, end, active = false, activeStyles, className, ...props }: SidebarItemProps) => {
+export const SidebarItem = forwardRef<HTMLAnchorElement, SidebarItemProps>(({ to, children, end, active = false, activeStyles, className, ...props }, ref) => {
 
     const activeClass = 'bg-gray-3 dark:bg-gray-3 text-gray-12'
 
@@ -76,6 +76,7 @@ export const SidebarItem = ({ to, children, end, active = false, activeStyles, c
             to={to}
             end={end}
             className='no-underline'
+            ref={ref}
         >
             {({ isActive }) => {
                 return (
@@ -91,7 +92,7 @@ export const SidebarItem = ({ to, children, end, active = false, activeStyles, c
             }}
         </NavLink>
     )
-}
+})
 
 type SidebarIconProps = FlexProps & {
     subtle?: boolean,

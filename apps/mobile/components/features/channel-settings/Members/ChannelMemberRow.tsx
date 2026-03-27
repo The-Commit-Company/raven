@@ -65,16 +65,9 @@ const ChannelMemberRow = ({ member }: { member: Member }) => {
         const { deleteDoc, error, loading: deletingDoc } = useFrappeDeleteDoc()
         const { mutate } = useSWRConfig()
 
-        const { data: memberInfo, error: errorFetchingChannelMember } = useFrappeGetCall<{ message: { name: string } }>('frappe.client.get_value', {
-            doctype: "Raven Channel Member",
-            filters: JSON.stringify({ channel_id: channelId, user_id: member?.name }),
-            fieldname: JSON.stringify(["name"])
-        }, undefined, {
-            revalidateOnFocus: false
-        })
 
         const deleteMember = async () => {
-            return deleteDoc('Raven Channel Member', memberInfo?.message.name).then(() => {
+            return deleteDoc('Raven Channel Member', member?.channel_member_name).then(() => {
                 toast.success(`Removed ${member.full_name} from the channel`)
                 mutate(["channel_members", channelId])
             })
