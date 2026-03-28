@@ -36,7 +36,7 @@ export const CreatePollDialog = ({ channelID }: CreatePollDialogProps) => {
                     </DialogTrigger>
                 </TooltipTrigger>
                 <TooltipContent side="top" sideOffset={5} className="text-[11px]">
-                    <p>Create a poll</p>
+                    <p>Create poll</p>
                 </TooltipContent>
             </Tooltip>
             <DialogContent className="sm:max-w-[800px] h-[90vh] max-h-[90vh] p-0 gap-0 flex flex-col overflow-hidden [&>button]:top-[20px] [&>button]:right-4">
