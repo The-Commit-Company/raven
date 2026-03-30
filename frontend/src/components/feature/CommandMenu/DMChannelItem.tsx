@@ -8,35 +8,36 @@ import { useContext } from "react"
 import { UserContext } from "@/utils/auth/UserProvider"
 import { replaceCurrentUserFromDMChannelName } from "@/utils/operations"
 import { Badge, Flex } from "@radix-ui/themes"
+import { UserFields } from "@/utils/users/UserListProvider"
+import { DMChannelListItem } from "@/utils/channel/ChannelListProvider"
 
-const DMChannelItem = ({ channelID, peer_user_id, channelName }: { channelID: string, channelName: string, peer_user_id: string }) => {
+const DMChannelItem = ({ channel, user }: { user: UserFields | null, channel: DMChannelListItem }) => {
 
     const { currentUser } = useContext(UserContext)
     const { workspaceID } = useParams()
-    const user = useGetUser(peer_user_id)
     const navigate = useNavigate()
     const setOpen = useSetAtom(commandMenuOpenAtom)
 
     const onSelect = () => {
         if (workspaceID) {
-            navigate(`/${workspaceID}/${channelID}`)
+            navigate(`/${workspaceID}/${channel.name}`)
         } else {
-            navigate(`/channel/${channelID}`)
+            navigate(`/channel/${channel.name}`)
         }
         setOpen(false)
     }
 
-    const userName = user?.full_name ?? peer_user_id ?? replaceCurrentUserFromDMChannelName(channelName, currentUser)
+    // const userName = user?.full_name ?? peer_user_id ?? replaceCurrentUserFromDMChannelName(channelName, currentUser)
 
     return <Command.Item
-        keywords={[userName]}
-        value={peer_user_id ?? channelID}
+        keywords={[user?.full_name || channel.peer_user_id]}
+        value={channel.name}
         onSelect={onSelect}>
         <Flex gap='2' align='center' justify={'between'} width='100%'>
             <Flex gap='2' align='center'>
-                <UserAvatar src={user?.user_image} alt={userName}
+                <UserAvatar src={user?.user_image} alt={user?.full_name || channel.peer_user_id}
                     isBot={user?.type === 'Bot'} />
-                {userName}
+                {user?.full_name || channel.peer_user_id}
             </Flex>
             {user && !user?.enabled && <Badge color='gray' variant="soft">Disabled</Badge>}
             {!user && <Badge color='gray' variant="soft">Deleted</Badge>}

@@ -269,6 +269,14 @@ class RavenChannelMember(Document):
 def on_doctype_update():
 	"""
 	Add indexes to Raven Channel Member table
+	Add unique constraint to Raven Channel Member table
+	Ensures that a user can only be a member of a channel once
+	Note: Adding a unique constraint automatically adds an index on the fields
 	"""
 	# Index the selector (channel or message type) first for faster queries (less rows to sort in the next step)
-	frappe.db.add_index("Raven Channel Member", ["channel_id", "user_id"])
+
+	frappe.db.add_unique(
+		"Raven Channel Member",
+		fields=["channel_id", "user_id"],
+		constraint_name="unique_channel_member",
+	)

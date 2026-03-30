@@ -13,7 +13,7 @@ export const getFileExtension = (filename: string) => {
     return extension;
 }
 
-export const VIDEO_FORMATS = ['mp4', 'webm']
+export const VIDEO_FORMATS = ['mp4', 'webm', 'mov']
 /**
  * Function to check if a file is a video
  * @param extension extension of the file
@@ -22,6 +22,28 @@ export const VIDEO_FORMATS = ['mp4', 'webm']
 export const isVideoFile = (ext: string) => {
 
     return VIDEO_FORMATS.includes(ext)
+}
+
+export const AUDIO_FORMATS = ['mp3', 'ogg', 'wav']
+
+/**
+ * Function to check if a file is an audio file
+ * @param extension extension of the file
+ * @returns boolean
+ */
+export const isAudioFile = (ext: string) => {
+    return AUDIO_FORMATS.includes(ext)
+}
+
+export const getAudioSource = (ext: string) => {
+    if (ext === 'mp3') {
+        return 'audio/mpeg'
+    } else if (ext === 'ogg') {
+        return 'audio/ogg'
+    } else if (ext === 'wav') {
+        return 'audio/wav'
+    }
+    return 'audio/mpeg'
 }
 
 /**

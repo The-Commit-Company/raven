@@ -222,44 +222,6 @@
    "mandatory_depends_on": "eval: doc.push_notification_service == \"Raven\";"
   },
   {
-   "fieldname": "video_calling_tab",
-   "fieldtype": "Tab Break",
-   "label": "Video Calling"
-  },
-  {
-   "fieldname": "livekit_settings_section",
-   "fieldtype": "Section Break",
-   "label": "LiveKit Settings"
-  },
-  {
-   "default": "0",
-   "fieldname": "enable_video_calling_via_livekit",
-   "fieldtype": "Check",
-   "label": "Enable Video Calling via LiveKit"
-  },
-  {
-   "depends_on": "eval: doc.enable_video_calling_via_livekit;",
-   "fieldname": "livekit_url",
-   "fieldtype": "Data",
-   "label": "LiveKit URL",
-   "length": 300,
-   "mandatory_depends_on": "eval: doc.enable_video_calling_via_livekit;"
-  },
-  {
-   "depends_on": "eval: doc.enable_video_calling_via_livekit;",
-   "fieldname": "livekit_api_key",
-   "fieldtype": "Data",
-   "label": "LiveKit API Key",
-   "mandatory_depends_on": "eval: doc.enable_video_calling_via_livekit;"
-  },
-  {
-   "depends_on": "eval: doc.enable_video_calling_via_livekit;",
-   "fieldname": "livekit_api_secret",
-   "fieldtype": "Password",
-   "label": "LiveKit API Secret",
-   "mandatory_depends_on": "eval: doc.enable_video_calling_via_livekit;"
-  },
-  {
    "depends_on": "eval: doc.push_notification_service == \"Raven\";",
    "fieldname": "push_notification_api_key",
    "fieldtype": "Data",
@@ -317,13 +279,51 @@
    "fieldtype": "Password",
    "label": "Google Service Account JSON Key",
    "length": 800
+  },
+  {
+   "fieldname": "video_calling_tab",
+   "fieldtype": "Tab Break",
+   "label": "Video Calling"
+  },
+  {
+   "fieldname": "livekit_settings_section",
+   "fieldtype": "Section Break",
+   "label": "LiveKit Settings"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_video_calling_via_livekit",
+   "fieldtype": "Check",
+   "label": "Enable Video Calling via LiveKit"
+  },
+  {
+   "depends_on": "eval: doc.enable_video_calling_via_livekit;",
+   "fieldname": "livekit_url",
+   "fieldtype": "Data",
+   "label": "LiveKit URL",
+   "length": 300,
+   "mandatory_depends_on": "eval: doc.enable_video_calling_via_livekit;"
+  },
+  {
+   "depends_on": "eval: doc.enable_video_calling_via_livekit;",
+   "fieldname": "livekit_api_key",
+   "fieldtype": "Data",
+   "label": "LiveKit API Key",
+   "mandatory_depends_on": "eval: doc.enable_video_calling_via_livekit;"
+  },
+  {
+   "depends_on": "eval: doc.enable_video_calling_via_livekit;",
+   "fieldname": "livekit_api_secret",
+   "fieldtype": "Password",
+   "label": "LiveKit API Secret",
+   "mandatory_depends_on": "eval: doc.enable_video_calling_via_livekit;"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-16 23:33:58.243626",
+ "modified": "2026-01-31 18:49:12.757755",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven Settings",
@@ -341,7 +341,7 @@
   },
   {
    "read": 1,
-   "role": "All"
+   "role": "Desk User"
   },
   {
    "delete": 1,

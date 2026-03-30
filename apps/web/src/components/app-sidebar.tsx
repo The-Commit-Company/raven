@@ -1,0 +1,83 @@
+import { Label } from "@components/ui/label"
+import {
+    SidebarContent,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarHeader,
+} from "@components/ui/sidebar"
+import { Switch } from "@components/ui/switch"
+import { useNavigate, useLocation } from "react-router-dom"
+import { ChannelSidebar } from "./channel-sidebar/ChannelSidebar"
+import { DMSidebar } from "./dm-sidebar/DMSidebar"
+import { ChannelListItem } from "@raven/types/common/ChannelListItem"
+import { useActiveWorkspace } from "../contexts/ActiveWorkspaceContext"
+import { SidebarShell } from "@components/layout/SidebarShell"
+import _ from "@lib/translate"
+import { useState } from "react"
+
+export function AppSidebar(props: React.ComponentProps<typeof SidebarShell>) {
+    const [activeChannel, setActiveChannel] = useState<{ id: string; name: string; type: string; unread: number } | null>(null)
+    const navigate = useNavigate()
+    const location = useLocation()
+    const { activeWorkspaceName } = useActiveWorkspace()
+
+    // Get channel data based on active workspace
+    // TODO: Replace with real API call to fetch channels for workspace
+
+    const handleChannelClick = (channel: ChannelListItem) => {
+        setActiveChannel({
+            id: channel.name,
+            name: channel.channel_name,
+            type: channel.type || "Public",
+            unread: channel.last_message_details?.unread_count || 0
+        })
+        if (activeWorkspaceName) {
+            const workspaceSlug = encodeURIComponent(activeWorkspaceName)
+            const channelId = channel.name || channel.channel_name || "general"
+            // Save to localStorage
+            localStorage.setItem('ravenLastChannel', JSON.stringify(channelId))
+            navigate(`/${workspaceSlug}/channel/${encodeURIComponent(channelId)}`)
+        }
+    }
+
+    return (
+        <SidebarShell collapsible="icon" className="overflow-hidden h-full" {...props}>
+            <div className="flex-1 flex flex-col overflow-hidden">
+                {location.pathname === "/threads" || location.pathname === "/notifications" ? null : location.pathname.startsWith("/dm-channel") || activeWorkspaceName === "Direct Messages" ? (
+                    <DMSidebar
+                        workspaceName="Direct Messages"
+                        activeDMChannelId={null}
+                        onDMClick={(dmChannelId) =>
+                            navigate(`/dm-channel/${encodeURIComponent(dmChannelId)}`)
+                        }
+                    />
+                ) : (
+                    <>
+                        <SidebarHeader className="h-[36px] gap-2 px-3 border-b flex items-center">
+                            <div className="flex items-center justify-between w-full">
+                                <div className="text-sm font-medium text-foreground truncate">
+                                    {activeWorkspaceName}
+                                </div>
+                                <Label className="flex items-center gap-2 text-[12px]">
+                                    <span>{_("Unreads")}</span>
+                                    <Switch className="shadow-none" />
+                                </Label>
+                            </div>
+                        </SidebarHeader>
+
+                        <SidebarContent className="overflow-hidden">
+                            <SidebarGroup className="p-0 flex-1 min-h-0">
+                                <SidebarGroupContent className="flex-1 min-h-0 flex flex-col">
+                                    <ChannelSidebar
+                                        activeChannelId={activeChannel?.name}
+                                        onChannelClick={handleChannelClick}
+                                    />
+                                </SidebarGroupContent>
+                            </SidebarGroup>
+                        </SidebarContent>
+                    </>
+                )}
+            </div>
+        </SidebarShell>
+    )
+}

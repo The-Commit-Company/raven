@@ -1,7 +1,7 @@
 import { DIALOG_CONTENT_CLASS } from '@/utils/layout/dialog'
 import { Dialog, VisuallyHidden } from '@radix-ui/themes'
 import { Command, defaultFilter } from 'cmdk'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import './commandMenu.styles.css'
 import ChannelList from './ChannelList'
 import UserList from './UserList'
@@ -11,6 +11,7 @@ import { useIsDesktop } from '@/hooks/useMediaQuery'
 import { Drawer, DrawerContent } from '@/components/layout/Drawer'
 import SettingsList from './SettingsList'
 import ToggleThemeCommand from './ToggleThemeCommand'
+import { useDebounce } from '@/hooks/useDebounce'
 
 export const commandMenuOpenAtom = atom(false)
 
@@ -61,9 +62,15 @@ const CommandMenu = () => {
 export const CommandList = () => {
     const isDesktop = useIsDesktop()
 
+    const [text, setText] = useState('')
+
+    const debouncedText = useDebounce(text, 200)
+
     /** Use a custom filter instead of the default one - ignore very low scores in results */
     const customFilter = (value: string, search: string, keywords?: string[]) => {
         const score = defaultFilter ? defaultFilter(value, search, keywords) : 1
+
+        console.log(value)
 
         if (score <= 0.1) {
             return 0
@@ -71,15 +78,17 @@ export const CommandList = () => {
         return score
     }
 
-    return <Command label="Global Command Menu" className='command-menu' filter={customFilter}>
+    return <Command label="Global Command Menu" className='command-menu' filter={customFilter} shouldFilter={false}>
         <Command.Input
             autoFocus={isDesktop}
+            value={text}
+            onValueChange={setText}
             placeholder='Search or type a command' />
         <Command.List>
             <Command.Empty>No results found.</Command.Empty>
-            <ChannelList />
-            <UserList />
-            <SettingsList />
+            <ChannelList text={debouncedText} />
+            <UserList text={debouncedText} />
+            <SettingsList text={debouncedText} />
             <Command.Group heading="Commands">
                 <ToggleThemeCommand />
             </Command.Group>

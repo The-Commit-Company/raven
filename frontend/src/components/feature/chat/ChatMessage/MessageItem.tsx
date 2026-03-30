@@ -416,12 +416,12 @@ const StartDMButton = ({ userID }: { userID: string }) => {
 export const MessageContent = ({ message, user, forceHideLinkPreview = false, ...props }: MessageContentProps) => {
 
     return <Box className='flex flex-col gap-1' {...props}>
+        {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} />}
+        {message.message_type === 'File' && <FileMessageBlock message={message} user={user} />}
         {message.text ? <TiptapRenderer message={{
             ...message,
             message_type: 'Text'
         }} user={user} showLinkPreview={forceHideLinkPreview ? false : message.hide_link_preview ? false : true} /> : null}
-        {message.message_type === 'Image' && <ImageMessageBlock message={message} user={user} />}
-        {message.message_type === 'File' && <FileMessageBlock message={message} user={user} />}
         {message.message_type === 'Poll' && <PollMessageBlock message={message} user={user} />}
     </Box>
 }

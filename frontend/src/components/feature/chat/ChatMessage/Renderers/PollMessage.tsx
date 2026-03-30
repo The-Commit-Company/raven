@@ -1,4 +1,4 @@
-import { Box, Checkbox, Flex, Text, RadioGroup, Button, Badge, BoxProps } from "@radix-ui/themes"
+import { Box, Checkbox, Flex, Text, RadioGroup, Button, Badge, BoxProps, Tooltip } from "@radix-ui/themes"
 import { useEffect, useMemo, useState } from "react"
 import { UserFields } from "../../../../../utils/users/UserListProvider"
 import { PollMessage } from "../../../../../../../types/Messaging/Message"
@@ -59,10 +59,9 @@ const PollMessageBox = ({ data, messageID }: { data: Poll, messageID: string }) 
                         <Text size='2' weight={'medium'}>{data.poll.question}</Text>
                         {data.poll.is_anonymous ? <Badge color='blue' className={'w-fit'}>Anonymous</Badge> : null}
                     </Flex>
-                    {data.poll.is_disabled ? <Badge color="gray" className={'w-fit mb-2'}>
-                        <IoLockClosed />
+                    {data.poll.is_disabled ? <Text color="gray" size='1'>
                         Poll is now closed. No more votes will be accepted.
-                    </Badge> : null}
+                    </Text> : null}
                     {data.poll.end_date && !data.poll.is_disabled && (
                         <Text size='1' color='gray'>
                             This poll will end on {new Date(data.poll.end_date).toLocaleString()}.
@@ -124,20 +123,22 @@ const PollOption = ({ data, option }: { data: Poll, option: RavenPollOption }) =
     const width = `${percentage}%`
 
     return (
-        <Flex key={option.name} justify='between' align='center' className={'relative'}>
-            <Box position='absolute' top='0' left='0'
-                data-is-current-user-vote={isCurrentUserVote}
-                className={`bg-gray-5
+        <Tooltip content={`${option.votes} vote${option.votes && option.votes === 1 ? '' : 's'}`}>
+            <Flex key={option.name} justify='between' align='center' className={'relative'}>
+                <Box position='absolute' top='0' left='0'
+                    data-is-current-user-vote={isCurrentUserVote}
+                    className={`bg-gray-5
                             dark:bg-gray-6
                             h-full
                             rounded-sm
                             data-[is-current-user-vote=true]:bg-accent-a5
                             dark:data-[is-current-user-vote=true]:bg-accent-a6`}
-                style={{ width: triggerAnimation ? width : 0, transition: 'width 0.5s ease-in-out' }}>
-            </Box>
-            <Text as='span' size='2' className="px-2 py-1 z-10 overflow-hidden text-ellipsis" weight={isCurrentUserVote ? 'bold' : 'regular'}>{option.option}</Text>
-            <Text as='span' size='2' className="px-2 py-1 z-10 w-[6ch] text-right" weight={isCurrentUserVote ? 'bold' : 'regular'}>{percentage.toFixed(1)}%</Text>
-        </Flex>
+                    style={{ width: triggerAnimation ? width : 0, transition: 'width 0.5s ease-in-out' }}>
+                </Box>
+                <Text as='span' size='2' className="px-2 py-1 z-10 overflow-hidden text-ellipsis" weight={isCurrentUserVote ? 'bold' : 'regular'}>{option.option}</Text>
+                <Text as='span' size='2' className="px-2 py-1 z-10 w-[6ch] text-right" weight={isCurrentUserVote ? 'bold' : 'regular'}>{percentage.toFixed(1)}%</Text>
+            </Flex>
+        </Tooltip>
     )
 }
 

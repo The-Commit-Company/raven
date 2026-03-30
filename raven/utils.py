@@ -126,6 +126,7 @@ def get_channel_members(channel_id: str):
 			raven_user.type,
 		)
 		.where(raven_channel_member.channel_id == channel_id)
+		.where(raven_user.enabled == 1)
 	)
 
 	members = query.run(as_dict=True)
@@ -180,7 +181,17 @@ def get_raven_user(user_id: str) -> str:
 	Get the Raven User ID of a user
 	"""
 	# TODO: Run this via cache
-	return frappe.db.get_value("Raven User", {"user": user_id}, "name")
+	raven_user = frappe.qb.DocType("Raven User")
+	query = (
+		frappe.qb.from_(raven_user)
+		.select(raven_user.name)
+		.where((raven_user.user == user_id) | (raven_user.bot == user_id))
+		.limit(1)
+	)
+
+	result = query.run(pluck=True)
+
+	return result[0] if result else None
 
 
 def get_thread_reply_count(thread_id: str) -> int:

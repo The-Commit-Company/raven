@@ -39,6 +39,7 @@ class RavenSettings(Document):
 		local_llm_provider: DF.Literal["LM Studio", "Ollama", "LocalAI", "OpenAI Compatible"]
 		oauth_client: DF.Link | None
 		openai_api_key: DF.Password | None
+		openai_compatible_api_key: DF.Password | None
 		openai_organisation_id: DF.Data | None
 		openai_project_id: DF.Data | None
 		push_notification_api_key: DF.Data | None

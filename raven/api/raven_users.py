@@ -103,7 +103,7 @@ def is_user_on_leave(user: str):
 
 
 @frappe.whitelist(methods=["POST"])
-def add_users_to_raven(users):
+def add_users_to_raven(users: list[str] | str):
 
 	if isinstance(users, str):
 		users = json.loads(users)

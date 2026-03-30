@@ -32,3 +32,16 @@ force_grid_wrap = 0
 use_parentheses = true
 ensure_newline_before_comments = true
 indent = "\t"
+
+[tool.bench.frappe-dependencies]
+frappe = ">=15.0.0,<=17.0.0-dev"
+
+[tool.bench.assets]
+build_dir = "./frontend"
+out_dir = "../raven/public/raven"
+index_html_path = "../raven/www/raven.html"
+
+[project.urls]
+Homepage = "https://www.ravenchat.ai/"
+Repository = "https://github.com/The-Commit-Company/raven.git"
+"Bug Reports" = "https://github.com/The-Commit-Company/raven/issues"

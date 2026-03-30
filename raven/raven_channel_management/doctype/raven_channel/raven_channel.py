@@ -21,6 +21,8 @@ class RavenChannel(Document):
 
 		channel_description: DF.SmallText | None
 		channel_name: DF.Data
+		dm_user_1: DF.Link | None
+		dm_user_2: DF.Link | None
 		is_ai_thread: DF.Check
 		is_archived: DF.Check
 		is_direct_message: DF.Check
@@ -203,6 +205,16 @@ class RavenChannel(Document):
 
 		if self.is_direct_message == 1:
 			self.type = "Private"
+			users = self.channel_name.split(" _ ")
+			if len(users) == 2:
+				# Canonical order - user1 > user_2(alphabetically)
+				if users[0] > users[1]:
+					self.dm_user_1, self.dm_user_2 = users[0], users[1]
+				else:
+					self.dm_user_1, self.dm_user_2 = users[1], users[0]
+			else:
+				self.dm_user_1 = self.dm_user_2 = users[0]
+
 		if self.is_direct_message == 0:
 			self.channel_name = self.channel_name.strip().lower().replace(" ", "-")
 
@@ -242,3 +254,15 @@ class RavenChannel(Document):
 			self.name = self.workspace + "-" + self.channel_name.strip().lower().replace(" ", "-")
 		elif self.is_thread:
 			self.name = self.channel_name
+
+
+def on_doctype_update():
+	"""
+	Add unique constraint on dm_user_1 and dm_user_2 to prevent duplicate DM channels.
+	NULL values are ignored by MySQL/MariaDB unique constraints, so this only affects DM channels.
+	"""
+	frappe.db.add_unique(
+		"Raven Channel",
+		fields=["dm_user_1", "dm_user_2"],
+		constraint_name="unique_dm_channel",
+	)

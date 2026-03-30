@@ -49,7 +49,7 @@ const Preferences = () => {
                     <Stack className="max-w-[480px]">
                         <Label htmlFor='QuickEmojis'>Set Favourite Emojis for Reactions</Label>
                         <HStack gap='2'>
-                            {quickEmojis.map((emoji, index) => (
+                            {(quickEmojis ?? ["👍", "✅", "👀", "🎉"]).map((emoji, index) => (
                                 <Popover.Root key={index}>
                                     <Popover.Trigger>
                                         <IconButton

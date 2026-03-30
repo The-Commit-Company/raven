@@ -172,7 +172,10 @@ scheduler_events = {
 	# "monthly": [
 	# 	"raven.scheduler.monthly"
 	# ],
-	"daily_maintenance": ["raven.scheduler.daily.sync_invalid_tokens"],
+	"daily_maintenance": [
+		"raven.scheduler.daily.sync_invalid_tokens",
+		"raven.raven_cloud_notifications.sync_users_tokens_to_raven_cloud",
+	],
 	"cron": {
 		# run every 5 minutes
 		"*/5 * * * *": ["raven.scheduler.close_expired_polls.close_expired_polls"]
@@ -244,6 +247,7 @@ additional_timeline_content = {"*": ["raven.api.raven_message.get_timeline_messa
 website_route_rules = [
 	{"from_route": "/raven/<path:app_path>", "to_route": "raven"},
 	{"from_route": "/raven_mobile/<path:app_path>", "to_route": "raven"},
+	{"from_route": "/raven_v3/<path:app_path>", "to_route": "raven_v3"},
 ]
 
 permission_query_conditions = {
@@ -253,6 +257,7 @@ permission_query_conditions = {
 	"Raven Poll Vote": "raven.permissions.raven_poll_vote_query",
 	"Raven Workspace": "raven.permissions.raven_workspace_query",
 	"Raven Workspace Member": "raven.permissions.raven_workspace_member_query",
+	"Raven Channel Member": "raven.permissions.raven_channel_member_query",
 }
 
 has_permission = {
@@ -270,7 +275,13 @@ on_session_creation = "raven.api.user_availability.set_user_active"
 on_logout = "raven.api.user_availability.set_user_inactive"
 
 export_python_type_annotations = True
+require_type_annotated_api_methods = True
 
 raven_document_link_override = "raven.api.document_link.get_new_app_document_links"
+
+# Translation
+# ------------
+# List of apps whose translatable strings should be excluded from this app's translations.
+ignore_translatable_strings_from = ["frappe"]
 
 sqlite_search = ["raven.api.search.RavenSearch"]

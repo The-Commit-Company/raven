@@ -10,8 +10,9 @@ import useFetchChannelMembers, { Member } from "@/hooks/fetchers/useFetchChannel
 import { useContext, useMemo } from "react"
 import useIsPushNotificationEnabled from "@/hooks/fetchers/useIsPushNotificationEnabled"
 import { UserContext } from "@/utils/auth/UserProvider"
+import { LuExternalLink } from "react-icons/lu"
 
-export const ThreadHeader = () => {
+export const ThreadHeader = ({ channelID }: { channelID?: string }) => {
 
     const navigate = useNavigate()
 
@@ -28,6 +29,10 @@ export const ThreadHeader = () => {
         return null
     }, [user, channelMembers])
 
+    const onViewMessageInChannel = () => {
+        navigate(`../../${channelID}?message_id=${threadID}`)
+    }
+
     return (
         <header className='dark:bg-gray-2 bg-white fixed top-0 px-3 sm:w-[calc((100vw-var(--sidebar-width)-var(--space-8))/2)] w-screen' style={{ zIndex: 999 }}>
             <Flex direction={'column'} gap='2' className='pt-3'>
@@ -42,6 +47,12 @@ export const ThreadHeader = () => {
                                     </IconButton>
                                 </DropdownMenu.Trigger>
                                 <DropdownMenu.Content className='min-w-48'>
+                                    {channelID && <DropdownMenu.Item onClick={onViewMessageInChannel}>
+                                        <Flex gap='2' align='center'>
+                                            <LuExternalLink size={'16'} />
+                                            View Message
+                                        </Flex>
+                                    </DropdownMenu.Item>}
                                     <ToggleNotificationButton channelMember={channelMember} />
                                     <LeaveThreadButton />
                                     {channelMembers[currentUser].is_admin === 1 && <DeleteThreadButton />}
