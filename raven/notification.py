@@ -18,6 +18,15 @@ def send_notification_for_message(message):
 	This is called in the "after_response" hook for user initiated requests.
 	"""
 
+	# if in developer mode or frappe.utils.get_url() is a localhost URL, then we should not send the push notification
+	# reason: avoid sending notifications from restored backups from local environments
+	if (
+		frappe.conf.developer_mode
+		or frappe.utils.get_url().startswith("http://localhost")
+		or frappe.utils.get_url().startswith("http://127.0.0.1")
+	):
+		return
+
 	raven_settings = frappe.get_cached_doc("Raven Settings")
 
 	if raven_settings.push_notification_service == "Raven":
