@@ -7,6 +7,8 @@ import frappe
 from frappe import _, is_whitelisted
 from frappe.model.document import Document
 
+from raven.ai.function_types import DOCTYPE_SCOPED_FUNCTION_TYPES
+
 
 class RavenAIFunction(Document):
 	# begin: auto-generated types
@@ -21,6 +23,7 @@ class RavenAIFunction(Document):
 			RavenAIFunctionParams,
 		)
 
+		allow_any_doctype: DF.Check
 		description: DF.SmallText
 		function_definition: DF.JSON | None
 		function_name: DF.Data
@@ -86,8 +89,11 @@ class RavenAIFunction(Document):
 		self.validate_json()
 
 	def validate_reference_doctype(self):
+		if self.allow_any_doctype and self.type in DOCTYPE_SCOPED_FUNCTION_TYPES:
+			return
+
 		if not self.reference_doctype:
-			if not self.type in [
+			if self.type not in [
 				"Custom Function",
 				"Send Message",
 				"Get Report Result",
@@ -122,7 +128,6 @@ class RavenAIFunction(Document):
 				if not docfield:
 					frappe.throw(_("Field {0} not found in {1}").format(param.fieldname, child_table.options))
 			else:
-
 				field = doctype.get_field(param.fieldname)
 
 				if not field:
@@ -150,93 +155,186 @@ class RavenAIFunction(Document):
 		Set the function params based on the type of function and other inputs
 		"""
 		params = {}
+		reference_doctype_label = self.reference_doctype or "document"
+		reference_doctype_label_plural = (
+			f"{self.reference_doctype}s" if self.reference_doctype else "documents"
+		)
 		if self.type == "Get Document":
-			params = {
-				"type": "object",
-				"properties": {
-					"document_id": {
-						"type": "string",
-						"description": f"The ID of the {self.reference_doctype} to get",
-					}
-				},
-				"required": ["document_id"],
-				"additionalProperties": False,
-			}
+			if self.allow_any_doctype:
+				params = {
+					"type": "object",
+					"properties": {
+						"doctype": {
+							"type": "string",
+							"description": "The DocType of the document to get",
+						},
+						"document_id": {
+							"type": "string",
+							"description": "The ID of the document to get",
+						},
+					},
+					"required": ["doctype", "document_id"],
+					"additionalProperties": False,
+				}
+			else:
+				params = {
+					"type": "object",
+					"properties": {
+						"document_id": {
+							"type": "string",
+							"description": f"The ID of the {reference_doctype_label} to get",
+						}
+					},
+					"required": ["document_id"],
+					"additionalProperties": False,
+				}
 
 		elif self.type == "Get Multiple Documents":
+			properties = {
+				"document_ids": {
+					"type": "array",
+					"items": {"type": "string"},
+					"description": f"The IDs of the {reference_doctype_label_plural} to get",
+				}
+			}
+			required = ["document_ids"]
+			if self.allow_any_doctype:
+				properties = {
+					"doctype": {
+						"type": "string",
+						"description": "The DocType of the documents to get",
+					},
+					**properties,
+				}
+				required = ["doctype", *required]
+
 			params = {
 				"type": "object",
-				"properties": {
-					"document_ids": {
-						"type": "array",
-						"items": {"type": "string"},
-						"description": f"The IDs of the {self.reference_doctype}s to get",
-					}
-				},
-				"required": ["document_ids"],
+				"properties": properties,
+				"required": required,
 				"additionalProperties": False,
 			}
 
 		elif self.type == "Delete Document":
+			properties = {
+				"document_id": {
+					"type": "string",
+					"description": f"The ID of the {reference_doctype_label} to delete",
+				}
+			}
+			required = ["document_id"]
+			if self.allow_any_doctype:
+				properties = {
+					"doctype": {
+						"type": "string",
+						"description": "The DocType of the document to delete",
+					},
+					**properties,
+				}
+				required = ["doctype", *required]
+
 			params = {
 				"type": "object",
-				"properties": {
-					"document_id": {
-						"type": "string",
-						"description": f"The ID of the {self.reference_doctype} to delete",
-					}
-				},
-				"required": ["document_id"],
+				"properties": properties,
+				"required": required,
 				"additionalProperties": False,
 			}
 
 		elif self.type == "Delete Multiple Documents":
+			properties = {
+				"document_ids": {
+					"type": "array",
+					"items": {"type": "string"},
+					"description": f"The IDs of the {reference_doctype_label_plural} to delete",
+				}
+			}
+			required = ["document_ids"]
+			if self.allow_any_doctype:
+				properties = {
+					"doctype": {
+						"type": "string",
+						"description": "The DocType of the documents to delete",
+					},
+					**properties,
+				}
+				required = ["doctype", *required]
+
 			params = {
 				"type": "object",
-				"properties": {
-					"document_ids": {
-						"type": "array",
-						"items": {"type": "string"},
-						"description": f"The IDs of the {self.reference_doctype}s to delete",
-					}
-				},
-				"required": ["document_ids"],
+				"properties": properties,
+				"required": required,
 				"additionalProperties": False,
 			}
 		elif self.type == "Submit Document":
+			properties = {
+				"document_id": {
+					"type": "string",
+					"description": f"The ID of the {reference_doctype_label} to submit",
+				}
+			}
+			required = ["document_id"]
+			if self.allow_any_doctype:
+				properties = {
+					"doctype": {
+						"type": "string",
+						"description": "The DocType of the document to submit",
+					},
+					**properties,
+				}
+				required = ["doctype", *required]
+
 			params = {
 				"type": "object",
-				"properties": {
-					"document_id": {
-						"type": "string",
-						"description": f"The ID of the {self.reference_doctype} to submit",
-					}
-				},
-				"required": ["document_id"],
+				"properties": properties,
+				"required": required,
 				"additionalProperties": False,
 			}
 		elif self.type == "Cancel Document":
+			properties = {
+				"document_id": {
+					"type": "string",
+					"description": f"The ID of the {reference_doctype_label} to cancel",
+				}
+			}
+			required = ["document_id"]
+			if self.allow_any_doctype:
+				properties = {
+					"doctype": {
+						"type": "string",
+						"description": "The DocType of the document to cancel",
+					},
+					**properties,
+				}
+				required = ["doctype", *required]
+
 			params = {
 				"type": "object",
-				"properties": {
-					"document_id": {
-						"type": "string",
-						"description": f"The ID of the {self.reference_doctype} to cancel",
-					}
-				},
-				"required": ["document_id"],
+				"properties": properties,
+				"required": required,
 				"additionalProperties": False,
 			}
 		elif self.type == "Get Amended Document":
+			properties = {
+				"document_id": {
+					"type": "string",
+					"description": f"The ID of the {reference_doctype_label} to get the amended document for",
+				}
+			}
+			required = ["document_id"]
+			if self.allow_any_doctype:
+				properties = {
+					"doctype": {
+						"type": "string",
+						"description": "The DocType of the document to get the amended version for",
+					},
+					**properties,
+				}
+				required = ["doctype", *required]
+
 			params = {
 				"type": "object",
-				"properties": {
-					"document_id": {
-						"type": "string",
-						"description": f"The ID of the {self.reference_doctype} to get the amended document for",
-					}
-				},
-				"required": ["document_id"],
+				"properties": properties,
+				"required": required,
 				"additionalProperties": False,
 			}
 		elif self.type == "Attach File to Document":
@@ -262,69 +360,103 @@ class RavenAIFunction(Document):
 		elif self.type == "Custom Function":
 			params = self.get_params_as_dict()
 		elif self.type == "Get List":
+			properties = {
+				"filters": {
+					"type": "object",
+					"description": "Filters to apply when retrieving the list",
+				},
+				"fields": {
+					"type": "array",
+					"items": {"type": "string"},
+					"description": "Fields to retrieve for each document",
+				},
+				"limit": {
+					"type": "integer",
+					"description": "Maximum number of documents to retrieve",
+					"default": 20,
+				},
+			}
+			required = ["filters", "fields"]
+			if self.allow_any_doctype:
+				properties = {
+					"doctype": {
+						"type": "string",
+						"description": "The DocType to retrieve documents from",
+					},
+					**properties,
+				}
+				required = ["doctype", *required]
+
 			params = {
 				"type": "object",
-				"properties": {
-					"filters": {
-						"type": "object",
-						"description": "Filters to apply when retrieving the list",
-					},
-					"fields": {
-						"type": "array",
-						"items": {"type": "string"},
-						"description": "Fields to retrieve for each document",
-					},
-					"limit": {
-						"type": "integer",
-						"description": "Maximum number of documents to retrieve",
-						"default": 20,
-					},
-				},
-				"required": ["filters", "fields"],
+				"properties": properties,
+				"required": required,
 				"additionalProperties": False,
 			}
 		elif self.type == "Get Value":
-			params = {
-				"type": "object",
-				"properties": {
+			properties = {
+				"filters": {
+					"type": "object",
+					"description": "Filters to apply when retrieving the value",
+				},
+				"fieldname": {
+					"anyOf": [
+						{"type": "string"},
+						{"type": "array", "items": {"type": "string"}},
+					],
+					"description": "The fields whose value needs to be returned. Can be a single field or a list of fields. If a list of fields is provided, the values will be returned as a tuple.",
+				},
+			}
+			required = ["filters", "fieldname"]
+			if self.allow_any_doctype:
+				properties = {
 					"doctype": {
 						"type": "string",
 						"description": "The DocType to get the value from",
 					},
-					"filters": {
-						"type": "object",
-						"description": "Filters to apply when retrieving the value",
-					},
-					"fieldname": {
-						"anyOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}],
-						"description": "The fields whose value needs to be returned. Can be a single field or a list of fields. If a list of fields is provided, the values will be returned as a tuple.",
-					},
-				},
-				"required": ["doctype", "filters", "fieldname"],
+					**properties,
+				}
+				required = ["doctype", *required]
+
+			params = {
+				"type": "object",
+				"properties": properties,
+				"required": required,
 				"additionalProperties": False,
 			}
 		elif self.type == "Set Value":
-			params = {
-				"type": "object",
-				"properties": {
+			properties = {
+				"document_id": {
+					"type": "string",
+					"description": "The ID of the document to set the value for",
+				},
+				"fieldname": {
+					"anyOf": [
+						{"type": "string"},
+						{"type": "object", "additionalProperties": True},
+					],
+					"description": "The fields whose value needs to be set. Can be a single field or a JSON object with key value pairs.",
+				},
+				"value": {
+					"type": "string",
+					"description": "The value to set for the field. This is required if fieldname is a string.",
+				},
+			}
+			required = ["document_id", "fieldname"]
+			if self.allow_any_doctype:
+				properties = {
 					"doctype": {
 						"type": "string",
 						"description": "The DocType to set the value for",
 					},
-					"document_id": {
-						"type": "string",
-						"description": "The ID of the document to set the value for",
-					},
-					"fieldname": {
-						"anyOf": [{"type": "string"}, {"type": "object", "additionalProperties": True}],
-						"description": "The fields whose value needs to be set. Can be a single field or a JSON object with key value pairs.",
-					},
-					"value": {
-						"type": "string",
-						"description": "The value to set for the field. This is required if fieldname is a string.",
-					},
-				},
-				"required": ["doctype", "document_id", "fieldname"],
+					**properties,
+				}
+				required = ["doctype", *required]
+
+			params = {
+				"type": "object",
+				"properties": properties,
+				"required": required,
 				"additionalProperties": False,
 			}
 		elif self.type == "Get Report Result":
@@ -335,18 +467,33 @@ class RavenAIFunction(Document):
 					"filters": {
 						"type": "object",
 						"properties": {
-							"company": {"type": "string", "description": "Company name to run the report for"},
-							"from_date": {"type": "string", "description": "generate report from this date"},
-							"to_date": {"type": "string", "description": "generate report till this date"},
+							"company": {
+								"type": "string",
+								"description": "Company name to run the report for",
+							},
+							"from_date": {
+								"type": "string",
+								"description": "generate report from this date",
+							},
+							"to_date": {
+								"type": "string",
+								"description": "generate report till this date",
+							},
 						},
 						"required": ["company", "to_date", "from_date"],
 					},
-					"limit": {"type": "number", "description": "Limit for the number of records to be fetched"},
+					"limit": {
+						"type": "number",
+						"description": "Limit for the number of records to be fetched",
+					},
 					"ignore_prepared_report": {
 						"type": "boolean",
 						"description": "Whether to ignore the prepared report",
 					},
-					"user": {"type": "string", "description": "The user to run the report for"},
+					"user": {
+						"type": "string",
+						"description": "The user to run the report for",
+					},
 					"are_default_filters": {
 						"type": "boolean",
 						"description": "Whether to use the default filters",
@@ -365,15 +512,25 @@ class RavenAIFunction(Document):
 			"additionalProperties": False,
 		}
 
+		top_level_required = []
+		top_level_properties = {}
 		required = []
 		properties = {}
+		reference_doctype_label = self.reference_doctype or "document"
 
 		child_tables = {}
+
+		if self.allow_any_doctype:
+			top_level_properties["doctype"] = {
+				"type": "string",
+				"description": "The DocType to operate on",
+			}
+			top_level_required.append("doctype")
 
 		if self.type == "Update Document" or self.type == "Update Multiple Documents":
 			properties["document_id"] = {
 				"type": "string",
-				"description": f"The ID of the {self.reference_doctype} to update",
+				"description": f"The ID of the {reference_doctype_label} to update",
 			}
 			required.append("document_id")
 
@@ -425,6 +582,7 @@ class RavenAIFunction(Document):
 
 		if self.type == "Create Multiple Documents" or self.type == "Update Multiple Documents":
 			params["properties"] = {
+				**top_level_properties,
 				"data": {
 					"type": "array",
 					"items": {
@@ -433,13 +591,15 @@ class RavenAIFunction(Document):
 						"required": required,
 						"additionalProperties": False,
 					},
-				}
+				},
 			}
+			if top_level_required:
+				params["required"] = top_level_required
 			if not self.strict:
 				params["properties"]["data"]["minItems"] = 1
 		else:
-			params["properties"] = properties
-			params["required"] = required
+			params["properties"] = {**top_level_properties, **properties}
+			params["required"] = [*top_level_required, *required]
 
 		return params
 
@@ -457,6 +617,13 @@ class RavenAIFunction(Document):
 			self.params = json.dumps(json.loads(self.params), indent=4)
 
 	def validate(self):
+		if self.allow_any_doctype and self.type not in DOCTYPE_SCOPED_FUNCTION_TYPES:
+			frappe.throw(
+				_(
+					"Allow Any DocType is only supported for functions that normally require a reference DocType."
+				)
+			)
+
 		# Functions cannot be named after core functions
 		INVALID_FUNCTION_NAMES = [
 			"get_document",
@@ -473,24 +640,6 @@ class RavenAIFunction(Document):
 			frappe.throw(
 				_("Function name cannot be one of the core functions. Please choose a different name.")
 			)
-
-		DOCUMENT_REF_FUNCTIONS = [
-			"Get Document",
-			"Get Multiple Documents",
-			"Get List",
-			"Create Document",
-			"Create Multiple Documents",
-			"Update Document",
-			"Update Multiple Documents",
-			"Delete Document",
-			"Delete Multiple Documents",
-			"Submit Document",
-			"Cancel Document",
-			"Get Amended Document",
-		]
-		if self.type in DOCUMENT_REF_FUNCTIONS:
-			if not self.reference_doctype:
-				frappe.throw(_("Please select a DocType for this function."))
 
 		# Validate if the function is whitelisted
 		if self.type == "Custom Function":
