@@ -6,7 +6,8 @@ from frappe.frappeclient import FrappeClient
 from frappe.utils import get_datetime, get_system_timezone
 from pytz import timezone, utc
 
-from raven.utils import get_channel_members
+from raven.raven_cloud_notifications import get_site_name
+from raven.utils import get_channel_members, make_api_call
 
 MAX_NOTIFICATION_CONTENT_LENGTH = 1000
 
@@ -208,10 +209,6 @@ def make_post_call_for_notification(messages, raven_settings):
 	"""
 	Make a post call to the push notification server to send the notification
 	"""
-	from base64 import b64encode
-
-	import requests
-
 	# instead of using the frappe client, we will use the requests library to make the post call
 	# reason: FrappeClient's post_api method sends data in params which is not ideal for large payloads(Proxy returns JSON Decode errors as the URL is too long)
 	# and post_request method uses "cmd" based key in it's payload which is weird semantically
@@ -219,16 +216,14 @@ def make_post_call_for_notification(messages, raven_settings):
 	api_key = raven_settings.push_notification_api_key
 	api_secret = raven_settings.get_password("push_notification_api_secret")
 
-	token = b64encode(f"{api_key}:{api_secret}".encode()).decode()
-	auth_header = {"Authorization": f"Basic {token}"}
+	url = f"{raven_settings.push_notification_server_url}/api/method/raven_cloud.api.notification.send_to_users"
 
-	requests.post(
-		f"{raven_settings.push_notification_server_url}/api/method/raven_cloud.api.notification.send_to_users",
-		json={
-			"messages": json.dumps(messages),
-			"site_name": urlparse(frappe.utils.get_url()).hostname,
-		},
-		headers=auth_header,
+	make_api_call(
+		url=url,
+		api_key=api_key,
+		api_secret=api_secret,
+		method="POST",
+		params={"messages": json.dumps(messages), "site_name": get_site_name()},
 	)
 
 
