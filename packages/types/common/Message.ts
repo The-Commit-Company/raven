@@ -28,7 +28,9 @@ export interface BaseMessage {
     is_pinned: 1 | 0,
     might_contain_link_preview?: boolean,
     content?: string,
-    isOpenInThread?: boolean
+    isOpenInThread?: boolean,
+    /** Optional JSON payload (e.g. converted_to_channel_*, forwarded_thread). Backend shape TBD. */
+    json?: string | Record<string, unknown>,
 }
 
 export interface FileMessage extends BaseMessage {
@@ -63,6 +65,33 @@ export interface PollMessage extends BaseMessage {
 export interface SystemMessage extends BaseMessage {
     message_type: 'System',
     text: string,
+}
+
+/** Dummy type for UI-only converted-thread preview. Backend shape TBD. */
+export interface ConvertedChannelPreview {
+    root_message_owner_name?: string
+    root_message_owner_image?: string
+    root_message_snippet?: string
+    message_count?: number
+    participants?: { name: string; full_name: string; user_image?: string }[]
+    preview_replies?: { owner_name: string; owner_image?: string; snippet?: string }[]
+}
+
+/** Dummy type for UI-only forwarded-thread metadata. Backend shape TBD. */
+export interface ForwardedThreadMetadata {
+    thread_id: string
+    source_channel_id: string
+    is_source_dm: boolean
+    source_workspace: string | null
+    title: string
+    message_count: number
+    root_message_snippet: string
+    last_activity: string
+    last_message_owner_name: string
+    root_message_owner_name?: string
+    root_message_owner_image?: string
+    participants?: { name: string; full_name: string; user_image?: string }[]
+    preview_replies?: { owner_name?: string; owner_image?: string; snippet?: string }[]
 }
 
 export type DateBlock = {
