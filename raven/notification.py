@@ -6,7 +6,8 @@ from frappe.frappeclient import FrappeClient
 from frappe.utils import get_datetime, get_system_timezone
 from pytz import timezone, utc
 
-from raven.utils import get_channel_members
+from raven.raven_cloud_notifications import get_site_name
+from raven.utils import get_channel_members, make_api_call
 
 MAX_NOTIFICATION_CONTENT_LENGTH = 1000
 
@@ -17,6 +18,15 @@ def send_notification_for_message(message):
 
 	This is called in the "after_response" hook for user initiated requests.
 	"""
+
+	# if in developer mode or frappe.utils.get_url() is a localhost URL, then we should not send the push notification
+	# reason: avoid sending notifications from restored backups from local environments
+	if (
+		frappe.conf.developer_mode
+		or frappe.utils.get_url().startswith("http://localhost")
+		or frappe.utils.get_url().startswith("http://127.0.0.1")
+	):
+		return
 
 	raven_settings = frappe.get_cached_doc("Raven Settings")
 
@@ -199,19 +209,21 @@ def make_post_call_for_notification(messages, raven_settings):
 	"""
 	Make a post call to the push notification server to send the notification
 	"""
+	# instead of using the frappe client, we will use the requests library to make the post call
+	# reason: FrappeClient's post_api method sends data in params which is not ideal for large payloads(Proxy returns JSON Decode errors as the URL is too long)
+	# and post_request method uses "cmd" based key in it's payload which is weird semantically
 
-	client = FrappeClient(
-		url=raven_settings.push_notification_server_url,
-		api_key=raven_settings.push_notification_api_key,
-		api_secret=raven_settings.get_password("push_notification_api_secret"),
-	)
+	api_key = raven_settings.push_notification_api_key
+	api_secret = raven_settings.get_password("push_notification_api_secret")
 
-	client.post_api(
-		"raven_cloud.api.notification.send_to_users",
-		params={
-			"messages": json.dumps(messages),
-			"site_name": urlparse(frappe.utils.get_url()).hostname,
-		},
+	url = f"{raven_settings.push_notification_server_url}/api/method/raven_cloud.api.notification.send_to_users"
+
+	make_api_call(
+		url=url,
+		api_key=api_key,
+		api_secret=api_secret,
+		method="POST",
+		params={"messages": json.dumps(messages), "site_name": get_site_name()},
 	)
 
 
