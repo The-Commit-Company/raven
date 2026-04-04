@@ -12,6 +12,7 @@ from pytz import timezone, utc
 
 from raven.ai.ai import handle_ai_thread_message, handle_bot_dm
 from raven.api.raven_channel import get_peer_user
+from raven.api.search import RavenSearch
 from raven.notification import (
 	send_notification_for_message,
 	send_notification_to_topic,
@@ -547,6 +548,8 @@ class RavenMessage(Document):
 
 		if self.message_type != "System":
 			self.publish_unread_count_event()
+			search = RavenSearch()
+			search.remove_doc(self.doctype, self.name)
 
 		# delete poll if the message is of type poll after deleting the message
 		if self.message_type == "Poll":
@@ -673,6 +676,10 @@ class RavenMessage(Document):
 			if self.message_type == "File" or self.message_type == "Image":
 				if self.file:
 					self.handle_ai_message()
+
+			if self.message_type != "System":
+				search = RavenSearch()
+				search.index_doc(self.doctype, self.name)
 
 	def on_trash(self):
 		# delete all the reactions for the message

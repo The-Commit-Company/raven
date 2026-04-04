@@ -247,6 +247,7 @@ additional_timeline_content = {"*": ["raven.api.raven_message.get_timeline_messa
 website_route_rules = [
 	{"from_route": "/raven/<path:app_path>", "to_route": "raven"},
 	{"from_route": "/raven_mobile/<path:app_path>", "to_route": "raven"},
+	{"from_route": "/raven_v3/<path:app_path>", "to_route": "raven_v3"},
 ]
 
 permission_query_conditions = {
@@ -282,3 +283,5 @@ raven_document_link_override = "raven.api.document_link.get_new_app_document_lin
 # ------------
 # List of apps whose translatable strings should be excluded from this app's translations.
 ignore_translatable_strings_from = ["frappe"]
+
+sqlite_search = ["raven.api.search.RavenSearch"]

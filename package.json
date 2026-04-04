@@ -4,7 +4,6 @@
   "version": "2.8.10",
   "description": "Messaging Application",
   "workspaces": [
-    "frontend",
     "apps/*",
     "packages/*"
   ],
@@ -12,10 +11,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "cd frontend && yarn dev",
-    "build": "cd frontend && yarn build",
-    "postinstall": "yarn install-web && yarn install-desk",
+    "dev-web": "cd apps/web && yarn dev",
+    "build": "yarn build-web-v3",
+    "postinstall": "yarn install-desk && yarn install-web-v3",
     "install-desk": "cd raven && yarn install",
-    "install-web": "cd frontend && yarn install"
+    "install-web": "cd frontend && yarn install",
+    "build-web": "cd frontend && yarn build",
+    "build-web-v3": "cd apps/web && yarn build",
+    "install-web-v3": "cd apps/web && yarn install"
   },
   "keywords": [],
   "author": "",
