@@ -4,17 +4,184 @@ import { RavenAIFunction } from '@/types/RavenAI/RavenAIFunction'
 import { Box, Checkbox, Text, TextField, Select, TextArea, Tabs, Grid } from '@radix-ui/themes'
 import { Controller, useFormContext } from 'react-hook-form'
 import { FUNCTION_TYPES } from './FunctionConstants'
-import { ChangeEvent } from 'react'
+import { ChangeEvent, MutableRefObject, useRef } from 'react'
 import VariableBuilder from './VariableBuilder'
 import LinkFormField from '@/components/common/LinkField/LinkFormField'
 import AINotEnabledCallout from '../AINotEnabledCallout'
 import DoctypeVariableBuilder from './DoctypeVariableBuilder'
 import { LuSquareFunction, LuVariable } from 'react-icons/lu'
+import { __ } from '@/utils/translations'
 import { in_list } from '@/utils/validations'
 
 const ICON_PROPS = {
     size: 18,
     className: 'mr-1.5'
+}
+
+type DoctypeFunctionConfig = {
+    functionName: (normalizedDoctype: string) => string
+    description: (doctype: string) => string
+    anyDoctype: {
+        function_name: string
+        description: string
+    }
+}
+
+const DOCTYPE_FUNCTION_CONFIG = {
+    "Get Document": {
+        functionName: (normalizedDoctype: string) => `get_${normalizedDoctype}`,
+        description: (doctype: string) => `This function fetches a ${doctype} document using its name from the system.`,
+        anyDoctype: {
+            function_name: 'get_doc',
+            description: __('This function fetches a document from any DocType in the system using its DocType and name.')
+        }
+    },
+    "Get Multiple Documents": {
+        functionName: (normalizedDoctype: string) => `get_${normalizedDoctype}s`,
+        description: (doctype: string) => `This function fetches multiple ${doctype} documents using their names from the system.`,
+        anyDoctype: {
+            function_name: 'get_docs',
+            description: __('This function fetches multiple documents from any DocType in the system using their DocType and names.')
+        }
+    },
+    "Get List": {
+        functionName: (normalizedDoctype: string) => `get_${normalizedDoctype}_list`,
+        description: (doctype: string) => `This function fetches a list of ${doctype} from the system.`,
+        anyDoctype: {
+            function_name: 'get_doc_list',
+            description: __('This function fetches a list of documents from any DocType in the system.')
+        }
+    },
+    "Get Value": {
+        functionName: (normalizedDoctype: string) => `get_${normalizedDoctype}_value`,
+        description: (doctype: string) => `This function fetches a value from a ${doctype} in the system.`,
+        anyDoctype: {
+            function_name: 'get_doc_value',
+            description: __('This function fetches one or more field values from a document in any DocType in the system.')
+        }
+    },
+    "Set Value": {
+        functionName: (normalizedDoctype: string) => `set_${normalizedDoctype}_value`,
+        description: (doctype: string) => `This function sets a value in a ${doctype} in the system.`,
+        anyDoctype: {
+            function_name: 'set_doc_value',
+            description: __('This function sets one or more field values in a document from any DocType in the system.')
+        }
+    },
+    "Create Document": {
+        functionName: (normalizedDoctype: string) => `create_${normalizedDoctype}`,
+        description: (doctype: string) => `This function creates a ${doctype} in the system.`,
+        anyDoctype: {
+            function_name: 'create_doc',
+            description: __('This function creates a document in any DocType in the system.')
+        }
+    },
+    "Create Multiple Documents": {
+        functionName: (normalizedDoctype: string) => `create_${normalizedDoctype}s`,
+        description: (doctype: string) => `This function creates multiple ${doctype} in the system.`,
+        anyDoctype: {
+            function_name: 'create_docs',
+            description: __('This function creates multiple documents in any DocType in the system.')
+        }
+    },
+    "Update Document": {
+        functionName: (normalizedDoctype: string) => `update_${normalizedDoctype}`,
+        description: (doctype: string) => `This function updates a ${doctype} in the system.`,
+        anyDoctype: {
+            function_name: 'update_doc',
+            description: __('This function updates a document in any DocType in the system.')
+        }
+    },
+    "Update Multiple Documents": {
+        functionName: (normalizedDoctype: string) => `update_${normalizedDoctype}s`,
+        description: (doctype: string) => `This function updates multiple ${doctype} in the system.`,
+        anyDoctype: {
+            function_name: 'update_docs',
+            description: __('This function updates multiple documents in any DocType in the system.')
+        }
+    },
+    "Delete Document": {
+        functionName: (normalizedDoctype: string) => `delete_${normalizedDoctype}`,
+        description: (doctype: string) => `This function deletes a ${doctype} from the system.`,
+        anyDoctype: {
+            function_name: 'delete_doc',
+            description: __('This function deletes a document from any DocType in the system.')
+        }
+    },
+    "Delete Multiple Documents": {
+        functionName: (normalizedDoctype: string) => `delete_${normalizedDoctype}s`,
+        description: (doctype: string) => `This function deletes multiple ${doctype} from the system.`,
+        anyDoctype: {
+            function_name: 'delete_docs',
+            description: __('This function deletes multiple documents from any DocType in the system.')
+        }
+    },
+    "Submit Document": {
+        functionName: (normalizedDoctype: string) => `submit_${normalizedDoctype}`,
+        description: (doctype: string) => `This function submits a ${doctype} in the system.`,
+        anyDoctype: {
+            function_name: 'submit_doc',
+            description: __('This function submits a document from any DocType in the system.')
+        }
+    },
+    "Cancel Document": {
+        functionName: (normalizedDoctype: string) => `cancel_${normalizedDoctype}`,
+        description: (doctype: string) => `This function cancels a ${doctype} in the system.`,
+        anyDoctype: {
+            function_name: 'cancel_doc',
+            description: __('This function cancels a document from any DocType in the system.')
+        }
+    },
+    "Get Amended Document": {
+        functionName: (normalizedDoctype: string) => `get_amended_${normalizedDoctype}`,
+        description: (doctype: string) => `This function gets the amended document for a ${doctype} in the system.`,
+        anyDoctype: {
+            function_name: 'get_amended_doc',
+            description: __('This function fetches the amended version of a document from any DocType in the system.')
+        }
+    }
+} satisfies Record<string, DoctypeFunctionConfig>
+
+type DoctypeFunctionType = keyof typeof DOCTYPE_FUNCTION_CONFIG
+
+const ANY_DOCTYPE_FUNCTIONS = Object.keys(DOCTYPE_FUNCTION_CONFIG) as DoctypeFunctionType[]
+
+const normalizeDoctype = (doctype: string) => doctype.toLowerCase().replace(/\s/g, '_')
+
+const getFunctionConfig = (type: string) => DOCTYPE_FUNCTION_CONFIG[type as DoctypeFunctionType]
+
+const getDoctypeFunctionName = (type: string, doctype?: string) => {
+    const functionConfig = getFunctionConfig(type)
+
+    if (!doctype || !functionConfig) {
+        return ''
+    }
+
+    return functionConfig.functionName(normalizeDoctype(doctype))
+}
+
+const getDoctypeDescription = (type: string, doctype?: string) => {
+    const functionConfig = getFunctionConfig(type)
+
+    if (!doctype || !functionConfig) {
+        return ''
+    }
+
+    return functionConfig.description(doctype)
+}
+
+const getSuggestedFunctionName = (type: string, doctype?: string, allowAnyDoctype?: boolean | 0 | 1) => {
+    const functionConfig = getFunctionConfig(type)
+
+    if (!functionConfig) {
+        return ''
+    }
+
+    if (allowAnyDoctype) {
+        return functionConfig.anyDoctype.function_name
+    }
+
+    return getDoctypeFunctionName(type, doctype)
 }
 
 const FunctionForm = ({ isEdit }: { isEdit?: boolean }) => {
@@ -80,6 +247,10 @@ const GeneralFunctionDetails = ({ isEdit }: { isEdit?: boolean }) => {
                 setValue('requires_write_permissions', functionDef.requires_write_permissions ? 1 : 0)
             }
 
+            if (!ANY_DOCTYPE_FUNCTIONS.includes(functionDef.value as typeof ANY_DOCTYPE_FUNCTIONS[number])) {
+                setValue('allow_any_doctype', 0)
+            }
+
             if (functionDef.value !== 'Custom Function') {
                 setValue('function_path', '')
             }
@@ -125,7 +296,7 @@ const GeneralFunctionDetails = ({ isEdit }: { isEdit?: boolean }) => {
                 <FunctionHelperText />
                 {errors.type && <ErrorText>{errors.type?.message}</ErrorText>}
             </Stack>
-            <ReferenceDoctypeField />
+            <ReferenceDoctypeField isEdit={isEdit} />
             <Stack>
                 <Box>
                     <Label htmlFor='function_name' isRequired>Name</Label>
@@ -257,6 +428,81 @@ const RequiresWritePermissions = () => {
     </Stack>
 }
 
+const AllowAnyDoctype = ({
+    compact = false,
+    isEdit,
+    lastReferenceDoctype
+}: {
+    compact?: boolean,
+    isEdit?: boolean,
+    lastReferenceDoctype?: MutableRefObject<string>
+}) => {
+    const { watch, control, setValue, getValues } = useFormContext<RavenAIFunction>()
+    const type = watch('type')
+
+    if (!ANY_DOCTYPE_FUNCTIONS.includes(type as typeof ANY_DOCTYPE_FUNCTIONS[number])) {
+        return null
+    }
+
+    const checkbox = <Text as="label" size="2">
+        <HStack align='center'>
+            <Controller
+                control={control}
+                name='allow_any_doctype'
+                render={({ field }) => (
+                    <Checkbox
+                        checked={field.value ? true : false}
+                        onCheckedChange={(v) => {
+                            const enabled = v ? 1 : 0
+                            field.onChange(enabled)
+
+                            if (enabled) {
+                                const referenceDoctype = getValues('reference_doctype')
+                                if (referenceDoctype && lastReferenceDoctype) {
+                                    lastReferenceDoctype.current = referenceDoctype
+                                }
+                                setValue('reference_doctype', '')
+
+                                const defaults = getFunctionConfig(type)?.anyDoctype
+                                if (!isEdit && defaults?.function_name) {
+                                    setValue('function_name', defaults.function_name)
+                                }
+
+                                if (!getValues('description') && defaults?.description) {
+                                    setValue('description', defaults.description)
+                                }
+                            } else if (lastReferenceDoctype?.current) {
+                                setValue('reference_doctype', lastReferenceDoctype.current)
+
+                                const nextSuggestedName = getSuggestedFunctionName(
+                                    type,
+                                    lastReferenceDoctype.current,
+                                    false
+                                )
+                                if (!isEdit && nextSuggestedName) {
+                                    setValue('function_name', nextSuggestedName)
+                                }
+                            }
+                        }}
+                    />
+                )} />
+
+            {__("Allow Any DocType")}
+        </HStack>
+    </Text>
+
+    if (compact) {
+        return checkbox
+    }
+
+    return <Stack maxWidth={'560px'}>
+        {checkbox}
+        <HelperText>
+            {__("When enabled, this tool accepts a doctype parameter at runtime instead of being locked to one reference DocType. Normal Frappe permissions still apply.")}
+        </HelperText>
+    </Stack>
+}
+
 const CustomFunction = () => {
 
     const { register, watch, formState: { errors } } = useFormContext<RavenAIFunction>()
@@ -291,82 +537,26 @@ const CustomFunction = () => {
     </Stack>
 }
 
-const ReferenceDoctypeField = () => {
+const ReferenceDoctypeField = ({ isEdit }: { isEdit?: boolean }) => {
 
     const { watch, formState: { errors }, setValue, getValues } = useFormContext<RavenAIFunction>()
 
     const type = watch('type')
+    const allowAnyDoctype = watch('allow_any_doctype')
+    const lastReferenceDoctype = useRef(getValues('reference_doctype') || '')
 
-    const DOCUMENT_REF_FUNCTIONS = ["Get Document", "Get Multiple Documents", "Get List", "Get Value", "Set Value", "Create Document", "Create Multiple Documents", "Update Document", "Update Multiple Documents", "Delete Document", "Delete Multiple Documents", "Submit Document", "Cancel Document", "Get Amended Document"]
+    const supportsAnyDoctype = ANY_DOCTYPE_FUNCTIONS.includes(type as DoctypeFunctionType)
 
     const onReferenceDoctypeChange = (e: ChangeEvent<HTMLInputElement>) => {
 
         if (e.target.value) {
+            lastReferenceDoctype.current = e.target.value
 
-            let description = ''
-            const function_name_exists = getValues('function_name') ? true : false
-            let function_name = ''
-            // Set the description if none is set
-            if (type === 'Get Document') {
-                description = `This function fetches a ${e.target.value} document using its name from the system.`
-                function_name = `get_${e.target.value.toLowerCase().replace(/\s/g, '_')}`
-            }
-            if (type === 'Get Multiple Documents') {
-                description = `This function fetches multiple ${e.target.value} documents using their names from the system.`
-                function_name = `get_${e.target.value.toLowerCase().replace(/\s/g, '_')}s`
-            }
-            if (type === 'Get List') {
-                description = `This function fetches a list of ${e.target.value} from the system.`
-                function_name = `get_${e.target.value.toLowerCase().replace(/\s/g, '_')}_list`
-            }
-            if (type === 'Get Value') {
-                description = `This function fetches a value from a ${e.target.value} in the system.`
-                function_name = `get_${e.target.value.toLowerCase().replace(/\s/g, '_')}_value`
-            }
-            if (type === 'Set Value') {
-                description = `This function sets a value in a ${e.target.value} in the system.`
-                function_name = `set_${e.target.value.toLowerCase().replace(/\s/g, '_')}_value`
-            }
-            if (type === 'Create Document') {
-                description = `This function creates a ${e.target.value} in the system.`
-                function_name = `create_${e.target.value.toLowerCase().replace(/\s/g, '_')}`
-            }
-            if (type === 'Create Multiple Documents') {
-                description = `This function creates multiple ${e.target.value} in the system.`
-                function_name = `create_${e.target.value.toLowerCase().replace(/\s/g, '_')}s`
-            }
-            if (type === 'Update Document') {
-                description = `This function updates a ${e.target.value} in the system.`
-                function_name = `update_${e.target.value.toLowerCase().replace(/\s/g, '_')}`
-            }
-            if (type === 'Update Multiple Documents') {
-                description = `This function updates multiple ${e.target.value} in the system.`
-                function_name = `update_${e.target.value.toLowerCase().replace(/\s/g, '_')}s`
-            }
-            if (type === 'Delete Document') {
-                description = `This function deletes a ${e.target.value} from the system.`
-                function_name = `delete_${e.target.value.toLowerCase().replace(/\s/g, '_')}`
-            }
-            if (type === 'Delete Multiple Documents') {
-                description = `This function deletes multiple ${e.target.value} from the system.`
-                function_name = `delete_${e.target.value.toLowerCase().replace(/\s/g, '_')}s`
-            }
-            if (type === 'Submit Document') {
-                description = `This function submits a ${e.target.value} in the system.`
-                function_name = `submit_${e.target.value.toLowerCase().replace(/\s/g, '_')}`
-            }
-            if (type === 'Cancel Document') {
-                description = `This function cancels a ${e.target.value} in the system.`
-                function_name = `cancel_${e.target.value.toLowerCase().replace(/\s/g, '_')}`
-            }
+            const nextSuggestedName = getSuggestedFunctionName(type, e.target.value, false)
+            const description = getDoctypeDescription(type, e.target.value)
 
-            if (type === 'Get Amended Document') {
-                description = `This function gets the amended document for a ${e.target.value} in the system.`
-                function_name = `get_amended_${e.target.value.toLowerCase().replace(/\s/g, '_')}`
-            }
-
-            if (function_name && !function_name_exists) {
-                setValue('function_name', function_name)
+            if (!isEdit && nextSuggestedName) {
+                setValue('function_name', nextSuggestedName)
             }
             if (description) {
                 setValue('description', description)
@@ -374,25 +564,45 @@ const ReferenceDoctypeField = () => {
         }
     }
 
-    if (!DOCUMENT_REF_FUNCTIONS.includes(type)) {
+    if (!supportsAnyDoctype) {
         return null
     }
+
     return <Stack>
-        <LinkFormField
-            name='reference_doctype'
-            label='Reference Doctype'
-            required
-            filters={[["istable", "=", 0], ["issingle", "=", 0]]}
-            doctype='DocType'
-            rules={{
-                required: DOCUMENT_REF_FUNCTIONS.includes(type) ? 'Reference Doctype is required' : false,
-                onChange: onReferenceDoctypeChange
-            }}
-        />
-        <HelperText>
-            The document you want this function to operate on.
-        </HelperText>
-        {errors.reference_doctype && <ErrorText>{errors.reference_doctype?.message}</ErrorText>}
+        <HStack align='end' gap='4' className='w-full'>
+            {!allowAnyDoctype && (
+                <Box className='flex-1'>
+                    <LinkFormField
+                        name='reference_doctype'
+                        label={__('Reference Doctype')}
+                        required
+                        filters={[["istable", "=", 0], ["issingle", "=", 0]]}
+                        doctype='DocType'
+                        rules={{
+                            required: supportsAnyDoctype && !allowAnyDoctype ? __('Reference Doctype is required') : false,
+                            onChange: onReferenceDoctypeChange
+                        }}
+                    />
+                </Box>
+            )}
+            <Box className='shrink-0 pb-1'>
+                <AllowAnyDoctype
+                    compact
+                    isEdit={isEdit}
+                    lastReferenceDoctype={lastReferenceDoctype}
+                />
+            </Box>
+        </HStack>
+        {allowAnyDoctype ? (
+            <HelperText>
+                {__("This function will accept a doctype parameter at runtime instead of being locked to one reference DocType.")}
+            </HelperText>
+        ) : (
+            <HelperText>
+                {__("The document you want this function to operate on.")}
+            </HelperText>
+        )}
+        {!allowAnyDoctype && errors.reference_doctype && <ErrorText>{errors.reference_doctype?.message}</ErrorText>}
     </Stack>
 }
 
