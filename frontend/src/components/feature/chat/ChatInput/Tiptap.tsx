@@ -138,6 +138,51 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
 
     const [enterKeyBehaviour] = useAtom(EnterKeyBehaviourAtom)
 
+    const hasLinkMark = (node: any) => {
+        return Boolean(node?.marks?.some((mark: any) => mark.type?.name === 'link'))
+    }
+
+    const looksLikeLink = (text: string) => {
+        const value = text.trim().replace(/[)\].,!?;:]+$/, '')
+
+        if (!value) {
+            return false
+        }
+
+        if (/^(https?:\/\/|www\.)/i.test(value)) {
+            return true
+        }
+
+        return /^[^\s@]+\.[^\s@]{2,}(\/[^\s]*)?$/i.test(value)
+    }
+
+    const isSelectionTouchingLink = (editor: any) => {
+        const { selection, storedMarks } = editor.state
+
+        if (!selection.empty) {
+            return false
+        }
+
+        const { $from, from } = selection
+
+        if ($from.marks().some((mark: any) => mark.type.name === 'link')) {
+            return true
+        }
+
+        if ((storedMarks ?? []).some((mark: any) => mark.type.name === 'link')) {
+            return true
+        }
+
+        if (hasLinkMark($from.nodeBefore) || hasLinkMark($from.nodeAfter)) {
+            return true
+        }
+
+        const textBefore = editor.state.doc.textBetween(Math.max(0, from - 2048), from, '\n', '\0')
+        const lastToken = textBefore.split(/\s/).pop() ?? ''
+
+        return looksLikeLink(lastToken)
+    }
+
     const handleMessageSendAction = (editor: any) => {
 
         const hasContent = editor.getText().trim().length > 0
@@ -155,6 +200,27 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
                 editor.commands.clearContent(true);
                 editor.setEditable(true)
                 editor.commands.focus('start')
+            })
+            .catch(() => {
+                editor.setEditable(true)
+            })
+        return editor.commands.clearContent(true);
+    }
+
+    const handleModEnterMessageSendAction = (editor: any) => {
+        const hasContent = editor.getText().trim().length > 0
+        let html = ''
+        let json = {}
+        if (hasContent) {
+            html = editor.getHTML()
+            json = editor.getJSON()
+        }
+
+        editor.setEditable(false)
+        onMessageSend(html, json)
+            .then(() => {
+                editor.commands.clearContent(true);
+                editor.setEditable(true)
             })
             .catch(() => {
                 editor.setEditable(true)
@@ -206,7 +272,6 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
                 'Mod-Enter': () => {
                     const isCodeBlockActive = this.editor.isActive('codeBlock');
                     const isListItemActive = this.editor.isActive('listItem');
-                    const hasContent = this.editor.getText().trim().length > 0
                     /**
                      * when inside of a codeblock and setting for sending the message with CMD/CTRL-Enter
                      * force calling the `onSubmit` function and clear the editor content
@@ -220,23 +285,7 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
                     }
 
                     if (!isCodeBlockActive && !isListItemActive) {
-                        let html = ''
-                        let json = {}
-                        if (hasContent) {
-                            html = this.editor.getHTML()
-                            json = this.editor.getJSON()
-                        }
-
-                        this.editor.setEditable(false)
-                        onMessageSend(html, json)
-                            .then(() => {
-                                this.editor.commands.clearContent(true);
-                                this.editor.setEditable(true)
-                            })
-                            .catch(() => {
-                                this.editor.setEditable(true)
-                            })
-                        return this.editor.commands.clearContent(true);
+                        return handleModEnterMessageSendAction(this.editor)
                     }
 
                     return false;
@@ -518,12 +567,56 @@ const Tiptap = forwardRef(({ isEdit, slotBefore, fileProps, onMessageSend, onUpA
 
     const isDesktop = useIsDesktop()
 
-    const editor = useEditor({
+    const editor: any = useEditor({
         extensions: isDesktop ? extensions.concat([EmojiSuggestion]) : extensions,
         content,
         editorProps: {
             handleTextInput() {
                 onUserType?.()
+            },
+            handleKeyDown(view: any, event: KeyboardEvent): boolean {
+                if (event.key !== 'Enter' || view.composing || event.isComposing) {
+                    return false
+                }
+
+                if (!editor || !isSelectionTouchingLink(editor)) {
+                    return false
+                }
+
+                const isCodeBlockActive = editor.isActive('codeBlock');
+                const isListItemActive = editor.isActive('listItem');
+
+                if (isCodeBlockActive || isListItemActive) {
+                    return false
+                }
+
+                if (event.shiftKey) {
+                    event.preventDefault()
+                    return handleNewLineAction(editor)
+                }
+
+                if (event.metaKey || event.ctrlKey) {
+                    event.preventDefault()
+                    return handleModEnterMessageSendAction(editor)
+                }
+
+                //  Check for phone
+                if (matchMedia('(max-device-width: 768px)').matches) {
+                    return false
+                }
+
+                // Check for iPad
+                if (matchMedia('(max-device-width: 1024px)').matches) {
+                    return false
+                }
+
+                if (enterKeyBehaviour === 'send-message') {
+                    event.preventDefault()
+                    return handleMessageSendAction(editor)
+                } else {
+                    event.preventDefault()
+                    return handleNewLineAction(editor)
+                }
             },
             attributes: {
                 class: 'tiptap-editor' + (replyMessage ? ' replying' : '') + (isEdit ? ' editing-message' : '')
