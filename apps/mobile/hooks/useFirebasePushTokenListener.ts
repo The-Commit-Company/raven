@@ -16,22 +16,20 @@ const useFirebasePushTokenListener = () => {
 
     useEffect(() => {
 
-        if (callMade.current) return
+        if (!siteInfo || callMade.current) return
         callMade.current = true
 
         // When the site is switched, fetch the token and store it in the database
-        if (siteInfo) {
-            messaging.requestPermission().then(async (authorizationStatus) => {
-                if (authorizationStatus === AuthorizationStatus.AUTHORIZED) {
-                    const token = await messaging.getToken()
-                    call.post('raven.api.notification.subscribe', {
-                        fcm_token: token,
-                        environment: 'Mobile',
-                        device_information: Device.deviceName
-                    })
-                }
-            })
-        }
+        messaging.requestPermission().then(async (authorizationStatus) => {
+            if (authorizationStatus === AuthorizationStatus.AUTHORIZED) {
+                const token = await messaging.getToken()
+                call.post('raven.api.notification.subscribe', {
+                    fcm_token: token,
+                    environment: 'Mobile',
+                    device_information: Device.deviceName
+                })
+            }
+        })
 
     }, [siteInfo])
 }

@@ -28,25 +28,27 @@ const NotificationSetting = () => {
         if (enabled) {
             messaging.requestPermission().then((authorizationStatus) => {
                 if (authorizationStatus !== AuthorizationStatus.AUTHORIZED && authorizationStatus !== AuthorizationStatus.EPHEMERAL) {
-                    throw new Error('User has not granted permission to receive notifications.')
+                    toast.error('Permission denied. Please enable notifications in your device settings.')
+                    return
                 }
-            }).then(() => {
                 messaging.getToken().then((token) => {
                     if (token) {
                         call.post('raven.api.notification.subscribe', {
                             fcm_token: token,
                             environment: 'Mobile',
                             device_information: Device.deviceName
-
                         }).then(() => {
                             setEnabled(true)
-                        }).catch((error) => {
+                            toast.success('Push notifications enabled.')
+                        }).catch(() => {
                             toast.error('Failed to subscribe to push notifications.')
                         })
                     } else {
-                        toast.error('Failed to get token to subscribe.')
+                        toast.error('Failed to get device token.')
                     }
                 })
+            }).catch(() => {
+                toast.error('Failed to request notification permission.')
             })
         } else {
             messaging.getToken().then((token) => {
