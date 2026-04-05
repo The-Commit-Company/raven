@@ -1,0 +1,5 @@
+{
+  "react-native": {
+    "messaging_android_notification_channel_id": "raven-default"
+  }
+}

@@ -15,6 +15,7 @@ import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { Toaster } from 'sonner-native';
 import { LogBox, Platform } from 'react-native';
 import { getMessaging } from '@react-native-firebase/messaging';
+import notifee, { AndroidImportance } from '@notifee/react-native';
 import { setDefaultSite } from '@lib/auth';
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -78,6 +79,15 @@ export default function RootLayout() {
         const onMount = async () => {
 
             try {
+                // Create the Android notification channel so the app appears in system notification settings
+                if (Platform.OS === 'android') {
+                    await notifee.createChannel({
+                        id: 'raven-default',
+                        name: 'Raven Notifications',
+                        importance: AndroidImportance.HIGH,
+                    })
+                }
+
                 // Get the defualt site from the async storage
                 // Also check if the app was started by a notification
                 const initialNotification = await messaging.getInitialNotification();
