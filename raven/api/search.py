@@ -1,4 +1,3 @@
-from raven.api.preview_links import get_preview_link
 import json
 import mimetypes
 
@@ -118,7 +117,9 @@ class RavenSearch(SQLiteSearch):
 				document["file_type"] = None
 			document["internal_link"] = doc.file
 			document["title"] = doc.file.split("?")[0].split("/")[-1]
-			document["file_size"] = frappe.db.get_value("File", {"file_url": doc.file.split("?")[0]}, "file_size") or 0 # TODO: store this on message itself
+			document["file_size"] = (
+				frappe.db.get_value("File", {"file_url": doc.file.split("?")[0]}, "file_size") or 0
+			)  # TODO: store this on message itself
 		return document
 
 	def index_doc(self, doctype, name):
