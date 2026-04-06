@@ -13,13 +13,16 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
     return <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeRaw]}
-    // components={{
-    //     p: (props) => <Text {...props} as='p' />,
-    //     ul: (props) => <UnorderedList {...props} />,
-    //     ol: (props) => <OrderedList {...props} />,
-    //     li: (props) => <ListItem {...props} />,
-    //     a: (props) => <Link {...props} />,
-    // }}>
+        // components={{
+        //     p: (props) => <Text {...props} as='p' />,
+        //     ul: (props) => <UnorderedList {...props} />,
+        //     ol: (props) => <OrderedList {...props} />,
+        //     li: (props) => <ListItem {...props} />,
+        //     a: (props) => <Link {...props} />,
+        // }}>
+        components={{
+            p: ({ children }) => <span>{children}</span>,
+        }}
     >
         {content}
     </ReactMarkdown>

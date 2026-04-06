@@ -12,7 +12,6 @@ interface ChannelMembersProps {
 const ChannelMembers = ({ onClick, channelID }: ChannelMembersProps) => {
 
     const { members, isLoading } = useChannelMembers(channelID)
-    console.log(members, isLoading)
     return (
         <Tooltip>
             <TooltipTrigger asChild>

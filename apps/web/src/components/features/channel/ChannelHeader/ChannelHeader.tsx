@@ -10,9 +10,11 @@ import { useSidebar } from "@components/ui/sidebar"
 import { useLocation } from "react-router-dom"
 import { SIDEBAR_LESS_ROUTES } from "@utils/routes"
 import { useChannel } from "@hooks/useChannel"
+import _ from "@lib/translate"
 
 const ChannelHeader = () => {
     const channelID = useCurrentChannelID()
+    const { channel } = useChannel(channelID)
     const location = useLocation()
     const pathname = location.pathname
     const isSettingsPage = pathname.startsWith("/settings")
@@ -21,8 +23,11 @@ const ChannelHeader = () => {
     const isCollapsed = state === "collapsed"
     const { toggleStarChannel, isStarred } = useChannel(channelID)
 
-    const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
+    const pinnedCount = channel?.pinned_messages_string?.split("\n").length || 0
+    console.log(channel?.pinned_messages_string)
+    console.log(pinnedCount)
 
+    const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
 
     const onOpenMembers = () => {
         if (drawerType === 'members') setDrawerType('')
@@ -69,11 +74,11 @@ const ChannelHeader = () => {
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={toggleStarChannel}>
                                 <Star className={`h-3 w-3 text-foreground/80 ${isStarred ? "fill-foreground" : ""}`} />
-                                <span className="sr-only">Star</span>
+                                <span className="sr-only">{_('Star')}</span>
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>Star</p>
+                            <p>{_('Star')}</p>
                         </TooltipContent>
                     </Tooltip>
 
@@ -83,45 +88,45 @@ const ChannelHeader = () => {
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={onOpenFiles}>
                                 <FileText className="h-2 w-2 text-foreground/80" />
-                                <span className="sr-only">Files</span>
+                                <span className="sr-only">{_('Files')}</span>
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>Files</p>
+                            <p>{_('Files')}</p>
                         </TooltipContent>
                     </Tooltip>
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={onOpenLinks}>
                                 <Link className="h-2 w-2 text-foreground/80" />
-                                <span className="sr-only">Links</span>
+                                <span className="sr-only">{_('Links')}</span>
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>Links</p>
+                            <p>{_('Links')}</p>
                         </TooltipContent>
                     </Tooltip>
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={onOpenThreads}>
                                 <MessageSquareText className="h-2 w-2 text-foreground/80" />
-                                <span className="sr-only">Threads</span>
+                                <span className="sr-only">{_('Threads')}</span>
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>Threads</p>
+                            <p>{_('Threads')}</p>
                         </TooltipContent>
                     </Tooltip>
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="default" className="h-7 gap-2 rounded-sm" onClick={onOpenPins}>
                                 <Pin className="h-2 w-2 text-foreground/80" />
-                                <span className="sr-only">Pinned</span>
-                                <span className="text-muted-foreground text-sm font-normal">3</span>
+                                <span className="sr-only">{_('Pinned')}</span>
+                                <span className="text-muted-foreground text-sm font-normal">{pinnedCount}</span>
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>Pinned Messages</p>
+                            <p>{_('Pinned Messages')}</p>
                         </TooltipContent>
                     </Tooltip>
                 </div>
@@ -133,11 +138,11 @@ const ChannelHeader = () => {
                     <TooltipTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm">
                             <Headset className="h-3 w-3 text-foreground/80" />
-                            <span className="sr-only">Start call</span>
+                            <span className="sr-only">{_('Start call')}</span>
                         </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                        <p>Start call</p>
+                        <p>{_('Start call')}</p>
                     </TooltipContent>
                 </Tooltip>
                 <ChannelMembers onClick={onOpenMembers} channelID={channelID} />
