@@ -23,9 +23,7 @@ const ChannelHeader = () => {
     const isCollapsed = state === "collapsed"
     const { toggleStarChannel, isStarred } = useChannel(channelID)
 
-    const pinnedCount = channel?.pinned_messages_string?.split("\n").length || 0
-    console.log(channel?.pinned_messages_string)
-    console.log(pinnedCount)
+    const pinnedCount = channel?.pinned_messages_string ? channel.pinned_messages_string.split("\n").length : 0
 
     const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
 
@@ -122,7 +120,7 @@ const ChannelHeader = () => {
                             <Button variant="ghost" size="default" className="h-7 gap-2 rounded-sm" onClick={onOpenPins}>
                                 <Pin className="h-2 w-2 text-foreground/80" />
                                 <span className="sr-only">{_('Pinned')}</span>
-                                <span className="text-muted-foreground text-sm font-normal">{pinnedCount}</span>
+                                {pinnedCount > 0 && <span className="text-muted-foreground text-sm font-normal">{pinnedCount}</span>}
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
