@@ -229,7 +229,7 @@ class RavenSearch(SQLiteSearch):
 
 
 @frappe.whitelist()
-def sqlite_search(query: str | None = None, filters=None, limit: int = 20):
+def sqlite_search(query: str | None = None, filters: str | None = None, limit: int = 20):
 	if filters:
 		filters = json.loads(filters)
 
