@@ -209,7 +209,7 @@ class RavenSearch(SQLiteSearch):
 
 		# Add compatibility fields for _process_search_results
 		title_field = text_fields[0] if text_fields else "doc_id"
-		select_fields.append(f"0.0 as bm25_score")
+		select_fields.append("0.0 as bm25_score")
 		select_fields.append(f"{title_field} as original_title")
 
 		select_clause = ", ".join(select_fields)
