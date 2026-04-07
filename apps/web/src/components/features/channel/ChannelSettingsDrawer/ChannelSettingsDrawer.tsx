@@ -10,6 +10,7 @@ import ChannelInfo from './ChannelInfo';
 import { useAtom } from 'jotai';
 import { channelDrawerAtom } from '@utils/channelAtoms';
 import { useCurrentChannelID } from '@hooks/useCurrentChannelID';
+import _ from '@lib/translate'
 
 const ChannelSettingsDrawer = () => {
 
@@ -32,11 +33,11 @@ const ChannelSettingsDrawer = () => {
                     <Tabs value={drawerType} onValueChange={onTabChange} className="w-full">
                         <div className="flex items-center justify-between">
                             <TabsList className="grid flex-1 grid-cols-5 gap-1 px-1 h-8">
-                                <TabsTrigger value="info" className="text-xs h-6">Info</TabsTrigger>
-                                <TabsTrigger value="files" className="text-xs h-6">Files</TabsTrigger>
-                                <TabsTrigger value="links" className="text-xs h-6">Links</TabsTrigger>
-                                <TabsTrigger value="threads" className="text-xs h-6">Threads</TabsTrigger>
-                                <TabsTrigger value="pins" className="text-xs h-6">Pins</TabsTrigger>
+                                <TabsTrigger value="info" className="text-xs h-6">{_('Info')}</TabsTrigger>
+                                <TabsTrigger value="files" className="text-xs h-6">{_('Files')}</TabsTrigger>
+                                <TabsTrigger value="links" className="text-xs h-6">{_('Links')}</TabsTrigger>
+                                <TabsTrigger value="threads" className="text-xs h-6">{_('Threads')}</TabsTrigger>
+                                <TabsTrigger value="pins" className="text-xs h-6">{_('Pins')}</TabsTrigger>
                             </TabsList>
                             <Button
                                 variant="ghost"
@@ -54,19 +55,19 @@ const ChannelSettingsDrawer = () => {
                         </TabsContent>
 
                         <TabsContent value="threads">
-                            <ChannelThreads />
+                            <ChannelThreads channelID={channelID} />
                         </TabsContent>
 
                         <TabsContent value="files">
-                            <ChannelFiles />
+                            <ChannelFiles channelID={channelID} />
                         </TabsContent>
 
                         <TabsContent value="links">
-                            <ChannelLinks />
+                            <ChannelLinks channelID={channelID} />
                         </TabsContent>
 
                         <TabsContent value="pins">
-                            <ChannelPins />
+                            <ChannelPins channelID={channelID} />
                         </TabsContent>
 
                     </Tabs>
