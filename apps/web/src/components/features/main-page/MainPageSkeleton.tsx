@@ -18,7 +18,7 @@ export function MainPageSkeleton() {
             {/* Channel Sidebar Skeleton */}
             <div className="w-[280px] border-r border-border bg-sidebar flex flex-col">
                 {/* Sidebar Header */}
-                <div className="h-[36px] border-b border-border px-4 flex items-center justify-between">
+                <div className="h-(--app-header-height) border-b border-border px-4 flex items-center justify-between">
                     <Skeleton className="h-4 w-32" />
                     <Skeleton className="h-4 w-16" />
                 </div>
@@ -52,7 +52,7 @@ export function MainPageSkeleton() {
                             </div>
                         </div>
                     ))}
-                    
+
                     {/* Ungrouped channels */}
                     <div className="mt-6 space-y-2">
                         {Array.from({ length: 3 }).map((_, i) => (
@@ -68,7 +68,7 @@ export function MainPageSkeleton() {
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col">
                 {/* Header */}
-                <div className="h-[36px] border-b border-border px-6 flex items-center">
+                <div className="h-(--app-header-height) border-b border-border px-6 flex items-center">
                     <Skeleton className="h-5 w-48" />
                 </div>
 

@@ -82,7 +82,7 @@ const ChannelHeader = () => {
 
                     <ChannelMenu channelID={channelID} />
 
-                    <Tooltip>
+                    {/* <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={onOpenFiles}>
                                 <FileText className="h-2 w-2 text-foreground/80" />
@@ -114,19 +114,19 @@ const ChannelHeader = () => {
                         <TooltipContent>
                             <p>{_('Threads')}</p>
                         </TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
+                    </Tooltip> */}
+                    {pinnedCount > 0 && <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="default" className="h-7 gap-2 rounded-sm" onClick={onOpenPins}>
                                 <Pin className="h-2 w-2 text-foreground/80" />
                                 <span className="sr-only">{_('Pinned')}</span>
-                                {pinnedCount > 0 && <span className="text-muted-foreground text-sm font-normal">{pinnedCount}</span>}
+                                <span className="text-muted-foreground text-sm font-normal">{pinnedCount}</span>
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
                             <p>{_('Pinned Messages')}</p>
                         </TooltipContent>
-                    </Tooltip>
+                    </Tooltip>}
                 </div>
             </div>
 

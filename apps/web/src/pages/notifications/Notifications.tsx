@@ -547,75 +547,75 @@ export default function Notifications() {
         <div className="flex flex-col h-full overflow-hidden" style={{ "--workspace-switcher-width": "60px" } as React.CSSProperties}>
             <WorkspaceSwitcher standalone />
             <div className="flex flex-col h-full overflow-hidden" style={{ marginLeft: "var(--workspace-switcher-width, 60px)", width: "calc(100% - var(--workspace-switcher-width, 60px))" } as React.CSSProperties}>
-                <header 
-                    className="flex items-center justify-between border-b bg-background py-1.5 px-2 z-10 fixed top-0 h-[36px] transition-[left,width] duration-200 ease-linear"
+                <header
+                    className="flex items-center justify-between border-b bg-background py-1.5 px-2 z-10 fixed top-0 h-(--app-header-height) transition-[left,width] duration-200 ease-linear"
                     style={{
                         left: headerLeft,
                         width: headerWidth,
                     }}
                 >
-                {/* Left side */}
-                <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                        <span className="text-md font-medium">Notifications</span>
-                        {unreadCount > 0 && (
-                            <div className="bg-muted text-foreground rounded px-1.5 py-0.5 text-[10px] font-semibold min-w-[18px] text-center">
-                                {unreadCount > 99 ? '99+' : unreadCount}
+                    {/* Left side */}
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                            <span className="text-md font-medium">Notifications</span>
+                            {unreadCount > 0 && (
+                                <div className="bg-muted text-foreground rounded px-1.5 py-0.5 text-[10px] font-semibold min-w-[18px] text-center">
+                                    {unreadCount > 99 ? '99+' : unreadCount}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Right side - Mark as read button */}
+                    {unreadCount > 0 && (
+                        <button
+                            onClick={handleMarkAllAsRead}
+                            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded hover:bg-muted/50"
+                        >
+                            <Check className="w-3 h-3" />
+                            Mark all as read
+                        </button>
+                    )}
+                </header>
+
+                <div className="pt-[36px] flex flex-1 flex-col overflow-hidden">
+                    {/* Tabs */}
+                    <div className="px-4 pt-4 shrink-0">
+                        <div className="flex gap-2 items-center">
+                            {TABS.map(tab => (
+                                <button
+                                    key={tab.key}
+                                    type="button"
+                                    className={cn(
+                                        "px-4 py-1 rounded-md text-xs font-medium transition-colors border border-transparent",
+                                        activeTab === tab.key
+                                            ? "bg-primary text-primary-foreground shadow"
+                                            : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                    )}
+                                    onClick={() => setActiveTab(tab.key)}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 overflow-y-auto">
+                        {currentData.length === 0 ? (
+                            <EmptyState />
+                        ) : (
+                            <div className="py-2">
+                                {activeTab === 'mentions' && currentData.map((item) => (
+                                    <MentionItem key={item.name} mention={item as MentionObject} />
+                                ))}
+                                {activeTab === 'reactions' && currentData.map((item) => (
+                                    <ReactionItem key={item.name} reaction={item as ReactionObject} />
+                                ))}
                             </div>
                         )}
                     </div>
                 </div>
-
-                {/* Right side - Mark as read button */}
-                {unreadCount > 0 && (
-                    <button
-                        onClick={handleMarkAllAsRead}
-                        className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded hover:bg-muted/50"
-                    >
-                        <Check className="w-3 h-3" />
-                        Mark all as read
-                    </button>
-                )}
-            </header>
-
-            <div className="pt-[36px] flex flex-1 flex-col overflow-hidden">
-                {/* Tabs */}
-                <div className="px-4 pt-4 shrink-0">
-                    <div className="flex gap-2 items-center">
-                        {TABS.map(tab => (
-                            <button
-                                key={tab.key}
-                                type="button"
-                                className={cn(
-                                    "px-4 py-1 rounded-md text-xs font-medium transition-colors border border-transparent",
-                                    activeTab === tab.key
-                                        ? "bg-primary text-primary-foreground shadow"
-                                        : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                                )}
-                                onClick={() => setActiveTab(tab.key)}
-                            >
-                                {tab.label}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 overflow-y-auto">
-                    {currentData.length === 0 ? (
-                        <EmptyState />
-                    ) : (
-                        <div className="py-2">
-                            {activeTab === 'mentions' && currentData.map((item) => (
-                                <MentionItem key={item.name} mention={item as MentionObject} />
-                            ))}
-                            {activeTab === 'reactions' && currentData.map((item) => (
-                                <ReactionItem key={item.name} reaction={item as ReactionObject} />
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </div>
             </div>
         </div>
     )

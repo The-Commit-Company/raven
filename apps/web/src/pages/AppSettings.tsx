@@ -14,8 +14,8 @@ export default function AppSettings() {
     <div className="flex flex-col h-full overflow-hidden" style={{ "--workspace-switcher-width": "60px" } as React.CSSProperties}>
       <WorkspaceSwitcher standalone />
       <div className="flex flex-col h-full overflow-hidden" style={{ marginLeft: "var(--workspace-switcher-width, 60px)", width: "calc(100% - var(--workspace-switcher-width, 60px))" } as React.CSSProperties}>
-        <header 
-          className="flex items-center justify-between border-b bg-background py-1.5 px-2 z-10 fixed top-0 h-[36px] transition-[left,width] duration-200 ease-linear"
+        <header
+          className="flex items-center justify-between border-b bg-background py-1.5 px-2 z-10 fixed top-0 h-(--app-header-height) transition-[left,width] duration-200 ease-linear"
           style={{
             left: headerLeft,
             width: headerWidth,

@@ -7,10 +7,10 @@ import { Button } from '@components/ui/button'
 import { SettingsSection } from './SettingsSection'
 import { LeaveChannelButton } from "./LeaveChannelButton"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
 } from '@components/ui/dropdown-menu'
 import { EditChannelDescriptionButton } from './EditChannelDescriptionButton'
 import { useMemo } from 'react'
@@ -25,19 +25,19 @@ const ChannelInfo = ({ channelID }: { channelID: string }) => {
     }
 
     const allowSettingChange = useMemo(() => {
-    if (channel.is_admin == 1) {
-      return true;
-    }
-    if (channel.member_id && hasRole("Raven Admin")) {
-      return true;
-    }
-    return false;
+        if (channel.is_admin == 1) {
+            return true;
+        }
+        if (channel.member_id && hasRole("Raven Admin")) {
+            return true;
+        }
+        return false;
     }, [channel]);
 
     return (
         <div className="px-1 space-y-2 pb-4 pt-2">
             {/* About Section */}
-            <div className="space-y-2">
+            <div className="space-y-2 max-w-87">
                 <h3 className="font-semibold text-sm">{_("About")}</h3>
 
                 {/* Channel Name and Description */}
@@ -71,14 +71,14 @@ const ChannelInfo = ({ channelID }: { channelID: string }) => {
                         </div>
                         {user && user.name !== "Administrator" && (
                             <>
-                        <div className="border-t border-border/50"></div>
-                        <div className="flex items-center gap-2">
-                            <UserAvatar user={user} size="xs" className="w-5 h-5 rounded-full" showStatusIndicator={false} showBotIndicator={false} />
-                            <span className="text-[13px] text-muted-foreground/80">
-                                {_(`Created by {0} on {1}`, [user.full_name, channel.creation.split(" ")[0]])}
-                            </span>
-                        </div>
-                        </>)}
+                                <div className="border-t border-border/50"></div>
+                                <div className="flex items-center gap-2">
+                                    <UserAvatar user={user} size="xs" className="w-5 h-5 rounded-full" showStatusIndicator={false} showBotIndicator={false} />
+                                    <span className="text-[13px] text-muted-foreground/80">
+                                        {_(`Created by {0} on {1}`, [user.full_name, channel.creation.split(" ")[0]])}
+                                    </span>
+                                </div>
+                            </>)}
                     </div>
                 </div>
 
@@ -96,19 +96,19 @@ const ChannelInfo = ({ channelID }: { channelID: string }) => {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" className="w-40">
-                        <DropdownMenuItem onClick={() => {}}>
+                        <DropdownMenuItem onClick={() => { }}>
                             <div className="flex items-center gap-2">
                                 <BellRing className="h-3 w-3 text-foreground/80" />
                                 <span>{_("All Notifications")}</span>
                             </div>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => {}}>
+                        <DropdownMenuItem onClick={() => { }}>
                             <div className="flex items-center gap-2">
                                 <Bell className="h-3 w-3 text-foreground/80" />
                                 <span>{_("Mentions Only")}</span>
                             </div>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => {}}>
+                        <DropdownMenuItem onClick={() => { }}>
                             <div className="flex items-center gap-2">
                                 <BellOff className="h-3 w-3 text-foreground/80" />
                                 <span>{_("Mute Channel")}</span>
@@ -116,8 +116,8 @@ const ChannelInfo = ({ channelID }: { channelID: string }) => {
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
-            {/* Leave Channel */}
-            {channel.type !== "Open" && <LeaveChannelButton channel={channel} />}
+                {/* Leave Channel */}
+                {channel.type !== "Open" && <LeaveChannelButton channel={channel} />}
             </div>
 
             {/* Settings Section */}

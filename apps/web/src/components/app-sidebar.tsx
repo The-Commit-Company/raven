@@ -53,14 +53,14 @@ export function AppSidebar(props: React.ComponentProps<typeof SidebarShell>) {
                     />
                 ) : (
                     <>
-                        <SidebarHeader className="h-[36px] gap-2 px-3 border-b flex items-center">
-                            <div className="flex items-center justify-between w-full">
+                        <SidebarHeader className="h-(--app-header-height) gap-2 px-3 border-b flex items-center group/header">
+                            <div className="flex items-center justify-between w-full h-full">
                                 <div className="text-sm font-medium text-foreground truncate">
                                     {activeWorkspaceName}
                                 </div>
-                                <Label className="flex items-center gap-2 text-[12px]">
+                                <Label className="flex items-center gap-2 text-[12px] group-hover/header:opacity-100 opacity-0 transition-opacity duration-100">
                                     <span>{_("Unreads")}</span>
-                                    <Switch className="shadow-none" />
+                                    <Switch className="shadow-none cursor-pointer" />
                                 </Label>
                             </div>
                         </SidebarHeader>

@@ -282,7 +282,7 @@ export default function Search() {
     return (
         <div className="flex flex-col h-full overflow-hidden" style={{ "--workspace-switcher-width": "60px" } as React.CSSProperties}>
             <header
-                className="flex items-center justify-between border-b bg-background py-1.5 px-2 z-20 fixed top-0 h-[36px] transition-[left,width] duration-200 ease-linear"
+                className="flex items-center justify-between border-b bg-background py-1.5 px-2 z-20 fixed top-0 h-(--app-header-height) transition-[left,width] duration-200 ease-linear"
                 style={{
                     left: headerLeft,
                     width: headerWidth,

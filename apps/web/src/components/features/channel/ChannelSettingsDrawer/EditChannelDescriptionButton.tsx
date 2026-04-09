@@ -45,9 +45,11 @@ export const EditChannelDescriptionButton = ({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <DialogTrigger asChild>
-            <Edit className="w-4 h-4 text-muted-foreground hover:text-foreground shrink-0 mt-1 cursor-pointer" />
+            <button className="p-1 rounded-sm cursor-pointer">
+              <Edit className="w-4 h-4 text-muted-foreground hover:text-foreground shrink-0" />
+            </button>
           </DialogTrigger>
         </TooltipTrigger>
         <TooltipContent>
@@ -104,10 +106,10 @@ const EditChannelNameAndDescriptionForm = ({
                 channels: data.message.channels.map((ch) =>
                   ch.name === result.name
                     ? {
-                        ...ch,
-                        channel_name: result.channel_name,
-                        channel_description: result.channel_description,
-                      }
+                      ...ch,
+                      channel_name: result.channel_name,
+                      channel_description: result.channel_description,
+                    }
                     : ch,
                 ),
               },

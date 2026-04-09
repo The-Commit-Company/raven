@@ -40,15 +40,15 @@ export function LeaveChannelButton({ channel }: LeaveChannelButtonProps) {
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger className="w-full">
-        <div className="w-full flex justify-start p-3 h-auto cursor-pointer font-normal bg-transparent border border-border/70 rounded-lg hover:bg-red-200/20 transition-colors">
+      <AlertDialogTrigger asChild className="w-full">
+        <button className="w-full flex justify-start p-3 h-auto cursor-pointer font-normal bg-transparent border border-border/70 rounded-lg hover:bg-red-200/20 transition-colors">
           <div className="flex items-center gap-3">
             <User className="w-4 h-4 text-destructive" />
             <span className="text-sm text-destructive">
               {_("Leave channel")}
             </span>
           </div>
-        </div>
+        </button>
       </AlertDialogTrigger>
       <AlertDialogContent className="sm:max-w-xl">
         <AlertDialogHeader>

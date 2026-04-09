@@ -1,25 +1,25 @@
 import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon";
 import { Button } from "@components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
 } from "@components/ui/dropdown-menu";
 import { useChannel } from "@hooks/useChannel";
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID";
 import { channelDrawerAtom } from "@utils/channelAtoms";
 import { useSetAtom } from "jotai";
 import {
-  Bell,
-  BellOff,
-  BellRing,
-  ChevronDown,
-  Settings,
-  Users,
+    Bell,
+    BellOff,
+    BellRing,
+    ChevronDown,
+    Settings,
+    Users,
 } from "lucide-react";
 import _ from "@lib/translate";
 
@@ -93,7 +93,7 @@ const SettingsButton = () => {
     return (
         <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpenSettings}>
             <Settings className="h-4 w-4" />
-            <span>{_("Channel settings")}</span>
+            <span>{_("Channel details")}</span>
         </DropdownMenuItem>
     )
 }

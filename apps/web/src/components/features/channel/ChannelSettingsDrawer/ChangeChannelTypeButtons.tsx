@@ -93,8 +93,8 @@ function ChangeChannelTypeButton({
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger className="w-full" disabled={disabled}>
-        <div
+      <AlertDialogTrigger asChild disabled={disabled}>
+        <button
           className={`w-full flex justify-start p-3 h-auto cursor-pointer font-normal bg-transparent border border-border/70 rounded-lg transition-colors ${disabled ? "opacity-50 pointer-events-none" : "hover:bg-muted/50"}`}
         >
           <div className="flex items-center gap-3">
@@ -104,7 +104,7 @@ function ChangeChannelTypeButton({
             />
             <span className="text-sm">{changeToTypeLabel()}</span>
           </div>
-        </div>
+        </button>
       </AlertDialogTrigger>
       <AlertDialogContent className="sm:max-w-xl">
         <AlertDialogHeader>

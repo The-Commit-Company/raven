@@ -127,7 +127,7 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-none;
     -webkit-tap-highlight-color: transparent;
     /*
         Temporarily fix a bug in Chrome
@@ -138,9 +138,24 @@
     font-optical-sizing: auto;
   }
 
+  *:focus-visible {
+    @apply ring-ring/50 ring-[1.5px];
+  }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+mark {
+  background-color: var(--input);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+.dark mark {
+  background-color: var(--input);
 }
 
 input[type="search"]::-webkit-search-cancel-button {

@@ -109,7 +109,7 @@ export const GroupDnd = () => {
             </div>
             <div
                 className={cn(
-                    "rounded-lg border p-1 transition-colors"
+                    "rounded-lg p-1 transition-colors"
                 )}
             >
                 {groups.length > 0 ? <DndContext

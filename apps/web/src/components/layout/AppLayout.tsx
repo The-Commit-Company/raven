@@ -26,7 +26,7 @@ export function AppLayout({ sidebar, header, children, sidebarWidth }: AppLayout
     const providerStyle = {
         "--sidebar-width": sidebarWidth,
         "--sidebar-width-icon": "60px",
-        "--app-header-height": "36px",
+        "--app-header-height": "42px",
         "--workspace-switcher-width": WORKSPACE_SWITCHER_WIDTH,
     } as React.CSSProperties
 
