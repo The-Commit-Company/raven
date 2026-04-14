@@ -34,6 +34,7 @@ class RavenMessage(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
+		from frappe.model.document import Document
 		from frappe.types import DF
 
 		from raven.raven_messaging.doctype.raven_mention.raven_mention import RavenMention
@@ -56,7 +57,7 @@ class RavenMessage(Document):
 		link_doctype: DF.Link | None
 		link_document: DF.DynamicLink | None
 		linked_message: DF.Link | None
-		links: DF.SmallText | None
+		links: DF.Table[Document]
 		mentions: DF.Table[RavenMention]
 		message_reactions: DF.JSON | None
 		message_type: DF.Literal["Text", "Image", "File", "Poll", "System"]
@@ -84,7 +85,7 @@ class RavenMessage(Document):
 		1. Extract all user mentions
 		2. Remove empty trailing paragraphs
 		3. Extract the text content
-		4. Extract all links and store as | separated string
+		4. Extract all links and create Raven Link Preview documents
 		"""
 		if not self.text:
 			return
@@ -95,13 +96,15 @@ class RavenMessage(Document):
 		self.remove_empty_trailing_paragraphs(soup)
 		self.extract_mentions(soup)
 
-		links = []
 		for link in soup.find_all("a"):
 			href = link.get("href")
 			if href:
-				links.append(href)
-		if links:
-			self.links = "|" + "|".join(links) + "|"
+				if not frappe.db.exists("Raven Link Preview", {"url": href}):
+					preview = frappe.new_doc("Raven Link Preview")
+					preview.url = href
+					preview.deferred_insert()
+
+				self.append("links", {"url": href})
 
 		text_content = soup.get_text(" ", strip=True)
 

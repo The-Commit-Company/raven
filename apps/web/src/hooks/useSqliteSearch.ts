@@ -24,8 +24,8 @@ export type SearchResult = {
     file_type?: string;
     file_size?: number;
     internal_link?: string;
-    links?: string;
     has_link?: 1 | 0;
+    preview_data?: string;
 };
 
 export const useSqliteSearch = (query: string, filters: Record<string, string | number | boolean | string[]>, limit: number = 20) => {

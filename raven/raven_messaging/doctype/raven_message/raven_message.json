@@ -206,14 +206,15 @@
   },
   {
    "fieldname": "links",
-   "fieldtype": "Small Text",
-   "label": "Links"
+   "fieldtype": "Table",
+   "label": "Links",
+   "options": "Raven Message Links"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-31 13:55:57.988161",
- "modified_by": "Administrator",
+ "modified": "2026-04-13 14:22:34.038919",
+ "modified_by": "aditya.p@frappe.io",
  "module": "Raven Messaging",
  "name": "Raven Message",
  "naming_rule": "Random",
