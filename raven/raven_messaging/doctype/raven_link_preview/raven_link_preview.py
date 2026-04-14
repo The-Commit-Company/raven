@@ -58,4 +58,3 @@ class RavenLinkPreview(Document):
 
 	def before_insert(self):
 		self.fetch_preview()
-		
