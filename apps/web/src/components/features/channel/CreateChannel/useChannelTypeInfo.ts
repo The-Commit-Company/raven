@@ -19,7 +19,7 @@ export const useChannelTypeInfo = (channelType: RavenChannel['type']) => {
             default:
                 return {
                     header: _('Create a public channel'),
-                    helperText: _('When a channel is set to public, anyone can join the channel and read messages, but only members can post messages.'),
+                    helperText: _('When a channel is set to public, anyone can read messages, join channel to post messages.'),
                 }
         }
     }, [channelType])

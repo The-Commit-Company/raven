@@ -3,7 +3,10 @@ import re
 
 import frappe
 from frappe import _
+from frappe.utils.background_jobs import enqueue, is_job_enqueued
 from linkpreview import Link, LinkGrabber, LinkPreview, link_preview
+
+from raven.utils import get_raven_room
 
 
 @frappe.whitelist(methods=["GET"])
@@ -87,3 +90,54 @@ def hide_link_preview(message_id: str):
 	message.hide_link_preview = 1
 	message.flags.editing_metadata = True
 	message.save()
+
+
+@frappe.whitelist(methods=["POST"])
+def update_link_previews_in_background(urls: list[str] | str, channel_id: str | None = None):
+	job_id = f"update_link_previews_{channel_id}"
+	if not is_job_enqueued(job_id):
+		enqueue(method=update_link_previews, urls=urls, channel_id=channel_id, job_name=job_id)
+	else:
+		frappe.log_error(f"Update preview links job is already running for channel {channel_id}")
+
+
+def update_link_previews(urls: list[str] | str, channel_id: str | None = None):
+	if isinstance(urls, str) and urls != "[]":
+		urls = json.loads(urls)
+
+	from raven.api.search import RavenSearch
+
+	search = RavenSearch()
+	reindexed_messages = set()
+
+	for url in urls:
+		try:
+			if frappe.db.exists("Raven Link Preview", url):
+				preview_doc = frappe.get_doc("Raven Link Preview", url)
+				preview_doc.fetch_preview()
+				preview_doc.save()
+			else:
+				preview_doc = frappe.get_doc(
+					{
+						"doctype": "Raven Link Preview",
+						"url": url,
+					}
+				)
+				preview_doc.insert()
+
+			# Re-index all messages that reference this URL
+			linked_messages = frappe.get_all(
+				"Raven Message Links", filters={"url": url, "parenttype": "Raven Message"}, pluck="parent"
+			)
+			for message_name in linked_messages:
+				if message_name not in reindexed_messages:
+					reindexed_messages.add(message_name)
+					search.index_doc("Raven Message", message_name)
+
+		except Exception:
+			frappe.log_error(f"Failed to update preview for {url}")
+
+	if channel_id:
+		frappe.publish_realtime(
+			"link_previews_updated", {"channel_id": channel_id}, room=get_raven_room()
+		)

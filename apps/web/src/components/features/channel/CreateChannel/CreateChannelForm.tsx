@@ -135,7 +135,7 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                                     ...data.message.channels,
                                     {
                                         ...result.message,
-                                        is_admin: '1',
+                                        is_admin: 1 as 1 | 0,
                                     }
                                 ]
                             }
@@ -269,75 +269,75 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                     {/* Footer - Sticky at Bottom */}
                     <div className="border-t bg-background">
                         <div className="px-4 py-4">
-                            {channelType !== "Open" ? 
-                            (currentStep === 1 ? (
-                                <div className="flex items-center justify-between gap-3" role="group" aria-label="Form navigation">
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        onClick={() => onClose()}
-                                        disabled={isSubmitting}
-                                        className="text-sm px-4"
-                                        aria-label="Cancel channel creation"
-                                    >
-                                        {_('Cancel')}
-                                    </Button>
-                                    <div className="flex items-center">
+                            {channelType !== "Open" ?
+                                (currentStep === 1 ? (
+                                    <div className="flex items-center justify-between gap-3" role="group" aria-label="Form navigation">
                                         <Button
                                             type="button"
-                                            onClick={handleNext}
-                                            className="text-sm pl-5 pr-4"
-                                            aria-label="Proceed to add members step"
+                                            variant="ghost"
+                                            onClick={() => onClose()}
+                                            disabled={isSubmitting}
+                                            className="text-sm px-4"
+                                            aria-label="Cancel channel creation"
                                         >
-                                            {_('Add Members')}
-                                            <ArrowRightIcon className="ml-2 h-4 w-4" aria-hidden="true" />
+                                            {_('Cancel')}
+                                        </Button>
+                                        <div className="flex items-center">
+                                            <Button
+                                                type="button"
+                                                onClick={handleNext}
+                                                className="text-sm pl-5 pr-4"
+                                                aria-label="Proceed to add members step"
+                                            >
+                                                {_('Add Members')}
+                                                <ArrowRightIcon className="ml-2 h-4 w-4" aria-hidden="true" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center justify-between gap-3" role="group" aria-label="Form navigation">
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            onClick={handleBack}
+                                            disabled={isSubmitting}
+                                            className="text-sm pl-3 pr-4"
+                                            aria-label="Go back to channel details"
+                                        >
+                                            <ArrowLeftIcon className="mr-2 h-4 w-4" aria-hidden="true" />
+                                            {_('Back')}
+                                        </Button>
+                                        <Button
+                                            onClick={handleSubmit(onSubmit)}
+                                            disabled={isSubmitting}
+                                            className="text-sm px-5"
+                                            aria-label={`Create channel with ${selectedMembers.length + 1} member${selectedMembers.length + 1 !== 1 ? 's' : ''}`}
+                                        >
+                                            {isSubmitting ? _('Creating...') : _(`Create Channel with ${selectedMembers.length + 1} member${selectedMembers.length + 1 !== 1 ? 's' : ''}`)}
                                         </Button>
                                     </div>
-                                </div>
-                            ) : (
-                                <div className="flex items-center justify-between gap-3" role="group" aria-label="Form navigation">
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        onClick={handleBack}
-                                        disabled={isSubmitting}
-                                        className="text-sm pl-3 pr-4"
-                                        aria-label="Go back to channel details"
-                                    >
-                                        <ArrowLeftIcon className="mr-2 h-4 w-4" aria-hidden="true" />
-                                        {_('Back')}
-                                    </Button>
-                                    <Button
-                                        onClick={handleSubmit(onSubmit)}
-                                        disabled={isSubmitting}
-                                        className="text-sm px-5"
-                                        aria-label={`Create channel with ${selectedMembers.length + 1} member${selectedMembers.length + 1 !== 1 ? 's' : ''}`}
-                                    >
-                                        {isSubmitting ? _('Creating...') : _(`Create Channel with ${selectedMembers.length + 1} member${selectedMembers.length + 1 !== 1 ? 's' : ''}`)}
-                                    </Button>
-                                </div>
-                            )) : (
-                                <div className="flex items-center justify-between gap-3" role="group" aria-label="Form navigation">
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        onClick={() => onClose()}
-                                        disabled={isSubmitting}
-                                        className="text-sm px-4"
-                                        aria-label="Cancel channel creation"
-                                    >
-                                        {_('Cancel')}
-                                    </Button>
-                                    <Button
-                                        onClick={handleSubmit(onSubmit)}
-                                        disabled={isSubmitting}
-                                        className="text-sm px-5"
-                                        aria-label={`Create channel with ${selectedMembers.length + 1} member${selectedMembers.length + 1 !== 1 ? 's' : ''}`}
-                                    >
-                                        {isSubmitting ? _('Creating...') : _(`Create Channel`)}
-                                    </Button>
-                                </div>
-                            )}    
+                                )) : (
+                                    <div className="flex items-center justify-between gap-3" role="group" aria-label="Form navigation">
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            onClick={() => onClose()}
+                                            disabled={isSubmitting}
+                                            className="text-sm px-4"
+                                            aria-label="Cancel channel creation"
+                                        >
+                                            {_('Cancel')}
+                                        </Button>
+                                        <Button
+                                            onClick={handleSubmit(onSubmit)}
+                                            disabled={isSubmitting}
+                                            className="text-sm px-5"
+                                            aria-label={`Create channel with ${selectedMembers.length + 1} member${selectedMembers.length + 1 !== 1 ? 's' : ''}`}
+                                        >
+                                            {isSubmitting ? _('Creating...') : _(`Create Channel`)}
+                                        </Button>
+                                    </div>
+                                )}
                         </div>
                     </div>
                 </form>

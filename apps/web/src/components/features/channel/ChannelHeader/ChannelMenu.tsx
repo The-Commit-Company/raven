@@ -10,7 +10,6 @@ import {
     DropdownMenuTrigger,
 } from "@components/ui/dropdown-menu";
 import { useChannel } from "@hooks/useChannel";
-import { useCurrentChannelID } from "@hooks/useCurrentChannelID";
 import { channelDrawerAtom } from "@utils/channelAtoms";
 import { useSetAtom } from "jotai";
 import {
@@ -20,6 +19,9 @@ import {
     ChevronDown,
     Settings,
     Users,
+    Files,
+    Link,
+    MessageSquareText
 } from "lucide-react";
 import _ from "@lib/translate";
 
@@ -44,8 +46,11 @@ const ChannelMenu = ({ channelID }: { channelID: string }) => {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-64">
-                <SettingsButton />
-                <MembersButton />
+                <SettingsButton channelID={channelID} />
+                <ChannelFilesButton channelID={channelID} />
+                <ChannelLinksButton channelID={channelID} />
+                <ChannelThreadsButton channelID={channelID} />
+                <MembersButton channelID={channelID} />
                 <DropdownMenuSub>
                     <DropdownMenuSubTrigger className="flex cursor-pointer items-center gap-2 py-2 text-sm">
                         <Bell className="h-4 w-4 text-muted-foreground" />
@@ -80,9 +85,7 @@ const ChannelMenu = ({ channelID }: { channelID: string }) => {
     )
 }
 
-const SettingsButton = () => {
-
-    const channelID = useCurrentChannelID()
+const SettingsButton = ({ channelID }: { channelID: string }) => {
 
     const setDrawerType = useSetAtom(channelDrawerAtom(channelID))
 
@@ -93,14 +96,54 @@ const SettingsButton = () => {
     return (
         <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpenSettings}>
             <Settings className="h-4 w-4" />
-            <span>{_("Channel details")}</span>
+            <span>{_("Channel info")}</span>
         </DropdownMenuItem>
     )
 }
 
-const MembersButton = () => {
+const ChannelFilesButton = ({ channelID }: { channelID: string }) => {
 
-    const channelID = useCurrentChannelID()
+    const setDrawerType = useSetAtom(channelDrawerAtom(channelID))
+
+    const onOpenFiles = () => {
+        setDrawerType('files')
+    }
+
+    return <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpenFiles}>
+        <Files className="h-4 w-4" />
+        <span>{_("Channel files")}</span>
+    </DropdownMenuItem>
+}
+
+const ChannelLinksButton = ({ channelID }: { channelID: string }) => {
+
+    const setDrawerType = useSetAtom(channelDrawerAtom(channelID))
+
+    const onOpenLinks = () => {
+        setDrawerType('links')
+    }
+
+    return <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpenLinks}>
+        <Link className="h-4 w-4" />
+        <span>{_("Channel links")}</span>
+    </DropdownMenuItem>
+}
+
+const ChannelThreadsButton = ({ channelID }: { channelID: string }) => {
+
+    const setDrawerType = useSetAtom(channelDrawerAtom(channelID))
+
+    const onOpenThreads = () => {
+        setDrawerType('threads')
+    }
+
+    return <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpenThreads}>
+        <MessageSquareText className="h-4 w-4" />
+        <span>{_("Channel threads")}</span>
+    </DropdownMenuItem>
+}
+
+const MembersButton = ({ channelID }: { channelID: string }) => {
 
     const setDrawerType = useSetAtom(channelDrawerAtom(channelID))
 

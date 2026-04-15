@@ -15,7 +15,7 @@ class RavenSearch(SQLiteSearch):
 
 	# Define the search schema
 	INDEX_SCHEMA = {
-		"text_fields": ["title", "content"],
+		"text_fields": ["title", "content", "preview_search_text"],
 		"metadata_fields": [
 			"channel_id",
 			"owner",
@@ -27,24 +27,23 @@ class RavenSearch(SQLiteSearch):
 			"is_bot_message",
 			"bot",
 			"poll_id",
-			"file_type",
-			"file_size",
-			"blurhash",
-			"file_thumbnail",
-			"thumbnail_width",
-			"thumbnail_height",
-			"internal_link",
-			"links",
+			"file_type",  # this won't be here when we have a child table for files
+			"file_size",  # this won't be here when we have a child table for files
+			"blurhash",  # this won't be here when we have a child table for files
+			"file_thumbnail",  # this won't be here when we have a child table for files
+			"thumbnail_width",  # this won't be here when we have a child table for files
+			"thumbnail_height",  # this won't be here when we have a child table for files
+			"internal_link",  # this won't be here when we have a child table for files
+			"preview_data",
 			"has_link",
 		],
-		"tokenizer": "unicode61 remove_diacritics 2 tokenchars '-_'",
+		"tokenizer": "unicode61 remove_diacritics 2 tokenchars '-_.'",
 	}
 
 	# Define which doctypes to index and their field mappings
 	INDEXABLE_DOCTYPES = {
 		"Raven Message": {
 			"fields": [
-				"name",
 				"content",
 				"channel_id",
 				"owner",
@@ -59,11 +58,10 @@ class RavenSearch(SQLiteSearch):
 				"file_thumbnail",
 				"thumbnail_width",
 				"thumbnail_height",
-				"links",
 				"link_doctype",
 				"link_document",
 			],
-		},
+		}
 	}
 
 	def get_search_filters(self):
@@ -79,20 +77,73 @@ class RavenSearch(SQLiteSearch):
 
 	def prepare_document(self, doc):
 		"""Custom document preparation"""
-		link_document = None
+
+		msg_link = frappe.qb.DocType("Raven Message Links")
+		preview_urls = (
+			frappe.qb.from_(msg_link)
+			.select(msg_link.url)
+			.where(msg_link.parent == doc.name)
+			.where(msg_link.parenttype == "Raven Message")
+		).run(pluck="url")
+
+		preview_data = []
+		preview_texts = []
+		if preview_urls:
+			unique_urls = set(preview_urls)
+			for url in unique_urls:
+				preview = frappe.db.get_value(
+					"Raven Link Preview", url, ["title", "description", "image", "site_name"], as_dict=True
+				)
+				if preview:
+					if preview.get("title"):
+						preview_texts.append(preview.title)
+					if preview.get("description"):
+						preview_texts.append(preview.description)
+					if preview.get("site_name"):
+						preview_texts.append(preview.site_name)
+
+					preview_data.append(
+						{
+							"url": url,
+							"title": preview.get("title"),
+							"description": preview.get("description"),
+							"image": preview.get("image"),
+							"site_name": preview.get("site_name"),
+						}
+					)
+				else:
+					preview_data.append(
+						{
+							"url": url,
+						}
+					)
+
 		if doc.link_document:
 			link_document = get_preview_data(doc.link_doctype, doc.link_document)
-			lowerCaseDoctype = doc.link_doctype.lower().replace(" ", "-")
-			doc.internal_link = f"/app/{lowerCaseDoctype}/{doc.link_document}"
-			if not doc.content:
-				doc.content = link_document.get("preview_title")
+			if link_document:
+				if link_document.get("preview_title"):
+					preview_texts.append(link_document.get("preview_title"))
+				if link_document.get("id"):
+					preview_texts.append(link_document.get("id"))
+				preview_data.append(
+					{
+						"url": link_document.get("raven_document_link"),
+						"title": link_document.get("preview_title"),
+						"image": link_document.get("preview_image"),
+						"document_id": link_document.get("id"),
+					}
+				)
+
+		if preview_data:
+			doc.has_link = 1
+			doc.preview_data = json.dumps(preview_data)
+
+		if preview_texts:
+			doc.preview_search_text = "\n\n" + "\n".join(preview_texts)
 
 		document = super().prepare_document(doc)
 		if not document:
 			return None
-
-		if link_document:
-			document["title"] = link_document.get("preview_title")
 
 		is_thread = frappe.db.get_value("Raven Channel", doc.channel_id, "is_thread")
 		mentions = frappe.db.get_all("Raven Mention", {"parent": doc.name}, pluck="user")
@@ -104,8 +155,6 @@ class RavenSearch(SQLiteSearch):
 			document["parent_channel_id"] = parent_channel_id
 		else:
 			document["parent_channel_id"] = doc.channel_id
-
-		document["has_link"] = 1 if doc.links else 0
 
 		if doc.message_type == "File" or doc.message_type == "Image":
 			file_name = doc.file.split("/")[-1]
@@ -123,10 +172,15 @@ class RavenSearch(SQLiteSearch):
 		return document
 
 	def index_doc(self, doctype, name):
-		"""Override index_doc to handle custom fields properly"""
+		"""Override index_doc to handle field mappings properly"""
 		# Get the document
 		doc = frappe.db.get_value(doctype, name, self.INDEXABLE_DOCTYPES[doctype]["fields"], as_dict=1)
+		if not doc:
+			return
+
 		doc["doctype"] = doctype
+		doc["name"] = name
+
 		self.raise_if_not_indexed()
 		# Remove existing document first to prevent duplicates
 		self.remove_doc(doctype, name)
@@ -245,6 +299,7 @@ def sqlite_search(query: str | None = None, filters: str | None = None, limit: i
 @frappe.whitelist()
 def rebuild_search_index():
 	search = RavenSearch()
+	search.drop_index()
 	search.build_index()
 	return "Search index rebuilt"
 
