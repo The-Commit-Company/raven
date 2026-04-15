@@ -18,7 +18,6 @@ class RavenLinkPreview(Document):
 		from frappe.types import DF
 
 		description: DF.SmallText | None
-		document_id: DF.Data | None
 		image: DF.AttachImage | None
 		site_name: DF.Data | None
 		title: DF.Data | None

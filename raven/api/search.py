@@ -33,7 +33,7 @@ class RavenSearch(SQLiteSearch):
 			"file_thumbnail",  # this won't be here when we have a child table for files
 			"thumbnail_width",  # this won't be here when we have a child table for files
 			"thumbnail_height",  # this won't be here when we have a child table for files
-			"internal_link",  # this won't be here when we have a child table for files, and linked documents will go in Raven Link Preview
+			"internal_link",  # this won't be here when we have a child table for files
 			"preview_data",
 			"has_link",
 		],
@@ -86,9 +86,9 @@ class RavenSearch(SQLiteSearch):
 			.where(msg_link.parenttype == "Raven Message")
 		).run(pluck="url")
 
+		preview_data = []
+		preview_texts = []
 		if preview_urls:
-			preview_texts = []
-			preview_data = []
 			unique_urls = set(preview_urls)
 			for url in unique_urls:
 				preview = frappe.db.get_value(
@@ -111,29 +111,41 @@ class RavenSearch(SQLiteSearch):
 							"site_name": preview.get("site_name"),
 						}
 					)
+				else:
+					preview_data.append(
+						{
+							"url": url,
+						}
+					)
 
-			doc.has_link = 1
-
-			if preview_data:
-				doc.preview_data = json.dumps(preview_data)
-
-			if preview_texts:
-				doc.preview_search_text = "\n\n" + "\n".join(preview_texts)
-
-		link_document = None
 		if doc.link_document:
 			link_document = get_preview_data(doc.link_doctype, doc.link_document)
-			lowerCaseDoctype = doc.link_doctype.lower().replace(" ", "-")
-			doc.internal_link = f"/app/{lowerCaseDoctype}/{doc.link_document}"
-			if not doc.content:
-				doc.content = link_document.get("preview_title")
+			if link_document:
+				if link_document.get("preview_title"):
+					preview_texts.append(link_document.get("preview_title"))
+				if link_document.get("id"):
+					preview_texts.append(link_document.get("id"))
+				preview_data.append(
+					{
+						"url": link_document.get("raven_document_link"),
+						"title": link_document.get("preview_title"),
+						"image": link_document.get("preview_image"),
+						"document_id": link_document.get("id")
+					}
+				)
+
+
+		if preview_data:
+			doc.has_link = 1
+			doc.preview_data = json.dumps(preview_data)
+
+		if preview_texts:
+			doc.preview_search_text = "\n\n" + "\n".join(preview_texts)
+
 
 		document = super().prepare_document(doc)
 		if not document:
 			return None
-
-		if link_document:
-			document["title"] = link_document.get("preview_title")
 
 		is_thread = frappe.db.get_value("Raven Channel", doc.channel_id, "is_thread")
 		mentions = frappe.db.get_all("Raven Mention", {"parent": doc.name}, pluck="user")

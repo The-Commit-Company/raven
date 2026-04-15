@@ -11,7 +11,6 @@
   "description",
   "image",
   "site_name",
-  "document_id",
   "url"
  ],
  "fields": [
@@ -42,18 +41,13 @@
    "label": "URL",
    "reqd": 1,
    "unique": 1
-  },
-  {
-   "fieldname": "document_id",
-   "fieldtype": "Data",
-   "label": "Document ID"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-10 15:43:57.967166",
- "modified_by": "Administrator",
+ "modified": "2026-04-15 14:14:14.620869",
+ "modified_by": "aditya.p@frappe.io",
  "module": "Raven Messaging",
  "name": "Raven Link Preview",
  "naming_rule": "By fieldname",

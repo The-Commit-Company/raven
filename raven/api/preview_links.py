@@ -94,13 +94,13 @@ def hide_link_preview(message_id: str):
 
 @frappe.whitelist(methods=["POST"])
 def update_link_previews_in_background(urls: list[str] | str, channel_id: str | None = None):
-	job_id = "update_link_previews"
+	job_id = f"update_link_previews_{channel_id}"
 	if not is_job_enqueued(job_id):
 		enqueue(
-			method=update_link_previews, urls=urls, channel_id=channel_id, job_name="update_link_previews"
+			method=update_link_previews, urls=urls, channel_id=channel_id, job_name=job_id
 		)
 	else:
-		frappe.log_error("Update preview links job is already running")
+		frappe.log_error(f"Update preview links job is already running for channel {channel_id}")
 
 
 def update_link_previews(urls: list[str] | str, channel_id: str | None = None):
@@ -114,10 +114,19 @@ def update_link_previews(urls: list[str] | str, channel_id: str | None = None):
 
 	for url in urls:
 		try:
-			preview_doc = frappe.get_doc("Raven Link Preview", url)
-			preview_doc.fetch_preview()
-			preview_doc.save()
-
+			if frappe.db.exists("Raven Link Preview", url):
+				preview_doc = frappe.get_doc("Raven Link Preview", url)
+				preview_doc.fetch_preview()
+				preview_doc.save()
+			else:
+				preview_doc = frappe.get_doc(
+					{
+						"doctype": "Raven Link Preview",
+						"url": url,
+					}
+				)
+				preview_doc.insert()
+				
 			# Re-index all messages that reference this URL
 			linked_messages = frappe.get_all(
 				"Raven Message Links", filters={"url": url, "parenttype": "Raven Message"}, pluck="parent"
