@@ -130,10 +130,9 @@ class RavenSearch(SQLiteSearch):
 						"url": link_document.get("raven_document_link"),
 						"title": link_document.get("preview_title"),
 						"image": link_document.get("preview_image"),
-						"document_id": link_document.get("id")
+						"document_id": link_document.get("id"),
 					}
 				)
-
 
 		if preview_data:
 			doc.has_link = 1
@@ -141,7 +140,6 @@ class RavenSearch(SQLiteSearch):
 
 		if preview_texts:
 			doc.preview_search_text = "\n\n" + "\n".join(preview_texts)
-
 
 		document = super().prepare_document(doc)
 		if not document:

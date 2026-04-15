@@ -96,9 +96,7 @@ def hide_link_preview(message_id: str):
 def update_link_previews_in_background(urls: list[str] | str, channel_id: str | None = None):
 	job_id = f"update_link_previews_{channel_id}"
 	if not is_job_enqueued(job_id):
-		enqueue(
-			method=update_link_previews, urls=urls, channel_id=channel_id, job_name=job_id
-		)
+		enqueue(method=update_link_previews, urls=urls, channel_id=channel_id, job_name=job_id)
 	else:
 		frappe.log_error(f"Update preview links job is already running for channel {channel_id}")
 
@@ -126,7 +124,7 @@ def update_link_previews(urls: list[str] | str, channel_id: str | None = None):
 					}
 				)
 				preview_doc.insert()
-				
+
 			# Re-index all messages that reference this URL
 			linked_messages = frappe.get_all(
 				"Raven Message Links", filters={"url": url, "parenttype": "Raven Message"}, pluck="parent"
