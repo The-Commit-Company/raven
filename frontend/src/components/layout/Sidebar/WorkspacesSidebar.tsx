@@ -102,8 +102,8 @@ const WorkspaceItem = ({ workspace }: { workspace: WorkspaceFields & { unread_co
             </Tooltip>
         </Flex>
         {workspace.unread_count > 0 &&
-            <Box className='rounded-full absolute -right-2 -bottom-1 bg-red-11 dark:bg-red-9 text-white w-4 h-4 flex items-center justify-center'>
-                <Text as='span' size='1' weight='medium'>{workspace.unread_count}</Text>
+            <Box className='rounded-lg absolute -right-2 -bottom-1 bg-red-11 dark:bg-red-9 text-white min-w-4 p-0.5 h-4 flex items-center justify-center'>
+                <Text as='span' size='1' weight='medium'>{workspace.unread_count > 99 ? '99+' : workspace.unread_count}</Text>
             </Box>
         }
     </HStack>
