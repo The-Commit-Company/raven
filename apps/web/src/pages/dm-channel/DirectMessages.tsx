@@ -1,4 +1,4 @@
-import { useNavigate, useParams, Outlet } from "react-router-dom"
+import { useNavigate, useParams, Outlet, Navigate } from "react-router-dom"
 import { DMSidebar } from "@components/dm-sidebar/DMSidebar"
 import AppHeader from "@components/features/header/AppHeader"
 import { AppLayout } from "@components/layout/AppLayout"
@@ -14,6 +14,19 @@ export function DirectMessagesEmptyState() {
             <p className="text-xs">{_("Choose a direct message from the sidebar to start chatting.")}</p>
         </div>
     )
+}
+
+export function DirectMessagesIndex() {
+    const { dm_channels, isLoading } = useChannels()
+
+    if (isLoading) return null
+
+    const firstDM = dm_channels[0]
+    if (firstDM) {
+        return <Navigate to={`/dm-channel/${encodeURIComponent(firstDM.name)}`} replace />
+    }
+
+    return <DirectMessagesEmptyState />
 }
 
 export default function DirectMessages() {

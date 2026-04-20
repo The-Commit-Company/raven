@@ -31,12 +31,8 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
     const displayName = peer.full_name ?? peer.name ?? "Unknown"
     const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
     const { dmChannel } = useChannel(channelID)
-    console.log("DMChannelHeader rendered with channelID", channelID, "and dmChannel", dmChannel)
     const pinnedCount = dmChannel?.pinned_messages_string ? dmChannel.pinned_messages_string.split("\n").length : 0
 
-    const onOpenFiles = () => setDrawerType(drawerType === "files" ? "" : "files")
-    const onOpenLinks = () => setDrawerType(drawerType === "links" ? "" : "links")
-    const onOpenThreads = () => setDrawerType(drawerType === "threads" ? "" : "threads")
     const onOpenPins = () => setDrawerType(drawerType === "pins" ? "" : "pins")
     const handleViewProfile = () => onViewProfile?.()
 

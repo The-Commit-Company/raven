@@ -10,7 +10,7 @@ import Notifications from "@pages/notifications/Notifications"
 import SavedMessages from "@pages/saved-messages/SavedMessages"
 import Search from "@pages/search/Search"
 import Threads from "@pages/threads/Threads"
-import DirectMessages, { DirectMessagesEmptyState } from "@pages/dm-channel/DirectMessages"
+import DirectMessages, { DirectMessagesIndex } from "@pages/dm-channel/DirectMessages"
 import DirectMessage from "@pages/dm-channel/DirectMessage"
 import WorkspaceSwitcher from "@pages/WorkspaceSwitcher"
 import { WorkspaceSwitcherGrid } from "@components/workspace-switcher/WorkspaceSwitcherGrid"
@@ -75,7 +75,7 @@ function App() {
               <Route index element={<Search />} />
             </Route>
             <Route path="dm-channel" element={<DirectMessages />}>
-              <Route index element={<DirectMessagesEmptyState />} />
+              <Route index element={<DirectMessagesIndex />} />
               <Route path=":id" element={<DirectMessage />} />
               <Route path=":id/thread/:threadID" element={<DirectMessage />} />
             </Route>
