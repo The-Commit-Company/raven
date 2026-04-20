@@ -161,13 +161,18 @@ def get_employee_details(user: str):
 	"""
 	Fetches employee details for a given user
 	"""
- 	# Check if FrappeHR is installed
+	# Check if FrappeHR is installed
 	if not "hrms" in frappe.get_installed_apps():
 		return False
 
 	employee = frappe.db.exists("Employee", {"user_id": user})
 
 	if employee:
-		return frappe.db.get_value("Employee", employee, ["designation", "department", "team", "cell_number", "prefered_email"], as_dict=True)
+		return frappe.db.get_value(
+			"Employee",
+			employee,
+			["designation", "department", "team", "cell_number", "prefered_email"],
+			as_dict=True,
+		)
 
 	return None
