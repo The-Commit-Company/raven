@@ -3,6 +3,8 @@ import SearchBar from "./QuickSearch/SearchBar";
 import { useSidebar } from "@components/ui/sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SIDEBAR_LESS_ROUTES } from "@utils/routes";
+import CommandMenu from "../cmdk/CommandMenu";
+import SearchButton from "./QuickSearch/SearchButton";
 
 interface AppHeaderProps {
     searchValue?: string
@@ -34,21 +36,20 @@ const AppHeader = ({ searchValue, onSearchChange, left: leftProp, width: widthPr
             className="flex items-center justify-between border-b bg-background z-10 px-2 fixed top-0 h-(--app-header-height) w-full transition-[left,width] duration-200 ease-linear"
         // style={{ left, width }}
         >
-            {/* Left section - empty for balance */}
-            {/* <div className="flex-1" /> */}
-
             {/* Centered search bar section */}
             <div className="flex flex-1 items-center justify-end w-full gap-1">
                 {isSearchPage ? (
                     <SearchBar value={searchValue || ""} onChange={onSearchChange || (() => { })} />
                 ) : (
-                    <SearchBar value={""} onChange={() => { }} onFocus={() => navigate("/search")} />
+                    <SearchButton />
                 )}
+
                 <UserHelpMenu />
             </div>
 
             {/* Right section - empty for balance */}
             <div className="flex-1" />
+            <CommandMenu />
         </header>
     )
 }
