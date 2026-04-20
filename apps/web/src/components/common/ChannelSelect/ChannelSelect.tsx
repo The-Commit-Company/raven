@@ -22,7 +22,8 @@ import { Label } from "@components/ui/label"
 import { ChevronDownIcon } from "lucide-react"
 import { cn } from "@lib/utils"
 import type { ChannelListItem, DMChannelListItem } from "@raven/types/common/ChannelListItem"
-import type { UserFields } from "@raven/types/common/UserFields"
+import { UserData } from "@db"
+import _ from "@lib/translate"
 
 export type ChannelSelectItem = ChannelListItem | DMChannelListItem
 
@@ -32,7 +33,7 @@ interface ChannelSelectProps {
     /** DM channels */
     dmChannels: DMChannelListItem[]
     /** Users for resolving DM peer names/avatars (optional; falls back to peer_user_id when empty) */
-    availableUsers?: UserFields[]
+    availableUsers?: UserData[]
     value: string
     onValueChange: (value: string) => void
     /** Placeholder when nothing selected */
@@ -55,7 +56,7 @@ interface ChannelSelectProps {
 
 function getChannelLabel(
     ch: ChannelSelectItem,
-    availableUsers: UserFields[]
+    availableUsers: UserData[]
 ): string {
     if (ch.is_direct_message === 1) {
         const dm = ch as DMChannelListItem
@@ -70,7 +71,7 @@ function ChannelOption({
     availableUsers,
 }: {
     channel: ChannelSelectItem
-    availableUsers: UserFields[]
+    availableUsers: UserData[]
 }) {
     const isDM = channel.is_direct_message === 1
     const dmChannel = channel as DMChannelListItem
@@ -144,8 +145,8 @@ export function ChannelSelect({
                 ? "!px-2"
                 : "!px-3"
             : size === "sm"
-              ? "!px-3"
-              : "!px-4"
+                ? "!px-3"
+                : "!px-4"
 
     const content = (
         <>
@@ -310,7 +311,7 @@ function ChannelSelectCombobox({
                         <CommandInput placeholder="Search channels and DMs..." />
                         <div
                             ref={scrollRef}
-                            className="h-[200px] overflow-y-auto overflow-x-hidden"
+                            className="h-50 overflow-y-auto overflow-x-hidden"
                             onWheel={(e) => {
                                 const el = scrollRef.current
                                 if (el) {
@@ -320,46 +321,46 @@ function ChannelSelectCombobox({
                                 }
                             }}
                         >
-                                <CommandList className="max-h-none overflow-visible">
-                            <CommandEmpty>No channels or DMs found.</CommandEmpty>
-                            {allowAll && (
-                                <CommandGroup>
-                                    <CommandItem value="all" onSelect={() => { onValueChange("all"); setOpen(false); }}>
-                                        {allLabel}
-                                    </CommandItem>
-                                </CommandGroup>
-                            )}
-                            <CommandGroup heading="Channels">
-                                {channels.map((ch) => (
-                                    <CommandItem
-                                        key={ch.name}
-                                        value={`${ch.name} ${getChannelLabel(ch, resolvedAvailableUsers)}`}
-                                        onSelect={() => {
-                                            onValueChange(ch.name)
-                                            setOpen(false)
-                                        }}
-                                    >
-                                        <ChannelOption channel={ch} availableUsers={resolvedAvailableUsers} />
-                                    </CommandItem>
-                                ))}
-                            </CommandGroup>
-                            {dmChannels.length > 0 && (
-                                <CommandGroup heading="Direct Messages">
-                                    {dmChannels.map((dm) => (
+                            <CommandList className="max-h-none overflow-visible">
+                                <CommandEmpty>{_("No channels or DMs found.")}</CommandEmpty>
+                                {allowAll && (
+                                    <CommandGroup>
+                                        <CommandItem value="all" onSelect={() => { onValueChange("all"); setOpen(false); }}>
+                                            {allLabel}
+                                        </CommandItem>
+                                    </CommandGroup>
+                                )}
+                                <CommandGroup heading="Channels">
+                                    {channels.map((ch) => (
                                         <CommandItem
-                                            key={dm.name}
-                                            value={`${dm.name} ${getChannelLabel(dm, resolvedAvailableUsers)}`}
+                                            key={ch.name}
+                                            value={`${ch.name} ${getChannelLabel(ch, resolvedAvailableUsers)}`}
                                             onSelect={() => {
-                                                onValueChange(dm.name)
+                                                onValueChange(ch.name)
                                                 setOpen(false)
                                             }}
                                         >
-                                            <ChannelOption channel={dm} availableUsers={resolvedAvailableUsers} />
+                                            <ChannelOption channel={ch} availableUsers={resolvedAvailableUsers} />
                                         </CommandItem>
                                     ))}
                                 </CommandGroup>
-                            )}
-                                </CommandList>
+                                {dmChannels.length > 0 && (
+                                    <CommandGroup heading="Direct Messages">
+                                        {dmChannels.map((dm) => (
+                                            <CommandItem
+                                                key={dm.name}
+                                                value={`${dm.name} ${getChannelLabel(dm, resolvedAvailableUsers)}`}
+                                                onSelect={() => {
+                                                    onValueChange(dm.name)
+                                                    setOpen(false)
+                                                }}
+                                            >
+                                                <ChannelOption channel={dm} availableUsers={resolvedAvailableUsers} />
+                                            </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                )}
+                            </CommandList>
                         </div>
                     </Command>
                 </PopoverContent>

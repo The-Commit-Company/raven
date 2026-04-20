@@ -40,7 +40,7 @@ export function ConvertedThreadPreviewCard({
     className,
 }: ConvertedThreadPreviewCardProps) {
     const to = workspace
-        ? `/${encodeURIComponent(workspace)}/channel/${encodeURIComponent(channelId)}`
+        ? `/${encodeURIComponent(workspace)}/${encodeURIComponent(channelId)}`
         : "#"
 
     const replyCount = preview?.message_count ?? 0

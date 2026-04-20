@@ -9,6 +9,7 @@ import { useMemo, useState } from "react"
 import { useFieldArray, useFormContext } from "react-hook-form"
 import { ColumnDef, SortingState } from "src/types/DataTable"
 import _ from "@lib/translate"
+import { Star } from "lucide-react"
 
 interface ChannelTable {
   name: string,
@@ -147,7 +148,7 @@ const ChannelGroupDropdown = ({ channel }: { channel: ChannelTable }) => {
       field => field.channel_id === channel.name
     )
 
-    if (value === "⭐️ Favorites") {
+    if (value === "Favorites") {
       if (pinnedIndex < 0) {
         appendPinnedChannels({
           channel_id: channel.name,
@@ -190,7 +191,12 @@ const ChannelGroupDropdown = ({ channel }: { channel: ChannelTable }) => {
       <SelectValue placeholder={_('Select a group')} />
     </SelectTrigger>
     <SelectContent className="min-w-56 max-w-72">
-      <SelectItem value="⭐️ Favorites">⭐️ {_("Favorites")}</SelectItem>
+      <SelectItem value="Favorites">
+        <div className="flex items-center gap-1">
+          <Star className="h-3 w-3 text-foreground/80 fill-amber-300 stroke-amber-300 mr-1" />
+          {_("Favorites")}
+        </div>
+      </SelectItem>
       {groups.length > 0 && <SelectSeparator className="mx-1" />}
       {groups.map((field) => (
         <SelectItem key={field.name} value={field.group_name} className="overflow-hidden *:last:truncate *:last:block!">

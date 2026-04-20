@@ -1,5 +1,5 @@
 import { useFrappeDocTypeEventListener, useFrappeGetCall } from "frappe-react-sdk"
-import { UserData, db } from "../db/db"
+import { UserData, db } from "@db"
 import { useEffect, useState } from "react"
 import { useSWRConfig } from "frappe-react-sdk"
 

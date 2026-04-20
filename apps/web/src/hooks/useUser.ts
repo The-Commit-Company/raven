@@ -1,5 +1,5 @@
 import { useSWR } from "frappe-react-sdk"
-import { db } from "../db/db"
+import { db } from "@db"
 
 const getUserKey = (userID: string) => `user::${userID}`
 

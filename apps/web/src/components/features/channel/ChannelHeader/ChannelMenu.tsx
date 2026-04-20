@@ -101,7 +101,7 @@ const SettingsButton = ({ channelID }: { channelID: string }) => {
     )
 }
 
-const ChannelFilesButton = ({ channelID }: { channelID: string }) => {
+export const ChannelFilesButton = ({ channelID }: { channelID: string }) => {
 
     const setDrawerType = useSetAtom(channelDrawerAtom(channelID))
 
@@ -111,11 +111,11 @@ const ChannelFilesButton = ({ channelID }: { channelID: string }) => {
 
     return <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpenFiles}>
         <Files className="h-4 w-4" />
-        <span>{_("Channel files")}</span>
+        <span>{_("Files")}</span>
     </DropdownMenuItem>
 }
 
-const ChannelLinksButton = ({ channelID }: { channelID: string }) => {
+export const ChannelLinksButton = ({ channelID }: { channelID: string }) => {
 
     const setDrawerType = useSetAtom(channelDrawerAtom(channelID))
 
@@ -125,11 +125,11 @@ const ChannelLinksButton = ({ channelID }: { channelID: string }) => {
 
     return <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpenLinks}>
         <Link className="h-4 w-4" />
-        <span>{_("Channel links")}</span>
+        <span>{_("Links")}</span>
     </DropdownMenuItem>
 }
 
-const ChannelThreadsButton = ({ channelID }: { channelID: string }) => {
+export const ChannelThreadsButton = ({ channelID }: { channelID: string }) => {
 
     const setDrawerType = useSetAtom(channelDrawerAtom(channelID))
 
@@ -139,7 +139,7 @@ const ChannelThreadsButton = ({ channelID }: { channelID: string }) => {
 
     return <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpenThreads}>
         <MessageSquareText className="h-4 w-4" />
-        <span>{_("Channel threads")}</span>
+        <span>{_("Threads")}</span>
     </DropdownMenuItem>
 }
 

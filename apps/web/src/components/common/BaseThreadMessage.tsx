@@ -1,6 +1,6 @@
 import { UserAvatar } from "@components/features/message/UserAvatar"
-import { UserFields } from "@raven/types/common/UserFields"
 import { GroupedAvatars } from "@components/ui/grouped-avatars"
+import { UserData } from "@db"
 
 interface ParticipantUser {
     name: string
@@ -9,12 +9,12 @@ interface ParticipantUser {
 }
 
 interface BaseThreadMessageProps {
-    user: UserFields | null
+    user: UserData | null
     messageContent: string
     channelName?: string
     channelIcon?: React.ReactNode
     participants?: ParticipantUser[]
-    aiUser?: UserFields | null
+    aiUser?: UserData | null
     isDirectMessage?: boolean
     replyCount?: number
     showConnectorLine?: boolean

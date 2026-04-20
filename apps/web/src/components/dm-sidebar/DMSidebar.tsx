@@ -1,10 +1,8 @@
-import * as React from "react"
 import { SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader } from "@components/ui/sidebar"
 import { Label } from "@components/ui/label"
 import { Switch } from "@components/ui/switch"
 import { Skeleton } from "@components/ui/skeleton"
 import { DMListItem } from "../common/DMListItem/DMListItem"
-import { UserFields } from "@raven/types/common/UserFields"
 import type { DMChannelListItem } from "@raven/types/common/ChannelListItem"
 import { useUser } from "@hooks/useUser"
 import { formatRelativeDate } from "@utils/date"
@@ -49,34 +47,27 @@ function DMChannelRow({
     onDMClick: (channelId: string) => void
 }) {
     const { data: peerUser } = useUser(dmChannel.peer_user_id)
-    const user: UserFields = React.useMemo(
-        () =>
-            peerUser ?? {
-                name: dmChannel.peer_user_id,
-                full_name: dmChannel.peer_user_id,
-                type: "User",
-            },
-        [peerUser, dmChannel.peer_user_id]
-    )
+
     const date = formatRelativeDate(dmChannel.last_message_timestamp)
     const teaser = getMessageTeaser(dmChannel.last_message_details)
     const unread = typeof dmChannel.last_message_details === "object" && dmChannel.last_message_details?.unread_count != null
         ? Number(dmChannel.last_message_details.unread_count)
         : 0
 
-    return (
-        <DMListItem
-            user={user}
-            date={date}
-            teaser={teaser}
-            unread={unread}
-            isActive={activeDMChannelId === dmChannel.name}
-            onClick={(e) => {
-                e.preventDefault()
-                onDMClick(dmChannel.name)
-            }}
-        />
-    )
+    if (peerUser)
+        return (
+            <DMListItem
+                user={peerUser}
+                date={date}
+                teaser={teaser}
+                unread={unread}
+                isActive={activeDMChannelId === dmChannel.name}
+                onClick={(e) => {
+                    e.preventDefault()
+                    onDMClick(dmChannel.name)
+                }}
+            />
+        )
 }
 
 interface DMSidebarProps {
@@ -84,7 +75,7 @@ interface DMSidebarProps {
     activeDMChannelId: string | null
     onDMClick: (dmChannelId: string) => void
     /** DM channels from API (e.g. raven.api.raven_channel.get_all_channels) */
-    dmChannelsFromAPI?: DMChannelListItem[]
+    dmChannels?: DMChannelListItem[]
     isLoadingChannels?: boolean
 }
 
@@ -92,10 +83,9 @@ export function DMSidebar({
     workspaceName,
     activeDMChannelId,
     onDMClick,
-    dmChannelsFromAPI,
+    dmChannels,
     isLoadingChannels = false,
 }: DMSidebarProps) {
-    const useAPI = Array.isArray(dmChannelsFromAPI) && dmChannelsFromAPI.length > 0
 
     return (
         <>
@@ -115,8 +105,8 @@ export function DMSidebar({
                     <SidebarGroupContent>
                         {isLoadingChannels ? (
                             <DMSidebarSkeleton />
-                        ) : useAPI ? (
-                            dmChannelsFromAPI!.map((dm) => (
+                        ) : (
+                            dmChannels!.map((dm) => (
                                 <DMChannelRow
                                     key={dm.name}
                                     dmChannel={dm}
@@ -124,8 +114,6 @@ export function DMSidebar({
                                     onDMClick={onDMClick}
                                 />
                             ))
-                        ) : (
-                            <div className="px-4 py-3 text-sm text-muted-foreground">No conversations yet</div>
                         )}
                     </SidebarGroupContent>
                 </SidebarGroup>

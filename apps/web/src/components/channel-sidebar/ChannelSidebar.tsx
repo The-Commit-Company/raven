@@ -1,4 +1,4 @@
-import { ChevronRight, Info } from "lucide-react"
+import { ChevronRight, Info, Star } from "lucide-react"
 import { ChannelListItem } from "@raven/types/common/ChannelListItem"
 import { cn } from "@lib/utils"
 import {
@@ -79,23 +79,6 @@ export function ChannelSidebar({
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
                     <SidebarGroupLabel className="text-muted-foreground/80 font-normal text-[11px]">{_("Channels")}</SidebarGroupLabel>
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Info className="w-3 h-3 text-sidebar-foreground/50 hover:text-sidebar-foreground/70 cursor-help transition-colors" />
-                            </TooltipTrigger>
-                            <TooltipContent side="right" className="max-w-xs">
-                                <div className="space-y-2 text-xs">
-                                    <div>
-                                        <strong>{_("Channel Groups")}</strong> {_("Organize channels into collapsible groups")}
-                                    </div>
-                                    <div>
-                                        <strong>{_("Ungrouped")}</strong> {_("Channels not in groups appear at the bottom")}
-                                    </div>
-                                </div>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
                 </div>
                 <div className="flex items-center gap-1">
                     <CustomizeSidebarButton showMyChannelsOnly={showMyChannelsOnly} setShowMyChannelsOnly={setShowMyChannelsOnly} />
@@ -124,12 +107,21 @@ export function ChannelSidebar({
                                                     const emojiMatch = groupName.match(/^[\p{Emoji}\u200d]+/u);
                                                     const emoji = emojiMatch ? emojiMatch[0] : null;
                                                     const nameWithoutEmoji = groupName.replace(/^[\p{Emoji}\u200d]+\s?/u, '');
-                                                    return (
-                                                        <>
-                                                            {emoji && <span className="text-lg leading-none shrink-0">{emoji}</span>}
-                                                            <span className="truncate">{nameWithoutEmoji}</span>
-                                                        </>
-                                                    );
+                                                    if (groupName === "Favorites") {
+                                                        return (
+                                                            <div className="flex items-center gap-2">
+                                                                <Star className="h-4 w-4 text-foreground/80" />
+                                                                <span className="truncate">{_("Favorites")}</span>
+                                                            </div>
+                                                        );
+                                                    } else {
+                                                        return (
+                                                            <>
+                                                                {emoji && <span className="text-lg leading-none shrink-0">{emoji}</span>}
+                                                                <span className="truncate">{nameWithoutEmoji}</span>
+                                                            </>
+                                                        );
+                                                    }
                                                 })()}
                                             </span>
                                             <div className="ml-auto shrink-0 flex items-center gap-2">

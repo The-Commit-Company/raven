@@ -1,5 +1,5 @@
 import { cn } from "@lib/utils"
-import { UserFields } from "@raven/types/common/UserFields"
+import { UserData } from "@db"
 import { Check, Clock, MoreVertical, ExternalLink } from "lucide-react"
 import { Button } from "@components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@components/ui/dropdown-menu"
@@ -11,10 +11,10 @@ import { useMemo } from "react"
 
 interface SavedMessagePreviewBoxProps {
     message: Message
-    user: UserFields | null
+    user: UserData | null
     channelName?: string
     channelIcon?: React.ReactNode
-    participantUsers?: UserFields[]
+    participantUsers?: UserData[]
     isDirectMessage?: boolean
     isThread?: boolean
     replyCount?: number
@@ -73,7 +73,7 @@ export const SavedMessagePreviewBox = ({
         >
             {/* Connecting line from avatar to participants - only show for non-DM threads */}
             {!isDirectMessage && isThread && (
-                <div className="absolute top-[80px] left-[40px] w-7 h-[calc(100%-6.75rem)] border-l border-b border-border rounded-bl-lg z-0" />
+                <div className="absolute top-20 left-10 w-7 h-[calc(100%-6.75rem)] border-l border-b border-border rounded-bl-lg z-0" />
             )}
 
             {/* Channel info header */}

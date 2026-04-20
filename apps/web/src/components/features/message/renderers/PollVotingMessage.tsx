@@ -1,6 +1,6 @@
 import React from "react"
 import { UserAvatar } from "../UserAvatar"
-import type { UserFields } from "@raven/types/common/UserFields"
+import type { UserData } from "@db"
 import type { RavenPoll } from "@raven/types/RavenMessaging/RavenPoll"
 import type { RavenPollOption } from "@raven/types/RavenMessaging/RavenPollOption"
 import {
@@ -11,7 +11,7 @@ import {
 } from "./poll-components"
 
 export interface PollVotingMessageProps {
-    user: UserFields
+    user: UserData
     poll: RavenPoll
     options: (RavenPollOption & { voters?: { id: string; name: string; image: string }[] })[]
     time: string

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react"
-import { UserFields } from "@raven/types/common/UserFields"
+import { UserData } from "@db"
 import { UserAvatar } from "../UserAvatar"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@lib/utils"
@@ -16,7 +16,7 @@ export interface ImageFile {
 }
 
 export interface ImageMessageProps {
-    user: UserFields
+    user: UserData
     images: ImageFile[]
     time: string
     message?: string

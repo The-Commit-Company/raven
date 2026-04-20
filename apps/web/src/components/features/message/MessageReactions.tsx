@@ -7,13 +7,13 @@ import {
   TooltipTrigger,
 } from '@components/ui/tooltip';
 import { ReactionObject } from '@raven/types/common/ChatStream';
-import { UserFields } from '@raven/types/common/UserFields';
+import { UserData } from "@db";
 import { cn } from '@lib/utils';
 import { SmilePlus } from 'lucide-react';
 
 interface MessageReactionsProps {
   reactions: ReactionObject[];
-  allUsers: Record<string, UserFields>;
+  allUsers: Record<string, UserData>;
   currentUserId?: string;
   onReactionClick?: (emoji: string, isCustom?: boolean, emojiName?: string) => void;
   onAddReaction?: () => void;
@@ -23,7 +23,7 @@ interface MessageReactionsProps {
 interface ReactionButtonProps {
   reaction: ReactionObject;
   isUserReacted: boolean;
-  allUsers: Record<string, UserFields>;
+  allUsers: Record<string, UserData>;
   currentUserId: string;
   onClick?: () => void;
 }
@@ -31,7 +31,7 @@ interface ReactionButtonProps {
 const getUsers = (
   users: string[],
   currentUser: string,
-  allUsers: Record<string, UserFields>
+  allUsers: Record<string, UserData>
 ): string => {
   const userNames = users.map(userId => {
     if (userId === currentUser) return 'You';

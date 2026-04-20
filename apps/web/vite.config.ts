@@ -28,6 +28,7 @@ export default defineConfig({
       "@assets": path.resolve(__dirname, "./src/assets"),
       "@raven/types": path.resolve(__dirname, "../../packages/types"),
       "@raven/lib": path.resolve(__dirname, "../../packages/lib"),
+      "@db": path.resolve(__dirname, "./src/db/db"),
     },
   },
   server: {

@@ -2,7 +2,7 @@ import { useMemo } from "react"
 import { SavedMessagePreviewBox } from "./SavedMessagePreviewBox"
 import { SavedMessage, SavedMessageStatus } from "../../../types/SavedMessage"
 import { RavenChannel } from "@raven/types/RavenChannelManagement/RavenChannel"
-import { UserFields } from "@raven/types/common/UserFields"
+import { UserData } from "@db"
 import { useUser } from "@hooks/useUser"
 import { getDateObject } from "@utils/date"
 import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
@@ -27,7 +27,7 @@ interface SavedMessagesListProps {
 }
 
 // Dummy users matching those used in ThreadsList
-const dummyUsers: Record<string, UserFields> = {
+const dummyUsers: Record<string, UserData> = {
     "Desirae Lipshutz": {
         name: "Desirae Lipshutz",
         full_name: "Desirae Lipshutz",
@@ -360,7 +360,7 @@ function SavedMessagePreviewBoxWrapper({
 }: {
     message: SavedMessage
     channel?: RavenChannel
-    users: UserFields[]
+    users: UserData[]
     onMarkComplete?: () => void
     onSetReminder?: (option: string) => void
     onArchive?: () => void
@@ -414,13 +414,13 @@ function SavedMessagePreviewBoxWrapper({
     // Check if this is a thread message
     const isThreadMessage = 'thread_message_id' in message
 
-    // Format participant users as UserFields array (only for thread messages)
+    // Format participant users as UserData array (only for thread messages)
     const participantUsers = useMemo(() => {
         if (!isThreadMessage || !message.participants || message.participants.length === 0) return []
 
         return message.participants
             .map(p => users.find(u => u.name === p.user_id))
-            .filter((u): u is UserFields => u !== undefined)
+            .filter((u): u is UserData => u !== undefined)
     }, [message, users, isThreadMessage])
 
     const hasReminder = !!(message.reminder_date && message.reminder_time)

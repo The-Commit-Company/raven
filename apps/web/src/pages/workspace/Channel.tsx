@@ -7,7 +7,7 @@ import { channelDrawerAtom } from "@utils/channelAtoms"
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
 import { useGetMessages } from "@hooks/useGetMessages"
 
-const SETTINGS_DRAWER_TYPES = ["info", "files", "links", "threads", "pins"] as const
+export const SETTINGS_DRAWER_TYPES = ["info", "files", "links", "threads", "pins"] as const
 
 export default function Channel() {
     const channelID = useCurrentChannelID()

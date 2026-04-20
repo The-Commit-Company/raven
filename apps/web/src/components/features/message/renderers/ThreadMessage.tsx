@@ -1,6 +1,6 @@
 import { Hash } from "lucide-react"
 import { GroupedAvatars } from "@components/ui/grouped-avatars"
-import type { UserFields } from "@raven/types/common/UserFields"
+import type { UserData } from "@db"
 import { useAtom } from "jotai"
 import { channelDrawerAtom } from "@utils/channelAtoms"
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
@@ -41,7 +41,7 @@ const MessageContent = ({ displayName, time, message }: MessageContentProps) => 
 )
 
 interface ThreadButtonProps {
-    participants: UserFields[]
+    participants: UserData[]
     messageCount: number
     threadID?: string
 }

@@ -1,10 +1,10 @@
 import ThreadsList from './ThreadsList'
-import { UserFields } from '@raven/types/common/UserFields'
+import { UserData } from "@db"
 import { ThreadMessage } from '../../../types/ThreadMessage'
 
 interface ParticipatingThreadsProps {
     threadType?: 'all' | 'participating'
-    availableUsers?: UserFields[]
+    availableUsers?: UserData[]
     onThreadClick?: (thread: ThreadMessage) => void
     activeThreadID?: string
 }

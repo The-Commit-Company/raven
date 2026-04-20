@@ -2,12 +2,12 @@ import { ChannelSelect } from "@components/common/ChannelSelect/ChannelSelect"
 import { SearchFilters } from "./types"
 import type { RavenChannel } from "@raven/types/RavenChannelManagement/RavenChannel"
 import type { ChannelListItem, DMChannelListItem } from "@raven/types/common/ChannelListItem"
-import type { UserFields } from "@raven/types/common/UserFields"
+import type { UserData } from "@db"
 
 interface ChannelFilterProps {
     filters: SearchFilters
     availableChannels: RavenChannel[]
-    availableUsers: UserFields[]
+    availableUsers: UserData[]
     onChannelChange?: (value: string) => void
     showLabel?: boolean
     size?: "sm"

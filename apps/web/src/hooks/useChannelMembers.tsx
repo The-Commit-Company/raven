@@ -1,5 +1,5 @@
 import { useFrappeGetCall } from "frappe-react-sdk"
-import { db, type UserData } from "../db/db"
+import { db, UserData } from "@db"
 import { useMemo } from "react"
 import { useLiveQuery } from "dexie-react-hooks"
 import { useLoadUsers } from "./useLoadUsers"
