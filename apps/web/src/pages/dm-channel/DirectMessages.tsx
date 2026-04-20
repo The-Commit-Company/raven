@@ -4,12 +4,14 @@ import AppHeader from "@components/features/header/AppHeader"
 import { AppLayout } from "@components/layout/AppLayout"
 import { SidebarShell } from "@components/layout/SidebarShell"
 import { useChannels } from "@hooks/useChannels"
+import _ from "@lib/translate"
+
 
 export function DirectMessagesEmptyState() {
     return (
         <div className="flex flex-1 flex-col items-center justify-center gap-2 p-6 text-center text-muted-foreground">
-            <p className="text-sm font-medium">Select a conversation</p>
-            <p className="text-xs">Choose a direct message from the sidebar to start chatting.</p>
+            <p className="text-sm font-medium">{_("Select a conversation")}</p>
+            <p className="text-xs">{_("Choose a direct message from the sidebar to start chatting.")}</p>
         </div>
     )
 }
@@ -30,7 +32,7 @@ export default function DirectMessages() {
                 workspaceName="Direct Messages"
                 activeDMChannelId={activeDMChannelId}
                 onDMClick={handleDMClick}
-                dmChannelsFromAPI={dm_channels}
+                dmChannels={dm_channels}
                 isLoadingChannels={isLoading}
             />
         </SidebarShell>

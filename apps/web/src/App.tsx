@@ -58,7 +58,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/" element={<WorkspaceSwitcher />}>
-            <Route index element={lastWorkspace && lastChannel && isDesktop ? <Navigate to={`/${encodeURIComponent(lastWorkspace)}/channel/${encodeURIComponent(lastChannel)}`} replace /> : lastWorkspace ? <Navigate to={`/${encodeURIComponent(lastWorkspace)}`} replace /> : <WorkspaceSwitcherGrid />} />
+            <Route index element={lastWorkspace && lastChannel && isDesktop ? <Navigate to={`/${encodeURIComponent(lastWorkspace)}/${encodeURIComponent(lastChannel)}`} replace /> : lastWorkspace ? <Navigate to={`/${encodeURIComponent(lastWorkspace)}`} replace /> : <WorkspaceSwitcherGrid />} />
             <Route path="workspace-explorer" element={<WorkspaceSwitcherGrid />} />
             <Route path="settings" element={<AppSettings />}>
               <Route index element={<Navigate to="profile" replace />} />
@@ -83,9 +83,9 @@ function App() {
             {/* Workspace: channels and settings only; search is global at /search above */}
             <Route path=":workspaceID" element={<MainPage />}>
               <Route index element={<WorkspaceRedirect />} />
-              <Route path="channel/:id" element={<Channel />} />
-              <Route path="channel/:id/thread/:threadID" element={<Channel />} />
-              <Route path="channel/:id/settings" element={<ChannelSettings />} />
+              <Route path=":id" element={<Channel />} />
+              <Route path=":id/thread/:threadID" element={<Channel />} />
+              <Route path=":id/settings" element={<ChannelSettings />} />
             </Route>
           </Route>
         </Routes>

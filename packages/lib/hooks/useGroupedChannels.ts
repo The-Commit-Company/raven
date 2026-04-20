@@ -28,7 +28,7 @@ export const useGroupedChannels = (
         )
 
         if (pinnedChannelIds.size > 0) {
-            groups.set('⭐️ Favorites', [])
+            groups.set('Favorites', [])
         }
         if (myProfile?.channel_groups && myProfile.channel_groups.length > 0) {
             myProfile.channel_groups.forEach(group => {
@@ -38,7 +38,7 @@ export const useGroupedChannels = (
 
         workspaceChannels.forEach(ch => {
             if (pinnedChannelIds.has(ch.name)) {
-                groups.get('⭐️ Favorites')?.push(ch)
+                groups.get('Favorites')?.push(ch)
                 remainingChannels.delete(ch)
                 return
             }

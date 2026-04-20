@@ -1,71 +1,44 @@
-import { useParams, Navigate } from "react-router-dom"
+import { Navigate } from "react-router-dom"
 import { DMChannelHeader } from "@components/features/dm-channel/DMChannelHeader"
-import { DMDrawer } from "@components/features/dm-channel/DMDrawer"
-import { UserProfileDrawer } from "@components/features/dm-channel/UserProfileDrawer"
+import ChannelSettingsDrawer from "@components/features/channel/ChannelSettingsDrawer/ChannelSettingsDrawer"
 import { DirectMessagePageSkeleton } from "@components/features/dm-channel/DirectMessagePageSkeleton"
 import { ChatContentView } from "@components/features/message/ChatContentView"
 import { useGetMessages } from "@hooks/useGetMessages"
-import { useMemo, useState } from "react"
-import { useChannels } from "@hooks/useChannels"
 import { useUser } from "@hooks/useUser"
-import { useAtomValue } from "jotai"
-import { dmDrawerAtom } from "@utils/channelAtoms"
-import type { DMChannelPeer } from "@components/features/dm-channel/DMChannelHeader"
-import type { UserFields } from "@raven/types/common/UserFields"
+import { useAtomValue, useSetAtom } from "jotai"
+import { channelDrawerAtom } from "@utils/channelAtoms"
+import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
+import _ from "@lib/translate"
+import { useChannel } from "@hooks/useChannel"
+import { SETTINGS_DRAWER_TYPES } from "@pages/workspace/Channel"
 
 export default function DirectMessage() {
-    const { id } = useParams<{ id: string; threadID?: string }>()
-    const channelId = id ?? ""
-    const { dm_channels, isLoading: isLoadingChannelList } = useChannels()
-    const dmDrawerType = useAtomValue(dmDrawerAtom(channelId))
+    const channelID = useCurrentChannelID()
+    const { dmChannel } = useChannel(channelID)
+    const drawerType = useAtomValue(channelDrawerAtom(channelID))
+    const setDrawerType = useSetAtom(channelDrawerAtom(channelID))
 
-    const peer = useMemo((): DMChannelPeer | null => {
-        const fromAPI = dm_channels?.find((c) => c.name === channelId)
-        if (fromAPI) {
-            return {
-                name: fromAPI.peer_user_id,
-                full_name: fromAPI.peer_user_id,
-                type: "User" as const,
-            }
-        }
-        return null
-    }, [channelId, dm_channels])
-
-    const [profileDrawerUser, setProfileDrawerUser] = useState<UserFields | null>(null)
-    const { data: peerUser } = useUser(peer?.name ?? "")
-    const peerForHeader: DMChannelPeer | null = peer
-        ? ({
-            name: peer.name,
-            full_name: peerUser?.full_name ?? peer.full_name ?? peer.name,
-            user_image: peerUser?.user_image ?? peer.user_image,
-            type: (peerUser?.type ?? peer.type) as "User" | "Bot",
-        } as DMChannelPeer)
-        : null
-
-    const { data, isLoading } = useGetMessages(channelId)
+    const { data: peerUser, isLoading: isPeerUserLoading } = useUser(dmChannel?.peer_user_id || "")
+    const { data, isLoading } = useGetMessages(channelID)
 
     const contextDrawer =
-        profileDrawerUser ? (
-            <div className="flex h-full min-h-0 shrink-0 flex-col border-l bg-background transition-all duration-300">
-                <UserProfileDrawer user={profileDrawerUser} onClose={() => setProfileDrawerUser(null)} />
-            </div>
-        ) : dmDrawerType !== "" ? (
-            <DMDrawer channelId={channelId} />
+        SETTINGS_DRAWER_TYPES.includes(drawerType as (typeof SETTINGS_DRAWER_TYPES)[number]) && peerUser ? (
+            <ChannelSettingsDrawer peerUser={peerUser} />
         ) : null
 
-    if (!channelId) {
+    if (!channelID) {
         return <Navigate to="/dm-channel" replace />
     }
 
-    if (isLoadingChannelList && !peer) {
+    if (isPeerUserLoading && !isLoading) {
         return <DirectMessagePageSkeleton />
     }
 
-    if (!peerForHeader) {
+    if (!peerUser) {
         return (
             <div className="flex flex-1 flex-col items-center justify-center gap-2 p-6 text-center text-muted-foreground">
-                <p className="text-sm font-medium">Conversation not found</p>
-                <p className="text-xs">This direct message may have been removed or you don’t have access.</p>
+                <p className="text-sm font-medium">{_("Conversation not found")}</p>
+                <p className="text-xs">{_("This direct message may have been removed or you don’t have access.")}</p>
             </div>
         )
     }
@@ -73,12 +46,12 @@ export default function DirectMessage() {
     return (
         <div className="flex h-full min-h-0 flex-col">
             <DMChannelHeader
-                peer={peerForHeader}
-                channelId={channelId}
-                onViewProfile={() => setProfileDrawerUser(peerForHeader as UserFields)}
+                peer={peerUser}
+                channelID={channelID}
+                onViewProfile={() => setDrawerType('info')}
             />
             <ChatContentView
-                channelID={channelId}
+                channelID={channelID}
                 messages={data?.messages ?? null}
                 isLoading={isLoading}
                 contextDrawer={contextDrawer}

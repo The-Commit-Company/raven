@@ -70,7 +70,7 @@ export const ManageChannels = () => {
             enableSorting: true,
             headerClassName: 'w-[20%]',
             cell: ({ row }) => (
-                <div className='flex items-center gap-2 hover:cursor-pointer w-full' onClick={() => navigate(`/${row.workspace}/channel/${row.name}`)}>
+                <div className='flex items-center gap-2 hover:cursor-pointer w-full' onClick={() => navigate(`/${row.workspace}/${row.name}`)}>
                     <ChannelIcon type={row.type || "Public"} className="w-4 h-4 shrink-0" />
                     <span className='text-sm font-medium line-clamp-1 text-ellipsis'>{row.channel_name}</span>
                 </div>

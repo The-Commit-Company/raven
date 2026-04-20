@@ -6,7 +6,7 @@ import { Navigate, useParams } from "react-router-dom"
  */
 export const WorkspaceRedirect = () => {
     const { workspaceID } = useParams<{ workspaceID: string }>()
-    
+
     if (!workspaceID) {
         return <Navigate to="/" replace />
     }
@@ -21,6 +21,6 @@ export const WorkspaceRedirect = () => {
 
     const workspaceSlug = encodeURIComponent(workspaceID)
     const channelId = lastChannel || "general"
-    
-    return <Navigate to={`/${workspaceSlug}/channel/${encodeURIComponent(channelId)}`} replace />
+
+    return <Navigate to={`/${workspaceSlug}/${encodeURIComponent(channelId)}`} replace />
 }

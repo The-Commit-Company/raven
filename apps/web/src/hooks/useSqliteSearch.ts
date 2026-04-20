@@ -29,7 +29,7 @@ export type SearchResult = {
 };
 
 export const useSqliteSearch = (query: string, filters: Record<string, string | number | boolean | string[]>, limit: number = 20) => {
-    const debouncedQuery = useDebounce(query, 500)
+    const debouncedQuery = useDebounce(query, 200)
 
     const swrKey = useMemo(() =>
         `raven.api.search.sqlite_search?query=${debouncedQuery}&filters=${JSON.stringify(filters)}&limit=${limit}`,

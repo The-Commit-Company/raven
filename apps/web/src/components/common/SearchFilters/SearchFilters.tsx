@@ -6,13 +6,13 @@ import DateFilter from './DateFilter'
 import { Button } from '@components/ui/button'
 import { ListFilter } from 'lucide-react'
 import { RavenChannel } from '@raven/types/RavenChannelManagement/RavenChannel'
-import { UserFields } from '@raven/types/common/UserFields'
+import { UserData } from "@db"
 import { SearchFilters as SearchFiltersType } from './types'
 
 interface SearchFiltersProps {
     filters: SearchFiltersType
     availableChannels: RavenChannel[]
-    availableUsers: UserFields[]
+    availableUsers: UserData[]
     onOpenMoreFilters: () => void
     onChannelChange?: (value: string) => void
 }

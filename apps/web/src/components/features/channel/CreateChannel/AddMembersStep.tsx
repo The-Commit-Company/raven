@@ -3,9 +3,8 @@ import { Button } from '@components/ui/button'
 import { Input } from '@components/ui/input'
 import { UserAvatar } from '@components/features/message/UserAvatar'
 import { Search, UserPlus, X } from 'lucide-react'
-import type { UserFields } from '@raven/types/common/UserFields'
+import { db, UserData } from "@db"
 import { ScrollArea } from '@components/ui/scroll-area'
-import { db, UserData } from '../../../../db/db'
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useDebounce } from '@raven/lib/hooks/useDebounce';
 import _ from '@lib/translate'
@@ -151,7 +150,7 @@ export const AddMembersStep = ({ selectedUsers, onSelectUsers }: AddMembersStepP
                                 onClick={() => handleSelectUser(user)}
                             >
                                 <UserAvatar
-                                    user={user as UserFields}
+                                    user={user}
                                     size="sm"
                                     className="shrink-0"
                                     showStatusIndicator={false}

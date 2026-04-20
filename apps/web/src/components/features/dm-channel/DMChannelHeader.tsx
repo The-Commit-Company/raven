@@ -4,33 +4,40 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "@components/ui/dropdown-menu"
 import { UserAvatar } from "@components/features/message/UserAvatar"
-import { BellOff, ChevronDown, FileText, Headset, Link, MessageSquareText, Star, User } from "lucide-react"
+import { Bell, BellOff, BellRing, ChevronDown, FileText, Headset, Link, MessageSquareText, Pin, Star, User } from "lucide-react"
 import { useAtom } from "jotai"
-import { dmDrawerAtom } from "@utils/channelAtoms"
-import type { UserFields } from "@raven/types/common/UserFields"
-
-/** Data for the peer user in a DM channel (name, avatar, etc.). full_name is optional for display. */
-export type DMChannelPeer = Omit<UserFields, "full_name"> & { full_name?: string }
+import { channelDrawerAtom } from "@utils/channelAtoms"
+import { UserData } from "@db"
+import _ from "@lib/translate"
+import { useChannel } from "@hooks/useChannel"
+import { ChannelFilesButton, ChannelLinksButton, ChannelThreadsButton } from "../channel/ChannelHeader/ChannelMenu"
 
 interface DMChannelHeaderProps {
     /** Peer user info (name, avatar). When from API this can extend to peer_user_id, etc. */
-    peer: DMChannelPeer
+    peer: UserData
     /** DM channel id (for drawer state) */
-    channelId: string
+    channelID: string
     /** Called when user chooses "View profile" in the dropdown */
     onViewProfile?: () => void
 }
 
-export function DMChannelHeader({ peer, channelId, onViewProfile }: DMChannelHeaderProps) {
+export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHeaderProps) {
     const displayName = peer.full_name ?? peer.name ?? "Unknown"
-    const [drawerType, setDrawerType] = useAtom(dmDrawerAtom(channelId))
+    const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
+    const { dmChannel } = useChannel(channelID)
+    console.log("DMChannelHeader rendered with channelID", channelID, "and dmChannel", dmChannel)
+    const pinnedCount = dmChannel?.pinned_messages_string ? dmChannel.pinned_messages_string.split("\n").length : 0
 
     const onOpenFiles = () => setDrawerType(drawerType === "files" ? "" : "files")
     const onOpenLinks = () => setDrawerType(drawerType === "links" ? "" : "links")
     const onOpenThreads = () => setDrawerType(drawerType === "threads" ? "" : "threads")
+    const onOpenPins = () => setDrawerType(drawerType === "pins" ? "" : "pins")
     const handleViewProfile = () => onViewProfile?.()
 
     return (
@@ -45,7 +52,7 @@ export function DMChannelHeader({ peer, channelId, onViewProfile }: DMChannelHea
             {/* Left: Star + Avatar/Name dropdown + Files + Links – aligned like channel header */}
             <div className="flex items-center gap-2 min-w-0">
                 <div className="flex items-center gap-0.5">
-                    <Tooltip>
+                    {/* <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm shrink-0">
                                 <Star className="h-3 w-3 text-foreground/80" />
@@ -55,17 +62,17 @@ export function DMChannelHeader({ peer, channelId, onViewProfile }: DMChannelHea
                         <TooltipContent side="bottom">
                             <p>Star</p>
                         </TooltipContent>
-                    </Tooltip>
+                    </Tooltip> */}
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button
                                 variant="ghost"
                                 size="default"
-                                className="h-8 rounded-sm gap-2 min-w-0 max-w-[240px] py-1"
+                                className="h-8 rounded-sm gap-2 min-w-0 max-w-60 py-1"
                             >
                                 <UserAvatar
-                                    user={peer as UserFields}
+                                    user={peer}
                                     size="sm"
                                     showStatusIndicator={false}
                                     showBotIndicator={false}
@@ -80,16 +87,57 @@ export function DMChannelHeader({ peer, channelId, onViewProfile }: DMChannelHea
                                 onSelect={handleViewProfile}
                             >
                                 <User className="h-4 w-4" />
-                                View profile
+                                {_("View profile")}
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm">
-                                <BellOff className="h-4 w-4" />
-                                Mute conversation
-                            </DropdownMenuItem>
+                            <ChannelFilesButton channelID={channelID} />
+                            <ChannelLinksButton channelID={channelID} />
+                            <ChannelThreadsButton channelID={channelID} />
+                            <DropdownMenuSub>
+                                <DropdownMenuSubTrigger className="flex cursor-pointer items-center gap-2 py-2 text-sm">
+                                    <Bell className="h-4 w-4 text-muted-foreground" />
+                                    <span>{_("Push notifications")}</span>
+                                </DropdownMenuSubTrigger>
+                                <DropdownMenuSubContent className="w-44">
+                                    <DropdownMenuItem
+                                        className="flex cursor-pointer items-center gap-2 py-2 text-sm"
+                                        onClick={() => { }}
+                                    >
+                                        <BellRing className="h-4 w-4" />
+                                        <span>{_("All Notifications")}</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        className="flex cursor-pointer items-center gap-2 py-2 text-sm"
+                                        onClick={() => { }}
+                                    >
+                                        <Bell className="h-4 w-4" />
+                                        <span>{_("Mentions Only")}</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        className="flex cursor-pointer items-center gap-2 py-2 text-sm"
+                                        onClick={() => { }}
+                                    >
+                                        <BellOff className="h-4 w-4" />
+                                        <span>{_("Mute Channel")}</span>
+                                    </DropdownMenuItem>
+                                </DropdownMenuSubContent>
+                            </DropdownMenuSub>
                         </DropdownMenuContent>
                     </DropdownMenu>
 
-                    <Tooltip>
+                    {pinnedCount > 0 && <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button variant="ghost" size="default" className="h-7 gap-2 rounded-sm" onClick={onOpenPins}>
+                                <Pin className="h-2 w-2 text-foreground/80" />
+                                <span className="sr-only">{_('Pinned')}</span>
+                                <span className="text-muted-foreground text-sm font-normal">{pinnedCount}</span>
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{_('Pinned Messages')}</p>
+                        </TooltipContent>
+                    </Tooltip>}
+
+                    {/* <Tooltip>
                         <TooltipTrigger asChild>
                             <Button
                                 variant="ghost"
@@ -136,7 +184,7 @@ export function DMChannelHeader({ peer, channelId, onViewProfile }: DMChannelHea
                         <TooltipContent side="bottom">
                             <p>Threads</p>
                         </TooltipContent>
-                    </Tooltip>
+                    </Tooltip> */}
                 </div>
             </div>
 

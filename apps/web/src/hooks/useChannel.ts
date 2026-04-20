@@ -5,13 +5,17 @@ import { useContext, useMemo } from "react";
 import { useChannels } from "./useChannels";
 
 export function useChannel(channelID: string) {
-  const { channels } = useChannels()
+  const { channels, dm_channels } = useChannels()
   const { call } = useContext(FrappeContext) as FrappeConfig
   const { myProfile, mutate: mutateUser } = useCurrentRavenUser()
 
   const channel = useMemo(() => {
     return channels.find((channel) => channel.name === channelID)
   }, [channels, channelID])
+
+  const dmChannel = useMemo(() => {
+    return dm_channels.find((channel) => channel.name === channelID)
+  }, [dm_channels, channelID])
 
   const toggleStarChannel = async () => {
     return call
@@ -37,6 +41,7 @@ export function useChannel(channelID: string) {
 
   return {
     channel,
+    dmChannel,
     toggleStarChannel,
     isStarred,
   }

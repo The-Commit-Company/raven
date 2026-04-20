@@ -2,7 +2,7 @@ import { X } from 'lucide-react'
 import { Badge } from '@components/ui/badge'
 import { SearchFilters } from './types'
 import { RavenChannel } from '@raven/types/RavenChannelManagement/RavenChannel'
-import { UserFields } from '@raven/types/common/UserFields'
+import { UserData } from "@db"
 interface FilterBadgeProps {
     label: string
 }
@@ -24,7 +24,7 @@ function FilterBadge({ label }: FilterBadgeProps) {
     )
 }
 
-export function ActiveFilterBadges({ filters, availableChannels, availableUsers }: { filters: SearchFilters, availableChannels: RavenChannel[], availableUsers: UserFields[] }) {
+export function ActiveFilterBadges({ filters, availableChannels, availableUsers }: { filters: SearchFilters, availableChannels: RavenChannel[], availableUsers: UserData[] }) {
 
     if (!filters) {
         return null

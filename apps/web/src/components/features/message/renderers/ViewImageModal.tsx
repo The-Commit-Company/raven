@@ -10,7 +10,7 @@ import { Button } from "@components/ui/button"
 import { Dialog, DialogPortal, DialogOverlay } from "@components/ui/dialog"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { UserAvatar } from "../UserAvatar"
-import { UserFields } from "@raven/types/common/UserFields"
+import { UserData } from "@db"
 import { useEffect } from "react"
 
 export interface ImageFile {
@@ -25,7 +25,7 @@ export interface ImageFile {
 interface ViewImageModalProps {
     images: ImageFile[]
     selectedImageIndex: number | null
-    user: UserFields
+    user: UserData
     time: string
     onClose: () => void
     onImageSelect: (index: number) => void
@@ -76,7 +76,7 @@ const ViewImageModal = ({
             <DialogPortal>
                 <DialogOverlay />
                 <DialogPrimitive.Content
-                    className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border shadow-xl duration-200 sm:max-w-lg !max-w-6xl w-[90vw] h-[85vh] !max-h-none p-0 overflow-hidden bg-background">
+                    className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border shadow-xl duration-200 sm:max-w-lg max-w-6xl! w-[90vw] h-[85vh] max-h-none! p-0 overflow-hidden bg-background">
                     {/* Header */}
                     <div className="flex items-center justify-between px-4 py-3 border-b bg-background">
                         <div className="flex items-center gap-2 min-w-0">
@@ -94,7 +94,7 @@ const ViewImageModal = ({
                         </div>
                         {currentImage && (
                             <div className="flex flex-wrap items-baseline gap-2">
-                                <span className="truncate max-w-[180px] text-base font-medium">
+                                <span className="truncate max-w-45 text-base font-medium">
                                     {currentImage.file_name}
                                 </span>
                                 <span className="text-xs bg-muted/80 px-1 py-0.5 rounded-sm">
@@ -170,7 +170,7 @@ const ViewImageModal = ({
                                     <div
                                         key={image.name}
                                         className={cn(
-                                            "flex-shrink-0 cursor-pointer border-2 rounded-lg overflow-hidden transition-all duration-200",
+                                            "shrink-0 cursor-pointer border-2 rounded-lg overflow-hidden transition-all duration-200",
                                             index === selectedImageIndex
                                                 ? "border-blue-500 ring-2 ring-blue-300"
                                                 : "border-transparent hover:border-border"

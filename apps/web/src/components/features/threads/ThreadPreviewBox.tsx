@@ -1,6 +1,6 @@
 import { Badge } from "@components/ui/badge"
 import { cn } from "@lib/utils"
-import { UserFields } from "@raven/types/common/UserFields"
+import { UserData } from "@db"
 import { BaseThreadMessage } from "@components/common/BaseThreadMessage"
 
 interface ParticipantUser {
@@ -10,7 +10,7 @@ interface ParticipantUser {
 }
 
 interface ThreadPreviewBoxProps {
-    user: UserFields | null
+    user: UserData | null
     messageContent: string
     formattedDate: string
     replyCount: number
@@ -18,7 +18,7 @@ interface ThreadPreviewBoxProps {
     channelName?: string
     channelIcon?: React.ReactNode
     participants?: ParticipantUser[]
-    aiUser?: UserFields | null
+    aiUser?: UserData | null
     isDirectMessage?: boolean
     onClick?: () => void
     isActive?: boolean
@@ -51,7 +51,7 @@ export const ThreadPreviewBox = ({
         >
             {/* Connecting line from avatar to participants - only show for non-DM threads */}
             {!isDirectMessage && (
-                <div className="absolute top-[80px] left-[40px] w-7 h-[calc(100%-6.75rem)] border-l border-b border-border rounded-bl-lg z-0" />
+                <div className="absolute top-20 left-10 w-7 h-[calc(100%-6.75rem)] border-l border-b border-border rounded-bl-lg z-0" />
             )}
 
             {/* Header: Channel name and date */}
@@ -82,7 +82,7 @@ export const ThreadPreviewBox = ({
                 <div className="absolute top-4 right-6">
                     <Badge
                         variant="default"
-                        className="font-semibold min-w-[20px] h-5 flex items-center justify-center text-[10px] px-1.5"
+                        className="font-semibold min-w-5 h-5 flex items-center justify-center text-[10px] px-1.5"
                     >
                         {unreadCount > 99 ? '99+' : unreadCount}
                     </Badge>

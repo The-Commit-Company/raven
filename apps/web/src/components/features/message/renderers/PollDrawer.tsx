@@ -14,11 +14,11 @@ import { UserAvatar } from "../UserAvatar"
 import { getDateObject } from "@utils/date"
 import type { RavenPoll } from "@raven/types/RavenMessaging/RavenPoll"
 import type { RavenPollOption } from "@raven/types/RavenMessaging/RavenPollOption"
-import type { UserFields } from "@raven/types/common/UserFields"
+import type { UserData } from "@db"
 import { getOptionPercentage, getPollStatus, isUserVote } from "./poll-components"
 
 export interface PollDrawerProps {
-    user: UserFields
+    user: UserData
     poll: RavenPoll & {
         options: (RavenPollOption & { voters?: { id: string; name: string; full_name?: string; image: string }[] })[]
     }
@@ -54,7 +54,7 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
     }
 
     return (
-        <div className="flex flex-col h-full max-w-md w-[380px]">
+        <div className="flex flex-col h-full max-w-md w-95">
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-2 border-b shrink-0">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -189,7 +189,7 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                                             {/* Voters List */}
                                             {showVoters && (
                                                 <div className="pt-2 border-t">
-                                                    <div className="space-y-1 max-h-[300px] overflow-y-auto">
+                                                    <div className="space-y-1 max-h-75 overflow-y-auto">
                                                         {optionWithVoters.voters?.map((voter) => (
                                                             <div
                                                                 key={voter.id}

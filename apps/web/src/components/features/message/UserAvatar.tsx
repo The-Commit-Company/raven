@@ -1,11 +1,11 @@
 import { memo, useMemo } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { cn } from '@lib/utils'
-import { UserFields } from '@raven/types/common/UserFields'
+import { UserData } from "@db"
 import { RiRobot2Fill } from 'react-icons/ri'
 
 interface UserAvatarProps {
-    user: UserFields,
+    user: UserData,
     isActive?: boolean,
     size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl',
     className?: string,

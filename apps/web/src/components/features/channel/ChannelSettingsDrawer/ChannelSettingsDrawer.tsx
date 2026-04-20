@@ -7,12 +7,18 @@ import ChannelFiles from './ChannelFiles';
 import ChannelPins from './ChannelPins';
 import ChannelLinks from './ChannelLinks';
 import ChannelInfo from './ChannelInfo';
+import { UserProfileDrawer } from '@components/features/dm-channel/UserProfileDrawer';
 import { useAtom } from 'jotai';
 import { channelDrawerAtom } from '@utils/channelAtoms';
 import { useCurrentChannelID } from '@hooks/useCurrentChannelID';
+import type { UserData } from '@db';
 import _ from '@lib/translate'
 
-const ChannelSettingsDrawer = () => {
+interface ChannelSettingsDrawerProps {
+    peerUser?: UserData
+}
+
+const ChannelSettingsDrawer = ({ peerUser }: ChannelSettingsDrawerProps) => {
 
     const channelID = useCurrentChannelID()
 
@@ -27,13 +33,17 @@ const ChannelSettingsDrawer = () => {
     }
 
     return (
-        <div className="flex flex-col h-full max-w-md w-[380px]">
+        <div className="flex flex-col h-full max-w-md w-95">
             <div className="flex-1 overflow-hidden p-3">
                 <ScrollArea className="h-full">
                     <Tabs value={drawerType} onValueChange={onTabChange} className="w-full">
                         <div className="flex items-center justify-between">
                             <TabsList className="grid flex-1 grid-cols-5 gap-1 px-1 h-8">
-                                <TabsTrigger value="info" className="text-xs h-6">{_('Info')}</TabsTrigger>
+                                {peerUser ? (
+                                    <TabsTrigger value="info" className="text-xs h-6">{_('Profile')}</TabsTrigger>
+                                ) : (
+                                    <TabsTrigger value="info" className="text-xs h-6">{_('Info')}</TabsTrigger>
+                                )}
                                 <TabsTrigger value="files" className="text-xs h-6">{_('Files')}</TabsTrigger>
                                 <TabsTrigger value="links" className="text-xs h-6">{_('Links')}</TabsTrigger>
                                 <TabsTrigger value="threads" className="text-xs h-6">{_('Threads')}</TabsTrigger>
@@ -51,7 +61,11 @@ const ChannelSettingsDrawer = () => {
                         </div>
 
                         <TabsContent value="info">
-                            <ChannelInfo channelID={channelID} />
+                            {peerUser ? (
+                                <UserProfileDrawer user={peerUser} />
+                            ) : (
+                                <ChannelInfo channelID={channelID} />
+                            )}
                         </TabsContent>
 
                         <TabsContent value="threads">
@@ -69,7 +83,6 @@ const ChannelSettingsDrawer = () => {
                         <TabsContent value="pins">
                             <ChannelPins channelID={channelID} />
                         </TabsContent>
-
                     </Tabs>
                 </ScrollArea>
             </div>

@@ -9,7 +9,7 @@ import SearchResultsPeople from "@components/common/SearchFilters/SearchResultsP
 import SearchResultsPolls from "@components/common/SearchFilters/SearchResultsPolls"
 import SearchResultsFiles from "@components/common/SearchFilters/SearchResultsFiles"
 import { RavenChannel } from "@raven/types/RavenChannelManagement/RavenChannel"
-import { UserFields } from "@raven/types/common/UserFields"
+import { UserData } from "@db"
 
 export default function Search() {
 
@@ -97,7 +97,7 @@ export default function Search() {
             availability_status: "Available",
             custom_status: "Reviewing PRs"
         }
-    ] as UserFields[]
+    ] as UserData[]
 
     // Dummy channels for ChannelFilter UI
     const dummyChannels = [
@@ -301,7 +301,7 @@ export default function Search() {
                     <SearchFiltersComponent
                         filters={fullFilters}
                         availableChannels={dummyChannels as RavenChannel[]}
-                        availableUsers={dummyUsers as UserFields[]}
+                        availableUsers={dummyUsers as UserData[]}
                         onOpenMoreFilters={() => setIsDrawerOpen(open => !open)}
                     />
                     <div className="mt-4 flex-1 overflow-y-auto">

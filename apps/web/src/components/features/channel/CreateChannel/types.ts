@@ -1,5 +1,5 @@
 import { RavenChannel } from '@raven/types/RavenChannelManagement/RavenChannel'
-import { UserData } from '../../../../db/db'
+import { UserData } from "@db"
 
 export interface ChannelCreationForm {
     channel_name: string

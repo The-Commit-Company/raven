@@ -36,7 +36,7 @@ export function AppSidebar(props: React.ComponentProps<typeof SidebarShell>) {
             const channelId = channel.name || channel.channel_name || "general"
             // Save to localStorage
             localStorage.setItem('ravenLastChannel', JSON.stringify(channelId))
-            navigate(`/${workspaceSlug}/channel/${encodeURIComponent(channelId)}`)
+            navigate(`/${workspaceSlug}/${encodeURIComponent(channelId)}`)
         }
     }
 

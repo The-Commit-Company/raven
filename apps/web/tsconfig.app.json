@@ -49,6 +49,9 @@
       ],
       "@utils/*": [
         "./src/utils/*"
+      ],
+      "@db": [
+        "./src/db/db"
       ]
     }
   },

@@ -54,7 +54,7 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
 
     const onClose = (channel_name?: string, workspace?: string) => {
         if (channel_name) {
-            navigate(`/${workspace}/channel/${channel_name}`)
+            navigate(`/${workspace}/${channel_name}`)
         }
         onCloseCallback()
 
@@ -175,7 +175,7 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                     {/* Step Content - Fixed Height */}
                     <div
                         ref={stepContentRef}
-                        className="pt-4 h-[400px] overflow-hidden"
+                        className="pt-4 h-100 overflow-hidden"
                         tabIndex={-1}
                         aria-label={currentStep === 1 ? 'Channel details step' : 'Add members step'}
                     >

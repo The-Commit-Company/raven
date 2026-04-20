@@ -23,7 +23,7 @@ export function buildThreadUrl(meta: ForwardedThreadMetadata, fullscreen?: boole
         path = `${base}/dm-channel/${encodeURIComponent(meta.source_channel_id)}/thread/${encodeURIComponent(meta.thread_id)}`
     } else {
         const workspace = meta.source_workspace ? encodeURIComponent(meta.source_workspace) : ""
-        path = `${base}/${workspace}/channel/${encodeURIComponent(meta.source_channel_id)}/thread/${encodeURIComponent(meta.thread_id)}`
+        path = `${base}/${workspace}/${encodeURIComponent(meta.source_channel_id)}/thread/${encodeURIComponent(meta.thread_id)}`
     }
     return fullscreen ? `${path}?fullscreen=1` : path
 }

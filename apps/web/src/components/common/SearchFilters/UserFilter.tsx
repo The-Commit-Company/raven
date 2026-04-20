@@ -3,11 +3,11 @@ import { UserAvatar } from '@components/features/message/UserAvatar'
 import { Label } from '@components/ui/label'
 import { cn } from "../../../lib/utils"
 import { SearchFilters } from './types'
-import { UserFields } from '@raven/types/common/UserFields'
+import { UserData } from "@db"
 
 interface UserFilterProps {
     filters: SearchFilters,
-    availableUsers: UserFields[],
+    availableUsers: UserData[],
     showLabel?: boolean,
     size?: 'sm'
 }
@@ -29,7 +29,7 @@ export function UserFilter({ filters, availableUsers, showLabel = true, size }: 
     const paddingClass = hasSelectedAvatar ? (size === 'sm' ? '!px-2' : '!px-3') : (size === 'sm' ? '!px-3' : '!px-4')
 
     return (
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
             {showLabel && <Label className="text-xs text-muted-foreground mb-1 block">From</Label>}
             <Select
                 value={filters.selectedUser}

@@ -1,6 +1,6 @@
 import { Button } from "@components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
-import { FileText, Headset, Link, MessageSquareText, Pin, Star } from "lucide-react"
+import { Headset, Pin, Star } from "lucide-react"
 import ChannelMembers from "./ChannelMembers"
 import ChannelMenu from "./ChannelMenu"
 import { useAtom } from "jotai"
@@ -71,7 +71,7 @@ const ChannelHeader = () => {
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={toggleStarChannel}>
-                                <Star className={`h-3 w-3 text-foreground/80 ${isStarred ? "fill-foreground" : ""}`} />
+                                <Star className={`h-3 w-3 text-foreground/80 ${isStarred ? "fill-amber-300 stroke-amber-300" : ""}`} />
                                 <span className="sr-only">{_('Star')}</span>
                             </Button>
                         </TooltipTrigger>

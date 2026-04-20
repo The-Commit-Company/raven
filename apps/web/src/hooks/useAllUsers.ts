@@ -1,5 +1,5 @@
 import { useFrappeGetCall } from "frappe-react-sdk"
-import type { UserFields } from "@raven/types/common/UserFields"
+import type { UserData } from "@db"
 
 const USERS_LIST_KEY = "raven.api.raven_users.get_list"
 
@@ -12,7 +12,7 @@ const USERS_LIST_KEY = "raven.api.raven_users.get_list"
  */
 export function useAllUsers(options?: { enabled?: boolean }) {
     const enabled = options?.enabled !== false
-    const { data } = useFrappeGetCall<{ message: UserFields[] }>(
+    const { data } = useFrappeGetCall<{ message: UserData[] }>(
         "raven.api.raven_users.get_list",
         undefined,
         enabled ? USERS_LIST_KEY : null,

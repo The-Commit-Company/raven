@@ -5,7 +5,7 @@ import ImageMessage from "./renderers/ImageMessage"
 import FileMessageRenderer from "./renderers/FileMessage"
 import { MessageReactions } from "./MessageReactions"
 import { ReactionObject } from "@raven/types/common/ChatStream"
-import { UserFields } from "@raven/types/common/UserFields"
+import { UserData } from "@db"
 import { Message } from "@raven/types/common/Message"
 import { useMemo, useRef } from "react"
 import { formatMessages } from "@hooks/useGetMessages"
@@ -857,7 +857,7 @@ const dummySingleImage = [
 ]
 
 // Dummy users for reactions
-const dummyUsers: Record<string, UserFields> = {
+const dummyUsers: Record<string, UserData> = {
     "user1": {
         name: "Desirae Lipshutz",
         full_name: "Desirae Lipshutz",

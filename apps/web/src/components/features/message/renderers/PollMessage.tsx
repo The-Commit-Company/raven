@@ -2,7 +2,7 @@ import React from "react"
 import type { PollMessage } from "@raven/types/common/Message"
 import type { RavenPoll } from "@raven/types/RavenMessaging/RavenPoll"
 import type { RavenPollOption } from "@raven/types/RavenMessaging/RavenPollOption"
-import { UserFields } from "@raven/types/common/UserFields"
+import { UserData } from "@db"
 import { UserAvatar } from "../UserAvatar"
 import { useAtom } from "jotai"
 import { pollDrawerAtom } from "@utils/channelAtoms"
@@ -11,7 +11,7 @@ import { PollQuestionHeader } from "./PollQuestionHeader"
 import { PollOptionBar, getOptionPercentage, isUserVote, type PollOptionWithVoters } from "./poll-components"
 
 export interface PollMessageProps {
-    user: UserFields
+    user: UserData
     poll: RavenPoll & {
         options: (RavenPollOption & { voters?: { id: string; name: string; image: string }[] })[]
     }

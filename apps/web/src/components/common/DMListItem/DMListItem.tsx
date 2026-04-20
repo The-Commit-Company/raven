@@ -1,10 +1,10 @@
 import * as React from "react"
 import { UserAvatar } from "@components/features/message/UserAvatar"
-import { UserFields } from "@raven/types/common/UserFields"
+import { UserData } from "@db"
 import { cn } from "@lib/utils"
 
 interface DMListItemProps {
-    user: UserFields
+    user: UserData
     date: string
     teaser: string
     unread?: number
@@ -27,7 +27,7 @@ export const DMListItem = React.forwardRef<HTMLAnchorElement,
             )}
             {...props}
         >
-            <div className="flex-shrink-0 self-center">
+            <div className="shrink-0 self-center">
                 <UserAvatar
                     user={user}
                     size="md"
@@ -38,7 +38,7 @@ export const DMListItem = React.forwardRef<HTMLAnchorElement,
             <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-center gap-2 mb-0.5">
                     <span className="font-medium text-sm truncate">{user.name}</span>
-                    <span className="text-[11px] font-light text-muted-foreground/90 flex-shrink-0">{date}</span>
+                    <span className="text-[11px] font-light text-muted-foreground/90 shrink-0">{date}</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className={cn(

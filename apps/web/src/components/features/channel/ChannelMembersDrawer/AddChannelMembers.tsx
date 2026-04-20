@@ -4,10 +4,9 @@ import { Input } from '@components/ui/input';
 import { UserAvatar } from '@components/features/message/UserAvatar';
 import { Search, UserPlus, X } from 'lucide-react';
 import { Badge } from '@components/ui/badge';
-import type { UserFields } from '@raven/types/common/UserFields';
 import { useDebounce } from '@raven/lib/hooks/useDebounce';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, type UserData } from '../../../../db/db';
+import { db, UserData } from "@db";
 import _ from '@lib/translate';
 import { ScrollArea } from '@components/ui/scroll-area';
 import { Virtuoso } from 'react-virtuoso';
@@ -128,7 +127,7 @@ const AddChannelMembers = ({ memberIds, channelID, onClose }: { memberIds: strin
                                 >
                                     <div className="flex items-center gap-3 flex-1 min-w-0">
                                         <UserAvatar
-                                            user={user as UserFields}
+                                            user={user}
                                             size="md"
                                             className="shrink-0"
                                             showStatusIndicator={false}

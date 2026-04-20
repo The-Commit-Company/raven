@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import type { RavenChannel } from "@raven/types/RavenChannelManagement/RavenChannel";
 import type { RavenMessage } from "@raven/types/RavenMessaging/RavenMessage";
 import { AtSignIcon, MessageSquare, Check } from "lucide-react";
-import { UserFields } from "@raven/types/common/UserFields";
+import { UserData } from "@db";
 import { cn } from "@lib/utils";
 
 interface MentionObject {
@@ -92,7 +92,7 @@ interface UnreadMessageObject {
 }
 
 // Dummy users matching those used in ChatStream
-const dummyUsers: Record<string, UserFields> = {
+const dummyUsers: Record<string, UserData> = {
     "Desirae Lipshutz": {
         name: "Desirae Lipshutz",
         full_name: "Desirae Lipshutz",
@@ -356,7 +356,7 @@ const MentionItem = ({ mention }: { mention: MentionObject }) => {
 
     return (
         <Link
-            to={`/channel/${encodeURIComponent(mention.channel_id)}?message_id=${encodeURIComponent(mention.name)}`}
+            to={`/${encodeURIComponent(mention.channel_id)}?message_id=${encodeURIComponent(mention.name)}`}
             className={`group block px-6 py-4 hover:bg-accent/50 transition-colors relative ${!mention.is_read ? 'bg-muted/10' : ''
                 }`}
         >
@@ -406,7 +406,7 @@ const ReactionItem = ({ reaction }: { reaction: ReactionObject }) => {
 
     return (
         <Link
-            to={`/channel/${encodeURIComponent(reaction.channel_id)}?message_id=${encodeURIComponent(reaction.name)}`}
+            to={`/${encodeURIComponent(reaction.channel_id)}?message_id=${encodeURIComponent(reaction.name)}`}
             className={`group block px-6 py-4 hover:bg-accent/50 transition-colors relative ${!reaction.is_read ? 'bg-muted/10' : ''
                 }`}
         >
@@ -459,7 +459,7 @@ const UnreadMessageItem = ({ message }: { message: UnreadMessageObject }) => {
 
     return (
         <Link
-            to={`/channel/${encodeURIComponent(message.channel_id)}?message_id=${encodeURIComponent(message.name)}`}
+            to={`/${encodeURIComponent(message.channel_id)}?message_id=${encodeURIComponent(message.name)}`}
             className={`group block px-6 py-4 hover:bg-accent/50 transition-colors relative ${!message.is_read ? 'bg-muted/10' : ''
                 }`}
         >

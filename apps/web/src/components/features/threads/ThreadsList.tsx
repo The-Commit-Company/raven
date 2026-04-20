@@ -2,7 +2,7 @@ import { useMemo } from "react"
 import { ThreadPreviewBox } from "./ThreadPreviewBox"
 import { ThreadMessage } from "../../../types/ThreadMessage"
 import { RavenChannel } from "@raven/types/RavenChannelManagement/RavenChannel"
-import { UserFields } from "@raven/types/common/UserFields"
+import { UserData } from "@db"
 import { useUser } from "@hooks/useUser"
 import { getDateObject } from "@utils/date"
 import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
@@ -20,7 +20,7 @@ interface ThreadsListProps {
 }
 
 // Dummy users matching those used in ChatStream and Mentions
-const dummyUsers: Record<string, UserFields> = {
+const dummyUsers: Record<string, UserData> = {
     "Desirae Lipshutz": {
         name: "Desirae Lipshutz",
         full_name: "Desirae Lipshutz",
@@ -465,7 +465,7 @@ function ThreadPreviewBoxWrapper({
 }: {
     thread: ThreadMessage
     channel?: RavenChannel
-    users: UserFields[]
+    users: UserData[]
     unreadCount: number
     onClick?: () => void
     isActive?: boolean
@@ -536,7 +536,7 @@ function ThreadPreviewBoxWrapper({
 
         return thread.participants
             .map(p => users.find(u => u.name === p.user_id))
-            .filter((u): u is UserFields => u !== undefined)
+            .filter((u): u is UserData => u !== undefined)
             .map(u => ({
                 id: u.name,
                 name: u.full_name || u.name,
@@ -556,7 +556,7 @@ function ThreadPreviewBoxWrapper({
             type: "Bot" as const,
             availability_status: "Available" as const,
             custom_status: undefined
-        } as UserFields
+        } as UserData
     }, [isAIThread, thread.bot, thread.owner])
 
     return (
