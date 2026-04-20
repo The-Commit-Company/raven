@@ -1,0 +1,119 @@
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@components/ui/dialog'
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@components/ui/command'
+import _ from '@lib/translate'
+import { useDebounce } from '@raven/lib/hooks/useDebounce'
+import { defaultFilter } from 'cmdk'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { TextSearch } from 'lucide-react'
+import { useAtom, useSetAtom } from 'jotai'
+import ChannelList from './ChannelList'
+import UserList from './UserList'
+import SettingsList from './SettingsList'
+import QuickActions from './CommandList'
+import { commandMenuOpenAtom } from './atoms'
+import { useCurrentChannelID } from '@hooks/useCurrentChannelID'
+import { useChannel } from '@hooks/useChannel'
+import { useUser } from '@hooks/useUser'
+import { ChannelIcon } from '@components/common/ChannelIcon/ChannelIcon'
+
+const CommandMenu = () => {
+    const [open, setOpen] = useAtom(commandMenuOpenAtom)
+
+    useEffect(() => {
+        const down = (e: KeyboardEvent) => {
+            if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault()
+                setOpen((open) => !open)
+            }
+        }
+
+        document.addEventListener('keydown', down)
+        return () => document.removeEventListener('keydown', down)
+    }, [])
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent
+                className="fixed left-1/2 top-1.25 -translate-x-1/2 translate-y-0 w-155 max-w-none sm:max-w-none p-0 gap-0 rounded-lg shadow-lg overflow-hidden border border-border/50 bg-card [&>button:last-child]:hidden"
+                aria-describedby={undefined}
+            >
+                <DialogHeader className="sr-only">
+                    <DialogTitle>{_("Command Menu")}</DialogTitle>
+                    <DialogDescription>{_("Search or type a command")}</DialogDescription>
+                </DialogHeader>
+                <CommandPalette />
+            </DialogContent>
+        </Dialog>
+    )
+}
+
+const CommandPalette = () => {
+    const [text, setText] = useState('')
+    const navigate = useNavigate()
+    const setOpen = useSetAtom(commandMenuOpenAtom)
+    const channelID = useCurrentChannelID()
+    const { channel, dmChannel } = useChannel(channelID)
+    const { data: peerUser } = useUser(dmChannel?.peer_user_id || "")
+
+    const debouncedText = useDebounce(text, 200)
+
+    const customFilter = (value: string, search: string, keywords?: string[]) => {
+        const score = defaultFilter ? defaultFilter(value, search, keywords) : 1
+        if (score <= 0.1) return 0
+        return score
+    }
+
+    return (
+        <Command
+            label="Global Command Menu"
+            filter={customFilter}
+            shouldFilter={false}
+        >
+            <CommandInput
+                autoFocus
+                value={text}
+                onValueChange={setText}
+                placeholder={_("Search or type a command")}
+                className="focus:ring-0 border-0 bg-transparent"
+            />
+            <CommandList className="max-h-109">
+                <CommandGroup>
+                    <CommandItem
+                        onSelect={() => {
+                            navigate(text ? `/search?q=${encodeURIComponent(text)}` : '/search')
+                            setOpen(false)
+                        }}
+                    >
+                        <TextSearch className="h-4 w-4 text-muted-foreground" />
+                        {text ? (
+                            <>{_("Search for")} <span className="font-medium">"{text}"</span></>
+                        ) : channel ? (
+                            <div className="flex gap-1 items-center">
+                                {_("Search in")}
+                                <ChannelIcon type={channel.type} className="h-4 w-4" />
+                                <span className="font-medium text-foreground">{channel.channel_name}</span>
+                            </div>
+                        ) : peerUser ? (
+                            <div className="flex gap-1 items-center">
+                                {_("Search in DM with")}
+                                <span className="font-medium text-foreground">{peerUser.full_name || peerUser.name}</span>
+                            </div>
+                        ) : null}
+                    </CommandItem>
+                </CommandGroup>
+
+                <ChannelList text={debouncedText} />
+                <UserList text={debouncedText} />
+                <SettingsList text={debouncedText} />
+                <QuickActions text={debouncedText} />
+
+                <CommandEmpty>
+                    {_("No results found.")}
+                </CommandEmpty>
+            </CommandList>
+        </Command>
+    )
+}
+
+export default CommandMenu

@@ -1,6 +1,6 @@
 import { Input } from "@components/ui/input";
 import { Search, X } from "lucide-react";
-import React, { forwardRef } from "react";
+import React, { forwardRef, useState } from "react";
 
 interface SearchBarProps {
     value: string;
@@ -11,8 +11,9 @@ interface SearchBarProps {
 }
 
 const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(({ value, onChange, onBlur, onFocus, onKeyDown }, ref) => {
+    const [open, setOpen] = useState(false)
     return (
-        <div className="fixed left-1/2 top-[21px] -translate-x-1/2 -translate-y-1/2 w-[600px] z-50">
+        <div className="fixed left-1/2 top-5.25 -translate-x-1/2 -translate-y-1/2 w-150 z-50">
             <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
                 ref={ref}
@@ -22,10 +23,10 @@ const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(({ value, onChang
                 value={value}
                 onChange={e => onChange(e.target.value)}
                 onBlur={onBlur}
-                onFocus={onFocus}
+                onFocus={() => { setOpen(true); onFocus?.() }}
                 onKeyDown={onKeyDown}
             />
-            {value && (
+            {/* {value && (
                 <button
                     type="button"
                     aria-label="Clear search"
@@ -33,7 +34,8 @@ const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(({ value, onChang
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none">
                     <X className="h-4 w-4" />
                 </button>
-            )}
+            )} */}
+
         </div>
     )
 })
