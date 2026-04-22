@@ -40,7 +40,14 @@ export async function frappeRequest(args: RequestArgs): Promise<unknown> {
 		...(args.auth?.headers ?? {}),
 	}
 
+	// Match frappe-ui behaviour: a dotted path (e.g.
+	// `meet.api.meeting.get_sfu_connection_details`) is a whitelisted
+	// server method; prepend `/api/method/`. Anything starting with
+	// `/` or `http` is passed through.
 	let url = args.url
+	if (!url.startsWith('/') && !url.startsWith('http')) {
+		url = `/api/method/${url}`
+	}
 	const init: RequestInit = {
 		method,
 		credentials: 'include',
