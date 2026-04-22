@@ -48,7 +48,9 @@
   "enable_video_calling_via_livekit",
   "livekit_url",
   "livekit_api_key",
-  "livekit_api_secret"
+  "livekit_api_secret",
+  "frappe_meet_settings_section",
+  "enable_frappe_meet"
  ],
  "fields": [
   {
@@ -317,6 +319,18 @@
    "fieldtype": "Password",
    "label": "LiveKit API Secret",
    "mandatory_depends_on": "eval: doc.enable_video_calling_via_livekit;"
+  },
+  {
+   "fieldname": "frappe_meet_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Frappe Meet Settings"
+  },
+  {
+   "default": "0",
+   "description": "Enables the 'Start Call' button in channels using Frappe Meet. Requires the `meet` app (https://github.com/frappe/meet) to be installed on this site.",
+   "fieldname": "enable_frappe_meet",
+   "fieldtype": "Check",
+   "label": "Enable Video Calling via Frappe Meet"
   }
  ],
  "grid_page_length": 50,

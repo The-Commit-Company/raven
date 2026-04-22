@@ -299,6 +299,33 @@ def message_has_permission(doc, user=None, ptype=None):
 	return False
 
 
+def raven_meet_room_has_permission(doc, user=None, ptype=None):
+	"""Permission hook for Raven Meet Room.
+
+	Mirrors `raven_livekit_room_has_permission` from PR #1486:
+	- read: allowed if the user is listed as a participant OR is a
+	  member of the channel the room belongs to.
+	- create: allowed if the user is a member of the channel.
+	- write/delete: only the room owner (creator) can modify.
+	"""
+	if ptype == "read":
+		for p in doc.participants or []:
+			if p.raven_user == user:
+				return True
+
+		channel = frappe.get_cached_doc("Raven Channel", doc.channel_id)
+		return channel_has_permission(channel, user, ptype)
+
+	if ptype == "create":
+		channel_member = get_channel_member(doc.channel_id, user)
+		return bool(channel_member)
+
+	if ptype in ("write", "delete"):
+		return doc.owner == user
+
+	return False
+
+
 def raven_poll_vote_has_permission(doc, user=None, ptype=None):
 	"""
 	Allowed users can add a vote to a poll and read votes (if the poll is not anonymous)

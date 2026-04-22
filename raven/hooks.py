@@ -268,6 +268,7 @@ has_permission = {
 	"Raven User": "raven.permissions.raven_user_has_permission",
 	"Raven Workspace Member": "raven.permissions.workspace_member_has_permission",
 	"Raven Workspace": "raven.permissions.workspace_has_permission",
+	"Raven Meet Room": "raven.permissions.raven_meet_room_has_permission",
 }
 
 on_session_creation = "raven.api.user_availability.set_user_active"

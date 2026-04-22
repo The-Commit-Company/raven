@@ -25,6 +25,7 @@ class RavenSettings(Document):
 		config: DF.SmallText | None
 		department_channel_type: DF.Literal["Public", "Private"]
 		enable_ai_integration: DF.Check
+		enable_frappe_meet: DF.Check
 		enable_google_apis: DF.Check
 		enable_local_llm: DF.Check
 		enable_openai_services: DF.Check
