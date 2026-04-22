@@ -9,6 +9,23 @@ import useDoctypeMeta from "@/hooks/useDoctypeMeta"
 import { HStack } from "@/components/layout/Stack"
 import { ErrorBanner, getErrorMessage } from "@/components/layout/AlertBanner/ErrorBanner"
 import parse from 'html-react-parser';
+import MeetRoomMessageRenderer from "@/components/feature/video-calling/MeetRoomMessageRenderer"
+
+/**
+ * Router used by message renderers to delegate certain `link_doctype`
+ * values to a dedicated component (instead of the generic doctype
+ * preview card). New providers (LiveKit, Frappe Meet, …) plug in here.
+ *
+ * Kept separate from `DoctypeLinkRenderer` so other usages
+ * (link preview in the chat input, document configurator) keep the
+ * generic preview behavior.
+ */
+export const DoctypeLinkMessageRenderer = ({ doctype, docname }: { doctype: string, docname: string }) => {
+    if (doctype === 'Raven Meet Room') {
+        return <MeetRoomMessageRenderer roomID={docname} />
+    }
+    return <DoctypeLinkRenderer doctype={doctype} docname={docname} />
+}
 
 export const DoctypeLinkRenderer = ({ doctype, docname }: { doctype: string, docname: string }) => {
 

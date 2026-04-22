@@ -10,6 +10,8 @@ import { Link } from "react-router-dom"
 import { ViewPinnedMessagesButton } from "../pinned-messages/ViewPinnedMessagesButton"
 import { useAtomValue } from "jotai"
 import { lastWorkspaceAtom } from "@/utils/lastVisitedAtoms"
+import useRavenSettings from "@/hooks/fetchers/useRavenSettings"
+import CreateMeetRoomButton from "../video-calling/CreateMeetRoomButton"
 
 interface ChannelHeaderProps {
     channelData: ChannelListItem
@@ -20,6 +22,8 @@ export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
     // The channel header has the channel name, the channel type icon, edit channel name button, and the view or add members button
 
     const lastWorkspace = useAtomValue(lastWorkspaceAtom)
+    const { ravenSettings } = useRavenSettings()
+    const showFrappeMeetButton = ravenSettings?.enable_frappe_meet === 1 && !!channelData.member_id
 
     return (
         <PageHeader>
@@ -44,6 +48,7 @@ export const ChannelHeader = ({ channelData }: ChannelHeaderProps) => {
 
             <Flex gap='2' align='center' className="animate-fadein">
                 <ViewChannelMemberAvatars channelData={channelData} />
+                {showFrappeMeetButton && <CreateMeetRoomButton channelData={channelData} />}
                 <ChannelHeaderMenu channelData={channelData} />
             </Flex>
         </PageHeader>

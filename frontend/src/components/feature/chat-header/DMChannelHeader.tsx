@@ -15,6 +15,8 @@ import { replaceCurrentUserFromDMChannelName } from "@/utils/operations"
 import { useIsDesktop } from "@/hooks/useMediaQuery"
 import { useAtomValue } from "jotai"
 import { lastWorkspaceAtom } from "@/utils/lastVisitedAtoms"
+import useRavenSettings from "@/hooks/fetchers/useRavenSettings"
+import CreateMeetRoomButton from "../video-calling/CreateMeetRoomButton"
 
 interface DMChannelHeaderProps {
     channelData: DMChannelListItem,
@@ -55,6 +57,8 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
     const isDesktop = useIsDesktop()
 
     const lastWorkspace = useAtomValue(lastWorkspaceAtom)
+    const { ravenSettings } = useRavenSettings()
+    const showFrappeMeetButton = ravenSettings?.enable_frappe_meet === 1 && channelData.is_self_message === 0
 
     return (
         <PageHeader>
@@ -85,7 +89,8 @@ export const DMChannelHeader = ({ channelData }: DMChannelHeaderProps) => {
                     </div>
                 </Heading>
             </Flex>
-            <Flex gap='4' align='center'>
+            <Flex gap='2' align='center'>
+                {showFrappeMeetButton && <CreateMeetRoomButton channelData={channelData} />}
                 <ChannelHeaderMenu channelData={channelData} />
             </Flex>
         </PageHeader>

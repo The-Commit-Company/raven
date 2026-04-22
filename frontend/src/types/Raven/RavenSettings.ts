@@ -73,4 +73,6 @@ export interface RavenSettings{
 	livekit_api_key?: string
 	/**	LiveKit API Secret : Password	*/
 	livekit_api_secret?: string
+	/**	Enable Video Calling via Frappe Meet : Check	*/
+	enable_frappe_meet?: 0 | 1
 }
