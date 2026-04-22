@@ -139,7 +139,11 @@ export function useFrappeMeetLogic({
 				})
 
 				// 3. Connect + join + device setup + publish + fetch roster
-				await manager.connect(details.auth_token)
+				// Passing no authToken: for logged-in Raven users the SFU
+				// client will call `meet.api.meeting.get_sfu_connection_details`
+				// itself (session-authenticated). Passing a token here is
+				// reserved for the guest flow (which uses sessionStorage).
+				await manager.connect()
 				await manager.joinRoom(
 					{
 						name: choices.username || details.user_data?.name || 'Guest',
