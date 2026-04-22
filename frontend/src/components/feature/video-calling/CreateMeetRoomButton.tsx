@@ -84,7 +84,9 @@ const CreateMeetRoomDialog = ({ channelData, onClose }: { channelData: ChannelLi
     const { createDoc, loading, error } = useFrappeCreateDoc<RavenMeetRoom>()
 
     const onSubmit = async (data: Partial<RavenMeetRoom>) => {
-        return createDoc("Raven Meet Room", data).then((res) => {
+        // The doctype controller fills the auto-generated fields
+        // (name/owner/creation/...) on the server; the cast is safe.
+        return createDoc("Raven Meet Room", data as RavenMeetRoom).then((res) => {
             toast.success('Call created. Joining…')
             onClose()
             // Navigate the host straight into the meeting room — they
