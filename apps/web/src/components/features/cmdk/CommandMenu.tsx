@@ -81,23 +81,26 @@ const CommandPalette = () => {
                 <CommandGroup>
                     <CommandItem
                         onSelect={() => {
-                            navigate(text ? `/search?q=${encodeURIComponent(text)}` : '/search')
+                            const params = new URLSearchParams()
+                            if (text) params.set('q', text)
+                            if (channelID) params.set('channel', channelID)
+                            const qs = params.toString()
+                            navigate(qs ? `/search?${qs}` : '/search')
                             setOpen(false)
                         }}
+                        className='cursor-pointer'
                     >
                         <TextSearch className="h-4 w-4 text-muted-foreground" />
-                        {text ? (
-                            <>{_("Search for")} <span className="font-medium">"{text}"</span></>
-                        ) : channel ? (
+                        {channel ? (
                             <div className="flex gap-1 items-center">
-                                {_("Search in")}
+                                {text ? _("Search for `{0}` in", [text]) : _("Search in")}
                                 <ChannelIcon type={channel.type} className="h-4 w-4" />
                                 <span className="font-medium text-foreground">{channel.channel_name}</span>
                             </div>
                         ) : peerUser ? (
                             <div className="flex gap-1 items-center">
-                                {_("Search in DM with")}
-                                <span className="font-medium text-foreground">{peerUser.full_name || peerUser.name}</span>
+                                {text ? _("Search for `{0}` in DMs with", [text]) : _("Search in DMs with")}
+                                <span className="font-medium text-foreground">{peerUser.first_name || peerUser.name}</span>
                             </div>
                         ) : null}
                     </CommandItem>

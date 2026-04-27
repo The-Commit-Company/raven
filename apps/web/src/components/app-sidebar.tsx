@@ -58,10 +58,6 @@ export function AppSidebar(props: React.ComponentProps<typeof SidebarShell>) {
                                 <div className="text-sm font-medium text-foreground truncate">
                                     {activeWorkspaceName}
                                 </div>
-                                <Label className="flex items-center gap-2 text-[12px] group-hover/header:opacity-100 opacity-0 transition-opacity duration-100">
-                                    <span>{_("Unreads")}</span>
-                                    <Switch className="shadow-none cursor-pointer" />
-                                </Label>
                             </div>
                         </SidebarHeader>
 

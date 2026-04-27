@@ -121,6 +121,9 @@ def save_message(message_id: str, add: str | bool = False):
 
 	liked_by = frappe.db.get_value("Raven Message", message_id, "_liked_by")
 
+	from raven.api.search import RavenSearch
+	RavenSearch().index_doc("Raven Message", message_id)
+
 	frappe.publish_realtime(
 		"message_saved",
 		{

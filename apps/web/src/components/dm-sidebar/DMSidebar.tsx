@@ -1,6 +1,4 @@
 import { SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader } from "@components/ui/sidebar"
-import { Label } from "@components/ui/label"
-import { Switch } from "@components/ui/switch"
 import { Skeleton } from "@components/ui/skeleton"
 import { DMListItem } from "../common/DMListItem/DMListItem"
 import type { DMChannelListItem } from "@raven/types/common/ChannelListItem"
@@ -94,10 +92,6 @@ export function DMSidebar({
                     <div className="text-sm font-medium text-foreground truncate">
                         {workspaceName}
                     </div>
-                    <Label className="flex items-center gap-2 text-[12px] group-hover/header:opacity-100 opacity-0 transition-opacity duration-100">
-                        <span>{_("Unreads")}</span>
-                        <Switch className="shadow-none cursor-pointer" />
-                    </Label>
                 </div>
             </SidebarHeader>
             <SidebarContent>

@@ -23,10 +23,17 @@ class RavenSearch(SQLiteSearch):
 			"parent_channel_id",
 			"mentions",
 			"is_thread",
+			"is_thread_message",
+			"is_pinned",
+			"has_reactions",
+			"liked_by",
+			"channel_type",
+			"is_direct_message",
 			"message_type",
 			"is_bot_message",
 			"bot",
 			"poll_id",
+			"has_poll",
 			"file_type",  # this won't be here when we have a child table for files
 			"file_size",  # this won't be here when we have a child table for files
 			"blurhash",  # this won't be here when we have a child table for files
@@ -60,6 +67,8 @@ class RavenSearch(SQLiteSearch):
 				"thumbnail_height",
 				"link_doctype",
 				"link_document",
+				"message_reactions",
+				"_liked_by",
 			],
 		}
 	}
@@ -145,12 +154,25 @@ class RavenSearch(SQLiteSearch):
 		if not document:
 			return None
 
-		is_thread = frappe.db.get_value("Raven Channel", doc.channel_id, "is_thread")
+		is_thread_channel, channel_type, is_direct_message = frappe.db.get_value("Raven Channel", doc.channel_id, ["is_thread", "type", "is_direct_message"])
+		document["channel_type"] = channel_type
+		document["is_direct_message"] = is_direct_message
+		document["is_thread_message"] = is_thread_channel
+		document["is_thread"] = 1 if frappe.db.exists("Raven Channel", {"name": doc.name, "is_thread": 1}) else 0
+		document["is_pinned"] = 1 if frappe.db.exists("Raven Pinned Messages", {"message_id": doc.name}) else 0
+		try:
+			reactions = json.loads(doc.message_reactions) if doc.message_reactions else {}
+		except (TypeError, ValueError):
+			reactions = {}
+		document["has_reactions"] = 1 if reactions else 0
+		document["liked_by"] = doc.get("_liked_by") or ""
+		document["has_poll"] = 1 if doc.poll_id else 0
+
 		mentions = frappe.db.get_all("Raven Mention", {"parent": doc.name}, pluck="user")
 		if mentions:
 			# Convert list to | separated string for SQLite storage
 			document["mentions"] = "|" + "|".join(mentions) + "|"
-		if is_thread:
+		if is_thread_channel:
 			parent_channel_id = frappe.db.get_value("Raven Message", doc.channel_id, "channel_id")
 			document["parent_channel_id"] = parent_channel_id
 		else:
@@ -284,14 +306,19 @@ class RavenSearch(SQLiteSearch):
 
 @frappe.whitelist()
 def sqlite_search(query: str | None = None, filters: str | None = None, limit: int = 20):
-	if filters:
-		filters = json.loads(filters)
+	parsed_filters: dict = json.loads(filters) if filters else {}
+
+	if parsed_filters.pop("saved", None):
+		parsed_filters["liked_by"] = ["LIKE", f'"{frappe.session.user}"']
+
+	if parsed_filters.pop("mentions_me", None):
+		parsed_filters["mentions"] = ["LIKE", f"|{frappe.session.user}|"]
 
 	search = RavenSearch()
 	if not query:
-		results = search.get_list(filters=filters, limit=limit)
+		results = search.get_list(filters=parsed_filters, limit=limit)
 	else:
-		results = search.search(query, filters=filters)["results"]
+		results = search.search(query, filters=parsed_filters)["results"]
 
 	return results[:limit]
 

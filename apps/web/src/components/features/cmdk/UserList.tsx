@@ -69,6 +69,7 @@ const DMChannelItem = ({ user, channel }: { user: UserData; channel: DMChannelLi
                 navigate(`/dm-channel/${channel.name}`)
                 setOpen(false)
             }}
+            className='cursor-pointer'
         >
             {user ? (
                 <UserAvatar user={user} size="xs" showStatusIndicator={false} />
@@ -107,6 +108,7 @@ const UserItem = ({ user }: { user: UserData }) => {
             value={user.name}
             keywords={[user.full_name, user.name]}
             onSelect={onSelect}
+            className={user.enabled === 0 ? 'cursor-not-allowed' : 'cursor-pointer'}
         >
             <UserAvatar user={user} size="xs" showStatusIndicator={false} />
             <span className="truncate">{user.full_name}</span>

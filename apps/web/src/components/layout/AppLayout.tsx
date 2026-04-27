@@ -43,7 +43,10 @@ export function AppLayout({ sidebar, header, children, sidebarWidth }: AppLayout
                         className="overflow-hidden"
                         style={{ marginLeft: `var(--workspace-switcher-width, ${WORKSPACE_SWITCHER_WIDTH})` } as React.CSSProperties}
                     >
-                        {children}
+                        {header}
+                        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                            {children}
+                        </div>
                     </SidebarInset>
                 </SidebarProvider>
             </div>

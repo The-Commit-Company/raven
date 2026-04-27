@@ -47,6 +47,7 @@ const QuickActions = ({ text }: { text: string }) => {
                             item.action()
                             setOpen(false)
                         }}
+                        className='cursor-pointer'
                     >
                         <Icon className="h-4 w-4" />
                         {_(item.label)}

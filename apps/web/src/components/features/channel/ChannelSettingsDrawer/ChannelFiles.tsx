@@ -10,6 +10,7 @@ import { formatFileSize } from '@utils/fileUtils'
 import { MessageListSkeleton } from '@components/features/dm-channel/DirectMessagePageSkeleton'
 import MarkdownRenderer from '@components/ui/markdown'
 import _ from '@lib/translate'
+import ErrorBanner from '@components/ui/error-banner'
 
 const ChannelFiles = ({ channelID }: { channelID: string }) => {
     const [searchQuery, setSearchQuery] = useState('')
@@ -29,7 +30,7 @@ const ChannelFiles = ({ channelID }: { channelID: string }) => {
                     className="w-full pl-9 pr-4 py-2 text-sm bg-background border border-border/70 rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 />
             </div>
-
+            {error && <ErrorBanner error={error} />}
             {/* Files List */}
             <ScrollArea className="flex-1">
                 {isLoading || !results ? <MessageListSkeleton /> :

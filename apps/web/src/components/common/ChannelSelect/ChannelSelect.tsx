@@ -19,7 +19,7 @@ import { Button } from "@components/ui/button"
 import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
 import { UserAvatar } from "@components/features/message/UserAvatar"
 import { Label } from "@components/ui/label"
-import { ChevronDownIcon } from "lucide-react"
+import { CheckIcon, ChevronDownIcon } from "lucide-react"
 import { cn } from "@lib/utils"
 import type { ChannelListItem, DMChannelListItem } from "@raven/types/common/ChannelListItem"
 import { UserData } from "@db"
@@ -31,15 +31,13 @@ interface ChannelSelectProps {
     /** Regular channels */
     channels: ChannelListItem[]
     /** DM channels */
-    dmChannels: DMChannelListItem[]
+    dmChannels?: DMChannelListItem[]
     /** Users for resolving DM peer names/avatars (optional; falls back to peer_user_id when empty) */
-    availableUsers?: UserData[]
+    users?: UserData[]
     value: string
     onValueChange: (value: string) => void
     /** Placeholder when nothing selected */
     placeholder?: string
-    /** Exclude this channel ID from the list */
-    excludeChannelId?: string | null
     /** Show "In Any Channel" / "All" option */
     allowAll?: boolean
     allLabel?: string
@@ -54,64 +52,13 @@ interface ChannelSelectProps {
     searchable?: boolean
 }
 
-function getChannelLabel(
-    ch: ChannelSelectItem,
-    availableUsers: UserData[]
-): string {
-    if (ch.is_direct_message === 1) {
-        const dm = ch as DMChannelListItem
-        const peer = availableUsers.find((u) => u.name === dm.peer_user_id)
-        return peer?.full_name ?? dm.peer_user_id ?? ch.name
-    }
-    return ch.channel_name ?? ch.name ?? ""
-}
-
-function ChannelOption({
-    channel,
-    availableUsers,
-}: {
-    channel: ChannelSelectItem
-    availableUsers: UserData[]
-}) {
-    const isDM = channel.is_direct_message === 1
-    const dmChannel = channel as DMChannelListItem
-    const peerUser = availableUsers.find((u) => u.name === dmChannel.peer_user_id)
-    const label = getChannelLabel(channel, availableUsers)
-
-    return (
-        <div className="flex items-center gap-2">
-            {isDM ? (
-                peerUser ? (
-                    <UserAvatar
-                        user={peerUser}
-                        size="sm"
-                        showStatusIndicator={false}
-                        showBotIndicator={false}
-                    />
-                ) : (
-                    <span className="flex h-6 w-6 items-center justify-center rounded bg-muted text-xs font-bold text-muted-foreground">
-                        ?
-                    </span>
-                )
-            ) : (
-                <ChannelIcon
-                    type={(channel as ChannelListItem).type as "Public" | "Private" | "Open"}
-                    className="h-4 w-4"
-                />
-            )}
-            <span className="truncate pl-0.5">{label}</span>
-        </div>
-    )
-}
-
 export function ChannelSelect({
     channels,
     dmChannels,
-    availableUsers,
+    users,
     value,
     onValueChange,
     placeholder = "Select channel",
-    excludeChannelId,
     allowAll = false,
     allLabel = "In Any Channel",
     size = "default",
@@ -120,69 +67,59 @@ export function ChannelSelect({
     label = "Channel",
     searchable = false,
 }: ChannelSelectProps) {
-    const filteredChannels = useMemo(
-        () => channels.filter((c) => c.name !== excludeChannelId),
-        [channels, excludeChannelId]
-    )
-    const filteredDms = useMemo(
-        () => dmChannels.filter((d) => d.name !== excludeChannelId),
-        [dmChannels, excludeChannelId]
-    )
 
     const selectedChannel = useMemo(() => {
-        if (!value || value === "all") return null
-        const ch = filteredChannels.find((c) => c.name === value)
+        if (!value || value === "*all") return null
+        const ch = channels.find((c) => c.name === value)
         if (ch) return ch
-        return filteredDms.find((d) => d.name === value) ?? null
-    }, [value, filteredChannels, filteredDms])
-
-    const resolvedAvailableUsers = availableUsers ?? []
+        return dmChannels?.find((d) => d.name === value) ?? null
+    }, [value, channels, dmChannels])
 
     const triggerSizeClass = size === "sm" ? "!h-7 !py-1 text-xs [&>span]:!px-0" : "!h-9 !py-2 [&>span]:!px-0"
     const paddingClass =
-        selectedChannel && value !== "all"
+        selectedChannel && value !== "*all"
             ? size === "sm"
                 ? "!px-2"
                 : "!px-3"
             : size === "sm"
-                ? "!px-3"
-                : "!px-4"
+                ? "!pl-3 !pr-2"
+                : "!pl-4 !pr-3"
 
     const content = (
         <>
             {allowAll && (
-                <SelectItem value="all" textValue={allLabel}>
+                <SelectItem value="*all" textValue={allLabel}>
                     {allLabel}
                 </SelectItem>
             )}
             <SelectGroup>
                 <SelectLabel className="text-xs text-muted-foreground/80 px-2 py-1.5">
-                    Channels
+                    {_("Channels")}
                 </SelectLabel>
-                {filteredChannels.map((ch) => (
+                {channels.map((ch) => (
                     <SelectItem
                         key={ch.name}
                         value={ch.name}
-                        textValue={getChannelLabel(ch, resolvedAvailableUsers)}
+                        textValue={getChannelLabel(ch, users)}
                     >
-                        <ChannelOption channel={ch} availableUsers={resolvedAvailableUsers} />
+                        <ChannelOption channel={ch} users={users} />
                     </SelectItem>
                 ))}
             </SelectGroup>
-            {filteredDms.length > 0 && (
+            {dmChannels && dmChannels.length > 0 && (
                 <>
                     <SelectSeparator />
                     <SelectGroup>
                         <SelectLabel className="text-xs text-muted-foreground/80 px-2 py-1.5">
-                            Direct Messages
+                            {_("Direct Messages")}
                         </SelectLabel>
-                        {filteredDms.map((dm) => (
+                        {dmChannels.map((dm) => (
                             <SelectItem
                                 key={dm.name}
                                 value={dm.name}
-                                textValue={getChannelLabel(dm, resolvedAvailableUsers)}
+                                textValue={getChannelLabel(dm, users)}
                             >
-                                <ChannelOption channel={dm} availableUsers={resolvedAvailableUsers} />
+                                <ChannelOption channel={dm} users={users} />
                             </SelectItem>
                         ))}
                     </SelectGroup>
@@ -191,9 +128,9 @@ export function ChannelSelect({
         </>
     )
 
-    const triggerContent = selectedChannel && value !== "all" ? (
-        <div className="flex items-center gap-1">
-            <ChannelOption channel={selectedChannel} availableUsers={resolvedAvailableUsers} />
+    const triggerContent = selectedChannel && value !== "*all" ? (
+        <div className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
+            <ChannelOption channel={selectedChannel} users={users} compact={size === "sm"} />
         </div>
     ) : (
         <SelectValue placeholder={placeholder} className="pl-1" />
@@ -202,9 +139,9 @@ export function ChannelSelect({
     if (searchable) {
         return (
             <ChannelSelectCombobox
-                channels={filteredChannels}
-                dmChannels={filteredDms}
-                availableUsers={resolvedAvailableUsers}
+                channels={channels}
+                dmChannels={dmChannels}
+                users={users}
                 value={value}
                 onValueChange={onValueChange}
                 placeholder={placeholder}
@@ -224,7 +161,7 @@ export function ChannelSelect({
             {showLabel && (
                 <Label className="mb-1 block text-xs text-muted-foreground">{label}</Label>
             )}
-            <Select value={value || (allowAll ? "all" : "")} onValueChange={onValueChange}>
+            <Select value={value || (allowAll ? "*all" : "")} onValueChange={onValueChange}>
                 <SelectTrigger
                     className={cn(
                         "w-fit [&>span]:text-inherit",
@@ -243,11 +180,58 @@ export function ChannelSelect({
     )
 }
 
+function getChannelLabel(
+    ch: ChannelSelectItem | DMChannelListItem,
+    users?: UserData[]
+): string {
+    if (ch.is_direct_message === 1) {
+        const dm = ch as DMChannelListItem
+        const peer = users?.find((u) => u.name === dm.peer_user_id)
+        return peer?.full_name ?? dm.peer_user_id ?? ch.name
+    }
+    return ch.channel_name ?? ch.name ?? ""
+}
+
+function ChannelOption({ channel, users, compact = false }: { channel: ChannelSelectItem | DMChannelListItem, users?: UserData[], compact?: boolean }) {
+    const isDM = channel.is_direct_message === 1
+    const dmChannel = channel as DMChannelListItem
+    const peerUser = users?.find((u) => u.name === dmChannel.peer_user_id)
+    const label = getChannelLabel(channel, users)
+    const avatarSize = compact ? "xs" : "sm"
+    const fallbackSize = compact ? "h-4 w-4" : "h-6 w-6"
+
+    return (
+        <div className={cn("flex items-center gap-2", compact && "min-w-0 flex-1 overflow-hidden")}>
+            {isDM ? (
+                peerUser ? (
+                    <UserAvatar
+                        user={peerUser}
+                        size={avatarSize}
+                        showStatusIndicator={false}
+                        showBotIndicator={false}
+                    />
+                ) : (
+                    <span className={cn("flex items-center justify-center rounded bg-muted text-xs font-bold text-muted-foreground shrink-0", fallbackSize)}>
+                        ?
+                    </span>
+                )
+            ) : (
+                <ChannelIcon
+                    type={(channel as ChannelListItem).type as "Public" | "Private" | "Open"}
+                    className="h-4 w-4 text-muted-foreground shrink-0"
+                />
+            )}
+            <span className={cn("truncate text-left", compact ? "min-w-0 flex-1" : "max-w-50")}>{label}</span>
+        </div>
+    )
+}
+
+
 /** Searchable combobox variant */
 function ChannelSelectCombobox({
     channels,
     dmChannels,
-    availableUsers,
+    users,
     value,
     onValueChange,
     placeholder,
@@ -258,26 +242,40 @@ function ChannelSelectCombobox({
     dropdownClassName,
     triggerSizeClass,
     paddingClass,
-}: Omit<ChannelSelectProps, "excludeChannelId" | "size"> & {
+}: Omit<ChannelSelectProps, "size"> & {
     triggerSizeClass: string
     paddingClass: string
 }) {
-    const resolvedAvailableUsers = availableUsers ?? []
     const [open, setOpen] = useState(false)
     const scrollRef = useRef<HTMLDivElement>(null)
     const selectedChannel = useMemo(() => {
-        if (!value || value === "all") return null
+        if (!value || value === "*all") return null
         const ch = channels.find((c) => c.name === value)
         if (ch) return ch
-        return dmChannels.find((d) => d.name === value) ?? null
+        return dmChannels?.find((d) => d.name === value) ?? null
     }, [value, channels, dmChannels])
 
-    const triggerContent = selectedChannel && value !== "all" ? (
-        <div className="flex items-center gap-1">
-            <ChannelOption channel={selectedChannel} availableUsers={resolvedAvailableUsers} />
+    const channelsByWorkspace = useMemo(() => {
+        const groups = new Map<string, ChannelListItem[]>()
+        for (const ch of channels) {
+            const key = ch.workspace ?? ""
+            const list = groups.get(key)
+            if (list) list.push(ch)
+            else groups.set(key, [ch])
+        }
+        return Array.from(groups.entries())
+    }, [channels])
+
+    const isAllSelected = allowAll && (!value || value === "*all")
+    const isCompact = triggerSizeClass.includes("!h-7")
+    const triggerContent = selectedChannel && value !== "*all" ? (
+        <div className="flex min-w-0 flex-1 items-center gap-1">
+            <ChannelOption channel={selectedChannel} users={users} compact={isCompact} />
         </div>
+    ) : isAllSelected ? (
+        <span className="min-w-0 flex-1 truncate text-left">{allLabel}</span>
     ) : (
-        <span className="text-muted-foreground">{placeholder}</span>
+        <span className="min-w-0 flex-1 truncate text-left text-muted-foreground">{placeholder}</span>
     )
 
     return (
@@ -292,10 +290,10 @@ function ChannelSelectCombobox({
                         role="combobox"
                         aria-expanded={open}
                         className={cn(
-                            "w-full justify-between font-normal",
+                            "w-fit justify-between font-normal gap-2 overflow-hidden",
                             triggerSizeClass,
                             paddingClass,
-                            "h-auto min-h-0"
+                            dropdownClassName
                         )}
                     >
                         {triggerContent}
@@ -305,13 +303,13 @@ function ChannelSelectCombobox({
                 <PopoverContent
                     side="bottom"
                     align="start"
-                    className={cn("w-(--radix-popover-trigger-width) min-w-(--radix-popover-trigger-width) p-0", dropdownClassName)}
+                    className={cn("w-(--radix-popover-trigger-width) min-w-(--radix-popover-trigger-width) max-h-100 p-0 flex flex-col", dropdownClassName)}
                 >
-                    <Command shouldFilter={true}>
-                        <CommandInput placeholder="Search channels and DMs..." />
+                    <Command shouldFilter={true} className="flex-1 min-h-0">
+                        <CommandInput placeholder="Search channels and DMs..." className="focus:ring-0 border-0 bg-transparent" />
                         <div
                             ref={scrollRef}
-                            className="h-50 overflow-y-auto overflow-x-hidden"
+                            className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden"
                             onWheel={(e) => {
                                 const el = scrollRef.current
                                 if (el) {
@@ -325,37 +323,44 @@ function ChannelSelectCombobox({
                                 <CommandEmpty>{_("No channels or DMs found.")}</CommandEmpty>
                                 {allowAll && (
                                     <CommandGroup>
-                                        <CommandItem value="all" onSelect={() => { onValueChange("all"); setOpen(false); }}>
-                                            {allLabel}
+                                        <CommandItem value="*all" onSelect={() => { onValueChange("*all"); setOpen(false); }} className="justify-between">
+                                            <span>{allLabel}</span>
+                                            {(!value || value === "*all") && <CheckIcon className="h-4 w-4 opacity-70" />}
                                         </CommandItem>
                                     </CommandGroup>
                                 )}
-                                <CommandGroup heading="Channels">
-                                    {channels.map((ch) => (
-                                        <CommandItem
-                                            key={ch.name}
-                                            value={`${ch.name} ${getChannelLabel(ch, resolvedAvailableUsers)}`}
-                                            onSelect={() => {
-                                                onValueChange(ch.name)
-                                                setOpen(false)
-                                            }}
-                                        >
-                                            <ChannelOption channel={ch} availableUsers={resolvedAvailableUsers} />
-                                        </CommandItem>
-                                    ))}
-                                </CommandGroup>
-                                {dmChannels.length > 0 && (
+                                {channelsByWorkspace.map(([workspaceId, wsChannels]) => (
+                                    <CommandGroup key={workspaceId} heading={workspaceId}>
+                                        {wsChannels.map((ch) => (
+                                            <CommandItem
+                                                key={ch.name}
+                                                value={`${ch.name} ${getChannelLabel(ch, users)}`}
+                                                onSelect={() => {
+                                                    onValueChange(ch.name)
+                                                    setOpen(false)
+                                                }}
+                                                className="justify-between"
+                                            >
+                                                <ChannelOption channel={ch} users={users} />
+                                                {value === ch.name && <CheckIcon className="h-4 w-4 opacity-70" />}
+                                            </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                ))}
+                                {dmChannels && dmChannels.length > 0 && (
                                     <CommandGroup heading="Direct Messages">
                                         {dmChannels.map((dm) => (
                                             <CommandItem
                                                 key={dm.name}
-                                                value={`${dm.name} ${getChannelLabel(dm, resolvedAvailableUsers)}`}
+                                                value={`${dm.name} ${getChannelLabel(dm, users)}`}
                                                 onSelect={() => {
                                                     onValueChange(dm.name)
                                                     setOpen(false)
                                                 }}
+                                                className="justify-between"
                                             >
-                                                <ChannelOption channel={dm} availableUsers={resolvedAvailableUsers} />
+                                                <ChannelOption channel={dm} users={users} />
+                                                {value === dm.name && <CheckIcon className="h-4 w-4 opacity-70" />}
                                             </CommandItem>
                                         ))}
                                     </CommandGroup>

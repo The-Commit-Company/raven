@@ -1,353 +1,127 @@
 import { SearchFilters } from '@components/common/SearchFilters/types'
 import { SearchFilters as SearchFiltersComponent } from '@components/common/SearchFilters/SearchFilters'
 import { useState } from 'react'
-import { useOutletContext } from 'react-router-dom'
+import { useOutletContext, useSearchParams } from 'react-router-dom'
 import TabsBar, { SearchTab } from '@components/common/SearchFilters/TabsBar'
-import SearchResultsChannelsThreads from '@components/common/SearchFilters/SearchResultsChannelsThreads'
 import { MoreFiltersDrawer } from '@components/common/SearchFilters/MoreFiltersDrawer'
 import SearchResultsPeople from "@components/common/SearchFilters/SearchResultsPeople"
 import SearchResultsPolls from "@components/common/SearchFilters/SearchResultsPolls"
 import SearchResultsFiles from "@components/common/SearchFilters/SearchResultsFiles"
-import { RavenChannel } from "@raven/types/RavenChannelManagement/RavenChannel"
-import { UserData } from "@db"
+import SearchResultsMessages from "@components/common/SearchFilters/SearchResultsMessages"
+import SearchResultsLinks from "@components/common/SearchFilters/SearchResultsLinks"
+import SearchResultsAll from "@components/common/SearchFilters/SearchResultsAll"
+import { useChannels } from '@hooks/useChannels'
+import SearchResultsThreads from '@components/common/SearchFilters/SearchResultsThreads'
 
 export default function Search() {
 
     const { searchValue } = useOutletContext<{ searchValue: string, setSearchValue: (v: string) => void }>()
+    const [searchParams, setSearchParams] = useSearchParams()
 
-    // Dummy users for UserFilter UI
-    const dummyUsers = [
-        {
-            name: "john.doe",
-            full_name: "John Doe",
-            user_image: "https://randomuser.me/api/portraits/men/1.jpg",
-            first_name: "John",
-            enabled: 1,
-            type: "User",
-            availability_status: "Available",
-            custom_status: "Working remotely"
-        },
-        {
-            name: "jane.smith",
-            full_name: "Jane Smith",
-            user_image: "https://randomuser.me/api/portraits/women/2.jpg",
-            first_name: "Jane",
-            enabled: 1,
-            type: "User",
-            availability_status: "Away",
-            custom_status: "In a meeting"
-        },
-        {
-            name: "alex.johnson",
-            full_name: "Alex Johnson",
-            user_image: "https://randomuser.me/api/portraits/men/3.jpg",
-            first_name: "Alex",
-            enabled: 1,
-            type: "User",
-            availability_status: "Do not disturb",
-            custom_status: "Focusing"
-        },
-        {
-            name: "emily.chen",
-            full_name: "Emily Chen",
-            user_image: "https://randomuser.me/api/portraits/women/4.jpg",
-            first_name: "Emily",
-            enabled: 1,
-            type: "User",
-            availability_status: "Available",
-            custom_status: "Happy to help!"
-        },
-        {
-            name: "michael.brown",
-            full_name: "Michael Brown",
-            user_image: "https://randomuser.me/api/portraits/men/5.jpg",
-            first_name: "Michael",
-            enabled: 1,
-            type: "User",
-            availability_status: "Invisible",
-            custom_status: ""
-        },
-        {
-            name: "sophia.wilson",
-            full_name: "Sophia Wilson",
-            user_image: "https://randomuser.me/api/portraits/women/6.jpg",
-            first_name: "Sophia",
-            enabled: 1,
-            type: "User",
-            availability_status: "Available",
-            custom_status: "On vacation soon"
-        },
-        {
-            name: "liam.martinez",
-            full_name: "Liam Martinez",
-            user_image: "https://randomuser.me/api/portraits/men/7.jpg",
-            first_name: "Liam",
-            enabled: 1,
-            type: "User",
-            availability_status: "Away",
-            custom_status: "Lunch break"
-        },
-        {
-            name: "olivia.garcia",
-            full_name: "Olivia Garcia",
-            user_image: "https://randomuser.me/api/portraits/women/8.jpg",
-            first_name: "Olivia",
-            enabled: 1,
-            type: "User",
-            availability_status: "Available",
-            custom_status: "Reviewing PRs"
-        }
-    ] as UserData[]
+    // Read filters from URL params
+    const channelFromURL = searchParams.get('channel') ?? ''
+    const userFromURL = searchParams.get('user') ?? ''
+    const fileTypeFromURL = searchParams.get('file_type')?.split(',').filter(Boolean) ?? []
+    const channelTypeFromURL = searchParams.get('channel_type') ?? ''
+    const isDMFromURL = searchParams.get('is_dm') ? 1 : null
+    // If Channel Type is Private, exclude DMs explicitly
+    const excludeDMs = channelTypeFromURL === 'Private' ? 0 : null
+    const isThreadMessageFromURL = searchParams.get('is_thread_message') ? 1 : null
+    const savedFromURL = searchParams.get('saved') ? 1 : null
+    const isPinnedFromURL = searchParams.get('is_pinned') ? 1 : null
+    const hasLinkFromURL = searchParams.get('has_link') ? 1 : null
+    const hasReactionsFromURL = searchParams.get('has_reactions') ? 1 : null
+    const mentionsMeFromURL = searchParams.get('mentions_me') ? 1 : null
+    const tabFromURL = (searchParams.get('tab') as SearchTab) || 'all'
 
-    // Dummy channels for ChannelFilter UI
-    const dummyChannels = [
-        // Regular channels
-        {
-            creation: "2024-01-01T10:00:00Z",
-            name: "general",
-            modified: "2024-01-01T10:00:00Z",
-            owner: "john.doe",
-            modified_by: "john.doe",
-            docstatus: 0,
-            channel_name: "General",
-            channel_description: "Company-wide announcements and work-based matters",
-            type: "Public",
-            is_direct_message: 0,
-            is_self_message: 0,
-            is_archived: 0,
-            workspace: "main",
-            last_message_timestamp: "2024-06-01T12:00:00Z",
-            last_message_details: {},
-            pinned_messages_string: "",
-        },
-        {
-            creation: "2024-01-02T10:00:00Z",
-            name: "engineering",
-            modified: "2024-01-02T10:00:00Z",
-            owner: "jane.smith",
-            modified_by: "jane.smith",
-            docstatus: 0,
-            channel_name: "Engineering",
-            channel_description: "Engineering team discussions",
-            type: "Private",
-            is_direct_message: 0,
-            is_self_message: 0,
-            is_archived: 0,
-            workspace: "main",
-            last_message_timestamp: "2024-06-01T13:00:00Z",
-            last_message_details: {},
-            pinned_messages_string: "",
-        },
-        {
-            creation: "2024-01-03T10:00:00Z",
-            name: "random",
-            modified: "2024-01-03T10:00:00Z",
-            owner: "alex.johnson",
-            modified_by: "alex.johnson",
-            docstatus: 0,
-            channel_name: "Random",
-            channel_description: "Non-work banter and fun stuff",
-            type: "Open",
-            is_direct_message: 0,
-            is_self_message: 0,
-            is_archived: 0,
-            workspace: "main",
-            last_message_timestamp: "2024-06-01T14:00:00Z",
-            last_message_details: {},
-            pinned_messages_string: "",
-        },
-        {
-            creation: "2024-01-04T10:00:00Z",
-            name: "design",
-            modified: "2024-01-04T10:00:00Z",
-            owner: "emily.chen",
-            modified_by: "emily.chen",
-            docstatus: 0,
-            channel_name: "Design",
-            channel_description: "Design team inspiration and reviews",
-            type: "Public",
-            is_direct_message: 0,
-            is_self_message: 0,
-            is_archived: 0,
-            workspace: "main",
-            last_message_timestamp: "2024-06-01T15:00:00Z",
-            last_message_details: {},
-            pinned_messages_string: "",
-        },
-        {
-            creation: "2024-01-05T10:00:00Z",
-            name: "marketing",
-            modified: "2024-01-05T10:00:00Z",
-            owner: "sophia.wilson",
-            modified_by: "sophia.wilson",
-            docstatus: 0,
-            channel_name: "Marketing",
-            channel_description: "Marketing plans and campaigns",
-            type: "Private",
-            is_direct_message: 0,
-            is_self_message: 0,
-            is_archived: 0,
-            workspace: "main",
-            last_message_timestamp: "2024-06-01T16:00:00Z",
-            last_message_details: {},
-            pinned_messages_string: "",
-        },
-        {
-            creation: "2024-01-06T10:00:00Z",
-            name: "support",
-            modified: "2024-01-06T10:00:00Z",
-            owner: "liam.martinez",
-            modified_by: "liam.martinez",
-            docstatus: 0,
-            channel_name: "Support",
-            channel_description: "Customer support and troubleshooting",
-            type: "Open",
-            is_direct_message: 0,
-            is_self_message: 0,
-            is_archived: 0,
-            workspace: "main",
-            last_message_timestamp: "2024-06-01T17:00:00Z",
-            last_message_details: {},
-            pinned_messages_string: "",
-        },
-        {
-            creation: "2024-01-07T10:00:00Z",
-            name: "ai-lab",
-            modified: "2024-01-07T10:00:00Z",
-            owner: "olivia.garcia",
-            modified_by: "olivia.garcia",
-            docstatus: 0,
-            channel_name: "AI Lab",
-            channel_description: "AI experiments and research",
-            type: "Public",
-            is_direct_message: 0,
-            is_self_message: 0,
-            is_archived: 0,
-            workspace: "main",
-            last_message_timestamp: "2024-06-01T18:00:00Z",
-            last_message_details: {},
-            pinned_messages_string: "",
-        },
-        // DM channels (one for each user except self)
-        ...dummyUsers.map(user => ({
-            creation: "2024-01-08T10:00:00Z",
-            name: `dm-${user.name}`,
-            modified: "2024-01-08T10:00:00Z",
-            owner: "john.doe",
-            modified_by: "john.doe",
-            docstatus: 0,
-            channel_name: user.full_name,
-            channel_description: `Direct message with ${user.full_name}`,
-            type: "Private",
-            is_direct_message: 1,
-            is_self_message: 0,
-            is_archived: 0,
-            workspace: "main",
-            last_message_timestamp: "2024-06-01T19:00:00Z",
-            last_message_details: {},
-            pinned_messages_string: "",
-            peer_user_id: user.name,
-        }))
-    ]
-
-    // Initialize filters state
-    const [filters] = useState<Omit<SearchFilters, 'searchQuery'>>({
-        selectedChannel: '',
-        selectedUser: '',
-        channelType: '',
-        messageType: '',
-        fileType: [],
-        dateRange: { from: undefined, to: undefined },
-        isPinned: null,
-        isSaved: null,
-        hasReactions: null,
-        hasLink: null,
-        inThread: null,
-        isDirectMessage: null,
-    })
-
-    const [activeTab, setActiveTab] = useState<SearchTab>('all')
+    const [activeTab, setActiveTab] = useState<SearchTab>(tabFromURL)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
-    // Compose the full filters object for useMessageFilters and SearchFilters
-    const fullFilters: SearchFilters = {
-        searchQuery: searchValue || '',
-        ...filters
+    const filters: SearchFilters = {
+        query: searchValue || '',
+        channel_id: channelFromURL,
+        owner: userFromURL,
+        file_type: fileTypeFromURL,
+        channel_type: channelTypeFromURL,
+        is_direct_message: isDMFromURL ?? excludeDMs,
+        saved: savedFromURL,
+        is_pinned: isPinnedFromURL,
+        is_thread: null,
+        is_thread_message: isThreadMessageFromURL,
+        is_bot_message: null,
+        has_link: hasLinkFromURL,
+        has_reactions: hasReactionsFromURL,
+        mentions_me: mentionsMeFromURL,
     }
 
-    // Match Settings / Saved Messages / Threads: fixed header with workspace-switcher offset
-    const headerLeft = "var(--workspace-switcher-width, 60px)"
-    const headerWidth = "calc(100% - var(--workspace-switcher-width, 60px))"
+    const { channels, dm_channels } = useChannels()
+
+    const setChannelFilter = (channelId: string) => {
+        setSearchParams((prev) => {
+            if (channelId !== "*all") prev.set('channel', channelId)
+            else prev.delete('channel')
+            return prev
+        })
+    }
+
+    const setUserFilter = (userId: string) => {
+        setSearchParams((prev) => {
+            if (userId && userId !== "all") prev.set('user', userId)
+            else prev.delete('user')
+            return prev
+        })
+    }
 
     return (
-        <div className="flex flex-col h-full overflow-hidden" style={{ "--workspace-switcher-width": "60px" } as React.CSSProperties}>
-            <header
-                className="flex items-center justify-between border-b bg-background py-1.5 px-2 z-20 fixed top-0 h-(--app-header-height) transition-[left,width] duration-200 ease-linear"
-                style={{
-                    left: headerLeft,
-                    width: headerWidth,
-                }}
-            >
-                <div className="flex items-center gap-4">
-                    <span className="text-md font-medium">Search</span>
+        <div className="flex flex-row h-full overflow-hidden pt-(--app-header-height)">
+            {/* Main Content */}
+            <div className={`transition-all duration-300 ${isDrawerOpen ? 'w-[calc(100%-340px)]' : 'w-full'} h-full flex flex-col p-4 pb-0`}>
+                {/* Tabs Bar */}
+                <TabsBar activeTab={activeTab} setActiveTab={setActiveTab} />
+                {/* Search and Filter Component */}
+                <SearchFiltersComponent
+                    filters={filters}
+                    channels={channels}
+                    dmChannels={dm_channels}
+                    onChannelChange={setChannelFilter}
+                    onUserChange={setUserFilter}
+                    onOpenMoreFilters={() => setIsDrawerOpen(open => !open)}
+                />
+
+                <div className="mt-2 flex-1 overflow-y-auto">
+                    {/* Results based on active tab */}
+                    {activeTab === 'all' && (
+                        <SearchResultsAll searchValue={filters.query} filters={filters} />
+                    )}
+                    {activeTab === 'messages' && (
+                        <SearchResultsMessages searchValue={filters.query} filters={filters} />
+                    )}
+                    {activeTab === 'files' && (
+                        <SearchResultsFiles searchValue={filters.query} filters={filters} />
+                    )}
+                    {activeTab === 'links' && (
+                        <SearchResultsLinks searchValue={filters.query} filters={filters} />
+                    )}
+                    {activeTab === 'polls' && (
+                        <SearchResultsPolls searchValue={filters.query} filters={filters} />
+                    )}
+                    {activeTab === 'people' && (
+                        <SearchResultsPeople />
+                    )}
+                    {activeTab === 'threads' && (
+                        <SearchResultsThreads searchValue={filters.query} filters={filters} />
+                    )}
                 </div>
-            </header>
-            <div className="pt-[36px] flex flex-1 flex-row gap-0 p-0 overflow-hidden">
-                {/* Main Content */}
-                <div className={`transition-all duration-300 ${isDrawerOpen ? 'w-[calc(100%-340px)]' : 'w-full'} h-full flex flex-col p-4`}>
-                    {/* Tabs Bar */}
-                    <TabsBar activeTab={activeTab} setActiveTab={setActiveTab} />
-                    {/* Search and Filter Component (no search bar) */}
-                    <SearchFiltersComponent
-                        filters={fullFilters}
-                        availableChannels={dummyChannels as RavenChannel[]}
-                        availableUsers={dummyUsers as UserData[]}
-                        onOpenMoreFilters={() => setIsDrawerOpen(open => !open)}
-                    />
-                    <div className="mt-4 flex-1 overflow-y-auto">
-                        {/* Results based on active tab */}
-                        {activeTab === 'all' && (
-                            // <SearchResultsAll
-                            //     filters={fullFilters}
-                            //     messages={filteredMessages}
-                            //     users={availableUsers}
-                            //     channels={availableChannels}
-                            // />
-                            <></>
-                        )}
-                        {activeTab === 'messages' && (
-                            // <SearchResultsMessages
-                            //     filters={fullFilters}
-                            //     messages={dummyAllMessages}
-                            //     users={availableUsers}
-                            //     channels={availableChannels}
-                            // />
-                            <></>
-                        )}
-                        {activeTab === 'files' && (
-                            <SearchResultsFiles />
-                        )}
-                        {activeTab === 'polls' && (
-                            <SearchResultsPolls />
-                        )}
-                        {activeTab === 'people' && (
-                            <SearchResultsPeople />
-                        )}
-                        {activeTab === 'channels_threads' && (
-                            <SearchResultsChannelsThreads />
-                        )}
-                    </div>
-                </div>
-                {/* Right Drawer */}
-                {isDrawerOpen && (
-                    <div className="w-[340px] h-full border-l bg-background shadow-lg transition-all duration-300 flex flex-col">
-                        <MoreFiltersDrawer
-                            filters={fullFilters}
-                            onClose={() => setIsDrawerOpen(false)}
-                        />
-                    </div>
-                )}
             </div>
+            {/* Right Drawer */}
+            {isDrawerOpen && (
+                <div className="w-85 h-full border-l bg-background shadow-lg transition-all duration-300 flex flex-col">
+                    <MoreFiltersDrawer
+                        filters={filters}
+                        onClose={() => setIsDrawerOpen(false)}
+                    />
+                </div>
+            )}
         </div>
     )
 } 

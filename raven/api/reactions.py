@@ -100,6 +100,9 @@ def calculate_message_reaction(message_id, channel_id: str = None, do_not_publis
 		update_modified=False,
 	)
 
+	from raven.api.search import RavenSearch
+	RavenSearch().index_doc("Raven Message", message_id)
+
 	if do_not_publish:
 		return
 
