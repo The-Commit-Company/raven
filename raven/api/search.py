@@ -154,12 +154,18 @@ class RavenSearch(SQLiteSearch):
 		if not document:
 			return None
 
-		is_thread_channel, channel_type, is_direct_message = frappe.db.get_value("Raven Channel", doc.channel_id, ["is_thread", "type", "is_direct_message"])
+		is_thread_channel, channel_type, is_direct_message = frappe.db.get_value(
+			"Raven Channel", doc.channel_id, ["is_thread", "type", "is_direct_message"]
+		)
 		document["channel_type"] = channel_type
 		document["is_direct_message"] = is_direct_message
 		document["is_thread_message"] = is_thread_channel
-		document["is_thread"] = 1 if frappe.db.exists("Raven Channel", {"name": doc.name, "is_thread": 1}) else 0
-		document["is_pinned"] = 1 if frappe.db.exists("Raven Pinned Messages", {"message_id": doc.name}) else 0
+		document["is_thread"] = (
+			1 if frappe.db.exists("Raven Channel", {"name": doc.name, "is_thread": 1}) else 0
+		)
+		document["is_pinned"] = (
+			1 if frappe.db.exists("Raven Pinned Messages", {"message_id": doc.name}) else 0
+		)
 		try:
 			reactions = json.loads(doc.message_reactions) if doc.message_reactions else {}
 		except (TypeError, ValueError):

@@ -5,6 +5,7 @@ from frappe.query_builder import Order
 from raven.api.raven_users import get_current_raven_user
 from raven.utils import get_channel_members, get_raven_user, is_channel_member, track_channel_visit
 
+
 @frappe.whitelist()
 def get_all_channels(hide_archived: bool | str = True):
 	"""
@@ -265,6 +266,7 @@ def toggle_pin_message(channel_id: str, message_id: str):
 	channel.save(ignore_permissions=True)
 
 	from raven.api.search import RavenSearch
+
 	RavenSearch().index_doc("Raven Message", message_id)
 
 	return "Ok"

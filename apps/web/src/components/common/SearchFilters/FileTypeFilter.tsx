@@ -56,7 +56,7 @@ export function FileTypeFilter({ filters }: { filters: SearchFilters }) {
         <div className="w-full">
             <Label className="text-xs text-muted-foreground mb-1 block">{_("File types")}</Label>
             <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
+                <PopoverTrigger asChild autoFocus>
                     <Button
                         variant="outline"
                         className="w-full h-9 pl-3 pr-2 flex justify-between items-center text-left font-normal border bg-background"
