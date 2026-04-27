@@ -35,6 +35,7 @@ const ChannelList = ({ text }: { text: string }) => {
                         navigate(`/${channel.workspace}/${channel.name}`)
                         setOpen(false)
                     }}
+                    className='cursor-pointer'
                 >
                     <ChannelIconLucide type={channel.type} className="h-4 w-4 shrink-0" />
                     <span className="truncate">{channel.channel_name}</span>

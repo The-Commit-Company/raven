@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@components/ui/tabs';
 import { ScrollArea } from '@components/ui/scroll-area';
 import { Button } from '@components/ui/button';
@@ -23,6 +24,14 @@ const ChannelSettingsDrawer = ({ peerUser }: ChannelSettingsDrawerProps) => {
     const channelID = useCurrentChannelID()
 
     const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
+
+    useEffect(() => {
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') handleClose()
+        }
+        window.addEventListener('keydown', onKeyDown)
+        return () => window.removeEventListener('keydown', onKeyDown)
+    }, [])
 
     const onTabChange = (value: string) => {
         setDrawerType(value as '' | 'files' | 'pins' | 'links' | 'threads' | 'info')

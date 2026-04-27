@@ -38,7 +38,7 @@ export const AddMembersStep = ({ selectedUsers, onSelectUsers }: AddMembersStepP
     const handleSelectUser = (user: UserData) => {
         onSelectUsers([...selectedUsers, user])
         setSearchQuery('')
-        setAnnouncement(_(`${user.full_name} added to channel`))
+        setAnnouncement(_(`{0} added to channel`, [user.full_name]))
         // Return focus to search input after selection
         setTimeout(() => {
             searchInputRef.current?.focus()
@@ -107,7 +107,7 @@ export const AddMembersStep = ({ selectedUsers, onSelectUsers }: AddMembersStepP
                                     className="flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-muted transition-colors rounded-md bg-secondary text-secondary-foreground focus:shadow-md"
                                     onClick={() => handleRemoveSelectedUser(user.name)}
                                     onKeyDown={(e) => handleKeyDownOnBadge(e, user.name)}
-                                    aria-label={_(`Remove ${user.full_name} from selection`)}
+                                    aria-label={_(`Remove {0} from selection`, [user.full_name])}
                                     role="listitem"
                                 >
                                     <span className="text-xs">{user.full_name}</span>

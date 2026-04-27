@@ -28,6 +28,9 @@ function parsePreviews(previewDataJson?: string): LinkPreviewData[] {
     }
 }
 
+const getLinkRowField = (r: SearchResult) =>
+    parsePreviews(r.preview_data).map(p => p.title ?? '').join(' ')
+
 type RichPreview = {
     link: SearchResult
     preview: LinkPreviewData
@@ -38,17 +41,10 @@ const ChannelLinks = ({ channelID }: { channelID: string }) => {
     const { members } = useChannelMembers(channelID)
     const [searchQuery, setSearchQuery] = useState('')
 
-    const longEnoughSearchQuery = useMemo(() => {
-        if (searchQuery.trim().length > 3) {
-            return searchQuery
-        }
-        return ""
-    }, [searchQuery])
-
-    const { results, isLoading, error, mutate } = useSqliteSearch(longEnoughSearchQuery, {
+    const { results, isLoading, error, mutate } = useSqliteSearch(searchQuery, {
         channel_id: channelID,
         has_link: 1,
-    }, 100)
+    }, 100, getLinkRowField)
 
     useFrappeEventListener("link_previews_updated", (data: { channel_id: string }) => {
         if (data.channel_id === channelID) {
@@ -64,11 +60,7 @@ const ChannelLinks = ({ channelID }: { channelID: string }) => {
         if (results) {
             for (const link of results) {
                 for (const [index, preview] of parsePreviews(link.preview_data).entries()) {
-                    if (longEnoughSearchQuery) {
-                        previews.push({ link, preview, index })
-                    } else if (!searchQuery.trim() || preview.title?.toLowerCase().includes(searchQuery.toLowerCase())) {
-                        previews.push({ link, preview, index })
-                    }
+                    previews.push({ link, preview, index })
                     if (!preview.title) {
                         previewlessUrlSet.add(preview.url)
                     }
@@ -77,7 +69,7 @@ const ChannelLinks = ({ channelID }: { channelID: string }) => {
         }
 
         return { previews, previewlessUrls: [...previewlessUrlSet] }
-    }, [results, searchQuery])
+    }, [results])
 
     const { call: updatePreviewLinks } = useFrappePostCall('raven.api.preview_links.update_link_previews_in_background')
     const backfillFired = useRef(false)

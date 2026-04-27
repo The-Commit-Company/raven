@@ -265,6 +265,10 @@ def toggle_pin_message(channel_id: str, message_id: str):
 
 	channel.save(ignore_permissions=True)
 
+	from raven.api.search import RavenSearch
+
+	RavenSearch().index_doc("Raven Message", message_id)
+
 	return "Ok"
 
 

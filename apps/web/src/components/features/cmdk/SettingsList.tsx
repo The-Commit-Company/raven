@@ -50,6 +50,7 @@ const SettingsList = ({ text }: { text: string }) => {
                             navigate(`/settings/${item.value}`)
                             setOpen(false)
                         }}
+                        className='cursor-pointer'
                     >
                         <Icon className="h-4 w-4" />
                         {_(item.label)}

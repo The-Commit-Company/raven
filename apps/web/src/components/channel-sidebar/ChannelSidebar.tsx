@@ -1,4 +1,4 @@
-import { ChevronRight, Info, Star } from "lucide-react"
+import { ChevronRight, Star } from "lucide-react"
 import { ChannelListItem } from "@raven/types/common/ChannelListItem"
 import { cn } from "@lib/utils"
 import {
@@ -14,12 +14,6 @@ import {
     SidebarMenuItem,
     SidebarMenuSubItem,
 } from "@components/ui/sidebar"
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@components/ui/tooltip"
 import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
 import { CreateChannelButton } from "@components/features/channel/CreateChannel/CreateChannelButton"
 import { useGroupedChannels } from "@raven/lib/hooks/useGroupedChannels"
@@ -76,6 +70,7 @@ export function ChannelSidebar({
 
     return (
         <SidebarGroup className="pt-1 flex-1 min-h-0">
+            {/* <SidebarGroupLabel className="text-muted-foreground/80 font-normal text-[11px]">{_("Unreads")}</SidebarGroupLabel> */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
                     <SidebarGroupLabel className="text-muted-foreground/80 font-normal text-[11px]">{_("Channels")}</SidebarGroupLabel>

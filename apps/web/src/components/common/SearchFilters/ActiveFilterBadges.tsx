@@ -1,90 +1,109 @@
 import { X } from 'lucide-react'
 import { Badge } from '@components/ui/badge'
 import { SearchFilters } from './types'
-import { RavenChannel } from '@raven/types/RavenChannelManagement/RavenChannel'
 import { UserData } from "@db"
+import { ChannelListItem, DMChannelListItem } from '@raven/types/common/ChannelListItem'
+import { useSearchParams } from 'react-router'
+import _ from '@lib/translate'
+
 interface FilterBadgeProps {
     label: string
+    onRemove: () => void
 }
 
-function FilterBadge({ label }: FilterBadgeProps) {
-
-    const handleRemove = () => {
-        console.log('remove filter')
-    }
-
+function FilterBadge({ label, onRemove }: FilterBadgeProps) {
     return (
         <Badge
             variant="secondary"
-            className="gap-1 text-[10px] cursor-pointer hover:bg-secondary/80 transition-colors"
-            onClick={handleRemove}>
+            className="gap-1 text-[10px] cursor-pointer hover:bg-secondary/80 transition-colors pr-1.5"
+            onClick={onRemove}>
             {label}
-            <X className="w-1 h-1" />
+            <X className="w-3 h-3" />
         </Badge>
     )
 }
 
-export function ActiveFilterBadges({ filters, availableChannels, availableUsers }: { filters: SearchFilters, availableChannels: RavenChannel[], availableUsers: UserData[] }) {
+const FILE_TYPE_LABELS: Record<string, string> = {
+    pdf: 'PDFs',
+    doc: 'Documents',
+    ppt: 'Presentations',
+    xls: 'Spreadsheets',
+    image: 'Images',
+}
 
-    if (!filters) {
-        return null
+export function ActiveFilterBadges({ filters, channels, dmChannels, users }: { filters: SearchFilters, channels: ChannelListItem[], dmChannels: DMChannelListItem[], users: UserData[] }) {
+
+    const [, setSearchParams] = useSearchParams()
+
+    if (!filters) return null
+
+    const removeParam = (key: string) => () => {
+        setSearchParams((prev) => {
+            const params = new URLSearchParams(prev)
+            params.delete(key)
+            return params
+        })
     }
 
     return (
         <div className="flex flex-wrap gap-2">
-            {filters.searchQuery && (
+            {filters.channel_id && filters.channel_id !== '' && (
                 <FilterBadge
-                    label={`Search: "${filters.searchQuery}"`}
+                    label={_('Channel: {0}', [(channels.find(c => c.name === filters.channel_id)?.channel_name || dmChannels.find(dc => dc.name === filters.channel_id)?.peer_user_id) ?? filters.channel_id])}
+                    onRemove={removeParam('channel')}
                 />
             )}
 
-            {filters.selectedChannel !== '' && (
+            {filters.owner && filters.owner !== '' && (
                 <FilterBadge
-                    label={`Channel: ${availableChannels.find(c => c.name === filters.selectedChannel)?.name}`}
+                    label={_('User: {0}', [users.find(u => u.name === filters.owner)?.full_name ?? filters.owner])}
+                    onRemove={removeParam('user')}
                 />
             )}
 
-            {filters.selectedUser !== '' && (
+            {filters.file_type && filters.file_type.length > 0 && (
                 <FilterBadge
-                    label={`User: ${availableUsers.find(u => u.name === filters.selectedUser)?.full_name}`}
+                    label={filters.file_type.length === 1
+                        ? _('File: {0}', [FILE_TYPE_LABELS[filters.file_type[0]] ?? filters.file_type[0]])
+                        : _('File: {0} types', [String(filters.file_type.length)])}
+                    onRemove={removeParam('file_type')}
                 />
             )}
 
-            {filters.channelType !== '' && (
+            {filters.channel_type && filters.channel_type !== '' && (
                 <FilterBadge
-                    label={`Type: ${filters.channelType}`}
+                    label={_('Channel type: {0}', [filters.channel_type])}
+                    onRemove={removeParam('channel_type')}
                 />
             )}
 
-            {filters.messageType !== '' && (
-                <FilterBadge
-                    label={`Message: ${filters.messageType}`}
-                />
+            {filters.is_direct_message === 1 && (
+                <FilterBadge label={_('Direct Messages')} onRemove={removeParam('is_dm')} />
             )}
 
-            {filters.fileType.length > 0 && (
-                <FilterBadge
-                    label={`File: ${filters.fileType.length === 1 ? filters.fileType[0].toUpperCase() : `${filters.fileType.length} types`}`}
-                />
+            {filters.is_thread_message === 1 && (
+                <FilterBadge label={_('In thread')} onRemove={removeParam('is_thread_message')} />
             )}
 
-            {(filters.dateRange.from || filters.dateRange.to) && (
-                <FilterBadge
-                    label={`Date: ${filters.dateRange.from && filters.dateRange.from.toLocaleDateString()}${filters.dateRange.to && ` - ${filters.dateRange.to.toLocaleDateString()}`}`}
-                />
+            {filters.is_pinned === 1 && (
+                <FilterBadge label={_('Pinned')} onRemove={removeParam('is_pinned')} />
             )}
 
-            {filters.isPinned === true && (
-                <FilterBadge
-                    label="Pinned"
-                />
+            {filters.saved === 1 && (
+                <FilterBadge label={_('Saved')} onRemove={removeParam('saved')} />
             )}
 
-            {filters.isSaved === true && (
-                <FilterBadge
-                    label="Saved"
-                />
+            {filters.has_link === 1 && (
+                <FilterBadge label={_('Has link')} onRemove={removeParam('has_link')} />
+            )}
+
+            {filters.has_reactions === 1 && (
+                <FilterBadge label={_('Has reactions')} onRemove={removeParam('has_reactions')} />
+            )}
+
+            {filters.mentions_me === 1 && (
+                <FilterBadge label={_('Mentions me')} onRemove={removeParam('mentions_me')} />
             )}
         </div>
     )
-} 
+}

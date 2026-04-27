@@ -1,8 +1,6 @@
 import UserHelpMenu from "./UserHelpMenu/UserHelpMenu";
 import SearchBar from "./QuickSearch/SearchBar";
-import { useSidebar } from "@components/ui/sidebar";
-import { useLocation, useNavigate } from "react-router-dom";
-import { SIDEBAR_LESS_ROUTES } from "@utils/routes";
+import { useLocation } from "react-router-dom";
 import CommandMenu from "../cmdk/CommandMenu";
 import SearchButton from "./QuickSearch/SearchButton";
 
@@ -14,22 +12,10 @@ interface AppHeaderProps {
     width?: string
 }
 
-const AppHeader = ({ searchValue, onSearchChange, left: leftProp, width: widthProp }: AppHeaderProps) => {
+const AppHeader = ({ searchValue, onSearchChange }: AppHeaderProps) => {
     const location = useLocation()
-    const navigate = useNavigate()
     const pathname = location.pathname
     const isSearchPage = pathname === "/search"
-    const isSettingsPage = pathname.startsWith("/settings")
-    const isSidebarLessPage = SIDEBAR_LESS_ROUTES.has(pathname) || isSettingsPage
-    const { state } = useSidebar()
-    const isCollapsed = state === "collapsed"
-
-    const left = leftProp ?? (isSidebarLessPage
-        ? "var(--workspace-switcher-width, 60px)"
-        : (isCollapsed ? "var(--sidebar-width-icon, 60px)" : "var(--sidebar-width, 340px)"))
-    const width = widthProp ?? (isSidebarLessPage
-        ? "calc(100% - var(--workspace-switcher-width, 60px))"
-        : (isCollapsed ? "calc(100% - var(--sidebar-width-icon, 60px))" : "calc(100% - var(--sidebar-width, 340px))"))
 
     return (
         <header
@@ -44,7 +30,7 @@ const AppHeader = ({ searchValue, onSearchChange, left: leftProp, width: widthPr
                     <SearchButton />
                 )}
 
-                <UserHelpMenu />
+                {/* <UserHelpMenu /> */}
             </div>
 
             {/* Right section - empty for balance */}

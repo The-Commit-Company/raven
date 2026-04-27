@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@components/ui/tabs';
 import { Button } from '@components/ui/button';
 import { Loader2, X } from 'lucide-react';
@@ -34,6 +34,14 @@ const ChannelMembersDrawer = () => {
         return false;
     }, [channel]);
 
+    useEffect(() => {
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') handleClose()
+        }
+        window.addEventListener('keydown', onKeyDown)
+        return () => window.removeEventListener('keydown', onKeyDown)
+    }, [])
+
     const handleClose = () => {
         setDrawerType('')
     }
@@ -41,7 +49,7 @@ const ChannelMembersDrawer = () => {
     const showTabs = channel?.type !== 'Open' && allowSettingChange
 
     return (
-        <div className="flex flex-col h-full max-w-md w-[380px]">
+        <div className="flex flex-col h-full max-w-md w-95">
             <div className="flex-1 overflow-hidden p-3">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col w-full h-[calc(100vh-6rem)]">
                     {showTabs && <div className="flex items-center justify-between shrink-0">
