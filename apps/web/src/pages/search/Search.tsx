@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useOutletContext, useSearchParams } from 'react-router-dom'
 import TabsBar, { SearchTab } from '@components/common/SearchFilters/TabsBar'
 import { MoreFiltersDrawer } from '@components/common/SearchFilters/MoreFiltersDrawer'
-import SearchResultsPeople from "@components/common/SearchFilters/SearchResultsPeople"
 import SearchResultsPolls from "@components/common/SearchFilters/SearchResultsPolls"
 import SearchResultsFiles from "@components/common/SearchFilters/SearchResultsFiles"
 import SearchResultsMessages from "@components/common/SearchFilters/SearchResultsMessages"
@@ -104,9 +103,6 @@ export default function Search() {
                     )}
                     {activeTab === 'polls' && (
                         <SearchResultsPolls searchValue={filters.query} filters={filters} />
-                    )}
-                    {activeTab === 'people' && (
-                        <SearchResultsPeople />
                     )}
                     {activeTab === 'threads' && (
                         <SearchResultsThreads searchValue={filters.query} filters={filters} />

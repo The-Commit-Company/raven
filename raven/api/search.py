@@ -44,7 +44,7 @@ class RavenSearch(SQLiteSearch):
 			"preview_data",
 			"has_link",
 		],
-		"tokenizer": "unicode61 remove_diacritics 2 tokenchars '-_.'",
+		"tokenizer": "unicode61 remove_diacritics 2 tokenchars '-_'",
 	}
 
 	# Define which doctypes to index and their field mappings

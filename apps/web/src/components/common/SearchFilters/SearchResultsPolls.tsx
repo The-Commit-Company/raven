@@ -63,7 +63,7 @@ export const PollResultCard = ({ poll, author }: {
 
 const SearchResultsPolls = ({ searchValue, filters }: SearchResultsPollsProps) => {
     const users = useLiveQuery(() => db.users.toArray(), [])
-    const { results, isLoading, error } = useSqliteSearch(searchValue, { ...filters, message_type: "Poll" })
+    const { results, isLoading, error } = useSqliteSearch(searchValue, { ...filters, message_type: "Poll" }, 100, (r) => r.content)
 
     return (
         <div className="space-y-2">

@@ -82,7 +82,7 @@ export const FileResultCard = ({ file, author }: {
 const SearchResultsFiles = ({ searchValue, filters }: SearchResultsFilesProps) => {
     const users = useLiveQuery(() => db.users.toArray(), [])
 
-    const { results, isLoading, error } = useSqliteSearch(searchValue, { ...filters, message_type: filters.message_type || ["File", "Image"] as any })
+    const { results, isLoading, error } = useSqliteSearch(searchValue, { ...filters, message_type: filters.message_type || ["File", "Image"] }, 100, (r) => r.title)
 
     return (
         <div className="space-y-2">

@@ -31,6 +31,9 @@ export function parsePreviews(previewDataJson?: string): LinkPreviewData[] {
     }
 }
 
+const getLinkRowField = (r: SearchResult) =>
+    parsePreviews(r.preview_data).map(p => p.title ?? '').join(' ')
+
 type RichPreview = {
     link: SearchResult
     preview: LinkPreviewData
@@ -44,7 +47,7 @@ interface SearchResultsLinksProps {
 
 const SearchResultsLinks = ({ searchValue, filters }: SearchResultsLinksProps) => {
     const users = useLiveQuery(() => db.users.toArray(), [])
-    const { results, isLoading, error, mutate } = useSqliteSearch(searchValue, { ...filters, has_link: 1 }, 100)
+    const { results, isLoading, error, mutate } = useSqliteSearch(searchValue, { ...filters, has_link: 1 }, 100, getLinkRowField)
 
     useFrappeEventListener("link_previews_updated", () => {
         mutate()

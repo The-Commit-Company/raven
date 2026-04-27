@@ -57,7 +57,7 @@ export const ThreadResultCard = ({ thread, author }: {
 
 const SearchResultsThreads = ({ searchValue, filters }: SearchResultsThreadsProps) => {
     const users = useLiveQuery(() => db.users.toArray(), [])
-    const { results, isLoading, error } = useSqliteSearch(searchValue, { ...filters, is_thread: 1 })
+    const { results, isLoading, error } = useSqliteSearch(searchValue, { ...filters, is_thread: 1 }, 100, (r) => r.content)
 
     return (
         <div className="space-y-2">

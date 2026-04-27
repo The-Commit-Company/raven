@@ -50,8 +50,30 @@ const normalizeFilters = (filters: SearchFilters): ApiFilters => {
     return out
 }
 
-export const useSqliteSearch = (query?: string, filters?: SearchFilters, limit: number = 20) => {
-    const debouncedQuery = useDebounce(query, 200)
+/**
+ * Hook to search messages, files, links, polls and threads via the sqlite FTS index.
+ *
+ * Sqlite FTS only does prefix match for tokens >= 4 chars, so short queries return only
+ * exact-token matches and feel broken (e.g. "he" misses "hello"). To smooth this over,
+ * when the query is shorter than 4 chars we send an empty query to the server and
+ * substring-filter the unfiltered result set client-side using `getSearchTextField`.
+ *
+ * @param query - User search input. Debounced 200ms before hitting the server.
+ * @param filters - Server-side filters (channel, author, message_type, etc.).
+ * @param limit - Max rows fetched. Default 20. Use 100+ when client-side filtering is enabled
+ *                so the short-query fallback has enough rows to filter against.
+ * @param getSearchTextField - callback to select the text to substring-match for short queries.
+ *                             Omit to disable the short-query fallback. 
+ */
+export const useSqliteSearch = (
+    query?: string,
+    filters?: SearchFilters,
+    limit: number = 20,
+    getSearchTextField?: (r: SearchResult) => string | undefined,
+) => {
+    const trimmed = (query ?? '').trim()
+    const longEnoughSearchQuery = trimmed.length >= 4 ? query : ''
+    const debouncedQuery = useDebounce(longEnoughSearchQuery, 200)
 
     const apiFilters = useMemo(() => {
         if (filters) {
@@ -81,8 +103,16 @@ export const useSqliteSearch = (query?: string, filters?: SearchFilters, limit: 
         }
     )
 
+    const rawResults = data?.message || []
+
+    const results = useMemo(() => {
+        if (longEnoughSearchQuery || !trimmed || !getSearchTextField) return rawResults
+        const q = trimmed.toLowerCase()
+        return rawResults.filter(r => getSearchTextField(r)?.toLowerCase().includes(q))
+    }, [rawResults, trimmed, longEnoughSearchQuery, getSearchTextField])
+
     return {
-        results: data?.message || [],
+        results,
         error,
         isLoading,
         mutate

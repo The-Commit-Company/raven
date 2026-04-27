@@ -14,7 +14,7 @@ import ErrorBanner from '@components/ui/error-banner'
 
 const ChannelFiles = ({ channelID }: { channelID: string }) => {
     const [searchQuery, setSearchQuery] = useState('')
-    const { results, isLoading, error } = useSqliteSearch(searchQuery, { channel_id: channelID, message_type: ["File", "Image"] })
+    const { results, isLoading, error } = useSqliteSearch(searchQuery, { channel_id: channelID, message_type: ["File", "Image"] }, 100, (r) => r.title)
     const { members } = useChannelMembers(channelID)
 
     return (

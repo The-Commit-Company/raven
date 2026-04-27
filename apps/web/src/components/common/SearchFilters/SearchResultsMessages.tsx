@@ -51,7 +51,7 @@ export const MessageResultCard = ({ message, author }: {
 
 const SearchResultsMessages = ({ searchValue, filters }: SearchResultsMessagesProps) => {
     const users = useLiveQuery(() => db.users.toArray(), [])
-    const { results, isLoading, error } = useSqliteSearch(searchValue, { ...filters, message_type: filters.message_type || "Text" })
+    const { results, isLoading, error } = useSqliteSearch(searchValue, { ...filters, message_type: filters.message_type || "Text" }, 100, (r) => r.content)
 
     return (
         <div className="space-y-2">

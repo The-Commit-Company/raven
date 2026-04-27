@@ -3,7 +3,7 @@ export interface SearchFilters {
     channel_id?: string,
     owner?: string,
     parent_channel_id?: string,
-    message_type?: 'Text' | 'Image' | 'File' | 'Poll' | '',
+    message_type?: string[] | string,
     file_type?: string[],
     channel_type?: string,
     is_direct_message?: 1 | 0 | null,

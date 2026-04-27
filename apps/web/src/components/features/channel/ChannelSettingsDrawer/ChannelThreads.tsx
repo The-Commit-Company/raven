@@ -18,7 +18,7 @@ const ChannelThreads = ({ channelID }: { channelID: string }) => {
     const { results, isLoading, error } = useSqliteSearch(searchQuery, {
         channel_id: channelID,
         is_thread: 1
-    })
+    }, 100, (r) => r.content)
 
     // TODO: I do not have number of replies and last activity in the search index
 

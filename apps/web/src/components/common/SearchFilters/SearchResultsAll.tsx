@@ -1,5 +1,5 @@
 import { ScrollArea } from '@components/ui/scroll-area'
-import { useSqliteSearch } from '@hooks/useSqliteSearch'
+import { SearchResult, useSqliteSearch } from '@hooks/useSqliteSearch'
 import { MessageListSkeleton } from '@components/features/dm-channel/DirectMessagePageSkeleton'
 import _ from '@lib/translate'
 import ErrorBanner from '@components/ui/error-banner'
@@ -17,9 +17,17 @@ interface SearchResultsAllProps {
     filters: SearchFilters
 }
 
+const getAllRowField = (r: SearchResult) => {
+    if (r.message_type === 'File' || r.message_type === 'Image') return r.title
+    if (r.has_link === 1 && r.preview_data) {
+        return parsePreviews(r.preview_data).map(p => p.title ?? '').join(' ')
+    }
+    return r.content
+}
+
 const SearchResultsAll = ({ searchValue, filters }: SearchResultsAllProps) => {
     const users = useLiveQuery(() => db.users.toArray(), [])
-    const { results, isLoading, error } = useSqliteSearch(searchValue, filters)
+    const { results, isLoading, error } = useSqliteSearch(searchValue, filters, 100, getAllRowField)
     return (
         <div className="space-y-2">
             {error && <ErrorBanner error={error} />}
