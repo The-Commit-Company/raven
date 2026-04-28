@@ -33,7 +33,7 @@ export const PollResultCard = ({ poll, author }: {
                 <BarChart3 className="w-5 h-5 shrink-0 text-muted-foreground mt-0.5" />
                 <div className="flex-1 min-w-0">
                     <div className="flex justify-between gap-2 mb-1">
-                        <h3 className="text-sm font-medium text-foreground line-clamp-2 flex-1 min-w-0">{question}</h3>
+                        <h3 className="text-sm font-medium text-foreground line-clamp-2 flex-1 min-w-0 max-w-[calc(100vw-20rem)]">{question}</h3>
                         <span className="text-xs text-muted-foreground shrink-0">{formatDate(poll.creation, "D MMMM YYYY h:mm A")}</span>
                     </div>
                     {options.length > 0 && (

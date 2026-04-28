@@ -29,7 +29,7 @@ export const MessageResultCard = ({ message, author }: {
             aria-label={`Open message`}>
             <div className="flex-1 min-w-0">
                 <div className="flex justify-between gap-2 mb-0.5">
-                    <div className="text-sm text-foreground line-clamp-3">
+                    <div className="text-sm text-foreground line-clamp-3 max-w-[calc(100vw-20rem)]">
                         <MarkdownRenderer content={message.content} />
                     </div>
                     <span className="text-xs text-muted-foreground shrink-0">{formatDate(message.creation, "D MMMM YYYY h:mm A")}</span>

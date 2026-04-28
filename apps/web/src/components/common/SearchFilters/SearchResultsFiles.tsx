@@ -49,7 +49,7 @@ export const FileResultCard = ({ file, author }: {
                 <div className="flex-1 min-w-0 flex flex-col">
                     <div className="flex justify-between gap-2 mb-0.5">
                         <div className="flex items-center gap-2 min-w-0 flex-1">
-                            <h3 className="text-sm font-medium text-foreground truncate min-w-0">
+                            <h3 className="text-sm font-medium text-foreground truncate min-w-0 max-w-[calc(100vw-20rem)]">
                                 <MarkdownRenderer content={file.title} />
                             </h3>
                             <a href={file.internal_link} download onClick={(e) => e.stopPropagation()}>

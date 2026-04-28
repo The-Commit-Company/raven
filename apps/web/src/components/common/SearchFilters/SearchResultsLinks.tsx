@@ -170,7 +170,7 @@ export const LinkPreviewCard = ({ link, preview, author }: {
                 <div className="flex-1 min-w-0 flex flex-col">
                     <div className="flex justify-between gap-2 mb-0.5">
                         <div className="flex items-center gap-2 min-w-0 flex-1">
-                            <h3 className="text-sm font-medium text-foreground truncate min-w-0">{displayTitle}</h3>
+                            <h3 className="text-sm font-medium text-foreground truncate min-w-0 max-w-[calc(100vw-20rem)]">{displayTitle}</h3>
                             <ExternalLink
                                 className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-primary transition-opacity duration-200 shrink-0"
                                 onClick={(e) => { e.stopPropagation(); window.open(url, '_blank') }}
