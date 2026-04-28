@@ -33,7 +33,7 @@ export const ThreadResultCard = ({ thread, author }: {
                     <div className="flex justify-between gap-2 mb-0.5">
                         <div className="flex items-center gap-2 min-w-0 flex-1">
                             <MessageSquareText className="w-4 h-4 text-muted-foreground shrink-0" />
-                            <h3 className="text-sm font-medium text-foreground truncate max-w-[calc(100vw-20rem)]">
+                            <h3 className="text-sm font-medium text-foreground truncate w-[calc(100vw-20rem)]">
                                 <MarkdownRenderer content={thread.content} />
                             </h3>
                         </div>

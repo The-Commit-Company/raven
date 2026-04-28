@@ -11,9 +11,13 @@ export function ChannelOrDMLabel({ channelId, parentChannelId }: { channelId?: s
     const channel = channels.find(c => c.name === channelId) || channels.find(c => c.name === parentChannelId)
     if (channel) {
         return (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <ChannelIcon type={channel.type} className="h-3 w-3" />
-                <span>{channel.channel_name}</span>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <ChannelIcon type={channel.type} className="h-3 w-3" />
+                    <span>{channel.channel_name}</span>
+                </div>
+                <span>•</span>
+                <span>{channel.workspace}</span>
             </div>
         )
     }
