@@ -3,6 +3,7 @@
 
 import frappe
 from frappe import _
+from frappe.utils.data import get_url
 from frappe.model.document import Document
 
 
@@ -92,6 +93,10 @@ class RavenUser(Document):
 		and Frappe creates a duplicate file in the system (that is public) but does not update the URL in the field.
 		"""
 		user_image = frappe.db.get_value("User", self.user, "user_image")
+
+		if isinstance(user_image, str) and user_image.startswith("/"):
+			user_image = get_url(user_image)
+
 		if user_image and not self.user_image:
 			image_file = frappe.get_doc(
 				{
