@@ -203,8 +203,8 @@ export default function ThreadsList({
                     {onlyShowUnread
                         ? _("There are no unread threads to show. Clear the filter to see all threads.")
                         : threadType === 'ai'
-                            ? _("")
-                            : _("Create a thread by clicking on the thread icon on a message")}
+                            ? _("AI threads will appear here when you start conversations with an AI bot.")
+                            : _("Create a thread by right-clicking a message and selecting 'Create Thread'.")}
                 </p>
             </div>
         )
