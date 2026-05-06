@@ -74,10 +74,6 @@ export function MoreFiltersDrawer({ filters, onClose }: MoreFiltersDrawerProps) 
                         <Label className="text-xs text-muted-foreground mb-3 block">{_("Message has...")}</Label>
                         <div className="grid grid-cols-2 gap-3">
                             <div className="flex items-center gap-2">
-                                <Checkbox id="has_link" checked={filters.has_link === 1} onCheckedChange={checked => toggleBooleanParam('has_link')(checked === true)} />
-                                <Label htmlFor="has_link" className="font-normal">{_("A link")}</Label>
-                            </div>
-                            <div className="flex items-center gap-2">
                                 <Checkbox id="hasReactions" checked={filters.has_reactions === 1} onCheckedChange={checked => toggleBooleanParam('has_reactions')(checked === true)} />
                                 <Label htmlFor="hasReactions" className="font-normal">{_("Reactions")}</Label>
                             </div>

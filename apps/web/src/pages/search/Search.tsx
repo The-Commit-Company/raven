@@ -8,7 +8,6 @@ import SearchResultsPolls from "@components/common/SearchFilters/SearchResultsPo
 import SearchResultsFiles from "@components/common/SearchFilters/SearchResultsFiles"
 import SearchResultsMessages from "@components/common/SearchFilters/SearchResultsMessages"
 import SearchResultsLinks from "@components/common/SearchFilters/SearchResultsLinks"
-import SearchResultsAll from "@components/common/SearchFilters/SearchResultsAll"
 import { useChannels } from '@hooks/useChannels'
 import SearchResultsThreads from '@components/common/SearchFilters/SearchResultsThreads'
 
@@ -28,10 +27,9 @@ export default function Search() {
     const isThreadMessageFromURL = searchParams.get('is_thread_message') ? 1 : null
     const savedFromURL = searchParams.get('saved') ? 1 : null
     const isPinnedFromURL = searchParams.get('is_pinned') ? 1 : null
-    const hasLinkFromURL = searchParams.get('has_link') ? 1 : null
     const hasReactionsFromURL = searchParams.get('has_reactions') ? 1 : null
     const mentionsMeFromURL = searchParams.get('mentions_me') ? 1 : null
-    const tabFromURL = (searchParams.get('tab') as SearchTab) || 'all'
+    const tabFromURL = (searchParams.get('tab') as SearchTab) || 'messages'
 
     const [activeTab, setActiveTab] = useState<SearchTab>(tabFromURL)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -48,7 +46,6 @@ export default function Search() {
         is_thread: null,
         is_thread_message: isThreadMessageFromURL,
         is_bot_message: null,
-        has_link: hasLinkFromURL,
         has_reactions: hasReactionsFromURL,
         mentions_me: mentionsMeFromURL,
     }
@@ -74,7 +71,7 @@ export default function Search() {
     return (
         <div className="flex flex-row h-full overflow-hidden pt-(--app-header-height)">
             {/* Main Content */}
-            <div className={`transition-all duration-300 ${isDrawerOpen ? 'w-[calc(100%-340px)]' : 'w-full'} h-full flex flex-col p-4 pb-0`}>
+            <div className={`transition-all duration-300 ${isDrawerOpen ? 'w-[calc(100%-340px)] pr-0' : 'w-full'} h-full flex flex-col p-4 pb-0`}>
                 {/* Tabs Bar */}
                 <TabsBar activeTab={activeTab} setActiveTab={setActiveTab} />
                 {/* Search and Filter Component */}
@@ -89,9 +86,6 @@ export default function Search() {
 
                 <div className="mt-2 flex-1 overflow-y-auto">
                     {/* Results based on active tab */}
-                    {activeTab === 'all' && (
-                        <SearchResultsAll searchValue={filters.query} filters={filters} />
-                    )}
                     {activeTab === 'messages' && (
                         <SearchResultsMessages searchValue={filters.query} filters={filters} />
                     )}
@@ -104,9 +98,10 @@ export default function Search() {
                     {activeTab === 'polls' && (
                         <SearchResultsPolls searchValue={filters.query} filters={filters} />
                     )}
-                    {activeTab === 'threads' && (
+                    {/* Threads have a separate page*/}
+                    {/* {activeTab === 'threads' && (
                         <SearchResultsThreads searchValue={filters.query} filters={filters} />
-                    )}
+                    )} */}
                 </div>
             </div>
             {/* Right Drawer */}

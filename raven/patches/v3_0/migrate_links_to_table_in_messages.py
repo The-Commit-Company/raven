@@ -1,7 +1,5 @@
 import frappe
 
-from raven.api.search import RavenSearch
-
 
 def execute():
 	"""

@@ -93,10 +93,6 @@ export function ActiveFilterBadges({ filters, channels, dmChannels, users }: { f
                 <FilterBadge label={_('Saved')} onRemove={removeParam('saved')} />
             )}
 
-            {filters.has_link === 1 && (
-                <FilterBadge label={_('Has link')} onRemove={removeParam('has_link')} />
-            )}
-
             {filters.has_reactions === 1 && (
                 <FilterBadge label={_('Has reactions')} onRemove={removeParam('has_reactions')} />
             )}

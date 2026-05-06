@@ -3,7 +3,7 @@ import mimetypes
 
 import frappe
 from frappe.search.sqlite_search import SQLiteSearch
-from pypika import JoinType
+from pypika import JoinType, Order
 
 from raven.api.document_link import get_preview_data
 from raven.api.raven_channel import get_channel_list
@@ -42,7 +42,6 @@ class RavenSearch(SQLiteSearch):
 			"thumbnail_height",  # this won't be here when we have a child table for files
 			"internal_link",  # this won't be here when we have a child table for files
 			"preview_data",
-			"has_link",
 		],
 		"tokenizer": "unicode61 remove_diacritics 2 tokenchars '-_'",
 	}
@@ -86,69 +85,6 @@ class RavenSearch(SQLiteSearch):
 
 	def prepare_document(self, doc):
 		"""Custom document preparation"""
-
-		msg_link = frappe.qb.DocType("Raven Message Links")
-		preview_urls = (
-			frappe.qb.from_(msg_link)
-			.select(msg_link.url)
-			.where(msg_link.parent == doc.name)
-			.where(msg_link.parenttype == "Raven Message")
-		).run(pluck="url")
-
-		preview_data = []
-		preview_texts = []
-		if preview_urls:
-			unique_urls = set(preview_urls)
-			for url in unique_urls:
-				preview = frappe.db.get_value(
-					"Raven Link Preview", url, ["title", "description", "image", "site_name"], as_dict=True
-				)
-				if preview:
-					if preview.get("title"):
-						preview_texts.append(preview.title)
-					if preview.get("description"):
-						preview_texts.append(preview.description)
-					if preview.get("site_name"):
-						preview_texts.append(preview.site_name)
-
-					preview_data.append(
-						{
-							"url": url,
-							"title": preview.get("title"),
-							"description": preview.get("description"),
-							"image": preview.get("image"),
-							"site_name": preview.get("site_name"),
-						}
-					)
-				else:
-					preview_data.append(
-						{
-							"url": url,
-						}
-					)
-
-		if doc.link_document:
-			link_document = get_preview_data(doc.link_doctype, doc.link_document)
-			if link_document:
-				if link_document.get("preview_title"):
-					preview_texts.append(link_document.get("preview_title"))
-				if link_document.get("id"):
-					preview_texts.append(link_document.get("id"))
-				preview_data.append(
-					{
-						"url": link_document.get("raven_document_link"),
-						"title": link_document.get("preview_title"),
-						"image": link_document.get("preview_image"),
-						"document_id": link_document.get("id"),
-					}
-				)
-
-		if preview_data:
-			doc.has_link = 1
-			doc.preview_data = json.dumps(preview_data)
-
-		if preview_texts:
-			doc.preview_search_text = "\n\n" + "\n".join(preview_texts)
 
 		document = super().prepare_document(doc)
 		if not document:
@@ -486,3 +422,162 @@ def get_search_result(
 		query = query.where(message._liked_by.like(f"%{frappe.session.user}%"))
 
 	return query.limit(20).offset(0).run(as_dict=True)
+
+
+@frappe.whitelist(methods=["GET"])
+def search_links(
+	search_text: str | None = None,
+	channel_id: str | None = None,
+	parent_channel_id: str | None = None,
+	owner: str | None = None,
+	channel_type: str | None = None,
+	is_direct_message: int | None = None,
+	is_thread_message: int | None = None,
+	is_pinned: int | None = None,
+	is_bot_message: int | None = None,
+	bot: str | None = None,
+	mentions: str | None = None,
+	mentions_me: int | None = None,
+	saved: int | None = None,
+	has_reactions: int | None = None,
+	start_after: int = 0,
+	limit: int = 20,
+):
+	"""
+	Search through Raven Link Previews joined with linked Raven Message.
+	"""
+
+	user = frappe.session.user
+
+	link_preview = frappe.qb.DocType("Raven Link Preview")
+	msg_link = frappe.qb.DocType("Raven Message Links")
+	message = frappe.qb.DocType("Raven Message")
+	channel = frappe.qb.DocType("Raven Channel")
+	channel_member = frappe.qb.DocType("Raven Channel Member")
+	# For thread messages, the parent channel of the THREAD CHANNEL is resolved via the Raven Message whose name == thread channel name.
+	thread_root = frappe.qb.DocType("Raven Message").as_("thread_root")
+
+	query = (
+		frappe.qb.from_(link_preview)
+		.inner_join(msg_link)
+		.on((msg_link.url == link_preview.name) & (msg_link.parenttype == "Raven Message"))
+		.inner_join(message)
+		.on(message.name == msg_link.parent)
+		.inner_join(channel)
+		.on(channel.name == message.channel_id)
+		.left_join(channel_member)
+		.on((channel_member.channel_id == message.channel_id) & (channel_member.user_id == user))
+		.left_join(thread_root)
+		.on(thread_root.name == channel.name)
+		.select(
+			message.name.as_("id"),
+			message.channel_id,
+			message.creation,
+			message.owner.as_("author"),
+			message.content,
+			channel.is_thread,
+			channel.is_direct_message,
+			channel.type.as_("channel_type"),
+			thread_root.channel_id.as_("parent_channel_id"),
+			link_preview.name.as_("url"),
+			link_preview.title,
+			link_preview.description,
+			link_preview.image,
+			link_preview.site_name,
+		)
+		# Permission: open channel OR user is member
+		.where((channel.type == "Open") | (channel_member.user_id == user))
+		.distinct()
+	)
+
+	if search_text:
+		like = f"%{search_text}%"
+		query = query.where(
+			(link_preview.title.like(like))
+			| (link_preview.description.like(like))
+			| (link_preview.site_name.like(like))
+		)
+
+	if channel_id:
+		query = query.where(message.channel_id == channel_id)
+
+	if parent_channel_id:
+		# If message is in a thread channel use thread_root.channel_id, else message.channel_id
+		from pypika import Case
+
+		resolved_parent = (
+			Case().when(channel.is_thread == 1, thread_root.channel_id).else_(message.channel_id)
+		)
+		query = query.where(resolved_parent == parent_channel_id)
+
+	if owner:
+		query = query.where(message.owner == owner)
+
+	if channel_type:
+		query = query.where(channel.type == channel_type)
+
+	if is_direct_message is not None:
+		query = query.where(channel.is_direct_message == int(is_direct_message))
+
+	if is_thread_message is not None:
+		query = query.where(channel.is_thread == int(is_thread_message))
+
+	if is_bot_message is not None:
+		query = query.where(message.is_bot_message == int(is_bot_message))
+
+	if bot:
+		query = query.where(message.bot == bot)
+
+	if is_pinned:
+		pinned = frappe.qb.DocType("Raven Pinned Messages")
+		query = query.where(
+			frappe.qb.from_(pinned).select(pinned.name).where(pinned.message_id == message.name).exists()
+		)
+
+	if mentions_me:
+		mention = frappe.qb.DocType("Raven Mention")
+		query = query.where(
+			frappe.qb.from_(mention)
+			.select(mention.name)
+			.where((mention.parent == message.name) & (mention.user == user))
+			.exists()
+		)
+	elif mentions:
+		mention = frappe.qb.DocType("Raven Mention")
+		query = query.where(
+			frappe.qb.from_(mention)
+			.select(mention.name)
+			.where((mention.parent == message.name) & (mention.user == mentions))
+			.exists()
+		)
+
+	if saved:
+		query = query.where(message._liked_by.like(f'%"{user}"%'))
+
+	if has_reactions:
+		query = query.where(message.message_reactions.notnull() & (message.message_reactions != "{}"))
+
+	query = (
+		query.orderby(message.creation, order=Order.desc).limit(int(limit)).offset(int(start_after))
+	)
+
+	results = query.run(as_dict=True)
+
+	# Lazy backfill: enqueue preview fetch for rows with no title (likely brought in by
+	# the v3 link migration patch which bulk-inserted Raven Link Preview rows without
+	# triggering before_insert -> fetch_preview). One job per call, dedup via job_name.
+	blank_urls = [r["url"] for r in results if not r.get("title") and r.get("url")]
+	if blank_urls:
+		from frappe.utils.background_jobs import enqueue, is_job_enqueued
+
+		# Cap to avoid huge jobs; remaining rows get backfilled on subsequent reads.
+		blank_urls = blank_urls[:50]
+		job_id = f"search_links_backfill_{frappe.session.user}"
+		if not is_job_enqueued(job_id):
+			enqueue(
+				method="raven.api.preview_links.update_link_previews",
+				urls=json.dumps(blank_urls),
+				job_name=job_id,
+			)
+
+	return results

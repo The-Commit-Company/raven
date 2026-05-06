@@ -171,7 +171,7 @@ export default function SavedMessages() {
                     </div>
                 </header>
 
-                <div className="pt-[36px] flex flex-1 overflow-hidden">
+                <div className="pt-9 flex flex-1 overflow-hidden">
                     <div className="flex-1 flex flex-col overflow-hidden">
                         <div className="px-4 pt-4 shrink-0 space-y-3">
                             {/* Tabs */}
@@ -207,7 +207,7 @@ export default function SavedMessages() {
 
                             {/* Search and Channel Filter */}
                             <div className="flex flex-row items-end gap-2">
-                                <div className="relative flex-1 min-w-[200px]">
+                                <div className="relative flex-1 min-w-50">
                                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
                                     <Input
                                         placeholder="Search saved messages..."
@@ -227,7 +227,7 @@ export default function SavedMessages() {
                                     )}
                                 </div>
                                 <Select value={channel} onValueChange={setChannel}>
-                                    <SelectTrigger className="w-fit min-w-[140px] sm:min-w-[180px] h-7 text-[13px] [&>span]:px-2">
+                                    <SelectTrigger className="w-fit min-w-35 sm:min-w-45 h-7 text-[13px] [&>span]:px-2">
                                         {selectedChannel && channel !== 'all' ? (
                                             <div className="flex items-center gap-1.5">
                                                 {selectedChannel.is_direct_message === 1 ? (

@@ -1,85 +1,28 @@
 import { ScrollArea } from '@components/ui/scroll-area'
 import { Search, ExternalLink, Link, FileBox } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { SearchResult, useSqliteSearch } from '@hooks/useSqliteSearch'
-import { useFrappePostCall, useFrappeEventListener } from 'frappe-react-sdk'
+import { useState } from 'react'
+import { useFrappeEventListener } from 'frappe-react-sdk'
 import _ from '@lib/translate'
 import { Skeleton } from '@components/ui/skeleton'
 import { ChannelMemberData, useChannelMembers } from '@hooks/useChannelMembers'
 import { UserAvatar } from '@components/features/message/UserAvatar'
 import { formatRelativeDate } from '@utils/date'
 import ErrorBanner from '@components/ui/error-banner'
-
-export type LinkPreviewData = {
-    url: string
-    title?: string
-    description?: string
-    image?: string
-    site_name?: string
-    document_id?: string
-}
-
-function parsePreviews(previewDataJson?: string): LinkPreviewData[] {
-    if (!previewDataJson) return []
-    try {
-        return JSON.parse(previewDataJson)
-    } catch {
-        return []
-    }
-}
-
-const getLinkRowField = (r: SearchResult) =>
-    parsePreviews(r.preview_data).map(p => p.title ?? '').join(' ')
-
-type RichPreview = {
-    link: SearchResult
-    preview: LinkPreviewData
-    index: number
-}
+import { LinkSearchResult, useLinkSearch } from '@hooks/useLinkSearch'
 
 const ChannelLinks = ({ channelID }: { channelID: string }) => {
     const { members } = useChannelMembers(channelID)
     const [searchQuery, setSearchQuery] = useState('')
 
-    const { results, isLoading, error, mutate } = useSqliteSearch(searchQuery, {
+    const { results, isLoading, error, mutate } = useLinkSearch(searchQuery, {
         channel_id: channelID,
-        has_link: 1,
-    }, 100, getLinkRowField)
+    }, 100)
 
     useFrappeEventListener("link_previews_updated", (data: { channel_id: string }) => {
         if (data.channel_id === channelID) {
             mutate()
         }
     })
-
-
-    const { previews, previewlessUrls } = useMemo(() => {
-        const previews: RichPreview[] = []
-        const previewlessUrlSet = new Set<string>()
-
-        if (results) {
-            for (const link of results) {
-                for (const [index, preview] of parsePreviews(link.preview_data).entries()) {
-                    previews.push({ link, preview, index })
-                    if (!preview.title) {
-                        previewlessUrlSet.add(preview.url)
-                    }
-                }
-            }
-        }
-
-        return { previews, previewlessUrls: [...previewlessUrlSet] }
-    }, [results])
-
-    const { call: updatePreviewLinks } = useFrappePostCall('raven.api.preview_links.update_link_previews_in_background')
-    const backfillFired = useRef(false)
-
-    useEffect(() => {
-        if (previewlessUrls.length > 0 && !backfillFired.current) {
-            backfillFired.current = true
-            updatePreviewLinks({ urls: JSON.stringify(previewlessUrls), channel_id: channelID })
-        }
-    }, [previewlessUrls])
 
     return (
         <div className="px-1 space-y-2">
@@ -99,16 +42,15 @@ const ChannelLinks = ({ channelID }: { channelID: string }) => {
             {error && <ErrorBanner error={error} />}
             {/* Links List */}
             <ScrollArea className="flex-1">
-                {isLoading || !results ? <LinkPreviewSkeletonList /> :
+                {isLoading ? <LinkPreviewSkeletonList /> :
                     results.length === 0 ? <div className="text-sm text-muted-foreground text-center py-8">{searchQuery ? _("No links found matching your search.") : _("No links shared in this channel yet.")}</div> :
                         <div className={'space-y-2'}>
-                            {previews.map(({ link, preview, index }) => {
+                            {results.map((link) => {
                                 const member = members.find((m) => m.name === link.author)
                                 return (
                                     <LinkPreviewCard
-                                        key={`${link.id}-${index}`}
+                                        key={`${link.id}-${link.url}`}
                                         link={link}
-                                        preview={preview}
                                         member={member}
                                     />
                                 )
@@ -150,17 +92,17 @@ const LinkPreviewSkeletonList = () => {
     )
 }
 
-
-const LinkPreviewCard = ({ link, preview, member }: {
-    link: SearchResult,
-    preview: LinkPreviewData,
+const LinkPreviewCard = ({ link, member }: {
+    link: LinkSearchResult,
     member?: ChannelMemberData,
 }) => {
-    const url = preview.url
-    const hostname = new URL(url).hostname;
-    const faviconUrl = `https://icons.duckduckgo.com/ip2/${hostname}.ico`;
-    const displayTitle = preview?.title || url
-    const displaySubtitle = preview?.document_id ? preview.document_id : (preview?.site_name || hostname)
+    const url = link.url
+    const hostname = (() => {
+        try { return new URL(url).hostname } catch { return url }
+    })()
+    const faviconUrl = `https://icons.duckduckgo.com/ip2/${hostname}.ico`
+    const displayTitle = link.title || url
+    const displaySubtitle = link.site_name || hostname
 
     return (
         <div
@@ -172,19 +114,19 @@ const LinkPreviewCard = ({ link, preview, member }: {
 
             <div className="space-y-2">
                 <div className="flex items-start gap-3">
-                    {preview.document_id ? (
-                        <FileBox className="w-5 h-5 shrink-0 text-muted-foreground" />
-                    ) : faviconUrl ? (
+                    {faviconUrl ? (
                         <img
                             src={faviconUrl}
                             alt=""
                             className="w-5 h-5 shrink-0"
                             onError={(e) => {
-                                e.currentTarget.style.display = 'none';
-                                e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                e.currentTarget.style.display = 'none'
+                                e.currentTarget.nextElementSibling?.classList.remove('hidden')
                             }}
-                        />)
-                        : null}
+                        />
+                    ) : (
+                        <FileBox className="w-5 h-5 shrink-0 text-muted-foreground" />
+                    )}
                     <Link className="w-5 h-5 shrink-0 text-muted-foreground hidden" />
                     <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-medium text-foreground truncate">
@@ -210,6 +152,5 @@ const LinkPreviewCard = ({ link, preview, member }: {
         </div>
     )
 }
-
 
 export default ChannelLinks

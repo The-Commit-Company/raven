@@ -1,6 +1,7 @@
 import { X } from "lucide-react"
 import { Button } from "@components/ui/button"
 import { ScrollArea } from "@components/ui/scroll-area"
+import _ from "@lib/translate"
 
 interface ThreadViewDrawerProps {
     threadID: string
@@ -12,13 +13,13 @@ export default function ThreadViewDrawer({ threadID, onClose }: ThreadViewDrawer
         <div className="flex flex-col h-full bg-background">
             {/* Header */}
             <div className="flex items-center justify-between pl-4 pr-2 py-2 border-b border-border shrink-0 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-                <h2 className="text-sm font-medium">Thread</h2>
+                <h2 className="text-sm font-medium">{_("Thread")}</h2>
                 <Button
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8"
                     onClick={onClose}
-                    aria-label="Close thread"
+                    aria-label={_("Close thread")}
                 >
                     <X className="h-4 w-4" />
                 </Button>
@@ -26,8 +27,8 @@ export default function ThreadViewDrawer({ threadID, onClose }: ThreadViewDrawer
 
             {/* Thread Messages */}
             <ScrollArea className="flex-1">
-                <div className="flex items-center justify-center min-h-[500px] px-6 text-center">
-                    <p className="text-[13px] text-muted-foreground">Thread messages will appear here</p>
+                <div className="flex items-center justify-center min-h-125 px-6 text-center">
+                    <p className="text-[13px] text-muted-foreground">{_("Thread messages will appear here")}</p>
                 </div>
             </ScrollArea>
         </div>

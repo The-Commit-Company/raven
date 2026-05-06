@@ -2,7 +2,6 @@ import frappe
 from frappe.tests import IntegrationTestCase
 
 from raven.api.raven_channel import create_direct_message_channel
-from raven.api.search import RavenSearch
 from raven.api.threads import create_thread
 
 EXTRA_TEST_RECORD_DEPENDENCIES = ["User", "Raven User"]
@@ -12,8 +11,6 @@ class TestPermissions(IntegrationTestCase):
 	@classmethod
 	def setUpClass(cls):
 		super().setUpClass()
-		search = RavenSearch()
-		search.build_index()
 
 	def setUp(self):
 

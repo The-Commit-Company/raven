@@ -310,7 +310,7 @@ const ContinuationMessageHeader = ({ message }: { message: Message }) => {
 }
 
 
-const MessageContent = ({ message }: { message: Message }) => {
+export const MessageContent = ({ message }: { message: Message }) => {
 
     const repliedMessageDetails = useMemo(() => {
         if (message.replied_message_details) {

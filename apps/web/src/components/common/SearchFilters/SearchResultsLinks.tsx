@@ -1,8 +1,6 @@
 import { ScrollArea } from '@components/ui/scroll-area'
 import { ExternalLink, FileBox } from 'lucide-react'
-import { useEffect, useMemo, useRef } from 'react'
-import { SearchResult, useSqliteSearch } from '@hooks/useSqliteSearch'
-import { useFrappePostCall, useFrappeEventListener } from 'frappe-react-sdk'
+import { useFrappeEventListener } from 'frappe-react-sdk'
 import _ from '@lib/translate'
 import { UserAvatar } from '@components/features/message/UserAvatar'
 import { formatDate } from '@utils/date'
@@ -12,33 +10,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { db, UserData } from '@db'
 import { ChannelOrDMLabel } from './ChannelOrDMLabel'
 import { SearchFilters } from './types'
-
-export type LinkPreviewData = {
-    url: string
-    title?: string
-    description?: string
-    image?: string
-    site_name?: string
-    document_id?: string
-}
-
-export function parsePreviews(previewDataJson?: string): LinkPreviewData[] {
-    if (!previewDataJson) return []
-    try {
-        return JSON.parse(previewDataJson)
-    } catch {
-        return []
-    }
-}
-
-const getLinkRowField = (r: SearchResult) =>
-    parsePreviews(r.preview_data).map(p => p.title ?? '').join(' ')
-
-type RichPreview = {
-    link: SearchResult
-    preview: LinkPreviewData
-    index: number
-}
+import { LinkSearchResult, useLinkSearch } from '@hooks/useLinkSearch'
 
 interface SearchResultsLinksProps {
     searchValue?: string
@@ -47,54 +19,25 @@ interface SearchResultsLinksProps {
 
 const SearchResultsLinks = ({ searchValue, filters }: SearchResultsLinksProps) => {
     const users = useLiveQuery(() => db.users.toArray(), [])
-    const { results, isLoading, error, mutate } = useSqliteSearch(searchValue, { ...filters, has_link: 1 }, 100, getLinkRowField)
+    const { results, isLoading, error, mutate } = useLinkSearch(searchValue, filters, 100)
 
     useFrappeEventListener("link_previews_updated", () => {
         mutate()
     })
 
-    const { previews, previewlessUrls } = useMemo(() => {
-        const previews: RichPreview[] = []
-        const previewlessUrlSet = new Set<string>()
-
-        if (results) {
-            for (const link of results) {
-                for (const [index, preview] of parsePreviews(link.preview_data).entries()) {
-                    previews.push({ link, preview, index })
-                    if (!preview.title) {
-                        previewlessUrlSet.add(preview.url)
-                    }
-                }
-            }
-        }
-
-        return { previews, previewlessUrls: [...previewlessUrlSet] }
-    }, [results])
-
-    const { call: updatePreviewLinks } = useFrappePostCall('raven.api.preview_links.update_link_previews_in_background')
-    const backfillFired = useRef(false)
-
-    useEffect(() => {
-        if (previewlessUrls.length > 0 && !backfillFired.current) {
-            backfillFired.current = true
-            updatePreviewLinks({ urls: JSON.stringify(previewlessUrls) })
-        }
-    }, [previewlessUrls])
-
     return (
         <div className="space-y-2">
             {error && <ErrorBanner error={error} />}
             <ScrollArea className="flex-1">
-                {isLoading || !results ? <LinkPreviewSkeletonList /> :
-                    previews.length === 0 ? <div className="text-sm text-muted-foreground text-center py-8">{_("No links found.")}</div> :
+                {isLoading ? <LinkPreviewSkeletonList /> :
+                    results.length === 0 ? <div className="text-sm text-muted-foreground text-center py-8">{_("No links found.")}</div> :
                         <div className={'space-y-2'}>
-                            {previews.map(({ link, preview, index }) => {
+                            {results.map((link) => {
                                 const author = users?.find((u) => u.name === link.author)
                                 return (
                                     <LinkPreviewCard
-                                        key={`${link.id}-${index}`}
+                                        key={`${link.id}-${link.url}`}
                                         link={link}
-                                        preview={preview}
                                         author={author}
                                     />
                                 )
@@ -128,16 +71,17 @@ const LinkPreviewSkeletonList = () => {
     )
 }
 
-export const LinkPreviewCard = ({ link, preview, author }: {
-    link: SearchResult,
-    preview: LinkPreviewData,
+export const LinkPreviewCard = ({ link, author }: {
+    link: LinkSearchResult,
     author?: UserData,
 }) => {
-    const url = preview.url
-    const hostname = new URL(url).hostname
+    const url = link.url
+    const hostname = (() => {
+        try { return new URL(url).hostname } catch { return url }
+    })()
     const faviconUrl = `https://icons.duckduckgo.com/ip2/${hostname}.ico`
-    const displayTitle = preview?.title || url
-    const displaySubtitle = preview?.document_id ? preview.document_id : (preview?.site_name || hostname)
+    const displayTitle = link.title || url
+    const displaySubtitle = link.site_name || hostname
 
     return (
         <div
@@ -146,17 +90,13 @@ export const LinkPreviewCard = ({ link, preview, author }: {
             role="button"
             aria-label={`Open link: ${displayTitle}`}>
             <div className="flex gap-3">
-                {preview.image ? (
+                {link.image ? (
                     <img
-                        src={preview.image}
+                        src={link.image}
                         alt=""
                         className="w-20 h-20 object-cover rounded-md border border-border/40 shrink-0"
                         onError={(e) => { e.currentTarget.style.display = 'none' }}
                     />
-                ) : preview.document_id ? (
-                    <div className="w-20 h-20 rounded-md bg-muted flex items-center justify-center shrink-0 border border-border/40">
-                        <FileBox className="w-8 h-8 text-muted-foreground" />
-                    </div>
                 ) : (
                     <div className="w-20 h-20 rounded-md bg-muted flex items-center justify-center shrink-0 border border-border/40">
                         <img
@@ -165,6 +105,7 @@ export const LinkPreviewCard = ({ link, preview, author }: {
                             className="w-10 h-10"
                             onError={(e) => { e.currentTarget.style.display = 'none' }}
                         />
+                        <FileBox className="w-8 h-8 text-muted-foreground hidden" />
                     </div>
                 )}
                 <div className="flex-1 min-w-0 flex flex-col">
@@ -179,13 +120,11 @@ export const LinkPreviewCard = ({ link, preview, author }: {
                         <span className="text-xs text-muted-foreground shrink-0">{formatDate(link.creation, "D MMMM YYYY h:mm A")}</span>
                     </div>
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground/70 mt-0.5">
-                        {!preview.document_id && (
-                            <img src={faviconUrl} alt="" className="w-3 h-3" onError={(e) => { e.currentTarget.style.display = 'none' }} />
-                        )}
+                        <img src={faviconUrl} alt="" className="w-3 h-3" onError={(e) => { e.currentTarget.style.display = 'none' }} />
                         <span className="truncate">{displaySubtitle}</span>
                     </div>
-                    {preview.description && (
-                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{preview.description}</p>
+                    {link.description && (
+                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{link.description}</p>
                     )}
                     <div className="flex items-center gap-2 text-xs text-muted-foreground/80 mt-auto pt-2 flex-wrap">
                         {author && <>
