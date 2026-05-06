@@ -9,6 +9,7 @@ import { useChannelMembers } from '@hooks/useChannelMembers'
 import { formatRelativeDate } from '@utils/date'
 import MarkdownRenderer from '@components/ui/markdown'
 import ErrorBanner from '@components/ui/error-banner'
+import { Badge } from '@components/ui/badge'
 
 const ChannelThreads = ({ channelID }: { channelID: string }) => {
 
@@ -20,7 +21,6 @@ const ChannelThreads = ({ channelID }: { channelID: string }) => {
         is_thread: 1
     }, 100, (r) => r.content)
 
-    // TODO: I do not have number of replies and last activity in the search index
 
     return (
         <div className="px-1 space-y-2">
@@ -57,11 +57,13 @@ const ChannelThreads = ({ channelID }: { channelID: string }) => {
                                                     <MarkdownRenderer content={thread.content} />
                                                 </h3>
                                             </div>
-                                            {/* <Badge
-                                                variant="secondary"
-                                                className="text-xs bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300">
-                                                {thread.message_count > 9 ? '9+' : thread.message_count}
-                                            </Badge> */}
+                                            {/* {thread.reply_count ? (
+                                                <Badge
+                                                    variant="secondary"
+                                                    className="text-xs bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300">
+                                                    {thread.reply_count > 9 ? '9+' : thread.reply_count}
+                                                </Badge>
+                                            ) : null} */}
                                         </div>
 
                                         {/* <div className="text-[13px] mb-2 line-clamp-2">

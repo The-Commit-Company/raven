@@ -2,39 +2,24 @@ import { Badge } from "@components/ui/badge"
 import { cn } from "@lib/utils"
 import { UserData } from "@db"
 import { BaseThreadMessage } from "@components/common/BaseThreadMessage"
-
-interface ParticipantUser {
-    id: string
-    name: string
-    image?: string
-}
+import { ThreadChannelDetails } from "./ThreadsList"
+import { ThreadMessage } from "src/types/ThreadMessage"
+import { formatDate } from "@utils/date"
 
 interface ThreadPreviewBoxProps {
     user: UserData | null
-    messageContent: string
-    formattedDate: string
-    replyCount: number
+    thread: ThreadMessage
     unreadCount: number
-    channelName?: string
-    channelIcon?: React.ReactNode
-    participants?: ParticipantUser[]
-    aiUser?: UserData | null
-    isDirectMessage?: boolean
+    channelDetails: ThreadChannelDetails
     onClick?: () => void
     isActive?: boolean
 }
 
 export const ThreadPreviewBox = ({
     user,
-    messageContent,
-    formattedDate,
-    replyCount,
+    thread,
     unreadCount,
-    channelName,
-    channelIcon,
-    participants = [],
-    aiUser,
-    isDirectMessage = false,
+    channelDetails,
     onClick,
     isActive
 }: ThreadPreviewBoxProps) => {
@@ -50,31 +35,26 @@ export const ThreadPreviewBox = ({
             )}
         >
             {/* Connecting line from avatar to participants - only show for non-DM threads */}
-            {!isDirectMessage && (
+            {!channelDetails.isDirectMessage && (
                 <div className="absolute top-20 left-10 w-7 h-[calc(100%-6.75rem)] border-l border-b border-border rounded-bl-lg z-0" />
             )}
 
             {/* Header: Channel name and date */}
-            {channelName && (
+            {channelDetails.channelName && (
                 <div className="flex items-center gap-2 mb-3 relative z-10">
-                    {channelIcon && (
-                        <span>{channelIcon}</span>
+                    {channelDetails.channelIcon && (
+                        <span>{channelDetails.channelIcon}</span>
                     )}
-                    <span className="font-medium text-xs">{channelName}</span>
-                    <span className="text-xs text-muted-foreground">{formattedDate}</span>
+                    <span className="font-medium text-xs">{channelDetails.channelName}</span>
+                    <span className="text-xs text-muted-foreground">{formatDate(thread.last_message_timestamp, "D MMMM YYYY h:mm A")}</span>
                 </div>
             )}
 
             <BaseThreadMessage
                 user={user}
-                messageContent={messageContent}
-                channelName={undefined}
-                channelIcon={undefined}
-                participants={participants}
-                aiUser={aiUser}
-                isDirectMessage={isDirectMessage}
-                replyCount={replyCount}
+                channelDetails={channelDetails}
                 showConnectorLine={false}
+                thread={thread}
             />
 
             {/* Unread badge */}

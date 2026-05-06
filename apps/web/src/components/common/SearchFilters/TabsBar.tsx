@@ -1,15 +1,14 @@
 import React from 'react'
 import _ from '@lib/translate';
 
-export type SearchTab = 'all' | 'messages' | 'files' | 'polls' | 'people' | 'threads' | 'links'
+export type SearchTab = 'messages' | 'files' | 'polls' | 'links'
 
 const TABS: { key: SearchTab; label: string }[] = [
-    { key: 'all', label: _('All') },
     { key: 'messages', label: _('Messages') },
     { key: 'files', label: _('Files') },
     { key: 'links', label: _('Links') },
     { key: 'polls', label: _('Polls') },
-    { key: 'threads', label: _('Threads') },
+    // { key: 'threads', label: _('Threads') },
 ]
 
 interface TabsBarProps { activeTab: SearchTab; setActiveTab: (tab: SearchTab) => void }
