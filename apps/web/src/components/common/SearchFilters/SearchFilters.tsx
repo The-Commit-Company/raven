@@ -33,7 +33,6 @@ export function SearchFilters({ filters, channels, dmChannels, onOpenMoreFilters
         filters.is_thread_message === 1,
         filters.is_pinned === 1,
         filters.saved === 1,
-        filters.has_link === 1,
         filters.has_reactions === 1,
         filters.mentions_me === 1,
     ].filter(Boolean).length
@@ -60,7 +59,7 @@ export function SearchFilters({ filters, channels, dmChannels, onOpenMoreFilters
                     allowAll
                     allLabel={_("In Any Channel")}
                     size="sm"
-                    dropdownClassName="w-[270px]"
+                    dropdownClassName="w-68"
                     showLabel={false}
                     label="Channel"
                     searchable

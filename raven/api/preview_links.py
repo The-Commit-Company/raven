@@ -105,11 +105,6 @@ def update_link_previews(urls: list[str] | str, channel_id: str | None = None):
 	if isinstance(urls, str) and urls != "[]":
 		urls = json.loads(urls)
 
-	from raven.api.search import RavenSearch
-
-	search = RavenSearch()
-	reindexed_messages = set()
-
 	for url in urls:
 		try:
 			if frappe.db.exists("Raven Link Preview", url):
@@ -124,15 +119,6 @@ def update_link_previews(urls: list[str] | str, channel_id: str | None = None):
 					}
 				)
 				preview_doc.insert()
-
-			# Re-index all messages that reference this URL
-			linked_messages = frappe.get_all(
-				"Raven Message Links", filters={"url": url, "parenttype": "Raven Message"}, pluck="parent"
-			)
-			for message_name in linked_messages:
-				if message_name not in reindexed_messages:
-					reindexed_messages.add(message_name)
-					search.index_doc("Raven Message", message_name)
 
 		except Exception:
 			frappe.log_error(f"Failed to update preview for {url}")

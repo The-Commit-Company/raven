@@ -2,7 +2,6 @@ import frappe
 from frappe.tests import IntegrationTestCase
 
 from raven.api.raven_channel import create_direct_message_channel
-from raven.api.search import RavenSearch
 from raven.api.threads import create_thread
 
 EXTRA_TEST_RECORD_DEPENDENCIES = ["User", "Raven User"]

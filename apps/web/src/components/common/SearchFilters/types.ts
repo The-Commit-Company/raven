@@ -14,7 +14,6 @@ export interface SearchFilters {
     is_pinned?: 1 | 0 | null,
     bot?: string,
     poll_id?: string,
-    has_link?: 1 | 0 | null,
     has_reactions?: 1 | 0 | null,
     mentions?: string,
     mentions_me?: 1 | 0 | null,

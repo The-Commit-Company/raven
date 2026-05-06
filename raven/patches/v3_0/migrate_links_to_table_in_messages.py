@@ -1,8 +1,5 @@
 import frappe
 
-from raven.api.search import RavenSearch
-
-
 def execute():
 	"""
 	Migrate links from small text field to table in Raven Message doctype.
