@@ -11,8 +11,6 @@ class TestPermissions(IntegrationTestCase):
 	@classmethod
 	def setUpClass(cls):
 		super().setUpClass()
-		search = RavenSearch()
-		search.build_index()
 
 	def setUp(self):
 

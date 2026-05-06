@@ -551,6 +551,7 @@ class RavenMessage(Document):
 		if self.message_type != "System":
 			self.publish_unread_count_event()
 			from raven.api.search import RavenSearch
+
 			search = RavenSearch()
 			search.remove_doc(self.doctype, self.name)
 

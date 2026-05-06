@@ -504,7 +504,10 @@ def search_links(
 	if parent_channel_id:
 		# If message is in a thread channel use thread_root.channel_id, else message.channel_id
 		from pypika import Case
-		resolved_parent = Case().when(channel.is_thread == 1, thread_root.channel_id).else_(message.channel_id)
+
+		resolved_parent = (
+			Case().when(channel.is_thread == 1, thread_root.channel_id).else_(message.channel_id)
+		)
 		query = query.where(resolved_parent == parent_channel_id)
 
 	if owner:
@@ -528,10 +531,7 @@ def search_links(
 	if is_pinned:
 		pinned = frappe.qb.DocType("Raven Pinned Messages")
 		query = query.where(
-			frappe.qb.from_(pinned)
-			.select(pinned.name)
-			.where(pinned.message_id == message.name)
-			.exists()
+			frappe.qb.from_(pinned).select(pinned.name).where(pinned.message_id == message.name).exists()
 		)
 
 	if mentions_me:
@@ -557,7 +557,9 @@ def search_links(
 	if has_reactions:
 		query = query.where(message.message_reactions.notnull() & (message.message_reactions != "{}"))
 
-	query = query.orderby(message.creation, order=Order.desc).limit(int(limit)).offset(int(start_after))
+	query = (
+		query.orderby(message.creation, order=Order.desc).limit(int(limit)).offset(int(start_after))
+	)
 
 	results = query.run(as_dict=True)
 
