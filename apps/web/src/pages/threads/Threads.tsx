@@ -5,7 +5,7 @@ import { Label } from "@components/ui/label"
 import { Input } from "@components/ui/input"
 import { ChannelSelect } from "@components/common/ChannelSelect/ChannelSelect"
 import ThreadsList from "@components/features/threads/ThreadsList"
-import ThreadViewDrawer from "@components/features/threads/ThreadViewDrawer"
+import ChatDrawer from "@components/common/ChatDrawer"
 import { ThreadMessage } from "../../types/ThreadMessage"
 import { cn } from "@lib/utils"
 import { WorkspaceSwitcher } from "@components/workspace-switcher/WorkspaceSwitcher"
@@ -137,8 +137,8 @@ export default function Threads() {
 
                     {selectedThreadID && (
                         <div className="w-1/2 shrink-0">
-                            <ThreadViewDrawer
-                                threadID={selectedThreadID}
+                            <ChatDrawer
+                                channelID={selectedThreadID}
                                 onClose={() => setSelectedThreadID(null)}
                             />
                         </div>

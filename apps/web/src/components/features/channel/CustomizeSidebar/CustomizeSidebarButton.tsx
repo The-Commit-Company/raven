@@ -47,7 +47,7 @@ export const CustomizeSidebarButton = ({ showMyChannelsOnly, setShowMyChannelsOn
                         <span>{_("Customize my sidebar")}</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate('/settings/channels')}>
-                        <span>{_("Manage Channels")}</span>
+                        <span>{_("Manage channels")}</span>
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
