@@ -55,6 +55,7 @@ def react(message_id: str, reaction: str, is_custom: bool = False, emoji_name: s
 			frappe.get_attr(fn)(message_id)
 
 		calculate_message_reaction(message_id, channel_id)
+
 		return "Ok"
 	except Exception as e:
 		frappe.throw(_("Error reacting to message {0}").format(str(e)))
@@ -114,12 +115,3 @@ def calculate_message_reaction(message_id, channel_id: str = None, do_not_publis
 		docname=channel_id,  # Adding this to automatically add the room for the event via Frappe
 		after_commit=False,
 	)
-
-	message_owner = frappe.db.get_value("Raven Message", message_id, "owner")
-	if message_owner and message_owner != frappe.session.user:
-		frappe.publish_realtime(
-			"raven_reaction_notification",
-			{"message_id": message_id, "channel_id": channel_id, "reaction": reaction, "sender": frappe.session.user},
-			user=message_owner,
-			after_commit=True,
-		)

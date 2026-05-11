@@ -3,7 +3,9 @@ from frappe.query_builder import Order
 
 
 @frappe.whitelist(methods=["GET"])
-def get_notifications(notification_type: str = None, limit: int = 10, start: int = 0, unread_only: bool = False):
+def get_notifications(
+	notification_type: str = None, limit: int = 10, start: int = 0, unread_only: bool = False
+):
 	"""
 	Get notifications for the current user.
 	notification_type: 'mention' | 'reaction' | None (both, merged, sorted by creation)
@@ -21,14 +23,14 @@ def get_notifications(notification_type: str = None, limit: int = 10, start: int
 		fetch = limit + start
 		mentions = _get_mention_notifications(fetch, 0, unread_only)
 		reactions = _get_reaction_notifications(fetch, 0, unread_only)
-     	# Rare collision possible if random id of Raven Mention is same as Raven Message in merged results.
+		# Rare collision possible if random id of Raven Mention is same as Raven Message in merged results.
 		merged = mentions + reactions
 		merged.sort(key=lambda x: x["creation"], reverse=True)
 		return merged[start : start + limit]
 
 
 def _get_mention_notifications(limit, start, unread_only):
-    # sql query to fetch mentions for current user
+	# sql query to fetch mentions for current user
 	mention = frappe.qb.DocType("Raven Mention")
 	message = frappe.qb.DocType("Raven Message")
 	channel = frappe.qb.DocType("Raven Channel")
@@ -57,7 +59,9 @@ def _get_mention_notifications(limit, start, unread_only):
 		.join(channel)
 		.on(message.channel_id == channel.name)
 		.left_join(channel_member)
-		.on((channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user))
+		.on(
+			(channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user)
+		)
 		.left_join(workspace_member)
 		.on(
 			(channel.workspace == workspace_member.workspace)
