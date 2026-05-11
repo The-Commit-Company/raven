@@ -211,7 +211,7 @@ export default function ThreadsList({
     }
 
     return (
-        <div className="py-2">
+        <div>
             {threads.map((thread) => (
                 <ThreadPreviewBoxWrapper
                     key={thread.name}

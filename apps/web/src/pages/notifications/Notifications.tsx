@@ -93,7 +93,7 @@ export default function Notifications() {
 
     return (
         <div
-            className="flex flex-col h-full overflow-hidden"
+            className="flex flex-col h-screen overflow-hidden"
             style={{ "--workspace-switcher-width": "60px" } as React.CSSProperties}
         >
             <WorkspaceSwitcher standalone />

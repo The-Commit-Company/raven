@@ -35,7 +35,7 @@ export default function Threads() {
     const headerWidth = "calc(100% - var(--workspace-switcher-width, 60px))"
 
     return (
-        <div className="flex flex-col h-full overflow-hidden" style={{ "--workspace-switcher-width": "60px" } as React.CSSProperties}>
+        <div className="flex flex-col h-screen overflow-hidden" style={{ "--workspace-switcher-width": "60px" } as React.CSSProperties}>
             <WorkspaceSwitcher standalone />
             <div className="flex flex-col h-full overflow-hidden" style={{ marginLeft: "var(--workspace-switcher-width, 60px)", width: "calc(100% - var(--workspace-switcher-width, 60px))" } as React.CSSProperties}>
                 <header
@@ -56,7 +56,7 @@ export default function Threads() {
                         selectedThreadID && "w-1/2 border-r border-border"
                     )}>
                         <div className="flex flex-col flex-1 overflow-hidden">
-                            <div className="px-4 pt-4 shrink-0 space-y-3 z-0">
+                            <div className="px-4 pt-4 pb-2 shrink-0 space-y-3 z-0">
                                 <div className="flex items-center justify-between gap-4">
                                     <div className="flex gap-2">
                                         {TABS.map(tab => (
