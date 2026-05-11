@@ -8,7 +8,7 @@ import { useCurrentChannelID } from '@hooks/useCurrentChannelID';
 import ChannelMembersList from './ChannelMembersList.tsx';
 import AddChannelMembers from './AddChannelMembers.tsx';
 import _ from '@lib/translate';
-import { useChannelMembers } from '@hooks/useChannelMembers.tsx';
+import { useChannelMembers } from '@hooks/useChannelMembers';
 import { useChannel } from '@hooks/useChannel.ts';
 import { hasRole } from '@lib/permissions.ts';
 

@@ -40,11 +40,11 @@ export const BaseThreadMessage = ({
                 {!channelDetails.isDirectMessage ? (
                     <GroupedAvatars users={channelDetails.participants} max={3} size="xs" />
                 ) : null}
-                {thread.reply_count && thread.reply_count > 0 && (
+                {thread.reply_count && thread.reply_count > 0 ? (
                     <span className="text-xs font-semibold text-primary">
                         {_(`${thread.reply_count} ${thread.reply_count === 1 ? 'Reply' : 'Replies'}`)}
                     </span>
-                )}
+                ) : null}
             </div>
         </div>
     )

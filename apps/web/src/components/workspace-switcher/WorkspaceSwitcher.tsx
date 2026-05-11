@@ -7,6 +7,7 @@ import NavUserMenu from "@components/features/header/NavUserMenu/NavUserMenu"
 import { useActiveWorkspace } from "../../contexts/ActiveWorkspaceContext"
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
 import { useWorkspaces, WorkspaceFields } from "@hooks/useWorkspaces"
+import { useNotifications } from "@hooks/useNotifications"
 
 const getLogo = (workspace: WorkspaceFields) => {
     let logo = workspace.logo || ''
@@ -28,6 +29,7 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
     const params = useParams()
     const { setActiveWorkspaceName, activeWorkspaceName } = useActiveWorkspace()
     const { workspaces } = useWorkspaces()
+    const { unreadCount } = useNotifications()
 
     // Get workspace from URL params or from context/localStorage
     const urlWorkspace = React.useMemo(() => {
@@ -125,6 +127,11 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                             )}
                             fill={location.pathname === "/notifications" ? "currentColor" : "none"}
                         />
+                        {unreadCount > 0 && (
+                            <span className="absolute -top-1 -right-1 min-w-3.5 h-3.5 px-0.5 flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-semibold leading-none">
+                                {unreadCount > 99 ? "99+" : unreadCount}
+                            </span>
+                        )}
                     </div>
                 </div>
 
@@ -147,9 +154,9 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                         className={cn(
                             "relative flex items-center justify-center w-8 h-8 rounded-md transition-all duration-250 ease-out",
                             "bg-[oklch(0.99_0_0)] dark:bg-[oklch(0.25_0_0)] border border-border/80 dark:border-border/60",
-                                    location.pathname.startsWith("/dm-channel")
-                                        ? "shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.05),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.05)] dark:shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.15),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.02)]"
-                                        : "shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.03),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] dark:shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.1),-0.5px_-0.5px_1px_rgba(255,255,255,0.01)]",
+                            location.pathname.startsWith("/dm-channel")
+                                ? "shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.05),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.05)] dark:shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.15),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.02)]"
+                                : "shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.03),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] dark:shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.1),-0.5px_-0.5px_1px_rgba(255,255,255,0.01)]",
                             "group-hover/dm-item:-translate-y-px group-hover/dm-item:scale-[1.02]",
                             "group-hover/dm-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.05),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.05)] dark:group-hover/dm-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.13),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.018)]"
                         )}

@@ -41,7 +41,6 @@ def react(message_id: str, reaction: str, is_custom: bool = False, emoji_name: s
 			}
 		).insert(ignore_permissions=True)
 
-		calculate_message_reaction(message_id, channel_id)
 		return "Ok"
 
 	except frappe.exceptions.UniqueValidationError:
@@ -56,6 +55,7 @@ def react(message_id: str, reaction: str, is_custom: bool = False, emoji_name: s
 			frappe.get_attr(fn)(message_id)
 
 		calculate_message_reaction(message_id, channel_id)
+
 		return "Ok"
 	except Exception as e:
 		frappe.throw(_("Error reacting to message {0}").format(str(e)))
