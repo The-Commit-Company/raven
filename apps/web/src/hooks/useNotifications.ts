@@ -1,12 +1,11 @@
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
-import { FrappeConfig, FrappeContext, useFrappeEventListener, useFrappeGetCall, useSWR, useSWRConfig, useSWRInfinite } from "frappe-react-sdk"
+import { FrappeConfig, FrappeContext, useFrappeEventListener, useFrappeGetCall, useSWRConfig, useSWRInfinite } from "frappe-react-sdk"
 import type { RavenChannel } from "@raven/types/RavenChannelManagement/RavenChannel"
 import type { RavenMessage } from "@raven/types/RavenMessaging/RavenMessage"
 
 /**
  * `name` is unique per row (Raven Mention name for mentions, message id for grouped reactions).
  * `reactors` / `reactions` are parallel arrays present only on reaction rows
- * (deduped newest-first by the backend).
  */
 export interface NotificationObject {
     name: string
@@ -72,6 +71,7 @@ export const useNotifications = (
     showUnread: boolean = true,
 ) => {
     const { call } = useContext(FrappeContext) as FrappeConfig
+    const { mutate: globalMutate } = useSWRConfig()
 
     /**
      * Unread count for the badge. Fetched separately since it's a small, fast query.
@@ -129,7 +129,7 @@ export const useNotifications = (
         initialOffsetRef.current = showCachedAsInitial ? cachedItemsForTab.length : 0
     }
 
-    const { data: pageData, size, setSize, isLoading, mutate: mutatePaged } = useSWRInfinite<PageResult>(
+    const { data: pageData, size, setSize, isLoading } = useSWRInfinite<PageResult>(
         (pageIndex: number, previousPageData: PageResult | null): SWRKey | null => {
             if (previousPageData && previousPageData.message.length < PAGE_SIZE) return null
             const start = initialOffsetRef.current + pageIndex * PAGE_SIZE
@@ -161,11 +161,15 @@ export const useNotifications = (
         })
     }, [pageData, tabType, modeKey])
 
-    /** Revalidate paginated data + unread count. */
+    /** Revalidate every cached notifications page (all tabs/modes) + unread count. */
     const onRefresh = useCallback(() => {
-        mutatePaged()
+        globalMutate(
+            (key) => Array.isArray(key) && key[0] === "raven.api.notifications.get_notifications",
+            undefined,
+            { revalidate: true }
+        )
         mutateCount()
-    }, [mutatePaged, mutateCount])
+    }, [globalMutate, mutateCount])
     useFrappeEventListener("raven_mention", onRefresh)
     useFrappeEventListener("raven_reaction_notification", onRefresh)
 
@@ -181,44 +185,48 @@ export const useNotifications = (
     )
 
     /**
-     * Optimistic update for the `all_notifications_read` event. In unread mode every page becomes
-     * empty (those items are no longer unread); in all mode each item is flipped to read.
+     * Optimistic update for the `all_notifications_read` event. Flips `is_read` to 1 across every
+     * cached notifications page (all tabs/modes) so cross-tab snapshots stay in sync.
+     * `currentData` filters out read items when `showUnread` is on, so unread tabs hide them.
      */
     const onAllRead = useCallback(() => {
-        mutatePaged(
-            (pages) => pages?.map((page) => ({
-                message: showUnread
-                    ? []
-                    : page.message.map((n) => ({ ...n, is_read: 1 as const })),
-            })),
+        globalMutate(
+            (key) => Array.isArray(key) && key[0] === "raven.api.notifications.get_notifications",
+            (data: PageResult | undefined) => data && {
+                message: data.message.map((n) => ({ ...n, is_read: 1 as const })),
+            },
             { revalidate: false }
         )
         mutateCount({ message: 0 }, { revalidate: false })
         updateSeeds((items) => items.map((n) => ({ ...n, is_read: 1 as const })))
-    }, [mutatePaged, showUnread, updateSeeds])
+    }, [globalMutate, mutateCount, updateSeeds])
     useFrappeEventListener("all_notifications_read", onAllRead)
 
     /**
-     * Optimistic update for the `message_notifications_read` event. In unread mode any notification
-     * matching `message_id` is filtered out; in all mode the matching items are flipped to read.
+     * Optimistic update for the `message_notifications_read` event. Flips `is_read` to 1 on every
+     * cached notification for `message_id` across all tab/mode SWR keys. `currentData` filters out
+     * read items in unread mode, so they disappear there too.
      */
     const onMessageRead = useCallback(({ message_id }: { message_id: string }) => {
-        mutatePaged(
-            (pages) => pages?.map((page) => ({
-                message: showUnread
-                    ? page.message.filter((n) => n.message_id !== message_id)
-                    : page.message.map((n) => n.message_id === message_id ? { ...n, is_read: 1 as const } : n),
-            })),
+        globalMutate(
+            (key) => Array.isArray(key) && key[0] === "raven.api.notifications.get_notifications",
+            (data: PageResult | undefined) => data && {
+                message: data.message.map((n) =>
+                    n.message_id === message_id ? { ...n, is_read: 1 as const } : n
+                ),
+            },
             { revalidate: false }
         )
         mutateCount(
+            // This optimistically decrements the unread count by 1, but a message may have more than 1 unread notification.
+            // Though this discrepancy will only show on other inactive tabs and will resolve on focus.
             (current: CountResult | undefined) => ({ message: Math.max(0, (current?.message ?? 0) - 1) }),
             { revalidate: false }
         )
         updateSeeds((items) => items.map((n) =>
             n.message_id === message_id ? { ...n, is_read: 1 as const } : n
         ))
-    }, [mutatePaged, showUnread, updateSeeds])
+    }, [globalMutate, mutateCount, updateSeeds])
     useFrappeEventListener("message_notifications_read", onMessageRead)
 
     /** Flattened fetched items. */
@@ -227,10 +235,20 @@ export const useNotifications = (
      * Items to render: cached items followed by fetched items.
      * Cached items go first to preserve the newest-first order inherited from the snapshot.
      */
-    const currentData = useMemo<NotificationObject[]>(
-        () => cachedItemsForTab.length === 0 ? fetchedItems : [...cachedItemsForTab, ...fetchedItems],
-        [cachedItemsForTab, fetchedItems]
-    )
+    const currentData = useMemo<NotificationObject[]>(() => {
+        const filteredFetched = fetchedItems.filter((n) =>
+            (tabType === null || n.notification_type === tabType) && (!showUnread || !n.is_read)
+        )
+        const seen = new Set<string>()
+        const result: NotificationObject[] = []
+        for (const n of [...cachedItemsForTab, ...filteredFetched]) {
+            if (!seen.has(n.name)) {
+                seen.add(n.name)
+                result.push(n)
+            }
+        }
+        return result
+    }, [cachedItemsForTab, fetchedItems, tabType, showUnread])
 
     const isReachingEnd = (snapshot.exhausted && (snapshot.mode === modeKey || snapshot.mode === "all") && tabType !== null)
         ? true
@@ -250,11 +268,15 @@ export const useNotifications = (
             call.post("raven.api.notifications.mark_message_notifications_read", { message_id: messageId })
                 .then(() => mutateCount())
                 .catch(() => {
-                    mutatePaged()
+                    globalMutate(
+                        (key) => Array.isArray(key) && key[0] === "raven.api.notifications.get_notifications",
+                        undefined,
+                        { revalidate: true }
+                    )
                     mutateCount()
                 })
         },
-        [call, onMessageRead, mutatePaged, mutateCount]
+        [call, onMessageRead, globalMutate, mutateCount]
     )
 
     /**
@@ -267,10 +289,14 @@ export const useNotifications = (
         call.post("raven.api.notifications.mark_all_notifications_read")
             .then(() => mutateCount())
             .catch(() => {
-                mutatePaged()
+                globalMutate(
+                    (key) => Array.isArray(key) && key[0] === "raven.api.notifications.get_notifications",
+                    undefined,
+                    { revalidate: true }
+                )
                 mutateCount()
             })
-    }, [call, onAllRead, mutatePaged, mutateCount])
+    }, [call, onAllRead, globalMutate, mutateCount])
 
     return {
         unreadCount,
