@@ -14,10 +14,7 @@ class RavenSettings(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
-
-		from raven.raven_integrations.doctype.raven_hr_company_workspace.raven_hr_company_workspace import (
-			RavenHRCompanyWorkspace,
-		)
+		from raven.raven_integrations.doctype.raven_hr_company_workspace.raven_hr_company_workspace import RavenHRCompanyWorkspace
 
 		auto_add_system_users: DF.Check
 		auto_create_department_channel: DF.Check
@@ -49,6 +46,7 @@ class RavenSettings(Document):
 		show_if_a_user_is_on_leave: DF.Check
 		show_raven_on_desk: DF.Check
 		tenor_api_key: DF.Data | None
+		use_website_favicon: DF.Check
 		vapid_public_key: DF.Data | None
 	# end: auto-generated types
 
