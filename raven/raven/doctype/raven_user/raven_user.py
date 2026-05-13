@@ -3,8 +3,8 @@
 
 import frappe
 from frappe import _
-from frappe.utils.data import get_url
 from frappe.model.document import Document
+from frappe.utils.data import get_url
 
 
 class RavenUser(Document):
@@ -130,7 +130,7 @@ def add_user_to_raven(doc, method):
 				raven_user = frappe.get_doc("Raven User", {"user": doc.name})
 				if not raven_user.full_name:
 					raven_user.full_name = doc.full_name or doc.first_name
-				
+
 				if not raven_user.first_name:
 					raven_user.first_name = doc.first_name
 				raven_user.enabled = doc.enabled
@@ -139,7 +139,7 @@ def add_user_to_raven(doc, method):
 				raven_user = frappe.get_doc("Raven User", {"user": doc.name})
 				if not raven_user.full_name:
 					raven_user.full_name = doc.full_name or doc.first_name
-				
+
 				if not raven_user.first_name:
 					raven_user.first_name = doc.first_name
 				raven_user.enabled = 0
