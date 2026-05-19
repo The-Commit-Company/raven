@@ -585,6 +585,7 @@ def add_forwarded_message_to_channel(channel_id: str, forwarded_message: dict):
 			"is_thread": 0,
 			"replied_message_details": None,
 			"message_reactions": None,
+			"linked_message": None,
 		}
 	)
 	doc.insert()
