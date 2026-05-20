@@ -25,14 +25,14 @@ const WorkspaceMemberCount = ({ workspace }: { workspace: string }) => {
     }
 
     if (data.message === 0) {
-        return <span className="text-sm text-muted-foreground font-medium">No members</span>
+        return <span className="text-sm text-ink-gray-4 font-medium">No members</span>
     }
 
     if (data.message === 1) {
-        return <span className="text-sm text-muted-foreground font-medium">1 solo member</span>
+        return <span className="text-sm text-ink-gray-4 font-medium">1 solo member</span>
     }
 
-    return <span className="text-sm text-muted-foreground font-medium">{data.message} members</span>
+    return <span className="text-sm text-ink-gray-4 font-medium">{data.message} members</span>
 }
 
 export const WorkspaceSwitcherGrid = () => {
@@ -68,7 +68,7 @@ export const WorkspaceSwitcherGrid = () => {
             <div className="container flex mx-auto flex-col gap-5 max-w-screen-lg">
                 <div className="flex flex-col gap-1">
                     <h2 className="text-xl font-semibold">My Workspaces</h2>
-                    <p className="text-sm text-muted-foreground font-medium">
+                    <p className="text-sm text-ink-gray-4 font-medium">
                         Switch between workspaces that you are a member of.
                     </p>
                 </div>
@@ -82,7 +82,7 @@ export const WorkspaceSwitcherGrid = () => {
                 <div className="container flex mx-auto flex-col gap-5 max-w-screen-lg mt-16">
                     <div className="flex flex-col gap-1">
                         <h2 className="text-xl font-semibold">Other Workspaces</h2>
-                        <p className="text-sm text-muted-foreground font-medium">
+                        <p className="text-sm text-ink-gray-4 font-medium">
                             Explore other workspaces that you can join.
                         </p>
                     </div>
@@ -109,7 +109,7 @@ const MyWorkspaceItem = ({ workspace, onOpen }: { workspace: WorkspaceFields; on
                 className="block p-4"
             >
                 <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10 border border-border/80 dark:border-border/60">
+                    <Avatar className="h-10 w-10 border border-outline-gray-2/80 dark:border-outline-gray-2/60">
                         <AvatarImage src={logo} alt={workspace.workspace_name} />
                         <AvatarFallback>{workspace.workspace_name.charAt(0)}</AvatarFallback>
                     </Avatar>
@@ -117,13 +117,13 @@ const MyWorkspaceItem = ({ workspace, onOpen }: { workspace: WorkspaceFields; on
                         <div className="flex flex-col gap-0.5">
                             <h3 className="text-base font-semibold truncate">{workspace.workspace_name}</h3>
                             {workspace.type === 'Public' ? (
-                                <span className="text-sm text-muted-foreground font-medium">Public</span>
+                                <span className="text-sm text-ink-gray-4 font-medium">Public</span>
                             ) : (
-                                <span className="text-sm text-muted-foreground font-medium">Private</span>
+                                <span className="text-sm text-ink-gray-4 font-medium">Private</span>
                             )}
                         </div>
                         {workspace.description && (
-                            <p className="text-sm text-muted-foreground line-clamp-2 text-ellipsis">
+                            <p className="text-sm text-ink-gray-4 line-clamp-2 text-ellipsis">
                                 {workspace.description}
                             </p>
                         )}
@@ -163,7 +163,7 @@ const OtherWorkspaceItem = ({ workspace }: { workspace: WorkspaceFields }) => {
                 className="p-4"
             >
                 <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10 border border-border/80 dark:border-border/60">
+                    <Avatar className="h-10 w-10 border border-outline-gray-2/80 dark:border-outline-gray-2/60">
                         <AvatarImage src={logo} alt={workspace.workspace_name} />
                         <AvatarFallback>{workspace.workspace_name.charAt(0)}</AvatarFallback>
                     </Avatar>
@@ -173,7 +173,7 @@ const OtherWorkspaceItem = ({ workspace }: { workspace: WorkspaceFields }) => {
                             <WorkspaceMemberCount workspace={workspace.name} />
                         </div>
                         {workspace.description && (
-                            <p className="text-sm text-muted-foreground line-clamp-2 text-ellipsis">
+                            <p className="text-sm text-ink-gray-4 line-clamp-2 text-ellipsis">
                                 {workspace.description}
                             </p>
                         )}
@@ -181,7 +181,7 @@ const OtherWorkspaceItem = ({ workspace }: { workspace: WorkspaceFields }) => {
                 </div>
             </div>
             <div className="absolute top-0 right-0 p-3">
-                <ArrowUpRight className="w-4 h-4 text-muted-foreground" />
+                <ArrowUpRight className="w-4 h-4 text-ink-gray-4" />
             </div>
         </Card>
     )

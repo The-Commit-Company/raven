@@ -78,7 +78,7 @@ export const ChannelTable = ({ data }: { data: ChannelSidebarData }) => {
       enableSorting: false,
       headerClassName: 'w-[40%]',
       cell: ({ value }) => (
-        <span className='text-sm text-muted-foreground line-clamp-1 text-ellipsis'>
+        <span className='text-sm text-ink-gray-4 line-clamp-1 text-ellipsis'>
           {value as string || '—'}
         </span>
       )
@@ -193,7 +193,7 @@ const ChannelGroupDropdown = ({ channel }: { channel: ChannelTable }) => {
     <SelectContent className="min-w-56 max-w-72">
       <SelectItem value="Favorites">
         <div className="flex items-center gap-1">
-          <Star className="h-3 w-3 text-foreground/80 fill-amber-300 stroke-amber-300 mr-1" />
+          <Star className="h-3 w-3 text-ink-gray-8/80 fill-amber-300 stroke-amber-300 mr-1" />
           {_("Favorites")}
         </div>
       </SelectItem>

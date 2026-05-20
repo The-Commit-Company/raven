@@ -134,7 +134,7 @@ export const GroupDnd = () => {
                             ))}
                         </div>
                     </SortableContext>
-                </DndContext> : (!createGroup && <p className="text-sm text-muted-foreground text-center p-3 pt-3.5">
+                </DndContext> : (!createGroup && <p className="text-sm text-ink-gray-4 text-center p-3 pt-3.5">
                     {_("You don't have any groups yet. Add a group to start sorting.")}
                 </p>)}
                 {createGroup &&
@@ -186,7 +186,7 @@ const SortableItem = ({ id, index, content, onEdit, onDelete }: SortableItemProp
             {...attributes}
             // {...listeners}
             className={cn(
-                "flex items-center gap-2 rounded-md border bg-card text-sm transition-colors",
+                "flex items-center gap-2 rounded-md border bg-surface-cards text-sm transition-colors",
                 isDragging && "border-muted-foreground/50"
             )}
         >
@@ -223,7 +223,7 @@ const SortableItem = ({ id, index, content, onEdit, onDelete }: SortableItemProp
 const EditGroup = ({ initialName = '', onCancel, onSubmit }: { initialName?: string, onCancel: () => void, onSubmit: (name: string) => void }) => {
     const [name, setName] = useState(initialName)
     return (
-        <div className="border rounded-lg pr-2 pl-1 py-1 bg-muted/50 flex items-center justify-between w-full gap-2">
+        <div className="border rounded-lg pr-2 pl-1 py-1 bg-surface-gray-2/50 flex items-center justify-between w-full gap-2">
             <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}

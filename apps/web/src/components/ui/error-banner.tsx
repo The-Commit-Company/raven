@@ -1,24 +1,48 @@
-import { getErrorMessage } from "@lib/frappe"
+import { getErrorMessages } from '@/lib/frappe'
 import { FrappeError } from 'frappe-react-sdk'
-import { Alert, AlertDescription, AlertTitle } from './alert'
+import { Alert, AlertDescription, AlertProps, AlertTitle } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
-import MarkdownRenderer from '@components/ui/markdown'
-import _ from "@lib/translate"
+import MarkdownRenderer from '@/components/ui/markdown'
+import _ from '@/lib/translate'
+import { useMemo } from 'react'
 
-type Props = {
-    error: FrappeError | null,
-    title?: string
+type ErrorBannerProps = AlertProps & {
+    error?: FrappeError | null,
+    overrideHeading?: string,
 }
 
-const ErrorBanner = ({ error, title = _("There was an error.") }: Props) => {
+interface ParsedErrorMessage {
+    message: string,
+    title?: string,
+    indicator?: string,
+}
 
-    const errorMessage = getErrorMessage(error)
+const parseHeading = (message?: ParsedErrorMessage) => {
+    if (message?.title === 'Message' || message?.title === 'Error') return "There was an error."
+    return message?.title
+}
+
+const ErrorBanner = ({ error, overrideHeading, ...props }: ErrorBannerProps) => {
+
+
+    //exc_type: "ValidationError" or "PermissionError" etc
+    // exc: With entire traceback - useful for reporting maybe
+    // httpStatus and httpStatusText - not needed
+    // _server_messages: Array of messages - useful for showing to user
+    // console.log(JSON.parse(error?._server_messages!))
+
+    const messages = useMemo(() => {
+        return getErrorMessages(error)
+    }, [error])
+
     return (
-        <Alert variant='destructive'>
+        <Alert theme={messages[0]?.indicator === 'yellow' ? 'amber' : "red"} {...props}>
             <AlertCircle />
-            <AlertTitle>{title}</AlertTitle>
+            <AlertTitle>{overrideHeading ?? parseHeading(messages[0])}</AlertTitle>
             <AlertDescription>
-                <MarkdownRenderer content={errorMessage} />
+                {messages.map((m, i) => {
+                    return <MarkdownRenderer content={m.message} key={i} />
+                })}
             </AlertDescription>
         </Alert>
     )

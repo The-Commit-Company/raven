@@ -3,7 +3,7 @@ import { UserAvatar } from '@components/features/message/UserAvatar'
 import { Download } from 'lucide-react'
 import FileTypeIcon from '@components/common/FileIcons/FileTypeIcon'
 import { SearchResult, useSqliteSearch } from '@hooks/useSqliteSearch'
-import { formatDate } from '@utils/date'
+import { formatDate } from '@lib/date'
 import { formatFileSize } from '@utils/fileUtils'
 import { MessageListSkeleton } from '@components/features/dm-channel/DirectMessagePageSkeleton'
 import MarkdownRenderer from '@components/ui/markdown'
@@ -26,7 +26,7 @@ export const FileResultCard = ({ file, author }: {
     return (
         <div
             key={file.id}
-            className="group p-3 border border-border/70 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+            className="group p-3 border border-outline-gray-2/70 rounded-lg hover:bg-surface-gray-2/50 transition-colors cursor-pointer"
             tabIndex={0}
             role="button"
             aria-label={`View ${file.title}`}>
@@ -37,7 +37,7 @@ export const FileResultCard = ({ file, author }: {
                             <img
                                 src={file.internal_link}
                                 alt={file.title}
-                                className="h-20 w-20 object-cover rounded-md border border-border/40"
+                                className="h-20 w-20 object-cover rounded-md border border-outline-gray-2/40"
                             />
                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200 rounded-md" />
                         </div>
@@ -49,21 +49,21 @@ export const FileResultCard = ({ file, author }: {
                 <div className="flex-1 min-w-0 flex flex-col">
                     <div className="flex justify-between gap-2 mb-0.5">
                         <div className="flex items-center gap-2 min-w-0 flex-1">
-                            <h3 className="text-sm font-medium text-foreground truncate w-[calc(100vw-20rem)]">
+                            <h3 className="text-sm font-medium text-ink-gray-8 truncate w-[calc(100vw-20rem)]">
                                 <MarkdownRenderer content={file.title} />
                             </h3>
                             <a href={file.internal_link} download onClick={(e) => e.stopPropagation()}>
-                                <Download className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-primary transition-opacity duration-200 shrink-0" />
+                                <Download className="h-3 w-3 text-ink-gray-4 opacity-0 group-hover:opacity-100 hover:text-primary transition-opacity duration-200 shrink-0" />
                             </a>
                         </div>
-                        <span className="text-xs text-muted-foreground shrink-0">{formatDate(file.creation, "D MMMM YYYY h:mm A")}</span>
+                        <span className="text-xs text-ink-gray-4 shrink-0">{formatDate(file.creation, "D MMMM YYYY h:mm A")}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-[11px] text-muted-foreground/70">
+                    <div className="flex items-center gap-2 text-[11px] text-ink-gray-4/70">
                         {file.file_size ? <span>{formatFileSize(file.file_size)}</span> : <span>0 B</span>}
                         <span>•</span>
                         <span className="uppercase">{file.file_type}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground/80 mt-auto pt-2 flex-wrap">
+                    <div className="flex items-center gap-2 text-xs text-ink-gray-4/80 mt-auto pt-2 flex-wrap">
                         {author && <><UserAvatar
                             user={author}
                             size="xs"
@@ -89,7 +89,7 @@ const SearchResultsFiles = ({ searchValue, filters }: SearchResultsFilesProps) =
             {error && <ErrorBanner error={error} />}
             <ScrollArea className="flex-1">
                 {isLoading || !results ? <MessageListSkeleton /> :
-                    results.length === 0 ? <div className="text-sm text-muted-foreground text-center py-8">{_("No files found.")}</div> :
+                    results.length === 0 ? <div className="text-sm text-ink-gray-4 text-center py-8">{_("No files found.")}</div> :
                         <div className="space-y-2 pb-1">
                             {results.map((file) => {
                                 const author = users?.find((u) => u.name === file.author)

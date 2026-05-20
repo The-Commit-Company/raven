@@ -19,7 +19,7 @@ const AppHeader = ({ searchValue, onSearchChange }: AppHeaderProps) => {
 
     return (
         <header
-            className="flex items-center justify-between border-b bg-background z-10 px-2 fixed top-0 h-(--app-header-height) w-full transition-[left,width] duration-200 ease-linear"
+            className="flex items-center justify-between border-b bg-surface-white z-10 px-2 fixed top-0 h-(--app-header-height) w-full transition-[left,width] duration-200 ease-linear"
         // style={{ left, width }}
         >
             {/* Centered search bar section */}

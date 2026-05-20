@@ -70,7 +70,7 @@ export function ReminderDialog({
                                         variant="outline"
                                         className={cn(
                                             "w-full justify-start text-left font-normal",
-                                            !date && "text-muted-foreground"
+                                            !date && "text-ink-gray-4"
                                         )}
                                     >
                                         <CalendarIcon className="mr-2 h-4 w-4" />

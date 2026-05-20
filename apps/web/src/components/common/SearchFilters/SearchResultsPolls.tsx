@@ -2,7 +2,7 @@ import { ScrollArea } from '@components/ui/scroll-area'
 import { UserAvatar } from '@components/features/message/UserAvatar'
 import { BarChart3 } from 'lucide-react'
 import { SearchResult, useSqliteSearch } from '@hooks/useSqliteSearch'
-import { formatDate } from '@utils/date'
+import { formatDate } from '@lib/date'
 import { MessageListSkeleton } from '@components/features/dm-channel/DirectMessagePageSkeleton'
 import _ from '@lib/translate'
 import ErrorBanner from '@components/ui/error-banner'
@@ -25,27 +25,27 @@ export const PollResultCard = ({ poll, author }: {
     return (
         <div
             key={poll.id}
-            className="group p-3 border border-border/70 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+            className="group p-3 border border-outline-gray-2/70 rounded-lg hover:bg-surface-gray-2/50 transition-colors cursor-pointer"
             tabIndex={0}
             role="button"
             aria-label={`View poll: ${question}`}>
             <div className="flex items-start gap-3">
-                <BarChart3 className="w-5 h-5 shrink-0 text-muted-foreground mt-0.5" />
+                <BarChart3 className="w-5 h-5 shrink-0 text-ink-gray-4 mt-0.5" />
                 <div className="flex-1 min-w-0">
                     <div className="flex justify-between gap-2 mb-1">
-                        <h3 className="text-sm font-medium text-foreground line-clamp-2 flex-1 w-[calc(100vw-20rem)]">{question}</h3>
-                        <span className="text-xs text-muted-foreground shrink-0">{formatDate(poll.creation, "D MMMM YYYY h:mm A")}</span>
+                        <h3 className="text-sm font-medium text-ink-gray-8 line-clamp-2 flex-1 w-[calc(100vw-20rem)]">{question}</h3>
+                        <span className="text-xs text-ink-gray-4 shrink-0">{formatDate(poll.creation, "D MMMM YYYY h:mm A")}</span>
                     </div>
                     {options.length > 0 && (
                         <ul className="space-y-1 mb-2">
                             {options.map((opt, i) => (
-                                <li key={i} className="text-xs text-foreground/80">
+                                <li key={i} className="text-xs text-ink-gray-8/80">
                                     {opt}
                                 </li>
                             ))}
                         </ul>
                     )}
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground/80 flex-wrap">
+                    <div className="flex items-center gap-2 text-xs text-ink-gray-4/80 flex-wrap">
                         {author && <><UserAvatar
                             user={author}
                             size="xs"
@@ -70,7 +70,7 @@ const SearchResultsPolls = ({ searchValue, filters }: SearchResultsPollsProps) =
             {error && <ErrorBanner error={error} />}
             <ScrollArea className="flex-1">
                 {isLoading || !results ? <MessageListSkeleton /> :
-                    results.length === 0 ? <div className="text-sm text-muted-foreground text-center py-8">{_("No polls found.")}</div> :
+                    results.length === 0 ? <div className="text-sm text-ink-gray-4 text-center py-8">{_("No polls found.")}</div> :
                         <div className="space-y-2 pb-1">
                             {results.map((poll) => {
                                 const author = users?.find((u) => u.name === poll.author)

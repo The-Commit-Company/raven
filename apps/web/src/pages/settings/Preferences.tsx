@@ -31,7 +31,7 @@ export default function Preferences() {
     <div className="flex flex-col gap-6 p-6">
       <div className="space-y-1">
         <h2 className="text-base font-semibold">Preferences</h2>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-ink-gray-4">
           Configure your preferences.
         </p>
       </div>
@@ -41,7 +41,7 @@ export default function Preferences() {
         <div className="space-y-3">
           <div>
             <h3 className="text-sm font-medium">Enter Key Behaviour</h3>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-ink-gray-4 mt-1">
               When writing a message, press <strong>Enter</strong> to:
             </p>
           </div>
@@ -60,7 +60,7 @@ export default function Preferences() {
                 <SelectItem value="new-line">Start a new line</SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-xs text-muted-foreground mt-2 w-1/2">
+            <p className="text-xs text-ink-gray-4 mt-2 w-1/2">
               {enterKeyBehaviour === "send-message"
                 ? "Pressing Enter will immediately send your message. Use Shift+Enter to add a new line."
                 : "Pressing Enter will add a new line. Use Ctrl/Cmd+Enter to send your message."}
@@ -74,7 +74,7 @@ export default function Preferences() {
         <div className="space-y-3">
           <div>
             <h3 className="text-sm font-medium">Quick Emojis</h3>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-ink-gray-4 mt-1">
               Set your favorite emojis for quick reactions.
             </p>
           </div>
@@ -102,7 +102,7 @@ export default function Preferences() {
               </Popover>
             ))}
           </div>
-          <p className="text-xs text-muted-foreground w-1/2">
+          <p className="text-xs text-ink-gray-4 w-1/2">
             Click on any button to set your favorite emoji for quick reactions.
             These emojis will be available as quick reactions in chat messages.
           </p>

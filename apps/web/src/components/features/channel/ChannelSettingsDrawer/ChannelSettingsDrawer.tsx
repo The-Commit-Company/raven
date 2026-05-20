@@ -47,21 +47,20 @@ const ChannelSettingsDrawer = ({ peerUser }: ChannelSettingsDrawerProps) => {
                 <ScrollArea className="h-full">
                     <Tabs value={drawerType} onValueChange={onTabChange} className="w-full">
                         <div className="flex items-center justify-between">
-                            <TabsList className="grid flex-1 grid-cols-5 gap-1 px-1 h-8">
+                            <TabsList variant="underline" className="grid flex-1 grid-cols-5 gap-1 px-1 h-8 border-0">
                                 {peerUser ? (
-                                    <TabsTrigger value="info" className="text-xs h-6">{_('Profile')}</TabsTrigger>
+                                    <TabsTrigger value="info">{_('Profile')}</TabsTrigger>
                                 ) : (
-                                    <TabsTrigger value="info" className="text-xs h-6">{_('Info')}</TabsTrigger>
+                                    <TabsTrigger value="info">{_('Info')}</TabsTrigger>
                                 )}
-                                <TabsTrigger value="files" className="text-xs h-6">{_('Files')}</TabsTrigger>
-                                <TabsTrigger value="links" className="text-xs h-6">{_('Links')}</TabsTrigger>
-                                <TabsTrigger value="threads" className="text-xs h-6">{_('Threads')}</TabsTrigger>
-                                <TabsTrigger value="pins" className="text-xs h-6">{_('Pins')}</TabsTrigger>
+                                <TabsTrigger value="files">{_('Files')}</TabsTrigger>
+                                <TabsTrigger value="links">{_('Links')}</TabsTrigger>
+                                <TabsTrigger value="threads">{_('Threads')}</TabsTrigger>
+                                <TabsTrigger value="pins">{_('Pins')}</TabsTrigger>
                             </TabsList>
                             <Button
                                 variant="ghost"
-                                size="icon"
-                                className="h-7 w-7 ml-2 shrink-0"
+                                className="h-7 w-7 shrink-0"
                                 onClick={handleClose}
                                 aria-label="Close drawer"
                             >

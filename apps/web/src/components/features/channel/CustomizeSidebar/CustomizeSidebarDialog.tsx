@@ -67,7 +67,7 @@ export const CustomizeSidebarDialog = ({ onClose }: { onClose: () => void }) => 
                 </div>
                 <div className="flex flex-1 min-h-0 overflow-hidden">
                     {/* Left Column - Customization */}
-                    <div className="flex-1 flex flex-col min-w-0 min-h-0 border-r overflow-hidden bg-background">
+                    <div className="flex-1 flex flex-col min-w-0 min-h-0 border-r overflow-hidden bg-surface-white">
                         <div className="flex gap-2 px-4 py-3 shrink-0">
                             {TABS.map(tab => (
                                 <button
@@ -76,8 +76,8 @@ export const CustomizeSidebarDialog = ({ onClose }: { onClose: () => void }) => 
                                     className={cn(
                                         "px-4 py-1 rounded-md text-xs font-medium transition-colors border border-transparent",
                                         activeTab === tab.key
-                                            ? "bg-primary text-primary-foreground shadow"
-                                            : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                            ? "bg-ink-gray-8 text-ink-white shadow"
+                                            : "bg-surface-gray-2 text-ink-gray-4 hover:bg-surface-gray-3 hover:text-ink-gray-8"
                                     )}
                                     onClick={() => setActiveTab(tab.key)}
                                 >
@@ -97,7 +97,7 @@ export const CustomizeSidebarDialog = ({ onClose }: { onClose: () => void }) => 
                         </div>
                     </div>
                     {/* Right Column - Preview */}
-                    <div className="flex-none w-64 flex flex-col min-h-0 bg-sidebar/40 border-l overflow-hidden">
+                    <div className="flex-none w-64 flex flex-col min-h-0 bg-surface-menu-bar/40 border-l overflow-hidden">
                         <div className="px-4 py-3 border-b shrink-0">
                             <h3 className="text-sm font-semibold">{_("Preview")}</h3>
                         </div>

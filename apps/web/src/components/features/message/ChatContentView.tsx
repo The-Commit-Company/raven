@@ -124,7 +124,7 @@ export function ChatContentView({
                 <div className="w-0" />
             ) : (
                 <div
-                    className={`flex h-full min-h-0 shrink-0 flex-col border-l bg-background transition-all duration-300 ${drawerWidth}`}
+                    className={`flex h-full min-h-0 shrink-0 flex-col border-l bg-surface-white transition-all duration-300 ${drawerWidth}`}
                 >
                     {threadID ? (
                         <ThreadDrawer />

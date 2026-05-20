@@ -3,7 +3,7 @@ import { ExternalLink, FileBox } from 'lucide-react'
 import { useFrappeEventListener } from 'frappe-react-sdk'
 import _ from '@lib/translate'
 import { UserAvatar } from '@components/features/message/UserAvatar'
-import { formatDate } from '@utils/date'
+import { formatDate } from '@lib/date'
 import ErrorBanner from '@components/ui/error-banner'
 import { Skeleton } from '@components/ui/skeleton'
 import { useLiveQuery } from 'dexie-react-hooks'
@@ -30,7 +30,7 @@ const SearchResultsLinks = ({ searchValue, filters }: SearchResultsLinksProps) =
             {error && <ErrorBanner error={error} />}
             <ScrollArea className="flex-1">
                 {isLoading ? <LinkPreviewSkeletonList /> :
-                    results.length === 0 ? <div className="text-sm text-muted-foreground text-center py-8">{_("No links found.")}</div> :
+                    results.length === 0 ? <div className="text-sm text-ink-gray-4 text-center py-8">{_("No links found.")}</div> :
                         <div className={'space-y-2'}>
                             {results.map((link) => {
                                 const author = users?.find((u) => u.name === link.author)
@@ -85,7 +85,7 @@ export const LinkPreviewCard = ({ link, author }: {
 
     return (
         <div
-            className="group border border-border/70 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer overflow-hidden p-3"
+            className="group border border-outline-gray-2/70 rounded-lg hover:bg-surface-gray-2/50 transition-colors cursor-pointer overflow-hidden p-3"
             tabIndex={0}
             role="button"
             aria-label={`Open link: ${displayTitle}`}>
@@ -94,39 +94,39 @@ export const LinkPreviewCard = ({ link, author }: {
                     <img
                         src={link.image}
                         alt=""
-                        className="w-20 h-20 object-cover rounded-md border border-border/40 shrink-0"
+                        className="w-20 h-20 object-cover rounded-md border border-outline-gray-2/40 shrink-0"
                         onError={(e) => { e.currentTarget.style.display = 'none' }}
                     />
                 ) : (
-                    <div className="w-20 h-20 rounded-md bg-muted flex items-center justify-center shrink-0 border border-border/40">
+                    <div className="w-20 h-20 rounded-md bg-surface-gray-2 flex items-center justify-center shrink-0 border border-outline-gray-2/40">
                         <img
                             src={faviconUrl}
                             alt=""
                             className="w-10 h-10"
                             onError={(e) => { e.currentTarget.style.display = 'none' }}
                         />
-                        <FileBox className="w-8 h-8 text-muted-foreground hidden" />
+                        <FileBox className="w-8 h-8 text-ink-gray-4 hidden" />
                     </div>
                 )}
                 <div className="flex-1 min-w-0 flex flex-col">
                     <div className="flex justify-between gap-2 mb-0.5">
                         <div className="flex items-center gap-2 min-w-0 flex-1">
-                            <h3 className="text-sm font-medium text-foreground truncate w-[calc(100vw-20rem)]">{displayTitle}</h3>
+                            <h3 className="text-sm font-medium text-ink-gray-8 truncate w-[calc(100vw-20rem)]">{displayTitle}</h3>
                             <ExternalLink
-                                className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-primary transition-opacity duration-200 shrink-0"
+                                className="h-3 w-3 text-ink-gray-4 opacity-0 group-hover:opacity-100 hover:text-primary transition-opacity duration-200 shrink-0"
                                 onClick={(e) => { e.stopPropagation(); window.open(url, '_blank') }}
                             />
                         </div>
-                        <span className="text-xs text-muted-foreground shrink-0">{formatDate(link.creation, "D MMMM YYYY h:mm A")}</span>
+                        <span className="text-xs text-ink-gray-4 shrink-0">{formatDate(link.creation, "D MMMM YYYY h:mm A")}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground/70 mt-0.5">
+                    <div className="flex items-center gap-1.5 text-xs text-ink-gray-4/70 mt-0.5">
                         <img src={faviconUrl} alt="" className="w-3 h-3" onError={(e) => { e.currentTarget.style.display = 'none' }} />
                         <span className="truncate">{displaySubtitle}</span>
                     </div>
                     {link.description && (
-                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{link.description}</p>
+                        <p className="text-xs text-ink-gray-4 mt-1 line-clamp-2">{link.description}</p>
                     )}
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground/80 mt-auto pt-2 flex-wrap">
+                    <div className="flex items-center gap-2 text-xs text-ink-gray-4/80 mt-auto pt-2 flex-wrap">
                         {author && <>
                             <UserAvatar user={author} size="xs" showStatusIndicator={false} />
                             <span>{author.full_name}</span>

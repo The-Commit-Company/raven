@@ -28,10 +28,10 @@ export const SettingsSection = ({ channel, allowSettingChange }: { channel: Chan
 
       {/* Permissions Info */}
       <div className="space-y-1 px-1">
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-ink-gray-4">
           {_("Only channel admins are allowed to change the channel settings")}
         </p>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-ink-gray-4">
           {_("General channel cannot be modified/ removed")}
         </p>
       </div>

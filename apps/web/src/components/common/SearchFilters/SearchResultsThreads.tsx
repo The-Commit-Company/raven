@@ -4,7 +4,7 @@ import { MessageSquareText } from 'lucide-react'
 import _ from '@lib/translate'
 import { SearchResult, useSqliteSearch } from '@hooks/useSqliteSearch'
 import { MessageListSkeleton } from '@components/features/dm-channel/DirectMessagePageSkeleton'
-import { formatDate } from '@utils/date'
+import { formatDate } from '@lib/date'
 import MarkdownRenderer from '@components/ui/markdown'
 import ErrorBanner from '@components/ui/error-banner'
 import { useLiveQuery } from 'dexie-react-hooks'
@@ -24,7 +24,7 @@ export const ThreadResultCard = ({ thread, author }: {
     return (
         <div
             key={thread.id}
-            className="group p-3 border border-border/70 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+            className="group p-3 border border-outline-gray-2/70 rounded-lg hover:bg-surface-gray-2/50 transition-colors cursor-pointer"
             tabIndex={0}
             role="button"
             aria-label={`Open thread: ${thread.content}`}>
@@ -32,14 +32,14 @@ export const ThreadResultCard = ({ thread, author }: {
                 <div className="flex-1 min-w-0">
                     <div className="flex justify-between gap-2 mb-0.5">
                         <div className="flex items-center gap-2 min-w-0 flex-1">
-                            <MessageSquareText className="w-4 h-4 text-muted-foreground shrink-0" />
-                            <h3 className="text-sm font-medium text-foreground truncate w-[calc(100vw-20rem)]">
+                            <MessageSquareText className="w-4 h-4 text-ink-gray-4 shrink-0" />
+                            <h3 className="text-sm font-medium text-ink-gray-8 truncate w-[calc(100vw-20rem)]">
                                 <MarkdownRenderer content={thread.content} />
                             </h3>
                         </div>
-                        <span className="text-xs text-muted-foreground shrink-0">{formatDate(thread.creation, "D MMMM YYYY h:mm A")}</span>
+                        <span className="text-xs text-ink-gray-4 shrink-0">{formatDate(thread.creation, "D MMMM YYYY h:mm A")}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground/80 mt-auto pt-2 flex-wrap">
+                    <div className="flex items-center gap-2 text-xs text-ink-gray-4/80 mt-auto pt-2 flex-wrap">
                         {author && <><UserAvatar
                             user={author}
                             size="xs"
@@ -64,7 +64,7 @@ const SearchResultsThreads = ({ searchValue, filters }: SearchResultsThreadsProp
             {error && <ErrorBanner error={error} />}
             <ScrollArea className="flex-1">
                 {isLoading || !results ? <MessageListSkeleton /> :
-                    results.length === 0 ? <div className="text-sm text-muted-foreground text-center py-8">{_("No threads found.")}</div> :
+                    results.length === 0 ? <div className="text-sm text-ink-gray-4 text-center py-8">{_("No threads found.")}</div> :
                         <div className="space-y-2 pb-1">
                             {results.map((thread) => {
                                 const author = users?.find((u) => u.name === thread.author)

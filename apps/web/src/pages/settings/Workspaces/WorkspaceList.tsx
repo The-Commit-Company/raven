@@ -60,7 +60,7 @@ const workspaceColumns: ColumnDef<WorkspaceFields>[] = [
         enableSorting: false,
         cellClassName: "max-w-[250px]",
         cell: ({ value }) => (
-            <span className="line-clamp-1 text-muted-foreground">
+            <span className="line-clamp-1 text-ink-gray-4">
                 {value as string}
             </span>
         ),
@@ -80,7 +80,7 @@ const workspaceColumns: ColumnDef<WorkspaceFields>[] = [
 function WorkspaceNameCell({ workspace }: { workspace: WorkspaceFields }) {
     const content = (
         <div className="flex items-center gap-2">
-            <Avatar className="h-8 w-8 rounded-md border border-border/80 dark:border-border/60">
+            <Avatar className="h-8 w-8 rounded-md border border-outline-gray-2/80 dark:border-outline-gray-2/60">
                 <AvatarImage src={workspace.logo} alt={workspace.workspace_name} />
                 <AvatarFallback className="rounded-md">
                     {workspace.workspace_name?.charAt(0)?.toUpperCase()}
@@ -142,7 +142,7 @@ function MembershipCell({ workspace }: { workspace: WorkspaceFields }) {
 function EmptyWorkspaceState() {
     return (
         <div className="flex flex-col items-center gap-2 py-8">
-            <p className="text-muted-foreground">No workspaces found.</p>
+            <p className="text-ink-gray-4">No workspaces found.</p>
         </div>
     )
 }

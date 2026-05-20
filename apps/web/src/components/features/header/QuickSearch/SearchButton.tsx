@@ -9,9 +9,9 @@ const SearchButton = forwardRef<HTMLInputElement>(() => {
 
     return (
         <div className="fixed left-1/2 top-5.25 -translate-x-1/2 -translate-y-1/2 w-150 z-50 cursor-pointer">
-            <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-gray-4" />
             <button
-                className="pl-8 bg-muted border-none h-7 w-full rounded-sm text-sm text-left text-muted-foreground cursor-pointer"
+                className="pl-8 bg-surface-gray-2 border-none h-7 w-full rounded-sm text-sm text-left text-ink-gray-4 cursor-pointer"
                 onClick={() => setOpen(true)}
             >
                 {_("Search")}

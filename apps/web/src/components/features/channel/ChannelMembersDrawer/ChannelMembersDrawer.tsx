@@ -70,7 +70,7 @@ const ChannelMembersDrawer = () => {
 
                     {isLoading ?
                         <div className="flex items-center justify-center flex-1">
-                            <Loader2 className="h-4 w-4 animate-spin text-foreground/80" />
+                            <Loader2 className="h-4 w-4 animate-spin text-ink-gray-8/80" />
                         </div> :
                         <TabsContent value="members">
                             <ChannelMembersList members={members} allowSettingChange={allowSettingChange} showCloseButton={!showTabs} onClose={handleClose} />

@@ -20,7 +20,7 @@ export const ChannelListItem = forwardRef<
             href="#"
             onClick={onClick}
             className={cn(
-                "flex flex-col items-start gap-2 whitespace-nowrap border-b p-4 text-sm leading-tight last:border-b-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                "flex flex-col items-start gap-2 whitespace-nowrap border-b p-4 text-sm leading-tight last:border-b-0 hover:bg-surface-gray-3 hover:text-ink-gray-8",
                 className
             )}
             {...props}

@@ -7,10 +7,11 @@ import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
 import { useUser } from "@hooks/useUser"
 import { WorkspaceSwitcher } from "@components/workspace-switcher/WorkspaceSwitcher"
 import ChatDrawer from "@components/common/ChatDrawer"
-import { formatRelativeDate } from "@utils/date"
+import { formatRelativeDate } from "@lib/date"
 import _ from "@lib/translate"
 import { Label } from "@components/ui/label"
 import { Switch } from "@components/ui/switch"
+import { Tabs, TabsList, TabsTrigger } from "@components/ui/tabs"
 import { useLiveQuery } from "dexie-react-hooks"
 import { db } from "@db"
 import MarkdownRenderer from "@components/ui/markdown"
@@ -102,13 +103,13 @@ export default function Notifications() {
                 style={{ marginLeft: "var(--workspace-switcher-width, 60px)", width: headerWidth }}
             >
                 <header
-                    className="flex items-center justify-between border-b bg-background py-1.5 px-2 z-10 fixed top-0 h-(--app-header-height) transition-[left,width] duration-200 ease-linear"
+                    className="flex items-center justify-between border-b bg-surface-white py-1.5 px-2 z-10 fixed top-0 h-(--app-header-height) transition-[left,width] duration-200 ease-linear"
                     style={{ left: headerLeft, width: headerWidth }}
                 >
                     <div className="flex items-center gap-2">
                         <span className="text-md font-medium">{_("Notifications")}</span>
                         {unreadCount > 0 && (
-                            <div className="bg-muted text-foreground rounded px-1.5 py-0.5 text-[10px] font-semibold min-w-4.5 text-center">
+                            <div className="bg-surface-gray-2 text-ink-gray-8 rounded px-1.5 py-0.5 text-[10px] font-semibold min-w-4.5 text-center">
                                 {unreadCount > 99 ? "99+" : unreadCount}
                             </div>
                         )}
@@ -116,7 +117,7 @@ export default function Notifications() {
                     {unreadCount > 0 && (
                         <button
                             onClick={markAllRead}
-                            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded hover:bg-muted/50"
+                            className="flex items-center gap-1 text-xs text-ink-gray-4 hover:text-ink-gray-8 transition-colors px-2 py-1 rounded hover:bg-surface-gray-2/50"
                         >
                             <Check className="w-3 h-3" />
                             {_("Mark all as read")}
@@ -127,30 +128,20 @@ export default function Notifications() {
                 <div className="pt-9 flex flex-1 overflow-hidden">
                     <div className={cn(
                         "flex-1 flex flex-col transition-all duration-300",
-                        selected && "w-1/2 border-r border-border"
+                        selected && "w-1/2 border-r border-outline-gray-2"
                     )}>
                         <div className="px-4 pt-4 pb-2 shrink-0 flex items-center gap-4">
-                            <div className="flex gap-2 items-center" role="tablist" aria-label={_("Notification filters")}>
-                                {TABS.map((tab) => (
-                                    <button
-                                        key={tab.key}
-                                        type="button"
-                                        role="tab"
-                                        aria-selected={activeTab === tab.key}
-                                        className={cn(
-                                            "px-4 py-1 rounded-md text-xs font-medium transition-colors border border-transparent",
-                                            activeTab === tab.key
-                                                ? "bg-primary text-primary-foreground shadow"
-                                                : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer"
-                                        )}
-                                        onClick={() => onTabChange(tab.key)}
-                                    >
-                                        {_(tab.label)}
-                                    </button>
-                                ))}
-                            </div>
+                            <Tabs value={activeTab} onValueChange={(v) => onTabChange(v as NotificationTab)}>
+                                <TabsList className="grid grid-cols-3 gap-1 px-1 h-8">
+                                    {TABS.map((tab) => (
+                                        <TabsTrigger key={tab.key} value={tab.key}>
+                                            {_(tab.label)}
+                                        </TabsTrigger>
+                                    ))}
+                                </TabsList>
+                            </Tabs>
                             <div className="flex items-center gap-2 ml-auto">
-                                <Label htmlFor="unread-toggle" className="text-xs font-medium text-muted-foreground cursor-pointer">
+                                <Label htmlFor="unread-toggle" className="text-xs font-medium text-ink-gray-4 cursor-pointer">
                                     {_("Unread only")}
                                 </Label>
                                 <Switch
@@ -185,7 +176,7 @@ export default function Notifications() {
                                     )}
                                     <div ref={observerTarget} className="h-4" />
                                     {isLoadingMore && (
-                                        <div className="text-center py-4 text-xs text-muted-foreground">{_("Loading more notifications...")}</div>
+                                        <div className="text-center py-4 text-xs text-ink-gray-4">{_("Loading more notifications...")}</div>
                                     )}
                                 </div>
                             )}
@@ -214,7 +205,7 @@ const ChannelContext = ({
 }) => {
     if (notification.is_thread) {
         return (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground/80">
+            <div className="flex items-center gap-1 text-xs text-ink-gray-4/80">
                 <MessageSquare className="w-3 h-3" />
                 <span>{_("Thread")}</span>
             </div>
@@ -223,9 +214,9 @@ const ChannelContext = ({
     if (!notification.is_direct_message) {
         return (
             <div className="flex items-center gap-1 text-xs">
-                <span className="text-muted-foreground/80">{_("in")}</span>
-                <ChannelIcon type={notification.channel_type} className="h-3 w-3 text-muted-foreground" />
-                <span className="font-medium text-foreground/70 group-hover:text-primary group-hover:underline transition-colors">
+                <span className="text-ink-gray-4/80">{_("in")}</span>
+                <ChannelIcon type={notification.channel_type} className="h-3 w-3 text-ink-gray-4" />
+                <span className="font-medium text-ink-gray-8/70 group-hover:text-primary group-hover:underline transition-colors">
                     {notification.channel_name}
                 </span>
             </div>
@@ -250,9 +241,9 @@ const MentionItem = memo(({
             type="button"
             onClick={() => onSelect(notification)}
             className={cn(
-                "group block w-full text-left px-6 py-4 hover:bg-accent/50 transition-colors cursor-pointer",
-                !notification.is_read && "bg-muted/10",
-                isActive && "bg-accent"
+                "group block w-full text-left px-6 py-4 hover:bg-surface-gray-3/50 transition-colors cursor-pointer",
+                !notification.is_read && "bg-surface-gray-2/10",
+                isActive && "bg-surface-gray-3"
             )}
         >
             <div className="flex items-start gap-3">
@@ -267,7 +258,7 @@ const MentionItem = memo(({
                         <span className={cn("text-sm", !notification.is_read ? "font-semibold" : "font-medium")}>
                             {sender?.full_name ?? notification.owner}
                         </span>
-                        <span className="text-xs font-light text-muted-foreground/90 shrink-0">
+                        <span className="text-xs font-light text-ink-gray-4/90 shrink-0">
                             {formatRelativeDate(notification.creation)}
                         </span>
                         <ChannelContext notification={notification} />
@@ -305,9 +296,9 @@ const ReactionItem = memo(({
             type="button"
             onClick={() => onSelect(notification)}
             className={cn(
-                "group block w-full text-left px-6 py-4 hover:bg-accent/50 transition-colors cursor-pointer",
-                !notification.is_read && "bg-muted/10",
-                isActive && "bg-accent"
+                "group block w-full text-left px-6 py-4 hover:bg-surface-gray-3/50 transition-colors cursor-pointer",
+                !notification.is_read && "bg-surface-gray-2/10",
+                isActive && "bg-surface-gray-3"
             )}
         >
             <div className="flex items-start gap-3">
@@ -331,18 +322,18 @@ const ReactionItem = memo(({
                         <span className={cn("text-sm", !notification.is_read ? "font-semibold" : "font-medium")}>
                             {reactorText}
                         </span>
-                        <span className="text-xs font-light text-muted-foreground/90 shrink-0">
+                        <span className="text-xs font-light text-ink-gray-4/90 shrink-0">
                             {formatRelativeDate(notification.creation)}
                         </span>
                         <ChannelContext notification={notification} />
                     </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">
+                    <p className="text-xs text-ink-gray-4 mt-0.5">
                         {_("reacted to your message")}
                         {displayReactions.length > 0 && (
                             <span className="ml-1">{displayReactions.join(" ")}</span>
                         )}
                     </p>
-                    <div className="text-[13px] text-foreground/70 line-clamp-1 mt-0.5 [&_p]:my-0">
+                    <div className="text-[13px] text-ink-gray-8/70 line-clamp-1 mt-0.5 [&_p]:my-0">
                         <MarkdownRenderer content={notification.text} />
                     </div>
                 </div>
@@ -353,16 +344,16 @@ const ReactionItem = memo(({
 
 const EmptyState = ({ showUnread }: { showUnread: boolean }) => (
     <div className="flex flex-col items-center justify-center min-h-80 px-6">
-        <div className="rounded-full bg-muted/80 p-8 mb-6">
+        <div className="rounded-full bg-surface-gray-2/80 p-8 mb-6">
             {showUnread
-                ? <Check className="w-12 h-12 text-muted-foreground/60" strokeWidth={1.5} />
-                : <AtSignIcon className="w-12 h-12 text-muted-foreground/60" strokeWidth={1.5} />
+                ? <Check className="w-12 h-12 text-ink-gray-4/60" strokeWidth={1.5} />
+                : <AtSignIcon className="w-12 h-12 text-ink-gray-4/60" strokeWidth={1.5} />
             }
         </div>
         <h3 className="text-lg font-semibold mb-1">
             {showUnread ? _("You're all caught up") : _("No notifications yet")}
         </h3>
-        <p className="text-muted-foreground text-center text-sm max-w-xs leading-relaxed">
+        <p className="text-ink-gray-4 text-center text-sm max-w-xs leading-relaxed">
             {showUnread
                 ? _("No unread notifications at the moment.")
                 : _("Mentions and reactions to your messages will appear here.")

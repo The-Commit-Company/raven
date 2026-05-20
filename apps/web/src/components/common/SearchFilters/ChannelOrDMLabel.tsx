@@ -11,8 +11,8 @@ export function ChannelOrDMLabel({ channelId, parentChannelId }: { channelId?: s
     const channel = channels.find(c => c.name === channelId) || channels.find(c => c.name === parentChannelId)
     if (channel) {
         return (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2 text-xs text-ink-gray-4">
+                <div className="flex items-center gap-1 text-xs text-ink-gray-4">
                     <ChannelIcon type={channel.type} className="h-3 w-3" />
                     <span>{channel.channel_name}</span>
                 </div>
@@ -27,7 +27,7 @@ export function ChannelOrDMLabel({ channelId, parentChannelId }: { channelId?: s
         const peer = users?.find(u => u.name === dm.peer_user_id)
         const peerName = peer?.full_name ?? dm.peer_user_id
         if (!peerName) return null
-        return <span className="text-xs text-muted-foreground">{_('Chat with {0}', [peerName])}</span>
+        return <span className="text-xs text-ink-gray-4">{_('Chat with {0}', [peerName])}</span>
     }
 
     return null

@@ -106,7 +106,7 @@ export default function Search() {
             </div>
             {/* Right Drawer */}
             {isDrawerOpen && (
-                <div className="w-85 h-full border-l bg-background shadow-lg transition-all duration-300 flex flex-col">
+                <div className="w-85 h-full border-l bg-surface-white shadow-lg transition-all duration-300 flex flex-col">
                     <MoreFiltersDrawer
                         filters={filters}
                         onClose={() => setIsDrawerOpen(false)}

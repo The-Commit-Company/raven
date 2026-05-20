@@ -38,11 +38,11 @@ const PollMessage: React.FC<PollMessageProps> = ({ user, poll, currentUserVotes,
             <div className="flex-1">
                 <div className="flex items-baseline gap-2">
                     <span className="font-medium text-sm">{user?.full_name || user?.name || "User"}</span>
-                    <span className="text-xs font-light text-muted-foreground/90">{time}</span>
+                    <span className="text-xs font-light text-ink-gray-4/90">{time}</span>
                 </div>
 
                 <div
-                    className="w-full max-w-md bg-card border border-border rounded-lg p-4 shadow-xs mt-1 cursor-pointer hover:bg-muted/30 transition-colors"
+                    className="w-full max-w-md bg-surface-cards border border-outline-gray-2 rounded-lg p-4 shadow-xs mt-1 cursor-pointer hover:bg-surface-gray-2/30 transition-colors"
                     onClick={handleOpenDrawer}
                     role="button"
                     tabIndex={0}
@@ -73,7 +73,7 @@ const PollMessage: React.FC<PollMessageProps> = ({ user, poll, currentUserVotes,
                     </div>
                     {/* Total votes */}
                     <div className="flex items-center justify-start w-full">
-                        <span className="text-xs text-muted-foreground/80">Total votes: {poll.total_votes}</span>
+                        <span className="text-xs text-ink-gray-4/80">Total votes: {poll.total_votes}</span>
                     </div>
                 </div>
             </div>

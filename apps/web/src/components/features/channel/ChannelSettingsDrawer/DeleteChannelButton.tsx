@@ -63,11 +63,11 @@ export function DeleteChannelButton({
     <AlertDialog>
       <AlertDialogTrigger asChild disabled={disabled}>
         <button
-          className={`w-full flex justify-start p-3 h-auto cursor-pointer font-normal bg-transparent border border-border/70 rounded-lg transition-colors ${disabled ? "opacity-50 pointer-events-none" : "hover:bg-red-200/20"}`}
+          className={`w-full flex justify-start p-3 h-auto cursor-pointer font-normal bg-transparent border border-outline-gray-2/70 rounded-lg transition-colors ${disabled ? "opacity-50 pointer-events-none" : "hover:bg-red-200/20"}`}
         >
           <div className="flex items-center gap-3">
-            <Trash2 className="w-4 h-4 text-destructive" />
-            <span className="text-sm text-destructive">
+            <Trash2 className="w-4 h-4 text-ink-red-3" />
+            <span className="text-sm text-ink-red-3">
               {_("Delete channel")}
             </span>
           </div>
@@ -77,20 +77,20 @@ export function DeleteChannelButton({
         <AlertDialogHeader>
           <AlertDialogTitle>{_("Delete this channel?")}</AlertDialogTitle>
           <AlertDialogDescription asChild>
-            <div className="space-y-4 text-left text-foreground pt-1">
+            <div className="space-y-4 text-left text-ink-gray-8 pt-1">
               {error ? <ErrorBanner error={error} /> : null}
-              <div className="flex items-start gap-3 rounded-md border border-destructive/40 bg-destructive/10 p-3">
-                <AlertTriangle className="h-4 w-4 text-destructive mt-0.5" />
-                <p className="text-sm text-foreground/90">
+              <div className="flex items-start gap-3 rounded-md border border-outline-red-3/40 bg-surface-red-5/10 p-3">
+                <AlertTriangle className="h-4 w-4 text-ink-red-3 mt-0.5" />
+                <p className="text-sm text-ink-gray-8/90">
                   {_("This action is permanent and cannot be undone.")}
                 </p>
               </div>
-              <p className="text-sm text-foreground/80">
+              <p className="text-sm text-ink-gray-8/80">
                 {_(
                   "When you delete a channel, all messages from this channel will be removed immediately.",
                 )}
               </p>
-              <ul className="list-inside list-disc space-y-1 text-sm text-foreground/80">
+              <ul className="list-inside list-disc space-y-1 text-sm text-ink-gray-8/80">
                 <li>
                   {_(
                     "All messages, including files and images will be removed",
@@ -102,7 +102,7 @@ export function DeleteChannelButton({
                   )}
                 </li>
               </ul>
-              <label className="flex items-center gap-2 text-sm text-foreground/90 select-none">
+              <label className="flex items-center gap-2 text-sm text-ink-gray-8/90 select-none">
                 <Checkbox
                   checked={allowDelete}
                   onCheckedChange={(v) => setAllowDelete(Boolean(v))}
@@ -118,14 +118,15 @@ export function DeleteChannelButton({
           </AlertDialogCancel>
           <Button
             type="button"
-            variant="destructive"
+            variant="solid"
+            theme="red"
             disabled={!allowDelete || loading}
             onClick={deleteChannel}
             aria-label={_("Delete this channel?")}
           >
             {loading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin text-foreground/80 aria-hidden" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin text-ink-gray-8/80 aria-hidden" />
                 {_("Deleting")}
               </>
             ) : (

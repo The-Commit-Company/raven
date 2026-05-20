@@ -196,10 +196,10 @@ export default function ThreadsList({
     if (isEmpty) {
         return (
             <div className="flex flex-col items-center justify-center py-16 pr-6">
-                <p className="text-base font-medium mb-2 text-foreground text-center max-w-sm">
+                <p className="text-base font-medium mb-2 text-ink-gray-8 text-center max-w-sm">
                     {onlyShowUnread ? _("You're all caught up") : _("No threads yet")}
                 </p>
-                <p className="text-xs text-muted-foreground text-center max-w-sm">
+                <p className="text-xs text-ink-gray-4 text-center max-w-sm">
                     {onlyShowUnread
                         ? _("There are no unread threads to show. Clear the filter to see all threads.")
                         : threadType === 'ai'
@@ -224,7 +224,7 @@ export default function ThreadsList({
             ))}
             <div ref={observerTarget} className="h-4" />
             {isLoadingMore && (
-                <div className="text-center py-4 text-xs text-muted-foreground">{_("Loading more threads...")}</div>
+                <div className="text-center py-4 text-xs text-ink-gray-4">{_("Loading more threads...")}</div>
             )}
         </div>
     )

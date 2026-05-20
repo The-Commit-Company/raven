@@ -4,7 +4,7 @@ import { UserData } from "@db"
 import { BaseThreadMessage } from "@components/common/BaseThreadMessage"
 import { ThreadChannelDetails } from "./ThreadsList"
 import { ThreadMessage } from "src/types/ThreadMessage"
-import { formatDate } from "@utils/date"
+import { formatDate } from "@lib/date"
 
 interface ThreadPreviewBoxProps {
     user: UserData | null
@@ -28,15 +28,15 @@ export const ThreadPreviewBox = ({
         <div
             onClick={onClick}
             className={cn(
-                "group block px-6 py-4 hover:bg-accent/50 transition-colors relative cursor-pointer border-b border-border",
-                "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
-                isActive && "bg-muted/30",
-                unreadCount > 0 && !isActive && "bg-muted/10"
+                "group block px-6 py-4 hover:bg-surface-gray-3/50 transition-colors relative cursor-pointer border-b border-outline-gray-2",
+                "focus:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-4 focus-visible:ring-inset",
+                isActive && "bg-surface-gray-2/30",
+                unreadCount > 0 && !isActive && "bg-surface-gray-2/10"
             )}
         >
             {/* Connecting line from avatar to participants - only show for non-DM threads */}
             {!channelDetails.isDirectMessage && (
-                <div className="absolute top-20 left-10 w-7 h-[calc(100%-6.75rem)] border-l border-b border-border rounded-bl-lg z-0" />
+                <div className="absolute top-20 left-10 w-7 h-[calc(100%-6.75rem)] border-l border-b border-outline-gray-2 rounded-bl-lg z-0" />
             )}
 
             {/* Header: Channel name and date */}
@@ -46,7 +46,7 @@ export const ThreadPreviewBox = ({
                         <span>{channelDetails.channelIcon}</span>
                     )}
                     <span className="font-medium text-xs">{channelDetails.channelName}</span>
-                    <span className="text-xs text-muted-foreground">{formatDate(thread.last_message_timestamp, "D MMMM YYYY h:mm A")}</span>
+                    <span className="text-xs text-ink-gray-4">{formatDate(thread.last_message_timestamp, "D MMMM YYYY h:mm A")}</span>
                 </div>
             )}
 

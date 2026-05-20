@@ -54,19 +54,19 @@ export function FileTypeFilter({ filters }: { filters: SearchFilters }) {
 
     return (
         <div className="w-full">
-            <Label className="text-xs text-muted-foreground mb-1 block">{_("File types")}</Label>
+            <Label className="text-xs text-ink-gray-4 mb-1 block">{_("File types")}</Label>
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild autoFocus>
                     <Button
                         variant="outline"
-                        className="w-full h-9 pl-3 pr-2 flex justify-between items-center text-left font-normal border bg-background"
+                        className="w-full h-9 pl-3 pr-2 flex justify-between items-center text-left font-normal border bg-surface-white"
                         role="combobox"
                         aria-expanded={open}
                     >
-                        <span className={`truncate text-sm pl-1 ${checkedCount > 0 ? 'text-foreground' : 'text-muted-foreground'}`}>
+                        <span className={`truncate text-sm pl-1 ${checkedCount > 0 ? 'text-ink-gray-8' : 'text-ink-gray-4'}`}>
                             {checkedCount === 0 ? _('File Type') : checkedCount === 1 ? _('1 File Type Selected') : _(`${checkedCount} File Types Selected`)}
                         </span>
-                        <ChevronDown className="h-4 w-4 text-muted-foreground/50 ml-2" />
+                        <ChevronDown className="h-4 w-4 text-ink-gray-4/50 ml-2" />
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto min-w-(--radix-popover-trigger-width) max-w-[320px] p-0" align="start">
@@ -77,15 +77,15 @@ export function FileTypeFilter({ filters }: { filters: SearchFilters }) {
                             return (
                                 <div
                                     key={fileType.id}
-                                    className={`flex items-center gap-2 py-1.5 pr-8 pl-2 cursor-pointer rounded-sm transition-colors text-sm ${checked ? 'bg-primary/10' : ''} hover:bg-accent`}
+                                    className={`flex items-center gap-2 py-1.5 pr-8 pl-2 cursor-pointer rounded-sm transition-colors text-sm ${checked ? 'bg-ink-gray-8/10' : ''} hover:bg-surface-gray-3`}
                                     onClick={() => toggleFileType(fileType.id)}
                                 >
                                     <Checkbox
                                         checked={checked}
                                         onCheckedChange={() => toggleFileType(fileType.id)}
-                                        className={checked ? 'border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground' : ''}
+                                        className={checked ? 'border-primary data-[state=checked]:bg-ink-gray-8 data-[state=checked]:text-ink-white' : ''}
                                     />
-                                    <IconComponent className={`h-4 w-4 ${checked ? 'text-primary' : 'text-muted-foreground'}`} />
+                                    <IconComponent className={`h-4 w-4 ${checked ? 'text-primary' : 'text-ink-gray-4'}`} />
                                     <span>{fileType.label}</span>
                                 </div>
                             )

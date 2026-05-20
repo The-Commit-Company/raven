@@ -116,11 +116,11 @@ export default function DateFilter({ value, onValueChange, className, style, dro
 
     return (
         <div className={cn("flex-shrink-0", className)} style={style}>
-            {showLabel && <Label className="text-xs text-muted-foreground mb-1 block">Date</Label>}
+            {showLabel && <Label className="text-xs text-ink-gray-4 mb-1 block">Date</Label>}
             <Popover open={isOpen} onOpenChange={setIsOpen}>
                 <PopoverTrigger asChild>
                     <Button variant="outline" className={cn("w-fit justify-between text-left font-normal", buttonSizeClass)}>
-                        <span className={cn("pl-1", triggerLabelClassName, labelSizeClass, isPlaceholder && "text-muted-foreground")}>{triggerLabel}</span>
+                        <span className={cn("pl-1", triggerLabelClassName, labelSizeClass, isPlaceholder && "text-ink-gray-4")}>{triggerLabel}</span>
                         <ChevronDownIcon className="ml-2 h-4 w-4 opacity-30" />
                     </Button>
                 </PopoverTrigger>
@@ -146,12 +146,12 @@ export default function DateFilter({ value, onValueChange, className, style, dro
                         <div className="flex flex-col gap-3.5 p-3 w-full">
                             {/* From Date */}
                             <div className="w-full">
-                                <div className="text-xs text-muted-foreground mb-1">From</div>
+                                <div className="text-xs text-ink-gray-4 mb-1">From</div>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button
                                             variant="outline"
-                                            className={cn("w-full justify-start text-left font-normal h-8 px-2", !value.from && "text-muted-foreground")}
+                                            className={cn("w-full justify-start text-left font-normal h-8 px-2", !value.from && "text-ink-gray-4")}
                                         >
                                             <CalendarIcon className="h-4 w-4" />
                                             {value.from ? format(value.from, "dd MMM yyyy") : "Select a date"}
@@ -164,12 +164,12 @@ export default function DateFilter({ value, onValueChange, className, style, dro
                             </div>
                             {/* To Date */}
                             <div className="w-full">
-                                <div className="text-xs text-muted-foreground mb-1">To</div>
+                                <div className="text-xs text-ink-gray-4 mb-1">To</div>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button
                                             variant="outline"
-                                            className={cn("w-full justify-start text-left font-normal h-8 px-2", !value.to && "text-muted-foreground")}
+                                            className={cn("w-full justify-start text-left font-normal h-8 px-2", !value.to && "text-ink-gray-4")}
                                         >
                                             <CalendarIcon className="h-4 w-4" />
                                             {value.to ? format(value.to, "dd MMM yyyy") : "Select a date"}

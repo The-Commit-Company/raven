@@ -225,7 +225,7 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>
-                                                {_('Description')} <span className="font-light text-muted-foreground">
+                                                {_('Description')} <span className="font-light text-ink-gray-4">
                                                     ({_('optional')})
                                                 </span>
                                             </FormLabel>
@@ -267,7 +267,7 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                     </div>
 
                     {/* Footer - Sticky at Bottom */}
-                    <div className="border-t bg-background">
+                    <div className="border-t bg-surface-white">
                         <div className="px-4 py-4">
                             {channelType !== "Open" ?
                                 (currentStep === 1 ? (

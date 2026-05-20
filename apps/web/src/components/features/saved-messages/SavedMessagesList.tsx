@@ -4,7 +4,7 @@ import { SavedMessage, SavedMessageStatus } from "../../../types/SavedMessage"
 import { RavenChannel } from "@raven/types/RavenChannelManagement/RavenChannel"
 import { UserData } from "@db"
 import { useUser } from "@hooks/useUser"
-import { getDateObject } from "@utils/date"
+import { getDateObject } from "@lib/date"
 import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
 import { DMChannelListItem } from "@raven/types/common/ChannelListItem"
 import { Message } from "@raven/types/common/Message"
@@ -555,10 +555,10 @@ export default function SavedMessagesList({
     if (messages.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-16 px-6">
-                <p className="text-base font-medium mb-2 text-foreground text-center max-w-sm">
+                <p className="text-base font-medium mb-2 text-ink-gray-8 text-center max-w-sm">
                     No saved messages {status === 'in_progress' ? 'in progress' : status === 'archived' ? 'archived' : 'completed'} yet
                 </p>
-                <p className="text-xs text-muted-foreground text-center max-w-sm">
+                <p className="text-xs text-ink-gray-4 text-center max-w-sm">
                     {status === 'in_progress'
                         ? 'Save messages to view them here'
                         : status === 'archived'

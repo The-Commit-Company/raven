@@ -16,7 +16,7 @@ export const ChannelFilters = ({ filters, setFilters, workspaces }: { filters: a
         <div className="flex items-center gap-2 w-full">
             <div className="relative w-full">
                 <Search
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-ink-gray-4"
                     aria-hidden="true"
                 />
                 <Input
@@ -90,7 +90,7 @@ const WorkspaceFilter = ({ filters, setFilters, workspaces }: { filters: any, se
                 {workspaces?.map((workspace) => (
                     <SelectItem key={workspace.name} value={workspace.name} className="h-8 px-0.5">
                         <div className="flex items-center gap-2">
-                            <Avatar className="h-7 w-7 rounded-sm border border-border/80 dark:border-border/60">
+                            <Avatar className="h-7 w-7 rounded-sm border border-outline-gray-2/80 dark:border-outline-gray-2/60">
                                 <AvatarImage src={workspace.logo} alt={workspace.workspace_name} />
                                 <AvatarFallback className="rounded-none">
                                     {workspace.workspace_name?.charAt(0)?.toUpperCase()}

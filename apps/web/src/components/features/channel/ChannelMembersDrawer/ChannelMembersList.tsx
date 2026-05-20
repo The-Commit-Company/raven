@@ -22,7 +22,7 @@ const ChannelMembersList = ({ members, allowSettingChange, showCloseButton, onCl
         <div className="space-y-2 h-full flex flex-col">
             {/* Member count */}
             <div className="flex items-center justify-between">
-                <div className="text-xs text-muted-foreground p-2 shrink-0">
+                <div className="text-xs text-ink-gray-4 p-2 shrink-0">
                     {_(`${filteredMembers.length} member${filteredMembers.length !== 1 ? 's' : ''}`)}
                 </div>
                 {showCloseButton && <Button
@@ -38,7 +38,7 @@ const ChannelMembersList = ({ members, allowSettingChange, showCloseButton, onCl
 
             {/* Search */}
             <div className="relative px-1">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-ink-gray-4" />
                 <Input
                     placeholder="Search members..."
                     value={searchQuery}
@@ -54,7 +54,7 @@ const ChannelMembersList = ({ members, allowSettingChange, showCloseButton, onCl
 
             {filteredMembers.length === 0 && (
                 <div className="text-center py-8 shrink-0">
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-ink-gray-4">
                         {searchQuery ? 'No members found matching your search.' : 'No members in this channel.'}
                     </p>
                 </div>
@@ -82,7 +82,7 @@ const MembersList = ({ filteredMembers, allowSettingChange }: { filteredMembers:
             itemContent={(index, member) => (
                 <div
                     key={member.name}
-                    className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors group mb-1"
+                    className="flex items-center justify-between p-2 rounded-lg hover:bg-surface-gray-2/50 transition-colors group mb-1"
                 >
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                         <UserAvatar
@@ -107,7 +107,7 @@ const MembersList = ({ filteredMembers, allowSettingChange }: { filteredMembers:
                                     </Tooltip>
                                 )}
                             </div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-xs text-ink-gray-4">
                                 {member.name}
                             </div>
                         </div>

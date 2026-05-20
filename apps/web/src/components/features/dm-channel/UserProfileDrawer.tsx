@@ -51,15 +51,15 @@ export function UserProfileDrawer({ user }: UserProfileDrawerProps) {
                     showStatusIndicator={user.availability_status != null && user.availability_status !== "Invisible"}
                     showBotIndicator={false}
                 />
-                <h2 className="mt-4 text-[18px] font-bold text-foreground leading-tight text-center">
+                <h2 className="mt-4 text-[18px] font-bold text-ink-gray-8 leading-tight text-center">
                     {displayName}
                 </h2>
                 {hasEmployeeInfo && (
-                    <p className="mt-0.5 text-[13px] font-semibold text-center text-muted-foreground">
+                    <p className="mt-0.5 text-[13px] font-semibold text-center text-ink-gray-4">
                         {employeeInfo}
                     </p>
                 )}
-                <p className={`flex items-center justify-center gap-1 text-[13px] font-normal text-muted-foreground ${hasEmployeeInfo ? "mt-1" : "mt-0.5"}`}>
+                <p className={`flex items-center justify-center gap-1 text-[13px] font-normal text-ink-gray-4 ${hasEmployeeInfo ? "mt-1" : "mt-0.5"}`}>
                     <AtSign className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden />
                     <span>{formatUsername(user.name)}</span>
                 </p>
@@ -67,18 +67,18 @@ export function UserProfileDrawer({ user }: UserProfileDrawerProps) {
 
             {/* Status – only render when there is a status or custom status */}
             {hasStatus && (
-                <div className="border-t border-border/50 px-4 py-3">
+                <div className="border-t border-outline-gray-2/50 px-4 py-3">
                     {user.availability_status && (
                         <div className="flex items-center gap-2">
                             <span
                                 className={`inline-block h-2 w-2 shrink-0 rounded-full ${statusColor}`}
                                 aria-hidden
                             />
-                            <span className="text-[13px] font-normal text-foreground">{availability}</span>
+                            <span className="text-[13px] font-normal text-ink-gray-8">{availability}</span>
                         </div>
                     )}
                     {customStatus && (
-                        <p className={`text-[13px] font-normal text-muted-foreground ${user.availability_status ? "mt-1.5" : ""}`}>
+                        <p className={`text-[13px] font-normal text-ink-gray-4 ${user.availability_status ? "mt-1.5" : ""}`}>
                             {customStatus}
                         </p>
                     )}
@@ -86,18 +86,18 @@ export function UserProfileDrawer({ user }: UserProfileDrawerProps) {
             )}
 
             {/* Contact information – Slack: bold heading, icons in light rounded boxes */}
-            <div className="border-t border-border/50 px-4 py-3">
-                <p className="text-[13px] font-bold text-foreground mb-3">
+            <div className="border-t border-outline-gray-2/50 px-4 py-3">
+                <p className="text-[13px] font-bold text-ink-gray-8 mb-3">
                     {_("Contact information")}
                 </p>
                 <div className="space-y-3">
                     <div className="flex items-start gap-3">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted">
-                            <Mail className="h-4 w-4 text-foreground/90" strokeWidth={2} />
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-gray-2">
+                            <Mail className="h-4 w-4 text-ink-gray-8/90" strokeWidth={2} />
                         </div>
                         <div className="min-w-0 flex-1 flex items-start justify-between gap-2">
                             <div className="min-w-0">
-                                <p className="text-[13px] font-normal text-muted-foreground">{_("Email address")}</p>
+                                <p className="text-[13px] font-normal text-ink-gray-4">{_("Email address")}</p>
                                 {employee?.preferred_email ? (
                                     <a
                                         href={`mailto:${employee.preferred_email}`}
@@ -106,7 +106,7 @@ export function UserProfileDrawer({ user }: UserProfileDrawerProps) {
                                         {employee.preferred_email}
                                     </a>
                                 ) : (
-                                    <p className="text-[13px] font-normal text-muted-foreground/70">{_("No email added")}</p>
+                                    <p className="text-[13px] font-normal text-ink-gray-4/70">{_("No email added")}</p>
                                 )}
                             </div>
                             <Tooltip>
@@ -131,12 +131,12 @@ export function UserProfileDrawer({ user }: UserProfileDrawerProps) {
                         </div>
                     </div>
                     <div className="flex items-start gap-3">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted">
-                            <Phone className="h-4 w-4 text-foreground/90" strokeWidth={2} />
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-gray-2">
+                            <Phone className="h-4 w-4 text-ink-gray-8/90" strokeWidth={2} />
                         </div>
                         <div className="min-w-0 flex-1 flex items-start justify-between gap-2">
                             <div className="min-w-0">
-                                <p className="text-[13px] font-normal text-muted-foreground">{_("Phone")}</p>
+                                <p className="text-[13px] font-normal text-ink-gray-4">{_("Phone")}</p>
                                 {employee?.cell_number ? (
                                     <a
                                         href={`tel:${employee.cell_number}`}
@@ -145,7 +145,7 @@ export function UserProfileDrawer({ user }: UserProfileDrawerProps) {
                                         {employee.cell_number}
                                     </a>
                                 ) : (
-                                    <p className="text-[13px] font-normal text-muted-foreground/70">{_("No phone number")}</p>
+                                    <p className="text-[13px] font-normal text-ink-gray-4/70">{_("No phone number")}</p>
                                 )}
                             </div>
                             <Tooltip>

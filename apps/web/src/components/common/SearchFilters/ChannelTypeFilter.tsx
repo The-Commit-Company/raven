@@ -40,7 +40,7 @@ export function ChannelTypeFilter({ filters }: { filters: SearchFilters }) {
 
     return (
         <div>
-            <Label className="text-xs text-muted-foreground mb-1 block">{_("Channel Type")}</Label>
+            <Label className="text-xs text-ink-gray-4 mb-1 block">{_("Channel Type")}</Label>
             <Select
                 value={filters.is_direct_message ? 'dm' : (filters.channel_type || '')}
                 onValueChange={(value) => selectOption(value)}>

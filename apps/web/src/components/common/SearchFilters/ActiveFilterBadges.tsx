@@ -15,7 +15,7 @@ function FilterBadge({ label, onRemove }: FilterBadgeProps) {
     return (
         <Badge
             variant="secondary"
-            className="gap-1 text-[10px] cursor-pointer hover:bg-secondary/80 transition-colors pr-1.5"
+            className="gap-1 text-[10px] cursor-pointer hover:bg-surface-gray-2/80 transition-colors pr-1.5"
             onClick={onRemove}>
             {label}
             <X className="w-3 h-3" />

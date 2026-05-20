@@ -47,7 +47,7 @@ export function UserFilter({ filters, users, onValueChange, showLabel = true, si
     ) : isAllSelected ? (
         <span className="min-w-0 flex-1 truncate text-left">{_("From Anyone")}</span>
     ) : (
-        <span className="min-w-0 flex-1 truncate text-left text-muted-foreground">{_("From")}</span>
+        <span className="min-w-0 flex-1 truncate text-left text-ink-gray-4">{_("From")}</span>
     )
 
     const handleSelect = (v: string) => {
@@ -57,7 +57,7 @@ export function UserFilter({ filters, users, onValueChange, showLabel = true, si
 
     return (
         <div className="shrink-0">
-            {showLabel && <Label className="text-xs text-muted-foreground mb-1 block">{_("From")}</Label>}
+            {showLabel && <Label className="text-xs text-ink-gray-4 mb-1 block">{_("From")}</Label>}
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <Button

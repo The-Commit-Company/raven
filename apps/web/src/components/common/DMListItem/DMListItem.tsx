@@ -21,8 +21,8 @@ export const DMListItem = React.forwardRef<HTMLAnchorElement,
             href="#"
             onClick={onClick}
             className={cn(
-                "flex items-start gap-3 border-b px-4 py-3.5 text-sm leading-tight last:border-b-0 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors relative",
-                isActive && "bg-sidebar-accent/90 text-sidebar-accent-foreground",
+                "flex items-start gap-3 border-b px-4 py-3.5 text-sm leading-tight last:border-b-0 hover:bg-surface-gray-3 hover:text-ink-gray-8 transition-colors relative",
+                isActive && "bg-surface-gray-3/90 text-ink-gray-8",
                 className
             )}
             {...props}
@@ -38,12 +38,12 @@ export const DMListItem = React.forwardRef<HTMLAnchorElement,
             <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-center gap-2 mb-0.5">
                     <span className="font-medium text-sm truncate">{user.name}</span>
-                    <span className="text-[11px] font-light text-muted-foreground/90 shrink-0">{date}</span>
+                    <span className="text-[11px] font-light text-ink-gray-4/90 shrink-0">{date}</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className={cn(
-                        "line-clamp-1 text-xs text-muted-foreground/80 flex-1 min-w-0",
-                        unread > 0 && "font-medium text-foreground/90"
+                        "line-clamp-1 text-xs text-ink-gray-4/80 flex-1 min-w-0",
+                        unread > 0 && "font-medium text-ink-gray-8/90"
                     )}>
                         {teaser}
                     </div>

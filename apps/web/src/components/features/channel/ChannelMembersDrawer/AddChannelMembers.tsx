@@ -61,7 +61,7 @@ const AddChannelMembers = ({ memberIds, channelID, onClose }: { memberIds: strin
         <div className="flex flex-col h-full">
             <div className="flex-1 px-1 space-y-3 flex flex-col min-h-0">
                 {/* Description */}
-                <div className="text-xs text-muted-foreground py-1 pt-2">
+                <div className="text-xs text-ink-gray-4 py-1 pt-2">
                     {_('Search and add members to this channel')}
                 </div>
                 {error && <ErrorBanner error={error} />}
@@ -69,7 +69,7 @@ const AddChannelMembers = ({ memberIds, channelID, onClose }: { memberIds: strin
                 {selectedUsers.length > 0 && (
                     <div className="space-y-2 shrink-0 min-h-0 flex flex-col">
                         <div className="flex items-center justify-between">
-                            <span className="text-xs font-medium text-muted-foreground">
+                            <span className="text-xs font-medium text-ink-gray-4">
                                 {_(`Selected (${selectedUsers.length})`)}
                             </span>
                             <Button
@@ -87,7 +87,7 @@ const AddChannelMembers = ({ memberIds, channelID, onClose }: { memberIds: strin
                                     <Badge
                                         key={user.name}
                                         variant="secondary"
-                                        className="flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-muted transition-colors"
+                                        className="flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-surface-gray-2 transition-colors"
                                         onClick={() => handleRemoveSelectedUser(user.name)}
                                     >
                                         <span className="text-xs">{user.full_name}</span>
@@ -102,7 +102,7 @@ const AddChannelMembers = ({ memberIds, channelID, onClose }: { memberIds: strin
                 {/* Search */}
                 <div className="space-y-2">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-ink-gray-4" />
                         <Input
                             placeholder="Search users..."
                             value={searchQuery}
@@ -122,7 +122,7 @@ const AddChannelMembers = ({ memberIds, channelID, onClose }: { memberIds: strin
                             itemContent={(index, user) => (
                                 <div
                                     key={user.name}
-                                    className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer mb-1"
+                                    className="flex items-center justify-between p-2 rounded-lg hover:bg-surface-gray-2/50 transition-colors cursor-pointer mb-1"
                                     onClick={() => handleSelectUser(user)}
                                 >
                                     <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -138,18 +138,18 @@ const AddChannelMembers = ({ memberIds, channelID, onClose }: { memberIds: strin
                                                     {user.full_name}
                                                 </span>
                                             </div>
-                                            <div className="text-xs text-muted-foreground">
+                                            <div className="text-xs text-ink-gray-4">
                                                 {user.name}
                                             </div>
                                         </div>
                                     </div>
-                                    <UserPlus className="h-4 w-4 text-muted-foreground" />
+                                    <UserPlus className="h-4 w-4 text-ink-gray-4" />
                                 </div>
                             )}
                         />
                     ) : searchQuery ? (
                         <div className="text-center py-8">
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-ink-gray-4">
                                 {_('No users found matching your search.')}
                             </p>
                         </div>
@@ -160,7 +160,7 @@ const AddChannelMembers = ({ memberIds, channelID, onClose }: { memberIds: strin
 
             {/* Sticky Add Button at Bottom */}
             {selectedUsers.length > 0 && (
-                <div className="border-t bg-background">
+                <div className="border-t bg-surface-white">
                     <Button
                         onClick={handleAddMembers}
                         className="w-full cursor-pointer"

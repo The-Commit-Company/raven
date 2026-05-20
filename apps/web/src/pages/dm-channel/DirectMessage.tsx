@@ -36,7 +36,7 @@ export default function DirectMessage() {
 
     if (!peerUser) {
         return (
-            <div className="flex flex-1 flex-col items-center justify-center gap-2 p-6 text-center text-muted-foreground">
+            <div className="flex flex-1 flex-col items-center justify-center gap-2 p-6 text-center text-ink-gray-4">
                 <p className="text-sm font-medium">{_("Conversation not found")}</p>
                 <p className="text-xs">{_("This direct message may have been removed or you don’t have access.")}</p>
             </div>

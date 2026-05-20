@@ -21,8 +21,8 @@ const TabsBar: React.FC<TabsBarProps> = ({ activeTab, setActiveTab }) => (
                 type="button"
                 className={`px-4 py-1 rounded-md text-xs font-medium transition-colors border border-transparent
                 ${activeTab === tab.key
-                        ? 'bg-primary text-primary-foreground shadow'
-                        : 'bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground'}`}
+                        ? 'bg-ink-gray-8 text-ink-white shadow'
+                        : 'bg-surface-gray-2 text-ink-gray-4 hover:bg-surface-gray-3 hover:text-ink-gray-8'}`}
                 onClick={() => setActiveTab(tab.key)}>
                 {tab.label}
             </button>

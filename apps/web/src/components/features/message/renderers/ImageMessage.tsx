@@ -74,7 +74,7 @@ const ImageCarousel = ({ images, onImageClick }: { images: ImageFile[], onImageC
         >
             {/* Main Image */}
             <div
-                className="relative cursor-pointer overflow-hidden rounded-lg border border-border/60"
+                className="relative cursor-pointer overflow-hidden rounded-lg border border-outline-gray-2/60"
                 onClick={() => onImageClick(images[currentIndex])}
             >
                 <img
@@ -132,7 +132,7 @@ const ImageCarousel = ({ images, onImageClick }: { images: ImageFile[], onImageC
                                 "shrink-0 cursor-pointer border-2 rounded overflow-hidden transition-all duration-200",
                                 index === currentIndex
                                     ? "border-blue-500"
-                                    : "border-transparent hover:border-border"
+                                    : "border-transparent hover:border-outline-gray-2"
                             )}
                             onClick={() => setCurrentIndex(index)}
                         >
@@ -177,7 +177,7 @@ const ImageGrid = ({ images, onImageClick }: { images: ImageFile[], onImageClick
                 <div
                     key={image.name}
                     className={cn(
-                        "relative cursor-pointer overflow-hidden rounded-lg border border-border/60 group",
+                        "relative cursor-pointer overflow-hidden rounded-lg border border-outline-gray-2/60 group",
                         getImageClass(index, displayImages.length)
                     )}
                     onClick={() => onImageClick(image)}
@@ -226,7 +226,7 @@ const ImageMessage = ({ user, images, time, message, name }: ImageMessageProps) 
                 <div className="flex-1">
                     <div className="flex items-baseline gap-2">
                         <span className="font-medium text-sm">{user?.full_name || user?.name || "User"}</span>
-                        <span className="text-xs font-light text-muted-foreground/90">{time}</span>
+                        <span className="text-xs font-light text-ink-gray-4/90">{time}</span>
                     </div>
 
                     {message && (
@@ -237,7 +237,7 @@ const ImageMessage = ({ user, images, time, message, name }: ImageMessageProps) 
                     <div className="max-w-2xl">
                         {images.length === 1 ? (
                             <div
-                                className="cursor-pointer overflow-hidden rounded-lg border border-border/60"
+                                className="cursor-pointer overflow-hidden rounded-lg border border-outline-gray-2/60"
                                 onClick={() => handleImageClick(images[0])}
                             >
                                 <img

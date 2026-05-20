@@ -50,7 +50,7 @@ const ChannelHeader = () => {
 
     return (
         <div
-            className="fixed flex items-center justify-between border-b bg-background py-1.5 px-2 z-40 transition-[left,width,top] duration-200 ease-linear"
+            className="fixed flex items-center justify-between border-b bg-surface-white py-1.5 px-2 z-40 transition-[left,width,top] duration-200 ease-linear"
             style={{
                 top: "var(--app-header-height, 36px)",
                 left: isSidebarLessPage
@@ -71,7 +71,7 @@ const ChannelHeader = () => {
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={toggleStarChannel}>
-                                <Star className={`h-3 w-3 text-foreground/80 ${isStarred ? "fill-amber-300 stroke-amber-300" : ""}`} />
+                                <Star className={`h-3 w-3 text-ink-gray-8/80 ${isStarred ? "fill-amber-300 stroke-amber-300" : ""}`} />
                                 <span className="sr-only">{_('Star')}</span>
                             </Button>
                         </TooltipTrigger>
@@ -85,7 +85,7 @@ const ChannelHeader = () => {
                     {/* <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={onOpenFiles}>
-                                <FileText className="h-2 w-2 text-foreground/80" />
+                                <FileText className="h-2 w-2 text-ink-gray-8/80" />
                                 <span className="sr-only">{_('Files')}</span>
                             </Button>
                         </TooltipTrigger>
@@ -96,7 +96,7 @@ const ChannelHeader = () => {
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={onOpenLinks}>
-                                <Link className="h-2 w-2 text-foreground/80" />
+                                <Link className="h-2 w-2 text-ink-gray-8/80" />
                                 <span className="sr-only">{_('Links')}</span>
                             </Button>
                         </TooltipTrigger>
@@ -107,7 +107,7 @@ const ChannelHeader = () => {
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={onOpenThreads}>
-                                <MessageSquareText className="h-2 w-2 text-foreground/80" />
+                                <MessageSquareText className="h-2 w-2 text-ink-gray-8/80" />
                                 <span className="sr-only">{_('Threads')}</span>
                             </Button>
                         </TooltipTrigger>
@@ -118,9 +118,9 @@ const ChannelHeader = () => {
                     {pinnedCount > 0 && <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="default" className="h-7 gap-2 rounded-sm" onClick={onOpenPins}>
-                                <Pin className="h-2 w-2 text-foreground/80" />
+                                <Pin className="h-2 w-2 text-ink-gray-8/80" />
                                 <span className="sr-only">{_('Pinned')}</span>
-                                <span className="text-muted-foreground text-sm font-normal">{pinnedCount}</span>
+                                <span className="text-ink-gray-4 text-sm font-normal">{pinnedCount}</span>
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -135,7 +135,7 @@ const ChannelHeader = () => {
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm">
-                            <Headset className="h-3 w-3 text-foreground/80" />
+                            <Headset className="h-3 w-3 text-ink-gray-8/80" />
                             <span className="sr-only">{_('Start call')}</span>
                         </Button>
                     </TooltipTrigger>

@@ -11,7 +11,7 @@ import { useMemo, useRef } from "react"
 import { formatMessages } from "@hooks/useGetMessages"
 import { MessageItem } from "./renderers/MessageItem"
 import { PollVotingMessage } from "./renderers/PollVotingMessage"
-import { getDateObject } from "@utils/date"
+import { getDateObject } from "@lib/date"
 import dayjs from "dayjs"
 
 

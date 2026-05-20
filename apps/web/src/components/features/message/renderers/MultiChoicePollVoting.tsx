@@ -62,7 +62,7 @@ export const MultiChoicePollVoting: React.FC<MultiChoicePollVotingProps> = ({
                             key={option.name}
                             className={cn(
                                 "flex items-center gap-2 p-2 rounded-sm w-full cursor-pointer transition-colors",
-                                !isDisabled && "hover:bg-muted"
+                                !isDisabled && "hover:bg-surface-gray-2"
                             )}
                         >
                             <Checkbox
@@ -73,7 +73,7 @@ export const MultiChoicePollVoting: React.FC<MultiChoicePollVotingProps> = ({
                                 disabled={isDisabled}
                                 className="shrink-0"
                             />
-                            <span className="text-[13px] text-foreground wrap-break-word flex-1 min-w-0">
+                            <span className="text-[13px] text-ink-gray-8 wrap-break-word flex-1 min-w-0">
                                 {option.option}
                             </span>
                             {!isAnonymous && totalVotes > 0 && (
@@ -88,7 +88,7 @@ export const MultiChoicePollVoting: React.FC<MultiChoicePollVotingProps> = ({
                 })}
             </div>
             <div className="flex items-center justify-between gap-2 pt-1">
-                <span className="text-xs text-muted-foreground px-2 py-1">
+                <span className="text-xs text-ink-gray-4 px-2 py-1">
                     {isDisabled
                         ? "This poll is closed and no longer accepting votes"
                         : isAnonymous

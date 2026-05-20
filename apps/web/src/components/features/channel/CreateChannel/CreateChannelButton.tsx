@@ -26,7 +26,7 @@ export const CreateChannelButton = () => {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6 rounded-sm hover:bg-accent"
+                            className="h-6 w-6 rounded-sm hover:bg-surface-gray-3"
                             aria-label="Create a new channel"
                         >
                             <PlusIcon className="h-3 w-3" />

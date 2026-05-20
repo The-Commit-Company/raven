@@ -54,7 +54,7 @@ export function MoreFiltersDrawer({ filters, onClose }: MoreFiltersDrawerProps) 
                 {/* Message Properties */}
                 <div className="space-y-6">
                     <div>
-                        <Label className="text-xs text-muted-foreground mb-3 block">{_("Message is...")}</Label>
+                        <Label className="text-xs text-ink-gray-4 mb-3 block">{_("Message is...")}</Label>
                         <div className="grid grid-cols-2 gap-3">
                             <div className="flex items-center gap-2">
                                 <Checkbox checked={filters.is_thread_message === 1} onCheckedChange={checked => toggleBooleanParam('is_thread_message')(checked === true)} />
@@ -71,7 +71,7 @@ export function MoreFiltersDrawer({ filters, onClose }: MoreFiltersDrawerProps) 
                         </div>
                     </div>
                     <div>
-                        <Label className="text-xs text-muted-foreground mb-3 block">{_("Message has...")}</Label>
+                        <Label className="text-xs text-ink-gray-4 mb-3 block">{_("Message has...")}</Label>
                         <div className="grid grid-cols-2 gap-3">
                             <div className="flex items-center gap-2">
                                 <Checkbox id="hasReactions" checked={filters.has_reactions === 1} onCheckedChange={checked => toggleBooleanParam('has_reactions')(checked === true)} />

@@ -14,7 +14,7 @@ export function ClearFiltersButton() {
                 if (query) next.set('q', query)
                 return next
             })}
-            className="text-muted-foreground hover:text-foreground text-xs h-7 px-2 rounded-md gap-1.5">
+            className="text-ink-gray-4 hover:text-ink-gray-8 text-xs h-7 px-2 rounded-md gap-1.5">
             <X />
             {_("Clear All")}
         </Button>

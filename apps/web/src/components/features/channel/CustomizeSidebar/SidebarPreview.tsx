@@ -45,7 +45,7 @@ export const SidebarPreview = ({ data }: SidebarPreviewProps) => {
     }
 
     return (
-        <div className="flex flex-col h-full bg-sidebar/50">
+        <div className="flex flex-col h-full bg-surface-menu-bar/50">
             <SidebarGroup className="flex flex-col flex-1 min-h-0 gap-3 pb-12">
                 <div ref={setScrollerRef} className="flex-1 min-h-0 overflow-auto">
                     <SidebarMenu>
@@ -77,12 +77,12 @@ export const SidebarPreview = ({ data }: SidebarPreviewProps) => {
                                         </SidebarMenuButton>
                                     </CollapsibleTrigger>
                                     <CollapsibleContent>
-                                        <ul className="border-sidebar-border mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l px-2.5 py-0.5">
+                                        <ul className="border-outline-gray-1 mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l px-2.5 py-0.5">
                                             {channels.map((channel) => (
                                                 <SidebarMenuSubItem key={channel.name}>
                                                     <div
                                                         className={cn(
-                                                            "text-sidebar-foreground flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-[13px]"
+                                                            "text-ink-gray-7 flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-[13px]"
                                                         )}
                                                     >
                                                         <ChannelIcon

@@ -53,7 +53,7 @@ const ChannelMenu = ({ channelID }: { channelID: string }) => {
                 <MembersButton channelID={channelID} />
                 <DropdownMenuSub>
                     <DropdownMenuSubTrigger className="flex cursor-pointer items-center gap-2 py-2 text-sm">
-                        <Bell className="h-4 w-4 text-muted-foreground" />
+                        <Bell className="h-4 w-4 text-ink-gray-4" />
                         <span>{_("Push notifications")}</span>
                     </DropdownMenuSubTrigger>
                     <DropdownMenuSubContent className="w-44">

@@ -41,7 +41,7 @@ const ChannelInfo = ({ channelID }: { channelID: string }) => {
                 <h3 className="font-semibold text-sm">{_("About")}</h3>
 
                 {/* Channel Name and Description */}
-                <div className="p-3 border border-border/70 rounded-lg hover:bg-muted/50 transition-colors cursor-default">
+                <div className="p-3 border border-outline-gray-2/70 rounded-lg hover:bg-surface-gray-2/50 transition-colors cursor-default">
                     <div className="space-y-3">
                         <div className="flex items-start justify-between">
                             <div className="flex-1 min-w-0">
@@ -50,7 +50,7 @@ const ChannelInfo = ({ channelID }: { channelID: string }) => {
                                         {channel.channel_name}
                                     </span>
                                 </div>
-                                <div className="text-sm text-muted-foreground/90">
+                                <div className="text-sm text-ink-gray-4/90">
                                     {channel.name}
                                 </div>
 
@@ -61,7 +61,7 @@ const ChannelInfo = ({ channelID }: { channelID: string }) => {
                                                 {_("Channel description")}
                                             </span>
                                         </div>
-                                        <p className="text-sm text-muted-foreground/90 max-h-20 overflow-y-auto">
+                                        <p className="text-sm text-ink-gray-4/90 max-h-20 overflow-y-auto">
                                             {channel.channel_description}
                                         </p>
                                     </>
@@ -71,10 +71,10 @@ const ChannelInfo = ({ channelID }: { channelID: string }) => {
                         </div>
                         {user && user.name !== "Administrator" && (
                             <>
-                                <div className="border-t border-border/50"></div>
+                                <div className="border-t border-outline-gray-2/50"></div>
                                 <div className="flex items-center gap-2">
                                     <UserAvatar user={user} size="xs" className="w-5 h-5 rounded-full" showStatusIndicator={false} showBotIndicator={false} />
-                                    <span className="text-[13px] text-muted-foreground/80">
+                                    <span className="text-[13px] text-ink-gray-4/80">
                                         {_(`Created by {0} on {1}`, [user.full_name, channel.creation.split(" ")[0]])}
                                     </span>
                                 </div>
@@ -87,10 +87,10 @@ const ChannelInfo = ({ channelID }: { channelID: string }) => {
                     <DropdownMenuTrigger asChild>
                         <Button
                             variant="ghost"
-                            className="w-full justify-start p-3 h-auto cursor-pointer font-normal bg-transparent border border-border/70 rounded-lg hover:bg-muted/50 transition-colors"
+                            className="w-full justify-start p-3 h-auto cursor-pointer font-normal bg-transparent border border-outline-gray-2/70 rounded-lg hover:bg-surface-gray-2/50 transition-colors"
                         >
                             <div className="flex items-center gap-3">
-                                <Bell className="w-4 h-4 text-muted-foreground" />
+                                <Bell className="w-4 h-4 text-ink-gray-4" />
                                 <span className="text-sm">{_("Push Notifications")}</span>
                             </div>
                         </Button>
@@ -98,19 +98,19 @@ const ChannelInfo = ({ channelID }: { channelID: string }) => {
                     <DropdownMenuContent align="start" className="w-40">
                         <DropdownMenuItem onClick={() => { }}>
                             <div className="flex items-center gap-2">
-                                <BellRing className="h-3 w-3 text-foreground/80" />
+                                <BellRing className="h-3 w-3 text-ink-gray-8/80" />
                                 <span>{_("All Notifications")}</span>
                             </div>
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => { }}>
                             <div className="flex items-center gap-2">
-                                <Bell className="h-3 w-3 text-foreground/80" />
+                                <Bell className="h-3 w-3 text-ink-gray-8/80" />
                                 <span>{_("Mentions Only")}</span>
                             </div>
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => { }}>
                             <div className="flex items-center gap-2">
-                                <BellOff className="h-3 w-3 text-foreground/80" />
+                                <BellOff className="h-3 w-3 text-ink-gray-8/80" />
                                 <span>{_("Mute Channel")}</span>
                             </div>
                         </DropdownMenuItem>

@@ -33,7 +33,7 @@ export const CustomizeSidebarButton = ({ showMyChannelsOnly, setShowMyChannelsOn
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6 rounded-sm hover:bg-accent"
+                        className="h-6 w-6 rounded-sm hover:bg-surface-gray-3"
                         aria-label="More options"
                     >
                         <MoreVertical className="h-3 w-3" />

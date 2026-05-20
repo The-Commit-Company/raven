@@ -70,10 +70,10 @@ export function ChannelSidebar({
 
     return (
         <SidebarGroup className="pt-1 flex-1 min-h-0">
-            {/* <SidebarGroupLabel className="text-muted-foreground/80 font-normal text-[11px]">{_("Unreads")}</SidebarGroupLabel> */}
+            {/* <SidebarGroupLabel className="text-ink-gray-4/80 font-normal">{_("Unreads")}</SidebarGroupLabel> */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                    <SidebarGroupLabel className="text-muted-foreground/80 font-normal text-[11px]">{_("Channels")}</SidebarGroupLabel>
+                    <SidebarGroupLabel className="text-ink-gray-4/80 font-normal">{_("Channels")}</SidebarGroupLabel>
                 </div>
                 <div className="flex items-center gap-1">
                     <CustomizeSidebarButton showMyChannelsOnly={showMyChannelsOnly} setShowMyChannelsOnly={setShowMyChannelsOnly} />
@@ -105,7 +105,7 @@ export function ChannelSidebar({
                                                     if (groupName === "Favorites") {
                                                         return (
                                                             <div className="flex items-center gap-2">
-                                                                <Star className="h-4 w-4 text-foreground/80" />
+                                                                <Star className="h-4 w-4 text-ink-gray-8/80" />
                                                                 <span className="truncate">{_("Favorites")}</span>
                                                             </div>
                                                         );
@@ -129,14 +129,14 @@ export function ChannelSidebar({
                                         </SidebarMenuButton>
                                     </CollapsibleTrigger>
                                     <CollapsibleContent>
-                                        <ul className="border-sidebar-border ml-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l px-2 py-0.5">
+                                        <ul className="border-outline-gray-1 ml-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l px-2 py-0.5">
                                             {channels.map((channel) => (
                                                 <SidebarMenuSubItem key={channel.name}>
                                                     <button
                                                         onClick={() => onChannelClick(channel)}
                                                         className={cn(
-                                                            "text-sidebar-foreground ml-2 ring-sidebar-ring hover:bg-sidebar-accent/80 hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 w-full",
-                                                            activeChannelId === channel.name && "bg-sidebar-accent text-sidebar-accent-foreground"
+                                                            "text-ink-gray-7 ml-2 ring-outline-gray-3 hover:bg-surface-gray-3/80 hover:text-ink-gray-8 active:bg-surface-gray-3 active:text-ink-gray-8 flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 w-full",
+                                                            activeChannelId === channel.name && "bg-surface-gray-3 text-ink-gray-8"
                                                         )}
                                                     >
                                                         <div className="flex items-center gap-2 w-full">
@@ -175,7 +175,7 @@ export function ChannelSidebar({
                                         isActive={activeChannelId === channel.name}>
                                         <button
                                             onClick={() => onChannelClick(channel)}
-                                            className="w-full hover:bg-sidebar-accent/80 hover:text-sidebar-accent-foreground">
+                                            className="w-full hover:bg-surface-gray-3/80 hover:text-ink-gray-8">
                                             <div className="flex items-center gap-2 w-full">
                                                 <ChannelIcon
                                                     type={channel.type || "Public"}

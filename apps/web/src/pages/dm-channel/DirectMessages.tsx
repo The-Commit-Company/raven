@@ -9,7 +9,7 @@ import _ from "@lib/translate"
 
 export function DirectMessagesEmptyState() {
     return (
-        <div className="flex flex-1 flex-col items-center justify-center gap-2 p-6 text-center text-muted-foreground">
+        <div className="flex flex-1 flex-col items-center justify-center gap-2 p-6 text-center text-ink-gray-4">
             <p className="text-sm font-medium">{_("Select a conversation")}</p>
             <p className="text-xs">{_("Choose a direct message from the sidebar to start chatting.")}</p>
         </div>

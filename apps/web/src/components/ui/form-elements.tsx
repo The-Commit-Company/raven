@@ -1,10 +1,10 @@
 import { FieldValues, RegisterOptions, useFormContext } from "react-hook-form"
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@components/ui/form"
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, FormRequiredIndicator } from "@components/ui/form"
 import _ from "@lib/translate"
 import { Input } from "./input"
 import { ComponentProps, useState } from "react"
 import { parseDate } from "chrono-node"
-import { formatDate, toDate, USER_DATE_FORMAT } from "@utils/date"
+import { formatDate, USER_DATE_FORMAT, toDate } from "@lib/date"
 import { Popover, PopoverContent, PopoverTrigger } from "./popover"
 import { Button } from "./button"
 import { CalendarIcon } from "lucide-react"
@@ -22,6 +22,7 @@ interface FormElementProps {
     disabled?: boolean,
     formDescription?: string,
     hideLabel?: boolean,
+    readOnly?: boolean,
 
 }
 
@@ -29,7 +30,7 @@ interface DataFieldProps extends FormElementProps {
     inputProps?: Omit<ComponentProps<"input">, "value" | "onChange" | "onBlur" | "name" | "ref">
 }
 
-export const DataField = ({ name, rules, label, isRequired, formDescription, inputProps, hideLabel, disabled }: DataFieldProps) => {
+export const DataField = ({ name, rules, label, isRequired, formDescription, inputProps, hideLabel, disabled, readOnly }: DataFieldProps) => {
 
     const { control } = useFormContext()
     return <FormField
@@ -39,9 +40,9 @@ export const DataField = ({ name, rules, label, isRequired, formDescription, inp
         rules={rules}
         render={({ field }) => (
             <FormItem className='flex flex-col'>
-                <FormLabel className={hideLabel ? 'sr-only' : ''}>{label}{isRequired && <span className="text-destructive">*</span>}</FormLabel>
+                <FormLabel className={hideLabel ? 'sr-only' : ''}>{label}{isRequired && <FormRequiredIndicator />}</FormLabel>
                 <FormControl>
-                    <Input {...field} maxLength={140} {...inputProps} />
+                    <Input {...field} maxLength={140} aria-readonly={readOnly} readOnly={readOnly} {...inputProps} />
                 </FormControl>
                 {formDescription && <FormDescription>{formDescription}</FormDescription>}
                 <FormMessage />
@@ -54,7 +55,7 @@ interface SelectFieldProps extends FormElementProps {
     children: React.ReactNode
 }
 
-export const SelectFormField = ({ name, rules, label, isRequired, formDescription, hideLabel, children, disabled }: SelectFieldProps) => {
+export const SelectFormField = ({ name, rules, label, isRequired, formDescription, hideLabel, children, disabled, readOnly }: SelectFieldProps) => {
 
     const { control } = useFormContext()
 
@@ -65,9 +66,9 @@ export const SelectFormField = ({ name, rules, label, isRequired, formDescriptio
         rules={rules}
         render={({ field }) => (
             <FormItem>
-                <FormLabel className={hideLabel ? 'sr-only' : ''}>{label}{isRequired && <span className="text-destructive">*</span>}</FormLabel>
+                <FormLabel className={hideLabel ? 'sr-only' : ''}>{label}{isRequired && <FormRequiredIndicator />}</FormLabel>
                 <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value} disabled={disabled || readOnly} aria-readonly={readOnly}>
                         <FormControl>
                             <SelectTrigger className="w-full">
                                 <SelectValue />
@@ -95,6 +96,7 @@ export const DateField = ({ name, rules, label, isRequired, formDescription, inp
 
     const DatePicker = ({ field }: { field: FieldValues }) => {
 
+        const userDateFormat = USER_DATE_FORMAT
         const [open, setOpen] = useState(false)
 
         const [value, setValue] = useState<string | undefined>(field.value ? formatDate(field.value) : undefined)
@@ -103,19 +105,19 @@ export const DateField = ({ name, rules, label, isRequired, formDescription, inp
 
         return <div className="relative flex gap-2">
             <FormControl>
-                <Input className="bg-background pr-10"
+                <Input className="pe-10"
                     name={field.name}
                     onBlur={() => {
                         setValue(formatDate(field.value))
                         field.onBlur()
                     }}
-                    placeholder={USER_DATE_FORMAT}
+                    placeholder={userDateFormat}
                     value={value}
                     onChange={(e) => {
                         setValue(e.target.value)
                         if (e.target.value) {
                             // On change in value, try computing date usning standard formats first
-                            const dateObj = toDate(e.target.value, USER_DATE_FORMAT)
+                            const dateObj = toDate(e.target.value, userDateFormat)
                             // If we find a valid date, use it
                             if (dateObj && !isNaN(dateObj.getTime())) {
                                 field.onChange(formatDate(dateObj, "YYYY-MM-DD"))
@@ -142,9 +144,9 @@ export const DateField = ({ name, rules, label, isRequired, formDescription, inp
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <Button
-                        id="date-picker"
+                        id="date-picker-button"
                         variant="ghost"
-                        className="absolute top-1/2 right-2 size-6 -translate-y-1/2"
+                        className="absolute top-1/2 ltr:right-2 rtl:left-2 size-6 -translate-y-1/2"
                     >
                         <CalendarIcon className="size-3.5" />
                         <span className="sr-only">{_("Select date")}</span>
@@ -176,7 +178,7 @@ export const DateField = ({ name, rules, label, isRequired, formDescription, inp
         rules={rules}
         render={({ field }) => (
             <FormItem className='flex flex-col'>
-                <FormLabel className={hideLabel ? 'sr-only' : ''}>{label}{isRequired && <span className="text-destructive">*</span>}</FormLabel>
+                <FormLabel className={hideLabel ? 'sr-only' : ''}>{label}{isRequired && <FormRequiredIndicator />}</FormLabel>
                 <DatePicker field={field} />
                 {formDescription && <FormDescription>{formDescription}</FormDescription>}
                 <FormMessage />
@@ -190,7 +192,7 @@ interface SmallTextFieldProps extends FormElementProps {
     inputProps?: Omit<ComponentProps<"textarea">, "value" | "onChange" | "onBlur" | "name" | "ref">
 }
 
-export const SmallTextField = ({ name, rules, label, isRequired, formDescription, inputProps, hideLabel, disabled }: SmallTextFieldProps) => {
+export const SmallTextField = ({ name, rules, label, isRequired, formDescription, inputProps, hideLabel, disabled, readOnly }: SmallTextFieldProps) => {
 
     const { control } = useFormContext()
     return <FormField
@@ -200,9 +202,9 @@ export const SmallTextField = ({ name, rules, label, isRequired, formDescription
         rules={rules}
         render={({ field }) => (
             <FormItem className='flex flex-col'>
-                <FormLabel className={hideLabel ? 'sr-only' : ''}>{label}{isRequired && <span className="text-destructive">*</span>}</FormLabel>
+                <FormLabel className={hideLabel ? 'sr-only' : ''}>{label}{isRequired && <FormRequiredIndicator />}</FormLabel>
                 <FormControl>
-                    <Textarea {...field} {...inputProps} />
+                    <Textarea {...field} {...inputProps} readOnly={readOnly} aria-readonly={readOnly} />
                 </FormControl>
                 {formDescription && <FormDescription>{formDescription}</FormDescription>}
                 <FormMessage />
@@ -215,7 +217,7 @@ export const SmallTextField = ({ name, rules, label, isRequired, formDescription
 interface LinkFormFieldProps extends FormElementProps, Omit<LinkFieldComboboxProps, 'value' | 'onChange'> {
 }
 
-export const LinkFormField = ({ name, rules, label, isRequired, formDescription, hideLabel, disabled, ...inputProps }: LinkFormFieldProps) => {
+export const LinkFormField = ({ name, rules, label, isRequired, formDescription, hideLabel, disabled, readOnly, ...inputProps }: LinkFormFieldProps) => {
 
     const { control } = useFormContext()
 
@@ -226,8 +228,8 @@ export const LinkFormField = ({ name, rules, label, isRequired, formDescription,
         rules={rules}
         render={({ field }) => (
             <FormItem className='flex flex-col'>
-                <FormLabel className={hideLabel ? 'sr-only' : ''}>{label}{isRequired && <span className="text-destructive">*</span>}</FormLabel>
-                <LinkFieldCombobox {...inputProps} value={field.value} onChange={field.onChange} useInForm />
+                <FormLabel className={hideLabel ? 'sr-only' : ''}>{label}{isRequired && <FormRequiredIndicator />}</FormLabel>
+                <LinkFieldCombobox {...inputProps} value={field.value} onChange={field.onChange} useInForm disabled={disabled} readOnly={readOnly} />
                 {formDescription && <FormDescription>{formDescription}</FormDescription>}
                 <FormMessage />
             </FormItem>

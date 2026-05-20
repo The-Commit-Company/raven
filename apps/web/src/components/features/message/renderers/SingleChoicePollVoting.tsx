@@ -48,7 +48,7 @@ export const SingleChoicePollVoting: React.FC<SingleChoicePollVotingProps> = ({
                         key={option.name}
                         className={cn(
                             "flex items-center gap-2 p-2 rounded-sm w-full cursor-pointer transition-colors",
-                            !isDisabled && "hover:bg-muted"
+                            !isDisabled && "hover:bg-surface-gray-2"
                         )}
                     >
                         <RadioGroupItem
@@ -56,7 +56,7 @@ export const SingleChoicePollVoting: React.FC<SingleChoicePollVotingProps> = ({
                             disabled={isDisabled}
                             className="shrink-0"
                         />
-                        <span className="text-[13px] text-foreground wrap-break-word flex-1 min-w-0">
+                        <span className="text-[13px] text-ink-gray-8 wrap-break-word flex-1 min-w-0">
                             {option.option}
                         </span>
                         {!isAnonymous && totalVotes > 0 && (

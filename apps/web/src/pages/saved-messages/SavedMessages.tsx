@@ -160,7 +160,7 @@ export default function SavedMessages() {
             <WorkspaceSwitcher standalone />
             <div className="flex flex-col h-full overflow-hidden" style={{ marginLeft: "var(--workspace-switcher-width, 60px)", width: "calc(100% - var(--workspace-switcher-width, 60px))" } as React.CSSProperties}>
                 <header
-                    className="flex items-center justify-between border-b bg-background py-1.5 px-2 z-10 fixed top-0 h-(--app-header-height) transition-[left,width] duration-200 ease-linear"
+                    className="flex items-center justify-between border-b bg-surface-white py-1.5 px-2 z-10 fixed top-0 h-(--app-header-height) transition-[left,width] duration-200 ease-linear"
                     style={{
                         left: headerLeft,
                         width: headerWidth,
@@ -185,8 +185,8 @@ export default function SavedMessages() {
                                             className={cn(
                                                 "px-4 py-1 rounded-md text-xs font-medium transition-colors border border-transparent",
                                                 activeTab === tab.key
-                                                    ? "bg-primary text-primary-foreground shadow"
-                                                    : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                                    ? "bg-ink-gray-8 text-ink-white shadow"
+                                                    : "bg-surface-gray-2 text-ink-gray-4 hover:bg-surface-gray-3 hover:text-ink-gray-8"
                                             )}
                                             onClick={() => setActiveTab(tab.key)}
                                         >
@@ -208,7 +208,7 @@ export default function SavedMessages() {
                             {/* Search and Channel Filter */}
                             <div className="flex flex-row items-end gap-2">
                                 <div className="relative flex-1 min-w-50">
-                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-ink-gray-4 pointer-events-none" />
                                     <Input
                                         placeholder="Search saved messages..."
                                         value={search}
@@ -220,7 +220,7 @@ export default function SavedMessages() {
                                             type="button"
                                             aria-label="Clear search"
                                             onClick={() => setSearch("")}
-                                            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none"
+                                            className="absolute right-2 top-1/2 -translate-y-1/2 text-ink-gray-4 hover:text-ink-gray-8 focus:outline-none"
                                         >
                                             <X className="h-3.5 w-3.5" />
                                         </button>
@@ -231,7 +231,7 @@ export default function SavedMessages() {
                                         {selectedChannel && channel !== 'all' ? (
                                             <div className="flex items-center gap-1.5">
                                                 {selectedChannel.is_direct_message === 1 ? (
-                                                    <span className="h-3.5 w-3.5 rounded bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground">?</span>
+                                                    <span className="h-3.5 w-3.5 rounded bg-surface-gray-2 flex items-center justify-center text-[10px] font-bold text-ink-gray-4">?</span>
                                                 ) : (
                                                     <ChannelIcon
                                                         type={selectedChannel.type as 'Public' | 'Private' | 'Open'}

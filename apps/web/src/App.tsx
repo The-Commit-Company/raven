@@ -25,6 +25,8 @@ import { SearchLayout } from "@components/layout/SearchLayout"
 import CustomEmojiList from "@pages/settings/CustomEmojiList/CustomEmojiList"
 import { ManageChannels } from "@pages/settings/Channels/ManageChannels"
 import { Toaster } from "@components/ui/sonner"
+import { TooltipProvider } from "@radix-ui/react-tooltip"
+import { LucideProvider } from "lucide-react"
 
 const isDesktop = window.innerWidth > 768
 
@@ -43,55 +45,61 @@ catch {
 function App() {
 
   return (
-    <FrappeProvider
-      url={import.meta.env.VITE_FRAPPE_PATH ?? ''}
-      socketPort={import.meta.env.VITE_SOCKET_PORT ? import.meta.env.VITE_SOCKET_PORT : undefined}
-      swrConfig={{
-        errorRetryCount: 2,
-        // @ts-ignore - SWR config
-        provider: localStorageProvider
-      }}
-      siteName={getSiteName()}
+    <LucideProvider
+      strokeWidth={1.5}
     >
-      <BrowserRouter basename={import.meta.env.VITE_BASE_NAME}>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/" element={<WorkspaceSwitcher />}>
-            <Route index element={lastWorkspace && lastChannel && isDesktop ? <Navigate to={`/${encodeURIComponent(lastWorkspace)}/${encodeURIComponent(lastChannel)}`} replace /> : lastWorkspace ? <Navigate to={`/${encodeURIComponent(lastWorkspace)}`} replace /> : <WorkspaceSwitcherGrid />} />
-            <Route path="workspace-explorer" element={<WorkspaceSwitcherGrid />} />
-            <Route path="settings" element={<AppSettings />}>
-              <Route index element={<Navigate to="profile" replace />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="appearance" element={<Appearance />} />
-              <Route path="preferences" element={<Preferences />} />
-              <Route path="workspaces" element={<WorkspaceList />} />
-              <Route path="channels" element={<ManageChannels />} />
-              <Route path="emojis" element={<CustomEmojiList />} />
-            </Route>
-            <Route path="notifications" element={<Notifications />} />
-            <Route path="threads" element={<Threads />} />
-            <Route path="search" element={<SearchLayout />}>
-              <Route index element={<Search />} />
-            </Route>
-            <Route path="dm-channel" element={<DirectMessages />}>
-              <Route index element={<DirectMessagesIndex />} />
-              <Route path=":id" element={<DirectMessage />} />
-              <Route path=":id/thread/:threadID" element={<DirectMessage />} />
-            </Route>
-            <Route path="saved-messages" element={<SavedMessages />} />
-            {/* Workspace: channels and settings only; search is global at /search above */}
-            <Route path=":workspaceID" element={<MainPage />}>
-              <Route index element={<WorkspaceRedirect />} />
-              <Route path=":id" element={<Channel />} />
-              <Route path=":id/thread/:threadID" element={<Channel />} />
-              <Route path=":id/settings" element={<ChannelSettings />} />
-            </Route>
-          </Route>
-        </Routes>
-        <Toaster richColors />
-      </BrowserRouter>
-    </FrappeProvider>
+      <TooltipProvider>
+        <FrappeProvider
+          url={import.meta.env.VITE_FRAPPE_PATH ?? ''}
+          socketPort={import.meta.env.VITE_SOCKET_PORT ? import.meta.env.VITE_SOCKET_PORT : undefined}
+          swrConfig={{
+            errorRetryCount: 2,
+            // @ts-ignore - SWR config
+            provider: localStorageProvider
+          }}
+          siteName={getSiteName()}
+        >
+          <BrowserRouter basename={import.meta.env.VITE_BASE_NAME}>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/" element={<WorkspaceSwitcher />}>
+                <Route index element={lastWorkspace && lastChannel && isDesktop ? <Navigate to={`/${encodeURIComponent(lastWorkspace)}/${encodeURIComponent(lastChannel)}`} replace /> : lastWorkspace ? <Navigate to={`/${encodeURIComponent(lastWorkspace)}`} replace /> : <WorkspaceSwitcherGrid />} />
+                <Route path="workspace-explorer" element={<WorkspaceSwitcherGrid />} />
+                <Route path="settings" element={<AppSettings />}>
+                  <Route index element={<Navigate to="profile" replace />} />
+                  <Route path="profile" element={<Profile />} />
+                  <Route path="appearance" element={<Appearance />} />
+                  <Route path="preferences" element={<Preferences />} />
+                  <Route path="workspaces" element={<WorkspaceList />} />
+                  <Route path="channels" element={<ManageChannels />} />
+                  <Route path="emojis" element={<CustomEmojiList />} />
+                </Route>
+                <Route path="notifications" element={<Notifications />} />
+                <Route path="threads" element={<Threads />} />
+                <Route path="search" element={<SearchLayout />}>
+                  <Route index element={<Search />} />
+                </Route>
+                <Route path="dm-channel" element={<DirectMessages />}>
+                  <Route index element={<DirectMessagesIndex />} />
+                  <Route path=":id" element={<DirectMessage />} />
+                  <Route path=":id/thread/:threadID" element={<DirectMessage />} />
+                </Route>
+                <Route path="saved-messages" element={<SavedMessages />} />
+                {/* Workspace: channels and settings only; search is global at /search above */}
+                <Route path=":workspaceID" element={<MainPage />}>
+                  <Route index element={<WorkspaceRedirect />} />
+                  <Route path=":id" element={<Channel />} />
+                  <Route path=":id/thread/:threadID" element={<Channel />} />
+                  <Route path=":id/settings" element={<ChannelSettings />} />
+                </Route>
+              </Route>
+            </Routes>
+            <Toaster richColors />
+          </BrowserRouter>
+        </FrappeProvider>
+      </TooltipProvider>
+    </LucideProvider>
   )
 }
 

@@ -34,7 +34,7 @@ export const ChannelNameInput = ({ value, onChange, channelType, disabled }: Cha
 
     return (
         <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden="true">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-gray-4" aria-hidden="true">
                 {getChannelIcon()}
             </div>
             <Input
@@ -50,7 +50,7 @@ export const ChannelNameInput = ({ value, onChange, channelType, disabled }: Cha
             />
             <div
                 id="channel-name-counter"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-light"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-ink-gray-4 font-light"
                 aria-live="polite"
                 aria-atomic="true"
             >

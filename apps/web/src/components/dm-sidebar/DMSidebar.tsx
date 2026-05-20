@@ -3,7 +3,7 @@ import { Skeleton } from "@components/ui/skeleton"
 import { DMListItem } from "../common/DMListItem/DMListItem"
 import type { DMChannelListItem } from "@raven/types/common/ChannelListItem"
 import { useUser } from "@hooks/useUser"
-import { formatRelativeDate } from "@utils/date"
+import { formatRelativeDate } from "@lib/date"
 import { getMessageTeaser } from "@utils/messageUtils"
 import _ from "@lib/translate"
 
@@ -89,7 +89,7 @@ export function DMSidebar({
         <>
             <SidebarHeader className="h-(--app-header-height) gap-2 px-3 border-b flex items-center group/header">
                 <div className="flex items-center justify-between w-full h-full">
-                    <div className="text-sm font-medium text-foreground truncate">
+                    <div className="text-sm font-medium text-ink-gray-8 truncate">
                         {workspaceName}
                     </div>
                 </div>

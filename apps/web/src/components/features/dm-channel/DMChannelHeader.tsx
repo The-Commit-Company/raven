@@ -38,7 +38,7 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
 
     return (
         <div
-            className="fixed flex items-center justify-between gap-2 border-b bg-background py-1.5 px-2 z-40 transition-[left,width] duration-200 ease-linear"
+            className="fixed flex items-center justify-between gap-2 border-b bg-surface-white py-1.5 px-2 z-40 transition-[left,width] duration-200 ease-linear"
             style={{
                 top: "var(--app-header-height, 36px)",
                 left: "var(--sidebar-width, 380px)",
@@ -51,7 +51,7 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
                     {/* <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm shrink-0">
-                                <Star className="h-3 w-3 text-foreground/80" />
+                                <Star className="h-3 w-3 text-ink-gray-8/80" />
                                 <span className="sr-only">Star</span>
                             </Button>
                         </TooltipTrigger>
@@ -90,7 +90,7 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
                             <ChannelThreadsButton channelID={channelID} />
                             <DropdownMenuSub>
                                 <DropdownMenuSubTrigger className="flex cursor-pointer items-center gap-2 py-2 text-sm">
-                                    <Bell className="h-4 w-4 text-muted-foreground" />
+                                    <Bell className="h-4 w-4 text-ink-gray-4" />
                                     <span>{_("Push notifications")}</span>
                                 </DropdownMenuSubTrigger>
                                 <DropdownMenuSubContent className="w-44">
@@ -123,9 +123,9 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
                     {pinnedCount > 0 && <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="default" className="h-7 gap-2 rounded-sm" onClick={onOpenPins}>
-                                <Pin className="h-2 w-2 text-foreground/80" />
+                                <Pin className="h-2 w-2 text-ink-gray-8/80" />
                                 <span className="sr-only">{_('Pinned')}</span>
-                                <span className="text-muted-foreground text-sm font-normal">{pinnedCount}</span>
+                                <span className="text-ink-gray-4 text-sm font-normal">{pinnedCount}</span>
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -138,10 +138,10 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className={`h-7 w-7 rounded-sm ${drawerType === "files" ? "bg-muted" : ""}`}
+                                className={`h-7 w-7 rounded-sm ${drawerType === "files" ? "bg-surface-gray-2" : ""}`}
                                 onClick={onOpenFiles}
                             >
-                                <FileText className="h-3 w-3 text-foreground/80" />
+                                <FileText className="h-3 w-3 text-ink-gray-8/80" />
                                 <span className="sr-only">Files</span>
                             </Button>
                         </TooltipTrigger>
@@ -154,10 +154,10 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className={`h-7 w-7 rounded-sm ${drawerType === "links" ? "bg-muted" : ""}`}
+                                className={`h-7 w-7 rounded-sm ${drawerType === "links" ? "bg-surface-gray-2" : ""}`}
                                 onClick={onOpenLinks}
                             >
-                                <Link className="h-3 w-3 text-foreground/80" />
+                                <Link className="h-3 w-3 text-ink-gray-8/80" />
                                 <span className="sr-only">Links</span>
                             </Button>
                         </TooltipTrigger>
@@ -170,10 +170,10 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className={`h-7 w-7 rounded-sm ${drawerType === "threads" ? "bg-muted" : ""}`}
+                                className={`h-7 w-7 rounded-sm ${drawerType === "threads" ? "bg-surface-gray-2" : ""}`}
                                 onClick={onOpenThreads}
                             >
-                                <MessageSquareText className="h-3 w-3 text-foreground/80" />
+                                <MessageSquareText className="h-3 w-3 text-ink-gray-8/80" />
                                 <span className="sr-only">Threads</span>
                             </Button>
                         </TooltipTrigger>
@@ -189,7 +189,7 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm">
-                            <Headset className="h-3 w-3 text-foreground/80" />
+                            <Headset className="h-3 w-3 text-ink-gray-8/80" />
                             <span className="sr-only">Start call</span>
                         </Button>
                     </TooltipTrigger>

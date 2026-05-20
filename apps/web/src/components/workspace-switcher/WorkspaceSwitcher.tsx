@@ -87,7 +87,7 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
     return (
         <div
             className={cn(
-                "border-r border-border/40 bg-sidebar shrink-0 relative group/workspace-sidebar flex flex-col h-full",
+                "border-r border-outline-gray-2/40 bg-surface-menu-bar shrink-0 relative group/workspace-sidebar flex flex-col h-full",
                 standalone && "fixed top-0 left-0 z-10"
             )}
             style={{ width: "var(--workspace-switcher-width, 60px)" } as React.CSSProperties}
@@ -111,7 +111,7 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                     <div
                         className={cn(
                             "relative flex items-center justify-center w-8 h-8 rounded-md transition-all duration-250 ease-out",
-                            "bg-[oklch(0.99_0_0)] dark:bg-[oklch(0.25_0_0)] border border-border/80 dark:border-border/60",
+                            "bg-[oklch(0.99_0_0)] dark:bg-[oklch(0.25_0_0)] border border-outline-gray-2/80 dark:border-outline-gray-2/60",
                             location.pathname === "/notifications"
                                 ? "shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.05),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.05)] dark:shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.15),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.02)]"
                                 : "shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.03),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] dark:shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.1),-0.5px_-0.5px_1px_rgba(255,255,255,0.01)]",
@@ -121,7 +121,7 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                     >
                         <Bell
                             className={cn(
-                                "relative w-3.5 h-3.5 text-foreground transition-all duration-250 ease-out",
+                                "relative w-3.5 h-3.5 text-ink-gray-8 transition-all duration-250 ease-out",
                                 location.pathname === "/notifications" ? "opacity-100" : "opacity-70 dark:opacity-100",
                                 "group-hover/notifications-item:scale-105 group-hover/notifications-item:opacity-85 dark:group-hover/notifications-item:opacity-100"
                             )}
@@ -153,7 +153,7 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                     <div
                         className={cn(
                             "relative flex items-center justify-center w-8 h-8 rounded-md transition-all duration-250 ease-out",
-                            "bg-[oklch(0.99_0_0)] dark:bg-[oklch(0.25_0_0)] border border-border/80 dark:border-border/60",
+                            "bg-[oklch(0.99_0_0)] dark:bg-[oklch(0.25_0_0)] border border-outline-gray-2/80 dark:border-outline-gray-2/60",
                             location.pathname.startsWith("/dm-channel")
                                 ? "shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.05),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.05)] dark:shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.15),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.02)]"
                                 : "shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.03),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] dark:shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.1),-0.5px_-0.5px_1px_rgba(255,255,255,0.01)]",
@@ -163,7 +163,7 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                     >
                         <MessagesSquare
                             className={cn(
-                                "relative w-3.5 h-3.5 text-foreground transition-all duration-250 ease-out",
+                                "relative w-3.5 h-3.5 text-ink-gray-8 transition-all duration-250 ease-out",
                                 location.pathname.startsWith("/dm-channel") ? "opacity-100" : "opacity-70 dark:opacity-100",
                                 "group-hover/dm-item:scale-105 group-hover/dm-item:opacity-85 dark:group-hover/dm-item:opacity-100"
                             )}
@@ -190,7 +190,7 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                     <div
                         className={cn(
                             "relative flex items-center justify-center w-8 h-8 rounded-md transition-all duration-250 ease-out",
-                            "bg-[oklch(0.99_0_0)] dark:bg-[oklch(0.25_0_0)] border border-border/80 dark:border-border/60",
+                            "bg-[oklch(0.99_0_0)] dark:bg-[oklch(0.25_0_0)] border border-outline-gray-2/80 dark:border-outline-gray-2/60",
                             location.pathname === "/threads"
                                 ? "shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.05),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.05)] dark:shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.15),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.02)]"
                                 : "shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.03),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] dark:shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.1),-0.5px_-0.5px_1px_rgba(255,255,255,0.01)]",
@@ -200,7 +200,7 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                     >
                         <MessageSquareText
                             className={cn(
-                                "relative w-3.5 h-3.5 text-foreground transition-all duration-250 ease-out",
+                                "relative w-3.5 h-3.5 text-ink-gray-8 transition-all duration-250 ease-out",
                                 location.pathname === "/threads" ? "opacity-100" : "opacity-70 dark:opacity-100",
                                 "group-hover/threads-item:scale-105 group-hover/threads-item:opacity-85 dark:group-hover/threads-item:opacity-100"
                             )}
@@ -276,9 +276,9 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                     >
                         <Plus
                             className={cn(
-                                "relative w-3.5 h-3.5 text-muted-foreground/70 dark:text-muted-foreground transition-all duration-250 ease-out",
-                                location.pathname === "/workspace-explorer" ? "opacity-100 text-foreground" : "opacity-70 dark:opacity-100",
-                                "group-hover/add-workspace-item:scale-105 group-hover/add-workspace-item:opacity-85 dark:group-hover/add-workspace-item:opacity-100 group-hover/add-workspace-item:text-foreground/80 dark:group-hover/add-workspace-item:text-foreground"
+                                "relative w-3.5 h-3.5 text-ink-gray-4/70 dark:text-ink-gray-4 transition-all duration-250 ease-out",
+                                location.pathname === "/workspace-explorer" ? "opacity-100 text-ink-gray-8" : "opacity-70 dark:opacity-100",
+                                "group-hover/add-workspace-item:scale-105 group-hover/add-workspace-item:opacity-85 dark:group-hover/add-workspace-item:opacity-100 group-hover/add-workspace-item:text-ink-gray-8/80 dark:group-hover/add-workspace-item:text-ink-gray-8"
                             )}
                         />
                     </div>
@@ -292,7 +292,7 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                         className={cn(
                             "h-8 w-8 rounded-sm transition-all duration-200",
                             location.pathname === "/saved-messages"
-                                ? "bg-muted dark:bg-muted/80"
+                                ? "bg-surface-gray-2 dark:bg-surface-gray-2/80"
                                 : ""
                         )}
                         onClick={() => {
@@ -311,7 +311,7 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                         className={cn(
                             "h-8 w-8 rounded-sm transition-all duration-200",
                             location.pathname.startsWith("/settings")
-                                ? "bg-muted dark:bg-muted/80"
+                                ? "bg-surface-gray-2 dark:bg-surface-gray-2/80"
                                 : ""
                         )}
                         onClick={() => navigate("/settings/profile")}

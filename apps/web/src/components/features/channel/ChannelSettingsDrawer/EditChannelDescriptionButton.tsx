@@ -48,7 +48,7 @@ export const EditChannelDescriptionButton = ({
         <TooltipTrigger asChild>
           <DialogTrigger asChild>
             <button className="p-1 rounded-sm cursor-pointer">
-              <Edit className="w-4 h-4 text-muted-foreground hover:text-foreground shrink-0" />
+              <Edit className="w-4 h-4 text-ink-gray-4 hover:text-ink-gray-8 shrink-0" />
             </button>
           </DialogTrigger>
         </TooltipTrigger>
@@ -179,7 +179,7 @@ const EditChannelNameAndDescriptionForm = ({
                   disabled={loading}
                 />
               </FormControl>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-ink-gray-4 mt-1">
                 {_("This is how people will know what this channel is about.")}
               </p>
               <FormMessage />
@@ -199,7 +199,7 @@ const EditChannelNameAndDescriptionForm = ({
             {loading ? (
               <>
                 <Loader2
-                  className="mr-2 h-4 w-4 animate-spin text-foreground/80"
+                  className="mr-2 h-4 w-4 animate-spin text-ink-gray-8/80"
                   aria-hidden
                 />
                 {_("Saving")}

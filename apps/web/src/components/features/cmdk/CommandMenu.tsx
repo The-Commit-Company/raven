@@ -35,7 +35,7 @@ const CommandMenu = () => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent
-                className="fixed left-1/2 top-1.25 -translate-x-1/2 translate-y-0 w-155 max-w-none sm:max-w-none p-0 gap-0 rounded-lg shadow-lg overflow-hidden border border-border/50 bg-card [&>button:last-child]:hidden"
+                className="fixed left-1/2 top-1.25 -translate-x-1/2 translate-y-0 w-155 max-w-none sm:max-w-none p-0 gap-0 rounded-lg shadow-lg overflow-hidden border border-outline-gray-2/50 bg-surface-cards [&>button:last-child]:hidden"
                 aria-describedby={undefined}
             >
                 <DialogHeader className="sr-only">
@@ -90,17 +90,17 @@ const CommandPalette = () => {
                         }}
                         className='cursor-pointer'
                     >
-                        <TextSearch className="h-4 w-4 text-muted-foreground" />
+                        <TextSearch className="h-4 w-4 text-ink-gray-4" />
                         {channel ? (
                             <div className="flex gap-1 items-center">
                                 {text ? _("Search for `{0}` in", [text]) : _("Search in")}
                                 <ChannelIcon type={channel.type} className="h-4 w-4" />
-                                <span className="font-medium text-foreground">{channel.channel_name}</span>
+                                <span className="font-medium text-ink-gray-8">{channel.channel_name}</span>
                             </div>
                         ) : peerUser ? (
                             <div className="flex gap-1 items-center">
                                 {text ? _("Search for `{0}` in DMs with", [text]) : _("Search in DMs with")}
-                                <span className="font-medium text-foreground">{peerUser.first_name || peerUser.name}</span>
+                                <span className="font-medium text-ink-gray-8">{peerUser.first_name || peerUser.name}</span>
                             </div>
                         ) : null}
                     </CommandItem>

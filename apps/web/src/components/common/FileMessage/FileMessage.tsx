@@ -24,17 +24,17 @@ const FileMessage = ({
     const fileArray = Array.isArray(files) ? files : [files]
 
     const renderFile = (file: FileItem) => (
-        <div className="rounded-lg border border-border bg-card p-2">
+        <div className="rounded-lg border border-outline-gray-2 bg-surface-cards p-2">
             <div className="flex items-center gap-2">
                 <div className="flex-shrink-0">
                     <FileTypeIcon fileType={file.fileType} size="sm" />
                 </div>
 
                 <div className="flex-1 min-w-0">
-                    <h4 className="text-xs font-medium text-card-foreground truncate">
+                    <h4 className="text-xs font-medium text-ink-gray-7 truncate">
                         {file.fileName}
                     </h4>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-ink-gray-4">
                         {file.fileSize}
                     </p>
                 </div>

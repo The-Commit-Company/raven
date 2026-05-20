@@ -7,7 +7,7 @@ import SettingsContentContainer from '@components/features/settings/SettingsCont
 import { Button } from '@components/ui/button'
 import { Link } from 'react-router-dom'
 import { RavenCustomEmoji } from '@raven/types/RavenMessaging/RavenCustomEmoji'
-import { getDateObject } from '@utils/date'
+import { getDateObject } from '@lib/date'
 import { EmptyState, EmptyStateDescription, EmptyStateIcon, EmptyStateTitle } from '@components/features/settings/EmptyDataTableState'
 import { SmilePlus } from 'lucide-react'
 import AddCustomEmojiDialog from '@pages/settings/CustomEmojiList/AddEmojiDialog'
@@ -96,7 +96,7 @@ const CustomEmojiList = () => {
             accessorKey: 'keywords',
             enableSorting: false,
             cell: ({ value }) => (
-                <span className='text-sm text-muted-foreground'>
+                <span className='text-sm text-ink-gray-4'>
                     {value as string || '—'}
                 </span>
             )
@@ -152,7 +152,7 @@ const CustomEmojiList = () => {
                 <CustomEmojiEmptyState setOpen={setOpen} />
             ) : (
                 <DataTable
-                        columns={columns}
+                    columns={columns}
                     data={data ?? []}
                     isLoading={isLoading}
                     error={error}
@@ -160,8 +160,8 @@ const CustomEmojiList = () => {
                     sorting={sorting}
                     onSortingChange={setSorting}
                     pagination={pagination}
-                        onPaginationChange={handlePaginationChange}
-                    />
+                    onPaginationChange={handlePaginationChange}
+                />
             )}
             <AddCustomEmojiDialog open={open} onClose={onAddEmoji} />
         </SettingsContentContainer>

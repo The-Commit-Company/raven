@@ -20,7 +20,7 @@ const NotFoundPage = () => {
                 <div className="space-y-4 max-w-md">
                     <h1 className="text-6xl md:text-7xl font-bold text-primary/20 select-none">404</h1>
                     <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">Page Not Found</h2>
-                    <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
+                    <p className="text-base md:text-lg text-ink-gray-4 leading-relaxed">
                         You have ventured too far beyond the wall.
                     </p>
                 </div>

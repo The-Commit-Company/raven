@@ -55,7 +55,7 @@ export function AppSidebar(props: React.ComponentProps<typeof SidebarShell>) {
                     <>
                         <SidebarHeader className="h-(--app-header-height) gap-2 px-3 border-b flex items-center group/header">
                             <div className="flex items-center justify-between w-full h-full">
-                                <div className="text-sm font-medium text-foreground truncate">
+                                <div className="text-sm font-medium text-ink-gray-8 truncate">
                                     {activeWorkspaceName}
                                 </div>
                             </div>

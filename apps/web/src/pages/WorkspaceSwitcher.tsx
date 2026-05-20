@@ -18,7 +18,7 @@ const WorkspaceSwitcher = () => {
             <div className="flex justify-center items-center h-screen w-screen animate-fadein">
                 <div className="text-center">
                     <h1 className="text-4xl font-semibold tracking-normal mb-2">raven</h1>
-                    <p className="text-muted-foreground font-medium">Setting up your workspace...</p>
+                    <p className="text-ink-gray-4 font-medium">Setting up your workspace...</p>
                 </div>
             </div>
         )
@@ -29,7 +29,7 @@ const WorkspaceSwitcher = () => {
             <div className="flex justify-center items-center h-screen w-screen">
                 <div className="text-center">
                     <h2 className="text-xl font-semibold mb-2">There was an error while fetching your workspaces.</h2>
-                    <p className="text-muted-foreground">{error.message || "An unknown error occurred"}</p>
+                    <p className="text-ink-gray-4">{error.message || "An unknown error occurred"}</p>
                 </div>
             </div>
         )
@@ -40,7 +40,7 @@ const WorkspaceSwitcher = () => {
             <div className="flex justify-center items-center h-screen w-screen animate-fadein">
                 <div className="text-center">
                     <h1 className="text-4xl font-semibold tracking-normal mb-2">raven</h1>
-                    <p className="text-muted-foreground font-medium">You have not set up any workspaces yet.</p>
+                    <p className="text-ink-gray-4 font-medium">You have not set up any workspaces yet.</p>
                 </div>
             </div>
         )
@@ -67,7 +67,7 @@ const WorkspaceSwitcher = () => {
         <div className="flex justify-center items-center h-screen w-screen animate-fadein">
             <div className="text-center">
                 <h1 className="text-4xl font-semibold tracking-normal mb-2">raven</h1>
-                <p className="text-muted-foreground font-medium">Setting up your workspace...</p>
+                <p className="text-ink-gray-4 font-medium">Setting up your workspace...</p>
             </div>
         </div>
     )

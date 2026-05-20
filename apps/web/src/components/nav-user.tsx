@@ -51,7 +51,7 @@ export function NavUser({
                     <DropdownMenuTrigger asChild>
                         <SidebarMenuButton
                             size="lg"
-                            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground md:h-8 md:p-0"
+                            className="data-[state=open]:bg-surface-gray-3 data-[state=open]:text-ink-gray-8 md:h-8 md:p-0"
                         >
                             <UserAvatar user={userFields} size="md" className="rounded-lg" showStatusIndicator={false} showBotIndicator={false} />
                             <div className="grid flex-1 text-left text-sm leading-tight">

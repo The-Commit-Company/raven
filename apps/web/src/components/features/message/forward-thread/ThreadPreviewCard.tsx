@@ -62,7 +62,7 @@ export function ThreadPreviewCard({
     const content = (
         <div
             className={cn(
-                "rounded-lg border border-border/50 bg-background transition-colors",
+                "rounded-lg border border-outline-gray-2/50 bg-surface-white transition-colors",
                 "border-l-4 border-l-primary/30",
                 clickable && "cursor-pointer",
                 compact && "p-2.5",
@@ -76,17 +76,17 @@ export function ThreadPreviewCard({
                     <Hash className="h-3 w-3 shrink-0" aria-hidden />
                     <span className="font-semibold">Thread</span>
                 </div>
-                <span className="text-muted-foreground">—</span>
+                <span className="text-ink-gray-4">—</span>
                 {participants.length > 0 && (
                     <>
                         <GroupedAvatars users={participants} max={4} size="xs" />
-                        <span className="text-muted-foreground">
+                        <span className="text-ink-gray-4">
                             {meta.message_count} {meta.message_count === 1 ? "reply" : "replies"}
                         </span>
                     </>
                 )}
                 {participants.length === 0 && (
-                    <span className="text-muted-foreground">
+                    <span className="text-ink-gray-4">
                         {meta.message_count} {meta.message_count === 1 ? "reply" : "replies"}
                     </span>
                 )}
@@ -94,18 +94,18 @@ export function ThreadPreviewCard({
 
             {/* Root message: who started the thread + first message */}
             <div className="flex gap-2.5 mb-2">
-                <Avatar className="h-7 w-7 shrink-0 rounded-full border border-border">
+                <Avatar className="h-7 w-7 shrink-0 rounded-full border border-outline-gray-2">
                     <AvatarImage src={avatarSrc(meta.root_message_owner_image)} alt={startedByName} />
-                    <AvatarFallback className="text-[10px] bg-muted">
+                    <AvatarFallback className="text-[10px] bg-surface-gray-2">
                         {getInitials(startedByName)}
                     </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 flex-1">
-                    <p className="text-xs font-medium text-foreground">
+                    <p className="text-xs font-medium text-ink-gray-8">
                         {startedByName}
-                        <span className="font-normal text-muted-foreground"> started the thread</span>
+                        <span className="font-normal text-ink-gray-4"> started the thread</span>
                     </p>
-                    <p className="mt-0.5 text-[13px] text-muted-foreground line-clamp-2">
+                    <p className="mt-0.5 text-[13px] text-ink-gray-4 line-clamp-2">
                         {rootDisplay}
                     </p>
                 </div>
@@ -114,15 +114,15 @@ export function ThreadPreviewCard({
             {/* 1–2 reply previews */}
             {previewReplies.slice(0, 2).map((reply, i) => (
                 <div key={i} className="flex gap-2.5 ml-9 mt-2">
-                    <Avatar className="h-6 w-6 shrink-0 rounded-full border border-border">
+                    <Avatar className="h-6 w-6 shrink-0 rounded-full border border-outline-gray-2">
                         <AvatarImage src={avatarSrc(reply.owner_image)} alt={reply.owner_name} />
-                        <AvatarFallback className="text-[9px] bg-muted">
+                        <AvatarFallback className="text-[9px] bg-surface-gray-2">
                             {getInitials(reply.owner_name ?? "?")}
                         </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0 flex-1">
-                        <p className="text-xs font-medium text-foreground">{reply.owner_name}</p>
-                        <p className="text-[13px] text-muted-foreground line-clamp-1">
+                        <p className="text-xs font-medium text-ink-gray-8">{reply.owner_name}</p>
+                        <p className="text-[13px] text-ink-gray-4 line-clamp-1">
                             {reply.snippet}
                         </p>
                     </div>
@@ -131,7 +131,7 @@ export function ThreadPreviewCard({
 
             {/* Footer: View thread */}
             {clickable && (
-                <div className="mt-3 pt-2 border-t border-border/50 flex items-center gap-1.5 text-xs font-medium text-primary">
+                <div className="mt-3 pt-2 border-t border-outline-gray-2/50 flex items-center gap-1.5 text-xs font-medium text-primary">
                     <ExternalLink className="h-3.5 w-3.5" />
                     View thread
                 </div>

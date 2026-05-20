@@ -65,10 +65,10 @@ export function ArchiveChannelButton({
     <AlertDialog>
       <AlertDialogTrigger asChild disabled={disabled}>
         <button
-          className={`w-full flex justify-start p-3 h-auto cursor-pointer font-normal bg-transparent border border-border/70 rounded-lg transition-colors ${disabled ? "opacity-50 pointer-events-none" : "hover:bg-muted/50"}`}
+          className={`w-full flex justify-start p-3 h-auto cursor-pointer font-normal bg-transparent border border-outline-gray-2/70 rounded-lg transition-colors ${disabled ? "opacity-50 pointer-events-none" : "hover:bg-surface-gray-2/50"}`}
         >
           <div className="flex items-center gap-3">
-            <Archive className="w-4 h-4 text-muted-foreground" />
+            <Archive className="w-4 h-4 text-ink-gray-4" />
             <span className="text-sm">
               {channel.is_archived === 0
                 ? _("Archive channel")
@@ -86,27 +86,27 @@ export function ArchiveChannelButton({
           </AlertDialogTitle>
           <AlertDialogDescription asChild>
             {channel.is_archived === 0 ? (
-              <div className="space-y-4 text-left text-foreground pt-1">
+              <div className="space-y-4 text-left text-ink-gray-8 pt-1">
                 {error ? <ErrorBanner error={error} /> : null}
-                <p className="text-sm text-foreground/80">
+                <p className="text-sm text-ink-gray-8/80">
                   {_("Please understand that when you archive")}{" "}
                   <strong>{channel.channel_name}</strong>:
                 </p>
-                <ul className="list-inside list-disc space-y-1 text-sm text-foreground/80">
+                <ul className="list-inside list-disc space-y-1 text-sm text-ink-gray-8/80">
                   <li>{_("It will be removed from your channel list")}</li>
                   <li>
                     {_("No one will be able to send messages to this channel")}
                   </li>
                 </ul>
-                <p className="text-sm text-foreground/80">
+                <p className="text-sm text-ink-gray-8/80">
                   {_(
                     "You will still be able to find the channel’s contents via search. And you can always unarchive the channel in the future, if you want.",
                   )}
                 </p>
               </div>
             ) : (
-              <div className="space-y-4 text-left text-foreground">
-                <p className="text-sm text-foreground/80 pt-1">
+              <div className="space-y-4 text-left text-ink-gray-8">
+                <p className="text-sm text-ink-gray-8/80 pt-1">
                   {_("Are you sure you want to unarchive ")}
                   <strong>{channel.channel_name}</strong>?
                 </p>
@@ -120,7 +120,8 @@ export function ArchiveChannelButton({
           </AlertDialogCancel>
           <Button
             type="button"
-            variant="destructive"
+            variant="solid"
+            theme="red"
             disabled={loading}
             onClick={toggleArchiveChannel}
             aria-label={_("{0} this channel?", [
@@ -129,7 +130,7 @@ export function ArchiveChannelButton({
           >
             {loading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin text-foreground/80 aria-hidden" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin text-ink-gray-8/80 aria-hidden" />
                 {channel.is_archived === 0 ? _("Archiving") : _("Unarchiving")}
               </>
             ) : channel.is_archived === 0 ? (

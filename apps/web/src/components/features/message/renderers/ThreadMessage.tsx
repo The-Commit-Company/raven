@@ -17,9 +17,9 @@ export const ThreadHeader = ({ displayName, threadTitle }: ThreadHeaderProps) =>
             <Hash className="h-3 w-3" />
             <span className="font-semibold">Thread</span>
         </div>
-        <span className="text-muted-foreground">—</span>
+        <span className="text-ink-gray-4">—</span>
         <span className="font-semibold">{displayName}</span>
-        <span className="text-muted-foreground">started a thread:</span>
+        <span className="text-ink-gray-4">started a thread:</span>
         <span className="font-semibold">{threadTitle}</span>
     </div>
 )
@@ -34,7 +34,7 @@ const MessageContent = ({ displayName, time, message }: MessageContentProps) => 
     <div className="flex-1">
         <div className="flex items-center gap-2 mb-1">
             <span className="font-medium text-sm">{displayName}</span>
-            <span className="text-xs font-light text-muted-foreground/90">{time}</span>
+            <span className="text-xs font-light text-ink-gray-4/90">{time}</span>
         </div>
         <div className="text-[13px] text-primary">{message}</div>
     </div>
@@ -63,14 +63,14 @@ export const ThreadButton = ({ participants, messageCount, threadID }: ThreadBut
     return (
         <div className="flex items-center ml-11 mt-2">
             <div
-                className="inline-flex items-center gap-2 bg-card border border-border rounded-lg px-3 py-1.5 hover:bg-accent/50 shadow-xs cursor-pointer"
+                className="inline-flex items-center gap-2 bg-surface-cards border border-outline-gray-2 rounded-lg px-3 py-1.5 hover:bg-surface-gray-3/50 shadow-xs cursor-pointer"
                 onClick={handleClick}
             >
                 <GroupedAvatars users={participants} max={3} size="xs" />
                 <span className="text-xs font-medium text-primary">
                     {messageCount} Messages
                 </span>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-ink-gray-4">
                     View thread
                 </span>
             </div>
