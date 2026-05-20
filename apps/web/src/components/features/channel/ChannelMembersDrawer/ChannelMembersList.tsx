@@ -27,8 +27,9 @@ const ChannelMembersList = ({ members, allowSettingChange, showCloseButton, onCl
                 </div>
                 {showCloseButton && <Button
                     variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 ml-2 shrink-0"
+                    size="sm"
+                    isIconButton
+                    className="ml-2 shrink-0"
                     onClick={onClose}
                     aria-label="Close drawer"
                 >
@@ -99,7 +100,7 @@ const MembersList = ({ filteredMembers, allowSettingChange }: { filteredMembers:
                                 {member.is_admin === 1 && (
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Crown className="h-3 w-3 text-yellow-500 shrink-0" />
+                                            <Crown className="h-3 w-3 text-ink-amber-4 shrink-0" />
                                         </TooltipTrigger>
                                         <TooltipContent>
                                             <p>{_('Channel Admin')}</p>
@@ -117,7 +118,8 @@ const MembersList = ({ filteredMembers, allowSettingChange }: { filteredMembers:
                         <DropdownMenuTrigger asChild>
                             <Button
                                 variant="ghost"
-                                size="icon"
+                                size="sm"
+                                isIconButton
                                 className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
                             >
                                 <MoreVertical className="h-3 w-3" />
@@ -140,7 +142,7 @@ const MembersList = ({ filteredMembers, allowSettingChange }: { filteredMembers:
                                         {_('Make admin')}
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
-                                        className="text-destructive focus:text-destructive"
+                                        variant="destructive"
                                         onClick={() => handleRemoveMember(member.name)}
                                     >
                                         <UserMinus className="h-4 w-4 mr-2" />

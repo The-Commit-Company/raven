@@ -113,7 +113,7 @@ export const LinkPreviewCard = ({ link, author }: {
                         <div className="flex items-center gap-2 min-w-0 flex-1">
                             <h3 className="text-sm font-medium text-ink-gray-8 truncate w-[calc(100vw-20rem)]">{displayTitle}</h3>
                             <ExternalLink
-                                className="h-3 w-3 text-ink-gray-4 opacity-0 group-hover:opacity-100 hover:text-primary transition-opacity duration-200 shrink-0"
+                                className="h-3 w-3 text-ink-gray-4 opacity-0 group-hover:opacity-100 hover:text-ink-gray-8 transition-opacity duration-200 shrink-0"
                                 onClick={(e) => { e.stopPropagation(); window.open(url, '_blank') }}
                             />
                         </div>

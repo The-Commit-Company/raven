@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom"
 import { SettingsSidebar } from "@components/features/settings/SettingsSidebar"
 import { useIsMobile } from "@hooks/use-mobile"
 import { WorkspaceSwitcher } from "@components/workspace-switcher/WorkspaceSwitcher"
+import { H4 } from "@components/ui/typography"
 
 export default function AppSettings() {
   const isMobile = useIsMobile()
@@ -22,11 +23,11 @@ export default function AppSettings() {
           }}
         >
           <div className="flex items-center gap-4">
-            <span className="text-md font-medium">Settings</span>
+            <H4>Settings</H4>
           </div>
         </header>
 
-        <div className="pt-[36px] flex flex-1 overflow-hidden">
+        <div className="pt-9 flex flex-1 overflow-hidden">
           {!isMobile && <SettingsSidebar />}
           <div className="flex-1 ml-0 sm:ml-64 overflow-y-auto overflow-x-hidden">
             <Outlet />

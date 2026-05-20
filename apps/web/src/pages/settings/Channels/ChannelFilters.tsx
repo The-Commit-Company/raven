@@ -44,7 +44,7 @@ const MyChannelsFilter = ({ filters, setFilters }: { filters: any, setFilters: (
             value={filters.myChannels}
             onValueChange={(value) => setFilters({ ...filters, myChannels: value })}
         >
-            <SelectTrigger className="w-52 **:data-[slot=select-value]:truncate **:data-[slot=select-value]:block">
+            <SelectTrigger className="w-52">
                 <SelectValue placeholder={_('Select a group')} />
             </SelectTrigger>
             <SelectContent className="min-w-52  max-w-72">
@@ -63,7 +63,7 @@ const ChannelTypeFilter = ({ filters, setFilters }: { filters: any, setFilters: 
             value={filters.channelType}
             onValueChange={(value) => setFilters({ ...filters, channelType: value })}
         >
-            <SelectTrigger className="w-52 **:data-[slot=select-value]:truncate **:data-[slot=select-value]:block">
+            <SelectTrigger className="w-52">
                 <SelectValue placeholder={_('Select a channel type')} />
             </SelectTrigger>
             <SelectContent className="min-w-52 max-w-72">
@@ -83,7 +83,7 @@ const WorkspaceFilter = ({ filters, setFilters, workspaces }: { filters: any, se
             value={filters.workspace}
             onValueChange={(value) => setFilters({ ...filters, workspace: value })}
         >
-            <SelectTrigger className="w-52 **:data-[slot=select-value]:truncate **:data-[slot=select-value]:block px-1">
+            <SelectTrigger className="w-52 px-1">
                 <SelectValue placeholder={_('Select a workspace')} />
             </SelectTrigger>
             <SelectContent className="min-w-52 max-w-72">

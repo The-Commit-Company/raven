@@ -61,8 +61,8 @@ export const ThreadPreviewBox = ({
             {unreadCount > 0 && (
                 <div className="absolute top-4 right-6">
                     <Badge
-                        variant="default"
-                        className="font-semibold min-w-5 h-5 flex items-center justify-center text-[10px] px-1.5"
+                        variant="solid"
+                        className="min-w-5 h-5 flex items-center justify-center text-[10px]"
                     >
                         {unreadCount > 99 ? '99+' : unreadCount}
                     </Badge>

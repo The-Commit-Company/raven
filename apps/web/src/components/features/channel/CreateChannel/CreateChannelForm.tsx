@@ -205,7 +205,7 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>
-                                                {_('Name')} <span className="text-destructive">*</span>
+                                                    {_('Name')} <span className="text-ink-red-3">*</span>
                                             </FormLabel>
                                             <FormControl>
                                                 <ChannelNameInput

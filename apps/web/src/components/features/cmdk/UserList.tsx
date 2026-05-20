@@ -76,9 +76,9 @@ const DMChannelItem = ({ user, channel }: { user: UserData; channel: DMChannelLi
             ) : null}
             <span className="truncate">{displayName}</span>
             {user?.enabled === 0 && (
-                <Badge variant="secondary" className="ml-auto text-xs">
-                    {_("Disabled")}
-                </Badge>
+<Badge variant="subtle" className="ml-auto text-xs">
+    {_("Disabled")}
+</Badge>
             )}
         </CommandItem>
     )
@@ -114,7 +114,7 @@ const UserItem = ({ user }: { user: UserData }) => {
             <span className="truncate">{user.full_name}</span>
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {user?.enabled === 0 && (
-                <Badge variant="secondary" className="ml-auto text-xs">
+                <Badge variant="subtle" className="ml-auto text-xs">
                     {_("Disabled")}
                 </Badge>
             )}

@@ -84,8 +84,9 @@ export default function Preferences() {
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    size="icon"
-                    className="h-12 w-12 text-lg"
+                    size="sm"
+                    isIconButton
+                    className="text-lg"
                   >
                     {emoji || "➕"}
                   </Button>

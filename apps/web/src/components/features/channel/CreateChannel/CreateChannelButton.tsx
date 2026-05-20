@@ -25,8 +25,9 @@ export const CreateChannelButton = () => {
                     <DialogTrigger asChild>
                         <Button
                             variant="ghost"
-                            size="icon"
-                            className="h-6 w-6 rounded-sm hover:bg-surface-gray-3"
+                            size="sm"
+                            isIconButton
+                            className="h-6 w-6"
                             aria-label="Create a new channel"
                         >
                             <PlusIcon className="h-3 w-3" />
@@ -37,7 +38,7 @@ export const CreateChannelButton = () => {
                     <p>{_('Create a new channel')}</p>
                 </TooltipContent>
             </Tooltip>
-            <DialogContent className="sm:max-w-[680px] max-h-[90vh] p-0 gap-0 flex flex-col overflow-hidden">
+            <DialogContent className="sm:max-w-170 max-h-[90vh] p-0 gap-0 flex flex-col overflow-hidden">
                 <DialogTitle className='sr-only'>{_('Create a new channel')}</DialogTitle>
                 <CreateChannelForm onClose={() => setIsOpen(false)} />
             </DialogContent>

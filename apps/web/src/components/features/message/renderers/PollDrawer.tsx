@@ -77,7 +77,7 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                 </div>
                 <div className="flex items-center gap-2">
                     {pollStatusBadge && (
-                        <Badge variant="outline" className={cn("text-[11px] px-2 py-0.5", pollStatusBadge.className)}>
+                        <Badge variant="outline" className={cn("text-xs px-2 py-0.5", pollStatusBadge.className)}>
                             {pollStatusBadge.text}
                         </Badge>
                     )}
@@ -85,8 +85,8 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                         <DropdownMenuTrigger asChild>
                             <Button
                                 variant="ghost"
-                                size="icon"
-                                className="h-7 w-7"
+                                size="sm"
+                                isIconButton
                                 aria-label="Poll settings"
                             >
                                 <MoreVertical className="h-3 w-3" />
@@ -102,8 +102,8 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                     </DropdownMenu>
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className="h-7 w-7"
+                        size="sm"
+                        isIconButton
                         onClick={onClose}
                         aria-label="Close drawer"
                     >
@@ -145,7 +145,7 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                                         className={cn(
                                             "p-3 border rounded-lg",
                                             isCurrentUserVote
-                                                ? "border-blue-500/30 bg-blue-500/5"
+                                                ? "border-outline-blue-4/30 bg-surface-blue-5/5"
                                                 : "border-outline-gray-2/70"
                                         )}
                                     >

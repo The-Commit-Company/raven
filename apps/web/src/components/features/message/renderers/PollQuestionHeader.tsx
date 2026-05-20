@@ -30,12 +30,12 @@ export const PollQuestionHeader: React.FC<PollQuestionHeaderProps> = ({ poll, cl
                 </span>
                 <div className="flex items-center gap-2 shrink-0 ml-2">
                     {isAnonymous && (
-                        <Badge variant="outline" className="text-[11px] px-2 py-0.5">
+                        <Badge variant="outline" className="text-xs px-2 py-0.5">
                             Anonymous
                         </Badge>
                     )}
                     {isDisabled && (
-                        <Badge variant="outline" className="text-[11px] px-2 py-0.5">
+                        <Badge variant="outline" className="text-xs px-2 py-0.5">
                             Closed
                         </Badge>
                     )}

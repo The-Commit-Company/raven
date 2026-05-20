@@ -2,6 +2,7 @@ import React from "react"
 import { Outlet, useLocation } from "react-router-dom"
 import { useWorkspaces } from "@hooks/useWorkspaces"
 import { WorkspaceSwitcher as WorkspaceSwitcherSidebar } from "@components/workspace-switcher/WorkspaceSwitcher"
+import { H1, H3, Paragraph } from "@components/ui/typography"
 
 // Routes that need the workspace switcher sidebar wrapper
 // All other routes (MainPage, AppSettings, etc.) handle their own layouts
@@ -17,8 +18,8 @@ const WorkspaceSwitcher = () => {
         return (
             <div className="flex justify-center items-center h-screen w-screen animate-fadein">
                 <div className="text-center">
-                    <h1 className="text-4xl font-semibold tracking-normal mb-2">raven</h1>
-                    <p className="text-ink-gray-4 font-medium">Setting up your workspace...</p>
+                    <H1 className="text-4xl font-semibold tracking-normal mb-2">raven</H1>
+                    <Paragraph className="text-ink-gray-4 font-medium">Setting up your workspace...</Paragraph>
                 </div>
             </div>
         )
@@ -28,8 +29,8 @@ const WorkspaceSwitcher = () => {
         return (
             <div className="flex justify-center items-center h-screen w-screen">
                 <div className="text-center">
-                    <h2 className="text-xl font-semibold mb-2">There was an error while fetching your workspaces.</h2>
-                    <p className="text-ink-gray-4">{error.message || "An unknown error occurred"}</p>
+                    <H3 className="text-xl font-semibold mb-2">There was an error while fetching your workspaces.</H3>
+                    <Paragraph className="text-ink-gray-4">{error.message || "An unknown error occurred"}</Paragraph>
                 </div>
             </div>
         )
@@ -39,8 +40,8 @@ const WorkspaceSwitcher = () => {
         return (
             <div className="flex justify-center items-center h-screen w-screen animate-fadein">
                 <div className="text-center">
-                    <h1 className="text-4xl font-semibold tracking-normal mb-2">raven</h1>
-                    <p className="text-ink-gray-4 font-medium">You have not set up any workspaces yet.</p>
+                    <H1 className="text-4xl font-semibold tracking-normal mb-2">raven</H1>
+                    <Paragraph className="text-ink-gray-4 font-medium">You have not set up any workspaces yet.</Paragraph>
                 </div>
             </div>
         )
@@ -66,8 +67,8 @@ const WorkspaceSwitcher = () => {
     return (
         <div className="flex justify-center items-center h-screen w-screen animate-fadein">
             <div className="text-center">
-                <h1 className="text-4xl font-semibold tracking-normal mb-2">raven</h1>
-                <p className="text-ink-gray-4 font-medium">Setting up your workspace...</p>
+                <H1 className="text-4xl font-semibold tracking-normal mb-2">raven</H1>
+                <Paragraph className="text-ink-gray-4 font-medium">Setting up your workspace...</Paragraph>
             </div>
         </div>
     )

@@ -86,7 +86,7 @@ const AddChannelMembers = ({ memberIds, channelID, onClose }: { memberIds: strin
                                 {selectedUsers.map((user) => (
                                     <Badge
                                         key={user.name}
-                                        variant="secondary"
+                                        variant="subtle"
                                         className="flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-surface-gray-2 transition-colors"
                                         onClick={() => handleRemoveSelectedUser(user.name)}
                                     >

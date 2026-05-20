@@ -131,7 +131,7 @@ export default function DateFilter({ value, onValueChange, className, style, dro
                             {presetOptions.map((option) => (
                                 <Button
                                     key={option.value}
-                                    variant={value.preset === option.value ? "secondary" : "ghost"}
+                                    variant={value.preset === option.value ? "subtle" : "ghost"}
                                     className={cn(
                                         "justify-start h-8 px-2 text-sm font-normal",
                                         value.preset === option.value && "font-medium"

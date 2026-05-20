@@ -15,6 +15,10 @@ import { Tabs, TabsList, TabsTrigger } from "@components/ui/tabs"
 import { useLiveQuery } from "dexie-react-hooks"
 import { db } from "@db"
 import MarkdownRenderer from "@components/ui/markdown"
+import { Button } from "@components/ui/button"
+import { Badge } from "@components/ui/badge"
+import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from "@components/ui/empty"
+import { H4 } from "@components/ui/typography"
 
 type NotificationTab = "all" | "mentions" | "reactions"
 
@@ -107,21 +111,18 @@ export default function Notifications() {
                     style={{ left: headerLeft, width: headerWidth }}
                 >
                     <div className="flex items-center gap-2">
-                        <span className="text-md font-medium">{_("Notifications")}</span>
+                        <H4>{_("Notifications")}</H4>
                         {unreadCount > 0 && (
-                            <div className="bg-surface-gray-2 text-ink-gray-8 rounded px-1.5 py-0.5 text-[10px] font-semibold min-w-4.5 text-center">
+                            <Badge variant="subtle" size="sm" theme="gray">
                                 {unreadCount > 99 ? "99+" : unreadCount}
-                            </div>
+                            </Badge>
                         )}
                     </div>
                     {unreadCount > 0 && (
-                        <button
-                            onClick={markAllRead}
-                            className="flex items-center gap-1 text-xs text-ink-gray-4 hover:text-ink-gray-8 transition-colors px-2 py-1 rounded hover:bg-surface-gray-2/50"
-                        >
+                        <Button variant="ghost" size="sm" onClick={markAllRead}>
                             <Check className="w-3 h-3" />
                             {_("Mark all as read")}
-                        </button>
+                        </Button>
                     )}
                 </header>
 
@@ -250,7 +251,7 @@ const MentionItem = memo(({
                 <div className="relative shrink-0">
                     {sender && <UserAvatar user={sender} size="md" />}
                     {!notification.is_read && (
-                        <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-blue-500" />
+                        <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-surface-blue-5" />
                     )}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -263,7 +264,7 @@ const MentionItem = memo(({
                         </span>
                         <ChannelContext notification={notification} />
                     </div>
-                    <div className="text-[13px] text-primary line-clamp-2 mt-0.5 [&_.mention]:text-mention [&_.mention]:font-medium [&_.mention]:bg-blue-50 dark:[&_.mention]:bg-blue-950/50 [&_.mention]:px-1 [&_.mention]:py-0.5 [&_.mention]:rounded [&_p]:my-0">
+                    <div className="text-[13px] text-ink-gray-8 line-clamp-2 mt-0.5 [&_.mention]:text-mention [&_.mention]:font-medium [&_.mention]:bg-surface-blue-2 dark:[&_.mention]:bg-blue-950/50 [&_.mention]:px-1 [&_.mention]:py-0.5 [&_.mention]:rounded [&_p]:my-0">
                         <MarkdownRenderer content={notification.text} />
                     </div>
                 </div>
@@ -309,12 +310,12 @@ const ReactionItem = memo(({
                         </div>
                     )}
                     {reactorsData[1] && total > 1 && (
-                        <div className="absolute bottom-0 right-0 w-5 h-5 ring-1 ring-background rounded-full overflow-hidden">
+                        <div className="absolute bottom-0 right-0 w-5 h-5 ring-1 ring-surface-gray-1 rounded-full overflow-hidden">
                             <UserAvatar user={reactorsData[1]} size="xs" />
                         </div>
                     )}
                     {!notification.is_read && (
-                        <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-blue-500" />
+                        <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-surface-blue-5" />
                     )}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -343,21 +344,15 @@ const ReactionItem = memo(({
 })
 
 const EmptyState = ({ showUnread }: { showUnread: boolean }) => (
-    <div className="flex flex-col items-center justify-center min-h-80 px-6">
-        <div className="rounded-full bg-surface-gray-2/80 p-8 mb-6">
-            {showUnread
-                ? <Check className="w-12 h-12 text-ink-gray-4/60" strokeWidth={1.5} />
-                : <AtSignIcon className="w-12 h-12 text-ink-gray-4/60" strokeWidth={1.5} />
-            }
-        </div>
-        <h3 className="text-lg font-semibold mb-1">
-            {showUnread ? _("You're all caught up") : _("No notifications yet")}
-        </h3>
-        <p className="text-ink-gray-4 text-center text-sm max-w-xs leading-relaxed">
-            {showUnread
-                ? _("No unread notifications at the moment.")
-                : _("Mentions and reactions to your messages will appear here.")
-            }
-        </p>
-    </div>
+    <Empty>
+        <EmptyHeader>
+            <EmptyTitle>{showUnread ? _("You're all caught up") : _("No notifications yet")}</EmptyTitle>
+            <EmptyDescription>
+                {showUnread
+                    ? _("No unread notifications at the moment.")
+                    : _("Mentions and reactions to your messages will appear here.")
+                }
+            </EmptyDescription>
+        </EmptyHeader>
+    </Empty>
 )

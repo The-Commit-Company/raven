@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Tabs as TabsPrimitive, Dialog as DialogPrimitive } from "radix-ui"
-import { cn } from "@/lib/utils"
+import { cn } from "@lib/utils"
 import { DialogContent } from "./dialog"
 
 /**

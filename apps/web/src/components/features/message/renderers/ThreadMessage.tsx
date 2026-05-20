@@ -36,7 +36,7 @@ const MessageContent = ({ displayName, time, message }: MessageContentProps) => 
             <span className="font-medium text-sm">{displayName}</span>
             <span className="text-xs font-light text-ink-gray-4/90">{time}</span>
         </div>
-        <div className="text-[13px] text-primary">{message}</div>
+        <div className="text-sm text-ink-gray-8">{message}</div>
     </div>
 )
 
@@ -67,7 +67,7 @@ export const ThreadButton = ({ participants, messageCount, threadID }: ThreadBut
                 onClick={handleClick}
             >
                 <GroupedAvatars users={participants} max={3} size="xs" />
-                <span className="text-xs font-medium text-primary">
+                <span className="text-xs font-medium text-ink-gray-8">
                     {messageCount} Messages
                 </span>
                 <span className="text-xs text-ink-gray-4">

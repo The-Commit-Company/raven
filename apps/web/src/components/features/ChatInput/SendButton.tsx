@@ -38,7 +38,7 @@ const SendButton = ({ channelID }: SendButtonProps) => {
     }
     return (
         <div className="flex items-center justify-center">
-            <Button size="icon" onClick={onClick}>
+            <Button size="sm" isIconButton onClick={onClick}>
                 <SendIcon />
             </Button>
         </div>

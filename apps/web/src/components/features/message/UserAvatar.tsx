@@ -34,15 +34,15 @@ const generateAvatarColor = (name: string): string => {
 export const getStatusIndicatorColor = (status: string) => {
     switch (status) {
         case 'Available':
-            return 'bg-green-600'
+            return 'bg-surface-green-5'
         case 'Away':
-            return 'bg-yellow-500'
+            return 'bg-surface-yellow-5'
         case 'Do not disturb':
-            return 'bg-red-600'
+            return 'bg-surface-red-5'
         case 'Invisible':
-            return 'bg-gray-400'
+            return 'bg-surface-gray-5'
         default:
-            return 'bg-green-600'
+            return 'bg-surface-green-5'
     }
 }
 
@@ -156,7 +156,7 @@ export const UserAvatar = memo<UserAvatarProps>(({
                         sizeClasses.indicator,
                         availabilityStatus
                             ? getStatusIndicatorColor(availabilityStatus)
-                            : 'bg-green-600'
+                            : 'bg-surface-green-5'
                     )}
                     aria-label={statusLabel}
                     role="img"
@@ -173,7 +173,7 @@ export const UserAvatar = memo<UserAvatarProps>(({
                     aria-label="Bot account"
                     role="img">
                     <RiRobot2Fill
-                        className={cn("text-blue-600 dark:text-blue-400", sizeClasses.bot)}
+                        className={cn("text-ink-blue-4", sizeClasses.bot)}
                         aria-hidden="true"
                     />
                 </span>

@@ -88,9 +88,10 @@ const ImageCarousel = ({ images, onImageClick }: { images: ImageFile[], onImageC
                 {images.length > 1 && (
                     <>
                         <Button
-                            variant="secondary"
-                            size="icon"
-                            className="absolute left-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-full z-10"
+                            variant="subtle"
+                            size="sm"
+                            isIconButton
+                            className="absolute left-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10"
                             onClick={(e) => {
                                 e.stopPropagation()
                                 prevImage()
@@ -100,9 +101,10 @@ const ImageCarousel = ({ images, onImageClick }: { images: ImageFile[], onImageC
                             <ChevronLeft className="w-4 h-4" />
                         </Button>
                         <Button
-                            variant="secondary"
-                            size="icon"
-                            className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-full z-10"
+                            variant="subtle"
+                            size="sm"
+                            isIconButton
+                            className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10"
                             onClick={(e) => {
                                 e.stopPropagation()
                                 nextImage()
@@ -116,7 +118,7 @@ const ImageCarousel = ({ images, onImageClick }: { images: ImageFile[], onImageC
 
                 {/* Image counter */}
                 {images.length > 1 && (
-                    <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded z-10">
+                    <div className="absolute top-2 right-2 bg-surface-black/70 text-white text-xs px-2 py-1 rounded z-10">
                         {currentIndex + 1} / {images.length}
                     </div>
                 )}
@@ -131,7 +133,7 @@ const ImageCarousel = ({ images, onImageClick }: { images: ImageFile[], onImageC
                             className={cn(
                                 "shrink-0 cursor-pointer border-2 rounded overflow-hidden transition-all duration-200",
                                 index === currentIndex
-                                    ? "border-blue-500"
+                                    ? "border-outline-blue-4"
                                     : "border-transparent hover:border-outline-gray-2"
                             )}
                             onClick={() => setCurrentIndex(index)}
@@ -230,7 +232,7 @@ const ImageMessage = ({ user, images, time, message, name }: ImageMessageProps) 
                     </div>
 
                     {message && (
-                        <div className="text-[13px] text-primary mb-2">{message}</div>
+                        <div className="text-sm text-ink-gray-8 mb-2">{message}</div>
                     )}
 
                     {/* Image Display */}

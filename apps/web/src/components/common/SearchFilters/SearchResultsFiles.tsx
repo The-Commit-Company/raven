@@ -53,7 +53,7 @@ export const FileResultCard = ({ file, author }: {
                                 <MarkdownRenderer content={file.title} />
                             </h3>
                             <a href={file.internal_link} download onClick={(e) => e.stopPropagation()}>
-                                <Download className="h-3 w-3 text-ink-gray-4 opacity-0 group-hover:opacity-100 hover:text-primary transition-opacity duration-200 shrink-0" />
+                                <Download className="h-3 w-3 text-ink-gray-4 opacity-0 group-hover:opacity-100 hover:text-ink-gray-8 transition-opacity duration-200 shrink-0" />
                             </a>
                         </div>
                         <span className="text-xs text-ink-gray-4 shrink-0">{formatDate(file.creation, "D MMMM YYYY h:mm A")}</span>

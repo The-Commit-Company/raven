@@ -25,7 +25,7 @@ export const Stepper = ({ steps, currentStep }: StepperProps) => {
                                     currentStep > index &&
                                     'bg-ink-gray-8 text-ink-white',
                                     currentStep === index &&
-                                    'bg-ink-gray-8 text-ink-white ring-2 ring-primary/20 ring-offset-2',
+                                    'bg-ink-gray-8 text-ink-white ring-2 ring-ink-gray-8/20 ring-offset-2',
                                     currentStep < index &&
                                     'bg-surface-gray-2 text-ink-gray-4'
                                 )}
@@ -66,7 +66,7 @@ export const Stepper = ({ steps, currentStep }: StepperProps) => {
                                     'h-px w-8 transition-colors',
                                     currentStep > index
                                         ? 'bg-ink-gray-8'
-                                        : 'bg-border'
+                                        : 'bg-outline-gray-2'
                                 )}
                                 aria-hidden="true"
                             />

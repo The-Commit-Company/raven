@@ -17,17 +17,17 @@ export const EmptyState = ({ children, className }: PropsWithChildren<{ classNam
 
 export const EmptyStateIcon = ({ children }: PropsWithChildren) => {
 
-    return <div className="text-5xl text-gray-10">
+    return <div className="text-5xl text-ink-gray-5">
         {children}
     </div>
 }
 
 export const EmptyStateTitle = ({ children }: PropsWithChildren) => {
-    return <span className="text-2xl mt-4 text-center text-gray-12 font-semibold">{children}</span>
+    return <span className="text-2xl mt-4 text-center text-ink-gray-7 font-semibold">{children}</span>
 }
 
 export const EmptyStateDescription = ({ children }: PropsWithChildren) => {
-    return <span className="text-sm mt-3 mb-4 max-w-lg text-center text-gray-11">{children}</span>
+    return <span className="text-sm mt-3 mb-4 max-w-lg text-center text-ink-gray-6">{children}</span>
 }
 
 export const EmptyStateLinkAction = ({ children, buttonProps, ...props }: LinkProps & PropsWithChildren<{ buttonProps?: ButtonProps }>) => {

@@ -44,7 +44,8 @@ const FileMessage = ({
                     {file.onView && (
                         <Button
                             variant="ghost"
-                            size="icon"
+                            size="sm"
+                            isIconButton
                             onClick={file.onView}
                             title="View"
                         >
@@ -55,7 +56,8 @@ const FileMessage = ({
                     {file.onDownload && (
                         <Button
                             variant="ghost"
-                            size="icon"
+                            size="sm"
+                            isIconButton
                             onClick={file.onDownload}
                             title="Download"
                         >
@@ -66,7 +68,8 @@ const FileMessage = ({
                     {file.onShare && (
                         <Button
                             variant="ghost"
-                            size="icon"
+                            size="sm"
+                            isIconButton
                             onClick={file.onShare}
                             title="Share"
                         >

@@ -42,7 +42,7 @@ export const PollOptionBar: React.FC<PollOptionBarProps> = ({
                 <div className="relative z-10 flex items-center flex-1 px-4 py-1.5 gap-2">
                     <span
                         className={cn(
-                            "truncate text-[13px]",
+                            "truncate text-sm",
                             isCurrentUserVote ? "text-ink-gray-8 font-medium" : "text-ink-gray-4"
                         )}
                     >
@@ -54,7 +54,7 @@ export const PollOptionBar: React.FC<PollOptionBarProps> = ({
                     {option.votes !== undefined && (
                         <span className="text-xs text-ink-gray-4 font-medium">
                             {option.votes} vote{option.votes === 1 ? "" : "s"} •{" "}
-                            <span className="text-[11px]">{percentage.toFixed(0)}%</span>
+                            <span className="text-xs">{percentage.toFixed(0)}%</span>
                         </span>
                     )}
                     {showVoters && option.voters && option.voters.length > 0 && (
@@ -70,21 +70,21 @@ export const PollOptionBar: React.FC<PollOptionBarProps> = ({
         <div
             className={cn(
                 "relative flex items-center min-h-5 rounded-md overflow-hidden group mb-1 border",
-                isCurrentUserVote ? "border-blue-500/30 bg-blue-500/3" : "border-transparent"
+                isCurrentUserVote ? "border-outline-blue-4/30 bg-surface-blue-5/3" : "border-transparent"
             )}
         >
             <div className="absolute top-0 left-0 h-full w-full transition-all duration-300 ease-in-out rounded-md bg-surface-gray-2/60" />
             <div
                 className={cn(
                     "absolute top-0 left-0 h-full transition-all duration-300 ease-in-out rounded-md",
-                    isCurrentUserVote ? "bg-blue-500/10" : "bg-ink-gray-8/10"
+                    isCurrentUserVote ? "bg-surface-blue-5/10" : "bg-ink-gray-8/10"
                 )}
                 style={{ width: `${barWidth}%` }}
             />
             <div className="relative z-10 flex items-center flex-1 px-4 py-1.5 gap-2">
                 <span
                     className={cn(
-                        "truncate text-[13px]",
+                        "truncate text-sm",
                         isCurrentUserVote ? "text-ink-gray-8 font-medium" : "text-ink-gray-4"
                     )}
                 >
@@ -96,7 +96,7 @@ export const PollOptionBar: React.FC<PollOptionBarProps> = ({
                 {option.votes !== undefined && (
                     <span className="text-xs text-ink-gray-4 font-medium">
                         {option.votes} vote{option.votes === 1 ? "" : "s"} •{" "}
-                        <span className="text-[11px]">{percentage.toFixed(0)}%</span>
+                        <span className="text-xs">{percentage.toFixed(0)}%</span>
                     </span>
                 )}
                 {showVoters && option.voters && option.voters.length > 0 && (

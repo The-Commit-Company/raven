@@ -161,7 +161,7 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                 {/* Header */}
                 <div className="px-4 pt-4 pb-3 border-b shrink-0 bg-surface-gray-2/30">
                     <DialogHeader>
-                        <DialogTitle className="text-base font-semibold">Create Poll</DialogTitle>
+                        <DialogTitle className="text-base">Create Poll</DialogTitle>
                     </DialogHeader>
                 </div>
 
@@ -177,14 +177,14 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                                     rules={{ required: 'Poll question is required' }}
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-sm font-medium flex items-center gap-1.5">
+                                            <FormLabel className="text-sm font-medium gap-1.5">
                                                 Question
                                             </FormLabel>
                                             <FormControl>
                                                 <Textarea
                                                     placeholder="What would you like to ask?"
                                                     {...field}
-                                                    className="min-h-[70px] resize-none text-sm"
+                                                    className="min-h-17.5 resize-none text-sm"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -208,7 +208,7 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                                                     type="button"
                                                     variant="outline"
                                                     size="sm"
-                                                    className="h-7 text-xs px-2"
+                                                    className="text-xs"
                                                 >
                                                     <Sparkles className="h-3 w-3 mr-1.5 text-ink-gray-4" />
                                                     Choose preset
@@ -238,7 +238,7 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                                         variant="ghost"
                                         size="sm"
                                         onClick={clearOptions}
-                                        className="h-7 text-xs px-2 text-ink-gray-4 hover:text-ink-gray-8"
+                                        className="text-xs"
                                     >
                                         Clear
                                     </Button>
@@ -253,14 +253,15 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                                                 placeholder={`Option ${index + 1}`}
                                                 value={option}
                                                 onChange={(e) => updateOption(index, e.target.value)}
-                                                className="flex-1 h-8 text-sm"
+                                                className="flex-1 text-sm"
                                             />
                                             {options.length > 2 && (
                                                 <Button
                                                     type="button"
                                                     variant="ghost"
-                                                    size="icon"
-                                                    className="h-7 w-7 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    size="sm"
+                                                    isIconButton
+                                                    className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
                                                     onClick={() => removeOption(index)}
                                                     aria-label={`Remove option ${index + 1}`}
                                                 >
@@ -303,7 +304,7 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                                         render={({ field }) => (
                                             <FormItem className="flex flex-row items-center justify-between rounded-md border p-2.5 bg-surface-gray-2/30">
                                                 <div className="space-y-0.5 flex-1">
-                                                    <FormLabel className="text-xs font-medium flex items-center gap-1.5 cursor-pointer">
+                                                    <FormLabel className="text-xs font-medium gap-1.5 cursor-pointer">
                                                         <BarChart3 className="h-3 w-3 text-ink-gray-4" />
                                                         Allow multiple choices
                                                     </FormLabel>
@@ -327,7 +328,7 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                                         render={({ field }) => (
                                             <FormItem className="flex flex-row items-center justify-between rounded-md border p-2.5 bg-surface-gray-2/30">
                                                 <div className="space-y-0.5 flex-1">
-                                                    <FormLabel className="text-xs font-medium flex items-center gap-1.5 cursor-pointer">
+                                                    <FormLabel className="text-xs font-medium gap-1.5 cursor-pointer">
                                                         <EyeOff className="h-3 w-3 text-ink-gray-4" />
                                                         Anonymous poll
                                                     </FormLabel>
@@ -348,7 +349,7 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                                     {/* End Date */}
                                     <div className="rounded-md border p-2.5 bg-surface-gray-2/30 space-y-2.5">
                                         <div className="space-y-0.5">
-                                            <Label className="text-xs font-medium flex items-center gap-1.5">
+                                            <Label className="text-xs font-medium gap-1.5">
                                                 <CalendarIcon className="h-3 w-3 text-ink-gray-4" />
                                                 End date (optional)
                                             </Label>

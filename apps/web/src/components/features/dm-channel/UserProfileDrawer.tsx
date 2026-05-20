@@ -114,8 +114,9 @@ export function UserProfileDrawer({ user }: UserProfileDrawerProps) {
                                     <span className="inline-flex shrink-0">
                                         <Button
                                             variant="ghost"
-                                            size="icon"
-                                            className="h-7 w-7 shrink-0 opacity-70 hover:opacity-100 disabled:pointer-events-none"
+                                            size="sm"
+                                            isIconButton
+                                            className="shrink-0 opacity-70 hover:opacity-100"
                                             onClick={() => employee?.preferred_email && copyToClipboard(employee.preferred_email, "Email")}
                                             disabled={!employee?.preferred_email}
                                             aria-label="Copy email"
@@ -153,8 +154,9 @@ export function UserProfileDrawer({ user }: UserProfileDrawerProps) {
                                     <span className="inline-flex shrink-0">
                                         <Button
                                             variant="ghost"
-                                            size="icon"
-                                            className="h-7 w-7 shrink-0 opacity-70 hover:opacity-100 disabled:pointer-events-none"
+                                            size="sm"
+                                            isIconButton
+                                            className="shrink-0 opacity-70 hover:opacity-100"
                                             onClick={() => employee?.cell_number && copyToClipboard(employee.cell_number, "Phone number")}
                                             disabled={!employee?.cell_number}
                                             aria-label="Copy phone"

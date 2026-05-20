@@ -25,7 +25,7 @@ export default function ReplyMessage({
 
     return (
         <div className="py-0.5">
-            <div className="border-l-2 cursor-pointer border-gray-500 bg-surface-gray-2/60 pl-3 py-2 flex flex-col gap-1" role='button'>
+            <div className="border-l-2 cursor-pointer border-outline-gray-3 bg-surface-gray-2/60 pl-3 py-2 flex flex-col gap-1" role='button'>
                 <span className="text-xs text-ink-gray-4 font-medium">
                     Replying to {user?.full_name || user?.name || repliedMessage.owner}
                 </span>

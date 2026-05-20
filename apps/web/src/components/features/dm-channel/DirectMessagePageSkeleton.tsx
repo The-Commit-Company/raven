@@ -15,14 +15,14 @@ export function DirectMessagePageSkeleton() {
                 }}
             >
                 <div className="flex items-center gap-2 min-w-0">
-                    <Skeleton className="h-7 w-7 rounded-sm shrink-0" />
+                    <Skeleton className="h-7 w-7 shrink-0" />
                     <Skeleton className="h-8 w-8 rounded-full shrink-0" />
                     <Skeleton className="h-5 w-32" />
                 </div>
                 <div className="flex items-center gap-1">
-                    <Skeleton className="h-7 w-7 rounded-sm" />
-                    <Skeleton className="h-7 w-7 rounded-sm" />
-                    <Skeleton className="h-7 w-7 rounded-sm" />
+                    <Skeleton className="h-7 w-7" />
+                    <Skeleton className="h-7 w-7" />
+                    <Skeleton className="h-7 w-7" />
                 </div>
             </div>
 
@@ -59,7 +59,7 @@ export function DirectMessagePageSkeleton() {
                 <div className="border-t border-outline-gray-2 p-2 shrink-0">
                     <div className="flex items-end gap-2 rounded-lg border bg-surface-white px-3 py-2">
                         <Skeleton className="h-5 flex-1 max-w-md" />
-                        <Skeleton className="h-8 w-8 rounded shrink-0" />
+                        <Skeleton className="h-8 w-8 shrink-0" />
                     </div>
                 </div>
             </div>

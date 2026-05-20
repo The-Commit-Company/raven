@@ -409,8 +409,8 @@ function DataTablePagination({
                 <div className="flex items-center gap-1">
                     <Button
                         variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
+                        size="sm"
+                        isIconButton
                         onClick={onPreviousPage}
                         disabled={!canGoPrevious}
                     >
@@ -419,8 +419,8 @@ function DataTablePagination({
                     </Button>
                     <Button
                         variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
+                        size="sm"
+                        isIconButton
                         onClick={onNextPage}
                         disabled={!canGoNext}
                     >

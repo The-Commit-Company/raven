@@ -1,8 +1,8 @@
-import _ from '@/lib/translate'
+import _ from '@lib/translate'
 import { Dispatch, SetStateAction, useCallback } from 'react'
 import { Accept, useDropzone } from 'react-dropzone'
-import { cn } from '@/lib/utils'
-import { formatBytes, getFileExtension } from '@/lib/file'
+import { cn } from '@lib/utils'
+import { formatBytes, getFileExtension } from '@lib/file'
 import { Button } from './button'
 import { Trash2Icon } from 'lucide-react'
 

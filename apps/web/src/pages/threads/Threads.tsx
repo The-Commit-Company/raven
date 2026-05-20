@@ -14,6 +14,8 @@ import { useChannels } from "@hooks/useChannels"
 import _ from "@lib/translate"
 import { useLiveQuery } from "dexie-react-hooks"
 import { db } from "@db"
+import { Button } from "@components/ui/button"
+import { H4 } from "@components/ui/typography"
 
 type ThreadTab = 'participating' | 'ai' | 'other'
 
@@ -47,7 +49,7 @@ export default function Threads() {
                     }}
                 >
                     <div className="flex items-center gap-4">
-                        <span className="text-md font-medium">{_("Threads")}</span>
+                        <H4>{_("Threads")}</H4>
                     </div>
                 </header>
 
@@ -89,14 +91,9 @@ export default function Threads() {
                                             className="pl-8 pr-8 text-[13px]"
                                         />
                                         {search && (
-                                            <button
-                                                type="button"
-                                                aria-label={_("Clear search")}
-                                                onClick={() => setSearch("")}
-                                                className="absolute right-2 top-1/2 -translate-y-1/2 text-ink-gray-4 hover:text-ink-gray-8 focus:outline-none"
-                                            >
+                                            <Button isIconButton variant="ghost" size="sm" aria-label={_("Clear search")} onClick={() => setSearch("")}>
                                                 <X className="h-3.5 w-3.5" />
-                                            </button>
+                                            </Button>
                                         )}
                                     </div>
                                     <ChannelSelect

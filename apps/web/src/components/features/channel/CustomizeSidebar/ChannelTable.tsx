@@ -205,7 +205,7 @@ const ChannelGroupDropdown = ({ channel }: { channel: ChannelTable }) => {
       ))}
       {channel.channel_group && <div>
         <SelectSeparator className="mx-1" />
-        <SelectItem value="Ungroup Channel" className="text-red-400">{_("Ungroup Channel")}</SelectItem>
+        <SelectItem value="Ungroup Channel" className="text-ink-red-4">{_("Ungroup Channel")}</SelectItem>
       </div>}
     </SelectContent>
   </Select>)

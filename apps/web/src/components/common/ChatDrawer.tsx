@@ -26,8 +26,8 @@ export default function ChatDrawer({ channelID, messageID, onClose }: ChatDrawer
                 <h2 className="text-sm font-medium">{_("Messages")}</h2>
                 <Button
                     variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
+                    size="sm"
+                    isIconButton
                     onClick={onClose}
                     aria-label={_("Close")}
                 >

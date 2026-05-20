@@ -1,8 +1,8 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@lib/utils"
+import { Button } from "@components/ui/button"
 
 const inputGroupVariants = cva(cn("group/input-group relative flex w-full items-center outline-none min-w-0 border border-transparent transition-all",
 

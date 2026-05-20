@@ -10,6 +10,9 @@ import { ReminderDialog } from "@components/features/saved-messages/ReminderDial
 import { SavedMessage, SavedMessageStatus } from "../../types/SavedMessage"
 import { RavenChannel } from "@raven/types/RavenChannelManagement/RavenChannel"
 import { WorkspaceSwitcher } from "@components/workspace-switcher/WorkspaceSwitcher"
+import { Tabs, TabsList, TabsTrigger } from "@components/ui/tabs"
+import { Badge } from "@components/ui/badge"
+import { H4 } from "@components/ui/typography"
 
 const TABS: { key: SavedMessageStatus; label: string }[] = [
     { key: 'in_progress', label: 'In progress' },
@@ -167,7 +170,7 @@ export default function SavedMessages() {
                     }}
                 >
                     <div className="flex items-center gap-4">
-                        <span className="text-md font-medium">Saved Messages</span>
+                        <H4>Saved Messages</H4>
                     </div>
                 </header>
 
@@ -176,24 +179,16 @@ export default function SavedMessages() {
                         <div className="px-4 pt-4 shrink-0 space-y-3">
                             {/* Tabs */}
                             <div className="flex gap-2 items-center">
-                                {TABS.map(tab => {
-                                    const count = getTabCount(tab.key)
-                                    return (
-                                        <button
-                                            key={tab.key}
-                                            type="button"
-                                            className={cn(
-                                                "px-4 py-1 rounded-md text-xs font-medium transition-colors border border-transparent",
-                                                activeTab === tab.key
-                                                    ? "bg-ink-gray-8 text-ink-white shadow"
-                                                    : "bg-surface-gray-2 text-ink-gray-4 hover:bg-surface-gray-3 hover:text-ink-gray-8"
-                                            )}
-                                            onClick={() => setActiveTab(tab.key)}
-                                        >
-                                            {tab.label} {count > 0 && ` ${count}`}
-                                        </button>
-                                    )
-                                })}
+                                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as SavedMessageStatus)}>
+                                    <TabsList variant="subtle" size="sm">
+                                        {TABS.map(tab => (
+                                            <TabsTrigger key={tab.key} value={tab.key}>
+                                                {tab.label}
+                                                {getTabCount(tab.key) > 0 && <Badge variant="subtle" size="sm" theme="gray">{getTabCount(tab.key)}</Badge>}
+                                            </TabsTrigger>
+                                        ))}
+                                    </TabsList>
+                                </Tabs>
                                 <Button
                                     variant="outline"
                                     size="sm"
@@ -216,18 +211,13 @@ export default function SavedMessages() {
                                         className="pl-8 pr-8 text-[13px]"
                                     />
                                     {search && (
-                                        <button
-                                            type="button"
-                                            aria-label="Clear search"
-                                            onClick={() => setSearch("")}
-                                            className="absolute right-2 top-1/2 -translate-y-1/2 text-ink-gray-4 hover:text-ink-gray-8 focus:outline-none"
-                                        >
+                                        <Button isIconButton variant="ghost" size="sm" aria-label="Clear search" onClick={() => setSearch("")}>
                                             <X className="h-3.5 w-3.5" />
-                                        </button>
+                                        </Button>
                                     )}
                                 </div>
                                 <Select value={channel} onValueChange={setChannel}>
-                                    <SelectTrigger className="w-fit min-w-35 sm:min-w-45 h-7 text-[13px] [&>span]:px-2">
+                                    <SelectTrigger inputSize="sm" className="w-fit min-w-35 sm:min-w-45 text-[13px] [&>span]:px-2">
                                         {selectedChannel && channel !== 'all' ? (
                                             <div className="flex items-center gap-1.5">
                                                 {selectedChannel.is_direct_message === 1 ? (

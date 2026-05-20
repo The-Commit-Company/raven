@@ -11,6 +11,7 @@ import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
 import _ from "@lib/translate"
 import { useChannel } from "@hooks/useChannel"
 import { SETTINGS_DRAWER_TYPES } from "@pages/workspace/Channel"
+import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from "@components/ui/empty"
 
 export default function DirectMessage() {
     const channelID = useCurrentChannelID()
@@ -36,10 +37,12 @@ export default function DirectMessage() {
 
     if (!peerUser) {
         return (
-            <div className="flex flex-1 flex-col items-center justify-center gap-2 p-6 text-center text-ink-gray-4">
-                <p className="text-sm font-medium">{_("Conversation not found")}</p>
-                <p className="text-xs">{_("This direct message may have been removed or you don’t have access.")}</p>
-            </div>
+            <Empty>
+                <EmptyHeader>
+                    <EmptyTitle>{_("Conversation not found")}</EmptyTitle>
+                    <EmptyDescription>{_("This direct message may have been removed or you don’t have access.")}</EmptyDescription>
+                </EmptyHeader>
+            </Empty>
         )
     }
 

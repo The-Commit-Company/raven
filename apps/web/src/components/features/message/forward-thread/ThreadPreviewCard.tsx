@@ -131,7 +131,7 @@ export function ThreadPreviewCard({
 
             {/* Footer: View thread */}
             {clickable && (
-                <div className="mt-3 pt-2 border-t border-outline-gray-2/50 flex items-center gap-1.5 text-xs font-medium text-primary">
+                <div className="mt-3 pt-2 border-t border-outline-gray-2/50 flex items-center gap-1.5 text-xs font-medium text-ink-blue-3">
                     <ExternalLink className="h-3.5 w-3.5" />
                     View thread
                 </div>

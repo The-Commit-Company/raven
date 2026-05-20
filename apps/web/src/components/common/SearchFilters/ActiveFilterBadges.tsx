@@ -14,7 +14,7 @@ interface FilterBadgeProps {
 function FilterBadge({ label, onRemove }: FilterBadgeProps) {
     return (
         <Badge
-            variant="secondary"
+            variant="subtle"
             className="gap-1 text-[10px] cursor-pointer hover:bg-surface-gray-2/80 transition-colors pr-1.5"
             onClick={onRemove}>
             {label}

@@ -187,7 +187,7 @@ const SortableItem = ({ id, index, content, onEdit, onDelete }: SortableItemProp
             // {...listeners}
             className={cn(
                 "flex items-center gap-2 rounded-md border bg-surface-cards text-sm transition-colors",
-                isDragging && "border-muted-foreground/50"
+                isDragging && "border-outline-gray-3/50"
             )}
         >
             <div className="flex items-center justify-between flex-1 min-w-0">
@@ -198,7 +198,8 @@ const SortableItem = ({ id, index, content, onEdit, onDelete }: SortableItemProp
                 <div className="flex items-center gap-1 shrink-0 px-2">
                     <Button
                         variant="ghost"
-                        size="icon"
+                        size="sm"
+                        isIconButton
                         className="h-7 w-7"
                         onClick={toggleEdit}
                         aria-label="Edit group name"
@@ -207,8 +208,10 @@ const SortableItem = ({ id, index, content, onEdit, onDelete }: SortableItemProp
                     </Button>
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 text-destructive hover:text-destructive"
+                        theme="red"
+                        size="sm"
+                        isIconButton
+                        className="h-7 w-7"
                         onClick={onDelete}
                         aria-label="Delete group"
                     >
@@ -237,7 +240,8 @@ const EditGroup = ({ initialName = '', onCancel, onSubmit }: { initialName?: str
             <Button
                 onClick={onCancel}
                 variant="ghost"
-                size="icon"
+                size="sm"
+                isIconButton
                 className="h-8 w-8"
             >
                 <X className="h-4 w-4" />

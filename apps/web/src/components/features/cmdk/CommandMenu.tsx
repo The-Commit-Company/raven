@@ -35,7 +35,7 @@ const CommandMenu = () => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent
-                className="fixed left-1/2 top-1.25 -translate-x-1/2 translate-y-0 w-155 max-w-none sm:max-w-none p-0 gap-0 rounded-lg shadow-lg overflow-hidden border border-outline-gray-2/50 bg-surface-cards [&>button:last-child]:hidden"
+                className="fixed left-1/2 top-1.25 -translate-x-1/2 translate-y-0 w-155 max-w-none sm:max-w-none p-0 gap-0 overflow-hidden [&>button:last-child]:hidden"
                 aria-describedby={undefined}
             >
                 <DialogHeader className="sr-only">
@@ -75,7 +75,6 @@ const CommandPalette = () => {
                 value={text}
                 onValueChange={setText}
                 placeholder={_("Search or type a command")}
-                className="focus:ring-0 border-0 bg-transparent"
             />
             <CommandList className="max-h-109">
                 <CommandGroup>

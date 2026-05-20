@@ -70,7 +70,7 @@ const ChannelHeader = () => {
                 <div className="flex items-center gap-0.5">
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={toggleStarChannel}>
+                            <Button variant="ghost" size="sm" isIconButton onClick={toggleStarChannel}>
                                 <Star className={`h-3 w-3 text-ink-gray-8/80 ${isStarred ? "fill-amber-300 stroke-amber-300" : ""}`} />
                                 <span className="sr-only">{_('Star')}</span>
                             </Button>
@@ -117,7 +117,7 @@ const ChannelHeader = () => {
                     </Tooltip> */}
                     {pinnedCount > 0 && <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="default" className="h-7 gap-2 rounded-sm" onClick={onOpenPins}>
+                            <Button variant="ghost" size="sm" className="gap-2" onClick={onOpenPins}>
                                 <Pin className="h-2 w-2 text-ink-gray-8/80" />
                                 <span className="sr-only">{_('Pinned')}</span>
                                 <span className="text-ink-gray-4 text-sm font-normal">{pinnedCount}</span>
@@ -134,7 +134,7 @@ const ChannelHeader = () => {
             <div className="flex items-center gap-1 ml-auto">
                 <Tooltip>
                     <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm">
+                        <Button variant="ghost" size="sm" isIconButton>
                             <Headset className="h-3 w-3 text-ink-gray-8/80" />
                             <span className="sr-only">{_('Start call')}</span>
                         </Button>

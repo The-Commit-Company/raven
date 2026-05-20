@@ -59,8 +59,9 @@ const ChannelMembersDrawer = () => {
                         </TabsList>
                         <Button
                             variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 ml-2 shrink-0"
+                            size="sm"
+                            isIconButton
+                            className="ml-2 shrink-0"
                             onClick={handleClose}
                             aria-label="Close drawer"
                         >

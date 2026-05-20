@@ -155,7 +155,7 @@ const ChannelJoinButton = ({ channel }: { channel: ChannelListItem }) => {
         return (
             <Badge
                 variant="outline"
-                className="text-sm px-1 rounded-md w-20 h-8 bg-surface-red-5/10 text-destructive cursor-default border-transparent"
+                className="text-sm px-1 rounded-md w-20 h-8 bg-surface-red-5/10 text-ink-red-4 cursor-default border-transparent"
             >
                 {_("Archived")}
             </Badge>
@@ -203,7 +203,7 @@ const ChannelNotificationsButton = ({ channel }: { channel: ChannelListItem }) =
         <div className="flex w-full justify-center">
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="hover:cursor-pointer h-7 w-7 rounded-sm">
+                    <Button variant="ghost" size="sm" isIconButton className="hover:cursor-pointer">
                         <span key={channel.allow_notifications ? 'on' : 'off'} className="grid">
                             <NotificationIcon notification={channel.allow_notifications ? 'All' : 'Mute'} />
                         </span>

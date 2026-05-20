@@ -55,7 +55,7 @@ const FileMessageRenderer = ({ user, files, time, message }: FileMessageProps) =
                 </div>
 
                 {message && (
-                    <div className="text-[13px] text-primary mb-2">{message}</div>
+                    <div className="text-sm text-ink-gray-8 mb-2">{message}</div>
                 )}
 
                 <FileMessage

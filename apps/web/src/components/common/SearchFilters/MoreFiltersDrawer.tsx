@@ -42,7 +42,7 @@ export function MoreFiltersDrawer({ filters, onClose }: MoreFiltersDrawerProps) 
                     <ListFilter className="w-5 h-5" />
                     <h2 className="text-lg font-medium">{_("Filters")}</h2>
                 </div>
-                <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close">
+                <Button variant="ghost" size="sm" isIconButton onClick={onClose} aria-label="Close">
                     <X className="w-5 h-5" />
                 </Button>
             </div>

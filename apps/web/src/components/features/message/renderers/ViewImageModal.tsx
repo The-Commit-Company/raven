@@ -114,13 +114,13 @@ const ViewImageModal = ({
                                 </>
                             )}
                             <div className="flex items-center gap-2">
-                                <Button variant="ghost" size="icon" onClick={onClose}>
+                                <Button variant="ghost" size="sm" isIconButton onClick={onClose}>
                                     <Download className="w-4 h-4" />
                                 </Button>
-                                <Button variant="ghost" size="icon" onClick={onClose}>
+                                <Button variant="ghost" size="sm" isIconButton onClick={onClose}>
                                     <Share2 className="w-4 h-4" />
                                 </Button>
-                                <Button variant="ghost" size="icon" onClick={onClose}>
+                                <Button variant="ghost" size="sm" isIconButton onClick={onClose}>
                                     <X className="w-4 h-4" />
                                 </Button>
                             </div>
@@ -133,19 +133,21 @@ const ViewImageModal = ({
                         {images.length > 1 && (
                             <>
                                 <Button
-                                    variant="secondary"
-                                    size="icon"
+                                    variant="subtle"
+                                    size="sm"
+                                    isIconButton
                                     onClick={onPrev}
-                                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10 rounded-full"
+                                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10"
                                     title="Previous image (←)"
                                 >
                                     <ChevronLeft className="w-4 h-4" />
                                 </Button>
                                 <Button
-                                    variant="secondary"
-                                    size="icon"
+                                    variant="subtle"
+                                    size="sm"
+                                    isIconButton
                                     onClick={onNext}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10 rounded-full"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10"
                                     title="Next image (→)"
                                 >
                                     <ChevronRight className="w-4 h-4" />
@@ -172,7 +174,7 @@ const ViewImageModal = ({
                                         className={cn(
                                             "shrink-0 cursor-pointer border-2 rounded-lg overflow-hidden transition-all duration-200",
                                             index === selectedImageIndex
-                                                ? "border-blue-500 ring-2 ring-blue-300"
+                                                ? "border-outline-blue-4 ring-2 ring-blue-300"
                                                 : "border-transparent hover:border-outline-gray-2"
                                         )}
                                         onClick={() => onImageSelect(index)}

@@ -85,7 +85,7 @@ export function FileTypeFilter({ filters }: { filters: SearchFilters }) {
                                         onCheckedChange={() => toggleFileType(fileType.id)}
                                         className={checked ? 'border-primary data-[state=checked]:bg-ink-gray-8 data-[state=checked]:text-ink-white' : ''}
                                     />
-                                    <IconComponent className={`h-4 w-4 ${checked ? 'text-primary' : 'text-ink-gray-4'}`} />
+                                    <IconComponent className={`h-4 w-4 ${checked ? 'text-ink-gray-8' : 'text-ink-gray-4'}`} />
                                     <span>{fileType.label}</span>
                                 </div>
                             )

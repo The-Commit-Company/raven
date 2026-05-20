@@ -112,7 +112,7 @@ function WorkspaceTypeCell({ type }: { type: WorkspaceFields["type"] }) {
     const isPrivate = type === "Private"
 
     return (
-        <Badge variant={isPrivate ? "secondary" : "outline"}>
+        <Badge variant={isPrivate ? "subtle" : "outline"}>
             {isPrivate ? (
                 <Lock className="mr-1 h-3 w-3" />
             ) : (
@@ -128,10 +128,10 @@ function WorkspaceTypeCell({ type }: { type: WorkspaceFields["type"] }) {
  */
 function MembershipCell({ workspace }: { workspace: WorkspaceFields }) {
     if (workspace.is_admin) {
-        return <Badge variant="default">Admin</Badge>
+        return         <Badge variant="solid">Admin</Badge>
     }
     if (workspace.workspace_member_name) {
-        return <Badge variant="secondary">Member</Badge>
+        return         <Badge variant="subtle">Member</Badge>
     }
     return <Badge variant="outline">Not a member</Badge>
 }

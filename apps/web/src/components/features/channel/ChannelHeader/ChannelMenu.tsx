@@ -33,7 +33,7 @@ const ChannelMenu = ({ channelID }: { channelID: string }) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="default" className="h-7 rounded-sm">
+                <Button variant="ghost" size="sm">
                     {
                         <div className="flex items-center gap-1">
                             <ChannelIcon type={channel.type} className="h-4 w-4" />

@@ -1,6 +1,7 @@
 import { Separator } from "@components/ui/separator"
 import { Label } from "@components/ui/label"
 import { Input } from "@components/ui/input"
+import { Textarea } from "@components/ui/textarea"
 import { Button } from "@components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
 import {
@@ -153,8 +154,9 @@ export default function Profile() {
                   <Button
                     type="button"
                     variant="ghost"
-                    size="icon"
-                    className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full"
+                    size="sm"
+                    isIconButton
+                    className="absolute right-1 top-1/2 -translate-y-1/2"
                   >
                     <Smile className="h-4 w-4" />
                   </Button>
@@ -236,9 +238,9 @@ export default function Profile() {
             <Label htmlFor="bio" className="text-sm">
               Bio
             </Label>
-            <textarea
+            <Textarea
               id="bio"
-              className="flex min-h-[60px] w-full rounded-md border border-outline-gray-3 bg-surface-white px-3 py-2 text-sm ring-offset-surface-white placeholder:text-ink-gray-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-4 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              variant="outline"
               placeholder="Tell us about yourself"
             />
           </div>

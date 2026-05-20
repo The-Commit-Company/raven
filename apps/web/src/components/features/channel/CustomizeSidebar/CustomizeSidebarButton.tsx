@@ -32,8 +32,9 @@ export const CustomizeSidebarButton = ({ showMyChannelsOnly, setShowMyChannelsOn
                 <DropdownMenuTrigger asChild>
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 rounded-sm hover:bg-surface-gray-3"
+                        size="sm"
+                        isIconButton
+                        className="h-6 w-6"
                         aria-label="More options"
                     >
                         <MoreVertical className="h-3 w-3" />
@@ -41,7 +42,7 @@ export const CustomizeSidebarButton = ({ showMyChannelsOnly, setShowMyChannelsOn
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" side="bottom" sideOffset={4} className="min-w-48">
                     <DropdownMenuItem onClick={() => setShowMyChannelsOnly(!showMyChannelsOnly)}>
-                        <span>{_("Only show my channels")}</span>{showMyChannelsOnly && <Check className="h-4 w-4 text-primary" />}
+                        <span>{_("Only show my channels")}</span>{showMyChannelsOnly && <Check className="h-4 w-4 text-ink-gray-8" />}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => setIsDialogOpen(true)}>
                         <span>{_("Customize my sidebar")}</span>

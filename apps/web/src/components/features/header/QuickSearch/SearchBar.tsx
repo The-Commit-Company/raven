@@ -15,7 +15,9 @@ const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(({ value, onChang
                 ref={ref}
                 type="search"
                 placeholder="Search"
-                className="pl-8 pr-8 bg-surface-gray-2 border-none h-7 w-full rounded-sm"
+                variant="subtle"
+                inputSize="sm"
+                className="pl-8 pr-8"
                 value={value}
                 onChange={e => onChange(e.target.value)}
                 autoFocus

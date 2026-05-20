@@ -18,7 +18,7 @@ const NavUserMenu = ({ user }: { user: { name: string, email: string, avatar: st
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Button variant="ghost" size="sm" isIconButton>
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <UserAvatar user={userFields} size="md" className="rounded-lg" showStatusIndicator={true} showBotIndicator={false} />

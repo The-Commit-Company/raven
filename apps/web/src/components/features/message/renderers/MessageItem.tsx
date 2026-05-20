@@ -335,7 +335,7 @@ export const MessageContent = ({ message }: { message: Message }) => {
             <ReplyMessage repliedMessage={repliedMessageDetails} />}
 
 
-        {message.text && <div className="text-[13px] text-primary">{message.content}</div>}
+        {message.text && <div className="text-sm text-ink-gray-8">{message.content}</div>}
 
         {message.is_forwarded === 1 && hasForwardedThread(message) && (
             <ForwardedThreadMessage message={message} />
