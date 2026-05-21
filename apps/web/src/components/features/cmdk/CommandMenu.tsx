@@ -86,7 +86,7 @@ const CommandPalette = ({ inDrawer = false }: { inDrawer?: boolean }) => {
             label="Global Command Menu"
             filter={customFilter}
             shouldFilter={false}
-            className={inDrawer ? "flex flex-col flex-1 min-h-0" : ""}
+            className={inDrawer ? "flex flex-col flex-1 min-h-0 bg-transparent" : ""}
         >
             <CommandInput
                 autoFocus
