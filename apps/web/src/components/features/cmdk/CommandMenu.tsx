@@ -1,4 +1,5 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@components/ui/dialog'
+import { Drawer, DrawerContent } from '@components/ui/drawer'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@components/ui/command'
 import _ from '@lib/translate'
 import { useDebounce } from '@raven/lib/hooks/useDebounce'
@@ -16,9 +17,12 @@ import { useCurrentChannelID } from '@hooks/useCurrentChannelID'
 import { useChannel } from '@hooks/useChannel'
 import { useUser } from '@hooks/useUser'
 import { ChannelIcon } from '@components/common/ChannelIcon/ChannelIcon'
+import { useIsMobile } from '@hooks/use-mobile'
+import { useParams } from 'react-router-dom'
 
 const CommandMenu = () => {
     const [open, setOpen] = useAtom(commandMenuOpenAtom)
+    const isMobile = useIsMobile()
 
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
@@ -31,6 +35,18 @@ const CommandMenu = () => {
         document.addEventListener('keydown', down)
         return () => document.removeEventListener('keydown', down)
     }, [])
+
+    if (isMobile) {
+        return (
+            <Drawer open={open} onOpenChange={setOpen}>
+                <DrawerContent className="h-[90vh] flex flex-col">
+                    <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+                        <CommandPalette inDrawer />
+                    </div>
+                </DrawerContent>
+            </Drawer>
+        )
+    }
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -48,12 +64,13 @@ const CommandMenu = () => {
     )
 }
 
-const CommandPalette = () => {
+const CommandPalette = ({ inDrawer = false }: { inDrawer?: boolean }) => {
     const [text, setText] = useState('')
     const navigate = useNavigate()
     const setOpen = useSetAtom(commandMenuOpenAtom)
+    const { workspaceID, id: channelIDFromURL } = useParams()
     const channelID = useCurrentChannelID()
-    const { channel, dmChannel } = useChannel(channelID)
+    const { channel, dmChannel } = useChannel(channelIDFromURL ? channelID : "")
     const { data: peerUser } = useUser(dmChannel?.peer_user_id || "")
 
     const debouncedText = useDebounce(text, 200)
@@ -69,6 +86,7 @@ const CommandPalette = () => {
             label="Global Command Menu"
             filter={customFilter}
             shouldFilter={false}
+            className={inDrawer ? "flex flex-col flex-1 min-h-0" : ""}
         >
             <CommandInput
                 autoFocus
@@ -76,13 +94,13 @@ const CommandPalette = () => {
                 onValueChange={setText}
                 placeholder={_("Search or type a command")}
             />
-            <CommandList className="max-h-109">
+            <CommandList className={inDrawer ? "flex-1 overflow-auto max-h-none" : "max-h-105"}>
                 <CommandGroup>
                     <CommandItem
                         onSelect={() => {
                             const params = new URLSearchParams()
                             if (text) params.set('q', text)
-                            if (channelID) params.set('channel', channelID)
+                            if (channelIDFromURL) params.set('channel', channelID)
                             const qs = params.toString()
                             navigate(qs ? `/search?${qs}` : '/search')
                             setOpen(false)
@@ -100,6 +118,11 @@ const CommandPalette = () => {
                             <div className="flex gap-1 items-center">
                                 {text ? _("Search for `{0}` in DMs with", [text]) : _("Search in DMs with")}
                                 <span className="font-medium text-ink-gray-8">{peerUser.first_name || peerUser.name}</span>
+                            </div>
+                        ) : workspaceID ? (
+                            <div className="flex gap-1 items-center">
+                                {text ? _("Search for `{0}` in", [text]) : _("Search in")}
+                                <span className="font-medium text-ink-gray-8">{decodeURIComponent(workspaceID)}</span>
                             </div>
                         ) : null}
                     </CommandItem>
