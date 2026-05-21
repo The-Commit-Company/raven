@@ -66,7 +66,7 @@ const ChannelThreads = ({ channelID }: { channelID: string }) => {
                                             ) : null} */}
                                         </div>
 
-                                        {/* <div className="text-[13px] mb-2 line-clamp-2">
+                                        {/* <div className="text-sm mb-2 line-clamp-2">
                                             {channel?.last_message_details?.content}
                                         </div> */}
 

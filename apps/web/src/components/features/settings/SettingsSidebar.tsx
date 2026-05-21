@@ -54,7 +54,7 @@ const SettingsSidebarItem = ({
             {({ isActive }) => (
                 <div
                     className={cn(
-                        "px-2 py-1 text-[13px] font-medium rounded-md w-full flex items-center transition-colors",
+                        "px-2 py-1 text-sm font-medium rounded-md w-full flex items-center transition-colors",
                         isActive
                             ? "bg-surface-gray-3 text-ink-gray-8"
                             : "bg-transparent hover:bg-surface-gray-3/50 text-ink-gray-7",

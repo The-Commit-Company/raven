@@ -25,7 +25,15 @@ function RadioGroupItem({
     <RadioGroupPrimitive.Item
       data-slot="radio-group-item"
       className={cn(
-        "border-outline-gray-2 text-ink-gray-7 focus-visible:border-outline-gray-1 focus-visible:ring-outline-gray-1/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
+        "peer border shrink-0 rounded-full outline-none transition-shadow align-middle",
+        "size-4 aspect-square",
+        "border-ink-gray-4",
+        "data-[state=checked]:bg-ink-gray-8 data-[state=checked]:border-ink-gray-8 data-[state=checked]:text-ink-white",
+        "hover:border-ink-gray-5 hover:shadow-checkbox-hover hover:data-[state=checked]:bg-ink-gray-7 hover:data-[state=checked]:border-ink-gray-7",
+        "active:border-ink-gray-6 active:data-[state=checked]:bg-ink-gray-6 active:data-[state=checked]:border-ink-gray-6",
+        "focus-visible:border-ink-gray-8 focus-visible:shadow-focus-gray focus-visible:data-[state=checked]:bg-ink-gray-8 focus-visible:data-[state=checked]:border-ink-gray-8",
+        "disabled:border-ink-gray-3 disabled:bg-surface-gray-1 disabled:cursor-not-allowed disabled:data-[state=checked]:bg-surface-gray-3 disabled:data-[state=checked]:border-surface-gray-3",
+        "aria-invalid:border-red-500",
         className
       )}
       {...props}
@@ -34,7 +42,7 @@ function RadioGroupItem({
         data-slot="radio-group-indicator"
         className="relative flex items-center justify-center"
       >
-        <CircleIcon className="fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2" />
+        <CircleIcon className="fill-current absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2" />
       </RadioGroupPrimitive.Indicator>
     </RadioGroupPrimitive.Item>
   )

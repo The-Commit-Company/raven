@@ -106,14 +106,14 @@ export function ConvertedThreadPreviewCard({
                         </Avatar>
                         <div className="min-w-0 flex-1">
                             <p className="text-xs font-medium text-ink-gray-8">{reply.owner_name}</p>
-                            <p className="text-[13px] text-ink-gray-4 line-clamp-1">
+                            <p className="text-sm text-ink-gray-4 line-clamp-1">
                                 {reply.snippet}
                             </p>
                         </div>
                     </div>
                 ))
             ) : (
-                <p className="text-[13px] text-ink-gray-8 mb-3">
+                <p className="text-sm text-ink-gray-8 mb-3">
                     This thread was converted to a channel. You can continue the conversation there.
                 </p>
             )}

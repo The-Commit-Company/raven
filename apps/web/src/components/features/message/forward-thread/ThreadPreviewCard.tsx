@@ -105,7 +105,7 @@ export function ThreadPreviewCard({
                         {startedByName}
                         <span className="font-normal text-ink-gray-4"> started the thread</span>
                     </p>
-                    <p className="mt-0.5 text-[13px] text-ink-gray-4 line-clamp-2">
+                    <p className="mt-0.5 text-sm text-ink-gray-4 line-clamp-2">
                         {rootDisplay}
                     </p>
                 </div>
@@ -122,7 +122,7 @@ export function ThreadPreviewCard({
                     </Avatar>
                     <div className="min-w-0 flex-1">
                         <p className="text-xs font-medium text-ink-gray-8">{reply.owner_name}</p>
-                        <p className="text-[13px] text-ink-gray-4 line-clamp-1">
+                        <p className="text-sm text-ink-gray-4 line-clamp-1">
                             {reply.snippet}
                         </p>
                     </div>

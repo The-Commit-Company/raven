@@ -74,7 +74,7 @@ const ChannelInfo = ({ channelID }: { channelID: string }) => {
                                 <div className="border-t border-outline-gray-2/50"></div>
                                 <div className="flex items-center gap-2">
                                     <UserAvatar user={user} size="xs" className="w-5 h-5 rounded-full" showStatusIndicator={false} showBotIndicator={false} />
-                                    <span className="text-[13px] text-ink-gray-4/80">
+                                    <span className="text-sm text-ink-gray-4/80">
                                         {_(`Created by {0} on {1}`, [user.full_name, channel.creation.split(" ")[0]])}
                                     </span>
                                 </div>

@@ -55,11 +55,11 @@ export function UserProfileDrawer({ user }: UserProfileDrawerProps) {
                     {displayName}
                 </h2>
                 {hasEmployeeInfo && (
-                    <p className="mt-0.5 text-[13px] font-semibold text-center text-ink-gray-4">
+                    <p className="mt-0.5 text-sm font-semibold text-center text-ink-gray-4">
                         {employeeInfo}
                     </p>
                 )}
-                <p className={`flex items-center justify-center gap-1 text-[13px] font-normal text-ink-gray-4 ${hasEmployeeInfo ? "mt-1" : "mt-0.5"}`}>
+                <p className={`flex items-center justify-center gap-1 text-sm font-normal text-ink-gray-4 ${hasEmployeeInfo ? "mt-1" : "mt-0.5"}`}>
                     <AtSign className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden />
                     <span>{formatUsername(user.name)}</span>
                 </p>
@@ -74,11 +74,11 @@ export function UserProfileDrawer({ user }: UserProfileDrawerProps) {
                                 className={`inline-block h-2 w-2 shrink-0 rounded-full ${statusColor}`}
                                 aria-hidden
                             />
-                            <span className="text-[13px] font-normal text-ink-gray-8">{availability}</span>
+                            <span className="text-sm font-normal text-ink-gray-8">{availability}</span>
                         </div>
                     )}
                     {customStatus && (
-                        <p className={`text-[13px] font-normal text-ink-gray-4 ${user.availability_status ? "mt-1.5" : ""}`}>
+                        <p className={`text-sm font-normal text-ink-gray-4 ${user.availability_status ? "mt-1.5" : ""}`}>
                             {customStatus}
                         </p>
                     )}
@@ -87,7 +87,7 @@ export function UserProfileDrawer({ user }: UserProfileDrawerProps) {
 
             {/* Contact information – Slack: bold heading, icons in light rounded boxes */}
             <div className="border-t border-outline-gray-2/50 px-4 py-3">
-                <p className="text-[13px] font-bold text-ink-gray-8 mb-3">
+                <p className="text-sm font-bold text-ink-gray-8 mb-3">
                     {_("Contact information")}
                 </p>
                 <div className="space-y-3">
@@ -97,16 +97,16 @@ export function UserProfileDrawer({ user }: UserProfileDrawerProps) {
                         </div>
                         <div className="min-w-0 flex-1 flex items-start justify-between gap-2">
                             <div className="min-w-0">
-                                <p className="text-[13px] font-normal text-ink-gray-4">{_("Email address")}</p>
+                                <p className="text-sm font-normal text-ink-gray-4">{_("Email address")}</p>
                                 {employee?.preferred_email ? (
                                     <a
                                         href={`mailto:${employee.preferred_email}`}
-                                        className="text-[13px] font-normal text-primary hover:underline cursor-pointer block truncate"
+                                        className="text-sm font-normal text-primary hover:underline cursor-pointer block truncate"
                                     >
                                         {employee.preferred_email}
                                     </a>
                                 ) : (
-                                    <p className="text-[13px] font-normal text-ink-gray-4/70">{_("No email added")}</p>
+                                    <p className="text-sm font-normal text-ink-gray-4/70">{_("No email added")}</p>
                                 )}
                             </div>
                             <Tooltip>
@@ -137,16 +137,16 @@ export function UserProfileDrawer({ user }: UserProfileDrawerProps) {
                         </div>
                         <div className="min-w-0 flex-1 flex items-start justify-between gap-2">
                             <div className="min-w-0">
-                                <p className="text-[13px] font-normal text-ink-gray-4">{_("Phone")}</p>
+                                <p className="text-sm font-normal text-ink-gray-4">{_("Phone")}</p>
                                 {employee?.cell_number ? (
                                     <a
                                         href={`tel:${employee.cell_number}`}
-                                        className="text-[13px] font-normal text-primary hover:underline cursor-pointer block truncate"
+                                        className="text-sm font-normal text-primary hover:underline cursor-pointer block truncate"
                                     >
                                         {employee.cell_number}
                                     </a>
                                 ) : (
-                                    <p className="text-[13px] font-normal text-ink-gray-4/70">{_("No phone number")}</p>
+                                    <p className="text-sm font-normal text-ink-gray-4/70">{_("No phone number")}</p>
                                 )}
                             </div>
                             <Tooltip>

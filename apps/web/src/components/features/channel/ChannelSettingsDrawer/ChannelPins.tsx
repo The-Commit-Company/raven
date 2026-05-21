@@ -32,7 +32,7 @@ const ChannelPins = ({ channelID }: { channelID: string }) => {
                                             {formatRelativeDate(message.creation)}
                                         </div>
                                     </div>
-                                    <div className="text-[13px] truncate">
+                                    <div className="text-sm truncate">
                                         {message.content}
                                     </div>
                                 </div>

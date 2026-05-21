@@ -264,7 +264,7 @@ const MentionItem = memo(({
                         </span>
                         <ChannelContext notification={notification} />
                     </div>
-                    <div className="text-[13px] text-ink-gray-8 line-clamp-2 mt-0.5 [&_.mention]:text-mention [&_.mention]:font-medium [&_.mention]:bg-surface-blue-2 dark:[&_.mention]:bg-blue-950/50 [&_.mention]:px-1 [&_.mention]:py-0.5 [&_.mention]:rounded [&_p]:my-0">
+                    <div className="text-sm text-ink-gray-8 line-clamp-2 mt-0.5 [&_.mention]:text-mention [&_.mention]:font-medium [&_.mention]:bg-surface-blue-2 dark:[&_.mention]:bg-blue-950/50 [&_.mention]:px-1 [&_.mention]:py-0.5 [&_.mention]:rounded [&_p]:my-0">
                         <MarkdownRenderer content={notification.text} />
                     </div>
                 </div>
@@ -334,7 +334,7 @@ const ReactionItem = memo(({
                             <span className="ml-1">{displayReactions.join(" ")}</span>
                         )}
                     </p>
-                    <div className="text-[13px] text-ink-gray-8/70 line-clamp-1 mt-0.5 [&_p]:my-0">
+                    <div className="text-sm text-ink-gray-8/70 line-clamp-1 mt-0.5 [&_p]:my-0">
                         <MarkdownRenderer content={notification.text} />
                     </div>
                 </div>

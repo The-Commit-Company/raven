@@ -25,11 +25,11 @@
   /** ----- Espresso Design System ----- **/
   --font-sans: "InterVariable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-sans--font-optical-sizing: auto;
-  --font-sans--font-variation-settings: "opsz" 24;
+  --font-sans--font-variation-settings: "opsz"24;
   --font-numeric: "InterVariable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --font-numeric--font-feature-settings: "calt", "cv01", "cv03", "cv04", "cv09", "cv11", "zero";
   --font-numeric--font-optical-sizing: auto;
-  --font-numeric--font-variation-settings: "opsz" 24;
+  --font-numeric--font-variation-settings: "opsz"24;
 
 
   /** Font Sizes - Web **/
@@ -1205,5 +1205,16 @@ body {
 
   &::-webkit-scrollbar {
     display: none;
+  }
+}
+
+@layer base {
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled),
+  [role="tab"]:not(:disabled),
+  [role="menuitem"]:not(:disabled),
+  a {
+    cursor: pointer !important;
   }
 }

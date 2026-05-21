@@ -36,7 +36,7 @@ export default function ChatDrawer({ channelID, messageID, onClose }: ChatDrawer
             </div>
             <ScrollArea className="flex-1">
                 <div className="flex items-center justify-center min-h-125 px-6 text-center">
-                    <p className="text-[13px] text-ink-gray-4">{_("Messages will appear here")}</p>
+                    <p className="text-sm text-ink-gray-4">{_("Messages will appear here")}</p>
                 </div>
             </ScrollArea>
         </div>
