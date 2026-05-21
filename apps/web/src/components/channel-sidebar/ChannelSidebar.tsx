@@ -88,7 +88,7 @@ export function ChannelSidebar({
                     <CreateChannelButton />
                 </div>
             </div>
-            <div ref={setScrollerRef} className="flex-1 min-h-0 overflow-auto">
+            <div ref={setScrollerRef} className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto">
                 <SidebarMenu>
                     {/* Channel Groups */}
                     {channelSidebarData.groupedChannels.map(([groupName, channels]) => {
