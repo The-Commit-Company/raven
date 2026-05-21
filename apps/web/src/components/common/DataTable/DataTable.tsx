@@ -253,7 +253,7 @@ export function DataTable<TData>({
 
             {/* Table Content */}
             {!isLoading && !error && (
-                <div className={cn("overflow-hidden rounded-md border bg-surface-white", !hasPagination && "flex flex-col h-full")}>
+                <div className={cn("overflow-hidden bg-surface-white", !hasPagination && "flex flex-col h-full")}>
                     {hasPagination ? (
                         <Table className={tableClassName}>
                             <TableHeader>

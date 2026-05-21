@@ -15,9 +15,9 @@ import {
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { useDebounceCallback } from "usehooks-ts"
 
-import { Checkbox } from "@/components/ui/checkbox"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { cn } from "@/lib/utils"
+import { Checkbox } from "@components/ui/checkbox"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
+import { cn } from "@lib/utils"
 import { useDirection } from "./direction"
 
 /** Optional per-column layout hints for `ListView`. */
