@@ -2,6 +2,7 @@ import * as React from "react"
 import { UserAvatar } from "@components/features/message/UserAvatar"
 import { UserData } from "@db"
 import { cn } from "@lib/utils"
+import { Badge } from "@components/ui/badge"
 
 interface DMListItemProps {
     user: UserData
@@ -38,7 +39,7 @@ export const DMListItem = React.forwardRef<HTMLAnchorElement,
             <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-center gap-2 mb-0.5">
                     <span className="font-medium text-sm truncate">{user.name}</span>
-                    <span className="text-[11px] font-light text-ink-gray-4/90 shrink-0">{date}</span>
+                    <span className="text-2xs font-light text-ink-gray-4/90 shrink-0">{date}</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className={cn(
@@ -48,9 +49,9 @@ export const DMListItem = React.forwardRef<HTMLAnchorElement,
                         {teaser}
                     </div>
                     {unread > 0 && (
-                        <div className="badge-unread">
+                        <Badge size="sm" variant="solid" theme="gray">
                             {unread > 9 ? '9+' : unread}
-                        </div>
+                        </Badge>
                     )}
                 </div>
             </div>

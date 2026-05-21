@@ -284,7 +284,7 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                                     </Button>
                                 )}
                                 {options.length >= 10 && (
-                                    <p className="text-[11px] text-ink-gray-4 text-center py-1">
+                                    <p className="text-2xs text-ink-gray-4 text-center py-1">
                                         Maximum 10 options allowed
                                     </p>
                                 )}
@@ -308,7 +308,7 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                                                         <BarChart3 className="h-3 w-3 text-ink-gray-4" />
                                                         Allow multiple choices
                                                     </FormLabel>
-                                                    <FormDescription className="text-[11px] font-normal text-ink-gray-4">
+                                                    <FormDescription className="text-2xs font-normal text-ink-gray-4">
                                                         Voters can select more than one option
                                                     </FormDescription>
                                                 </div>
@@ -332,7 +332,7 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                                                         <EyeOff className="h-3 w-3 text-ink-gray-4" />
                                                         Anonymous poll
                                                     </FormLabel>
-                                                    <FormDescription className="text-[11px] font-normal text-ink-gray-4">
+                                                    <FormDescription className="text-2xs font-normal text-ink-gray-4">
                                                         Hide voter identities from other participants
                                                     </FormDescription>
                                                 </div>
@@ -353,7 +353,7 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                                                 <CalendarIcon className="h-3 w-3 text-ink-gray-4" />
                                                 End date (optional)
                                             </Label>
-                                            <p className="text-[11px] font-normal text-ink-gray-4">
+                                            <p className="text-2xs font-normal text-ink-gray-4">
                                                 Automatically close the poll at a specific date and time
                                             </p>
                                         </div>

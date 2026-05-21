@@ -58,7 +58,7 @@ export const FileResultCard = ({ file, author }: {
                         </div>
                         <span className="text-xs text-ink-gray-4 shrink-0">{formatDate(file.creation, "D MMMM YYYY h:mm A")}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-[11px] text-ink-gray-4/70">
+                    <div className="flex items-center gap-2 text-2xs text-ink-gray-4/70">
                         {file.file_size ? <span>{formatFileSize(file.file_size)}</span> : <span>0 B</span>}
                         <span>•</span>
                         <span className="uppercase">{file.file_type}</span>

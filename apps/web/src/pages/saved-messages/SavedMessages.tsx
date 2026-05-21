@@ -208,7 +208,7 @@ export default function SavedMessages() {
                                         placeholder="Search saved messages..."
                                         value={search}
                                         onChange={(e) => setSearch(e.target.value)}
-                                        className="pl-8 pr-8 text-[13px]"
+                                        className="pl-8 pr-8 text-sm"
                                     />
                                     {search && (
                                         <Button isIconButton variant="ghost" size="sm" aria-label="Clear search" onClick={() => setSearch("")}>
@@ -217,7 +217,7 @@ export default function SavedMessages() {
                                     )}
                                 </div>
                                 <Select value={channel} onValueChange={setChannel}>
-                                    <SelectTrigger inputSize="sm" className="w-fit min-w-35 sm:min-w-45 text-[13px] [&>span]:px-2">
+                                    <SelectTrigger inputSize="sm" className="w-fit min-w-35 sm:min-w-45 text-sm [&>span]:px-2">
                                         {selectedChannel && channel !== 'all' ? (
                                             <div className="flex items-center gap-1.5">
                                                 {selectedChannel.is_direct_message === 1 ? (

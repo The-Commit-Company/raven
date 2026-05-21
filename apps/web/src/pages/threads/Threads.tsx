@@ -88,7 +88,7 @@ export default function Threads() {
                                             placeholder={_("Search threads...")}
                                             value={search}
                                             onChange={(e) => setSearch(e.target.value)}
-                                            className="pl-8 pr-8 text-[13px]"
+                                            className="pl-8 pr-8 text-sm"
                                         />
                                         {search && (
                                             <Button isIconButton variant="ghost" size="sm" aria-label={_("Clear search")} onClick={() => setSearch("")}>
