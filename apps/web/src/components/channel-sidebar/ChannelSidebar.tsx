@@ -13,7 +13,9 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarMenuSubItem,
+    useSidebar,
 } from "@components/ui/sidebar"
+import { Badge } from "@components/ui/badge"
 import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
 import { CreateChannelButton } from "@components/features/channel/CreateChannel/CreateChannelButton"
 import { useGroupedChannels } from "@raven/lib/hooks/useGroupedChannels"
@@ -48,6 +50,12 @@ export function ChannelSidebar({
     const { workspaceID } = useParams()
     const [showMyChannelsOnly, setShowMyChannelsOnly] = useState(false)
     const channelSidebarData = useGroupedChannels(channels, myProfile, workspaceID, showMyChannelsOnly)
+    const { setOpenMobile, isMobile } = useSidebar()
+
+    const handleChannelClick = (channel: ChannelListItem) => {
+        onChannelClick(channel)
+        if (isMobile) setOpenMobile(false)
+    }
 
     // Calculate total unread count for a group
     const getGroupUnreadCount = (channels: ChannelListItem[]) => {
@@ -73,14 +81,14 @@ export function ChannelSidebar({
             {/* <SidebarGroupLabel className="text-ink-gray-4/80 font-normal">{_("Unreads")}</SidebarGroupLabel> */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                    <SidebarGroupLabel className="text-ink-gray-4/80 font-normal">{_("Channels")}</SidebarGroupLabel>
+                    <SidebarGroupLabel className="text-ink-gray-4 font-normal">{_("Channels")}</SidebarGroupLabel>
                 </div>
                 <div className="flex items-center gap-1">
                     <CustomizeSidebarButton showMyChannelsOnly={showMyChannelsOnly} setShowMyChannelsOnly={setShowMyChannelsOnly} />
                     <CreateChannelButton />
                 </div>
             </div>
-            <div ref={setScrollerRef} className="flex-1 min-h-0 overflow-auto">
+            <div ref={setScrollerRef} className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto">
                 <SidebarMenu>
                     {/* Channel Groups */}
                     {channelSidebarData.groupedChannels.map(([groupName, channels]) => {
@@ -89,14 +97,14 @@ export function ChannelSidebar({
                             <Collapsible
                                 key={groupName}
                                 asChild
-                                open={groupsState[groupName] ?? false}
+                                open={groupsState[groupName] ?? true}
                                 className="group/collapsible"
                             >
                                 <SidebarMenuItem>
-                                    <CollapsibleTrigger onClick={() => handleGroupStateChange(groupName, !groupsState[groupName])} asChild>
+                                    <CollapsibleTrigger onClick={() => handleGroupStateChange(groupName, !(groupsState[groupName] ?? true))} asChild>
                                         <SidebarMenuButton>
                                             <ChevronRight className="w-4 h-4 shrink-0 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                                            <span className="text-[13px] flex items-center gap-1.5 min-w-0 overflow-hidden">
+                                            <span className="text-base md:text-sm flex items-center gap-1.5 min-w-0 overflow-hidden">
                                                 {(() => {
                                                     // Match emoji including compound emojis (with ZWJ)
                                                     const emojiMatch = groupName.match(/^[\p{Emoji}\u200d]+/u);
@@ -121,9 +129,9 @@ export function ChannelSidebar({
                                             </span>
                                             <div className="ml-auto shrink-0 flex items-center gap-2">
                                                 {showUnreadBadges && totalUnread > 0 && (
-                                                    <div className="badge-unread opacity-0 group-data-[state=closed]/collapsible:opacity-100 transition-opacity">
+                                                    <Badge size="sm" variant="solid" theme="gray" className="opacity-0 group-data-[state=closed]/collapsible:opacity-100 transition-opacity">
                                                         {totalUnread > 9 ? '9+' : totalUnread}
-                                                    </div>
+                                                    </Badge>
                                                 )}
                                             </div>
                                         </SidebarMenuButton>
@@ -133,9 +141,9 @@ export function ChannelSidebar({
                                             {channels.map((channel) => (
                                                 <SidebarMenuSubItem key={channel.name}>
                                                     <button
-                                                        onClick={() => onChannelClick(channel)}
+                                                        onClick={() => handleChannelClick(channel)}
                                                         className={cn(
-                                                            "text-ink-gray-7 ml-2 ring-outline-gray-3 hover:bg-surface-gray-3/80 hover:text-ink-gray-8 active:bg-surface-gray-3 active:text-ink-gray-8 flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 w-full",
+                                                            "text-ink-gray-7 ml-2 ring-outline-gray-3 hover:bg-surface-gray-3/80 hover:text-ink-gray-8 active:bg-surface-gray-3 active:text-ink-gray-8 flex h-8 sm:h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 w-full",
                                                             activeChannelId === channel.name && "bg-surface-gray-3 text-ink-gray-8"
                                                         )}
                                                     >
@@ -144,14 +152,14 @@ export function ChannelSidebar({
                                                                 type={channel.type || "Public"}
                                                                 className="w-4 h-4 shrink-0"
                                                             />
-                                                            <span className={`truncate text-[13px] ${channel.last_message_details?.unread_count > 0 ? 'font-medium' : 'font-normal'}`}>
+                                                            <span className={`truncate text-base md:text-sm ${channel.last_message_details?.unread_count > 0 ? 'font-medium' : 'font-normal'}`}>
                                                                 {channel.channel_name}
                                                             </span>
                                                         </div>
                                                         {showUnreadBadges && channel.last_message_details?.unread_count > 0 && (
-                                                            <div className="badge-unread">
+                                                            <Badge size="sm" variant="solid" theme="gray">
                                                                 {channel.last_message_details.unread_count > 9 ? '9+' : channel.last_message_details.unread_count}
-                                                            </div>
+                                                            </Badge>
                                                         )}
                                                     </button>
                                                 </SidebarMenuSubItem>
@@ -174,21 +182,21 @@ export function ChannelSidebar({
                                         asChild
                                         isActive={activeChannelId === channel.name}>
                                         <button
-                                            onClick={() => onChannelClick(channel)}
+                                            onClick={() => handleChannelClick(channel)}
                                             className="w-full hover:bg-surface-gray-3/80 hover:text-ink-gray-8">
                                             <div className="flex items-center gap-2 w-full">
                                                 <ChannelIcon
                                                     type={channel.type || "Public"}
                                                     className="w-4 h-4 shrink-0"
                                                 />
-                                                <span className={`truncate text-[13px] ${channel.last_message_details?.unread_count > 0 ? 'font-medium' : 'font-normal'}`}>
+                                                <span className={`truncate text-base md:text-sm ${channel.last_message_details?.unread_count > 0 ? 'font-medium' : 'font-normal'}`}>
                                                     {channel.channel_name}
                                                 </span>
                                             </div>
                                             {showUnreadBadges && channel.last_message_details?.unread_count > 0 && (
-                                                <div className="badge-unread">
+                                                <Badge size="sm" variant="solid" theme="gray">
                                                     {channel.last_message_details.unread_count > 9 ? '9+' : channel.last_message_details.unread_count}
-                                                </div>
+                                                </Badge>
                                             )}
                                         </button>
                                     </SidebarMenuButton>

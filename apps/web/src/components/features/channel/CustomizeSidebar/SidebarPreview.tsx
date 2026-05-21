@@ -1,4 +1,4 @@
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, Star } from 'lucide-react'
 import {
     Collapsible,
     CollapsibleContent,
@@ -16,6 +16,7 @@ import { cn } from '@lib/utils'
 import { ChannelSidebarData } from '@raven/lib/hooks/useGroupedChannels'
 import { useEffect, useState } from 'react'
 import { Virtuoso } from 'react-virtuoso'
+import _ from '@lib/translate'
 
 interface SidebarPreviewProps {
     data: ChannelSidebarData
@@ -59,19 +60,28 @@ export const SidebarPreview = ({ data }: SidebarPreviewProps) => {
                             >
                                 <SidebarMenuItem>
                                     <CollapsibleTrigger asChild>
-                                        <SidebarMenuButton className="text-[13px]">
+                                        <SidebarMenuButton className="text-sm">
                                             <ChevronRight className="w-4 h-4 shrink-0 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                                            <span className="text-[13px] flex items-center gap-1.5 min-w-0 overflow-hidden">
+                                            <span className="text-sm flex items-center gap-1.5 min-w-0 overflow-hidden">
                                                 {(() => {
                                                     const emojiMatch = groupName.match(/^[\p{Emoji}\u200d]+/u);
                                                     const emoji = emojiMatch ? emojiMatch[0] : null;
                                                     const nameWithoutEmoji = groupName.replace(/^[\p{Emoji}\u200d]+\s?/u, '');
-                                                    return (
-                                                        <>
-                                                            {emoji && <span className="text-lg leading-none shrink-0">{emoji}</span>}
-                                                            <span className="truncate">{nameWithoutEmoji}</span>
-                                                        </>
-                                                    );
+                                                    if (groupName === "Favorites") {
+                                                        return (
+                                                            <div className="flex items-center gap-2">
+                                                                <Star className="h-4 w-4 text-ink-gray-8/80" />
+                                                                <span className="truncate">{_("Favorites")}</span>
+                                                            </div>
+                                                        );
+                                                    } else {
+                                                        return (
+                                                            <>
+                                                                {emoji && <span className="text-lg leading-none shrink-0">{emoji}</span>}
+                                                                <span className="truncate">{nameWithoutEmoji}</span>
+                                                            </>
+                                                        );
+                                                    }
                                                 })()}
                                             </span>
                                         </SidebarMenuButton>
@@ -82,7 +92,7 @@ export const SidebarPreview = ({ data }: SidebarPreviewProps) => {
                                                 <SidebarMenuSubItem key={channel.name}>
                                                     <div
                                                         className={cn(
-                                                            "text-ink-gray-7 flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-[13px]"
+                                                            "text-ink-gray-7 flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-sm"
                                                         )}
                                                     >
                                                         <ChannelIcon
@@ -106,7 +116,7 @@ export const SidebarPreview = ({ data }: SidebarPreviewProps) => {
                             data={data.ungroupedChannels}
                             itemContent={(index, channel) => (
                                 <SidebarMenuItem key={channel.name}>
-                                    <SidebarMenuButton asChild className="text-[13px]">
+                                    <SidebarMenuButton asChild className="text-sm">
                                         <div className="w-full flex items-center gap-2">
                                             <ChannelIcon
                                                 type={channel.type || "Public"}

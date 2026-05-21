@@ -1,15 +1,16 @@
 import { Button } from "@components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
-import { Headset, Pin, Star } from "lucide-react"
+import { ChevronLeft, Headset, Pin, Star } from "lucide-react"
 import ChannelMembers from "./ChannelMembers"
 import ChannelMenu from "./ChannelMenu"
 import { useAtom } from "jotai"
 import { channelDrawerAtom } from "@utils/channelAtoms"
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
 import { useSidebar } from "@components/ui/sidebar"
-import { useLocation } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import { SIDEBAR_LESS_ROUTES } from "@utils/routes"
 import { useChannel } from "@hooks/useChannel"
+import { useIsMobile } from "@hooks/use-mobile"
 import _ from "@lib/translate"
 
 const ChannelHeader = () => {
@@ -22,6 +23,9 @@ const ChannelHeader = () => {
     const { state } = useSidebar()
     const isCollapsed = state === "collapsed"
     const { toggleStarChannel, isStarred } = useChannel(channelID)
+    const isMobile = useIsMobile()
+    const navigate = useNavigate()
+    const { workspaceID } = useParams()
 
     const pinnedCount = channel?.pinned_messages_string ? channel.pinned_messages_string.split("\n").length : 0
 
@@ -48,25 +52,40 @@ const ChannelHeader = () => {
         setDrawerType('pins')
     }
 
+    const headerStyle = isMobile
+        ? { top: 0, left: 0, width: "100%" }
+        : {
+            top: "var(--app-header-height, 36px)",
+            left: isSidebarLessPage
+                ? "var(--workspace-switcher-width, 60px)"
+                : isCollapsed
+                    ? "var(--sidebar-width-icon, 60px)"
+                    : "var(--sidebar-width, 340px)",
+            width: isSidebarLessPage
+                ? "calc(100% - var(--workspace-switcher-width, 60px))"
+                : isCollapsed
+                    ? "calc(100% - var(--sidebar-width-icon, 60px))"
+                    : "calc(100% - var(--sidebar-width, 340px))",
+        }
+
     return (
         <div
             className="fixed flex items-center justify-between border-b bg-surface-white py-1.5 px-2 z-40 transition-[left,width,top] duration-200 ease-linear"
-            style={{
-                top: "var(--app-header-height, 36px)",
-                left: isSidebarLessPage
-                    ? "var(--workspace-switcher-width, 60px)"
-                    : isCollapsed
-                        ? "var(--sidebar-width-icon, 60px)"
-                        : "var(--sidebar-width, 340px)",
-                width: isSidebarLessPage
-                    ? "calc(100% - var(--workspace-switcher-width, 60px))"
-                    : isCollapsed
-                        ? "calc(100% - var(--sidebar-width-icon, 60px))"
-                        : "calc(100% - var(--sidebar-width, 340px))",
-            }}
+            style={headerStyle}
         >
             {/* Left side */}
             <div className="flex items-center gap-2">
+                {isMobile && (
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        isIconButton
+                        onClick={() => navigate(`/${workspaceID ?? ''}`)}
+                        aria-label={_('Back')}
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                )}
                 <div className="flex items-center gap-0.5">
                     <Tooltip>
                         <TooltipTrigger asChild>

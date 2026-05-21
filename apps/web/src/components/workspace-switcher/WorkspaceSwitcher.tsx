@@ -8,14 +8,15 @@ import { useActiveWorkspace } from "../../contexts/ActiveWorkspaceContext"
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
 import { useWorkspaces, WorkspaceFields } from "@hooks/useWorkspaces"
 import { useNotifications } from "@hooks/useNotifications"
+import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
+import { useMemo } from "react"
+import _ from "@lib/translate"
 
 const getLogo = (workspace: WorkspaceFields) => {
     let logo = workspace.logo || ''
-
     if (!logo && workspace.workspace_name === 'Raven') {
         logo = '/assets/raven/raven-logo.png'
     }
-
     return logo
 }
 
@@ -30,9 +31,10 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
     const { setActiveWorkspaceName, activeWorkspaceName } = useActiveWorkspace()
     const { workspaces } = useWorkspaces()
     const { unreadCount } = useNotifications()
+    const { myProfile } = useCurrentRavenUser()
 
     // Get workspace from URL params or from context/localStorage
-    const urlWorkspace = React.useMemo(() => {
+    const urlWorkspace = useMemo(() => {
         // Check if we're in a workspace route (from params - most reliable)
         if (params.workspaceID) {
             return decodeURIComponent(params.workspaceID)
@@ -49,19 +51,6 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
         }
         return null
     }, [location.pathname, params.workspaceID])
-
-    // Get the workspace to use for navigation (from URL, context, or localStorage)
-    const getWorkspaceForNavigation = () => {
-        if (urlWorkspace) return urlWorkspace
-        if (activeWorkspaceName) return activeWorkspaceName
-        // Fallback to last workspace from localStorage
-        try {
-            const lastWorkspace = JSON.parse(localStorage.getItem('ravenLastWorkspace') ?? '""') ?? ''
-            return lastWorkspace || null
-        } catch {
-            return null
-        }
-    }
 
     // Update active workspace based on URL
     React.useEffect(() => {
@@ -87,133 +76,49 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
     return (
         <div
             className={cn(
-                "border-r border-outline-gray-2/40 bg-surface-menu-bar shrink-0 relative group/workspace-sidebar flex flex-col h-full",
+                "border-r border-outline-gray-2/40 bg-surface-menu-bar shrink-0 flex flex-col h-full",
                 standalone && "fixed top-0 left-0 z-10"
             )}
             style={{ width: "var(--workspace-switcher-width, 60px)" } as React.CSSProperties}
         >
             <div className="flex flex-col items-center gap-3 py-4 flex-1">
-                {/* Notifications button - first item */}
-                <div
-                    className="relative group/notifications-item cursor-pointer w-full flex justify-center"
-                    onClick={() => {
-                        navigate("/notifications")
-                    }}
+                {/* Notifications */}
+                <NavItem
+                    isActive={location.pathname === "/notifications"}
+                    onClick={() => navigate("/notifications")}
                 >
-                    <div
-                        className={cn(
-                            "absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-r-full transition-all duration-300 ease-out",
-                            location.pathname === "/notifications"
-                                ? "h-8 bg-foreground"
-                                : "h-2 bg-transparent group-hover/notifications-item:bg-foreground/40 group-hover/notifications-item:h-2",
-                        )}
-                    />
-                    <div
-                        className={cn(
-                            "relative flex items-center justify-center w-8 h-8 rounded-md transition-all duration-250 ease-out",
-                            "bg-[oklch(0.99_0_0)] dark:bg-[oklch(0.25_0_0)] border border-outline-gray-2/80 dark:border-outline-gray-2/60",
-                            location.pathname === "/notifications"
-                                ? "shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.05),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.05)] dark:shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.15),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.02)]"
-                                : "shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.03),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] dark:shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.1),-0.5px_-0.5px_1px_rgba(255,255,255,0.01)]",
-                            "group-hover/notifications-item:-translate-y-px group-hover/notifications-item:scale-[1.02]",
-                            "group-hover/notifications-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.05),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.05)] dark:group-hover/notifications-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.13),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.018)]"
-                        )}
-                    >
-                        <Bell
-                            className={cn(
-                                "relative w-3.5 h-3.5 text-ink-gray-8 transition-all duration-250 ease-out",
-                                location.pathname === "/notifications" ? "opacity-100" : "opacity-70 dark:opacity-100",
-                                "group-hover/notifications-item:scale-105 group-hover/notifications-item:opacity-85 dark:group-hover/notifications-item:opacity-100"
-                            )}
-                            fill={location.pathname === "/notifications" ? "currentColor" : "none"}
-                        />
-                        {unreadCount > 0 && (
-                            <span className="absolute -top-1 -right-1 min-w-3.5 h-3.5 px-0.5 flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-semibold leading-none">
-                                {unreadCount > 99 ? "99+" : unreadCount}
-                            </span>
-                        )}
-                    </div>
-                </div>
+                    <Bell className="w-3.5 h-3.5 text-ink-gray-7" />
+                    {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 min-w-3.5 h-3.5 px-0.5 flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-semibold leading-none">
+                            {unreadCount > 99 ? "99+" : unreadCount}
+                        </span>
+                    )}
+                </NavItem>
 
-                {/* DMs button - second item */}
-                <div
-                    className="relative group/dm-item cursor-pointer w-full flex justify-center"
-                    onClick={() => {
-                        navigate("/dm-channel")
-                    }}
+                {/* DMs */}
+                <NavItem
+                    isActive={location.pathname.startsWith("/dm-channel")}
+                    onClick={() => navigate("/dm-channel")}
                 >
-                    <div
-                        className={cn(
-                            "absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-r-full transition-all duration-250 ease-out",
-                            location.pathname.startsWith("/dm-channel")
-                                ? "h-8 bg-foreground"
-                                : "h-2 bg-transparent group-hover/dm-item:bg-foreground/40 group-hover/dm-item:h-2",
-                        )}
-                    />
-                    <div
-                        className={cn(
-                            "relative flex items-center justify-center w-8 h-8 rounded-md transition-all duration-250 ease-out",
-                            "bg-[oklch(0.99_0_0)] dark:bg-[oklch(0.25_0_0)] border border-outline-gray-2/80 dark:border-outline-gray-2/60",
-                            location.pathname.startsWith("/dm-channel")
-                                ? "shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.05),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.05)] dark:shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.15),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.02)]"
-                                : "shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.03),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] dark:shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.1),-0.5px_-0.5px_1px_rgba(255,255,255,0.01)]",
-                            "group-hover/dm-item:-translate-y-px group-hover/dm-item:scale-[1.02]",
-                            "group-hover/dm-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.05),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.05)] dark:group-hover/dm-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.13),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.018)]"
-                        )}
-                    >
-                        <MessagesSquare
-                            className={cn(
-                                "relative w-3.5 h-3.5 text-ink-gray-8 transition-all duration-250 ease-out",
-                                location.pathname.startsWith("/dm-channel") ? "opacity-100" : "opacity-70 dark:opacity-100",
-                                "group-hover/dm-item:scale-105 group-hover/dm-item:opacity-85 dark:group-hover/dm-item:opacity-100"
-                            )}
-                            fill={location.pathname.startsWith("/dm-channel") ? "currentColor" : "none"}
-                        />
-                    </div>
-                </div>
+                    <MessagesSquare className="w-3.5 h-3.5 text-ink-gray-7" />
+                </NavItem>
 
-                {/* Threads button - third item */}
-                <div
-                    className="relative group/threads-item cursor-pointer w-full flex justify-center"
-                    onClick={() => {
-                        navigate("/threads")
-                    }}
+                {/* Threads */}
+                <NavItem
+                    isActive={location.pathname === "/threads"}
+                    onClick={() => navigate("/threads")}
                 >
-                    <div
-                        className={cn(
-                            "absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-r-full transition-all duration-300 ease-out",
-                            location.pathname === "/threads"
-                                ? "h-8 bg-foreground"
-                                : "h-2 bg-transparent group-hover/threads-item:bg-foreground/40 group-hover/threads-item:h-2",
-                        )}
-                    />
-                    <div
-                        className={cn(
-                            "relative flex items-center justify-center w-8 h-8 rounded-md transition-all duration-250 ease-out",
-                            "bg-[oklch(0.99_0_0)] dark:bg-[oklch(0.25_0_0)] border border-outline-gray-2/80 dark:border-outline-gray-2/60",
-                            location.pathname === "/threads"
-                                ? "shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.05),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.05)] dark:shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.15),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.02)]"
-                                : "shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.03),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] dark:shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.1),-0.5px_-0.5px_1px_rgba(255,255,255,0.01)]",
-                            "group-hover/threads-item:-translate-y-px group-hover/threads-item:scale-[1.02]",
-                            "group-hover/threads-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.05),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.05)] dark:group-hover/threads-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.13),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.018)]"
-                        )}
-                    >
-                        <MessageSquareText
-                            className={cn(
-                                "relative w-3.5 h-3.5 text-ink-gray-8 transition-all duration-250 ease-out",
-                                location.pathname === "/threads" ? "opacity-100" : "opacity-70 dark:opacity-100",
-                                "group-hover/threads-item:scale-105 group-hover/threads-item:opacity-85 dark:group-hover/threads-item:opacity-100"
-                            )}
-                            fill={location.pathname === "/threads" ? "currentColor" : "none"}
-                        />
-                    </div>
-                </div>
+                    <MessageSquareText className="w-3.5 h-3.5 text-ink-gray-7" />
+                </NavItem>
 
-                {/* Rest of workspace items */}
+                {/* Workspaces */}
                 {workspaces
                     ?.filter((workspace) => workspace.workspace_member_name) // Only show workspaces user is a member of
                     .map((workspace) => {
-                        const isOnSpecialPage = location.pathname === "/notifications" || location.pathname.startsWith("/dm-channel") || location.pathname === "/threads" || location.pathname === "/search"
+                        const isOnSpecialPage = location.pathname === "/notifications"
+                            || location.pathname.startsWith("/dm-channel")
+                            || location.pathname === "/threads"
+                            || location.pathname === "/search"
                         const isActive = !isOnSpecialPage && urlWorkspace === workspace.name
                         const logo = getLogo(workspace)
 
@@ -223,113 +128,96 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                                 className="relative group/workspace-item cursor-pointer w-full flex justify-center"
                                 onClick={() => handleWorkspaceClick(workspace)}
                             >
-                                <div
-                                    className={cn(
-                                        "absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-r-full transition-all duration-200",
-                                        isActive
-                                            ? "h-8 bg-foreground"
-                                            : "h-2 bg-transparent group-hover/workspace-item:bg-foreground/40 group-hover/workspace-item:h-2",
-                                    )}
-                                />
-
-                                <div
-                                    className={cn(
-                                        "relative flex items-center justify-center w-8 h-8 transition-all duration-200 shadow-sm rounded-md bg-white dark:bg-gray-800",
-                                        isActive && "shadow-md",
-                                    )}
-                                >
-                                    <Avatar className="w-8 h-8 rounded-md border border-[#F0F0F380] dark:border-[#2D2D3180]">
+                                <ActivePill isActive={isActive} />
+                                <div className={cn(
+                                    "relative flex items-center justify-center w-8 h-8 rounded-md transition-all duration-200",
+                                    "group-hover/workspace-item:-translate-y-px group-hover/workspace-item:scale-[1.02]",
+                                )}>
+                                    <Avatar className="w-8 h-8 rounded-md border border-outline-gray-2">
                                         <AvatarImage src={logo} alt={workspace.workspace_name} />
-                                        <AvatarFallback className="text-xs">{workspace.workspace_name.charAt(0)}</AvatarFallback>
+                                        <AvatarFallback className="text-xs bg-surface-gray-2 text-ink-gray-7">
+                                            {workspace.workspace_name.charAt(0)}
+                                        </AvatarFallback>
                                     </Avatar>
                                 </div>
                             </div>
                         )
                     })}
 
-                {/* Add workspace button */}
+                {/* Add workspace */}
                 <div
                     className="relative group/add-workspace-item cursor-pointer w-full flex justify-center"
-                    onClick={() => {
-                        navigate("/workspace-explorer")
-                    }}
+                    onClick={() => navigate("/workspace-explorer")}
                 >
-                    <div
-                        className={cn(
-                            "absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-r-full transition-all duration-300 ease-out",
-                            location.pathname === "/workspace-explorer"
-                                ? "h-8 bg-foreground"
-                                : "h-2 bg-transparent group-hover/add-workspace-item:bg-foreground/40 group-hover/add-workspace-item:h-2",
-                        )}
-                    />
-                    <div
-                        className={cn(
-                            "relative flex items-center justify-center w-8 h-8 rounded-md transition-all duration-250 ease-out",
-                            "bg-[oklch(0.99_0_0)] dark:bg-[oklch(0.25_0_0)] border-2 border-dashed border-muted-foreground/25 dark:border-muted-foreground/40",
-                            location.pathname === "/workspace-explorer"
-                                ? "shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.05),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.05)] dark:shadow-[inset_0.5px_0.5px_1px_rgba(0,0,0,0.15),inset_-0.5px_-0.5px_1px_rgba(255,255,255,0.02)] border-muted-foreground/50"
-                                : "shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.03),-0.5px_-0.5px_1px_rgba(255,255,255,0.03)] dark:shadow-[0.5px_0.5px_1px_rgba(0,0,0,0.1),-0.5px_-0.5px_1px_rgba(255,255,255,0.01)]",
-                            "group-hover/add-workspace-item:-translate-y-px group-hover/add-workspace-item:scale-[1.02]",
-                            "group-hover/add-workspace-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.05),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.05)] dark:group-hover/add-workspace-item:shadow-[0.75px_0.75px_1.5px_rgba(0,0,0,0.13),-0.75px_-0.75px_1.5px_rgba(255,255,255,0.018)]",
-                            "group-hover/add-workspace-item:border-muted-foreground/35"
-                        )}
-                    >
-                        <Plus
-                            className={cn(
-                                "relative w-3.5 h-3.5 text-ink-gray-4/70 dark:text-ink-gray-4 transition-all duration-250 ease-out",
-                                location.pathname === "/workspace-explorer" ? "opacity-100 text-ink-gray-8" : "opacity-70 dark:opacity-100",
-                                "group-hover/add-workspace-item:scale-105 group-hover/add-workspace-item:opacity-85 dark:group-hover/add-workspace-item:opacity-100 group-hover/add-workspace-item:text-ink-gray-8/80 dark:group-hover/add-workspace-item:text-ink-gray-8"
-                            )}
-                        />
+                    <ActivePill isActive={location.pathname === "/workspace-explorer"} />
+                    <div className={cn(
+                        "flex items-center justify-center w-8 h-8 rounded-md transition-all duration-200",
+                        "border-2 border-dashed border-outline-gray-3",
+                        "group-hover/add-workspace-item:-translate-y-px group-hover/add-workspace-item:scale-[1.02]",
+                        "group-hover/add-workspace-item:border-outline-gray-4",
+                    )}>
+                        <Plus className="w-3.5 h-3.5 text-ink-gray-4" />
                     </div>
                 </div>
             </div>
+
+            {/* Bottom actions */}
             <div className="flex flex-col items-center gap-2 pb-4">
                 <div className="flex flex-col items-center gap-1">
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className={cn(
-                            "h-8 w-8 rounded-sm transition-all duration-200",
-                            location.pathname === "/saved-messages"
-                                ? "bg-surface-gray-2 dark:bg-surface-gray-2/80"
-                                : ""
-                        )}
-                        onClick={() => {
-                            navigate("/saved-messages")
-                        }}
+                        size="sm"
+                        isIconButton
+                        className={cn(location.pathname === "/saved-messages" && "bg-surface-gray-2")}
+                        onClick={() => navigate("/saved-messages")}
                     >
-                        <BookmarkIcon className={cn(
-                            "h-3.5 w-3.5",
-                            location.pathname === "/saved-messages" ? "opacity-100" : "opacity-70 dark:opacity-100"
-                        )} />
-                        <span className="sr-only">Saved</span>
+                        <BookmarkIcon className="h-3.5 w-3.5 text-ink-gray-7" />
+                        <span className="sr-only">{_("Saved")}</span>
                     </Button>
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className={cn(
-                            "h-8 w-8 rounded-sm transition-all duration-200",
-                            location.pathname.startsWith("/settings")
-                                ? "bg-surface-gray-2 dark:bg-surface-gray-2/80"
-                                : ""
-                        )}
+                        size="sm"
+                        isIconButton
+                        className={cn(location.pathname.startsWith("/settings") && "bg-surface-gray-2")}
                         onClick={() => navigate("/settings/profile")}
                     >
-                        <Settings className={cn(
-                            "h-3.5 w-3.5",
-                            location.pathname.startsWith("/settings") ? "opacity-100" : "opacity-70 dark:opacity-100"
-                        )} />
-                        <span className="sr-only">Settings</span>
+                        <Settings className="h-3.5 w-3.5 text-ink-gray-7" />
+                        <span className="sr-only">{_("Settings")}</span>
                     </Button>
                 </div>
-                <NavUserMenu
-                    user={{
-                        name: "John Doe",
-                        email: "john.doe@example.com",
-                        avatar: "https://github.com/shadcn.png"
-                    }}
-                />
+                {myProfile && <NavUserMenu user={myProfile} />}
+            </div>
+        </div>
+    )
+}
+
+function ActivePill({ isActive }: { isActive: boolean }) {
+    return (
+        <div className={cn(
+            "absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-r-full transition-all duration-200",
+            isActive ? "h-8 bg-ink-gray-8" : "h-2 bg-transparent"
+        )} />
+    )
+}
+
+function NavItem({ isActive, onClick, children }: {
+    isActive: boolean
+    onClick: () => void
+    children: React.ReactNode
+}) {
+    return (
+        <div
+            className="relative group/nav-item cursor-pointer w-full flex justify-center"
+            onClick={onClick}
+        >
+            <ActivePill isActive={isActive} />
+            <div className={cn(
+                "relative flex items-center justify-center w-8 h-8 rounded-md transition-all duration-200",
+                "bg-surface-cards border border-outline-gray-2 shadow-sm",
+                "group-hover/nav-item:-translate-y-px group-hover/nav-item:scale-[1.02]",
+                isActive && "bg-surface-gray-2"
+            )}>
+                {children}
             </div>
         </div>
     )

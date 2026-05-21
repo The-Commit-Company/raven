@@ -25,6 +25,7 @@ import { Input } from "@components/ui/input";
 import { RavenChannelGroups } from "@raven/types/RavenChannelManagement/RavenChannelGroups";
 import { useBoolean } from "usehooks-ts";
 import _ from "@lib/translate"
+import { H2, H3, H4 } from "@components/ui/typography";
 
 export const GroupDnd = () => {
 
@@ -95,8 +96,8 @@ export const GroupDnd = () => {
 
     return (
         <div className="mx-auto">
-            <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-semibold">{_("Order Groups")}</h3>
+            <div className="flex items-center justify-between mb-2 px-1">
+                <p className="text-ink-gray-8 text-sm font-semibold">{_("Order Groups")}</p>
                 <Button
                     type="button"
                     variant="outline"
@@ -226,7 +227,7 @@ const SortableItem = ({ id, index, content, onEdit, onDelete }: SortableItemProp
 const EditGroup = ({ initialName = '', onCancel, onSubmit }: { initialName?: string, onCancel: () => void, onSubmit: (name: string) => void }) => {
     const [name, setName] = useState(initialName)
     return (
-        <div className="border rounded-lg pr-2 pl-1 py-1 bg-surface-gray-2/50 flex items-center justify-between w-full gap-2">
+        <div className="border rounded-lg pr-1.5 pl-1 py-1 bg-surface-gray-2/50 flex items-center justify-between w-full gap-1.5">
             <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -242,7 +243,7 @@ const EditGroup = ({ initialName = '', onCancel, onSubmit }: { initialName?: str
                 variant="ghost"
                 size="sm"
                 isIconButton
-                className="h-8 w-8"
+                className="h-7 w-7"
             >
                 <X className="h-4 w-4" />
             </Button>
