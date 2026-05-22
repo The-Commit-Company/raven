@@ -10,8 +10,10 @@ import {
     DropdownMenuTrigger,
 } from "@components/ui/dropdown-menu";
 import { useChannel } from "@hooks/useChannel";
+import { useIsMobile } from "@hooks/use-mobile";
 import { channelDrawerAtom } from "@utils/channelAtoms";
 import { useSetAtom } from "jotai";
+import { useNavigate, useParams } from "react-router-dom";
 import {
     Bell,
     BellOff,
@@ -37,7 +39,7 @@ const ChannelMenu = ({ channelID }: { channelID: string }) => {
                     {
                         <div className="flex items-center gap-1">
                             <ChannelIcon type={channel.type} className="h-4 w-4" />
-                            <span className="text-md font-medium">
+                            <span className="text-base font-medium">
                                 {channel.channel_name}
                             </span>
                         </div>
@@ -86,15 +88,21 @@ const ChannelMenu = ({ channelID }: { channelID: string }) => {
 }
 
 const SettingsButton = ({ channelID }: { channelID: string }) => {
-
     const setDrawerType = useSetAtom(channelDrawerAtom(channelID))
+    const isMobile = useIsMobile()
+    const navigate = useNavigate()
+    const { workspaceID } = useParams()
 
-    const onOpenSettings = () => {
-        setDrawerType('info')
+    const onOpen = () => {
+        if (isMobile) {
+            navigate(`/${encodeURIComponent(workspaceID ?? '')}/${encodeURIComponent(channelID)}/settings?tab=info`)
+        } else {
+            setDrawerType('info')
+        }
     }
 
     return (
-        <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpenSettings}>
+        <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpen}>
             <Settings className="h-4 w-4" />
             <span>{_("Channel info")}</span>
         </DropdownMenuItem>
@@ -102,59 +110,84 @@ const SettingsButton = ({ channelID }: { channelID: string }) => {
 }
 
 export const ChannelFilesButton = ({ channelID }: { channelID: string }) => {
-
     const setDrawerType = useSetAtom(channelDrawerAtom(channelID))
+    const isMobile = useIsMobile()
+    const navigate = useNavigate()
+    const { workspaceID } = useParams()
 
-    const onOpenFiles = () => {
-        setDrawerType('files')
+    const onOpen = () => {
+        if (isMobile) {
+            navigate(`/${encodeURIComponent(workspaceID ?? '')}/${encodeURIComponent(channelID)}/settings?tab=files`)
+        } else {
+            setDrawerType('files')
+        }
     }
 
-    return <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpenFiles}>
-        <Files className="h-4 w-4" />
-        <span>{_("Files")}</span>
-    </DropdownMenuItem>
+    return (
+        <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpen}>
+            <Files className="h-4 w-4" />
+            <span>{_("Files")}</span>
+        </DropdownMenuItem>
+    )
 }
 
 export const ChannelLinksButton = ({ channelID }: { channelID: string }) => {
-
     const setDrawerType = useSetAtom(channelDrawerAtom(channelID))
+    const isMobile = useIsMobile()
+    const navigate = useNavigate()
+    const { workspaceID } = useParams()
 
-    const onOpenLinks = () => {
-        setDrawerType('links')
+    const onOpen = () => {
+        if (isMobile) {
+            navigate(`/${encodeURIComponent(workspaceID ?? '')}/${encodeURIComponent(channelID)}/settings?tab=links`)
+        } else {
+            setDrawerType('links')
+        }
     }
 
-    return <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpenLinks}>
-        <Link className="h-4 w-4" />
-        <span>{_("Links")}</span>
-    </DropdownMenuItem>
+    return (
+        <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpen}>
+            <Link className="h-4 w-4" />
+            <span>{_("Links")}</span>
+        </DropdownMenuItem>
+    )
 }
 
 export const ChannelThreadsButton = ({ channelID }: { channelID: string }) => {
-
     const setDrawerType = useSetAtom(channelDrawerAtom(channelID))
+    const isMobile = useIsMobile()
+    const navigate = useNavigate()
+    const { workspaceID } = useParams()
 
-    const onOpenThreads = () => {
-        setDrawerType('threads')
+    const onOpen = () => {
+        if (isMobile) {
+            navigate(`/${encodeURIComponent(workspaceID ?? '')}/${encodeURIComponent(channelID)}/settings?tab=threads`)
+        } else {
+            setDrawerType('threads')
+        }
     }
 
-    return <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpenThreads}>
-        <MessageSquareText className="h-4 w-4" />
-        <span>{_("Threads")}</span>
-    </DropdownMenuItem>
+    return (
+        <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpen}>
+            <MessageSquareText className="h-4 w-4" />
+            <span>{_("Threads")}</span>
+        </DropdownMenuItem>
+    )
 }
 
 const MembersButton = ({ channelID }: { channelID: string }) => {
-
     const setDrawerType = useSetAtom(channelDrawerAtom(channelID))
 
     const onOpenMembers = () => {
         setDrawerType('members')
     }
 
-    return <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpenMembers}>
-        <Users className="h-4 w-4" />
-        <span>{_("Channel members")}</span>
-    </DropdownMenuItem>
+    return (
+        <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpenMembers}>
+            <Users className="h-4 w-4" />
+            <span>{_("Channel members")}</span>
+        </DropdownMenuItem>
+    )
 }
 
 export default ChannelMenu
