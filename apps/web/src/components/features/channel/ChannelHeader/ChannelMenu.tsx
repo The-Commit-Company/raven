@@ -11,7 +11,7 @@ import {
 } from "@components/ui/dropdown-menu";
 import { useChannel } from "@hooks/useChannel";
 import { useIsMobile } from "@hooks/use-mobile";
-import { channelDrawerAtom } from "@utils/channelAtoms";
+import { channelDrawerAtom, type DrawerType } from "@utils/channelAtoms";
 import { useSetAtom } from "jotai";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -27,13 +27,11 @@ import {
 } from "lucide-react";
 import _ from "@lib/translate";
 
-type DrawerType = '' | 'members' | 'files' | 'pins' | 'links' | 'threads' | 'info'
-
 export type NavProps = {
     isMobile: boolean
     workspaceID: string
     channelID: string
-    navigate: ReturnType<typeof useNavigate>
+    navigate?: ReturnType<typeof useNavigate>
     setDrawerType?: (type: DrawerType) => void
 }
 
@@ -72,7 +70,7 @@ const ChannelMenu = ({ channelID }: { channelID: string }) => {
                 <ChannelFilesButton {...navProps} />
                 <ChannelLinksButton {...navProps} />
                 <ChannelThreadsButton {...navProps} />
-                <MembersButton channelID={channelID} setDrawerType={setDrawerType} />
+                <MembersButton setDrawerType={setDrawerType} />
                 <DropdownMenuSub>
                     <DropdownMenuSubTrigger className="flex cursor-pointer items-center gap-2 py-2 text-sm">
                         <Bell className="h-4 w-4 text-ink-gray-4" />
@@ -110,7 +108,7 @@ const ChannelMenu = ({ channelID }: { channelID: string }) => {
 const SettingsButton = ({ isMobile, workspaceID, channelID, navigate, setDrawerType }: NavProps) => {
     const onOpen = () => {
         if (isMobile && workspaceID) {
-            navigate(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/settings?tab=info`)
+            navigate?.(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/settings?tab=info`)
         } else {
             setDrawerType?.('info')
         }
@@ -126,7 +124,7 @@ const SettingsButton = ({ isMobile, workspaceID, channelID, navigate, setDrawerT
 export const ChannelFilesButton = ({ isMobile, workspaceID, channelID, navigate, setDrawerType }: NavProps) => {
     const onOpen = () => {
         if (isMobile && workspaceID) {
-            navigate(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/settings?tab=files`)
+            navigate?.(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/settings?tab=files`)
         } else {
             setDrawerType?.('files')
         }
@@ -142,7 +140,7 @@ export const ChannelFilesButton = ({ isMobile, workspaceID, channelID, navigate,
 export const ChannelLinksButton = ({ isMobile, workspaceID, channelID, navigate, setDrawerType }: NavProps) => {
     const onOpen = () => {
         if (isMobile && workspaceID) {
-            navigate(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/settings?tab=links`)
+            navigate?.(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/settings?tab=links`)
         } else {
             setDrawerType?.('links')
         }
@@ -158,7 +156,7 @@ export const ChannelLinksButton = ({ isMobile, workspaceID, channelID, navigate,
 export const ChannelThreadsButton = ({ isMobile, workspaceID, channelID, navigate, setDrawerType }: NavProps) => {
     const onOpen = () => {
         if (isMobile && workspaceID) {
-            navigate(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/settings?tab=threads`)
+            navigate?.(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/settings?tab=threads`)
         } else {
             setDrawerType?.('threads')
         }
@@ -171,8 +169,9 @@ export const ChannelThreadsButton = ({ isMobile, workspaceID, channelID, navigat
     )
 }
 
-const MembersButton = ({ channelID, setDrawerType }: { channelID: string; setDrawerType: (type: DrawerType) => void }) => {
+const MembersButton = ({ setDrawerType }: { setDrawerType: (type: DrawerType) => void }) => {
     return (
+        // Mobile members navigation is handled separately (ChannelMembersDrawer is out of scope for this migration)
         <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={() => setDrawerType('members')}>
             <Users className="h-4 w-4" />
             <span>{_("Channel members")}</span>

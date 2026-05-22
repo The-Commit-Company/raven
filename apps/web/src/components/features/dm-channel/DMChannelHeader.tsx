@@ -16,7 +16,6 @@ import { channelDrawerAtom } from "@utils/channelAtoms"
 import { UserData } from "@db"
 import _ from "@lib/translate"
 import { useChannel } from "@hooks/useChannel"
-import { useNavigate } from "react-router-dom"
 import { ChannelFilesButton, ChannelLinksButton, ChannelThreadsButton, type NavProps } from "../channel/ChannelHeader/ChannelMenu"
 
 interface DMChannelHeaderProps {
@@ -32,7 +31,6 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
     const displayName = peer.full_name ?? peer.name ?? "Unknown"
     const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
     const { dmChannel } = useChannel(channelID)
-    const navigate = useNavigate()
     const pinnedCount = dmChannel?.pinned_messages_string ? dmChannel.pinned_messages_string.split("\n").length : 0
 
     const onOpenPins = () => setDrawerType(drawerType === "pins" ? "" : "pins")
@@ -43,7 +41,6 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
         isMobile: false,
         workspaceID: '',
         channelID,
-        navigate,
         setDrawerType,
     }
 
