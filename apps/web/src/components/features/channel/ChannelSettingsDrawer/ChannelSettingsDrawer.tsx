@@ -12,6 +12,7 @@ import { UserProfileDrawer } from '@components/features/dm-channel/UserProfileDr
 import { useAtom } from 'jotai';
 import { channelDrawerAtom } from '@utils/channelAtoms';
 import { useCurrentChannelID } from '@hooks/useCurrentChannelID';
+import { useIsMobile } from '@hooks/use-mobile';
 import type { UserData } from '@db';
 import _ from '@lib/translate'
 
@@ -22,7 +23,7 @@ interface ChannelSettingsDrawerProps {
 const ChannelSettingsDrawer = ({ peerUser }: ChannelSettingsDrawerProps) => {
 
     const channelID = useCurrentChannelID()
-
+    const isMobile = useIsMobile()
     const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
 
     useEffect(() => {
@@ -40,6 +41,8 @@ const ChannelSettingsDrawer = ({ peerUser }: ChannelSettingsDrawerProps) => {
     const handleClose = () => {
         setDrawerType('')
     }
+
+    if (isMobile) return null
 
     return (
         <div className="flex flex-col h-full max-w-md w-95">
