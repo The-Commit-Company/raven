@@ -16,6 +16,7 @@ import { channelDrawerAtom } from "@utils/channelAtoms"
 import { UserData } from "@db"
 import _ from "@lib/translate"
 import { useChannel } from "@hooks/useChannel"
+import { useNavigate } from "react-router-dom"
 import { ChannelFilesButton, ChannelLinksButton, ChannelThreadsButton } from "../channel/ChannelHeader/ChannelMenu"
 
 interface DMChannelHeaderProps {
@@ -31,10 +32,20 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
     const displayName = peer.full_name ?? peer.name ?? "Unknown"
     const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
     const { dmChannel } = useChannel(channelID)
+    const navigate = useNavigate()
     const pinnedCount = dmChannel?.pinned_messages_string ? dmChannel.pinned_messages_string.split("\n").length : 0
 
     const onOpenPins = () => setDrawerType(drawerType === "pins" ? "" : "pins")
     const handleViewProfile = () => onViewProfile?.()
+
+    // DM header is always desktop layout — no mobile navigation to settings page
+    const dmNavProps = {
+        isMobile: false as const,
+        workspaceID: '',
+        channelID,
+        navigate,
+        setDrawerType,
+    }
 
     return (
         <div
@@ -85,9 +96,9 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
                                 <User className="h-4 w-4" />
                                 {_("View profile")}
                             </DropdownMenuItem>
-                            <ChannelFilesButton channelID={channelID} />
-                            <ChannelLinksButton channelID={channelID} />
-                            <ChannelThreadsButton channelID={channelID} />
+                            <ChannelFilesButton {...dmNavProps} />
+                            <ChannelLinksButton {...dmNavProps} />
+                            <ChannelThreadsButton {...dmNavProps} />
                             <DropdownMenuSub>
                                 <DropdownMenuSubTrigger className="flex cursor-pointer items-center gap-2 py-2 text-sm">
                                     <Bell className="h-4 w-4 text-ink-gray-4" />
