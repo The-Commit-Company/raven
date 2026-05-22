@@ -17,7 +17,7 @@ import { UserData } from "@db"
 import _ from "@lib/translate"
 import { useChannel } from "@hooks/useChannel"
 import { useNavigate } from "react-router-dom"
-import { ChannelFilesButton, ChannelLinksButton, ChannelThreadsButton } from "../channel/ChannelHeader/ChannelMenu"
+import { ChannelFilesButton, ChannelLinksButton, ChannelThreadsButton, type NavProps } from "../channel/ChannelHeader/ChannelMenu"
 
 interface DMChannelHeaderProps {
     /** Peer user info (name, avatar). When from API this can extend to peer_user_id, etc. */
@@ -39,8 +39,8 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
     const handleViewProfile = () => onViewProfile?.()
 
     // DM header is always desktop layout — no mobile navigation to settings page
-    const dmNavProps = {
-        isMobile: false as const,
+    const dmNavProps: NavProps = {
+        isMobile: false,
         workspaceID: '',
         channelID,
         navigate,

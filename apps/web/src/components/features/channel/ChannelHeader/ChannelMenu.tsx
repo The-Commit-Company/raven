@@ -27,12 +27,14 @@ import {
 } from "lucide-react";
 import _ from "@lib/translate";
 
-type NavProps = {
+type DrawerType = '' | 'members' | 'files' | 'pins' | 'links' | 'threads' | 'info'
+
+export type NavProps = {
     isMobile: boolean
     workspaceID: string
     channelID: string
     navigate: ReturnType<typeof useNavigate>
-    setDrawerType?: (type: string) => void
+    setDrawerType?: (type: DrawerType) => void
 }
 
 const ChannelMenu = ({ channelID }: { channelID: string }) => {
@@ -107,7 +109,7 @@ const ChannelMenu = ({ channelID }: { channelID: string }) => {
 
 const SettingsButton = ({ isMobile, workspaceID, channelID, navigate, setDrawerType }: NavProps) => {
     const onOpen = () => {
-        if (isMobile) {
+        if (isMobile && workspaceID) {
             navigate(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/settings?tab=info`)
         } else {
             setDrawerType?.('info')
@@ -123,7 +125,7 @@ const SettingsButton = ({ isMobile, workspaceID, channelID, navigate, setDrawerT
 
 export const ChannelFilesButton = ({ isMobile, workspaceID, channelID, navigate, setDrawerType }: NavProps) => {
     const onOpen = () => {
-        if (isMobile) {
+        if (isMobile && workspaceID) {
             navigate(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/settings?tab=files`)
         } else {
             setDrawerType?.('files')
@@ -139,7 +141,7 @@ export const ChannelFilesButton = ({ isMobile, workspaceID, channelID, navigate,
 
 export const ChannelLinksButton = ({ isMobile, workspaceID, channelID, navigate, setDrawerType }: NavProps) => {
     const onOpen = () => {
-        if (isMobile) {
+        if (isMobile && workspaceID) {
             navigate(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/settings?tab=links`)
         } else {
             setDrawerType?.('links')
@@ -155,7 +157,7 @@ export const ChannelLinksButton = ({ isMobile, workspaceID, channelID, navigate,
 
 export const ChannelThreadsButton = ({ isMobile, workspaceID, channelID, navigate, setDrawerType }: NavProps) => {
     const onOpen = () => {
-        if (isMobile) {
+        if (isMobile && workspaceID) {
             navigate(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/settings?tab=threads`)
         } else {
             setDrawerType?.('threads')
@@ -169,7 +171,7 @@ export const ChannelThreadsButton = ({ isMobile, workspaceID, channelID, navigat
     )
 }
 
-const MembersButton = ({ channelID, setDrawerType }: { channelID: string; setDrawerType: (type: string) => void }) => {
+const MembersButton = ({ channelID, setDrawerType }: { channelID: string; setDrawerType: (type: DrawerType) => void }) => {
     return (
         <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={() => setDrawerType('members')}>
             <Users className="h-4 w-4" />
