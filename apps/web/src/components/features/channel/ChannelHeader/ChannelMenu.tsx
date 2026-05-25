@@ -71,26 +71,28 @@ const ChannelMenu = ({ channelID }: { channelID: string }) => {
                 <ChannelLinksButton {...navProps} />
                 <ChannelThreadsButton {...navProps} />
                 <MembersButton {...navProps} />
-                <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
-                        <Bell />
-                        <span>{_("Push notifications")}</span>
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent className="w-44">
-                        <DropdownMenuItem onClick={() => { }}>
-                            <BellRing />
-                            <span>{_("All Notifications")}</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { }}>
+                {!isMobile && (
+                    <DropdownMenuSub>
+                        <DropdownMenuSubTrigger>
                             <Bell />
-                            <span>{_("Mentions Only")}</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { }}>
-                            <BellOff />
-                            <span>{_("Mute Channel")}</span>
-                        </DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                </DropdownMenuSub>
+                            <span>{_("Push notifications")}</span>
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuSubContent className="w-44">
+                            <DropdownMenuItem onClick={() => { }}>
+                                <BellRing />
+                                <span>{_("All Notifications")}</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => { }}>
+                                <Bell />
+                                <span>{_("Mentions Only")}</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => { }}>
+                                <BellOff />
+                                <span>{_("Mute Channel")}</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+                )}
             </DropdownMenuContent>
         </DropdownMenu>
     )
