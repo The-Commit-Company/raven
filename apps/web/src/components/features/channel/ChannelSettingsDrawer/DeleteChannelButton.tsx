@@ -120,6 +120,7 @@ export function DeleteChannelButton({
             type="button"
             variant="solid"
             theme="red"
+            size="md"
             disabled={!allowDelete || loading}
             onClick={deleteChannel}
             aria-label={_("Delete this channel?")}

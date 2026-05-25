@@ -4,7 +4,8 @@ import Profile from "./pages/settings/Profile"
 import Appearance from "./pages/settings/Appearance"
 import Preferences from "./pages/settings/Preferences"
 import Channel from "@pages/workspace/Channel"
-import ChannelSettings from "@pages/workspace/ChannelSettings"
+import ChannelSettings from "@components/features/channel/ChannelSettings/ChannelSettings"
+import ChannelMembers from "@components/features/channel/ChannelMembers/ChannelMembers"
 import MainPage from "@pages/workspace/MainPage"
 import Notifications from "@pages/notifications/Notifications"
 import SavedMessages from "@pages/saved-messages/SavedMessages"
@@ -92,6 +93,7 @@ function App() {
                   <Route path=":id" element={<Channel />} />
                   <Route path=":id/thread/:threadID" element={<Channel />} />
                   <Route path=":id/settings" element={<ChannelSettings />} />
+                  <Route path=":id/members" element={<ChannelMembers />} />
                 </Route>
               </Route>
             </Routes>

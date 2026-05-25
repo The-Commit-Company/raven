@@ -122,6 +122,7 @@ export function ArchiveChannelButton({
             type="button"
             variant="solid"
             theme="red"
+            size="md"
             disabled={loading}
             onClick={toggleArchiveChannel}
             aria-label={_("{0} this channel?", [

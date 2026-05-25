@@ -70,32 +70,23 @@ const ChannelMenu = ({ channelID }: { channelID: string }) => {
                 <ChannelFilesButton {...navProps} />
                 <ChannelLinksButton {...navProps} />
                 <ChannelThreadsButton {...navProps} />
-                <MembersButton setDrawerType={setDrawerType} />
+                <MembersButton {...navProps} />
                 <DropdownMenuSub>
-                    <DropdownMenuSubTrigger className="flex cursor-pointer items-center gap-2 py-2 text-sm">
-                        <Bell className="h-4 w-4 text-ink-gray-4" />
+                    <DropdownMenuSubTrigger>
+                        <Bell />
                         <span>{_("Push notifications")}</span>
                     </DropdownMenuSubTrigger>
                     <DropdownMenuSubContent className="w-44">
-                        <DropdownMenuItem
-                            className="flex cursor-pointer items-center gap-2 py-2 text-sm"
-                            onClick={() => { }}
-                        >
-                            <BellRing className="h-4 w-4" />
+                        <DropdownMenuItem onClick={() => { }}>
+                            <BellRing />
                             <span>{_("All Notifications")}</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                            className="flex cursor-pointer items-center gap-2 py-2 text-sm"
-                            onClick={() => { }}
-                        >
-                            <Bell className="h-4 w-4" />
+                        <DropdownMenuItem onClick={() => { }}>
+                            <Bell />
                             <span>{_("Mentions Only")}</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                            className="flex cursor-pointer items-center gap-2 py-2 text-sm"
-                            onClick={() => { }}
-                        >
-                            <BellOff className="h-4 w-4" />
+                        <DropdownMenuItem onClick={() => { }}>
+                            <BellOff />
                             <span>{_("Mute Channel")}</span>
                         </DropdownMenuItem>
                     </DropdownMenuSubContent>
@@ -114,8 +105,8 @@ const SettingsButton = ({ isMobile, workspaceID, channelID, navigate, setDrawerT
         }
     }
     return (
-        <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpen}>
-            <Settings className="h-4 w-4" />
+        <DropdownMenuItem onClick={onOpen}>
+            <Settings />
             <span>{_("Channel info")}</span>
         </DropdownMenuItem>
     )
@@ -130,8 +121,8 @@ export const ChannelFilesButton = ({ isMobile, workspaceID, channelID, navigate,
         }
     }
     return (
-        <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpen}>
-            <Files className="h-4 w-4" />
+        <DropdownMenuItem onClick={onOpen}>
+            <Files />
             <span>{_("Files")}</span>
         </DropdownMenuItem>
     )
@@ -146,8 +137,8 @@ export const ChannelLinksButton = ({ isMobile, workspaceID, channelID, navigate,
         }
     }
     return (
-        <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpen}>
-            <Link className="h-4 w-4" />
+        <DropdownMenuItem onClick={onOpen}>
+            <Link />
             <span>{_("Links")}</span>
         </DropdownMenuItem>
     )
@@ -162,18 +153,24 @@ export const ChannelThreadsButton = ({ isMobile, workspaceID, channelID, navigat
         }
     }
     return (
-        <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={onOpen}>
-            <MessageSquareText className="h-4 w-4" />
+        <DropdownMenuItem onClick={onOpen}>
+            <MessageSquareText />
             <span>{_("Threads")}</span>
         </DropdownMenuItem>
     )
 }
 
-const MembersButton = ({ setDrawerType }: { setDrawerType: (type: DrawerType) => void }) => {
+const MembersButton = ({ isMobile, workspaceID, channelID, navigate, setDrawerType }: NavProps) => {
+    const onOpen = () => {
+        if (isMobile && workspaceID) {
+            navigate?.(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/members`)
+        } else {
+            setDrawerType?.('members')
+        }
+    }
     return (
-        // Mobile members navigation is handled separately (ChannelMembersDrawer is out of scope for this migration)
-        <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm" onClick={() => setDrawerType('members')}>
-            <Users className="h-4 w-4" />
+        <DropdownMenuItem onClick={onOpen}>
+            <Users />
             <span>{_("Channel members")}</span>
         </DropdownMenuItem>
     )

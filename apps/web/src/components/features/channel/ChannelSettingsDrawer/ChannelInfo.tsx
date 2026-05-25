@@ -37,7 +37,7 @@ const ChannelInfo = ({ channelID }: { channelID: string }) => {
     return (
         <div className="px-1 space-y-2 pb-4 pt-2">
             {/* About Section */}
-            <div className="space-y-2 max-w-87">
+            <div className="space-y-2 w-full">
                 <h3 className="font-semibold text-sm">{_("About")}</h3>
 
                 {/* Channel Name and Description */}

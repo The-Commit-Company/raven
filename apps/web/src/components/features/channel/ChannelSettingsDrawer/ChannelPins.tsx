@@ -19,7 +19,7 @@ const ChannelPins = ({ channelID }: { channelID: string }) => {
                             return (
                                 <div
                                     key={message.name}
-                                    className="p-3 border border-outline-gray-2/70 rounded-lg hover:bg-surface-gray-2/50 transition-colors cursor-pointer max-w-87">
+                                    className="p-3 border border-outline-gray-2/70 rounded-lg hover:bg-surface-gray-2/50 transition-colors cursor-pointer w-full">
                                     <div className="flex items-center gap-2 mb-1">
                                         {member && <>
                                             <UserAvatar

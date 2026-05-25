@@ -39,7 +39,7 @@ const MainPageContent = () => {
         return (
             <SidebarProvider>
                 <div
-                    className="flex flex-col h-screen min-h-0 overflow-hidden bg-surface-white"
+                    className="flex flex-col h-screen min-h-0 overflow-hidden bg-surface-white flex-1"
                     style={{ "--app-header-height": "0px" } as React.CSSProperties}
                 >
                     <Outlet />

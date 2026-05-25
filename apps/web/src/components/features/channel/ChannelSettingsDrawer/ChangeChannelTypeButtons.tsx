@@ -184,6 +184,7 @@ function ChangeChannelTypeButton({
           </AlertDialogCancel>
           <Button
             type="button"
+            size="md"
             disabled={loading}
             onClick={changeChannelType}
             aria-label={changeToTypeLabel()}
