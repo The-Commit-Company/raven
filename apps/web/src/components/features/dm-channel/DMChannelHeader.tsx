@@ -16,7 +16,7 @@ import { channelDrawerAtom } from "@utils/channelAtoms"
 import { UserData } from "@db"
 import _ from "@lib/translate"
 import { useChannel } from "@hooks/useChannel"
-import { ChannelFilesButton, ChannelLinksButton, ChannelThreadsButton } from "../channel/ChannelHeader/ChannelMenu"
+import { ChannelFilesButton, ChannelLinksButton, ChannelThreadsButton, type NavProps } from "../channel/ChannelHeader/ChannelMenu"
 
 interface DMChannelHeaderProps {
     /** Peer user info (name, avatar). When from API this can extend to peer_user_id, etc. */
@@ -35,6 +35,14 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
 
     const onOpenPins = () => setDrawerType(drawerType === "pins" ? "" : "pins")
     const handleViewProfile = () => onViewProfile?.()
+
+    // DM header is always desktop layout — no mobile navigation to settings page
+    const dmNavProps: NavProps = {
+        isMobile: false,
+        workspaceID: '',
+        channelID,
+        setDrawerType,
+    }
 
     return (
         <div
@@ -85,9 +93,9 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
                                 <User className="h-4 w-4" />
                                 {_("View profile")}
                             </DropdownMenuItem>
-                            <ChannelFilesButton channelID={channelID} />
-                            <ChannelLinksButton channelID={channelID} />
-                            <ChannelThreadsButton channelID={channelID} />
+                            <ChannelFilesButton {...dmNavProps} />
+                            <ChannelLinksButton {...dmNavProps} />
+                            <ChannelThreadsButton {...dmNavProps} />
                             <DropdownMenuSub>
                                 <DropdownMenuSubTrigger className="flex cursor-pointer items-center gap-2 py-2 text-sm">
                                     <Bell className="h-4 w-4 text-ink-gray-4" />

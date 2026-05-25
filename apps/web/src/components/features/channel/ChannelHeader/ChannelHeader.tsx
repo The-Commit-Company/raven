@@ -32,8 +32,13 @@ const ChannelHeader = () => {
     const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
 
     const onOpenMembers = () => {
-        if (drawerType === 'members') setDrawerType('')
-        else setDrawerType('members')
+        if (isMobile && workspaceID) {
+            navigate(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/members`)
+        } else if (drawerType === 'members') {
+            setDrawerType('')
+        } else {
+            setDrawerType('members')
+        }
     }
 
     const onOpenFiles = () => {

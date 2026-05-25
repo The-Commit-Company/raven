@@ -1,4 +1,3 @@
-import { ScrollArea } from '@components/ui/scroll-area'
 import { Search, ExternalLink, Link, FileBox } from 'lucide-react'
 import { useState } from 'react'
 import { useFrappeEventListener } from 'frappe-react-sdk'
@@ -9,6 +8,7 @@ import { UserAvatar } from '@components/features/message/UserAvatar'
 import { formatRelativeDate } from '@lib/date'
 import ErrorBanner from '@components/ui/error-banner'
 import { LinkSearchResult, useLinkSearch } from '@hooks/useLinkSearch'
+import { Input } from '@components/ui/input'
 
 const ChannelLinks = ({ channelID }: { channelID: string }) => {
     const { members } = useChannelMembers(channelID)
@@ -30,21 +30,20 @@ const ChannelLinks = ({ channelID }: { channelID: string }) => {
             <div className="flex items-center gap-2">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-ink-gray-4" />
-                    <input
-                        type="text"
+                    <Input
                         placeholder={_("Search links...")}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2 text-sm bg-surface-white border border-outline-gray-2/70 rounded-md focus:outline-none focus:ring-2 focus:ring-outline-gray-4 focus:border-transparent"
+                        className="pl-9 h-8 text-sm"
                     />
                 </div>
             </div>
             {error && <ErrorBanner error={error} />}
             {/* Links List */}
-            <ScrollArea className="flex-1">
+            <div>
                 {isLoading ? <LinkPreviewSkeletonList /> :
                     results.length === 0 ? <div className="text-sm text-ink-gray-4 text-center py-8">{searchQuery ? _("No links found matching your search.") : _("No links shared in this channel yet.")}</div> :
-                        <div className={'space-y-2'}>
+                        <div className='space-y-2'>
                             {results.map((link) => {
                                 const member = members.find((m) => m.name === link.author)
                                 return (
@@ -56,7 +55,7 @@ const ChannelLinks = ({ channelID }: { channelID: string }) => {
                                 )
                             })}
                         </div>}
-            </ScrollArea>
+            </div>
         </div>
     )
 }
@@ -107,13 +106,13 @@ const LinkPreviewCard = ({ link, member }: {
     return (
         <div
             key={link.id}   //TODO: Scroll to message when clicked, we have message id as link.name
-            className={`group border border-outline-gray-2/70 rounded-lg hover:bg-surface-gray-2/50 transition-colors cursor-pointer overflow-hidden max-w-87 p-3`}
+            className={`group border border-outline-gray-2/70 rounded-lg hover:bg-surface-gray-2/50 transition-colors cursor-pointer overflow-hidden w-full p-3`}
             tabIndex={0}
             role="button"
             aria-label={`Open link: ${displayTitle}`}>
 
             <div className="space-y-2">
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-3 min-w-0">
                     {faviconUrl ? (
                         <img
                             src={faviconUrl}
