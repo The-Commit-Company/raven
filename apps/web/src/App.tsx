@@ -4,7 +4,7 @@ import Profile from "./pages/settings/Profile"
 import Appearance from "./pages/settings/Appearance"
 import Preferences from "./pages/settings/Preferences"
 import Channel from "@pages/workspace/Channel"
-import ChannelSettings from "@components/features/channel/ChannelSettings/ChannelSettings"
+import MobileChannelSettings from "@components/features/channel/ChannelSettings/MobileChannelSettings"
 import ChannelMembers from "@components/features/channel/ChannelMembers/ChannelMembers"
 import MainPage from "@pages/workspace/MainPage"
 import Notifications from "@pages/notifications/Notifications"
@@ -85,6 +85,7 @@ function App() {
                   <Route index element={<DirectMessagesIndex />} />
                   <Route path=":id" element={<DirectMessage />} />
                   <Route path=":id/thread/:threadID" element={<DirectMessage />} />
+                  <Route path=":id/settings" element={<MobileChannelSettings />} />
                 </Route>
                 <Route path="saved-messages" element={<SavedMessages />} />
                 {/* Workspace: channels and settings only; search is global at /search above */}
@@ -92,7 +93,7 @@ function App() {
                   <Route index element={<WorkspaceRedirect />} />
                   <Route path=":id" element={<Channel />} />
                   <Route path=":id/thread/:threadID" element={<Channel />} />
-                  <Route path=":id/settings" element={<ChannelSettings />} />
+                  <Route path=":id/settings" element={<MobileChannelSettings />} />
                   <Route path=":id/members" element={<ChannelMembers />} />
                 </Route>
               </Route>

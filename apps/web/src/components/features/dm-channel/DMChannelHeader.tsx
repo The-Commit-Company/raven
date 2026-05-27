@@ -1,3 +1,5 @@
+import type React from "react"
+import { Badge } from "@components/ui/badge"
 import { Button } from "@components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
 import {
@@ -10,66 +12,79 @@ import {
     DropdownMenuTrigger,
 } from "@components/ui/dropdown-menu"
 import { UserAvatar } from "@components/features/message/UserAvatar"
-import { Bell, BellOff, BellRing, ChevronDown, FileText, Headset, Link, MessageSquareText, Pin, Star, User } from "lucide-react"
+import { Bell, BellOff, BellRing, Bot, ChevronDown, ChevronLeft, Files, Headset, Link, MessageSquareText, Palmtree, Pin, User, UserX } from "lucide-react"
 import { useAtom } from "jotai"
-import { channelDrawerAtom } from "@utils/channelAtoms"
+import { useNavigate } from "react-router-dom"
+import { channelDrawerAtom, type DrawerType } from "@utils/channelAtoms"
 import { UserData } from "@db"
 import _ from "@lib/translate"
 import { useChannel } from "@hooks/useChannel"
-import { ChannelFilesButton, ChannelLinksButton, ChannelThreadsButton, type NavProps } from "../channel/ChannelHeader/ChannelMenu"
+import { useIsMobile } from "@hooks/use-mobile"
+import { useIsUserOnLeave } from "@hooks/useIsUserOnLeave"
 
 interface DMChannelHeaderProps {
     /** Peer user info (name, avatar). When from API this can extend to peer_user_id, etc. */
     peer: UserData
     /** DM channel id (for drawer state) */
     channelID: string
-    /** Called when user chooses "View profile" in the dropdown */
+    /** Called when user chooses "View profile" in the dropdown (desktop only) */
     onViewProfile?: () => void
 }
 
 export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHeaderProps) {
-    const displayName = peer.full_name ?? peer.name ?? "Unknown"
-    const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
+    const navigate = useNavigate()
+    const isMobile = useIsMobile()
+    const displayName = peer.full_name || peer.name
+    const [, setDrawerType] = useAtom(channelDrawerAtom(channelID))
     const { dmChannel } = useChannel(channelID)
     const pinnedCount = dmChannel?.pinned_messages_string ? dmChannel.pinned_messages_string.split("\n").length : 0
+    const customStatus = peer.custom_status?.trim() || ""
+    const isBot = peer.type === "Bot"
+    const isDisabled = peer.enabled === 0
+    const isOnLeave = useIsUserOnLeave(peer.name)
 
-    const onOpenPins = () => setDrawerType(drawerType === "pins" ? "" : "pins")
-    const handleViewProfile = () => onViewProfile?.()
-
-    // DM header is always desktop layout — no mobile navigation to settings page
-    const dmNavProps: NavProps = {
-        isMobile: false,
-        workspaceID: '',
-        channelID,
-        setDrawerType,
+    const openTab = (tab: Exclude<DrawerType, "" | "members">) => {
+        if (isMobile) {
+            navigate(`/dm-channel/${encodeURIComponent(channelID)}/settings?tab=${tab}`)
+            return
+        }
+        if (tab === "info") {
+            onViewProfile?.()
+            return
+        }
+        setDrawerType(tab)
     }
+
+    const headerStyle: React.CSSProperties = isMobile
+        ? { top: 0, left: 0, width: "100%" }
+        : {
+            top: "var(--app-header-height, 36px)",
+            left: "var(--sidebar-width, 340px)",
+            width: "calc(100% - var(--sidebar-width, 340px))",
+        }
 
     return (
         <div
-            className="fixed flex items-center justify-between gap-2 border-b bg-surface-white py-1.5 px-2 z-40 transition-[left,width] duration-200 ease-linear"
-            style={{
-                top: "var(--app-header-height, 36px)",
-                left: "var(--sidebar-width, 380px)",
-                width: "calc(100% - var(--sidebar-width, 380px))",
-            }}
+            className="fixed flex items-center justify-between border-b bg-surface-white py-1.5 px-2 z-40 transition-[left,width,top] duration-200 ease-linear"
+            style={headerStyle}
         >
-            {/* Left: Star + Avatar/Name dropdown + Files + Links – aligned like channel header */}
+            {isMobile && (
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    isIconButton
+                    onClick={() => navigate('/dm-channel')}
+                    aria-label={_('Back')}
+                >
+                    <ChevronLeft className="h-4 w-4" />
+                </Button>
+            )}
+
+            {/* Left: Avatar/Name dropdown + pinned chip */}
             <div className="flex items-center gap-2 min-w-0">
                 <div className="flex items-center gap-0.5">
-                    {/* <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm shrink-0">
-                                <Star className="h-3 w-3 text-ink-gray-8/80" />
-                                <span className="sr-only">Star</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent side="bottom">
-                            <p>Star</p>
-                        </TooltipContent>
-                    </Tooltip> */}
-
                     <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
+                        <DropdownMenuTrigger asChild className="px-1.5">
                             <Button
                                 variant="ghost"
                                 size="md"
@@ -86,41 +101,38 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" className="w-56">
-                            <DropdownMenuItem
-                                className="flex cursor-pointer items-center gap-2 py-2 text-sm"
-                                onSelect={handleViewProfile}
-                            >
-                                <User className="h-4 w-4" />
-                                {_("View profile")}
+                            <DropdownMenuItem onClick={() => openTab("info")}>
+                                <User />
+                                <span>{_("View profile")}</span>
                             </DropdownMenuItem>
-                            <ChannelFilesButton {...dmNavProps} />
-                            <ChannelLinksButton {...dmNavProps} />
-                            <ChannelThreadsButton {...dmNavProps} />
+                            <DropdownMenuItem onClick={() => openTab("files")}>
+                                <Files />
+                                <span>{_("Files")}</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => openTab("links")}>
+                                <Link />
+                                <span>{_("Links")}</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => openTab("threads")}>
+                                <MessageSquareText />
+                                <span>{_("Threads")}</span>
+                            </DropdownMenuItem>
                             <DropdownMenuSub>
-                                <DropdownMenuSubTrigger className="flex cursor-pointer items-center gap-2 py-2 text-sm">
-                                    <Bell className="h-4 w-4 text-ink-gray-4" />
+                                <DropdownMenuSubTrigger>
+                                    <Bell />
                                     <span>{_("Push notifications")}</span>
                                 </DropdownMenuSubTrigger>
                                 <DropdownMenuSubContent className="w-44">
-                                    <DropdownMenuItem
-                                        className="flex cursor-pointer items-center gap-2 py-2 text-sm"
-                                        onClick={() => { }}
-                                    >
-                                        <BellRing className="h-4 w-4" />
+                                    <DropdownMenuItem onClick={() => { }}>
+                                        <BellRing />
                                         <span>{_("All Notifications")}</span>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        className="flex cursor-pointer items-center gap-2 py-2 text-sm"
-                                        onClick={() => { }}
-                                    >
-                                        <Bell className="h-4 w-4" />
+                                    <DropdownMenuItem onClick={() => { }}>
+                                        <Bell />
                                         <span>{_("Mentions Only")}</span>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        className="flex cursor-pointer items-center gap-2 py-2 text-sm"
-                                        onClick={() => { }}
-                                    >
-                                        <BellOff className="h-4 w-4" />
+                                    <DropdownMenuItem onClick={() => { }}>
+                                        <BellOff />
                                         <span>{_("Mute Channel")}</span>
                                     </DropdownMenuItem>
                                 </DropdownMenuSubContent>
@@ -128,81 +140,58 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
                         </DropdownMenuContent>
                     </DropdownMenu>
 
-                    {pinnedCount > 0 && <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button variant="ghost" size="md" className="h-7 gap-2" onClick={onOpenPins}>
-                                <Pin className="h-2 w-2 text-ink-gray-8/80" />
-                                <span className="sr-only">{_('Pinned')}</span>
-                                <span className="text-ink-gray-4 text-sm font-normal">{pinnedCount}</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{_('Pinned Messages')}</p>
-                        </TooltipContent>
-                    </Tooltip>}
+                    {isBot && (
+                        <Badge size="md" variant="subtle" theme="violet">
+                            <Bot />
+                            {_("Bot")}
+                        </Badge>
+                    )}
+                    {isDisabled && (
+                        <Badge size="md" variant="subtle" theme="gray">
+                            <UserX />
+                            {_("Disabled")}
+                        </Badge>
+                    )}
+                    {isOnLeave && (
+                        <Badge size="md" variant="subtle" theme="orange">
+                            <Palmtree />
+                            {_("On Leave")}
+                        </Badge>
+                    )}
+                    {customStatus && (
+                        <Badge size="md" variant="subtle" theme="gray">
+                            {customStatus}
+                        </Badge>
+                    )}
 
-                    {/* <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className={`h-7 w-7 rounded-sm ${drawerType === "files" ? "bg-surface-gray-2" : ""}`}
-                                onClick={onOpenFiles}
-                            >
-                                <FileText className="h-3 w-3 text-ink-gray-8/80" />
-                                <span className="sr-only">Files</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent side="bottom">
-                            <p>Files</p>
-                        </TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className={`h-7 w-7 rounded-sm ${drawerType === "links" ? "bg-surface-gray-2" : ""}`}
-                                onClick={onOpenLinks}
-                            >
-                                <Link className="h-3 w-3 text-ink-gray-8/80" />
-                                <span className="sr-only">Links</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent side="bottom">
-                            <p>Links</p>
-                        </TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className={`h-7 w-7 rounded-sm ${drawerType === "threads" ? "bg-surface-gray-2" : ""}`}
-                                onClick={onOpenThreads}
-                            >
-                                <MessageSquareText className="h-3 w-3 text-ink-gray-8/80" />
-                                <span className="sr-only">Threads</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent side="bottom">
-                            <p>Threads</p>
-                        </TooltipContent>
-                    </Tooltip> */}
+                    {pinnedCount > 0 && (
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant="ghost" size="sm" className="gap-2" onClick={() => openTab("pins")}>
+                                    <Pin className="h-2 w-2 text-ink-gray-8/80" />
+                                    <span className="sr-only">{_('Pinned')}</span>
+                                    <span className="text-ink-gray-4 text-sm font-normal">{pinnedCount}</span>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{_('Pinned Messages')}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    )}
                 </div>
             </div>
 
             {/* Right: Call */}
-            <div className="flex shrink-0 items-center gap-1 ml-auto">
+            <div className="flex items-center gap-1 ml-auto">
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <Button variant="ghost" size="sm" isIconButton>
                             <Headset className="h-3 w-3 text-ink-gray-8/80" />
-                            <span className="sr-only">Start call</span>
+                            <span className="sr-only">{_("Start call")}</span>
                         </Button>
                     </TooltipTrigger>
-                    <TooltipContent side="bottom">
-                        <p>Start call</p>
+                    <TooltipContent>
+                        <p>{_("Start call")}</p>
                     </TooltipContent>
                 </Tooltip>
             </div>
