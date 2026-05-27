@@ -15,7 +15,7 @@ const AppHeader = ({ searchValue, onSearchChange }: AppHeaderProps) => {
     const isSearchPage = pathname === "/search"
 
     return (
-        <header className="flex items-center gap-1 border-b bg-surface-white z-10 px-2 fixed top-0 h-(--app-header-height) w-full">
+        <header className="flex items-center gap-1 border-b bg-surface-white z-10 px-2 shrink-0 h-(--app-header-height) w-full">
             {/* Mobile sidebar trigger */}
             <SidebarTrigger className="md:hidden shrink-0" />
 

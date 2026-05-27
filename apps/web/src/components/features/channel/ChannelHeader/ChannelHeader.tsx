@@ -41,19 +41,11 @@ const ChannelHeader = () => {
         }
     }
 
-    const onOpenFiles = () => {
-        setDrawerType('files')
-    }
-
-    const onOpenLinks = () => {
-        setDrawerType('links')
-    }
-
-    const onOpenThreads = () => {
-        setDrawerType('threads')
-    }
-
     const onOpenPins = () => {
+        if (isMobile && workspaceID) {
+            navigate(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/settings?tab=pins`)
+            return
+        }
         setDrawerType('pins')
     }
 
@@ -78,19 +70,20 @@ const ChannelHeader = () => {
             className="fixed flex items-center justify-between border-b bg-surface-white py-1.5 px-2 z-40 transition-[left,width,top] duration-200 ease-linear"
             style={headerStyle}
         >
+            {isMobile && (
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    isIconButton
+                    onClick={() => navigate(`/${workspaceID ?? ''}`)}
+                    aria-label={_('Back')}
+                >
+                    <ChevronLeft className="h-4 w-4" />
+                </Button>
+            )}
+
             {/* Left side */}
-            <div className="flex items-center gap-2">
-                {isMobile && (
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        isIconButton
-                        onClick={() => navigate(`/${workspaceID ?? ''}`)}
-                        aria-label={_('Back')}
-                    >
-                        <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                )}
+            <div className="flex items-center gap-2 min-w-0">
                 <div className="flex items-center gap-0.5">
                     <Tooltip>
                         <TooltipTrigger asChild>
@@ -106,39 +99,6 @@ const ChannelHeader = () => {
 
                     <ChannelMenu channelID={channelID} />
 
-                    {/* <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={onOpenFiles}>
-                                <FileText className="h-2 w-2 text-ink-gray-8/80" />
-                                <span className="sr-only">{_('Files')}</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{_('Files')}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={onOpenLinks}>
-                                <Link className="h-2 w-2 text-ink-gray-8/80" />
-                                <span className="sr-only">{_('Links')}</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{_('Links')}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={onOpenThreads}>
-                                <MessageSquareText className="h-2 w-2 text-ink-gray-8/80" />
-                                <span className="sr-only">{_('Threads')}</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{_('Threads')}</p>
-                        </TooltipContent>
-                    </Tooltip> */}
                     {pinnedCount > 0 && <Tooltip>
                         <TooltipTrigger asChild>
                             <Button variant="ghost" size="sm" className="gap-2" onClick={onOpenPins}>

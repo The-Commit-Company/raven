@@ -2,7 +2,7 @@ import { AppSidebar } from "@components/app-sidebar"
 import { AppLayout } from "@components/layout/AppLayout"
 import AppHeader from "@components/features/header/AppHeader"
 import { Outlet, useParams, useLocation } from "react-router-dom"
-import React, { useMemo } from "react"
+import { useMemo } from "react"
 import { useLoadUsers } from "@hooks/useLoadUsers"
 import { ActiveWorkspaceProvider, useActiveWorkspace } from "../../contexts/ActiveWorkspaceContext"
 import { MainPageSkeleton } from "@components/features/main-page/MainPageSkeleton"
@@ -38,10 +38,7 @@ const MainPageContent = () => {
         // Channel view: full-screen, no sidebar, ChannelHeader at top (app-header-height=0)
         return (
             <SidebarProvider>
-                <div
-                    className="flex flex-col h-screen min-h-0 overflow-hidden bg-surface-white flex-1"
-                    style={{ "--app-header-height": "0px" } as React.CSSProperties}
-                >
+                <div className="flex flex-col h-screen min-h-0 overflow-hidden bg-surface-white flex-1 [--app-header-height:0px]">
                     <Outlet />
                 </div>
             </SidebarProvider>
@@ -49,17 +46,14 @@ const MainPageContent = () => {
     }
 
     // Desktop layout
-    const isDMWorkspace = currentWorkspace === "Direct Messages"
-    const isDirectMessagesPage = pathname.startsWith("/dm-channel")
     const isSettingsPage = pathname.startsWith("/settings")
     const isSidebarLessPage = SIDEBAR_LESS_ROUTES.has(pathname) || isSettingsPage
-    const shouldShowAppHeader = !isSidebarLessPage && !isDirectMessagesPage
-    const sidebarWidth = (isDMWorkspace || isDirectMessagesPage) ? "380px" : "340px"
+    const sidebarWidth = "340px"
 
     return (
         <AppLayout
             sidebar={isSidebarLessPage ? null : <AppSidebar />}
-            header={shouldShowAppHeader ? <AppHeader /> : null}
+            header={isSidebarLessPage ? null : <AppHeader />}
             sidebarWidth={sidebarWidth}
         >
             <Outlet />
