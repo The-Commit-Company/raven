@@ -5,14 +5,13 @@ import { ThreadPreviewBox } from "./ThreadPreviewBox"
 import { ThreadMessage, GetThreadsReturnType } from "../../../types/ThreadMessage"
 import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
 import { useChannels } from "@hooks/useChannels"
-import { useUser } from "@hooks/useUser"
+import { useUsersById } from "@hooks/useMessageRowLookups"
 import useUnreadThreadsCount from "@hooks/useUnreadThreadsCount"
 import { MessageListSkeleton } from "@components/features/dm-channel/DirectMessagePageSkeleton"
 import ErrorBanner from "@components/ui/error-banner"
 import _ from "@lib/translate"
 
 interface ThreadsListProps {
-    users: UserData[]
     threadType?: 'participating' | 'other' | 'ai'
     searchQuery?: string
     channelFilter?: string
@@ -43,13 +42,13 @@ type SWRKey = [string, {
 
 function ThreadPreviewBoxWrapper({
     thread,
-    users,
+    usersById,
     unreadCount,
     onClick,
     isActive
 }: {
     thread: ThreadMessage
-    users: UserData[]
+    usersById: Map<string, UserData>
     unreadCount: number
     onClick?: () => void
     isActive?: boolean
@@ -58,9 +57,9 @@ function ThreadPreviewBoxWrapper({
 
     const dmChannel = dm_channels.find((c) => c.name === thread.channel_id)
     const channel = channels.find((c) => c.name === thread.channel_id)
-    const { data: peer } = useUser(dmChannel?.peer_user_id ?? '')
+    const peer = dmChannel?.peer_user_id ? usersById.get(dmChannel.peer_user_id) : undefined
 
-    const user = users.find((u) => u.name === thread.owner) || null
+    const user = usersById.get(thread.owner) ?? null
 
     // Format channel details
     const channelDetails: ThreadChannelDetails = useMemo(() => {
@@ -78,7 +77,7 @@ function ThreadPreviewBoxWrapper({
                 channelIcon: <ChannelIcon type={channel.type as 'Public' | 'Private' | 'Open'} className="h-3.5 w-3.5" />,
                 isDirectMessage: false,
                 participants: thread.participants
-                    .map((p) => users.find((u) => u.name === p.user_id))
+                    .map((p) => usersById.get(p.user_id))
                     .filter((u): u is UserData => Boolean(u))
             }
         }
@@ -88,7 +87,7 @@ function ThreadPreviewBoxWrapper({
             isDirectMessage: false,
             participants: []
         }
-    }, [channel, dmChannel, users, thread.is_bot_message, thread.bot, peer])
+    }, [channel, dmChannel, usersById, thread.is_dm_thread, thread.participants, peer])
 
     return (
         <ThreadPreviewBox
@@ -103,7 +102,6 @@ function ThreadPreviewBoxWrapper({
 }
 
 export default function ThreadsList({
-    users,
     threadType = 'participating',
     searchQuery,
     channelFilter,
@@ -114,6 +112,7 @@ export default function ThreadsList({
 }: ThreadsListProps) {
     const { call } = useContext(FrappeContext) as FrappeConfig
     const { data: unreadThreads } = useUnreadThreadsCount(workspaceID)
+    const usersById = useUsersById()
 
     const unreadThreadsMap = useMemo(() => {
         return unreadThreads?.message.reduce((acc, t) => {
@@ -216,7 +215,7 @@ export default function ThreadsList({
                 <ThreadPreviewBoxWrapper
                     key={thread.name}
                     thread={thread}
-                    users={users as UserData[]}
+                    usersById={usersById}
                     unreadCount={unreadThreadsMap[thread.name] ?? 0}
                     onClick={() => onThreadClick?.(thread)}
                     isActive={activeThreadID === thread.name}

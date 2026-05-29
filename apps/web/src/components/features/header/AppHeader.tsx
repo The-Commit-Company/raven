@@ -1,15 +1,13 @@
-import SearchBar from "./QuickSearch/SearchBar";
 import { useLocation } from "react-router-dom";
 import CommandMenu from "../cmdk/CommandMenu";
 import SearchButton from "./QuickSearch/SearchButton";
 import { SidebarTrigger } from "@components/ui/sidebar";
 
 interface AppHeaderProps {
-    searchValue?: string
-    onSearchChange?: (value: string) => void
+    title?: string
 }
 
-const AppHeader = ({ searchValue, onSearchChange }: AppHeaderProps) => {
+const AppHeader = ({ title }: AppHeaderProps) => {
     const location = useLocation()
     const pathname = location.pathname
     const isSearchPage = pathname === "/search"
@@ -19,13 +17,15 @@ const AppHeader = ({ searchValue, onSearchChange }: AppHeaderProps) => {
             {/* Mobile sidebar trigger */}
             <SidebarTrigger className="md:hidden shrink-0" />
 
-            {/* Search — hidden on mobile (SearchButton is fixed w-150 and blocks the trigger) */}
+            {/* Page title (optional) */}
+            {title && (
+                <h1 className="text-base font-medium text-ink-gray-9 px-2 shrink-0">{title}</h1>
+            )}
+
+            {/* Search — hidden on mobile (SearchButton is fixed w-150 and blocks the trigger).
+                On /search the page renders its own in-page input — no header SearchBar. */}
             <div className="hidden md:flex flex-1 items-center justify-end gap-1">
-                {isSearchPage ? (
-                    <SearchBar value={searchValue || ""} onChange={onSearchChange || (() => { })} />
-                ) : (
-                    <SearchButton />
-                )}
+                {!isSearchPage && <SearchButton />}
             </div>
 
             {/* Balance spacer */}

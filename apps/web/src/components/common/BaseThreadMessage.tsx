@@ -1,4 +1,4 @@
-import { MessageContent } from "@components/features/message/renderers/MessageItem"
+import { MessageContent } from "@components/features/message/renderers/MessageContent"
 import { UserAvatar } from "@components/features/message/UserAvatar"
 import { ThreadChannelDetails } from "@components/features/threads/ThreadsList"
 import { GroupedAvatars } from "@components/ui/grouped-avatars"

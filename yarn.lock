@@ -4296,6 +4296,11 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-heading/-/extension-heading-3.13.0.tgz#ead7f224de24ac66bb198cabe6b2af9617967583"
   integrity sha512-8VKWX8waYPtUWN97J89em9fOtxNteh6pvUEd0htcOAtoxjt2uZjbW5N4lKyWhNKifZBrVhH2Cc2NUPuftCVgxw==
 
+"@tiptap/extension-highlight@3.13.0":
+  version "3.13.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-highlight/-/extension-highlight-3.13.0.tgz#5ed7330d0d2b1e6d5bd726d38acc2170b79dffdc"
+  integrity sha512-VlXyO8gWhWd0W5ln4Qyr/P1RoAVZkk9ge0jjNsb1bOc078wuvufQ9f6DquMxx0WpcaCXy+DBQLE0GUUqoLvjsQ==
+
 "@tiptap/extension-horizontal-rule@^3.13.0":
   version "3.13.0"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-horizontal-rule/-/extension-horizontal-rule-3.13.0.tgz#c51eb35f3b3bf6308ab6b354a06c0e96c19dbff6"
@@ -4357,6 +4362,11 @@
   version "3.13.0"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-table/-/extension-table-3.13.0.tgz#83283bc818582e621cefabf173beeb37fe6f30ba"
   integrity sha512-LcH9KE4QBUJ6IPwt1Uo5iU7zatFjUUvXbctIu2fKQ9nqJ7nNSFxRhkNyporVFkTWYH7/rb0qMoF1VxSUGefG5w==
+
+"@tiptap/extension-text-align@3.13.0":
+  version "3.13.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-text-align/-/extension-text-align-3.13.0.tgz#1478b4e1ea14ccebd235a19dba3692b2f5ba0553"
+  integrity sha512-hebIus9tdXWb+AmhO+LTeUxZLdb0tqwdeaL/0wYxJQR5DeCTlJe6huXacMD/BkmnlEpRhxzQH0FrmXAd0d4Wgg==
 
 "@tiptap/extension-text@^3.13.0":
   version "3.13.0"

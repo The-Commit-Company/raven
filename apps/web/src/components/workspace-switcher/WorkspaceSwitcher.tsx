@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Plus, MessagesSquare, Bell, MessageSquareText, BookmarkIcon, Settings } from "lucide-react"
+import { Plus, MessagesSquare, Bell, MessageSquareText, BookmarkIcon, Settings, Search } from "lucide-react"
 import { Button } from "@components/ui/button"
 import { cn } from "@lib/utils"
 import { useNavigate, useLocation, useParams } from "react-router-dom"
@@ -164,6 +164,16 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
             {/* Bottom actions */}
             <div className="flex flex-col items-center gap-2 pb-4">
                 <div className="flex flex-col items-center gap-1">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        isIconButton
+                        className={cn(location.pathname === "/search" && "bg-surface-gray-2")}
+                        onClick={() => navigate("/search")}
+                    >
+                        <Search className="h-3.5 w-3.5 text-ink-gray-7" />
+                        <span className="sr-only">{_("Search")}</span>
+                    </Button>
                     <Button
                         variant="ghost"
                         size="sm"

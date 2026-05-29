@@ -16,22 +16,20 @@ interface UserFilterProps {
     onValueChange?: (value: string) => void
     showLabel?: boolean
     size?: 'sm'
+    /** Width of the popover content (the open dropdown). */
     dropdownClassName?: string
+    /** Width of the trigger button. Defaults to dropdownClassName when omitted. */
+    triggerClassName?: string
 }
 
-export function UserFilter({ filters, users, onValueChange, showLabel = true, size, dropdownClassName = "w-[240px]" }: UserFilterProps) {
+export function UserFilter({ filters, users, onValueChange, showLabel = true, size, dropdownClassName = "w-[240px]", triggerClassName }: UserFilterProps) {
     const [open, setOpen] = useState(false)
     const scrollRef = useRef<HTMLDivElement>(null)
-
-    if (!users || users.length === 0) return null
 
     const value = filters.owner || ''
     const selectedUser = users.find(u => u.name === value)
     const isAllSelected = !value || value === 'all'
-
-    const triggerSizeClass = size === 'sm' ? '!h-7 !py-1 text-xs [&>span]:!px-0' : '!h-9 !py-2 [&>span]:!px-0'
     const hasSelectedAvatar = selectedUser && value !== 'all'
-    const paddingClass = (size === 'sm' ? '!px-2' : '!px-3')
     const isCompact = size === 'sm'
 
     const triggerContent = hasSelectedAvatar ? (
@@ -45,7 +43,7 @@ export function UserFilter({ filters, users, onValueChange, showLabel = true, si
             <span className="min-w-0 flex-1 truncate text-left">{selectedUser.full_name}</span>
         </div>
     ) : isAllSelected ? (
-        <span className="min-w-0 flex-1 truncate text-left">{_("From Anyone")}</span>
+        <span className="min-w-0 flex-1 truncate text-left text-ink-gray-4">{_("From Anyone")}</span>
     ) : (
         <span className="min-w-0 flex-1 truncate text-left text-ink-gray-4">{_("From")}</span>
     )
@@ -62,23 +60,19 @@ export function UserFilter({ filters, users, onValueChange, showLabel = true, si
                 <PopoverTrigger asChild>
                     <Button
                         variant="outline"
+                        size={isCompact ? 'sm' : 'md'}
                         role="combobox"
                         aria-expanded={open}
-                        className={cn(
-                            "w-fit justify-between font-normal gap-2 overflow-hidden",
-                            triggerSizeClass,
-                            paddingClass,
-                            dropdownClassName
-                        )}
+                        className={cn("justify-between font-normal overflow-hidden", triggerClassName ?? dropdownClassName)}
                     >
                         {triggerContent}
-                        <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        <ChevronDownIcon className="shrink-0 text-ink-gray-4" />
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent
                     side="bottom"
                     align="start"
-                    className={cn("w-(--radix-popover-trigger-width) min-w-(--radix-popover-trigger-width) max-h-100 p-0 flex flex-col", dropdownClassName)}
+                    className={cn("w-(--radix-popover-trigger-width) min-w-(--radix-popover-trigger-width) max-h-96 p-0 flex flex-col", dropdownClassName)}
                 >
                     <Command shouldFilter={true} className="flex-1 min-h-0">
                         <CommandInput placeholder={_("Search users...")} className="focus:ring-0 border-0 bg-transparent" />
