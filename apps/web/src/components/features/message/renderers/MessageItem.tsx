@@ -4,8 +4,7 @@ import { UserAvatar } from "../UserAvatar"
 import { getDateObject } from "@lib/date"
 import { useMemo, useState } from "react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
-import { ExternalLink, ForwardIcon, LucideIcon, PencilIcon, PinIcon, UserPlus, BellOff, Hash } from "lucide-react"
-import ReplyMessage from "./ReplyMessage"
+import { ExternalLink, ForwardIcon, UserPlus, BellOff, Hash } from "lucide-react"
 import { ThreadButton, ThreadHeader } from "./ThreadMessage"
 import { cn } from "@lib/utils"
 import { ContextMenu, ContextMenuContent, ContextMenuGroup, ContextMenuItem, ContextMenuTrigger } from "@components/ui/context-menu"
@@ -13,8 +12,8 @@ import { useIntersectionObserver } from "usehooks-ts"
 import { useLocation } from "react-router-dom"
 import { useSetAtom } from "jotai"
 import { forwardThreadModalAtom } from "@utils/channelAtoms"
-import { ForwardedThreadMessage } from "../forward-thread/ForwardedThreadMessage"
 import { buildThreadUrl } from "../forward-thread/ThreadPreviewCard"
+import { MessageContent } from "./MessageContent"
 import { ConvertThreadToChannelDialog } from "../ConvertThreadToChannelDialog"
 import { ConvertedThreadPreviewCard } from "../forward-thread/ConvertedThreadPreviewCard"
 
@@ -198,7 +197,7 @@ export const MessageItem = ({ message, onInView }: { message: Message; onInView?
         >
             <div>
                 {showThread && !convertedToChannelId && <ThreadHeader displayName={"TODO: Wire this up"} threadTitle={"Do not forget"} />}
-                {showThread && !convertedToChannelId && <div className={cn("absolute left-7.5 w-7 border-l border-b border-outline-gray-2 rounded-bl-lg z-0", message.is_continuation ? 'top-[36px] h-[calc(100%-64px)]' : 'top-[42px] h-[calc(100%-72px)]')} />}
+                {showThread && !convertedToChannelId && <div className={cn("absolute left-7.5 w-7 border-l border-b border-outline-gray-2 rounded-bl-lg z-0", message.is_continuation ? 'top-9 h-[calc(100%-64px)]' : 'top-[42px] h-[calc(100%-72px)]')} />}
                 {message.is_continuation === 0 ? <NonContinuationMessageHeader
                     message={message} shortTime={shortTime} longTime={longTime}
                 /> :
@@ -310,42 +309,3 @@ const ContinuationMessageHeader = ({ message }: { message: Message }) => {
 }
 
 
-export const MessageContent = ({ message }: { message: Message }) => {
-
-    const repliedMessageDetails = useMemo(() => {
-        if (message.replied_message_details) {
-            try {
-                return JSON.parse(message.replied_message_details)
-            } catch (error) {
-                return null
-            }
-        }
-        return null
-    }, [message.replied_message_details])
-
-    return <div className="flex-1 space-y-1">
-
-        {message.is_pinned === 1 && <MessageAttributeIndicator attribute="Pinned" Icon={PinIcon} />}
-
-        {message.is_forwarded === 1 && <MessageAttributeIndicator attribute="forwarded" Icon={ForwardIcon} />}
-
-        {message.is_edited === 1 && <MessageAttributeIndicator attribute="edited" Icon={PencilIcon} />}
-
-        {message.linked_message && repliedMessageDetails &&
-            <ReplyMessage repliedMessage={repliedMessageDetails} />}
-
-
-        {message.text && <div className="text-sm text-ink-gray-8">{message.content}</div>}
-
-        {message.is_forwarded === 1 && hasForwardedThread(message) && (
-            <ForwardedThreadMessage message={message} />
-        )}
-    </div>
-}
-
-const MessageAttributeIndicator = ({ attribute, Icon }: { attribute: string, Icon: LucideIcon }) => {
-    return <div className="text-ink-gray-4 flex items-center gap-1 py-0.5">
-        <Icon className={"w-4 h-4 pb-0.5"} />
-        <span className="text-xs">{attribute}</span>
-    </div>
-}

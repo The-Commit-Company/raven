@@ -4,7 +4,7 @@ import { cn } from "@lib/utils"
 import { type NotificationObject, useNotifications } from "@hooks/useNotifications"
 import { UserAvatar } from "@components/features/message/UserAvatar"
 import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
-import { useUser } from "@hooks/useUser"
+import { useUsersById } from "@hooks/useMessageRowLookups"
 import { WorkspaceSwitcher } from "@components/workspace-switcher/WorkspaceSwitcher"
 import ChatDrawer from "@components/common/ChatDrawer"
 import { formatRelativeDate } from "@lib/date"
@@ -13,7 +13,7 @@ import { Label } from "@components/ui/label"
 import { Switch } from "@components/ui/switch"
 import { Tabs, TabsList, TabsTrigger } from "@components/ui/tabs"
 import { useLiveQuery } from "dexie-react-hooks"
-import { db } from "@db"
+import { db, UserData } from "@db"
 import MarkdownRenderer from "@components/ui/markdown"
 import { Button } from "@components/ui/button"
 import { Badge } from "@components/ui/badge"
@@ -54,6 +54,8 @@ export default function Notifications() {
         markMessageRead,
         markAllRead,
     } = useNotifications(tabType, showUnread)
+
+    const usersById = useUsersById()
 
     const observerTarget = useRef<HTMLDivElement>(null)
 
@@ -163,6 +165,7 @@ export default function Notifications() {
                                             <MentionItem
                                                 key={item.name}
                                                 notification={item}
+                                                sender={usersById.get(item.owner)}
                                                 onSelect={onNotificationClick}
                                                 isActive={selected?.name === item.name}
                                             />
@@ -228,15 +231,15 @@ const ChannelContext = ({
 
 const MentionItem = memo(({
     notification,
+    sender,
     onSelect,
     isActive,
 }: {
     notification: NotificationObject
+    sender?: UserData
     onSelect: (notification: NotificationObject) => void
     isActive: boolean
 }) => {
-    const { data: sender } = useUser(notification.owner)
-
     return (
         <button
             type="button"

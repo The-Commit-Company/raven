@@ -113,7 +113,6 @@ export default function Threads() {
 
                             <div className="flex-1 overflow-y-auto">
                                 <ThreadsList
-                                    users={users ?? []}
                                     threadType={activeTab}
                                     searchQuery={search}
                                     channelFilter={channel}

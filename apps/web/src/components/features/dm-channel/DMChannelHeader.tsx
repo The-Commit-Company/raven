@@ -12,8 +12,10 @@ import {
     DropdownMenuTrigger,
 } from "@components/ui/dropdown-menu"
 import { UserAvatar } from "@components/features/message/UserAvatar"
-import { Bell, BellOff, BellRing, Bot, ChevronDown, ChevronLeft, Files, Headset, Link, MessageSquareText, Palmtree, Pin, User, UserX } from "lucide-react"
-import { useAtom } from "jotai"
+import { Bell, BellOff, BellRing, Bot, ChevronDown, ChevronLeft, Command, Files, Headset, Link, MessageSquareText, Palmtree, Pin, User, UserX } from "lucide-react"
+import { useAtom, useSetAtom } from "jotai"
+import { commandMenuOpenAtom } from "@components/features/cmdk/atoms"
+import CommandMenu from "@components/features/cmdk/CommandMenu"
 import { useNavigate } from "react-router-dom"
 import { channelDrawerAtom, type DrawerType } from "@utils/channelAtoms"
 import { UserData } from "@db"
@@ -36,6 +38,7 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
     const isMobile = useIsMobile()
     const displayName = peer.full_name || peer.name
     const [, setDrawerType] = useAtom(channelDrawerAtom(channelID))
+    const setCommandMenuOpen = useSetAtom(commandMenuOpenAtom)
     const { dmChannel } = useChannel(channelID)
     const pinnedCount = dmChannel?.pinned_messages_string ? dmChannel.pinned_messages_string.split("\n").length : 0
     const customStatus = peer.custom_status?.trim() || ""
@@ -181,12 +184,26 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
                 </div>
             </div>
 
-            {/* Right: Call */}
+            {/* Right: Command menu (mobile) + Call */}
             <div className="flex items-center gap-1 ml-auto">
+                {isMobile && (
+                    <>
+                        <Button
+                            variant="ghost"
+                            size="md"
+                            isIconButton
+                            onClick={() => setCommandMenuOpen(true)}
+                            aria-label={_("Command Menu")}
+                        >
+                            <Command className="h-4 w-4 text-ink-gray-7" />
+                        </Button>
+                        <CommandMenu />
+                    </>
+                )}
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <Button variant="ghost" size="sm" isIconButton>
-                            <Headset className="h-3 w-3 text-ink-gray-8/80" />
+                            <Headset className="h-4 w-4 md:h-3 md:w-3 text-ink-gray-8/80" />
                             <span className="sr-only">{_("Start call")}</span>
                         </Button>
                     </TooltipTrigger>

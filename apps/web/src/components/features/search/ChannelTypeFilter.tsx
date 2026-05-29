@@ -4,7 +4,7 @@ import { ChannelIcon } from '@components/common/ChannelIcon/ChannelIcon'
 import { useCallback } from 'react'
 import { SearchFilters } from './types'
 import _ from '@lib/translate'
-import { useSearchParams } from 'react-router'
+import { useSearchParams } from 'react-router-dom'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@components/ui/select'
 
 const CHANNEL_TYPE_OPTIONS: { id: 'Public' | 'Private' | 'Open' | 'dm'; label: string }[] = [
@@ -35,34 +35,26 @@ export function ChannelTypeFilter({ filters }: { filters: SearchFilters }) {
                 params.delete('channel')
             }
             return params
-        })
+        }, { replace: true })
     }, [setSearchParams])
 
     return (
         <div>
             <Label className="text-xs text-ink-gray-4 mb-1 block">{_("Channel Type")}</Label>
             <Select
-                value={filters.is_direct_message ? 'dm' : (filters.channel_type || '')}
+                value={filters.is_direct_message ? 'dm' : (filters.channel_type || undefined)}
                 onValueChange={(value) => selectOption(value)}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger variant="outline" className="w-full">
                     <SelectValue placeholder={_("Channel Type")} />
                 </SelectTrigger>
-                <SelectContent className="w-full">
-                    <SelectItem value="all">
-                        <span className="flex items-center gap-2">
-                            {_("All")}
-                        </span>
-                    </SelectItem>
+                <SelectContent>
+                    <SelectItem value="all">{_("All")}</SelectItem>
                     {CHANNEL_TYPE_OPTIONS.map((opt) => (
                         <SelectItem key={opt.id} value={opt.id}>
-                            <span className="flex items-center gap-2">
-                                {opt.id === 'dm' ? (
-                                    <User className={`h-4 w-4`} />
-                                ) : (
-                                    <ChannelIcon type={opt.id} className={`h-4 w-4`} />
-                                )}
-                                {_(opt.label)}
-                            </span>
+                            {opt.id === 'dm'
+                                ? <User />
+                                : <ChannelIcon type={opt.id} />}
+                            {_(opt.label)}
                         </SelectItem>
                     ))}
                 </SelectContent>

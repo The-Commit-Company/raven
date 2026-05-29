@@ -1,7 +1,7 @@
 import { useDebounce } from "@raven/lib/hooks/useDebounce"
 import { useFrappeGetCall } from "frappe-react-sdk"
 import { useMemo } from "react"
-import { SearchFilters } from "@components/common/SearchFilters/types"
+import { SearchFilters } from "@components/features/search/types"
 
 export type LinkSearchResult = {
     id: string

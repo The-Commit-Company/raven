@@ -45,6 +45,8 @@ interface ChannelSelectProps {
     size?: "sm" | "default"
     /** Dropdown content width */
     dropdownClassName?: string
+    /** Trigger button width — defaults to dropdownClassName when omitted. */
+    triggerClassName?: string
     /** Show label above */
     showLabel?: boolean
     label?: string
@@ -63,6 +65,7 @@ export function ChannelSelect({
     allLabel = "In Any Channel",
     size = "default",
     dropdownClassName,
+    triggerClassName,
     showLabel = false,
     label = "Channel",
     searchable = false,
@@ -75,7 +78,7 @@ export function ChannelSelect({
         return dmChannels?.find((d) => d.name === value) ?? null
     }, [value, channels, dmChannels])
 
-    const triggerSizeClass = size === "sm" ? "!h-7 !py-1 text-xs [&>span]:!px-0" : "!h-9 !py-2 [&>span]:!px-0"
+    const triggerSizeClass = size === "sm" ? "!h-7 !py-1 [&>span]:!px-0" : "!h-9 !py-2 [&>span]:!px-0"
     const paddingClass =
         selectedChannel && value !== "*all"
             ? size === "sm"
@@ -150,6 +153,7 @@ export function ChannelSelect({
                 showLabel={showLabel}
                 label={label}
                 dropdownClassName={dropdownClassName}
+                triggerClassName={triggerClassName}
                 triggerSizeClass={triggerSizeClass}
                 paddingClass={paddingClass}
             />
@@ -167,7 +171,7 @@ export function ChannelSelect({
                         "w-fit [&>span]:text-inherit",
                         triggerSizeClass,
                         paddingClass,
-                        dropdownClassName
+                        triggerClassName ?? dropdownClassName
                     )}
                 >
                     {triggerContent}
@@ -240,6 +244,7 @@ function ChannelSelectCombobox({
     showLabel,
     label,
     dropdownClassName,
+    triggerClassName,
     triggerSizeClass,
     paddingClass,
 }: Omit<ChannelSelectProps, "size"> & {
@@ -273,7 +278,7 @@ function ChannelSelectCombobox({
             <ChannelOption channel={selectedChannel} users={users} compact={isCompact} />
         </div>
     ) : isAllSelected ? (
-        <span className="min-w-0 flex-1 truncate text-left">{allLabel}</span>
+        <span className="min-w-0 flex-1 truncate text-left text-ink-gray-4">{allLabel}</span>
     ) : (
         <span className="min-w-0 flex-1 truncate text-left text-ink-gray-4">{placeholder}</span>
     )
@@ -293,7 +298,7 @@ function ChannelSelectCombobox({
                             "w-fit justify-between font-normal gap-2 overflow-hidden",
                             triggerSizeClass,
                             paddingClass,
-                            dropdownClassName
+                            triggerClassName ?? dropdownClassName
                         )}
                     >
                         {triggerContent}

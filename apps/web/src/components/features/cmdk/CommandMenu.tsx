@@ -142,33 +142,14 @@ const CommandPalette = ({ inDrawer = false }: { inDrawer?: boolean }) => {
                                     <span className="font-medium text-ink-gray-8 shrink-0 whitespace-nowrap">{_("Direct Messages")}</span>
                                 }
                             />
-                        ) : workspaceID ? (
+                        ) : (
                             <ScopedLabel
                                 text={text}
-                                templateWithText={_("Search for {0} in {1}")}
-                                templateNoText={_("Search in {0}")}
-                                entity={
-                                    <span className="font-medium text-ink-gray-8 shrink-0 whitespace-nowrap">{decodeURIComponent(workspaceID)}</span>
-                                }
+                                templateWithText={_("Search for {0}")}
+                                templateNoText={_("Search")}
                             />
-                        ) : null}
+                        )}
                     </CommandItem>
-                    {text && (
-                        <CommandItem
-                            onSelect={() => {
-                                navigate(`/search?q=${encodeURIComponent(text)}`)
-                                setOpen(false)
-                            }}
-                            className='cursor-pointer min-w-0'
-                        >
-                            <TextSearch className="h-4 w-4 text-ink-gray-4 shrink-0" />
-                            <ScopedLabel
-                                text={text}
-                                templateWithText={_("Search for {0} globally")}
-                                templateNoText=""
-                            />
-                        </CommandItem>
-                    )}
                 </CommandGroup>
 
                 <ChannelList text={debouncedText} />

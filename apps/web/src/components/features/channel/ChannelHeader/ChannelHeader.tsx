@@ -1,9 +1,9 @@
 import { Button } from "@components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
-import { ChevronLeft, Headset, Pin, Star } from "lucide-react"
+import { ChevronLeft, Command, Headset, Pin, Star } from "lucide-react"
 import ChannelMembers from "./ChannelMembers"
 import ChannelMenu from "./ChannelMenu"
-import { useAtom } from "jotai"
+import { useAtom, useSetAtom } from "jotai"
 import { channelDrawerAtom } from "@utils/channelAtoms"
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
 import { useSidebar } from "@components/ui/sidebar"
@@ -12,6 +12,8 @@ import { SIDEBAR_LESS_ROUTES } from "@utils/routes"
 import { useChannel } from "@hooks/useChannel"
 import { useIsMobile } from "@hooks/use-mobile"
 import _ from "@lib/translate"
+import { commandMenuOpenAtom } from "@components/features/cmdk/atoms"
+import CommandMenu from "@components/features/cmdk/CommandMenu"
 
 const ChannelHeader = () => {
     const channelID = useCurrentChannelID()
@@ -30,6 +32,7 @@ const ChannelHeader = () => {
     const pinnedCount = channel?.pinned_messages_string ? channel.pinned_messages_string.split("\n").length : 0
 
     const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
+    const setCommandMenuOpen = useSetAtom(commandMenuOpenAtom)
 
     const onOpenMembers = () => {
         if (isMobile && workspaceID) {
@@ -116,10 +119,24 @@ const ChannelHeader = () => {
 
             {/* Right side */}
             <div className="flex items-center gap-1 ml-auto">
+                {isMobile && (
+                    <>
+                        <Button
+                            variant="ghost"
+                            size="md"
+                            isIconButton
+                            onClick={() => setCommandMenuOpen(true)}
+                            aria-label={_("Command Menu")}
+                        >
+                            <Command className="h-4 w-4 text-ink-gray-7" />
+                        </Button>
+                        <CommandMenu />
+                    </>
+                )}
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <Button variant="ghost" size="sm" isIconButton>
-                            <Headset className="h-3 w-3 text-ink-gray-8/80" />
+                            <Headset className="h-4 w-4 md:h-3 md:w-3 text-ink-gray-8/80" />
                             <span className="sr-only">{_('Start call')}</span>
                         </Button>
                     </TooltipTrigger>

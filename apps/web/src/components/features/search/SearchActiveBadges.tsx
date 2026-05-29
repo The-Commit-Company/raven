@@ -3,7 +3,7 @@ import { Badge } from '@components/ui/badge'
 import { SearchFilters } from './types'
 import { UserData } from "@db"
 import { ChannelListItem, DMChannelListItem } from '@raven/types/common/ChannelListItem'
-import { useSearchParams } from 'react-router'
+import { useSearchParams } from 'react-router-dom'
 import _ from '@lib/translate'
 
 interface FilterBadgeProps {
@@ -15,10 +15,12 @@ function FilterBadge({ label, onRemove }: FilterBadgeProps) {
     return (
         <Badge
             variant="subtle"
-            className="gap-1 text-[10px] cursor-pointer hover:bg-surface-gray-2/80 transition-colors pr-1.5"
+            size="md"
+            theme="gray"
+            className="cursor-pointer mb-2"
             onClick={onRemove}>
             {label}
-            <X className="w-3 h-3" />
+            <X />
         </Badge>
     )
 }
@@ -31,7 +33,7 @@ const FILE_TYPE_LABELS: Record<string, string> = {
     image: 'Images',
 }
 
-export function ActiveFilterBadges({ filters, channels, dmChannels, users }: { filters: SearchFilters, channels: ChannelListItem[], dmChannels: DMChannelListItem[], users: UserData[] }) {
+export function SearchActiveBadges({ filters, channels, dmChannels, users }: { filters: SearchFilters, channels: ChannelListItem[], dmChannels: DMChannelListItem[], users: UserData[] }) {
 
     const [, setSearchParams] = useSearchParams()
 
@@ -42,7 +44,7 @@ export function ActiveFilterBadges({ filters, channels, dmChannels, users }: { f
             const params = new URLSearchParams(prev)
             params.delete(key)
             return params
-        })
+        }, { replace: true })
     }
 
     return (
