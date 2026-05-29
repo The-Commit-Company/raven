@@ -220,9 +220,7 @@ const MultiChoicePoll = ({ data, messageID, isReadOnly }: { data: Poll, messageI
 
     const footerText = data.poll.is_disabled
         ? 'This poll is closed and no longer accepting votes'
-        : !isReadOnly
-            ? 'To view the poll results, please submit your choice(s)'
-            : 'Join this channel to vote and view results.'
+        : 'To view the poll results, please submit your choice(s)'
 
     return (
         <div>
