@@ -39,8 +39,9 @@ export function DeleteEmojiDialog({ emojiId, emojiName, onDelete }: DeleteEmojiD
             <AlertDialogTrigger asChild>
                 <Button
                     variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+                    size="sm"
+                    isIconButton
+                    className="opacity-0 group-hover:opacity-100 transition-opacity text-ink-gray-4 hover:text-ink-red-3"
                 >
                     <Trash2 className="h-4 w-4" />
                     <span className="sr-only">Delete emoji</span>

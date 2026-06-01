@@ -51,11 +51,11 @@ const FileMessageRenderer = ({ user, files, time, message }: FileMessageProps) =
             <div className="flex-1">
                 <div className="flex items-baseline gap-2">
                     <span className="font-medium text-sm">{user?.full_name || user?.name || "User"}</span>
-                    <span className="text-xs font-light text-muted-foreground/90">{time}</span>
+                    <span className="text-xs font-light text-ink-gray-4/90">{time}</span>
                 </div>
 
                 {message && (
-                    <div className="text-[13px] text-primary mb-2">{message}</div>
+                    <div className="text-sm text-ink-gray-8 mb-2">{message}</div>
                 )}
 
                 <FileMessage

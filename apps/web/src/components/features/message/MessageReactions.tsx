@@ -77,14 +77,9 @@ const ReactionButton = memo<ReactionButtonProps>(({
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            variant="ghost"
+            variant={isUserReacted ? "subtle" : "outline"}
+            theme={isUserReacted ? "blue" : "gray"}
             size="sm"
-            className={cn(
-              "h-7 px-2 py-1 text-xs gap-1 min-w-0 font-normal transition-all hover:scale-105 cursor-pointer rounded-md border",
-              isUserReacted
-                ? "bg-blue-500/10 hover:bg-blue-500/10 border-blue-500/30 dark:bg-blue-500/5 dark:hover:bg-blue-500/10 dark:border-blue-500/30"
-                : "bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 border-gray-200 dark:border-gray-600"
-            )}
             onClick={handleClick}
             onKeyDown={handleKeyDown}
             aria-label={`${isUserReacted ? 'Remove' : 'Add'} reaction ${emoji_name}. ${tooltipContent}`}
@@ -104,7 +99,7 @@ const ReactionButton = memo<ReactionButtonProps>(({
                 {emoji}
               </span>
             )}
-            <span className="tabular-nums text-xs text-gray-700 dark:text-gray-300" aria-hidden="true">{count}</span>
+            <span className="tabular-nums text-xs text-ink-gray-7" aria-hidden="true">{count}</span>
           </Button>
         </TooltipTrigger>
         <TooltipContent>
@@ -135,9 +130,8 @@ const AddReactionButton = memo<{
 
   return (
     <Button
-      variant="ghost"
       size="sm"
-      className="h-7 w-7 p-0 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all hover:scale-105 rounded-md border border-gray-200 dark:border-gray-600"
+      isIconButton
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       disabled={disabled}

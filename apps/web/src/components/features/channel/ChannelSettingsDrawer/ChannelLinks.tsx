@@ -1,4 +1,3 @@
-import { ScrollArea } from '@components/ui/scroll-area'
 import { Search, ExternalLink, Link, FileBox } from 'lucide-react'
 import { useState } from 'react'
 import { useFrappeEventListener } from 'frappe-react-sdk'
@@ -6,9 +5,10 @@ import _ from '@lib/translate'
 import { Skeleton } from '@components/ui/skeleton'
 import { ChannelMemberData, useChannelMembers } from '@hooks/useChannelMembers'
 import { UserAvatar } from '@components/features/message/UserAvatar'
-import { formatRelativeDate } from '@utils/date'
+import { formatRelativeDate } from '@lib/date'
 import ErrorBanner from '@components/ui/error-banner'
 import { LinkSearchResult, useLinkSearch } from '@hooks/useLinkSearch'
+import { Input } from '@components/ui/input'
 
 const ChannelLinks = ({ channelID }: { channelID: string }) => {
     const { members } = useChannelMembers(channelID)
@@ -29,22 +29,21 @@ const ChannelLinks = ({ channelID }: { channelID: string }) => {
             {/* Search Bar and Toggle */}
             <div className="flex items-center gap-2">
                 <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <input
-                        type="text"
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-ink-gray-4" />
+                    <Input
                         placeholder={_("Search links...")}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2 text-sm bg-background border border-border/70 rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                        className="pl-9 h-8 text-sm"
                     />
                 </div>
             </div>
             {error && <ErrorBanner error={error} />}
             {/* Links List */}
-            <ScrollArea className="flex-1">
+            <div>
                 {isLoading ? <LinkPreviewSkeletonList /> :
-                    results.length === 0 ? <div className="text-sm text-muted-foreground text-center py-8">{searchQuery ? _("No links found matching your search.") : _("No links shared in this channel yet.")}</div> :
-                        <div className={'space-y-2'}>
+                    results.length === 0 ? <div className="text-sm text-ink-gray-4 text-center py-8">{searchQuery ? _("No links found matching your search.") : _("No links shared in this channel yet.")}</div> :
+                        <div className='space-y-2'>
                             {results.map((link) => {
                                 const member = members.find((m) => m.name === link.author)
                                 return (
@@ -56,7 +55,7 @@ const ChannelLinks = ({ channelID }: { channelID: string }) => {
                                 )
                             })}
                         </div>}
-            </ScrollArea>
+            </div>
         </div>
     )
 }
@@ -107,13 +106,13 @@ const LinkPreviewCard = ({ link, member }: {
     return (
         <div
             key={link.id}   //TODO: Scroll to message when clicked, we have message id as link.name
-            className={`group border border-border/70 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer overflow-hidden max-w-87 p-3`}
+            className={`group border border-outline-gray-2/70 rounded-lg hover:bg-surface-gray-2/50 transition-colors cursor-pointer overflow-hidden w-full p-3`}
             tabIndex={0}
             role="button"
             aria-label={`Open link: ${displayTitle}`}>
 
             <div className="space-y-2">
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-3 min-w-0">
                     {faviconUrl ? (
                         <img
                             src={faviconUrl}
@@ -125,20 +124,20 @@ const LinkPreviewCard = ({ link, member }: {
                             }}
                         />
                     ) : (
-                        <FileBox className="w-5 h-5 shrink-0 text-muted-foreground" />
+                        <FileBox className="w-5 h-5 shrink-0 text-ink-gray-4" />
                     )}
-                    <Link className="w-5 h-5 shrink-0 text-muted-foreground hidden" />
+                    <Link className="w-5 h-5 shrink-0 text-ink-gray-4 hidden" />
                     <div className="flex-1 min-w-0">
-                        <h3 className="text-sm font-medium text-foreground truncate">
+                        <h3 className="text-sm font-medium text-ink-gray-8 truncate">
                             {displayTitle}
                         </h3>
-                        <div className="text-xs text-muted-foreground/70 mt-0.5">
+                        <div className="text-xs text-ink-gray-4/70 mt-0.5">
                             {displaySubtitle}
                         </div>
                     </div>
-                    <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-primary transition-opacity duration-200 shrink-0 mt-0.5" onClick={() => window.open(url, '_blank')} />
+                    <ExternalLink className="h-3 w-3 text-ink-gray-4 opacity-0 group-hover:opacity-100 hover:text-ink-gray-8 transition-opacity duration-200 shrink-0 mt-0.5" onClick={() => window.open(url, '_blank')} />
                 </div>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground/80 ml-8">
+                <div className="flex items-center gap-2 text-xs text-ink-gray-4/80 ml-8">
                     {member && <> <UserAvatar
                         user={member}
                         size="xs"

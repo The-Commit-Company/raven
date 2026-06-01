@@ -68,12 +68,12 @@ export const SavedMessagePreviewBox = ({
     return (
         <div
             className={cn(
-                "group block px-6 py-4 hover:bg-accent/50 transition-colors relative border-b border-border"
+                "group block px-6 py-4 hover:bg-surface-gray-3/50 transition-colors relative border-b border-outline-gray-2"
             )}
         >
             {/* Connecting line from avatar to participants - only show for non-DM threads */}
             {!isDirectMessage && isThread && (
-                <div className="absolute top-20 left-10 w-7 h-[calc(100%-6.75rem)] border-l border-b border-border rounded-bl-lg z-0" />
+                <div className="absolute top-20 left-10 w-7 h-[calc(100%-6.75rem)] border-l border-b border-outline-gray-2 rounded-bl-lg z-0" />
             )}
 
             {/* Channel info header */}
@@ -84,7 +84,7 @@ export const SavedMessagePreviewBox = ({
                     )}
                     <span className="font-medium text-xs">{channelName}</span>
                     {formattedDate && (
-                        <span className="text-xs text-muted-foreground">{formattedDate}</span>
+                        <span className="text-xs text-ink-gray-4">{formattedDate}</span>
                     )}
                 </div>
             )}
@@ -112,7 +112,8 @@ export const SavedMessagePreviewBox = ({
                     <TooltipTrigger asChild>
                         <Button
                             variant="ghost"
-                            size="icon"
+                            size="sm"
+                            isIconButton
                             className="h-6 w-6"
                         >
                             <ExternalLink className="h-3.5 w-3.5" />
@@ -125,7 +126,8 @@ export const SavedMessagePreviewBox = ({
                     <TooltipTrigger asChild>
                         <Button
                             variant="ghost"
-                            size="icon"
+                            size="sm"
+                            isIconButton
                             className="h-6 w-6"
                             onClick={(e) => {
                                 e.stopPropagation()
@@ -144,7 +146,8 @@ export const SavedMessagePreviewBox = ({
                             <DropdownMenuTrigger asChild>
                                 <Button
                                     variant="ghost"
-                                    size="icon"
+                                    size="sm"
+                                    isIconButton
                                     className="h-6 w-6"
                                     onClick={(e) => e.stopPropagation()}
                                 >
@@ -172,7 +175,8 @@ export const SavedMessagePreviewBox = ({
                             <DropdownMenuTrigger asChild>
                                 <Button
                                     variant="ghost"
-                                    size="icon"
+                                    size="sm"
+                                    isIconButton
                                     className="h-6 w-6"
                                     onClick={(e) => e.stopPropagation()}
                                 >

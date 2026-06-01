@@ -1,11 +1,10 @@
 import { useUser } from "@hooks/useUser"
 import { Message, type ConvertedChannelPreview } from "@raven/types/common/Message"
 import { UserAvatar } from "../UserAvatar"
-import { getDateObject } from "@utils/date"
+import { getDateObject } from "@lib/date"
 import { useMemo, useState } from "react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
-import { ExternalLink, ForwardIcon, LucideIcon, PencilIcon, PinIcon, UserPlus, BellOff, Hash } from "lucide-react"
-import ReplyMessage from "./ReplyMessage"
+import { ExternalLink, ForwardIcon, UserPlus, BellOff, Hash } from "lucide-react"
 import { ThreadButton, ThreadHeader } from "./ThreadMessage"
 import { cn } from "@lib/utils"
 import { ContextMenu, ContextMenuContent, ContextMenuGroup, ContextMenuItem, ContextMenuTrigger } from "@components/ui/context-menu"
@@ -13,8 +12,8 @@ import { useIntersectionObserver } from "usehooks-ts"
 import { useLocation } from "react-router-dom"
 import { useSetAtom } from "jotai"
 import { forwardThreadModalAtom } from "@utils/channelAtoms"
-import { ForwardedThreadMessage } from "../forward-thread/ForwardedThreadMessage"
 import { buildThreadUrl } from "../forward-thread/ThreadPreviewCard"
+import { MessageContent } from "./MessageContent"
 import { ConvertThreadToChannelDialog } from "../ConvertThreadToChannelDialog"
 import { ConvertedThreadPreviewCard } from "../forward-thread/ConvertedThreadPreviewCard"
 
@@ -192,13 +191,13 @@ export const MessageItem = ({ message, onInView }: { message: Message; onInView?
         <ContextMenuTrigger
             ref={ref}
             data-message-id={message.name}
-            className={cn("group/message-item w-full overflow-hidden relative hover:bg-muted/30 py-3 rounded-md px-3.5 transition-all duration-200",
-                "data-[state=open]:bg-muted/50"
+            className={cn("group/message-item w-full overflow-hidden relative hover:bg-surface-gray-2/30 py-3 rounded-md px-3.5 transition-all duration-200",
+                "data-[state=open]:bg-surface-gray-2/50"
             )}
         >
             <div>
                 {showThread && !convertedToChannelId && <ThreadHeader displayName={"TODO: Wire this up"} threadTitle={"Do not forget"} />}
-                {showThread && !convertedToChannelId && <div className={cn("absolute left-7.5 w-7 border-l border-b border-border rounded-bl-lg z-0", message.is_continuation ? 'top-[36px] h-[calc(100%-64px)]' : 'top-[42px] h-[calc(100%-72px)]')} />}
+                {showThread && !convertedToChannelId && <div className={cn("absolute left-7.5 w-7 border-l border-b border-outline-gray-2 rounded-bl-lg z-0", message.is_continuation ? 'top-9 h-[calc(100%-64px)]' : 'top-[42px] h-[calc(100%-72px)]')} />}
                 {message.is_continuation === 0 ? <NonContinuationMessageHeader
                     message={message} shortTime={shortTime} longTime={longTime}
                 /> :
@@ -272,7 +271,7 @@ const NonContinuationMessageHeader = ({ message, shortTime, longTime }: { messag
 
     return <div className="flex items-start gap-3">
         {user ? <UserAvatar user={user} size="md" /> : (
-            <div className="h-9 w-9 shrink-0 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground">
+            <div className="h-9 w-9 shrink-0 rounded-full bg-surface-gray-2 flex items-center justify-center text-xs font-medium text-ink-gray-4">
                 {displayName.slice(0, 2).toUpperCase()}
             </div>
         )}
@@ -281,7 +280,7 @@ const NonContinuationMessageHeader = ({ message, shortTime, longTime }: { messag
                 <span className="font-medium text-sm">{displayName}</span>
                 <Tooltip delayDuration={300}>
                     <TooltipTrigger>
-                        <span className="text-xs font-light text-muted-foreground/90 tabular-nums">{shortTime}</span>
+                        <span className="text-xs font-light text-ink-gray-4/90 tabular-nums">{shortTime}</span>
                     </TooltipTrigger>
                     <TooltipContent>
                         {longTime}
@@ -310,42 +309,3 @@ const ContinuationMessageHeader = ({ message }: { message: Message }) => {
 }
 
 
-export const MessageContent = ({ message }: { message: Message }) => {
-
-    const repliedMessageDetails = useMemo(() => {
-        if (message.replied_message_details) {
-            try {
-                return JSON.parse(message.replied_message_details)
-            } catch (error) {
-                return null
-            }
-        }
-        return null
-    }, [message.replied_message_details])
-
-    return <div className="flex-1 space-y-1">
-
-        {message.is_pinned === 1 && <MessageAttributeIndicator attribute="Pinned" Icon={PinIcon} />}
-
-        {message.is_forwarded === 1 && <MessageAttributeIndicator attribute="forwarded" Icon={ForwardIcon} />}
-
-        {message.is_edited === 1 && <MessageAttributeIndicator attribute="edited" Icon={PencilIcon} />}
-
-        {message.linked_message && repliedMessageDetails &&
-            <ReplyMessage repliedMessage={repliedMessageDetails} />}
-
-
-        {message.text && <div className="text-[13px] text-primary">{message.content}</div>}
-
-        {message.is_forwarded === 1 && hasForwardedThread(message) && (
-            <ForwardedThreadMessage message={message} />
-        )}
-    </div>
-}
-
-const MessageAttributeIndicator = ({ attribute, Icon }: { attribute: string, Icon: LucideIcon }) => {
-    return <div className="text-muted-foreground flex items-center gap-1 py-0.5">
-        <Icon className={"w-4 h-4 pb-0.5"} />
-        <span className="text-xs">{attribute}</span>
-    </div>
-}

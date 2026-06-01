@@ -45,6 +45,8 @@ interface ChannelSelectProps {
     size?: "sm" | "default"
     /** Dropdown content width */
     dropdownClassName?: string
+    /** Trigger button width — defaults to dropdownClassName when omitted. */
+    triggerClassName?: string
     /** Show label above */
     showLabel?: boolean
     label?: string
@@ -63,6 +65,7 @@ export function ChannelSelect({
     allLabel = "In Any Channel",
     size = "default",
     dropdownClassName,
+    triggerClassName,
     showLabel = false,
     label = "Channel",
     searchable = false,
@@ -75,7 +78,7 @@ export function ChannelSelect({
         return dmChannels?.find((d) => d.name === value) ?? null
     }, [value, channels, dmChannels])
 
-    const triggerSizeClass = size === "sm" ? "!h-7 !py-1 text-xs [&>span]:!px-0" : "!h-9 !py-2 [&>span]:!px-0"
+    const triggerSizeClass = size === "sm" ? "!h-7 !py-1 [&>span]:!px-0" : "!h-9 !py-2 [&>span]:!px-0"
     const paddingClass =
         selectedChannel && value !== "*all"
             ? size === "sm"
@@ -93,7 +96,7 @@ export function ChannelSelect({
                 </SelectItem>
             )}
             <SelectGroup>
-                <SelectLabel className="text-xs text-muted-foreground/80 px-2 py-1.5">
+                <SelectLabel className="text-xs text-ink-gray-4/80 px-2 py-1.5">
                     {_("Channels")}
                 </SelectLabel>
                 {channels.map((ch) => (
@@ -110,7 +113,7 @@ export function ChannelSelect({
                 <>
                     <SelectSeparator />
                     <SelectGroup>
-                        <SelectLabel className="text-xs text-muted-foreground/80 px-2 py-1.5">
+                        <SelectLabel className="text-xs text-ink-gray-4/80 px-2 py-1.5">
                             {_("Direct Messages")}
                         </SelectLabel>
                         {dmChannels.map((dm) => (
@@ -150,6 +153,7 @@ export function ChannelSelect({
                 showLabel={showLabel}
                 label={label}
                 dropdownClassName={dropdownClassName}
+                triggerClassName={triggerClassName}
                 triggerSizeClass={triggerSizeClass}
                 paddingClass={paddingClass}
             />
@@ -159,7 +163,7 @@ export function ChannelSelect({
     return (
         <div className="shrink-0">
             {showLabel && (
-                <Label className="mb-1 block text-xs text-muted-foreground">{label}</Label>
+                <Label className="mb-1 block text-xs text-ink-gray-4">{label}</Label>
             )}
             <Select value={value || (allowAll ? "*all" : "")} onValueChange={onValueChange}>
                 <SelectTrigger
@@ -167,7 +171,7 @@ export function ChannelSelect({
                         "w-fit [&>span]:text-inherit",
                         triggerSizeClass,
                         paddingClass,
-                        dropdownClassName
+                        triggerClassName ?? dropdownClassName
                     )}
                 >
                     {triggerContent}
@@ -211,14 +215,14 @@ function ChannelOption({ channel, users, compact = false }: { channel: ChannelSe
                         showBotIndicator={false}
                     />
                 ) : (
-                    <span className={cn("flex items-center justify-center rounded bg-muted text-xs font-bold text-muted-foreground shrink-0", fallbackSize)}>
+                    <span className={cn("flex items-center justify-center rounded bg-surface-gray-2 text-xs font-bold text-ink-gray-4 shrink-0", fallbackSize)}>
                         ?
                     </span>
                 )
             ) : (
                 <ChannelIcon
                     type={(channel as ChannelListItem).type as "Public" | "Private" | "Open"}
-                    className="h-4 w-4 text-muted-foreground shrink-0"
+                    className="h-4 w-4 text-ink-gray-4 shrink-0"
                 />
             )}
             <span className={cn("truncate text-left", compact ? "min-w-0 flex-1" : "max-w-50")}>{label}</span>
@@ -240,6 +244,7 @@ function ChannelSelectCombobox({
     showLabel,
     label,
     dropdownClassName,
+    triggerClassName,
     triggerSizeClass,
     paddingClass,
 }: Omit<ChannelSelectProps, "size"> & {
@@ -273,15 +278,15 @@ function ChannelSelectCombobox({
             <ChannelOption channel={selectedChannel} users={users} compact={isCompact} />
         </div>
     ) : isAllSelected ? (
-        <span className="min-w-0 flex-1 truncate text-left">{allLabel}</span>
+        <span className="min-w-0 flex-1 truncate text-left text-ink-gray-4">{allLabel}</span>
     ) : (
-        <span className="min-w-0 flex-1 truncate text-left text-muted-foreground">{placeholder}</span>
+        <span className="min-w-0 flex-1 truncate text-left text-ink-gray-4">{placeholder}</span>
     )
 
     return (
         <div className="shrink-0">
             {showLabel && (
-                <Label className="mb-1 block text-xs text-muted-foreground">{label}</Label>
+                <Label className="mb-1 block text-xs text-ink-gray-4">{label}</Label>
             )}
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
@@ -293,7 +298,7 @@ function ChannelSelectCombobox({
                             "w-fit justify-between font-normal gap-2 overflow-hidden",
                             triggerSizeClass,
                             paddingClass,
-                            dropdownClassName
+                            triggerClassName ?? dropdownClassName
                         )}
                     >
                         {triggerContent}

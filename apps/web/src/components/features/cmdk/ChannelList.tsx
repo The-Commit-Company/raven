@@ -40,11 +40,11 @@ const ChannelList = ({ text }: { text: string }) => {
                     <ChannelIconLucide type={channel.type} className="h-4 w-4 shrink-0" />
                     <span className="truncate">{channel.channel_name}</span>
                     {channel.is_archived ? (
-                        <Badge variant="secondary" className="ml-auto text-xs">
-                            {_("Archived")}
-                        </Badge>
+<Badge variant="subtle" className="ml-auto text-xs">
+    {_("Archived")}
+</Badge>
                     ) : null}
-                    <div className="flex items-center ml-auto gap-1 text-xs text-muted-foreground">
+                    <div className="flex items-center ml-auto gap-1 text-xs text-ink-gray-4">
                         <BiBuildings className="h-4 w-4" />
                         <span>{channel.workspace}</span>
                     </div>

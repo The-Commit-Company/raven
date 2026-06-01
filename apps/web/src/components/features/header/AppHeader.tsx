@@ -1,40 +1,35 @@
-import UserHelpMenu from "./UserHelpMenu/UserHelpMenu";
-import SearchBar from "./QuickSearch/SearchBar";
 import { useLocation } from "react-router-dom";
 import CommandMenu from "../cmdk/CommandMenu";
 import SearchButton from "./QuickSearch/SearchButton";
+import { SidebarTrigger } from "@components/ui/sidebar";
 
 interface AppHeaderProps {
-    searchValue?: string
-    onSearchChange?: (value: string) => void
-    /** When set, use these for header position/size (e.g. DM layout with 380px sidebar). Otherwise derive from sidebar state and route. */
-    left?: string
-    width?: string
+    title?: string
 }
 
-const AppHeader = ({ searchValue, onSearchChange }: AppHeaderProps) => {
+const AppHeader = ({ title }: AppHeaderProps) => {
     const location = useLocation()
     const pathname = location.pathname
     const isSearchPage = pathname === "/search"
 
     return (
-        <header
-            className="flex items-center justify-between border-b bg-background z-10 px-2 fixed top-0 h-(--app-header-height) w-full transition-[left,width] duration-200 ease-linear"
-        // style={{ left, width }}
-        >
-            {/* Centered search bar section */}
-            <div className="flex flex-1 items-center justify-end w-full gap-1">
-                {isSearchPage ? (
-                    <SearchBar value={searchValue || ""} onChange={onSearchChange || (() => { })} />
-                ) : (
-                    <SearchButton />
-                )}
+        <header className="flex items-center gap-1 border-b bg-surface-white z-10 px-2 shrink-0 h-(--app-header-height) w-full">
+            {/* Mobile sidebar trigger */}
+            <SidebarTrigger className="md:hidden shrink-0" />
 
-                {/* <UserHelpMenu /> */}
+            {/* Page title (optional) */}
+            {title && (
+                <h1 className="text-base font-medium text-ink-gray-9 px-2 shrink-0">{title}</h1>
+            )}
+
+            {/* Search — hidden on mobile (SearchButton is fixed w-150 and blocks the trigger).
+                On /search the page renders its own in-page input — no header SearchBar. */}
+            <div className="hidden md:flex flex-1 items-center justify-end gap-1">
+                {!isSearchPage && <SearchButton />}
             </div>
 
-            {/* Right section - empty for balance */}
-            <div className="flex-1" />
+            {/* Balance spacer */}
+            <div className="hidden md:flex flex-1" />
             <CommandMenu />
         </header>
     )

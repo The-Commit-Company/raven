@@ -2,7 +2,7 @@ import { GetMessagesResponse } from '@raven/types/common/ChatStream'
 import { useFrappeGetCall } from 'frappe-react-sdk'
 import { useIsMobile } from './use-mobile'
 import { Message } from '@raven/types/common/Message'
-import { getDateObject } from '@utils/date'
+import { getDateObject } from '@lib/date'
 
 type MessageDateBlock = Message | {
     /**  */

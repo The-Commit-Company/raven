@@ -73,7 +73,7 @@ export const AddMembersStep = ({ selectedUsers, onSelectUsers }: AddMembersStepP
             </div>
 
             {/* Description */}
-            <div className="text-sm text-muted-foreground shrink-0" id="search-description">
+            <div className="text-sm text-ink-gray-4 shrink-0" id="search-description">
                 {_('Search and select team members to add to this channel. You can skip this step and invite members later.')}
             </div>
 
@@ -81,7 +81,7 @@ export const AddMembersStep = ({ selectedUsers, onSelectUsers }: AddMembersStepP
             {selectedUsers.length > 0 && (
                 <div className="space-y-2 shrink-0 min-h-0 flex flex-col">
                     <div className="flex items-center justify-between shrink-0">
-                        <span className="text-xs font-medium text-muted-foreground">
+                        <span className="text-xs font-medium text-ink-gray-4">
                             {_('Selected')} ({selectedUsers.length})
                         </span>
                         <Button
@@ -104,7 +104,7 @@ export const AddMembersStep = ({ selectedUsers, onSelectUsers }: AddMembersStepP
                                 <button
                                     key={user.name}
                                     type="button"
-                                    className="flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-muted transition-colors rounded-md bg-secondary text-secondary-foreground focus:shadow-md"
+                                    className="flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-surface-gray-2 transition-colors rounded-md bg-surface-gray-2 text-ink-gray-7 focus:shadow-md"
                                     onClick={() => handleRemoveSelectedUser(user.name)}
                                     onKeyDown={(e) => handleKeyDownOnBadge(e, user.name)}
                                     aria-label={_(`Remove {0} from selection`, [user.full_name])}
@@ -122,7 +122,7 @@ export const AddMembersStep = ({ selectedUsers, onSelectUsers }: AddMembersStepP
             {/* Search */}
             <div className="shrink-0">
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-ink-gray-4" aria-hidden="true" />
                     <Input
                         ref={searchInputRef}
                         placeholder={_('Search by name or email...')}
@@ -146,7 +146,7 @@ export const AddMembersStep = ({ selectedUsers, onSelectUsers }: AddMembersStepP
                         itemContent={(index, user) => (
                             <div
                                 key={user.name}
-                                className="flex items-center gap-2.5 hover:bg-accent/50 transition-colors cursor-pointer group p-2 rounded-lg mb-1"
+                                className="flex items-center gap-2.5 hover:bg-surface-gray-3/50 transition-colors cursor-pointer group p-2 rounded-lg mb-1"
                                 onClick={() => handleSelectUser(user)}
                             >
                                 <UserAvatar
@@ -159,23 +159,23 @@ export const AddMembersStep = ({ selectedUsers, onSelectUsers }: AddMembersStepP
                                     <div className="text-sm font-medium truncate leading-tight">
                                         {user.full_name}
                                     </div>
-                                    <div className="text-xs text-muted-foreground truncate leading-tight">
+                                    <div className="text-xs text-ink-gray-4 truncate leading-tight">
                                         {user.name}
                                     </div>
                                 </div>
-                                <UserPlus className="h-3.5 w-3.5 text-muted-foreground/60 group-hover:text-muted-foreground shrink-0 transition-colors mr-2" aria-hidden="true" />
+                                <UserPlus className="h-3.5 w-3.5 text-ink-gray-4/60 group-hover:text-ink-gray-4 shrink-0 transition-colors mr-2" aria-hidden="true" />
                             </div>
                         )}
                     />
                 ) : filterText ? (
                     <div className="text-center py-8 pr-4">
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-ink-gray-4">
                             {_('No users found matching your search.')}
                         </p>
                     </div>
                 ) : selectedUsers.length > 0 ? (
                     <div className="text-center py-8 pr-4">
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-ink-gray-4">
                             {_('All available users have been selected.')}
                         </p>
                     </div>

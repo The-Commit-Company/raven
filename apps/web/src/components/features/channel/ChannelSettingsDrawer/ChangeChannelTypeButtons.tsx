@@ -95,12 +95,12 @@ function ChangeChannelTypeButton({
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild disabled={disabled}>
         <button
-          className={`w-full flex justify-start p-3 h-auto cursor-pointer font-normal bg-transparent border border-border/70 rounded-lg transition-colors ${disabled ? "opacity-50 pointer-events-none" : "hover:bg-muted/50"}`}
+          className={`w-full flex justify-start p-3 h-auto cursor-pointer font-normal bg-transparent border border-outline-gray-2/70 rounded-lg transition-colors ${disabled ? "opacity-50 pointer-events-none" : "hover:bg-surface-gray-2/50"}`}
         >
           <div className="flex items-center gap-3">
             <ChannelIconLucide
               type={type}
-              className="w-4 h-4 text-muted-foreground"
+              className="w-4 h-4 text-ink-gray-4"
             />
             <span className="text-sm">{changeToTypeLabel()}</span>
           </div>
@@ -110,16 +110,16 @@ function ChangeChannelTypeButton({
         <AlertDialogHeader>
           <AlertDialogTitle>{changeToTypeLabel() + "?"}</AlertDialogTitle>
           <AlertDialogDescription asChild>
-            <div className="space-y-4 text-left text-foreground pt-1">
+            <div className="space-y-4 text-left text-ink-gray-8 pt-1">
               {error ? <ErrorBanner error={error} /> : null}
               {type === "Public" && (
                 <>
-                  <p className="text-sm text-foreground/80">
+                  <p className="text-sm text-ink-gray-8/80">
                     {_("Please understand that when you make")}{" "}
                     <strong>{channel.channel_name}</strong>{" "}
                     {_("a public channel:")}
                   </p>
-                  <ul className="list-inside list-disc space-y-1 text-sm text-foreground/80">
+                  <ul className="list-inside list-disc space-y-1 text-sm text-ink-gray-8/80">
                     <li>
                       {_(
                         "Anyone from your organisation can join this channel and view its message history.",
@@ -135,12 +135,12 @@ function ChangeChannelTypeButton({
               )}
               {type === "Private" && (
                 <>
-                  <p className="text-sm text-foreground/80">
+                  <p className="text-sm text-ink-gray-8/80">
                     {_("Please understand that when you make")}{" "}
                     <strong>{channel.channel_name}</strong>{" "}
                     {_("a private channel:")}
                   </p>
-                  <ul className="list-inside list-disc space-y-1 text-sm text-foreground/80">
+                  <ul className="list-inside list-disc space-y-1 text-sm text-ink-gray-8/80">
                     <li>
                       {_(
                         `No changes will be made to the channel's history or members`,
@@ -156,12 +156,12 @@ function ChangeChannelTypeButton({
               )}
               {type === "Open" && (
                 <>
-                  <p className="text-sm text-foreground/80">
+                  <p className="text-sm text-ink-gray-8/80">
                     {_("Please understand that when you make")}{" "}
                     <strong>{channel.channel_name}</strong>{" "}
                     {_("a open channel:")}
                   </p>
-                  <ul className="list-inside list-disc space-y-1 text-sm text-foreground/80">
+                  <ul className="list-inside list-disc space-y-1 text-sm text-ink-gray-8/80">
                     <li>
                       {_(
                         "Everyone from your organisation will become a channel member and will be able to view its message history.",
@@ -184,13 +184,14 @@ function ChangeChannelTypeButton({
           </AlertDialogCancel>
           <Button
             type="button"
+            size="md"
             disabled={loading}
             onClick={changeChannelType}
             aria-label={changeToTypeLabel()}
           >
             {loading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin text-foreground/80 aria-hidden" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin text-ink-gray-8/80 aria-hidden" />
                 {_("Saving")}
               </>
             ) : (

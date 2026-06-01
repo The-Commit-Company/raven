@@ -12,8 +12,8 @@ import { pollDrawerAtom, forwardThreadModalAtom } from "@utils/channelAtoms"
 import { useScrollToBottom } from "@hooks/useScrollToBottom"
 import type { Message } from "@raven/types/common/Message"
 
-/** Same top offset for Channel and DM so the chat stream and scroll area are identical. */
-const DEFAULT_CONTENT_PADDING_TOP = "calc(var(--app-header-height, 36px) + 40px)"
+/** Clears the fixed ChannelHeader/DMChannelHeader that sits at the top of the content area. */
+const DEFAULT_CONTENT_PADDING_TOP = "40px"
 
 export interface ChatContentViewProps {
     /** Channel or DM channel id (useCurrentChannelID is used by ThreadDrawer/ChatInput etc.) */
@@ -124,7 +124,7 @@ export function ChatContentView({
                 <div className="w-0" />
             ) : (
                 <div
-                    className={`flex h-full min-h-0 shrink-0 flex-col border-l bg-background transition-all duration-300 ${drawerWidth}`}
+                    className={`flex h-full min-h-0 shrink-0 flex-col border-l bg-surface-white transition-all duration-300 ${drawerWidth}`}
                 >
                     {threadID ? (
                         <ThreadDrawer />

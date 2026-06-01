@@ -25,7 +25,7 @@ export const PollVoteCount: React.FC<PollVoteCountProps> = ({
 
     return (
         <div className={`flex items-center gap-2 shrink-0 ${className || ""}`}>
-            <span className="text-xs text-muted-foreground font-medium">
+            <span className="text-xs text-ink-gray-4 font-medium">
                 {formatVoteCountWithPercentage(votes, percentage)}
             </span>
             {showAvatars && voters && voters.length > 0 && (

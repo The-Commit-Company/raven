@@ -83,7 +83,7 @@ export const ManageChannels = () => {
             enableSorting: false,
             headerClassName: 'w-[65%]',
             cell: ({ value }) => (
-                <span className='text-sm text-muted-foreground line-clamp-1 text-ellipsis'>
+                <span className='text-sm text-ink-gray-4 line-clamp-1 text-ellipsis'>
                     {value as string || '—'}
                 </span>
             )
@@ -121,8 +121,8 @@ export const ManageChannels = () => {
                 onSortingChange={setSorting}
                 tableClassName="table-fixed"
             /> : <div className="flex flex-col items-center justify-center h-full gap-2 py-10">
-                <p className="text-muted-foreground">{_("No channels found")}</p>
-                <p className="text-muted-foreground text-sm">{_("You may want to try adjusting your filters.")}</p>
+                <p className="text-ink-gray-4">{_("No channels found")}</p>
+                <p className="text-ink-gray-4 text-sm">{_("You may want to try adjusting your filters.")}</p>
             </div>}
         </SettingsContentContainer>
     )
@@ -155,7 +155,7 @@ const ChannelJoinButton = ({ channel }: { channel: ChannelListItem }) => {
         return (
             <Badge
                 variant="outline"
-                className="text-sm px-1 rounded-md w-20 h-8 bg-destructive/10 text-destructive cursor-default border-transparent"
+                className="text-sm px-1 rounded-md w-20 h-8 bg-surface-red-5/10 text-ink-red-4 cursor-default border-transparent"
             >
                 {_("Archived")}
             </Badge>
@@ -165,7 +165,7 @@ const ChannelJoinButton = ({ channel }: { channel: ChannelListItem }) => {
     return (
         <Button variant="outline" size="sm" className="group/join hover:cursor-pointer w-20" onClick={() => toggleJoin(channel.member_id ? 'leave' : 'join')}>
             {isLoading ? (<span className="grid">
-                <Loader2 className="h-4 w-4 animate-spin text-foreground/80" aria-hidden />
+                <Loader2 className="h-4 w-4 animate-spin text-ink-gray-8/80" aria-hidden />
             </span>) : channel.member_id ? (<span className="grid">
                 <span className='text-sm font-medium opacity-100 group-hover/join:opacity-0 transition-opacity duration-150 col-start-1 row-start-1'>
                     {_('Joined')}
@@ -187,11 +187,11 @@ const ChannelNotificationsButton = ({ channel }: { channel: ChannelListItem }) =
     const NotificationIcon = ({ notification }: { notification: 'All' | 'Mentions Only' | 'Mute' }) => {
         switch (notification) {
             case 'All':
-                return <BellRing className="h-3 w-3 text-foreground/80" />
+                return <BellRing className="h-3 w-3 text-ink-gray-8/80" />
             case 'Mentions Only':
-                return <Bell className="h-3 w-3 text-foreground/80" />
+                return <Bell className="h-3 w-3 text-ink-gray-8/80" />
             case 'Mute':
-                return <BellOff className="h-3 w-3 text-foreground/80" />
+                return <BellOff className="h-3 w-3 text-ink-gray-8/80" />
         }
     }
 
@@ -203,7 +203,7 @@ const ChannelNotificationsButton = ({ channel }: { channel: ChannelListItem }) =
         <div className="flex w-full justify-center">
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="hover:cursor-pointer h-7 w-7 rounded-sm">
+                    <Button variant="ghost" size="sm" isIconButton className="hover:cursor-pointer">
                         <span key={channel.allow_notifications ? 'on' : 'off'} className="grid">
                             <NotificationIcon notification={channel.allow_notifications ? 'All' : 'Mute'} />
                         </span>
@@ -213,19 +213,19 @@ const ChannelNotificationsButton = ({ channel }: { channel: ChannelListItem }) =
                 <DropdownMenuContent className="w-40">
                     <DropdownMenuItem onClick={() => { }}>
                         <div className="flex items-center gap-2">
-                            <BellRing className="h-3 w-3 text-foreground/80" />
+                            <BellRing className="h-3 w-3 text-ink-gray-8/80" />
                             <span>{_("All Notifications")}</span>
                         </div>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => { }}>
                         <div className="flex items-center gap-2">
-                            <Bell className="h-3 w-3 text-foreground/80" />
+                            <Bell className="h-3 w-3 text-ink-gray-8/80" />
                             <span>{_("Mentions Only")}</span>
                         </div>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => { }}>
                         <div className="flex items-center gap-2">
-                            <BellOff className="h-3 w-3 text-foreground/80" />
+                            <BellOff className="h-3 w-3 text-ink-gray-8/80" />
                             <span>{_("Mute Channel")}</span>
                         </div>
                     </DropdownMenuItem>

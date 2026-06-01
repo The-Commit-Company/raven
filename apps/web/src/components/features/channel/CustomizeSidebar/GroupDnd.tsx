@@ -25,6 +25,7 @@ import { Input } from "@components/ui/input";
 import { RavenChannelGroups } from "@raven/types/RavenChannelManagement/RavenChannelGroups";
 import { useBoolean } from "usehooks-ts";
 import _ from "@lib/translate"
+import { H2, H3, H4 } from "@components/ui/typography";
 
 export const GroupDnd = () => {
 
@@ -95,8 +96,8 @@ export const GroupDnd = () => {
 
     return (
         <div className="mx-auto">
-            <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-semibold">{_("Order Groups")}</h3>
+            <div className="flex items-center justify-between mb-2 px-1">
+                <p className="text-ink-gray-8 text-sm font-semibold">{_("Order Groups")}</p>
                 <Button
                     type="button"
                     variant="outline"
@@ -134,7 +135,7 @@ export const GroupDnd = () => {
                             ))}
                         </div>
                     </SortableContext>
-                </DndContext> : (!createGroup && <p className="text-sm text-muted-foreground text-center p-3 pt-3.5">
+                </DndContext> : (!createGroup && <p className="text-sm text-ink-gray-4 text-center p-3 pt-3.5">
                     {_("You don't have any groups yet. Add a group to start sorting.")}
                 </p>)}
                 {createGroup &&
@@ -186,8 +187,8 @@ const SortableItem = ({ id, index, content, onEdit, onDelete }: SortableItemProp
             {...attributes}
             // {...listeners}
             className={cn(
-                "flex items-center gap-2 rounded-md border bg-card text-sm transition-colors",
-                isDragging && "border-muted-foreground/50"
+                "flex items-center gap-2 rounded-md border bg-surface-cards text-sm transition-colors",
+                isDragging && "border-outline-gray-3/50"
             )}
         >
             <div className="flex items-center justify-between flex-1 min-w-0">
@@ -198,7 +199,8 @@ const SortableItem = ({ id, index, content, onEdit, onDelete }: SortableItemProp
                 <div className="flex items-center gap-1 shrink-0 px-2">
                     <Button
                         variant="ghost"
-                        size="icon"
+                        size="sm"
+                        isIconButton
                         className="h-7 w-7"
                         onClick={toggleEdit}
                         aria-label="Edit group name"
@@ -207,8 +209,10 @@ const SortableItem = ({ id, index, content, onEdit, onDelete }: SortableItemProp
                     </Button>
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 text-destructive hover:text-destructive"
+                        theme="red"
+                        size="sm"
+                        isIconButton
+                        className="h-7 w-7"
                         onClick={onDelete}
                         aria-label="Delete group"
                     >
@@ -223,7 +227,7 @@ const SortableItem = ({ id, index, content, onEdit, onDelete }: SortableItemProp
 const EditGroup = ({ initialName = '', onCancel, onSubmit }: { initialName?: string, onCancel: () => void, onSubmit: (name: string) => void }) => {
     const [name, setName] = useState(initialName)
     return (
-        <div className="border rounded-lg pr-2 pl-1 py-1 bg-muted/50 flex items-center justify-between w-full gap-2">
+        <div className="border rounded-lg pr-1.5 pl-1 py-1 bg-surface-gray-2/50 flex items-center justify-between w-full gap-1.5">
             <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -237,8 +241,9 @@ const EditGroup = ({ initialName = '', onCancel, onSubmit }: { initialName?: str
             <Button
                 onClick={onCancel}
                 variant="ghost"
-                size="icon"
-                className="h-8 w-8"
+                size="sm"
+                isIconButton
+                className="h-7 w-7"
             >
                 <X className="h-4 w-4" />
             </Button>

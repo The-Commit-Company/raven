@@ -76,17 +76,17 @@ const ViewImageModal = ({
             <DialogPortal>
                 <DialogOverlay />
                 <DialogPrimitive.Content
-                    className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border shadow-xl duration-200 sm:max-w-lg max-w-6xl! w-[90vw] h-[85vh] max-h-none! p-0 overflow-hidden bg-background">
+                    className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border shadow-xl duration-200 sm:max-w-lg max-w-6xl! w-[90vw] h-[85vh] max-h-none! p-0 overflow-hidden bg-surface-white">
                     {/* Header */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b bg-background">
+                    <div className="flex items-center justify-between px-4 py-3 border-b bg-surface-white">
                         <div className="flex items-center gap-2 min-w-0">
                             <UserAvatar user={user} size="md" />
                             <div className="min-w-0">
                                 <div className="flex items-baseline gap-2">
-                                    <h3 className="font-medium text-sm truncate text-foreground">
+                                    <h3 className="font-medium text-sm truncate text-ink-gray-8">
                                         {user?.full_name || user?.name || "User"}
                                     </h3>
-                                    <span className="text-xs text-muted-foreground/90 font-light">
+                                    <span className="text-xs text-ink-gray-4/90 font-light">
                                         {time}
                                     </span>
                                 </div>
@@ -97,10 +97,10 @@ const ViewImageModal = ({
                                 <span className="truncate max-w-45 text-base font-medium">
                                     {currentImage.file_name}
                                 </span>
-                                <span className="text-xs bg-muted/80 px-1 py-0.5 rounded-sm">
+                                <span className="text-xs bg-surface-gray-2/80 px-1 py-0.5 rounded-sm">
                                     {currentImage.file_size}
                                 </span>
-                                <span className="text-xs bg-muted/80 px-1 py-0.5 rounded-sm uppercase">
+                                <span className="text-xs bg-surface-gray-2/80 px-1 py-0.5 rounded-sm uppercase">
                                     {currentImage.file_type}
                                 </span>
                             </div>
@@ -114,13 +114,13 @@ const ViewImageModal = ({
                                 </>
                             )}
                             <div className="flex items-center gap-2">
-                                <Button variant="ghost" size="icon" onClick={onClose}>
+                                <Button variant="ghost" size="sm" isIconButton onClick={onClose}>
                                     <Download className="w-4 h-4" />
                                 </Button>
-                                <Button variant="ghost" size="icon" onClick={onClose}>
+                                <Button variant="ghost" size="sm" isIconButton onClick={onClose}>
                                     <Share2 className="w-4 h-4" />
                                 </Button>
-                                <Button variant="ghost" size="icon" onClick={onClose}>
+                                <Button variant="ghost" size="sm" isIconButton onClick={onClose}>
                                     <X className="w-4 h-4" />
                                 </Button>
                             </div>
@@ -129,23 +129,25 @@ const ViewImageModal = ({
                     </div>
 
                     {/* Image viewer */}
-                    <div className="relative flex-1 flex items-center justify-center bg-background">
+                    <div className="relative flex-1 flex items-center justify-center bg-surface-white">
                         {images.length > 1 && (
                             <>
                                 <Button
-                                    variant="secondary"
-                                    size="icon"
+                                    variant="subtle"
+                                    size="sm"
+                                    isIconButton
                                     onClick={onPrev}
-                                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10 rounded-full"
+                                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10"
                                     title="Previous image (←)"
                                 >
                                     <ChevronLeft className="w-4 h-4" />
                                 </Button>
                                 <Button
-                                    variant="secondary"
-                                    size="icon"
+                                    variant="subtle"
+                                    size="sm"
+                                    isIconButton
                                     onClick={onNext}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10 rounded-full"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10"
                                     title="Next image (→)"
                                 >
                                     <ChevronRight className="w-4 h-4" />
@@ -172,8 +174,8 @@ const ViewImageModal = ({
                                         className={cn(
                                             "shrink-0 cursor-pointer border-2 rounded-lg overflow-hidden transition-all duration-200",
                                             index === selectedImageIndex
-                                                ? "border-blue-500 ring-2 ring-blue-300"
-                                                : "border-transparent hover:border-border"
+                                                ? "border-outline-blue-4 ring-2 ring-blue-300"
+                                                : "border-transparent hover:border-outline-gray-2"
                                         )}
                                         onClick={() => onImageSelect(index)}
                                     >

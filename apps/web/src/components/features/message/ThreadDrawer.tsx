@@ -57,8 +57,8 @@ export default function ThreadDrawer() {
                         <DropdownMenuTrigger asChild>
                             <Button
                                 variant="ghost"
-                                size="icon"
-                                className="h-7 w-7"
+                                size="sm"
+                                isIconButton
                                 aria-label="Thread settings"
                             >
                                 <MoreVertical className="h-3 w-3" />
@@ -85,8 +85,8 @@ export default function ThreadDrawer() {
                     </DropdownMenu>
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className="h-7 w-7"
+                        size="sm"
+                        isIconButton
                         onClick={handleClose}
                         aria-label="Close thread"
                     >

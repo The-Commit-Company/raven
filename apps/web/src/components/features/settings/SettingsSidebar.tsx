@@ -12,7 +12,7 @@ interface SettingsGroupProps {
 const SettingsGroup = ({ title, icon: Icon, children }: SettingsGroupProps) => {
     return (
         <div className="flex flex-col gap-0.5">
-            <div className="flex items-center gap-1.5 py-1.5 text-muted-foreground">
+            <div className="flex items-center gap-1.5 py-1.5 text-ink-gray-4">
                 {Icon && <Icon size={15} />}
                 <span className="text-xs">{title}</span>
             </div>
@@ -54,10 +54,10 @@ const SettingsSidebarItem = ({
             {({ isActive }) => (
                 <div
                     className={cn(
-                        "px-2 py-1 text-[13px] font-medium rounded-md w-full flex items-center transition-colors",
+                        "px-2 py-1 text-sm font-medium rounded-md w-full flex items-center transition-colors",
                         isActive
-                            ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                            : "bg-transparent hover:bg-sidebar-accent/50 text-sidebar-foreground",
+                            ? "bg-surface-gray-3 text-ink-gray-8"
+                            : "bg-transparent hover:bg-surface-gray-3/50 text-ink-gray-7",
                         standalone && "gap-1.5"
                     )}
                 >
@@ -71,7 +71,7 @@ const SettingsSidebarItem = ({
 
 export const SettingsSidebar = () => {
     return (
-        <div className="h-screen overflow-y-auto fixed w-64 border-r border-border pt-2 bg-sidebar">
+        <div className="h-screen overflow-y-auto fixed w-64 border-r border-outline-gray-2 pt-2 bg-surface-menu-bar">
             <div className="flex flex-col gap-2 px-4">
                 <SettingsGroup title="My Account" icon={UserCircle}>
                     <SettingsSidebarItem title="Profile" to="profile" />

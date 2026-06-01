@@ -1,8 +1,8 @@
 import { useDebounce } from "@raven/lib/hooks/useDebounce"
 import { useFrappeGetCall } from "frappe-react-sdk"
 import { useMemo } from "react"
-import { expandFileTypeGroups } from "@components/common/SearchFilters/FileTypeFilter"
-import { SearchFilters } from "@components/common/SearchFilters/types";
+import { expandFileTypeGroups } from "@components/features/search/FileTypeFilter"
+import { SearchFilters } from "@components/features/search/types";
 
 export type SearchResult = {
     name: string;

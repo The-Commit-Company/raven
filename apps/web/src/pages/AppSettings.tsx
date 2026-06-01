@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom"
 import { SettingsSidebar } from "@components/features/settings/SettingsSidebar"
 import { useIsMobile } from "@hooks/use-mobile"
 import { WorkspaceSwitcher } from "@components/workspace-switcher/WorkspaceSwitcher"
+import { H4 } from "@components/ui/typography"
 
 export default function AppSettings() {
   const isMobile = useIsMobile()
@@ -15,18 +16,18 @@ export default function AppSettings() {
       <WorkspaceSwitcher standalone />
       <div className="flex flex-col h-full overflow-hidden" style={{ marginLeft: "var(--workspace-switcher-width, 60px)", width: "calc(100% - var(--workspace-switcher-width, 60px))" } as React.CSSProperties}>
         <header
-          className="flex items-center justify-between border-b bg-background py-1.5 px-2 z-10 fixed top-0 h-(--app-header-height) transition-[left,width] duration-200 ease-linear"
+          className="flex items-center justify-between border-b bg-surface-white py-1.5 px-2 z-10 fixed top-0 h-(--app-header-height) transition-[left,width] duration-200 ease-linear"
           style={{
             left: headerLeft,
             width: headerWidth,
           }}
         >
           <div className="flex items-center gap-4">
-            <span className="text-md font-medium">Settings</span>
+            <H4>Settings</H4>
           </div>
         </header>
 
-        <div className="pt-[36px] flex flex-1 overflow-hidden">
+        <div className="pt-9 flex flex-1 overflow-hidden">
           {!isMobile && <SettingsSidebar />}
           <div className="flex-1 ml-0 sm:ml-64 overflow-y-auto overflow-x-hidden">
             <Outlet />

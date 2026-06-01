@@ -8,7 +8,6 @@ import { useDebounce } from '@raven/lib/hooks/useDebounce';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, UserData } from "@db";
 import _ from '@lib/translate';
-import { ScrollArea } from '@components/ui/scroll-area';
 import { Virtuoso } from 'react-virtuoso';
 import { useFrappePostCall, useSWRConfig } from 'frappe-react-sdk';
 import { toast } from 'sonner';
@@ -50,7 +49,7 @@ const AddChannelMembers = ({ memberIds, channelID, onClose }: { memberIds: strin
                 members: selectedUsers.map(u => u.name)
             })
                 .then(() => {
-                    toast.success("Members added")
+                    toast.success(_("Members added"))
                     mutate(["channel_members", channelID])
                     onClose()
                 })
@@ -58,116 +57,114 @@ const AddChannelMembers = ({ memberIds, channelID, onClose }: { memberIds: strin
     }
 
     return (
-        <div className="flex flex-col h-full">
-            <div className="flex-1 px-1 space-y-3 flex flex-col min-h-0">
-                {/* Description */}
-                <div className="text-xs text-muted-foreground py-1 pt-2">
-                    {_('Search and add members to this channel')}
-                </div>
-                {error && <ErrorBanner error={error} />}
-                {/* Selected Users as Badges */}
-                {selectedUsers.length > 0 && (
-                    <div className="space-y-2 shrink-0 min-h-0 flex flex-col">
-                        <div className="flex items-center justify-between">
-                            <span className="text-xs font-medium text-muted-foreground">
-                                {_(`Selected (${selectedUsers.length})`)}
-                            </span>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setSelectedUsers([])}
-                                className="h-6 text-xs"
-                            >
-                                {_('Clear all')}
-                            </Button>
-                        </div>
-                        <ScrollArea className="max-h-15 min-h-0 shrink-0">
-                            <div className="flex flex-wrap gap-2" role="list" aria-label="Selected members">
-                                {selectedUsers.map((user) => (
-                                    <Badge
-                                        key={user.name}
-                                        variant="secondary"
-                                        className="flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-muted transition-colors"
-                                        onClick={() => handleRemoveSelectedUser(user.name)}
-                                    >
-                                        <span className="text-xs">{user.full_name}</span>
-                                        <X className="h-3 w-3" />
-                                    </Badge>
-                                ))}
-                            </div>
-                        </ScrollArea>
-                    </div>
-                )}
-
-                {/* Search */}
-                <div className="space-y-2">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Search users..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-9 h-8 text-sm"
-                        />
-                    </div>
-                </div>
-
-                {/* Available Users */}
-                <div className="flex-1 min-h-0">
-                    {filteredUsers.length > 0 ? (
-                        <Virtuoso
-                            style={{ height: '100%', width: '100%' }}
-                            data={filteredUsers}
-                            overscan={200}
-                            itemContent={(index, user) => (
-                                <div
-                                    key={user.name}
-                                    className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer mb-1"
-                                    onClick={() => handleSelectUser(user)}
-                                >
-                                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                                        <UserAvatar
-                                            user={user}
-                                            size="md"
-                                            className="shrink-0"
-                                            showStatusIndicator={false}
-                                        />
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-sm font-medium truncate">
-                                                    {user.full_name}
-                                                </span>
-                                            </div>
-                                            <div className="text-xs text-muted-foreground">
-                                                {user.name}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <UserPlus className="h-4 w-4 text-muted-foreground" />
-                                </div>
-                            )}
-                        />
-                    ) : searchQuery ? (
-                        <div className="text-center py-8">
-                            <p className="text-sm text-muted-foreground">
-                                {_('No users found matching your search.')}
-                            </p>
-                        </div>
-                    ) : null}
-                </div>
-
+        <div className="flex flex-col h-full min-h-0 gap-2">
+            {/* Description */}
+            <div className="text-xs text-ink-gray-4 px-1 shrink-0">
+                {_('Search and add members to this channel')}
             </div>
 
-            {/* Sticky Add Button at Bottom */}
+            {error && (
+                <div className="px-1 shrink-0">
+                    <ErrorBanner error={error} />
+                </div>
+            )}
+
+            {/* Selected Users as Badges */}
             {selectedUsers.length > 0 && (
-                <div className="border-t bg-background">
+                <div className="px-1 shrink-0 space-y-2">
+                    <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-ink-gray-4">
+                            {_("Selected ({0})", [selectedUsers.length.toString()])}
+                        </span>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setSelectedUsers([])}
+                            className="h-6 text-xs"
+                        >
+                            {_('Clear all')}
+                        </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2 max-h-15 overflow-y-auto" role="list" aria-label={_("Selected members")}>
+                        {selectedUsers.map((user) => (
+                            <Badge
+                                key={user.name}
+                                variant="subtle"
+                                className="flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-surface-gray-2 transition-colors"
+                                onClick={() => handleRemoveSelectedUser(user.name)}
+                            >
+                                <span className="text-xs">{user.full_name}</span>
+                                <X className="h-3 w-3" />
+                            </Badge>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Search */}
+            <div className="relative px-1 shrink-0">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-ink-gray-4" />
+                <Input
+                    placeholder={_("Search users...")}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-9 h-8 text-sm"
+                />
+            </div>
+
+            {/* Available Users */}
+            {filteredUsers.length > 0 ? (
+                <div className="flex-1 min-h-0 px-1">
+                    <Virtuoso
+                        style={{ height: '100%', width: '100%' }}
+                        data={filteredUsers}
+                        overscan={200}
+                        itemContent={(_index, user) => (
+                            <div
+                                key={user.name}
+                                className="flex items-center justify-between p-2 rounded-lg hover:bg-surface-gray-2/50 transition-colors cursor-pointer mb-1"
+                                onClick={() => handleSelectUser(user)}
+                            >
+                                <div className="flex items-center gap-3 flex-1 min-w-0">
+                                    <UserAvatar
+                                        user={user}
+                                        size="md"
+                                        className="shrink-0"
+                                        showStatusIndicator={false}
+                                    />
+                                    <div className="flex-1 min-w-0">
+                                        <span className="text-sm font-medium truncate block">
+                                            {user.full_name}
+                                        </span>
+                                        <div className="text-xs text-ink-gray-4">
+                                            {user.name}
+                                        </div>
+                                    </div>
+                                </div>
+                                <UserPlus className="h-4 w-4 text-ink-gray-4 shrink-0" />
+                            </div>
+                        )}
+                    />
+                </div>
+            ) : searchQuery ? (
+                <div className="text-center py-8 shrink-0">
+                    <p className="text-sm text-ink-gray-4">
+                        {_('No users found matching your search.')}
+                    </p>
+                </div>
+            ) : null}
+
+            {/* Add Button */}
+            {selectedUsers.length > 0 && (
+                <div className="shrink-0 p-2 bg-surface-white">
                     <Button
                         onClick={handleAddMembers}
+                        disabled={loading}
                         className="w-full cursor-pointer"
-                        size="sm"
+                        size="md"
                     >
-                        <UserPlus className="h-4 w-4 mr-2" />
-                        {_(`Add ${selectedUsers.length} user${selectedUsers.length !== 1 ? 's' : ''}`)}
+                        <UserPlus className="h-4 w-4" />
+                        {_("Add {0} members", [selectedUsers.length.toString()])}
                     </Button>
                 </div>
             )}

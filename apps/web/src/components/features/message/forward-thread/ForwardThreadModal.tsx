@@ -110,14 +110,14 @@ export function ForwardThreadModal({
 
                 <div className="space-y-4 py-2">
                     <div>
-                        <label className="text-sm font-medium text-foreground mb-2 block">
+                        <label className="text-sm font-medium text-ink-gray-8 mb-2 block">
                             Thread preview
                         </label>
                         <ThreadPreviewCard meta={meta} clickable={false} compact />
                     </div>
 
                     <div>
-                        <label className="text-sm font-medium text-foreground mb-2 block">
+                        <label className="text-sm font-medium text-ink-gray-8 mb-2 block">
                             Add a message (optional)
                         </label>
                         <input
@@ -125,12 +125,12 @@ export function ForwardThreadModal({
                             placeholder="Sharing this for visibility..."
                             value={optionalText}
                             onChange={(e) => setOptionalText(e.target.value)}
-                            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-ring"
+                            className="w-full rounded-md border border-outline-gray-2 bg-surface-white px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-outline-gray-4"
                         />
                     </div>
 
                     <div>
-                        <label className="text-sm font-medium text-foreground mb-2 block">
+                        <label className="text-sm font-medium text-ink-gray-8 mb-2 block">
                             Send to
                         </label>
                         <ChannelSelect

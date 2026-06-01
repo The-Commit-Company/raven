@@ -1,5 +1,5 @@
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip";
-import { getDateObject } from "@utils/date";
+import { getDateObject } from "@lib/date";
 import React, { useMemo } from "react";
 
 interface SystemMessageProps {
@@ -28,14 +28,14 @@ const SystemMessage: React.FC<SystemMessageProps> = ({ message, time }) => {
         <div className="flex flex-row gap-3 px-3.5 items-baseline">
             <Tooltip delayDuration={300}>
                 <TooltipTrigger>
-                    <span className="text-xs text-muted-foreground font-light text-left tabular-nums">{shortTime}</span>
+                    <span className="text-xs text-ink-gray-4 font-light text-left tabular-nums">{shortTime}</span>
                 </TooltipTrigger>
 
                 <TooltipContent>
                     {longTime}
                 </TooltipContent>
             </Tooltip>
-            <span className="text-xs text-muted-foreground font-light">{message}</span>
+            <span className="text-xs text-ink-gray-4 font-light">{message}</span>
         </div>
     )
 }

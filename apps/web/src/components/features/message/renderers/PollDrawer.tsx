@@ -11,7 +11,7 @@ import {
 import { X, MoreVertical, CheckCircle } from "lucide-react"
 import { cn } from "@lib/utils"
 import { UserAvatar } from "../UserAvatar"
-import { getDateObject } from "@utils/date"
+import { getDateObject } from "@lib/date"
 import type { RavenPoll } from "@raven/types/RavenMessaging/RavenPoll"
 import type { RavenPollOption } from "@raven/types/RavenMessaging/RavenPollOption"
 import type { UserData } from "@db"
@@ -36,7 +36,7 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
     const { isAnonymous, isDisabled: isPollClosed } = getPollStatus(poll)
     const hasVoted = currentUserVotes.length > 0
 
-    const badgeClassName = "bg-muted text-muted-foreground border-border"
+    const badgeClassName = "bg-surface-gray-2 text-ink-gray-4 border-outline-gray-2"
     let pollStatusBadge: { text: string; className: string } | null = null
 
     if (isPollClosed) {
@@ -59,25 +59,25 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
             <div className="flex items-center justify-between px-4 py-2 border-b shrink-0">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
                     <h2 className="text-sm font-medium">Poll</h2>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-ink-gray-4">
                         {totalVotes} vote{totalVotes === 1 ? "" : "s"}
                     </span>
                     {poll.is_multi_choice === 1 && (
                         <>
-                            <span className="text-xs text-muted-foreground">•</span>
-                            <span className="text-xs text-muted-foreground">Multiple choice</span>
+                            <span className="text-xs text-ink-gray-4">•</span>
+                            <span className="text-xs text-ink-gray-4">Multiple choice</span>
                         </>
                     )}
                     {isAnonymous && (
                         <>
-                            <span className="text-xs text-muted-foreground">•</span>
-                            <span className="text-xs text-muted-foreground">Anonymous</span>
+                            <span className="text-xs text-ink-gray-4">•</span>
+                            <span className="text-xs text-ink-gray-4">Anonymous</span>
                         </>
                     )}
                 </div>
                 <div className="flex items-center gap-2">
                     {pollStatusBadge && (
-                        <Badge variant="outline" className={cn("text-[11px] px-2 py-0.5", pollStatusBadge.className)}>
+                        <Badge variant="outline" className={cn("text-xs px-2 py-0.5", pollStatusBadge.className)}>
                             {pollStatusBadge.text}
                         </Badge>
                     )}
@@ -85,8 +85,8 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                         <DropdownMenuTrigger asChild>
                             <Button
                                 variant="ghost"
-                                size="icon"
-                                className="h-7 w-7"
+                                size="sm"
+                                isIconButton
                                 aria-label="Poll settings"
                             >
                                 <MoreVertical className="h-3 w-3" />
@@ -102,8 +102,8 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                     </DropdownMenu>
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className="h-7 w-7"
+                        size="sm"
+                        isIconButton
                         onClick={onClose}
                         aria-label="Close drawer"
                     >
@@ -115,10 +115,10 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                 <ScrollArea className="h-full">
                     <div className="px-1 space-y-2 pb-4">
                         {/* Poll Question */}
-                        <p className="text-sm font-medium text-foreground py-1">{poll.question}</p>
+                        <p className="text-sm font-medium text-ink-gray-8 py-1">{poll.question}</p>
 
                         {/* Poll Creator and Creation Time */}
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground pb-2">
+                        <div className="flex items-center gap-2 text-xs text-ink-gray-4 pb-2">
                             <UserAvatar
                                 user={user}
                                 size="xs"
@@ -145,8 +145,8 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                                         className={cn(
                                             "p-3 border rounded-lg",
                                             isCurrentUserVote
-                                                ? "border-blue-500/30 bg-blue-500/5"
-                                                : "border-border/70"
+                                                ? "border-outline-blue-4/30 bg-surface-blue-5/5"
+                                                : "border-outline-gray-2/70"
                                         )}
                                     >
                                         <div className="space-y-3">
@@ -156,31 +156,31 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                                                     <span
                                                         className={cn(
                                                             "text-sm font-medium truncate",
-                                                            isCurrentUserVote ? "text-foreground" : "text-muted-foreground"
+                                                            isCurrentUserVote ? "text-ink-gray-8" : "text-ink-gray-4"
                                                         )}
                                                     >
                                                         {option.option}
                                                     </span>
                                                     {isCurrentUserVote && (
-                                                        <CheckCircle className="w-4 h-4 text-muted-foreground shrink-0" />
+                                                        <CheckCircle className="w-4 h-4 text-ink-gray-4 shrink-0" />
                                                     )}
                                                 </div>
                                                 <div className="flex items-center gap-2 shrink-0">
-                                                    <span className="text-sm font-semibold text-foreground">
+                                                    <span className="text-sm font-semibold text-ink-gray-8">
                                                         {optionVotes}
                                                     </span>
-                                                    <span className="text-xs text-muted-foreground">
+                                                    <span className="text-xs text-ink-gray-4">
                                                         ({percentage.toFixed(1)}%)
                                                     </span>
                                                 </div>
                                             </div>
 
                                             {/* Progress Bar */}
-                                            <div className="relative h-2 w-full rounded-full bg-muted overflow-hidden">
+                                            <div className="relative h-2 w-full rounded-full bg-surface-gray-2 overflow-hidden">
                                                 <div
                                                     className={cn(
                                                         "h-full rounded-full transition-all duration-500 ease-out",
-                                                        isCurrentUserVote ? "bg-primary" : "bg-primary/60"
+                                                        isCurrentUserVote ? "bg-ink-gray-8" : "bg-ink-gray-8/60"
                                                     )}
                                                     style={{ width: `${Math.max(0, Math.min(100, percentage))}%` }}
                                                 />
@@ -208,7 +208,7 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                                                                     size="xs"
                                                                     showStatusIndicator={false}
                                                                 />
-                                                                <span className="text-sm text-foreground">
+                                                                <span className="text-sm text-ink-gray-8">
                                                                     {voter.full_name || voter.name}
                                                                 </span>
                                                             </div>
@@ -218,7 +218,7 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                                             )}
 
                                             {isAnonymous && optionVotes > 0 && (
-                                                <div className="text-xs text-muted-foreground italic pt-2 border-t">
+                                                <div className="text-xs text-ink-gray-4 italic pt-2 border-t">
                                                     {optionVotes} anonymous vote{optionVotes === 1 ? "" : "s"}
                                                 </div>
                                             )}

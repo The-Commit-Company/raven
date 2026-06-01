@@ -21,13 +21,13 @@ export default function ChatDrawer({ channelID, messageID, onClose }: ChatDrawer
     }, [onClose])
 
     return (
-        <div className="flex flex-col h-full bg-background">
-            <div className="flex items-center justify-between pl-4 pr-2 py-2 border-b border-border shrink-0 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+        <div className="flex flex-col h-full bg-surface-white">
+            <div className="flex items-center justify-between pl-4 pr-2 py-2 border-b border-outline-gray-2 shrink-0 bg-surface-white/95 backdrop-blur supports-backdrop-filter:bg-surface-white/60">
                 <h2 className="text-sm font-medium">{_("Messages")}</h2>
                 <Button
                     variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
+                    size="sm"
+                    isIconButton
                     onClick={onClose}
                     aria-label={_("Close")}
                 >
@@ -36,7 +36,7 @@ export default function ChatDrawer({ channelID, messageID, onClose }: ChatDrawer
             </div>
             <ScrollArea className="flex-1">
                 <div className="flex items-center justify-center min-h-125 px-6 text-center">
-                    <p className="text-[13px] text-muted-foreground">{_("Messages will appear here")}</p>
+                    <p className="text-sm text-ink-gray-4">{_("Messages will appear here")}</p>
                 </div>
             </ScrollArea>
         </div>

@@ -37,7 +37,7 @@ export const PollVotingMessage: React.FC<PollVotingMessageProps> = ({
             <div className="flex-1">
                 <div className="flex items-baseline gap-2">
                     <span className="font-medium text-sm">{user?.full_name || user?.name || "User"}</span>
-                    <span className="text-xs font-light text-muted-foreground/90">{time}</span>
+                    <span className="text-xs font-light text-ink-gray-4/90">{time}</span>
                 </div>
                 <div className="mt-1">
                     <PollVotingContainer>

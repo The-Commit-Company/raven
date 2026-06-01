@@ -159,9 +159,9 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full min-h-0">
                 {/* Header */}
-                <div className="px-4 pt-4 pb-3 border-b shrink-0 bg-muted/30">
+                <div className="px-4 pt-4 pb-3 border-b shrink-0 bg-surface-gray-2/30">
                     <DialogHeader>
-                        <DialogTitle className="text-base font-semibold">Create Poll</DialogTitle>
+                        <DialogTitle className="text-base">Create Poll</DialogTitle>
                     </DialogHeader>
                 </div>
 
@@ -177,14 +177,14 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                                     rules={{ required: 'Poll question is required' }}
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-sm font-medium flex items-center gap-1.5">
+                                            <FormLabel className="text-sm font-medium gap-1.5">
                                                 Question
                                             </FormLabel>
                                             <FormControl>
                                                 <Textarea
                                                     placeholder="What would you like to ask?"
                                                     {...field}
-                                                    className="min-h-[70px] resize-none text-sm"
+                                                    className="min-h-17.5 resize-none text-sm"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -201,16 +201,16 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                                 {/* Quick Presets */}
                                 <div className="flex items-center justify-between pb-3">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-xs text-muted-foreground">Quick presets:</span>
+                                        <span className="text-xs text-ink-gray-4">Quick presets:</span>
                                         <Popover>
                                             <PopoverTrigger asChild>
                                                 <Button
                                                     type="button"
                                                     variant="outline"
                                                     size="sm"
-                                                    className="h-7 text-xs px-2"
+                                                    className="text-xs"
                                                 >
-                                                    <Sparkles className="h-3 w-3 mr-1.5 text-muted-foreground" />
+                                                    <Sparkles className="h-3 w-3 mr-1.5 text-ink-gray-4" />
                                                     Choose preset
                                                 </Button>
                                             </PopoverTrigger>
@@ -238,7 +238,7 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                                         variant="ghost"
                                         size="sm"
                                         onClick={clearOptions}
-                                        className="h-7 text-xs px-2 text-muted-foreground hover:text-foreground"
+                                        className="text-xs"
                                     >
                                         Clear
                                     </Button>
@@ -246,21 +246,22 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                                 <div className="space-y-2 pb-3">
                                     {options.map((option, index) => (
                                         <div key={index} className="flex items-center gap-2 group">
-                                            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/5 text-muted-foreground font-semibold text-xs shrink-0">
+                                            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-ink-gray-8/5 text-ink-gray-4 font-semibold text-xs shrink-0">
                                                 {index + 1}
                                             </div>
                                             <Input
                                                 placeholder={`Option ${index + 1}`}
                                                 value={option}
                                                 onChange={(e) => updateOption(index, e.target.value)}
-                                                className="flex-1 h-8 text-sm"
+                                                className="flex-1 text-sm"
                                             />
                                             {options.length > 2 && (
                                                 <Button
                                                     type="button"
                                                     variant="ghost"
-                                                    size="icon"
-                                                    className="h-7 w-7 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    size="sm"
+                                                    isIconButton
+                                                    className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
                                                     onClick={() => removeOption(index)}
                                                     aria-label={`Remove option ${index + 1}`}
                                                 >
@@ -283,7 +284,7 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                                     </Button>
                                 )}
                                 {options.length >= 10 && (
-                                    <p className="text-[11px] text-muted-foreground text-center py-1">
+                                    <p className="text-2xs text-ink-gray-4 text-center py-1">
                                         Maximum 10 options allowed
                                     </p>
                                 )}
@@ -301,13 +302,13 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                                         control={form.control}
                                         name="is_multi_choice"
                                         render={({ field }) => (
-                                            <FormItem className="flex flex-row items-center justify-between rounded-md border p-2.5 bg-muted/30">
+                                            <FormItem className="flex flex-row items-center justify-between rounded-md border p-2.5 bg-surface-gray-2/30">
                                                 <div className="space-y-0.5 flex-1">
-                                                    <FormLabel className="text-xs font-medium flex items-center gap-1.5 cursor-pointer">
-                                                        <BarChart3 className="h-3 w-3 text-muted-foreground" />
+                                                    <FormLabel className="text-xs font-medium gap-1.5 cursor-pointer">
+                                                        <BarChart3 className="h-3 w-3 text-ink-gray-4" />
                                                         Allow multiple choices
                                                     </FormLabel>
-                                                    <FormDescription className="text-[11px] font-normal text-muted-foreground">
+                                                    <FormDescription className="text-2xs font-normal text-ink-gray-4">
                                                         Voters can select more than one option
                                                     </FormDescription>
                                                 </div>
@@ -325,13 +326,13 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                                         control={form.control}
                                         name="is_anonymous"
                                         render={({ field }) => (
-                                            <FormItem className="flex flex-row items-center justify-between rounded-md border p-2.5 bg-muted/30">
+                                            <FormItem className="flex flex-row items-center justify-between rounded-md border p-2.5 bg-surface-gray-2/30">
                                                 <div className="space-y-0.5 flex-1">
-                                                    <FormLabel className="text-xs font-medium flex items-center gap-1.5 cursor-pointer">
-                                                        <EyeOff className="h-3 w-3 text-muted-foreground" />
+                                                    <FormLabel className="text-xs font-medium gap-1.5 cursor-pointer">
+                                                        <EyeOff className="h-3 w-3 text-ink-gray-4" />
                                                         Anonymous poll
                                                     </FormLabel>
-                                                    <FormDescription className="text-[11px] font-normal text-muted-foreground">
+                                                    <FormDescription className="text-2xs font-normal text-ink-gray-4">
                                                         Hide voter identities from other participants
                                                     </FormDescription>
                                                 </div>
@@ -346,13 +347,13 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                                     />
 
                                     {/* End Date */}
-                                    <div className="rounded-md border p-2.5 bg-muted/30 space-y-2.5">
+                                    <div className="rounded-md border p-2.5 bg-surface-gray-2/30 space-y-2.5">
                                         <div className="space-y-0.5">
-                                            <Label className="text-xs font-medium flex items-center gap-1.5">
-                                                <CalendarIcon className="h-3 w-3 text-muted-foreground" />
+                                            <Label className="text-xs font-medium gap-1.5">
+                                                <CalendarIcon className="h-3 w-3 text-ink-gray-4" />
                                                 End date (optional)
                                             </Label>
-                                            <p className="text-[11px] font-normal text-muted-foreground">
+                                            <p className="text-2xs font-normal text-ink-gray-4">
                                                 Automatically close the poll at a specific date and time
                                             </p>
                                         </div>
@@ -363,7 +364,7 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                                                         variant="outline"
                                                         className={cn(
                                                             "w-full justify-start text-left font-normal text-xs px-3",
-                                                            !endDate && "text-muted-foreground"
+                                                            !endDate && "text-ink-gray-4"
                                                         )}
                                                     >
                                                         <CalendarIcon className="mr-1.5 h-3 w-3 shrink-0" />
@@ -416,7 +417,7 @@ export const CreatePollForm = ({ channelID, onClose }: CreatePollFormProps) => {
                 </div>
 
                 {/* Footer */}
-                <div className="px-4 py-3 border-t shrink-0 bg-muted/30 flex justify-end gap-2">
+                <div className="px-4 py-3 border-t shrink-0 bg-surface-gray-2/30 flex justify-end gap-2">
                     <Button
                         type="button"
                         variant="outline"

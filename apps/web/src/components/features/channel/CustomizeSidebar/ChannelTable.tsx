@@ -1,13 +1,14 @@
 import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
-import { DataTable } from "@components/common/DataTable/DataTable"
+import { ListView } from "@components/ui/list-view"
+import type { ListViewColumnMeta } from "@components/ui/list-view"
+import { ColumnDef } from "@tanstack/react-table"
 import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from "@components/ui/select"
 import { ChannelSidebarData } from "@raven/lib/hooks/useGroupedChannels"
 import { RavenGroupedChannels } from "@raven/types/Raven/RavenGroupedChannels"
 import { RavenPinnedChannels } from "@raven/types/Raven/RavenPinnedChannels"
 import { RavenUser } from "@raven/types/Raven/RavenUser"
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { useFieldArray, useFormContext } from "react-hook-form"
-import { ColumnDef, SortingState } from "src/types/DataTable"
 import _ from "@lib/translate"
 import { Star } from "lucide-react"
 
@@ -20,8 +21,6 @@ interface ChannelTable {
 }
 
 export const ChannelTable = ({ data }: { data: ChannelSidebarData }) => {
-
-  const [sorting, setSorting] = useState<SortingState | null>(null)
 
   const tableData = useMemo<ChannelTable[]>(() => {
 
@@ -59,62 +58,52 @@ export const ChannelTable = ({ data }: { data: ChannelSidebarData }) => {
       id: 'channel_name',
       header: _('Name'),
       accessorKey: 'channel_name',
-      enableSorting: true,
-      headerClassName: 'w-[30%]',
-      cell: ({ row }) => (
-        <div className='flex items-center gap-2'>
-          <ChannelIcon
-            type={row.type || "Public"}
-            className="w-4 h-4 shrink-0"
-          />
-          <span className='text-sm font-medium line-clamp-1 text-ellipsis'>{row.channel_name}</span>
-        </div>
-      )
+      size: 240,
+      cell: ({ row }) => {
+        const r = row.original
+        return (
+          <div className='flex items-center gap-2'>
+            <ChannelIcon
+              type={r.type || "Public"}
+              className="w-4 h-4 shrink-0"
+            />
+            <span className='text-sm font-medium line-clamp-1 text-ellipsis'>{r.channel_name}</span>
+          </div>
+        )
+      },
     },
     {
       id: 'channel_description',
       header: _('Description'),
       accessorKey: 'channel_description',
-      enableSorting: false,
-      headerClassName: 'w-[40%]',
-      cell: ({ value }) => (
-        <span className='text-sm text-muted-foreground line-clamp-1 text-ellipsis'>
-          {value as string || '—'}
+      size: 270,
+      cell: ({ getValue }) => (
+        <span className='text-sm text-ink-gray-4 line-clamp-1 text-ellipsis'>
+          {(getValue() as string) || '—'}
         </span>
-      )
+      ),
     },
     {
       id: 'channel_group',
       header: _('Group'),
       accessorKey: 'channel_group',
-      enableSorting: true,
-      headerClassName: 'w-[30%]',
-      cell: ({ row }) => (
-        <ChannelGroupDropdown channel={row} />
-      )
-    }
+      size: 210,
+      meta: {
+        truncate: false,
+      } satisfies ListViewColumnMeta,
+      cell: ({ row }) => <ChannelGroupDropdown channel={row.original} />,
+    },
   ], [])
 
-  const sortedData = useMemo(() => {
-    if (!sorting) return tableData
-    const { field, order } = sorting
-    return [...tableData].sort((a, b) => {
-      const aVal = a[field as keyof ChannelTable] ?? ''
-      const bVal = b[field as keyof ChannelTable] ?? ''
-      const cmp = aVal.localeCompare(bVal)
-      return order === 'desc' ? -cmp : cmp
-    })
-  }, [tableData, sorting])
-
   return (
-    <DataTable
-      className="flex-1 min-h-0 h-full"
+    <ListView
+      className="flex-1 min-h-0"
+      data={tableData}
       columns={columns}
-      data={sortedData}
       getRowId={(row) => row.name}
-      sorting={sorting}
-      onSortingChange={setSorting}
-      tableClassName="table-fixed"
+      scrollAreaClassName="flex-1"
+      maxHeight={600}
+      emptyState={<span className="text-ink-gray-4">No channels found.</span>}
     />
   )
 }
@@ -193,7 +182,7 @@ const ChannelGroupDropdown = ({ channel }: { channel: ChannelTable }) => {
     <SelectContent className="min-w-56 max-w-72">
       <SelectItem value="Favorites">
         <div className="flex items-center gap-1">
-          <Star className="h-3 w-3 text-foreground/80 fill-amber-300 stroke-amber-300 mr-1" />
+          <Star className="h-3 w-3 text-ink-gray-8/80 fill-amber-300 stroke-amber-300 mr-1" />
           {_("Favorites")}
         </div>
       </SelectItem>
@@ -205,7 +194,7 @@ const ChannelGroupDropdown = ({ channel }: { channel: ChannelTable }) => {
       ))}
       {channel.channel_group && <div>
         <SelectSeparator className="mx-1" />
-        <SelectItem value="Ungroup Channel" className="text-red-400">{_("Ungroup Channel")}</SelectItem>
+        <SelectItem value="Ungroup Channel" className="text-ink-red-4">{_("Ungroup Channel")}</SelectItem>
       </div>}
     </SelectContent>
   </Select>)

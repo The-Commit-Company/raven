@@ -176,7 +176,7 @@ export function DataTable<TData>({
         if (sortable) {
             return (
                 <Button
-                    className="flex items-center hover:text-foreground transition-colors -ml-2 px-2 py-1 rounded"
+                    className="flex items-center hover:text-ink-gray-8 transition-colors -ml-2 px-2 py-1 rounded"
                     onClick={() => handleSortClick(column)}
                     variant="ghost"
                     size="sm"
@@ -253,7 +253,7 @@ export function DataTable<TData>({
 
             {/* Table Content */}
             {!isLoading && !error && (
-                <div className={cn("overflow-hidden rounded-md border bg-background", !hasPagination && "flex flex-col h-full")}>
+                <div className={cn("overflow-hidden bg-surface-white", !hasPagination && "flex flex-col h-full")}>
                     {hasPagination ? (
                         <Table className={tableClassName}>
                             <TableHeader>
@@ -290,7 +290,7 @@ export function DataTable<TData>({
                                             className="h-24 text-center"
                                         >
                                             {emptyState ?? (
-                                                <span className="text-muted-foreground">
+                                                <span className="text-ink-gray-4">
                                                     No data available.
                                                 </span>
                                             )}
@@ -306,7 +306,7 @@ export function DataTable<TData>({
                             components={virtuosoComponents}
                             overscan={100}
                             fixedHeaderContent={() => (
-                                <TableRow className="bg-background hover:bg-background">
+                                <TableRow className="bg-surface-white hover:bg-surface-white">
                                     {columns.map((column: ColumnDef<TData>) => (
                                         <TableHead key={column.id} className={column.headerClassName}>
                                             {renderHeader(column)}
@@ -374,7 +374,7 @@ function DataTablePagination({
     return (
         <div className="flex items-center justify-between py-4">
             {/* Left side: showing X-Y of Z */}
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-ink-gray-4">
                 Showing {start}-{end} of {pagination.totalCount}
             </p>
 
@@ -382,7 +382,7 @@ function DataTablePagination({
             <div className="flex items-center gap-4">
                 {/* Page size selector */}
                 <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">Rows per page</span>
+                    <span className="text-sm text-ink-gray-4">Rows per page</span>
                     <Select
                         value={String(pagination.pageSize)}
                         onValueChange={onPageSizeChange}
@@ -401,7 +401,7 @@ function DataTablePagination({
                 </div>
 
                 {/* Page indicator */}
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm text-ink-gray-4">
                     Page {pagination.pageIndex + 1} of {totalPages}
                 </span>
 
@@ -409,8 +409,8 @@ function DataTablePagination({
                 <div className="flex items-center gap-1">
                     <Button
                         variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
+                        size="sm"
+                        isIconButton
                         onClick={onPreviousPage}
                         disabled={!canGoPrevious}
                     >
@@ -419,8 +419,8 @@ function DataTablePagination({
                     </Button>
                     <Button
                         variant="outline"
-                        size="icon"
-                        className="h-8 w-8"
+                        size="sm"
+                        isIconButton
                         onClick={onNextPage}
                         disabled={!canGoNext}
                     >

@@ -27,7 +27,8 @@ export const CreatePollDialog = ({ channelID }: CreatePollDialogProps) => {
                     <DialogTrigger asChild>
                         <Button
                             variant="ghost"
-                            size="icon"
+                            size="sm"
+                            isIconButton
                             className="h-8 w-8"
                             aria-label="Create a poll"
                         >
@@ -35,11 +36,11 @@ export const CreatePollDialog = ({ channelID }: CreatePollDialogProps) => {
                         </Button>
                     </DialogTrigger>
                 </TooltipTrigger>
-                <TooltipContent side="top" sideOffset={5} className="text-[11px]">
+                <TooltipContent side="top" sideOffset={5} className="text-2xs">
                     <p>Create a poll</p>
                 </TooltipContent>
             </Tooltip>
-            <DialogContent className="sm:max-w-[800px] h-[90vh] max-h-[90vh] p-0 gap-0 flex flex-col overflow-hidden [&>button]:top-[20px] [&>button]:right-4">
+            <DialogContent className="sm:max-w-200 h-[90vh] max-h-[90vh] p-0 gap-0 flex flex-col overflow-hidden [&>button]:top-5 [&>button]:right-4">
                 <CreatePollForm channelID={channelID} onClose={() => setIsOpen(false)} />
             </DialogContent>
         </Dialog>

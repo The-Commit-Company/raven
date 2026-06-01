@@ -1,6 +1,7 @@
 import { Separator } from "@components/ui/separator"
 import { Label } from "@components/ui/label"
 import { Input } from "@components/ui/input"
+import { Textarea } from "@components/ui/textarea"
 import { Button } from "@components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
 import {
@@ -49,12 +50,12 @@ const getStatusText = (status: AvailabilityStatus) => {
     case "Invisible":
       return (
         <span className="flex items-center gap-2">
-          <FaCircleDot className="text-muted-foreground text-xs" />
+          <FaCircleDot className="text-ink-gray-4 text-xs" />
           Invisible
         </span>
       )
     default:
-      return <span className="text-muted-foreground">Set Availability</span>
+      return <span className="text-ink-gray-4">Set Availability</span>
   }
 }
 
@@ -66,7 +67,7 @@ export default function Profile() {
     <div className="flex flex-col gap-6 p-6">
       <div className="space-y-1">
         <h2 className="text-base font-semibold">Profile</h2>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-ink-gray-4">
           Manage your Raven profile
         </p>
       </div>
@@ -135,7 +136,7 @@ export default function Profile() {
               <Label htmlFor="customStatus" className="text-sm">
                 Custom Status
               </Label>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-xs text-ink-gray-4 mt-0.5">
                 Share what you are up to
               </p>
             </div>
@@ -153,15 +154,16 @@ export default function Profile() {
                   <Button
                     type="button"
                     variant="ghost"
-                    size="icon"
-                    className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full"
+                    size="sm"
+                    isIconButton
+                    className="absolute right-1 top-1/2 -translate-y-1/2"
                   >
                     <Smile className="h-4 w-4" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="end">
                   {/* TODO: Add emoji picker component */}
-                  <div className="p-2 text-sm text-muted-foreground">
+                  <div className="p-2 text-sm text-ink-gray-4">
                     Emoji picker coming soon
                   </div>
                 </PopoverContent>
@@ -174,7 +176,7 @@ export default function Profile() {
               <Label htmlFor="availabilityStatus" className="text-sm">
                 Availability Status
               </Label>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-xs text-ink-gray-4 mt-0.5">
                 Set your current availability status
               </p>
             </div>
@@ -187,7 +189,7 @@ export default function Profile() {
                   {availabilityStatus ? (
                     getStatusText(availabilityStatus)
                   ) : (
-                    <span className="text-muted-foreground">Set Availability</span>
+                    <span className="text-ink-gray-4">Set Availability</span>
                   )}
                 </Button>
               </DropdownMenuTrigger>
@@ -236,9 +238,9 @@ export default function Profile() {
             <Label htmlFor="bio" className="text-sm">
               Bio
             </Label>
-            <textarea
+            <Textarea
               id="bio"
-              className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              variant="outline"
               placeholder="Tell us about yourself"
             />
           </div>

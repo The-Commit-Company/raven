@@ -225,7 +225,7 @@ const LinkFieldCombobox = ({
                         disabled={disabled}
                         aria-expanded={open}
                         className={cn("w-full justify-between font-normal group",
-                            readOnly ? "bg-muted" : ""
+                            readOnly ? "bg-surface-gray-2" : ""
                             , buttonClassName)}>
                         {linkTitle || placeholder}
 
@@ -244,7 +244,7 @@ const LinkFieldCombobox = ({
                         disabled={disabled}
                         aria-expanded={open}
                         className={cn("w-full justify-between font-normal",
-                            readOnly ? "bg-muted" : ""
+                            readOnly ? "bg-surface-gray-2" : ""
                             , buttonClassName)}>
                         {value || placeholder}
 
@@ -263,7 +263,7 @@ const LinkFieldCombobox = ({
                                     <span className="font-medium">
                                         {result.label || result.value}
                                     </span>
-                                    {result.description && <span className="text-xs text-muted-foreground">
+                                    {result.description && <span className="text-xs text-ink-gray-4">
                                         {result.description}
                                     </span>}
                                 </CommandItem>

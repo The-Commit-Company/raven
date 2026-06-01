@@ -52,7 +52,7 @@ export default function Appearance() {
     <div className="flex flex-col gap-6 p-6">
       <div className="space-y-1">
         <h2 className="text-base font-semibold">Appearance</h2>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-ink-gray-4">
           Configure how you want the app to look.
         </p>
       </div>
@@ -87,11 +87,11 @@ export default function Appearance() {
                   type="button"
                   onClick={() => handleThemeChange(option.id as "light" | "dark" | "system")}
                   className={cn(
-                    "p-0 cursor-pointer rounded-md border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    "p-0 cursor-pointer rounded-md border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-4",
                     "w-full overflow-hidden",
                     theme === option.id
                       ? "border-primary ring-2 ring-primary/20"
-                      : "border-border hover:border-primary/50"
+                      : "border-outline-gray-2 hover:border-primary/50"
                   )}
                 >
                   <img
@@ -130,11 +130,11 @@ export default function Appearance() {
                   type="button"
                   onClick={() => handleChatStyleChange(option.id)}
                   className={cn(
-                    "p-0 cursor-pointer rounded-md border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    "p-0 cursor-pointer rounded-md border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-4",
                     "w-full overflow-hidden",
                     chatStyle === option.id
                       ? "border-primary ring-2 ring-primary/20"
-                      : "border-border hover:border-primary/50"
+                      : "border-outline-gray-2 hover:border-primary/50"
                   )}
                 >
                   <img

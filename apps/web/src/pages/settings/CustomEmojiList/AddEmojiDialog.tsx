@@ -101,7 +101,7 @@ const AddCustomEmojiDialog = ({ open, onClose }: AddCustomEmojiDialogProps) => {
                         {error && <ErrorBanner error={error} />}
 
                         {/* TODO: Add file upload component here */}
-                        <div className="rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">
+                        <div className="rounded-md border border-dashed p-4 text-center text-sm text-ink-gray-4">
                             File upload coming soon.
                             <br />
                             128px × 128px PNG, SVG or GIF recommended.

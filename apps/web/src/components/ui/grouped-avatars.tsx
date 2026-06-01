@@ -60,7 +60,7 @@ export function GroupedAvatars({
                 <Avatar
                     className={cn(
                         sizeClasses[size],
-                        "border-2 bg-muted text-muted-foreground ring-0 rounded-full text-xs",
+                        "border-2 bg-surface-gray-2 text-ink-gray-4 ring-0 rounded-full text-xs",
                         borderColorClass,
                     )}
                 >

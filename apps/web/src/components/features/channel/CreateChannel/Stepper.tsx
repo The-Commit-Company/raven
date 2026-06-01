@@ -23,11 +23,11 @@ export const Stepper = ({ steps, currentStep }: StepperProps) => {
                                 className={cn(
                                     'flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium transition-all',
                                     currentStep > index &&
-                                    'bg-primary text-primary-foreground',
+                                    'bg-ink-gray-8 text-ink-white',
                                     currentStep === index &&
-                                    'bg-primary text-primary-foreground ring-2 ring-primary/20 ring-offset-2',
+                                    'bg-ink-gray-8 text-ink-white ring-2 ring-ink-gray-8/20 ring-offset-2',
                                     currentStep < index &&
-                                    'bg-muted text-muted-foreground'
+                                    'bg-surface-gray-2 text-ink-gray-4'
                                 )}
                                 aria-current={currentStep === index ? 'step' : undefined}
                                 aria-label={
@@ -50,8 +50,8 @@ export const Stepper = ({ steps, currentStep }: StepperProps) => {
                                 className={cn(
                                     'text-xs font-medium transition-colors',
                                     currentStep >= index
-                                        ? 'text-foreground'
-                                        : 'text-muted-foreground'
+                                        ? 'text-ink-gray-8'
+                                        : 'text-ink-gray-4'
                                 )}
                                 aria-hidden="true"
                             >
@@ -65,8 +65,8 @@ export const Stepper = ({ steps, currentStep }: StepperProps) => {
                                 className={cn(
                                     'h-px w-8 transition-colors',
                                     currentStep > index
-                                        ? 'bg-primary'
-                                        : 'bg-border'
+                                        ? 'bg-ink-gray-8'
+                                        : 'bg-outline-gray-2'
                                 )}
                                 aria-hidden="true"
                             />

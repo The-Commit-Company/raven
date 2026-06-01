@@ -49,7 +49,7 @@ export function ConvertedThreadPreviewCard({
     const content = (
         <div
             className={cn(
-                "rounded-lg border border-border/50 bg-background block",
+                "rounded-lg border border-outline-gray-2/50 bg-surface-white block",
                 "border-l-4 border-l-primary/30",
                 "p-3 no-underline text-inherit",
                 workspace && "cursor-pointer",
@@ -62,18 +62,18 @@ export function ConvertedThreadPreviewCard({
                     <Hash className="h-3 w-3 shrink-0" aria-hidden />
                     <span className="font-semibold">Thread</span>
                 </div>
-                <span className="text-muted-foreground">—</span>
-                <span className="text-muted-foreground">Converted to channel</span>
+                <span className="text-ink-gray-4">—</span>
+                <span className="text-ink-gray-4">Converted to channel</span>
                 {preview?.participants && preview?.participants.length > 0 && (
                     <>
                         <GroupedAvatars users={preview.participants} max={4} size="xs" />
-                        <span className="text-muted-foreground">
+                        <span className="text-ink-gray-4">
                             {replyCount} {replyCount === 1 ? "reply" : "replies"}
                         </span>
                     </>
                 )}
                 {preview?.participants?.length === 0 && replyCount > 0 && (
-                    <span className="text-muted-foreground">
+                    <span className="text-ink-gray-4">
                         {replyCount} {replyCount === 1 ? "reply" : "replies"}
                     </span>
                 )}
@@ -82,14 +82,14 @@ export function ConvertedThreadPreviewCard({
             {/* Who started the thread: avatar + name */}
             {preview?.root_message_owner_name && (
                 <div className="mb-3 flex items-center gap-2">
-                    <Avatar className="h-6 w-6 shrink-0 rounded-full border border-border">
+                    <Avatar className="h-6 w-6 shrink-0 rounded-full border border-outline-gray-2">
                         <AvatarImage src={avatarSrc(preview.root_message_owner_image)} alt={preview.root_message_owner_name} />
-                        <AvatarFallback className="text-[9px] bg-muted">
+                        <AvatarFallback className="text-[9px] bg-surface-gray-2">
                             {getInitials(preview.root_message_owner_name)}
                         </AvatarFallback>
                     </Avatar>
-                    <p className="text-xs text-muted-foreground">
-                        <span className="font-medium text-foreground">{preview.root_message_owner_name}</span>
+                    <p className="text-xs text-ink-gray-4">
+                        <span className="font-medium text-ink-gray-8">{preview.root_message_owner_name}</span>
                         <span> started the thread</span>
                     </p>
                 </div>
@@ -98,28 +98,28 @@ export function ConvertedThreadPreviewCard({
             {previewReplies.length > 0 ? (
                 previewReplies.slice(0, 2).map((reply, i) => (
                     <div key={i} className="flex gap-2.5 mb-2">
-                        <Avatar className="h-6 w-6 shrink-0 rounded-full border border-border">
+                        <Avatar className="h-6 w-6 shrink-0 rounded-full border border-outline-gray-2">
                             <AvatarImage src={avatarSrc(reply.owner_image)} alt={reply.owner_name} />
-                            <AvatarFallback className="text-[9px] bg-muted">
+                            <AvatarFallback className="text-[9px] bg-surface-gray-2">
                                 {getInitials(reply.owner_name)}
                             </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 flex-1">
-                            <p className="text-xs font-medium text-foreground">{reply.owner_name}</p>
-                            <p className="text-[13px] text-muted-foreground line-clamp-1">
+                            <p className="text-xs font-medium text-ink-gray-8">{reply.owner_name}</p>
+                            <p className="text-sm text-ink-gray-4 line-clamp-1">
                                 {reply.snippet}
                             </p>
                         </div>
                     </div>
                 ))
             ) : (
-                <p className="text-[13px] text-foreground mb-3">
+                <p className="text-sm text-ink-gray-8 mb-3">
                     This thread was converted to a channel. You can continue the conversation there.
                 </p>
             )}
 
             {/* Footer: Go to channel */}
-            <div className="mt-3 pt-2 border-t border-border/50 flex items-center gap-1.5 text-xs font-medium text-primary">
+            <div className="mt-3 pt-2 border-t border-outline-gray-2/50 flex items-center gap-1.5 text-xs font-medium text-ink-blue-3">
                 <ExternalLink className="h-3.5 w-3.5" />
                 Go to channel{channelName ? ` #${channelName}` : ""}
             </div>

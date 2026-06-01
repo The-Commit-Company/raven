@@ -34,15 +34,15 @@ const generateAvatarColor = (name: string): string => {
 export const getStatusIndicatorColor = (status: string) => {
     switch (status) {
         case 'Available':
-            return 'bg-green-600'
+            return 'bg-surface-green-5'
         case 'Away':
-            return 'bg-yellow-500'
+            return 'bg-surface-yellow-5'
         case 'Do not disturb':
-            return 'bg-red-600'
+            return 'bg-surface-red-5'
         case 'Invisible':
-            return 'bg-gray-400'
+            return 'bg-surface-gray-5'
         default:
-            return 'bg-green-600'
+            return 'bg-surface-green-5'
     }
 }
 
@@ -52,50 +52,47 @@ const getSizeClasses = (size: 'xs' | 'sm' | 'md' | 'lg' | 'xl') => {
             return {
                 avatar: 'h-4 w-4 rounded-full',
                 indicator: 'h-1 w-1 -bottom-0.5 -right-0.5',
+                manualAvailableDot: 'h-0.25 w-0.25',
                 bot: 'h-1.5 w-1.5',
-                botContainer: 'h-2 w-2 bottom-0.5 right-0.5',
+                botContainer: 'h-2.5 w-2.5 -bottom-0.5 -right-0.5',
                 font: '!text-[8px] font-bold'
             }
         case 'sm':
             return {
                 avatar: 'h-6 w-6 rounded-full',
                 indicator: 'h-2 w-2 -bottom-0.5 -right-0.5',
+                manualAvailableDot: 'h-0.5 w-0.5',
                 bot: 'h-2 w-2',
-                botContainer: 'h-2.5 w-2.5 bottom-1 right-1',
+                botContainer: 'h-3 w-3 -bottom-0.5 -right-0.5',
                 font: 'text-[10px]'
             }
         case 'md':
             return {
                 avatar: 'h-8 w-8 rounded-full',
                 indicator: 'h-2.5 w-2.5 -bottom-0.5 -right-0.5',
-                bot: 'h-3 w-3',
-                botContainer: 'h-3 w-3 bottom-1.5 right-1.5',
-                font: 'text-[13px]'
+                manualAvailableDot: 'h-0.75 w-0.75',
+                bot: 'h-2.5 w-2.5',
+                botContainer: 'h-3.5 w-3.5 -bottom-0.5 -right-0.5',
+                font: 'text-sm'
             }
         case 'lg':
             return {
                 avatar: 'h-12 w-12 rounded-full',
                 indicator: 'h-3 w-3 -bottom-1 -right-1',
-                bot: 'h-5 w-5',
-                botContainer: 'h-4 w-4 bottom-1.5 right-1.5',
-                font: 'text-md'
+                manualAvailableDot: 'h-1 w-1',
+                bot: 'h-3 w-3',
+                botContainer: 'h-4 w-4 -bottom-1 -right-1',
+                font: 'text-base'
             }
         case 'xl':
             return {
                 avatar: 'h-[160px] w-[160px] rounded-lg shadow-none',
                 indicator: 'h-3.5 w-3.5 -bottom-0 right-0 border-2 border-background',
+                manualAvailableDot: 'h-1.5 w-1.5',
                 bot: 'h-5 w-5',
-                botContainer: 'h-4 w-4 bottom-1.5 right-1.5',
+                botContainer: 'h-7 w-7 -bottom-1 -right-1 border-2 border-background',
                 font: 'text-3xl font-semibold',
                 fallbackRound: 'rounded-lg'
-            }
-        default:
-            return {
-                avatar: 'h-8 w-8 rounded-full',
-                indicator: 'h-2.5 w-2.5 bottom-1 right-1',
-                bot: 'h-3 w-3',
-                botContainer: 'h-3 w-3 bottom-1.5 right-1.5',
-                font: 'text-[13px]'
             }
     }
 }
@@ -131,6 +128,8 @@ export const UserAvatar = memo<UserAvatarProps>(({
         return isActive ? 'Online' : 'Offline'
     }, [availabilityStatus, isActive])
 
+    const showManualAvailableDot = availabilityStatus === 'Available' && !isActive
+
     return (
         <div className={cn("relative inline-block", className)}>
             <Avatar className={sizeClasses.avatar}>
@@ -152,28 +151,35 @@ export const UserAvatar = memo<UserAvatarProps>(({
             {shouldShowStatusIndicator && (
                 <span
                     className={cn(
-                        "absolute block rounded-full border-2 border-white dark:border-gray-900",
+                        "absolute flex items-center justify-center rounded-full border-2 border-outline-white",
                         sizeClasses.indicator,
                         availabilityStatus
                             ? getStatusIndicatorColor(availabilityStatus)
-                            : 'bg-green-600'
+                            : 'bg-surface-green-5'
                     )}
                     aria-label={statusLabel}
                     role="img"
-                />
+                >
+                    {showManualAvailableDot && (
+                        <span
+                            className={cn("rounded-full bg-outline-white", sizeClasses.manualAvailableDot)}
+                            aria-hidden="true"
+                        />
+                    )}
+                </span>
             )}
 
             {/* Bot Indicator */}
             {isBot && showBotIndicator && (
                 <span
                     className={cn(
-                        "absolute flex items-center justify-center rounded-full bg-white border border-gray-200 dark:border-gray-700",
+                        "absolute flex items-center justify-center rounded-full bg-surface-white border border-outline-gray-2",
                         sizeClasses.botContainer
                     )}
                     aria-label="Bot account"
                     role="img">
                     <RiRobot2Fill
-                        className={cn("text-blue-600 dark:text-blue-400", sizeClasses.bot)}
+                        className={cn("text-ink-blue-4", sizeClasses.bot)}
                         aria-hidden="true"
                     />
                 </span>

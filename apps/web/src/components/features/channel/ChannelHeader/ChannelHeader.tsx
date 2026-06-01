@@ -1,16 +1,19 @@
 import { Button } from "@components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
-import { Headset, Pin, Star } from "lucide-react"
+import { ChevronLeft, Command, Headset, Pin, Star } from "lucide-react"
 import ChannelMembers from "./ChannelMembers"
 import ChannelMenu from "./ChannelMenu"
-import { useAtom } from "jotai"
+import { useAtom, useSetAtom } from "jotai"
 import { channelDrawerAtom } from "@utils/channelAtoms"
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
 import { useSidebar } from "@components/ui/sidebar"
-import { useLocation } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import { SIDEBAR_LESS_ROUTES } from "@utils/routes"
 import { useChannel } from "@hooks/useChannel"
+import { useIsMobile } from "@hooks/use-mobile"
 import _ from "@lib/translate"
+import { commandMenuOpenAtom } from "@components/features/cmdk/atoms"
+import CommandMenu from "@components/features/cmdk/CommandMenu"
 
 const ChannelHeader = () => {
     const channelID = useCurrentChannelID()
@@ -22,56 +25,73 @@ const ChannelHeader = () => {
     const { state } = useSidebar()
     const isCollapsed = state === "collapsed"
     const { toggleStarChannel, isStarred } = useChannel(channelID)
+    const isMobile = useIsMobile()
+    const navigate = useNavigate()
+    const { workspaceID } = useParams()
 
     const pinnedCount = channel?.pinned_messages_string ? channel.pinned_messages_string.split("\n").length : 0
 
     const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
+    const setCommandMenuOpen = useSetAtom(commandMenuOpenAtom)
 
     const onOpenMembers = () => {
-        if (drawerType === 'members') setDrawerType('')
-        else setDrawerType('members')
-    }
-
-    const onOpenFiles = () => {
-        setDrawerType('files')
-    }
-
-    const onOpenLinks = () => {
-        setDrawerType('links')
-    }
-
-    const onOpenThreads = () => {
-        setDrawerType('threads')
+        if (isMobile && workspaceID) {
+            navigate(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/members`)
+        } else if (drawerType === 'members') {
+            setDrawerType('')
+        } else {
+            setDrawerType('members')
+        }
     }
 
     const onOpenPins = () => {
+        if (isMobile && workspaceID) {
+            navigate(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/settings?tab=pins`)
+            return
+        }
         setDrawerType('pins')
     }
 
+    const headerStyle = isMobile
+        ? { top: 0, left: 0, width: "100%" }
+        : {
+            top: "var(--app-header-height, 36px)",
+            left: isSidebarLessPage
+                ? "var(--workspace-switcher-width, 60px)"
+                : isCollapsed
+                    ? "var(--sidebar-width-icon, 60px)"
+                    : "var(--sidebar-width, 340px)",
+            width: isSidebarLessPage
+                ? "calc(100% - var(--workspace-switcher-width, 60px))"
+                : isCollapsed
+                    ? "calc(100% - var(--sidebar-width-icon, 60px))"
+                    : "calc(100% - var(--sidebar-width, 340px))",
+        }
+
     return (
         <div
-            className="fixed flex items-center justify-between border-b bg-background py-1.5 px-2 z-40 transition-[left,width,top] duration-200 ease-linear"
-            style={{
-                top: "var(--app-header-height, 36px)",
-                left: isSidebarLessPage
-                    ? "var(--workspace-switcher-width, 60px)"
-                    : isCollapsed
-                        ? "var(--sidebar-width-icon, 60px)"
-                        : "var(--sidebar-width, 340px)",
-                width: isSidebarLessPage
-                    ? "calc(100% - var(--workspace-switcher-width, 60px))"
-                    : isCollapsed
-                        ? "calc(100% - var(--sidebar-width-icon, 60px))"
-                        : "calc(100% - var(--sidebar-width, 340px))",
-            }}
+            className="fixed flex items-center justify-between border-b bg-surface-white py-1.5 px-2 z-40 transition-[left,width,top] duration-200 ease-linear"
+            style={headerStyle}
         >
+            {isMobile && (
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    isIconButton
+                    onClick={() => navigate(`/${workspaceID ?? ''}`)}
+                    aria-label={_('Back')}
+                >
+                    <ChevronLeft className="h-4 w-4" />
+                </Button>
+            )}
+
             {/* Left side */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 min-w-0">
                 <div className="flex items-center gap-0.5">
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={toggleStarChannel}>
-                                <Star className={`h-3 w-3 text-foreground/80 ${isStarred ? "fill-amber-300 stroke-amber-300" : ""}`} />
+                            <Button variant="ghost" size="sm" isIconButton onClick={toggleStarChannel}>
+                                <Star className={`h-3 w-3 text-ink-gray-8/80 ${isStarred ? "fill-amber-300 stroke-amber-300" : ""}`} />
                                 <span className="sr-only">{_('Star')}</span>
                             </Button>
                         </TooltipTrigger>
@@ -82,45 +102,12 @@ const ChannelHeader = () => {
 
                     <ChannelMenu channelID={channelID} />
 
-                    {/* <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={onOpenFiles}>
-                                <FileText className="h-2 w-2 text-foreground/80" />
-                                <span className="sr-only">{_('Files')}</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{_('Files')}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={onOpenLinks}>
-                                <Link className="h-2 w-2 text-foreground/80" />
-                                <span className="sr-only">{_('Links')}</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{_('Links')}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm" onClick={onOpenThreads}>
-                                <MessageSquareText className="h-2 w-2 text-foreground/80" />
-                                <span className="sr-only">{_('Threads')}</span>
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>{_('Threads')}</p>
-                        </TooltipContent>
-                    </Tooltip> */}
                     {pinnedCount > 0 && <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="default" className="h-7 gap-2 rounded-sm" onClick={onOpenPins}>
-                                <Pin className="h-2 w-2 text-foreground/80" />
+                            <Button variant="ghost" size="sm" className="gap-2" onClick={onOpenPins}>
+                                <Pin className="h-2 w-2 text-ink-gray-8/80" />
                                 <span className="sr-only">{_('Pinned')}</span>
-                                <span className="text-muted-foreground text-sm font-normal">{pinnedCount}</span>
+                                <span className="text-ink-gray-4 text-sm font-normal">{pinnedCount}</span>
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -132,10 +119,24 @@ const ChannelHeader = () => {
 
             {/* Right side */}
             <div className="flex items-center gap-1 ml-auto">
+                {isMobile && (
+                    <>
+                        <Button
+                            variant="ghost"
+                            size="md"
+                            isIconButton
+                            onClick={() => setCommandMenuOpen(true)}
+                            aria-label={_("Command Menu")}
+                        >
+                            <Command className="h-4 w-4 text-ink-gray-7" />
+                        </Button>
+                        <CommandMenu />
+                    </>
+                )}
                 <Tooltip>
                     <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm">
-                            <Headset className="h-3 w-3 text-foreground/80" />
+                        <Button variant="ghost" size="sm" isIconButton>
+                            <Headset className="h-4 w-4 md:h-3 md:w-3 text-ink-gray-8/80" />
                             <span className="sr-only">{_('Start call')}</span>
                         </Button>
                     </TooltipTrigger>

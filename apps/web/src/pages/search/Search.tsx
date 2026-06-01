@@ -1,28 +1,40 @@
-import { SearchFilters } from '@components/common/SearchFilters/types'
-import { SearchFilters as SearchFiltersComponent } from '@components/common/SearchFilters/SearchFilters'
 import { useState } from 'react'
-import { useOutletContext, useSearchParams } from 'react-router-dom'
-import TabsBar, { SearchTab } from '@components/common/SearchFilters/TabsBar'
-import { MoreFiltersDrawer } from '@components/common/SearchFilters/MoreFiltersDrawer'
-import SearchResultsPolls from "@components/common/SearchFilters/SearchResultsPolls"
-import SearchResultsFiles from "@components/common/SearchFilters/SearchResultsFiles"
-import SearchResultsMessages from "@components/common/SearchFilters/SearchResultsMessages"
-import SearchResultsLinks from "@components/common/SearchFilters/SearchResultsLinks"
+import { useNavigate, useOutletContext, useSearchParams } from 'react-router-dom'
+import { ChevronLeft, Search as SearchIcon, X } from 'lucide-react'
+
+import SearchTabsBar, { SearchTab } from '@components/features/search/SearchTabsBar'
+import { SearchFiltersBar } from '@components/features/search/SearchFiltersBar'
+import { SearchActiveBadges } from '@components/features/search/SearchActiveBadges'
+import SearchMessageResults from '@components/features/search/results/SearchMessageResults'
+import SearchFileResults from '@components/features/search/results/SearchFileResults'
+import SearchLinkResults from '@components/features/search/results/SearchLinkResults'
+import SearchPollResults from '@components/features/search/results/SearchPollResults'
+import { SearchFilters } from '@components/features/search/types'
+
 import { useChannels } from '@hooks/useChannels'
-import SearchResultsThreads from '@components/common/SearchFilters/SearchResultsThreads'
+import { useIsMobile } from '@hooks/use-mobile'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { db } from '@db'
+import { Input } from '@components/ui/input'
+import { Button } from '@components/ui/button'
+import _ from '@lib/translate'
+
+interface SearchOutletContext {
+    searchValue: string
+    setSearchValue: (v: string) => void
+}
 
 export default function Search() {
-
-    const { searchValue } = useOutletContext<{ searchValue: string, setSearchValue: (v: string) => void }>()
+    const { searchValue, setSearchValue } = useOutletContext<SearchOutletContext>()
     const [searchParams, setSearchParams] = useSearchParams()
+    const isMobile = useIsMobile()
+    const navigate = useNavigate()
 
-    // Read filters from URL params
     const channelFromURL = searchParams.get('channel') ?? ''
     const userFromURL = searchParams.get('user') ?? ''
     const fileTypeFromURL = searchParams.get('file_type')?.split(',').filter(Boolean) ?? []
     const channelTypeFromURL = searchParams.get('channel_type') ?? ''
     const isDMFromURL = searchParams.get('is_dm') ? 1 : null
-    // If Channel Type is Private, exclude DMs explicitly
     const excludeDMs = channelTypeFromURL === 'Private' ? 0 : null
     const isThreadMessageFromURL = searchParams.get('is_thread_message') ? 1 : null
     const savedFromURL = searchParams.get('saved') ? 1 : null
@@ -32,7 +44,6 @@ export default function Search() {
     const tabFromURL = (searchParams.get('tab') as SearchTab) || 'messages'
 
     const [activeTab, setActiveTab] = useState<SearchTab>(tabFromURL)
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
     const filters: SearchFilters = {
         query: searchValue || '',
@@ -51,68 +62,130 @@ export default function Search() {
     }
 
     const { channels, dm_channels } = useChannels()
+    const users = useLiveQuery(() => db.users.toArray(), [])
+
+    const onTabChange = (tab: SearchTab) => {
+        setActiveTab(tab)
+        setSearchParams((prev) => {
+            prev.set('tab', tab)
+            return prev
+        }, { replace: true })
+    }
 
     const setChannelFilter = (channelId: string) => {
         setSearchParams((prev) => {
-            if (channelId !== "*all") prev.set('channel', channelId)
+            if (channelId !== '*all') prev.set('channel', channelId)
             else prev.delete('channel')
             return prev
-        })
+        }, { replace: true })
     }
 
     const setUserFilter = (userId: string) => {
         setSearchParams((prev) => {
-            if (userId && userId !== "all") prev.set('user', userId)
+            if (userId && userId !== 'all') prev.set('user', userId)
             else prev.delete('user')
             return prev
-        })
+        }, { replace: true })
     }
 
-    return (
-        <div className="flex flex-row h-full overflow-hidden pt-(--app-header-height)">
-            {/* Main Content */}
-            <div className={`transition-all duration-300 ${isDrawerOpen ? 'w-[calc(100%-340px)] pr-0' : 'w-full'} h-full flex flex-col p-4 pb-0`}>
-                {/* Tabs Bar */}
-                <TabsBar activeTab={activeTab} setActiveTab={setActiveTab} />
-                {/* Search and Filter Component */}
-                <SearchFiltersComponent
-                    filters={filters}
-                    channels={channels}
-                    dmChannels={dm_channels}
-                    onChannelChange={setChannelFilter}
-                    onUserChange={setUserFilter}
-                    onOpenMoreFilters={() => setIsDrawerOpen(open => !open)}
-                />
-
-                <div className="mt-2 flex-1 overflow-y-auto">
-                    {/* Results based on active tab */}
-                    {activeTab === 'messages' && (
-                        <SearchResultsMessages searchValue={filters.query} filters={filters} />
-                    )}
-                    {activeTab === 'files' && (
-                        <SearchResultsFiles searchValue={filters.query} filters={filters} />
-                    )}
-                    {activeTab === 'links' && (
-                        <SearchResultsLinks searchValue={filters.query} filters={filters} />
-                    )}
-                    {activeTab === 'polls' && (
-                        <SearchResultsPolls searchValue={filters.query} filters={filters} />
-                    )}
-                    {/* Threads have a separate page*/}
-                    {/* {activeTab === 'threads' && (
-                        <SearchResultsThreads searchValue={filters.query} filters={filters} />
-                    )} */}
-                </div>
-            </div>
-            {/* Right Drawer */}
-            {isDrawerOpen && (
-                <div className="w-85 h-full border-l bg-background shadow-lg transition-all duration-300 flex flex-col">
-                    <MoreFiltersDrawer
-                        filters={filters}
-                        onClose={() => setIsDrawerOpen(false)}
-                    />
-                </div>
+    const searchInput = (
+        <div className="relative">
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-gray-4 pointer-events-none" />
+            <Input
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                placeholder={_('Search messages, files, links, polls')}
+                className="pl-9 pr-9 h-8 text-base"
+                autoFocus
+            />
+            {searchValue && (
+                <button
+                    type="button"
+                    onClick={() => setSearchValue('')}
+                    aria-label={_('Clear search')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-ink-gray-4 hover:text-ink-gray-8"
+                >
+                    <X className="h-4 w-4" />
+                </button>
             )}
         </div>
     )
-} 
+
+    return (
+        <div className="flex flex-col h-full overflow-hidden">
+            {isMobile && (
+                <div className="flex flex-col gap-2 px-3 pt-3 pb-2 border-b border-outline-gray-2 bg-surface-white shrink-0">
+                    <div className="flex items-center gap-2">
+                        <Button
+                            isIconButton
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => navigate(-1)}
+                            aria-label={_('Back')}
+                        >
+                            <ChevronLeft className="h-5 w-5" />
+                        </Button>
+                        <h1 className="text-base font-medium text-ink-gray-8">{_('Search')}</h1>
+                    </div>
+                    {searchInput}
+                </div>
+            )}
+
+            <div className="shrink-0 hidden md:block">
+                <div className="max-w-6xl mx-auto w-full px-6 pt-6 space-y-2">
+                    {searchInput}
+                    <div className="mt-4 flex items-center gap-3 flex-wrap">
+                        <SearchTabsBar activeTab={activeTab} setActiveTab={onTabChange} />
+                        <div className="ml-auto">
+                            <SearchFiltersBar
+                                filters={filters}
+                                channels={channels}
+                                dmChannels={dm_channels}
+                                onChannelChange={setChannelFilter}
+                                onUserChange={setUserFilter}
+                            />
+                        </div>
+                    </div>
+                    <SearchActiveBadges
+                        filters={filters}
+                        channels={channels}
+                        dmChannels={dm_channels}
+                        users={users ?? []}
+                    />
+                </div>
+            </div>
+
+            {isMobile && (
+                <div className="flex flex-col gap-2 px-3 pt-2 shrink-0">
+                    <SearchFiltersBar
+                        filters={filters}
+                        channels={channels}
+                        dmChannels={dm_channels}
+                        onChannelChange={setChannelFilter}
+                        onUserChange={setUserFilter}
+                        isMobile
+                    />
+                    <SearchTabsBar activeTab={activeTab} setActiveTab={onTabChange} fullWidth />
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <SearchActiveBadges
+                            filters={filters}
+                            channels={channels}
+                            dmChannels={dm_channels}
+                            users={users ?? []}
+                        />
+                    </div>
+                </div>
+            )}
+
+            <div className="flex-1 min-h-0 px-3 md:px-0 pb-2">
+                <div className="max-w-6xl mx-auto w-full h-full md:px-6">
+                    {activeTab === 'messages' && <SearchMessageResults searchValue={filters.query} filters={filters} />}
+                    {activeTab === 'files' && <SearchFileResults searchValue={filters.query} filters={filters} />}
+                    {activeTab === 'links' && <SearchLinkResults searchValue={filters.query} filters={filters} />}
+                    {activeTab === 'polls' && <SearchPollResults searchValue={filters.query} filters={filters} />}
+                </div>
+            </div>
+
+        </div>
+    )
+}

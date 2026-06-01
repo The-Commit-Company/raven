@@ -15,7 +15,7 @@ const WorkspaceActions = ({ workspace }: Props) => {
         <div className='flex items-center gap-2 justify-center h-full'>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant='ghost' color='gray' size='icon'>
+                    <Button variant='ghost' size='sm' isIconButton>
                         <EllipsisVertical fontSize={16} />
                     </Button>
                 </DropdownMenuTrigger>

@@ -49,17 +49,17 @@ const FileItem = ({ file, onRemove }: { file: FileItemType, onRemove: (file: Fil
         onRemove(file)
     }
 
-    return <div className="rounded-lg border border-gray-200 dark:border-gray-200 min-w-64">
+    return <div className="rounded-lg border border-outline-gray-2 min-w-64">
         <div className="flex items-center gap-2 p-2">
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
                 <FileTypeIcon fileType={extension} size="sm" />
             </div>
 
             <div className="flex-1 min-w-0">
-                <h4 className="text-xs font-medium text-gray-900 dark:text-gray-900 truncate">
+                <h4 className="text-xs font-medium text-ink-gray-8 truncate">
                     {file.fileName}
                 </h4>
-                <p className="text-xs text-gray-500 dark:text-gray-500">
+                <p className="text-xs text-ink-gray-5">
                     {formatBytes(file.size)}
                 </p>
             </div>
@@ -67,12 +67,13 @@ const FileItem = ({ file, onRemove }: { file: FileItemType, onRemove: (file: Fil
             <div className="flex items-center size-9 justify-center">
                 {file.status === 'uploading' &&
                     <div className='flex items-center justify-center size-9'>
-                        <ProgressCircle value={file.uploadProgress ?? 0} className='text-green-500' />
+                        <ProgressCircle value={file.uploadProgress ?? 0} className='text-ink-green-4' />
                     </div>}
                 {file.status === 'uploaded' && (
                     <Button
                         variant="ghost"
-                        size="icon"
+                        size="sm"
+                        isIconButton
                         onClick={onRemoveClick}
                         title="Remove File"
                     >
@@ -82,11 +83,12 @@ const FileItem = ({ file, onRemove }: { file: FileItemType, onRemove: (file: Fil
                 {file.status === 'error' && (
                     <Button
                         variant="ghost"
-                        size="icon"
+                        size="sm"
+                        isIconButton
                         onClick={onRemoveClick}
                         title="Remove File"
                     >
-                        <AlertCircleIcon className='text-destructive' />
+                        <AlertCircleIcon className='text-ink-red-3' />
                     </Button>
                 )}
             </div>
@@ -114,7 +116,7 @@ export const AddFileButton = ({ channelID }: { channelID: string }) => {
                     onAddFile(files)
                 }
             }} className='hidden' />
-        <Button variant="secondary" size="icon" onClick={onClick} type='button'>
+        <Button variant="subtle" size="sm" isIconButton onClick={onClick} type='button'>
             <PlusIcon />
         </Button>
     </>

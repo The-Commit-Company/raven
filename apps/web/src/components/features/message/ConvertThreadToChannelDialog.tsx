@@ -94,10 +94,10 @@ export function ConvertThreadToChannelDialog({
                             placeholder="e.g. project-alpha"
                             value={channelName}
                             onChange={(e) => setChannelName(e.target.value)}
-                            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-ring"
+                            className="w-full rounded-md border border-outline-gray-2 bg-surface-white px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-outline-gray-4"
                             minLength={3}
                         />
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-ink-gray-4">
                             Letters, numbers and hyphens only. At least 3 characters.
                         </p>
                     </div>
@@ -117,13 +117,13 @@ export function ConvertThreadToChannelDialog({
                                         htmlFor={t.value}
                                         className="flex cursor-pointer items-center gap-2 font-normal"
                                     >
-                                        <ChannelIcon type={t.value} className="h-4 w-4 text-muted-foreground" />
+                                        <ChannelIcon type={t.value} className="h-4 w-4 text-ink-gray-4" />
                                         {t.label}
                                     </Label>
                                 </div>
                             ))}
                         </RadioGroup>
-                        <p className="text-xs text-muted-foreground min-h-10">{helperText}</p>
+                        <p className="text-xs text-ink-gray-4 min-h-10">{helperText}</p>
                     </div>
                 </div>
 

@@ -5,7 +5,7 @@ import { useGroupedChannels } from "@raven/lib/hooks/useGroupedChannels"
 import { useChannels } from "@hooks/useChannels"
 import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
 import { useState } from "react"
-import { cn } from "@lib/utils"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs"
 import { ChannelTable } from "./ChannelTable"
 import { RavenUser } from "@raven/types/Raven/RavenUser"
 import { FormProvider, useForm, useWatch } from "react-hook-form"
@@ -14,6 +14,7 @@ import { toast } from "sonner"
 import _ from "@lib/translate"
 import { GroupDnd } from "./GroupDnd"
 import { useParams } from "react-router"
+import { H3 } from "@components/ui/typography"
 
 export const CustomizeSidebarDialog = ({ onClose }: { onClose: () => void }) => {
 
@@ -67,39 +68,31 @@ export const CustomizeSidebarDialog = ({ onClose }: { onClose: () => void }) => 
                 </div>
                 <div className="flex flex-1 min-h-0 overflow-hidden">
                     {/* Left Column - Customization */}
-                    <div className="flex-1 flex flex-col min-w-0 min-h-0 border-r overflow-hidden bg-background">
-                        <div className="flex gap-2 px-4 py-3 shrink-0">
-                            {TABS.map(tab => (
-                                <button
-                                    key={tab.key}
-                                    type="button"
-                                    className={cn(
-                                        "px-4 py-1 rounded-md text-xs font-medium transition-colors border border-transparent",
-                                        activeTab === tab.key
-                                            ? "bg-primary text-primary-foreground shadow"
-                                            : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                                    )}
-                                    onClick={() => setActiveTab(tab.key)}
-                                >
-                                    {tab.label}
-                                </button>
-                            ))}
-                        </div>
-                        <div className="flex-1 flex flex-col min-h-0 p-4">
-                            {activeTab === 'channels' && (
-                                <ChannelTable data={channelSidebarData} />
-                            )}
-                            {activeTab === 'groups' && (
-                                <div className="flex-1 overflow-y-auto pr-2">
-                                    <GroupDnd />
-                                </div>
-                            )}
-                        </div>
+                    <div className="flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden bg-surface-white p-4 pb-0">
+                        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                            <div>
+                                <TabsList variant="subtle" size="sm" style={{ width: "fit-content" }}>
+                                    {TABS.map(tab => (
+                                        <TabsTrigger key={tab.key} value={tab.key}>{tab.label}</TabsTrigger>
+                                    ))}
+                                </TabsList>
+                            </div>
+                            <div className="flex-1 flex flex-col min-h-0">
+                                <TabsContent value="channels" className="flex-1 min-h-0">
+                                    <ChannelTable data={channelSidebarData} />
+                                </TabsContent>
+                                <TabsContent value="groups" className="flex-1 min-h-0">
+                                    <div className="h-full overflow-y-auto pr-2">
+                                        <GroupDnd />
+                                    </div>
+                                </TabsContent>
+                            </div>
+                        </Tabs>
                     </div>
-                    {/* Right Column - Preview */}
-                    <div className="flex-none w-64 flex flex-col min-h-0 bg-sidebar/40 border-l overflow-hidden">
+                    {/* Right Column - Preview (hidden on mobile) */}
+                    <div className="hidden md:flex flex-none w-64 flex-col min-h-0 bg-surface-menu-bar/40 border-l overflow-hidden">
                         <div className="px-4 py-3 border-b shrink-0">
-                            <h3 className="text-sm font-semibold">{_("Preview")}</h3>
+                            <H3 className="text-sm font-semibold">{_("Preview")}</H3>
                         </div>
                         <SidebarPreview data={channelSidebarData} />
                     </div>

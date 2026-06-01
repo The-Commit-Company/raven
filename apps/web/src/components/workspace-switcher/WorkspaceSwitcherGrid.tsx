@@ -6,6 +6,7 @@ import { Card } from "@components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
 import { ArrowUpRight } from "lucide-react"
 import { useWorkspaces, WorkspaceFields } from "@hooks/useWorkspaces"
+import _ from "@lib/translate"
 
 const getLogo = (workspace: WorkspaceFields) => {
     let logo = workspace.logo || ''
@@ -25,14 +26,14 @@ const WorkspaceMemberCount = ({ workspace }: { workspace: string }) => {
     }
 
     if (data.message === 0) {
-        return <span className="text-sm text-muted-foreground font-medium">No members</span>
+        return <span className="text-sm text-ink-gray-4 font-medium">{_("No members")}</span>
     }
 
     if (data.message === 1) {
-        return <span className="text-sm text-muted-foreground font-medium">1 solo member</span>
+        return <span className="text-sm text-ink-gray-4 font-medium">{_("1 solo member")}</span>
     }
 
-    return <span className="text-sm text-muted-foreground font-medium">{data.message} members</span>
+    return <span className="text-sm text-ink-gray-4 font-medium">{_("{0} members", [data.message])}</span>
 }
 
 export const WorkspaceSwitcherGrid = () => {
@@ -57,7 +58,6 @@ export const WorkspaceSwitcherGrid = () => {
     }, [workspaces])
 
     const openWorkspace = (workspaceName: string) => {
-        // Save to localStorage
         localStorage.setItem('ravenLastWorkspace', JSON.stringify(workspaceName))
         localStorage.removeItem('ravenLastChannel')
         navigate(`/${encodeURIComponent(workspaceName)}`)
@@ -67,9 +67,9 @@ export const WorkspaceSwitcherGrid = () => {
         <div className="sm:p-28 py-16 sm:px-8 px-4 gap-16 animate-fadein">
             <div className="container flex mx-auto flex-col gap-5 max-w-screen-lg">
                 <div className="flex flex-col gap-1">
-                    <h2 className="text-xl font-semibold">My Workspaces</h2>
-                    <p className="text-sm text-muted-foreground font-medium">
-                        Switch between workspaces that you are a member of.
+                    <h2 className="text-xl font-semibold">{_("My Workspaces")}</h2>
+                    <p className="text-sm text-ink-gray-4 font-medium">
+                        {_("Switch between workspaces that you are a member of.")}
                     </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-4">
@@ -81,9 +81,9 @@ export const WorkspaceSwitcherGrid = () => {
             {otherWorkspaces.length > 0 && (
                 <div className="container flex mx-auto flex-col gap-5 max-w-screen-lg mt-16">
                     <div className="flex flex-col gap-1">
-                        <h2 className="text-xl font-semibold">Other Workspaces</h2>
-                        <p className="text-sm text-muted-foreground font-medium">
-                            Explore other workspaces that you can join.
+                        <h2 className="text-xl font-semibold">{_("Other Workspaces")}</h2>
+                        <p className="text-sm text-ink-gray-4 font-medium">
+                            {_("Explore other workspaces that you can join.")}
                         </p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-4">
@@ -103,27 +103,27 @@ const MyWorkspaceItem = ({ workspace, onOpen }: { workspace: WorkspaceFields; on
     return (
         <Card className="shadow-sm hover:scale-105 transition-all duration-200 cursor-pointer">
             <Link
-                aria-label={`Switch to ${workspace.workspace_name} workspace`}
+                aria-label={_("Switch to {0} workspace", [workspace.workspace_name])}
                 to={`/${encodeURIComponent(workspace.name)}`}
                 onClick={() => onOpen(workspace.name)}
                 className="block p-4"
             >
                 <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10 border border-border/80 dark:border-border/60">
+                    <Avatar className="h-10 w-10 border border-outline-gray-2">
                         <AvatarImage src={logo} alt={workspace.workspace_name} />
-                        <AvatarFallback>{workspace.workspace_name.charAt(0)}</AvatarFallback>
+                        <AvatarFallback className="bg-surface-gray-2 text-ink-gray-7">{workspace.workspace_name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col gap-0.5 flex-1 min-w-0">
                         <div className="flex flex-col gap-0.5">
                             <h3 className="text-base font-semibold truncate">{workspace.workspace_name}</h3>
                             {workspace.type === 'Public' ? (
-                                <span className="text-sm text-muted-foreground font-medium">Public</span>
+                                <span className="text-sm text-ink-gray-4 font-medium">{_("Public")}</span>
                             ) : (
-                                <span className="text-sm text-muted-foreground font-medium">Private</span>
+                                <span className="text-sm text-ink-gray-4 font-medium">{_("Private")}</span>
                             )}
                         </div>
                         {workspace.description && (
-                            <p className="text-sm text-muted-foreground line-clamp-2 text-ellipsis">
+                            <p className="text-sm text-ink-gray-4 line-clamp-2 text-ellipsis">
                                 {workspace.description}
                             </p>
                         )}
@@ -146,9 +146,9 @@ const OtherWorkspaceItem = ({ workspace }: { workspace: WorkspaceFields }) => {
                 mutate('channel_list')
             }),
             {
-                loading: 'Joining workspace...',
-                success: 'You have joined the workspace.',
-                error: (error) => `There was an error while joining the workspace.\n${error.message || 'Unknown error'}`,
+                loading: _("Joining workspace..."),
+                success: _("You have joined the workspace."),
+                error: (error) => _("There was an error while joining the workspace.\n{0}", [error.message || _("Unknown error")]),
             }
         )
     }
@@ -158,14 +158,14 @@ const OtherWorkspaceItem = ({ workspace }: { workspace: WorkspaceFields }) => {
             <div
                 role="button"
                 onClick={joinWorkspace}
-                title={`Join ${workspace.workspace_name} workspace`}
-                aria-label={`Join ${workspace.workspace_name} workspace`}
+                title={_("Join {0} workspace", [workspace.workspace_name])}
+                aria-label={_("Join {0} workspace", [workspace.workspace_name])}
                 className="p-4"
             >
                 <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10 border border-border/80 dark:border-border/60">
+                    <Avatar className="h-10 w-10 border border-outline-gray-2">
                         <AvatarImage src={logo} alt={workspace.workspace_name} />
-                        <AvatarFallback>{workspace.workspace_name.charAt(0)}</AvatarFallback>
+                        <AvatarFallback className="bg-surface-gray-2 text-ink-gray-7">{workspace.workspace_name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col gap-0.5 flex-1 min-w-0">
                         <div className="flex flex-col gap-0.5">
@@ -173,7 +173,7 @@ const OtherWorkspaceItem = ({ workspace }: { workspace: WorkspaceFields }) => {
                             <WorkspaceMemberCount workspace={workspace.name} />
                         </div>
                         {workspace.description && (
-                            <p className="text-sm text-muted-foreground line-clamp-2 text-ellipsis">
+                            <p className="text-sm text-ink-gray-4 line-clamp-2 text-ellipsis">
                                 {workspace.description}
                             </p>
                         )}
@@ -181,7 +181,7 @@ const OtherWorkspaceItem = ({ workspace }: { workspace: WorkspaceFields }) => {
                 </div>
             </div>
             <div className="absolute top-0 right-0 p-3">
-                <ArrowUpRight className="w-4 h-4 text-muted-foreground" />
+                <ArrowUpRight className="w-4 h-4 text-ink-gray-4" />
             </div>
         </Card>
     )

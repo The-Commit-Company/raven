@@ -100,7 +100,7 @@ export function LoginForm({
                                 )) : null}
 
                             </Field>
-                            {showSeparator && <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
+                            {showSeparator && <FieldSeparator className="*:data-[slot=field-separator-content]:bg-surface-cards">
                                 or continue with
                             </FieldSeparator>}
                             {(isEmailLinkLoginEnabled || isUserPassLoginEnabled) && <Field>

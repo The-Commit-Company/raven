@@ -41,10 +41,10 @@ export function LeaveChannelButton({ channel }: LeaveChannelButtonProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild className="w-full">
-        <button className="w-full flex justify-start p-3 h-auto cursor-pointer font-normal bg-transparent border border-border/70 rounded-lg hover:bg-red-200/20 transition-colors">
+        <button className="w-full flex justify-start p-3 h-auto cursor-pointer font-normal bg-transparent border border-outline-gray-2/70 rounded-lg hover:bg-red-200/20 transition-colors">
           <div className="flex items-center gap-3">
-            <User className="w-4 h-4 text-destructive" />
-            <span className="text-sm text-destructive">
+            <User className="w-4 h-4 text-ink-red-3" />
+            <span className="text-sm text-ink-red-3">
               {_("Leave channel")}
             </span>
           </div>
@@ -63,16 +63,16 @@ export function LeaveChannelButton({ channel }: LeaveChannelButtonProps) {
             </span>
           </AlertDialogTitle>
           <AlertDialogDescription asChild>
-            <div className="space-y-4 text-left text-foreground pt-1">
+            <div className="space-y-4 text-left text-ink-gray-8 pt-1">
               {error ? <ErrorBanner error={error} /> : null}
               {channel.type === "Private" ? (
-                <p className="text-sm text-foreground/80">
+                <p className="text-sm text-ink-gray-8/80">
                   {_(
                     "When you leave this channel, you’ll no longer be able to see any of its messages. To rejoin, you’ll need to be invited.",
                   )}
                 </p>
               ) : (
-                <p className="text-sm text-foreground/80">
+                <p className="text-sm text-ink-gray-8/80">
                   {_(
                     "When you leave this channel, you’ll no longer be able to send anymore messages, you will have to rejoin the channel to continue participation.",
                   )}
@@ -87,14 +87,15 @@ export function LeaveChannelButton({ channel }: LeaveChannelButtonProps) {
           </AlertDialogCancel>
           <Button
             type="button"
-            variant="destructive"
+            variant="solid"
+            theme="red"
             disabled={loading}
             onClick={handleLeaveChannel}
             aria-label={_("Leave {0}?", [channel.channel_name])}
           >
             {loading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin text-foreground/80 aria-hidden" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin text-ink-gray-8/80 aria-hidden" />
                 {_("Leaving")}
               </>
             ) : (

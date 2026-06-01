@@ -3,6 +3,7 @@ import { Search, X } from "lucide-react"
 import { Switch } from "@components/ui/switch"
 import { Label } from "@components/ui/label"
 import { Input } from "@components/ui/input"
+import { Tabs, TabsList, TabsTrigger } from "@components/ui/tabs"
 import { ChannelSelect } from "@components/common/ChannelSelect/ChannelSelect"
 import ThreadsList from "@components/features/threads/ThreadsList"
 import ChatDrawer from "@components/common/ChatDrawer"
@@ -13,6 +14,8 @@ import { useChannels } from "@hooks/useChannels"
 import _ from "@lib/translate"
 import { useLiveQuery } from "dexie-react-hooks"
 import { db } from "@db"
+import { Button } from "@components/ui/button"
+import { H4 } from "@components/ui/typography"
 
 type ThreadTab = 'participating' | 'ai' | 'other'
 
@@ -39,44 +42,36 @@ export default function Threads() {
             <WorkspaceSwitcher standalone />
             <div className="flex flex-col h-full overflow-hidden" style={{ marginLeft: "var(--workspace-switcher-width, 60px)", width: "calc(100% - var(--workspace-switcher-width, 60px))" } as React.CSSProperties}>
                 <header
-                    className="flex items-center justify-between border-b bg-background py-1.5 px-2 z-20 fixed top-0 h-(--app-header-height) transition-[left,width] duration-200 ease-linear"
+                    className="flex items-center justify-between border-b bg-surface-white py-1.5 px-2 z-20 fixed top-0 h-(--app-header-height) transition-[left,width] duration-200 ease-linear"
                     style={{
                         left: headerLeft,
                         width: headerWidth,
                     }}
                 >
                     <div className="flex items-center gap-4">
-                        <span className="text-md font-medium">{_("Threads")}</span>
+                        <H4>{_("Threads")}</H4>
                     </div>
                 </header>
 
                 <div className="pt-9 flex flex-1 overflow-hidden">
                     <div className={cn(
                         "flex-1 flex flex-col transition-all duration-300",
-                        selectedThreadID && "w-1/2 border-r border-border"
+                        selectedThreadID && "w-1/2 border-r border-outline-gray-2"
                     )}>
                         <div className="flex flex-col flex-1 overflow-hidden">
                             <div className="px-4 pt-4 pb-2 shrink-0 space-y-3 z-0">
                                 <div className="flex items-center justify-between gap-4">
-                                    <div className="flex gap-2">
-                                        {TABS.map(tab => (
-                                            <button
-                                                key={tab.key}
-                                                type="button"
-                                                className={cn(
-                                                    "px-4 py-1 rounded-md text-xs font-medium transition-colors border border-transparent",
-                                                    activeTab === tab.key
-                                                        ? "bg-primary text-primary-foreground shadow"
-                                                        : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                                                )}
-                                                onClick={() => setActiveTab(tab.key)}
-                                            >
-                                                {_(tab.label)}
-                                            </button>
-                                        ))}
-                                    </div>
+                                    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as ThreadTab)}>
+                                        <TabsList className="grid grid-cols-3 gap-1 px-1 h-8">
+                                            {TABS.map(tab => (
+                                                <TabsTrigger key={tab.key} value={tab.key}>
+                                                    {_(tab.label)}
+                                                </TabsTrigger>
+                                            ))}
+                                        </TabsList>
+                                    </Tabs>
                                     <div className="flex items-center gap-2">
-                                        <Label htmlFor="unread-toggle" className="text-xs font-medium text-muted-foreground cursor-pointer">
+                                        <Label htmlFor="unread-toggle" className="text-xs font-medium text-ink-gray-4 cursor-pointer">
                                             {_("Unread only")}
                                         </Label>
                                         <Switch
@@ -88,22 +83,17 @@ export default function Threads() {
                                 </div>
                                 <div className="flex flex-row items-end gap-2">
                                     <div className="relative flex-1 min-w-50 max-w-200">
-                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-ink-gray-4 pointer-events-none" />
                                         <Input
                                             placeholder={_("Search threads...")}
                                             value={search}
                                             onChange={(e) => setSearch(e.target.value)}
-                                            className="pl-8 pr-8 text-[13px]"
+                                            className="pl-8 pr-8 text-sm"
                                         />
                                         {search && (
-                                            <button
-                                                type="button"
-                                                aria-label={_("Clear search")}
-                                                onClick={() => setSearch("")}
-                                                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none"
-                                            >
+                                            <Button isIconButton variant="ghost" size="sm" aria-label={_("Clear search")} onClick={() => setSearch("")}>
                                                 <X className="h-3.5 w-3.5" />
-                                            </button>
+                                            </Button>
                                         )}
                                     </div>
                                     <ChannelSelect
@@ -123,7 +113,6 @@ export default function Threads() {
 
                             <div className="flex-1 overflow-y-auto">
                                 <ThreadsList
-                                    users={users ?? []}
                                     threadType={activeTab}
                                     searchQuery={search}
                                     channelFilter={channel}

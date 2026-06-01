@@ -1,4 +1,4 @@
-import { HelpCircle, BookOpen, AlertTriangle, Keyboard, GithubIcon } from "lucide-react"
+import { HelpCircle, BookOpen, AlertTriangle, Keyboard } from "lucide-react"
 import { Button } from "@components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@components/ui/dropdown-menu"
 
@@ -6,7 +6,7 @@ const UserHelpMenu = () => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm cursor-pointer">
+                <Button variant="ghost" size="sm" isIconButton className="cursor-pointer">
                     <HelpCircle className="h-3 w-3" />
                     <span className="sr-only">Help</span>
                 </Button>
@@ -24,10 +24,10 @@ const UserHelpMenu = () => {
                     <Keyboard className="h-4 w-4" />
                     <span>Keyboard shortcuts</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm">
+                {/* <DropdownMenuItem className="flex cursor-pointer items-center gap-2 py-2 text-sm">
                     <GithubIcon className="h-4 w-4" />
                     <span>GitHub repository</span>
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
             </DropdownMenuContent>
         </DropdownMenu>
     )

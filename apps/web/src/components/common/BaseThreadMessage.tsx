@@ -1,4 +1,4 @@
-import { MessageContent } from "@components/features/message/renderers/MessageItem"
+import { MessageContent } from "@components/features/message/renderers/MessageContent"
 import { UserAvatar } from "@components/features/message/UserAvatar"
 import { ThreadChannelDetails } from "@components/features/threads/ThreadsList"
 import { GroupedAvatars } from "@components/ui/grouped-avatars"
@@ -25,7 +25,7 @@ export const BaseThreadMessage = ({
             {/* Author and message */}
             <div className="flex items-start gap-3 relative z-10">
                 <div className="shrink-0">
-                    {user ? <UserAvatar user={user} size="md" /> : <div className="w-10 h-10 rounded-full bg-muted" />}
+                    {user ? <UserAvatar user={user} size="md" /> : <div className="w-10 h-10 rounded-full bg-surface-gray-2" />}
                 </div>
                 <div className="flex-1 min-w-0">
                     <div className="font-semibold text-sm mb-1">
@@ -41,7 +41,7 @@ export const BaseThreadMessage = ({
                     <GroupedAvatars users={channelDetails.participants} max={3} size="xs" />
                 ) : null}
                 {thread.reply_count && thread.reply_count > 0 ? (
-                    <span className="text-xs font-semibold text-primary">
+                    <span className="text-xs font-semibold text-ink-gray-8">
                         {_(`${thread.reply_count} ${thread.reply_count === 1 ? 'Reply' : 'Replies'}`)}
                     </span>
                 ) : null}

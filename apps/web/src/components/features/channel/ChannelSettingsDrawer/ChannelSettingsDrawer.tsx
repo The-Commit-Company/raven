@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@components/ui/tabs';
-import { ScrollArea } from '@components/ui/scroll-area';
 import { Button } from '@components/ui/button';
 import { X } from 'lucide-react';
 import ChannelThreads from './ChannelThreads';
@@ -12,6 +11,7 @@ import { UserProfileDrawer } from '@components/features/dm-channel/UserProfileDr
 import { useAtom } from 'jotai';
 import { channelDrawerAtom } from '@utils/channelAtoms';
 import { useCurrentChannelID } from '@hooks/useCurrentChannelID';
+import { useIsMobile } from '@hooks/use-mobile';
 import type { UserData } from '@db';
 import _ from '@lib/translate'
 
@@ -22,7 +22,7 @@ interface ChannelSettingsDrawerProps {
 const ChannelSettingsDrawer = ({ peerUser }: ChannelSettingsDrawerProps) => {
 
     const channelID = useCurrentChannelID()
-
+    const isMobile = useIsMobile()
     const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
 
     useEffect(() => {
@@ -41,34 +41,35 @@ const ChannelSettingsDrawer = ({ peerUser }: ChannelSettingsDrawerProps) => {
         setDrawerType('')
     }
 
+    if (isMobile) return null
+
     return (
         <div className="flex flex-col h-full max-w-md w-95">
             <div className="flex-1 overflow-hidden p-3">
-                <ScrollArea className="h-full">
-                    <Tabs value={drawerType} onValueChange={onTabChange} className="w-full">
-                        <div className="flex items-center justify-between">
-                            <TabsList className="grid flex-1 grid-cols-5 gap-1 px-1 h-8">
-                                {peerUser ? (
-                                    <TabsTrigger value="info" className="text-xs h-6">{_('Profile')}</TabsTrigger>
-                                ) : (
-                                    <TabsTrigger value="info" className="text-xs h-6">{_('Info')}</TabsTrigger>
-                                )}
-                                <TabsTrigger value="files" className="text-xs h-6">{_('Files')}</TabsTrigger>
-                                <TabsTrigger value="links" className="text-xs h-6">{_('Links')}</TabsTrigger>
-                                <TabsTrigger value="threads" className="text-xs h-6">{_('Threads')}</TabsTrigger>
-                                <TabsTrigger value="pins" className="text-xs h-6">{_('Pins')}</TabsTrigger>
-                            </TabsList>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7 ml-2 shrink-0"
-                                onClick={handleClose}
-                                aria-label="Close drawer"
-                            >
-                                <X className="h-3 w-3" />
-                            </Button>
-                        </div>
+                <Tabs value={drawerType} onValueChange={onTabChange} className="flex flex-col h-full w-full">
+                    <div className="flex items-center justify-between shrink-0">
+                        <TabsList variant="underline" className="grid flex-1 grid-cols-5 gap-1 px-1 h-8 border-0">
+                            {peerUser ? (
+                                <TabsTrigger value="info">{_('Profile')}</TabsTrigger>
+                            ) : (
+                                <TabsTrigger value="info">{_('Info')}</TabsTrigger>
+                            )}
+                            <TabsTrigger value="files">{_('Files')}</TabsTrigger>
+                            <TabsTrigger value="links">{_('Links')}</TabsTrigger>
+                            <TabsTrigger value="threads">{_('Threads')}</TabsTrigger>
+                            <TabsTrigger value="pins">{_('Pins')}</TabsTrigger>
+                        </TabsList>
+                        <Button
+                            variant="ghost"
+                            className="h-7 w-7 shrink-0"
+                            onClick={handleClose}
+                            aria-label="Close drawer"
+                        >
+                            <X className="h-3 w-3" />
+                        </Button>
+                    </div>
 
+                    <div className="flex-1 overflow-y-auto overflow-x-hidden">
                         <TabsContent value="info">
                             {peerUser ? (
                                 <UserProfileDrawer user={peerUser} />
@@ -92,8 +93,8 @@ const ChannelSettingsDrawer = ({ peerUser }: ChannelSettingsDrawerProps) => {
                         <TabsContent value="pins">
                             <ChannelPins channelID={channelID} />
                         </TabsContent>
-                    </Tabs>
-                </ScrollArea>
+                    </div>
+                </Tabs>
             </div>
         </div>
     )

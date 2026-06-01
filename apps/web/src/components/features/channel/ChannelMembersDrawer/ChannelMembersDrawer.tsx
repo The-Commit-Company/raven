@@ -11,24 +11,22 @@ import _ from '@lib/translate';
 import { useChannelMembers } from '@hooks/useChannelMembers';
 import { useChannel } from '@hooks/useChannel.ts';
 import { hasRole } from '@lib/permissions.ts';
+import { useIsMobile } from '@hooks/use-mobile';
 
 const ChannelMembersDrawer = () => {
 
     const [activeTab, setActiveTab] = useState('members')
     const channelID = useCurrentChannelID()
+    const isMobile = useIsMobile()
     const [, setDrawerType] = useAtom(channelDrawerAtom(channelID))
     const { channel } = useChannel(channelID)
     const { members, memberIds, isLoading } = useChannelMembers(channelID)
 
-    if (!channel) {
-        return null
-    }
-
     const allowSettingChange = useMemo(() => {
-        if (channel.is_admin == 1) {
+        if (channel?.is_admin == 1) {
             return true;
         }
-        if (channel.member_id && hasRole("Raven Admin")) {
+        if (channel?.member_id && hasRole("Raven Admin")) {
             return true;
         }
         return false;
@@ -46,43 +44,56 @@ const ChannelMembersDrawer = () => {
         setDrawerType('')
     }
 
+    if (isMobile) return null
+
+    if (!channel) {
+        return null
+    }
+
     const showTabs = channel?.type !== 'Open' && allowSettingChange
 
     return (
         <div className="flex flex-col h-full max-w-md w-95">
             <div className="flex-1 overflow-hidden p-3">
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col w-full h-[calc(100vh-6rem)]">
-                    {showTabs && <div className="flex items-center justify-between shrink-0">
-                        <TabsList className="grid flex-1 grid-cols-2 gap-1 px-1 h-8">
-                            <TabsTrigger value="members" className="text-xs h-6">{_('Members')}</TabsTrigger>
-                            <TabsTrigger value="add" className="text-xs h-6">{_('Add Members')}</TabsTrigger>
-                        </TabsList>
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col w-full h-full">
+                    <div className="flex items-center justify-between shrink-0">
+                        {showTabs ? (
+                            <TabsList variant="underline" className="grid flex-1 grid-cols-2 px-1 h-8 border-0">
+                                <TabsTrigger value="members">{_('Members')}</TabsTrigger>
+                                <TabsTrigger value="add">{_('Add Members')}</TabsTrigger>
+                            </TabsList>
+                        ) : (
+                            <span className="flex-1 text-sm font-medium text-ink-gray-8 px-1">{_('Members')}</span>
+                        )}
                         <Button
                             variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 ml-2 shrink-0"
+                            className="h-7 w-7 shrink-0"
                             onClick={handleClose}
-                            aria-label="Close drawer"
+                            aria-label={_('Close drawer')}
                         >
                             <X className="h-3 w-3" />
                         </Button>
-                    </div>}
+                    </div>
 
-                    {isLoading ?
-                        <div className="flex items-center justify-center flex-1">
-                            <Loader2 className="h-4 w-4 animate-spin text-foreground/80" />
-                        </div> :
-                        <TabsContent value="members">
-                            <ChannelMembersList members={members} allowSettingChange={allowSettingChange} showCloseButton={!showTabs} onClose={handleClose} />
-                        </TabsContent>}
+                    <div className="flex-1 min-h-0 flex flex-col overflow-x-hidden">
+                        {isLoading ? (
+                            <div className="flex items-center justify-center h-full">
+                                <Loader2 className="h-4 w-4 animate-spin text-ink-gray-8/80" />
+                            </div>
+                        ) : (
+                            <TabsContent value="members" className="flex flex-col min-h-0 m-0 data-[state=inactive]:hidden">
+                                <ChannelMembersList members={members} channelID={channelID} allowSettingChange={allowSettingChange} />
+                            </TabsContent>
+                        )}
 
-                    <TabsContent value="add" className="flex-1 min-h-0 m-0 data-[state=inactive]:hidden">
-                        <AddChannelMembers memberIds={memberIds} channelID={channelID} onClose={handleClose} />
-                    </TabsContent>
+                        <TabsContent value="add" className="flex flex-col min-h-0 m-0 data-[state=inactive]:hidden">
+                            <AddChannelMembers memberIds={memberIds} channelID={channelID} onClose={handleClose} />
+                        </TabsContent>
+                    </div>
                 </Tabs>
             </div>
         </div>
     )
 }
 
-export default ChannelMembersDrawer 
+export default ChannelMembersDrawer
