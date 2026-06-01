@@ -136,11 +136,10 @@ export function ForwardThreadModal({
                         <ChannelSelect
                             channels={channels}
                             dmChannels={dm_channels}
-                            availableUsers={availableUsers}
                             value={selectedChannelId}
                             onValueChange={setSelectedChannelId}
                             placeholder="Search channels and DMs..."
-                            excludeChannelId={threadData.sourceChannelId}
+                            // excludeChannelId={threadData.sourceChannelId}
                             showLabel={false}
                             searchable={true}
                         />

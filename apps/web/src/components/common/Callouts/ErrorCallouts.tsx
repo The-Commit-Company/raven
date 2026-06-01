@@ -4,7 +4,7 @@ import { AlertCircleIcon } from "lucide-react"
 
 export const ErrorCallout = ({ children, title }: PropsWithChildren<{ title?: string }>) => {
     return (
-        <Alert variant='destructive'>
+        <Alert theme="red">
             <AlertCircleIcon />
             {title && <AlertTitle>
                 {title}

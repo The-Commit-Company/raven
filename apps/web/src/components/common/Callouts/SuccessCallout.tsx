@@ -4,7 +4,7 @@ import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
 
 export const SuccessCallout = ({ children, title }: PropsWithChildren<{ title?: string }>) => {
     return (
-        <Alert variant='success'>
+        <Alert theme="green">
             <CheckCircleIcon />
             {title && <AlertTitle>
                 {title}

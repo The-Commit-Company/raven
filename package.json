@@ -26,5 +26,11 @@
   "devDependencies": {
     "turbo": "^2.3.3"
   },
+  "resolutions": {
+    "@types/react": "^19.2.15",
+    "@types/react-dom": "^19.2.3",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
+  },
   "dependencies": {}
 }

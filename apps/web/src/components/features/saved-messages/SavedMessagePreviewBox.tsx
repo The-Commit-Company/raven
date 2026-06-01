@@ -90,21 +90,8 @@ export const SavedMessagePreviewBox = ({
             )}
 
             {/* Use BaseThreadMessage component for threads */}
-            {isThread ? (
-                <BaseThreadMessage
-                    user={user}
-                    messageContent={messageContent}
-                    channelName={undefined}
-                    channelIcon={undefined}
-                    participants={formattedParticipants}
-                    isDirectMessage={isDirectMessage}
-                    replyCount={replyCount}
-                    showConnectorLine={false}
-                />
-            ) : (
-                /* Use MessageItem component for regular messages */
-                <MessageItem message={message} />
-            )}
+
+            <MessageItem message={message} />
 
             {/* Action buttons */}
             <div className="absolute top-4 right-6 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20">

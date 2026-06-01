@@ -142,7 +142,7 @@ export function LoginForm({
                             {(isUserPassLoginEnabled || isSignupEnabled || isEmailLinkLoginEnabled) && <Field>
 
                                 {isUserPassLoginEnabled && (showPasswordField || !isEmailLinkLoginEnabled) && <Button type="submit">Login</Button>}
-                                {isEmailLinkLoginEnabled && <Button type="button" variant={!isUserPassLoginEnabled || !showPasswordField ? "default" : "outline"}>Send Email Link</Button>}
+                                {isEmailLinkLoginEnabled && <Button type="button" variant={!isUserPassLoginEnabled || !showPasswordField ? "solid" : "outline"}>Send Email Link</Button>}
                                 {isEmailLinkLoginEnabled && (!showPasswordField) && isUserPassLoginEnabled &&
                                     <Button type='button' variant='outline' onClick={() => {
                                         setShowPasswordField(true)
