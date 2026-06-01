@@ -235,6 +235,7 @@ export const ChatBoxBody = ({ channelData }: ChatBoxBodyProps) => {
                     onModalClose={onModalClose}
                     pinnedMessagesString={channelData.pinned_messages_string}
                     replyToMessage={handleReplyAction}
+                    isChannelReadOnly={!channelMemberProfile}
                 />
                 {canUserSendMessage &&
                     <Stack>
