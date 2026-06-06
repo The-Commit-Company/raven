@@ -14,7 +14,6 @@ import Threads from "@pages/threads/Threads"
 import DirectMessages, { DirectMessagesIndex } from "@pages/dm-channel/DirectMessages"
 import DirectMessage from "@pages/dm-channel/DirectMessage"
 import WorkspaceSwitcher from "@pages/WorkspaceSwitcher"
-import { WorkspaceSwitcherGrid } from "@components/workspace-switcher/WorkspaceSwitcherGrid"
 import { WorkspaceRedirect } from "@components/workspace-switcher/WorkspaceRedirect"
 import { FrappeProvider } from 'frappe-react-sdk'
 import { init } from 'emoji-mart'
@@ -28,6 +27,7 @@ import { ManageChannels } from "@pages/settings/Channels/ManageChannels"
 import { Toaster } from "@components/ui/sonner"
 import { TooltipProvider } from "@radix-ui/react-tooltip"
 import { LucideProvider } from "lucide-react"
+import { useEffect } from "react"
 
 const isDesktop = window.innerWidth > 768
 
@@ -44,6 +44,22 @@ catch {
 
 
 function App() {
+
+  useEffect(() => {
+    // Check if user is logged in by checking the Cookie "user_id"
+    // In Frappe, unauthenticated users are "Guest"
+    const userId = document.cookie?.split('; ').find(row => row.startsWith('user_id='))?.split('=')[1]?.trim()
+    const isLoggedIn = userId !== 'Guest'
+
+    if (!isLoggedIn) {
+      if (import.meta.env.DEV) {
+        return
+      }
+      // Redirect to Frappe login page with the correct redirect to the current route
+      window.location.href = `/login?redirect-to=${window.location.pathname}`
+      return
+    }
+  }, [])
 
   return (
     <LucideProvider
@@ -65,9 +81,8 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/" element={<WorkspaceSwitcher />}>
-                <Route index element={lastWorkspace && lastChannel && isDesktop ? <Navigate to={`/${encodeURIComponent(lastWorkspace)}/${encodeURIComponent(lastChannel)}`} replace /> : lastWorkspace ? <Navigate to={`/${encodeURIComponent(lastWorkspace)}`} replace /> : <WorkspaceSwitcherGrid />} />
-                <Route path="workspace-explorer" element={<WorkspaceSwitcherGrid />} />
-                <Route path="settings" element={<AppSettings />}>
+                <Route index element={lastWorkspace && lastChannel && isDesktop ? <Navigate to={`/${encodeURIComponent(lastWorkspace)}/${encodeURIComponent(lastChannel)}`} replace /> : lastWorkspace ? <Navigate to={`/${encodeURIComponent(lastWorkspace)}`} replace /> : null} />
+                {/* <Route path="settings" element={<AppSettings />}>
                   <Route index element={<Navigate to="profile" replace />} />
                   <Route path="profile" element={<Profile />} />
                   <Route path="appearance" element={<Appearance />} />
@@ -75,19 +90,7 @@ function App() {
                   <Route path="workspaces" element={<WorkspaceList />} />
                   <Route path="channels" element={<ManageChannels />} />
                   <Route path="emojis" element={<CustomEmojiList />} />
-                </Route>
-                <Route path="notifications" element={<Notifications />} />
-                <Route path="threads" element={<Threads />} />
-                <Route path="search" element={<SearchLayout />}>
-                  <Route index element={<Search />} />
-                </Route>
-                <Route path="dm-channel" element={<DirectMessages />}>
-                  <Route index element={<DirectMessagesIndex />} />
-                  <Route path=":id" element={<DirectMessage />} />
-                  <Route path=":id/thread/:threadID" element={<DirectMessage />} />
-                  <Route path=":id/settings" element={<MobileChannelSettings />} />
-                </Route>
-                <Route path="saved-messages" element={<SavedMessages />} />
+                </Route> */}
                 {/* Workspace: channels and settings only; search is global at /search above */}
                 <Route path=":workspaceID" element={<MainPage />}>
                   <Route index element={<WorkspaceRedirect />} />
@@ -96,6 +99,18 @@ function App() {
                   <Route path=":id/settings" element={<MobileChannelSettings />} />
                   <Route path=":id/members" element={<ChannelMembers />} />
                 </Route>
+                <Route path="dm-channel" element={<DirectMessages />}>
+                  <Route index element={<DirectMessagesIndex />} />
+                  <Route path=":id" element={<DirectMessage />} />
+                  <Route path=":id/thread/:threadID" element={<DirectMessage />} />
+                  <Route path=":id/settings" element={<MobileChannelSettings />} />
+                </Route>
+                <Route path="notifications" element={<Notifications />} />
+                <Route path="threads" element={<Threads />} />
+                <Route path="search" element={<SearchLayout />}>
+                  <Route index element={<Search />} />
+                </Route>
+                <Route path="saved-messages" element={<SavedMessages />} />
               </Route>
             </Routes>
             <Toaster richColors />
