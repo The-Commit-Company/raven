@@ -1,9 +1,8 @@
 import { useCallback } from "react"
 import { Outlet, useSearchParams } from "react-router-dom"
-import { AppLayout } from "@components/layout/AppLayout"
 import AppHeader from "@components/features/header/AppHeader"
-import { useIsMobile } from "@hooks/use-mobile"
 import _ from "@lib/translate"
+import AppMobileFooter from "@components/features/header/AppMobileFooter"
 
 /**
  * Layout for the global search page (/search).
@@ -17,7 +16,6 @@ import _ from "@lib/translate"
 export function SearchLayout() {
     const [searchParams, setSearchParams] = useSearchParams()
     const searchValue = searchParams.get('q') ?? ''
-    const isMobile = useIsMobile()
 
     const setSearchValue = useCallback((value: string) => {
         setSearchParams(prev => {
@@ -30,21 +28,10 @@ export function SearchLayout() {
         }, { replace: true })
     }, [setSearchParams])
 
-    if (isMobile) {
-        return (
-            <div className="flex flex-col h-screen overflow-hidden bg-surface-white">
-                <Outlet context={{ searchValue, setSearchValue }} />
-            </div>
-        )
-    }
+    return <div className="flex flex-col h-screen w-full">
+        <AppHeader title={_("Search")} showSearchBar={false} />
+        <Outlet context={{ searchValue, setSearchValue }} />
+        <AppMobileFooter />
+    </div>
 
-    return (
-        <AppLayout
-            sidebar={null}
-            header={<AppHeader title={_("Search")} />}
-            sidebarWidth="340px"
-        >
-            <Outlet context={{ searchValue, setSearchValue }} />
-        </AppLayout>
-    )
 }

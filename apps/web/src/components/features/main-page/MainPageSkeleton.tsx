@@ -1,9 +1,49 @@
 import { Skeleton } from "@components/ui/skeleton"
+import { useIsMobile } from "@hooks/use-mobile"
+import { AppMobileFooterSkeleton } from "../header/AppMobileFooter"
 
+
+const BOTTOM_TAB_ICON_CLASS = "size-6 text-ink-gray-5"
 /**
- * Simple skeleton loading state for MainPage
+ * Simple skeleton loading state for the App Shell
  */
 export function MainPageSkeleton() {
+
+    const isMobile = useIsMobile()
+
+    // TODO: Replace bottom tabs with the final proper component
+    if (isMobile) {
+        return <div className="flex flex-col justify-between h-screen">
+            {/* Main Content Area */}
+            <div className="flex-1 flex flex-col">
+                {/* Header */}
+                <div className="h-(--app-header-height) border-b border-outline-gray-2 px-6 flex items-center">
+                    <Skeleton className="h-5 w-48" />
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 p-6 space-y-6">
+                    {Array.from({ length: 7 }).map((_, i) => (
+                        <div key={i} className="flex gap-4">
+                            <Skeleton className="h-10 w-10 rounded-full shrink-0" />
+                            <div className="flex-1 space-y-2.5">
+                                <div className="flex items-center gap-2">
+                                    <Skeleton className="h-4 w-24" />
+                                    <Skeleton className="h-3 w-16" />
+                                </div>
+                                <Skeleton className="h-4 w-full" />
+                                <Skeleton className="h-4 w-5/6" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+            {/* Show the bottom tabs */}
+            <AppMobileFooterSkeleton />
+
+        </div>
+    }
+
     return (
         <div className="flex h-screen">
             {/* Workspace Switcher Skeleton - Left narrow bar */}

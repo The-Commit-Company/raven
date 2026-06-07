@@ -31,7 +31,7 @@ import _ from "@lib/translate"
 
 interface ChannelSidebarProps {
     activeChannelId?: string
-    onChannelClick: (channel: ChannelListItem) => void
+    onChannelClick?: (channel: ChannelListItem) => void
     showUnreadBadges?: boolean
 }
 
@@ -39,6 +39,7 @@ interface GroupsState {
     [key: string]: boolean
 }
 
+// TODO: Fix the entire sidebar logic
 export function ChannelSidebar({
     activeChannelId,
     onChannelClick,
@@ -53,7 +54,7 @@ export function ChannelSidebar({
     const { setOpenMobile, isMobile } = useSidebar()
 
     const handleChannelClick = (channel: ChannelListItem) => {
-        onChannelClick(channel)
+        onChannelClick?.(channel)
         if (isMobile) setOpenMobile(false)
     }
 
@@ -77,7 +78,7 @@ export function ChannelSidebar({
     }
 
     return (
-        <SidebarGroup className="pt-1 flex-1 min-h-0">
+        <SidebarGroup className="pt-1 flex-1 min-h-0 border-r border-outline-gray-1 w-(--sidebar-width) max-w-(--sidebar-width) bg-surface-menu-bar">
             {/* <SidebarGroupLabel className="text-ink-gray-4/80 font-normal">{_("Unreads")}</SidebarGroupLabel> */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center">

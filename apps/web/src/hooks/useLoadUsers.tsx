@@ -7,6 +7,8 @@ import { useSWRConfig } from "frappe-react-sdk"
  * Hook to load all users from the server and store them in the database
  * 
  * Returns true if the users are loaded and ready to use
+ * 
+ * Only use this hook once at the top level of the app.
  */
 export const useLoadUsers = () => {
 

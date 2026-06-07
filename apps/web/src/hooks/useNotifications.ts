@@ -37,6 +37,16 @@ type SWRKey = [string, string, number, boolean]
 
 const UNREAD_COUNT_KEY = "unread_notifications_count"
 
+/** Hook to fetch the unread notifications count for the current user - does not handle realtime updates */
+export const useUnreadNotificationsCount = () => {
+    return useFrappeGetCall<CountResult>(
+        "raven.api.notifications.get_unread_notifications_count",
+        undefined,
+        UNREAD_COUNT_KEY,
+        { revalidateOnFocus: true, revalidateIfStale: false }
+    )
+}
+
 /**
  * Paginated notifications feed with tab filter (`all` / `mention` / `reaction`) and unread toggle.
  *
@@ -73,15 +83,7 @@ export const useNotifications = (
     const { call } = useContext(FrappeContext) as FrappeConfig
     const { mutate: globalMutate } = useSWRConfig()
 
-    /**
-     * Unread count for the badge. Fetched separately since it's a small, fast query.
-     */
-    const { data: unreadCountData, mutate: mutateCount } = useFrappeGetCall<CountResult>(
-        "raven.api.notifications.get_unread_notifications_count",
-        undefined,
-        UNREAD_COUNT_KEY,
-        { revalidateOnFocus: true, revalidateIfStale: false }
-    )
+    const { data: unreadCountData, mutate: mutateCount } = useUnreadNotificationsCount()
     const unreadCount = unreadCountData?.message ?? 0
 
     /**

@@ -15,11 +15,9 @@ const ChannelList = ({ text }: { text: string }) => {
     const setOpen = useSetAtom(commandMenuOpenAtom)
 
     const filteredChannels = useMemo(() => {
+        // TODO: If there's no text, then by default show the recently visited channels here
         if (!text) return channels.filter(c => !c.is_archived).slice(0, 3)
-        const query = text.toLowerCase()
-        return channels.filter(c =>
-            c.channel_name.toLowerCase().includes(query)
-        )
+        return channels
     }, [channels, text])
 
     if (!filteredChannels.length) return null
@@ -29,7 +27,7 @@ const ChannelList = ({ text }: { text: string }) => {
             {filteredChannels.map(channel => channel.name && (
                 <CommandItem
                     key={channel.name}
-                    value={channel.name}
+                    value={channel.channel_name}
                     keywords={[channel.channel_name]}
                     onSelect={() => {
                         navigate(`/${channel.workspace}/${channel.name}`)
@@ -40,9 +38,9 @@ const ChannelList = ({ text }: { text: string }) => {
                     <ChannelIconLucide type={channel.type} className="h-4 w-4 shrink-0" />
                     <span className="truncate">{channel.channel_name}</span>
                     {channel.is_archived ? (
-<Badge variant="subtle" className="ml-auto text-xs">
-    {_("Archived")}
-</Badge>
+                        <Badge variant="subtle" className="ml-auto text-xs">
+                            {_("Archived")}
+                        </Badge>
                     ) : null}
                     <div className="flex items-center ml-auto gap-1 text-xs text-ink-gray-4">
                         <BiBuildings className="h-4 w-4" />

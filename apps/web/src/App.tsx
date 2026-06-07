@@ -6,7 +6,6 @@ import Preferences from "./pages/settings/Preferences"
 import Channel from "@pages/workspace/Channel"
 import MobileChannelSettings from "@components/features/channel/ChannelSettings/MobileChannelSettings"
 import ChannelMembers from "@components/features/channel/ChannelMembers/ChannelMembers"
-import MainPage from "@pages/workspace/MainPage"
 import Notifications from "@pages/notifications/Notifications"
 import SavedMessages from "@pages/saved-messages/SavedMessages"
 import Search from "@pages/search/Search"
@@ -18,8 +17,6 @@ import { WorkspaceRedirect } from "@components/workspace-switcher/WorkspaceRedir
 import { FrappeProvider } from 'frappe-react-sdk'
 import { init } from 'emoji-mart'
 import Cookies from 'js-cookie'
-import LoginPage from "@pages/auth/Login"
-import ForgotPassword from "@pages/auth/ForgotPassword"
 import WorkspaceList from "@pages/settings/Workspaces/WorkspaceList"
 import { SearchLayout } from "@components/layout/SearchLayout"
 import CustomEmojiList from "@pages/settings/CustomEmojiList/CustomEmojiList"
@@ -28,6 +25,8 @@ import { Toaster } from "@components/ui/sonner"
 import { TooltipProvider } from "@radix-ui/react-tooltip"
 import { LucideProvider } from "lucide-react"
 import { useEffect } from "react"
+import AppShell from "@components/layout/AppShell"
+import WorkspaceLayout from "@pages/workspace/WorkspaceLayout"
 
 const isDesktop = window.innerWidth > 768
 
@@ -78,21 +77,10 @@ function App() {
         >
           <BrowserRouter basename={import.meta.env.VITE_BASE_NAME}>
             <Routes>
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/" element={<WorkspaceSwitcher />}>
+              <Route path="/" element={<AppShell />}>
                 <Route index element={lastWorkspace && lastChannel && isDesktop ? <Navigate to={`/${encodeURIComponent(lastWorkspace)}/${encodeURIComponent(lastChannel)}`} replace /> : lastWorkspace ? <Navigate to={`/${encodeURIComponent(lastWorkspace)}`} replace /> : null} />
-                {/* <Route path="settings" element={<AppSettings />}>
-                  <Route index element={<Navigate to="profile" replace />} />
-                  <Route path="profile" element={<Profile />} />
-                  <Route path="appearance" element={<Appearance />} />
-                  <Route path="preferences" element={<Preferences />} />
-                  <Route path="workspaces" element={<WorkspaceList />} />
-                  <Route path="channels" element={<ManageChannels />} />
-                  <Route path="emojis" element={<CustomEmojiList />} />
-                </Route> */}
                 {/* Workspace: channels and settings only; search is global at /search above */}
-                <Route path=":workspaceID" element={<MainPage />}>
+                <Route path=":workspaceID" element={<WorkspaceLayout />}>
                   <Route index element={<WorkspaceRedirect />} />
                   <Route path=":id" element={<Channel />} />
                   <Route path=":id/thread/:threadID" element={<Channel />} />
@@ -105,12 +93,23 @@ function App() {
                   <Route path=":id/thread/:threadID" element={<DirectMessage />} />
                   <Route path=":id/settings" element={<MobileChannelSettings />} />
                 </Route>
-                <Route path="notifications" element={<Notifications />} />
+                <Route path="notifications" element={<Notifications />}>
+                  <Route path=":id" element={<p>Chat drawer comes here</p>} />
+                </Route>
                 <Route path="threads" element={<Threads />} />
                 <Route path="search" element={<SearchLayout />}>
                   <Route index element={<Search />} />
                 </Route>
                 <Route path="saved-messages" element={<SavedMessages />} />
+                {/* <Route path="settings" element={<AppSettings />}>
+                  <Route index element={<Navigate to="profile" replace />} />
+                  <Route path="profile" element={<Profile />} />
+                  <Route path="appearance" element={<Appearance />} />
+                  <Route path="preferences" element={<Preferences />} />
+                  <Route path="workspaces" element={<WorkspaceList />} />
+                  <Route path="channels" element={<ManageChannels />} />
+                  <Route path="emojis" element={<CustomEmojiList />} />
+                </Route> */}
               </Route>
             </Routes>
             <Toaster richColors />

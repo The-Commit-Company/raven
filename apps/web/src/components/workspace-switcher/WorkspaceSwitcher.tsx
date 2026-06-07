@@ -8,7 +8,6 @@ import { useActiveWorkspace } from "../../contexts/ActiveWorkspaceContext"
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
 import { useWorkspaces, WorkspaceFields } from "@hooks/useWorkspaces"
 import { useNotifications } from "@hooks/useNotifications"
-import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
 import { useMemo } from "react"
 import _ from "@lib/translate"
 
@@ -28,10 +27,9 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
     const navigate = useNavigate()
     const location = useLocation()
     const params = useParams()
-    const { setActiveWorkspaceName, activeWorkspaceName } = useActiveWorkspace()
+    const { setActiveWorkspaceName } = useActiveWorkspace()
     const { workspaces } = useWorkspaces()
     const { unreadCount } = useNotifications()
-    const { myProfile } = useCurrentRavenUser()
 
     // Get workspace from URL params or from context/localStorage
     const urlWorkspace = useMemo(() => {
@@ -195,7 +193,7 @@ export function WorkspaceSwitcher({ standalone = false }: WorkspaceSwitcherProps
                         <span className="sr-only">{_("Settings")}</span>
                     </Button>
                 </div>
-                {myProfile && <NavUserMenu user={myProfile} />}
+                <NavUserMenu />
             </div>
         </div>
     )

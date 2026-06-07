@@ -2,12 +2,10 @@ import { useFrappeGetCall } from "frappe-react-sdk"
 import { db, UserData } from "@db"
 import { useMemo } from "react"
 import { useLiveQuery } from "dexie-react-hooks"
-import { useLoadUsers } from "./useLoadUsers"
 
 export type ChannelMemberData = UserData & { is_admin?: 1 | 0, channel_member_name?: string }
 
 export const useChannelMembers = (channelID: string) => {
-    const isReady = useLoadUsers()
     const { data: channelMembersData, isLoading: isChannelMembersLoading, error: channelMembersError, mutate } = useFrappeGetCall(
         'raven.api.raven_channel_member.get_channel_members',
         { channel_id: channelID },
@@ -26,7 +24,7 @@ export const useChannelMembers = (channelID: string) => {
     )
 
     // if usersData is undefined, it means the query is still loading.
-    const isUsersLoading = !isReady || memberIds.length > 0 && usersData === undefined;
+    const isUsersLoading = memberIds.length > 0 && usersData === undefined;
 
     const members = useMemo<ChannelMemberData[]>(() => {
         if (memberIds.length === 0) return []
@@ -43,20 +41,20 @@ export const useChannelMembers = (channelID: string) => {
                 ...channelData
             } as ChannelMemberData
         }).filter((m): m is ChannelMemberData => m !== null)
-        .sort((a, b) => {
-            // Admins first
-            const aIsAdmin = Boolean(a.is_admin);
-            const bIsAdmin = Boolean(b.is_admin);
+            .sort((a, b) => {
+                // Admins first
+                const aIsAdmin = Boolean(a.is_admin);
+                const bIsAdmin = Boolean(b.is_admin);
 
-            if (aIsAdmin !== bIsAdmin) {
-                return aIsAdmin ? -1 : 1;
-            }
+                if (aIsAdmin !== bIsAdmin) {
+                    return aIsAdmin ? -1 : 1;
+                }
 
-            // Then alphabetical by name
-            const aName = a.full_name || a.name || '';
-            const bName = b.full_name || b.name || '';
-            return aName.localeCompare(bName);
-        })
+                // Then alphabetical by name
+                const aName = a.full_name || a.name || '';
+                const bName = b.full_name || b.name || '';
+                return aName.localeCompare(bName);
+            })
     }, [memberIds, usersData, channelMembers])
 
     return {

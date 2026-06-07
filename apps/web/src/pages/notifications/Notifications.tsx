@@ -5,7 +5,6 @@ import { type NotificationObject, useNotifications } from "@hooks/useNotificatio
 import { UserAvatar } from "@components/features/message/UserAvatar"
 import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
 import { useUsersById } from "@hooks/useMessageRowLookups"
-import { WorkspaceSwitcher } from "@components/workspace-switcher/WorkspaceSwitcher"
 import ChatDrawer from "@components/common/ChatDrawer"
 import { formatRelativeDate } from "@lib/date"
 import _ from "@lib/translate"
@@ -19,6 +18,9 @@ import { Button } from "@components/ui/button"
 import { Badge } from "@components/ui/badge"
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from "@components/ui/empty"
 import { H4 } from "@components/ui/typography"
+import { Outlet, useNavigate, useParams } from "react-router"
+import AppHeader from "@components/features/header/AppHeader"
+import AppMobileFooter from "@components/features/header/AppMobileFooter"
 
 type NotificationTab = "all" | "mentions" | "reactions"
 
@@ -40,7 +42,8 @@ type SelectedNotification = { name: string; channelID: string; messageID: string
 export default function Notifications() {
     const [activeTab, setActiveTab] = useState<NotificationTab>("all")
     const [showUnread, setShowUnread] = useState(true)
-    const [selected, setSelected] = useState<SelectedNotification | null>(null)
+
+    const { id } = useParams<{ id?: string }>()
 
     const tabType = activeTab === "mentions" ? "mention" : activeTab === "reactions" ? "reaction" : null
 
@@ -76,128 +79,116 @@ export default function Notifications() {
         return () => observer.disconnect()
     }, [loadMore])
 
+    const navigate = useNavigate()
+
     const onNotificationClick = useCallback((notification: NotificationObject) => {
         markMessageRead(notification.message_id)
-        setSelected({
-            name: notification.name,
-            channelID: notification.channel_id,
-            messageID: notification.message_id,
-        })
+        navigate(`/notifications/${notification.message_id}`)
     }, [markMessageRead])
 
     const onShowUnreadChange = useCallback((checked: boolean) => {
         setShowUnread(checked)
-        setSelected(null)
+        navigate(`/notifications`)
     }, [])
 
     const onTabChange = useCallback((tab: NotificationTab) => {
         setActiveTab(tab)
-        setSelected(null)
+        navigate(`/notifications`)
     }, [])
 
-    const headerLeft = "var(--workspace-switcher-width, 60px)"
-    const headerWidth = "calc(100% - var(--workspace-switcher-width, 60px))"
-
     return (
-        <div
-            className="flex flex-col h-screen overflow-hidden"
-            style={{ "--workspace-switcher-width": "60px" } as React.CSSProperties}
-        >
-            <WorkspaceSwitcher standalone />
-            <div
-                className="flex flex-col h-full overflow-hidden"
-                style={{ marginLeft: "var(--workspace-switcher-width, 60px)", width: headerWidth }}
-            >
-                <header
-                    className="flex items-center justify-between border-b bg-surface-white py-1.5 px-2 z-10 fixed top-0 h-(--app-header-height) transition-[left,width] duration-200 ease-linear"
-                    style={{ left: headerLeft, width: headerWidth }}
-                >
-                    <div className="flex items-center gap-2">
-                        <H4>{_("Notifications")}</H4>
-                        {unreadCount > 0 && (
-                            <Badge variant="subtle" size="sm" theme="gray">
-                                {unreadCount > 99 ? "99+" : unreadCount}
-                            </Badge>
-                        )}
-                    </div>
-                    {unreadCount > 0 && (
+        <div className="flex flex-col h-full overflow-hidden w-full">
+            <AppHeader
+                title={_("Notifications")}
+                leftSlot={
+                    <>{unreadCount > 0 && (
+                        <Badge variant="subtle" size="sm" theme="gray">
+                            {unreadCount > 99 ? "99+" : unreadCount}
+                        </Badge>
+                    )}</>
+                }
+                rightSlot={
+                    <>{unreadCount > 0 && (
                         <Button variant="ghost" size="sm" onClick={markAllRead}>
-                            <Check className="w-3 h-3" />
+                            <Check />
                             {_("Mark all as read")}
                         </Button>
-                    )}
-                </header>
+                    )}</>
+                } />
 
-                <div className="pt-9 flex flex-1 overflow-hidden">
-                    <div className={cn(
+            <div className="flex">
+                <div
+                    className={cn(
                         "flex-1 flex flex-col transition-all duration-300",
-                        selected && "w-1/2 border-r border-outline-gray-2"
+                        "w-1/2 border-r border-outline-gray-2"
                     )}>
-                        <div className="px-4 pt-4 pb-2 shrink-0 flex items-center gap-4">
-                            <Tabs value={activeTab} onValueChange={(v) => onTabChange(v as NotificationTab)}>
-                                <TabsList className="grid grid-cols-3 gap-1 px-1 h-8">
+                    <div className="flex items-center gap-4">
+                        <Tabs value={activeTab} onValueChange={(v) => onTabChange(v as NotificationTab)}>
+                            <div className="flex items-center gap-2">
+                                <TabsList variant="subtle">
                                     {TABS.map((tab) => (
                                         <TabsTrigger key={tab.key} value={tab.key}>
                                             {_(tab.label)}
                                         </TabsTrigger>
                                     ))}
                                 </TabsList>
-                            </Tabs>
-                            <div className="flex items-center gap-2 ml-auto">
-                                <Label htmlFor="unread-toggle" className="text-xs font-medium text-ink-gray-4 cursor-pointer">
-                                    {_("Unread only")}
-                                </Label>
-                                <Switch
-                                    id="unread-toggle"
-                                    checked={showUnread}
-                                    onCheckedChange={onShowUnreadChange}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex-1 overflow-y-auto">
-                            {currentData.length === 0 && !isLoading && !isLoadingMore ? (
-                                <EmptyState showUnread={showUnread} />
-                            ) : (
-                                <div className="py-2">
-                                    {currentData.map((item) =>
-                                        item.notification_type === "mention" ? (
-                                            <MentionItem
-                                                key={item.name}
-                                                notification={item}
-                                                sender={usersById.get(item.owner)}
-                                                onSelect={onNotificationClick}
-                                                isActive={selected?.name === item.name}
-                                            />
-                                        ) : (
-                                            <ReactionItem
-                                                key={item.name}
-                                                notification={item}
-                                                onSelect={onNotificationClick}
-                                                isActive={selected?.name === item.name}
-                                            />
-                                        )
-                                    )}
-                                    <div ref={observerTarget} className="h-4" />
-                                    {isLoadingMore && (
-                                        <div className="text-center py-4 text-xs text-ink-gray-4">{_("Loading more notifications...")}</div>
-                                    )}
+                                <div className="flex items-center gap-2 ml-auto">
+                                    <Label htmlFor="unread-toggle" className="text-xs font-medium text-ink-gray-4 cursor-pointer">
+                                        {_("Unread only")}
+                                    </Label>
+                                    <Switch
+                                        id="unread-toggle"
+                                        checked={showUnread}
+                                        onCheckedChange={onShowUnreadChange}
+                                    />
                                 </div>
-                            )}
-                        </div>
+                            </div>
+                        </Tabs>
+
                     </div>
 
-                    {selected && (
-                        <div className="w-1/2 shrink-0">
-                            <ChatDrawer
-                                channelID={selected.channelID}
-                                messageID={selected.messageID}
-                                onClose={() => setSelected(null)}
-                            />
-                        </div>
-                    )}
+                    <div className="flex-1 overflow-y-auto">
+                        {currentData.length === 0 && !isLoading && !isLoadingMore ? (
+                            <EmptyState showUnread={showUnread} />
+                        ) : (
+                            <div className="py-2">
+                                {currentData.map((item) =>
+                                    item.notification_type === "mention" ? (
+                                        <MentionItem
+                                            key={item.name}
+                                            notification={item}
+                                            sender={usersById.get(item.owner)}
+                                            onSelect={onNotificationClick}
+                                            isActive={id === item.message_id}
+                                        />
+                                    ) : (
+                                        <ReactionItem
+                                            key={item.name}
+                                            notification={item}
+                                            onSelect={onNotificationClick}
+                                            isActive={id === item.message_id}
+                                        />
+                                    )
+                                )}
+                                <div ref={observerTarget} className="h-4" />
+                                {isLoadingMore && (
+                                    <div className="text-center py-4 text-xs text-ink-gray-4">{_("Loading more notifications...")}</div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div className="w-1/2 shrink-0">
+                    <Outlet />
+                    {/* <ChatDrawer
+                            channelID={selected.channelID}
+                            messageID={selected.messageID}
+                            onClose={() => setSelected(null)}
+                        /> */}
                 </div>
             </div>
+            <AppMobileFooter />
         </div>
     )
 }

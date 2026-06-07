@@ -58,18 +58,9 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
         setDrawerType(tab)
     }
 
-    const headerStyle: React.CSSProperties = isMobile
-        ? { top: 0, left: 0, width: "100%" }
-        : {
-            top: "var(--app-header-height, 36px)",
-            left: "var(--sidebar-width, 340px)",
-            width: "calc(100% - var(--sidebar-width, 340px))",
-        }
-
     return (
         <div
-            className="fixed flex items-center justify-between border-b bg-surface-white py-1.5 px-2 z-40 transition-[left,width,top] duration-200 ease-linear"
-            style={headerStyle}
+            className="sticky top-0 flex items-center md:w-[calc(100vw-var(--dm-sidebar-width)-var(--primary-sidebar-width))] w-screen justify-between border-b bg-surface-white py-1.5 px-2 z-40"
         >
             {isMobile && (
                 <Button

@@ -1,24 +1,33 @@
 import { commandMenuOpenAtom } from "@components/features/cmdk/atoms";
 import { Search } from "lucide-react";
-import { forwardRef } from "react";
 import _ from "@lib/translate";
 import { useSetAtom } from "jotai";
+import { Kbd, KbdGroup } from "@components/ui/kbd";
+import { KeyboardMetaKeyIcon } from "@components/ui/keyboard-keys";
 
-const SearchButton = forwardRef<HTMLInputElement>(() => {
+const SearchButton = () => {
     const setOpen = useSetAtom(commandMenuOpenAtom)
 
     return (
-        <div className="fixed left-1/2 top-5.25 -translate-x-1/2 -translate-y-1/2 w-150 z-50 cursor-pointer">
-            <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-gray-4" />
+        <div className="lg:w-130 md:w-72 w-full z-50 cursor-pointer">
+
             <button
-                className="pl-8 bg-surface-gray-2 border-none h-7 w-full rounded-sm text-sm text-left text-ink-gray-4 cursor-pointer"
+                className="flex justify-between items-center px-2 bg-surface-gray-2 border-none h-7 w-full rounded-sm text-sm text-left text-ink-gray-4 cursor-pointer"
                 onClick={() => setOpen(true)}
             >
-                {_("Search")}
+                <div className="flex items-center gap-2">
+                    <Search className="size-4 text-ink-gray-4" />
+                    {_("Search")}
+                </div>
+                <KbdGroup>
+                    <Kbd className="text-ink-gray-4 font-normal items-center gap-0 flex justify-center">
+                        <KeyboardMetaKeyIcon />K
+                    </Kbd>
+                </KbdGroup>
             </button>
         </div>
     )
-})
+}
 
 SearchButton.displayName = "SearchButton"
 

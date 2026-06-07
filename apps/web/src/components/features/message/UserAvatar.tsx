@@ -10,7 +10,8 @@ interface UserAvatarProps {
     size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl',
     className?: string,
     showStatusIndicator?: boolean,
-    showBotIndicator?: boolean
+    showBotIndicator?: boolean,
+    addColoredFallback?: boolean
 }
 
 const getInitials = (name: string): string => {
@@ -19,16 +20,26 @@ const getInitials = (name: string): string => {
         .map(word => word.charAt(0))
         .join('')
         .toUpperCase()
-        .slice(0, 2)
+        .slice(0, 1)
 }
 
 const generateAvatarColor = (name: string): string => {
+
+    const sampleColors = [
+        "bg-surface-green-4 text-ink-green-4",
+        "bg-surface-amber-4 text-ink-amber-4",
+        "bg-surface-red-4 text-ink-red-4",
+        "bg-surface-blue-4 text-ink-blue-4",
+        "bg-surface-violet-4 text-ink-violet-4",
+        "bg-surface-cyan-2 text-ink-gray-9",
+        "bg-surface-gray-2 text-ink-gray-9",
+    ]
     let hash = 0
     for (let i = 0; i < name.length; i++) {
         hash = name.charCodeAt(i) + ((hash << 5) - hash)
     }
     const hue = Math.abs(hash) % 360
-    return `hsl(${hue}, 70%, 50%)`
+    return sampleColors[hue % sampleColors.length]
 }
 
 export const getStatusIndicatorColor = (status: string) => {
@@ -103,18 +114,15 @@ export const UserAvatar = memo<UserAvatarProps>(({
     size = 'md',
     className,
     showStatusIndicator = true,
-    showBotIndicator = true
+    showBotIndicator = true,
+    addColoredFallback = true
 }) => {
     const displayName = user.full_name || user.name
     const isBot = user.type === 'Bot'
     const availabilityStatus = user.availability_status
     const sizeClasses = getSizeClasses(size)
 
-    const avatarColor = useMemo(() => generateAvatarColor(displayName), [displayName])
-
-    const fallbackStyle = useMemo(() => ({
-        backgroundColor: avatarColor
-    }), [avatarColor])
+    const avatarColor = useMemo(() => addColoredFallback ? generateAvatarColor(displayName) : 'bg-surface-gray-2 text-ink-gray-9', [displayName, addColoredFallback])
 
     const shouldShowStatusIndicator = useMemo(() => {
         if (!showStatusIndicator) return false
@@ -139,8 +147,8 @@ export const UserAvatar = memo<UserAvatarProps>(({
                     loading="lazy"
                 />
                 <AvatarFallback
-                    className={cn("text-white font-medium select-none border-0", sizeClasses.font, sizeClasses.fallbackRound)}
-                    style={fallbackStyle}
+                    className={cn("font-medium select-none border-0", avatarColor, sizeClasses.font, sizeClasses.fallbackRound)}
+                    // style={fallbackStyle}
                     aria-label={`${displayName} (initials)`}
                 >
                     {getInitials(displayName)}

@@ -24,12 +24,12 @@ export default function Channel() {
     return (
         <div className="flex h-full min-h-0 flex-col">
             <ChannelHeader />
-            <ChatContentView
+            {/* <ChatContentView
                 channelID={channelID}
                 messages={data?.messages}
                 isLoading={isLoading}
                 contextDrawer={contextDrawer}
-            />
+            /> */}
         </div>
     )
 }

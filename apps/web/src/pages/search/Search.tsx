@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { useNavigate, useOutletContext, useSearchParams } from 'react-router-dom'
-import { ChevronLeft, Search as SearchIcon, X } from 'lucide-react'
+import { useOutletContext, useSearchParams } from 'react-router-dom'
+import { Search as SearchIcon, X } from 'lucide-react'
 
 import SearchTabsBar, { SearchTab } from '@components/features/search/SearchTabsBar'
 import { SearchFiltersBar } from '@components/features/search/SearchFiltersBar'
@@ -12,11 +12,9 @@ import SearchPollResults from '@components/features/search/results/SearchPollRes
 import { SearchFilters } from '@components/features/search/types'
 
 import { useChannels } from '@hooks/useChannels'
-import { useIsMobile } from '@hooks/use-mobile'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@db'
 import { Input } from '@components/ui/input'
-import { Button } from '@components/ui/button'
 import _ from '@lib/translate'
 
 interface SearchOutletContext {
@@ -27,8 +25,6 @@ interface SearchOutletContext {
 export default function Search() {
     const { searchValue, setSearchValue } = useOutletContext<SearchOutletContext>()
     const [searchParams, setSearchParams] = useSearchParams()
-    const isMobile = useIsMobile()
-    const navigate = useNavigate()
 
     const channelFromURL = searchParams.get('channel') ?? ''
     const userFromURL = searchParams.get('user') ?? ''
@@ -111,28 +107,13 @@ export default function Search() {
         </div>
     )
 
+
+    // TODO: Add mobile search layout
     return (
         <div className="flex flex-col h-full overflow-hidden">
-            {isMobile && (
-                <div className="flex flex-col gap-2 px-3 pt-3 pb-2 border-b border-outline-gray-2 bg-surface-white shrink-0">
-                    <div className="flex items-center gap-2">
-                        <Button
-                            isIconButton
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => navigate(-1)}
-                            aria-label={_('Back')}
-                        >
-                            <ChevronLeft className="h-5 w-5" />
-                        </Button>
-                        <h1 className="text-base font-medium text-ink-gray-8">{_('Search')}</h1>
-                    </div>
-                    {searchInput}
-                </div>
-            )}
 
-            <div className="shrink-0 hidden md:block">
-                <div className="max-w-6xl mx-auto w-full px-6 pt-6 space-y-2">
+            <div className="shrink-0">
+                <div className="mx-auto w-full px-2 pt-2 space-y-2">
                     {searchInput}
                     <div className="mt-4 flex items-center gap-3 flex-wrap">
                         <SearchTabsBar activeTab={activeTab} setActiveTab={onTabChange} />
@@ -155,30 +136,8 @@ export default function Search() {
                 </div>
             </div>
 
-            {isMobile && (
-                <div className="flex flex-col gap-2 px-3 pt-2 shrink-0">
-                    <SearchFiltersBar
-                        filters={filters}
-                        channels={channels}
-                        dmChannels={dm_channels}
-                        onChannelChange={setChannelFilter}
-                        onUserChange={setUserFilter}
-                        isMobile
-                    />
-                    <SearchTabsBar activeTab={activeTab} setActiveTab={onTabChange} fullWidth />
-                    <div className="flex items-center gap-2 flex-wrap">
-                        <SearchActiveBadges
-                            filters={filters}
-                            channels={channels}
-                            dmChannels={dm_channels}
-                            users={users ?? []}
-                        />
-                    </div>
-                </div>
-            )}
-
             <div className="flex-1 min-h-0 px-3 md:px-0 pb-2">
-                <div className="max-w-6xl mx-auto w-full h-full md:px-6">
+                <div className="mx-auto w-full h-full">
                     {activeTab === 'messages' && <SearchMessageResults searchValue={filters.query} filters={filters} />}
                     {activeTab === 'files' && <SearchFileResults searchValue={filters.query} filters={filters} />}
                     {activeTab === 'links' && <SearchLinkResults searchValue={filters.query} filters={filters} />}

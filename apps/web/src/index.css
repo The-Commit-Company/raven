@@ -19,17 +19,47 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@custom-variant standalone (@media (display-mode: standalone));
+
 @theme inline {
+  /** TODO: Update sidebar and header heights here **/
+  --app-header-height: 36px;
+  --primary-sidebar-width: 60px;
+  --sidebar-width: 256px;
+  --app-mobile-footer-height: 60px;
+  --dm-sidebar-width: 360px;
+
   --color-*: initial;
 
   /** ----- Espresso Design System ----- **/
-  --font-sans: "InterVariable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans: "InterVariable",
+  ui-sans-serif,
+  system-ui,
+  sans-serif,
+  "Apple Color Emoji",
+  "Segoe UI Emoji",
+  "Segoe UI Symbol",
+  "Noto Color Emoji";
   --font-sans--font-optical-sizing: auto;
-  --font-sans--font-variation-settings: "opsz"24;
-  --font-numeric: "InterVariable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --font-numeric--font-feature-settings: "calt", "cv01", "cv03", "cv04", "cv09", "cv11", "zero";
+  --font-sans--font-variation-settings: "opsz" 24;
+  --font-numeric: "InterVariable",
+  ui-monospace,
+  SFMono-Regular,
+  Menlo,
+  Monaco,
+  Consolas,
+  "Liberation Mono",
+  "Courier New",
+  monospace;
+  --font-numeric--font-feature-settings: "calt",
+  "cv01",
+  "cv03",
+  "cv04",
+  "cv09",
+  "cv11",
+  "zero";
   --font-numeric--font-optical-sizing: auto;
-  --font-numeric--font-variation-settings: "opsz"24;
+  --font-numeric--font-variation-settings: "opsz" 24;
 
 
   /** Font Sizes - Web **/
@@ -131,7 +161,8 @@
   --shadow-2xl: var(--elevation-2xl);
 
   --shadow-switch: 0px 3px 3px 0px rgba(0, 0, 0, 0.05);
-  --shadow-checkbox-hover: 0px 1px 2px 0px rgba(0, 0, 0, 0.06), 0px 1px 3px 0px rgba(0, 0, 0, 0.1);
+  --shadow-checkbox-hover: 0px 1px 2px 0px rgba(0, 0, 0, 0.06),
+  0px 1px 3px 0px rgba(0, 0, 0, 0.1);
 
   --shadow-textarea-active: 0px 1px 4px 0px rgba(0, 0, 0, 0.1);
 
@@ -783,9 +814,6 @@
   --elevation-lg: 0px 18px 22px -6px rgba(0, 0, 0, 0.1), 0px 0px 6px 3px rgba(0, 0, 0, 0.03), 0px 0px 1.5px 0px rgba(0, 0, 0, 0.18);
   --elevation-xl: 0px 24px 30px -8px rgba(0, 0, 0, 0.1), 0px 0px 10px 2px rgba(0, 0, 0, 0.04), 0px 0px 1px 0px rgba(0, 0, 0, 0.2), 0px 0.25px 2px 0px rgba(255, 255, 255, 0.15) inset;
   --elevation-2xl: 0px 44px 52px -10px rgba(0, 0, 0, 0.1), 0px 0px 10px 2px rgba(0, 0, 0, 0.03), 0px 0px 1.5px 0px rgba(0, 0, 0, 0.25), 0px 0.1px 2px 0px rgba(255, 255, 255, 0.08) inset;
-
-  --app-header-height: 36px;
-  --sidebar-width: 360px;
 }
 
 .dark {

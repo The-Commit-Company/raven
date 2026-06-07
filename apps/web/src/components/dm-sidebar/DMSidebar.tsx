@@ -39,7 +39,7 @@ export function DMSidebar({
     )
 
     return (
-        <SidebarGroup className="p-0 flex-1 min-h-0">
+        <div className="flex h-[calc(100vh-var(--app-header-height))]">
             {isLoadingChannels ? (
                 <div className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto">
                     <DMSidebarSkeleton />
@@ -68,7 +68,7 @@ export function DMSidebar({
                     )}
                 />
             )}
-        </SidebarGroup>
+        </div>
     )
 }
 
@@ -107,7 +107,6 @@ interface DMRowProps {
 
 function DMRow({ dmChannel, isActive, onClick }: DMRowProps) {
     const { data: peerUser } = useUser(dmChannel.peer_user_id)
-    const { setOpenMobile, isMobile } = useSidebar()
     const { currentUser } = useFrappeAuth()
 
     if (!peerUser || peerUser.enabled === 0) return null
@@ -126,7 +125,6 @@ function DMRow({ dmChannel, isActive, onClick }: DMRowProps) {
 
     const handleClick = () => {
         onClick()
-        if (isMobile) setOpenMobile(false)
     }
 
     return (
@@ -174,7 +172,6 @@ function ExtraUsersList({ dmPeerIds }: { dmPeerIds: Set<string> }) {
 
 function ExtraUserRow({ user }: { user: UserData }) {
     const navigate = useNavigate()
-    const { setOpenMobile, isMobile } = useSidebar()
     const { mutate } = useSWRConfig()
     const { call, loading, error } = useFrappePostCall<{ message: string }>(
         "raven.api.raven_channel.create_direct_message_channel"
@@ -187,7 +184,6 @@ function ExtraUserRow({ user }: { user: UserData }) {
             if (channelId) {
                 mutate("channel_list")
                 navigate(`/dm-channel/${encodeURIComponent(channelId)}`)
-                if (isMobile) setOpenMobile(false)
             }
         } catch {
             toast.error(_("Could not create channel"))

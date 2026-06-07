@@ -51,7 +51,7 @@ const CommandMenu = () => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent
-                className="fixed left-1/2 top-1.25 -translate-x-1/2 translate-y-0 w-155 max-w-none sm:max-w-none p-0 gap-0 overflow-hidden [&>button:last-child]:hidden"
+                className="fixed left-1/2 top-1.25 rounded -translate-x-1/2 translate-y-0 w-150 max-w-none sm:max-w-none p-0 gap-0 overflow-hidden [&>button:last-child]:hidden"
                 aria-describedby={undefined}
             >
                 <DialogHeader className="sr-only">
@@ -86,8 +86,8 @@ const CommandPalette = ({ inDrawer = false }: { inDrawer?: boolean }) => {
     return (
         <Command
             label="Global Command Menu"
-            filter={customFilter}
-            shouldFilter={false}
+            // filter={customFilter}
+            // shouldFilter={false}
             className={inDrawer ? "flex flex-col flex-1 min-h-0 bg-transparent" : ""}
         >
             <CommandInput
@@ -98,6 +98,11 @@ const CommandPalette = ({ inDrawer = false }: { inDrawer?: boolean }) => {
                 placeholder={_("Search or type a command")}
             />
             <CommandList className={inDrawer ? "flex-1 overflow-auto max-h-none" : "max-h-105"}>
+
+                <ChannelList text={debouncedText} />
+                <UserList text={debouncedText} />
+                <SettingsList text={debouncedText} />
+                <QuickActions text={debouncedText} />
                 <CommandGroup>
                     <CommandItem
                         onSelect={() => {
@@ -151,12 +156,6 @@ const CommandPalette = ({ inDrawer = false }: { inDrawer?: boolean }) => {
                         )}
                     </CommandItem>
                 </CommandGroup>
-
-                <ChannelList text={debouncedText} />
-                <UserList text={debouncedText} />
-                <SettingsList text={debouncedText} />
-                <QuickActions text={debouncedText} />
-
                 <CommandEmpty>
                     {_("No results found.")}
                 </CommandEmpty>
