@@ -1,4 +1,4 @@
-import { useNavigate, useParams, Outlet, Navigate } from "react-router-dom"
+import { useParams, Outlet, Navigate } from "react-router-dom"
 import { DMSidebar } from "@components/dm-sidebar/DMSidebar"
 import AppHeader from "@components/features/header/AppHeader"
 import { useChannels } from "@hooks/useChannels"
@@ -38,15 +38,10 @@ export function DirectMessagesIndex() {
 }
 
 export default function DirectMessages() {
-    const navigate = useNavigate()
-    const { id } = useParams<{ id?: string }>()
-    const activeDMChannelId = id ?? null
     const isMobile = useIsMobile()
-    const { dm_channels, isLoading } = useChannels()
 
-    const handleDMClick = (channelId: string) => {
-        navigate(`/dm-channel/${encodeURIComponent(channelId)}`)
-    }
+    const { id } = useParams<{ id?: string }>()
+
 
     // Always show the sidebar on desktop
     // On mobile, only show if there's no DM ID
@@ -56,12 +51,7 @@ export default function DirectMessages() {
         {shouldShowSidebar && <AppHeader title={_("Direct Messages")} />}
         <div className="flex sm:flex-row flex-col">
             {shouldShowSidebar && <div className="md:w-(--dm-sidebar-width) w-screen h-screen border-r border-outline-gray-1">
-                <DMSidebar
-                    activeDMChannelId={activeDMChannelId}
-                    onDMClick={handleDMClick}
-                    dmChannels={dm_channels}
-                    isLoadingChannels={isLoading}
-                />
+                <DMSidebar />
             </div>}
             <Outlet />
         </div>

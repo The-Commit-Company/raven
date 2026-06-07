@@ -1,16 +1,12 @@
 import { useMemo } from "react"
-import { useNavigate } from "react-router-dom"
+import { NavLink, useNavigate } from "react-router-dom"
 import { Virtuoso } from "react-virtuoso"
 import { useLiveQuery } from "dexie-react-hooks"
 import { useFrappeAuth, useFrappePostCall, useSWRConfig } from "frappe-react-sdk"
 import { toast } from "sonner"
-
-import { SidebarGroup, useSidebar } from "@components/ui/sidebar"
 import { Skeleton } from "@components/ui/skeleton"
 import { Badge } from "@components/ui/badge"
 import { UserAvatar } from "@components/features/message/UserAvatar"
-import ErrorBanner from "@components/ui/error-banner"
-
 import { useUser } from "@hooks/useUser"
 import { db, type UserData } from "@db"
 import { cn } from "@lib/utils"
@@ -18,29 +14,20 @@ import { formatRelativeDate } from "@lib/date"
 import { getMessageTeaser } from "@utils/messageUtils"
 import _ from "@lib/translate"
 import type { DMChannelListItem } from "@raven/types/common/ChannelListItem"
+import { useChannels } from "@hooks/useChannels"
 
+export function DMSidebar() {
 
-interface DMSidebarProps {
-    activeDMChannelId: string | null
-    onDMClick: (dmChannelId: string) => void
-    dmChannels?: DMChannelListItem[]
-    isLoadingChannels?: boolean
-}
+    const { dm_channels, isLoading } = useChannels()
 
-export function DMSidebar({
-    activeDMChannelId,
-    onDMClick,
-    dmChannels = [],
-    isLoadingChannels = false,
-}: DMSidebarProps) {
     const dmPeerIds = useMemo(
-        () => new Set(dmChannels.map((d) => d.peer_user_id).filter(Boolean) as string[]),
-        [dmChannels]
+        () => new Set(dm_channels.map((d) => d.peer_user_id).filter(Boolean) as string[]),
+        [dm_channels]
     )
 
     return (
         <div className="flex h-[calc(100vh-var(--app-header-height))]">
-            {isLoadingChannels ? (
+            {isLoading ? (
                 <div className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto">
                     <DMSidebarSkeleton />
                 </div>
@@ -48,13 +35,13 @@ export function DMSidebar({
                 <Virtuoso
                     className="flex-1 min-h-0"
                     style={{ height: "100%" }}
-                    data={dmChannels}
+                    data={dm_channels}
                     defaultItemHeight={64}
-                    initialItemCount={Math.min(dmChannels.length, 10)}
+                    initialItemCount={Math.min(dm_channels.length, 10)}
                     overscan={200}
                     components={{
                         Footer: () =>
-                            dmChannels.length < 5 ? (
+                            dm_channels.length < 5 ? (
                                 <ExtraUsersList dmPeerIds={dmPeerIds} />
                             ) : null,
                     }}
@@ -62,8 +49,6 @@ export function DMSidebar({
                         <DMRow
                             key={dm.name}
                             dmChannel={dm}
-                            isActive={activeDMChannelId === dm.name}
-                            onClick={() => onDMClick(dm.name)}
                         />
                     )}
                 />
@@ -76,7 +61,7 @@ export function DMSidebar({
 function DMSidebarSkeleton() {
     return (
         <>
-            {Array.from({ length: 6 }).map((_, i) => (
+            {Array.from({ length: 10 }).map((_, i) => (
                 <div
                     key={i}
                     className="flex items-start gap-3 border-b px-3 py-3 md:py-2 last:border-b-0"
@@ -101,11 +86,9 @@ function DMSidebarSkeleton() {
 
 interface DMRowProps {
     dmChannel: DMChannelListItem
-    isActive: boolean
-    onClick: () => void
 }
 
-function DMRow({ dmChannel, isActive, onClick }: DMRowProps) {
+function DMRow({ dmChannel }: DMRowProps) {
     const { data: peerUser } = useUser(dmChannel.peer_user_id)
     const { currentUser } = useFrappeAuth()
 
@@ -123,21 +106,21 @@ function DMRow({ dmChannel, isActive, onClick }: DMRowProps) {
     const date = formatRelativeDate(dmChannel.last_message_timestamp)
     const lastMessage = getMessageTeaser(dmChannel.last_message_details)
 
-    const handleClick = () => {
-        onClick()
-    }
-
-    return (
-        <DMRowShell
-            user={peerUser}
-            name={displayName}
-            date={date}
-            lastMessage={lastMessage}
-            unread={unread}
-            isActive={isActive}
-            onClick={handleClick}
-        />
-    )
+    return <NavLink
+        to={`/dm-channel/${encodeURIComponent(dmChannel.name)}`}
+        className=""
+    >
+        {({ isActive }) => (
+            <DMRowShell
+                user={peerUser}
+                name={displayName}
+                date={date}
+                lastMessage={lastMessage}
+                unread={unread}
+                isActive={isActive}
+            />
+        )}
+    </NavLink>
 }
 
 
@@ -173,7 +156,7 @@ function ExtraUsersList({ dmPeerIds }: { dmPeerIds: Set<string> }) {
 function ExtraUserRow({ user }: { user: UserData }) {
     const navigate = useNavigate()
     const { mutate } = useSWRConfig()
-    const { call, loading, error } = useFrappePostCall<{ message: string }>(
+    const { call, loading } = useFrappePostCall<{ message: string }>(
         "raven.api.raven_channel.create_direct_message_channel"
     )
 
@@ -190,21 +173,19 @@ function ExtraUserRow({ user }: { user: UserData }) {
         }
     }
 
-    if (error) {
-        return <ErrorBanner error={error} />
-    }
-
     return (
-        <DMRowShell
-            user={user}
-            name={user.full_name || user.name}
-            date=""
-            lastMessage=""
-            unread={0}
-            isActive={false}
-            disabled={loading}
+        <button
+            type="button"
             onClick={handleClick}
-        />
+            disabled={loading}
+            className="flex w-full"
+        >
+            <DMRowShell
+                user={user}
+                name={user.full_name || user.name}
+                isActive={false}
+            />
+        </button>
     )
 }
 
@@ -212,35 +193,30 @@ function ExtraUserRow({ user }: { user: UserData }) {
 interface DMRowShellProps {
     user: UserData
     name: string
-    date: string
-    lastMessage: string
-    unread: number
+    date?: string
+    lastMessage?: string
+    unread?: number
     isActive: boolean
-    disabled?: boolean
-    onClick: () => void
 }
 
 function DMRowShell({
     user,
     name,
-    date,
-    lastMessage,
-    unread,
+    date = "",
+    lastMessage = "",
+    unread = 0,
     isActive,
-    disabled = false,
-    onClick,
 }: DMRowShellProps) {
+
+
     return (
-        <button
-            type="button"
-            onClick={onClick}
-            disabled={disabled}
+        <div
             className={cn(
                 "flex w-full items-start gap-3 border-b px-3 py-3 md:py-2 text-sm leading-tight last:border-b-0 transition-colors relative text-left",
-                "hover:bg-surface-gray-3 hover:text-ink-gray-8",
-                "active:bg-surface-gray-3 active:text-ink-gray-8",
+                "hover:bg-surface-gray-2 hover:text-ink-gray-8 select-none",
+                "active:bg-surface-gray-2 active:text-ink-gray-8",
                 "disabled:opacity-50 disabled:pointer-events-none",
-                isActive && "bg-surface-gray-3/90 text-ink-gray-8"
+                isActive && "bg-surface-gray-3 hover:bg-surface-gray-3 text-ink-gray-8"
             )}
         >
             <div className="shrink-0 self-center">
@@ -256,7 +232,7 @@ function DMRowShell({
                     <span
                         className={cn(
                             "truncate text-base md:text-sm",
-                            unread > 0 ? "font-semibold text-ink-gray-8" : "font-medium"
+                            unread > 0 ? "font-semibold text-ink-gray-8" : "font-normal"
                         )}
                     >
                         {name}
@@ -279,12 +255,12 @@ function DMRowShell({
                         {lastMessage}
                     </div>
                     {unread > 0 && (
-                        <Badge size="sm" variant="solid" theme="gray">
+                        <Badge size="sm" variant="subtle" theme="gray">
                             {unread > 9 ? "9+" : unread}
                         </Badge>
                     )}
                 </div>
             </div>
-        </button>
+        </div>
     )
 }
