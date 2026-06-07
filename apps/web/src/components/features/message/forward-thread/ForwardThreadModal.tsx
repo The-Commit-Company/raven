@@ -11,7 +11,6 @@ import { Button } from "@components/ui/button"
 import { ThreadPreviewCard } from "./ThreadPreviewCard"
 import { ChannelSelect } from "@components/common/ChannelSelect/ChannelSelect"
 import { useChannels } from "@hooks/useChannels"
-import { useAllUsers } from "@hooks/useAllUsers"
 import { useFrappePostCall } from "frappe-react-sdk"
 import { toast } from "sonner"
 import type { ForwardedThreadMetadata } from "@raven/types/common/Message"
@@ -45,7 +44,6 @@ export function ForwardThreadModal({
     const [optionalText, setOptionalText] = useState("")
     const [selectedChannelId, setSelectedChannelId] = useState("")
     const { channels, dm_channels } = useChannels()
-    const availableUsers = useAllUsers({ enabled: open })
     const { call, loading } = useFrappePostCall("raven.api.raven_message.forward_thread")
 
     const meta: ForwardedThreadMetadata = {
