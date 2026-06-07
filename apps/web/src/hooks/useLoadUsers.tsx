@@ -20,6 +20,9 @@ export const useLoadUsers = () => {
         revalidateOnReconnect: false,
         revalidateIfStale: false,
         onSuccess: async (data) => {
+
+            // We should udeally clear the database first and then put the new data in
+            await db.users.clear()
             await db.users.bulkPut(data.message)
             setIsReady(true)
 
