@@ -1,0 +1,115 @@
+import type { Message } from "@raven/types/common/Message"
+import { getDateObject } from "@lib/date"
+import { ChannelMessagesState, DateBlock, StreamBlock } from "./types"
+
+/**
+ * Derives the render list for the chat stream: messages in ascending order,
+ * decorated with continuation/pinned flags, with date dividers between days.
+ *
+ * Memoized two ways:
+ * - per state object: recomputes only when the channel state actually changed
+ * - per message: a message whose flags didn't change keeps its object identity,
+ *   so memoized message components skip re-rendering
+ */
+
+const CONTINUATION_GAP_MS = 2 * 60 * 1000
+
+type Decoration = { isContinuation: 0 | 1; isPinned: 0 | 1; decorated: Message }
+
+/**
+ * Remembers the decorated copy produced for each store message, so a message
+ * whose flags didn't change returns the SAME object across selector runs.
+ * That identity is what lets a memoized message component skip re-rendering
+ * when some other message in the channel changed.
+ *
+ * WeakMap, not Map: entries are garbage-collected together with the store
+ * message they key on, so evicted/trimmed messages don't leak memory.
+ */
+const decorationCache = new WeakMap<Message, Decoration>()
+
+/** Returns `message` with continuation/pinned flags applied, reusing the cached copy when the flags are unchanged. */
+const decorate = (message: Message, isContinuation: 0 | 1, isPinned: 0 | 1): Message => {
+    const cached = decorationCache.get(message)
+    if (cached && cached.isContinuation === isContinuation && cached.isPinned === isPinned) {
+        return cached.decorated
+    }
+    const decorated = { ...message, is_continuation: isContinuation, is_pinned: isPinned }
+    decorationCache.set(message, { isContinuation, isPinned, decorated })
+    return decorated
+}
+
+/** Who a message visually belongs to. System messages have no sender, so they never group. */
+const senderOf = (message: Message): string | null => {
+    if (message.message_type === "System") return null
+    return message.is_bot_message ? (message.bot ?? null) : message.owner
+}
+
+/** The day a message belongs to (`YYYY-MM-DD`), straight from the timestamp string. */
+const dateKeyOf = (message: Message): string => message.creation.split(" ")[0]
+
+/** Epoch millis for gap comparisons. Microseconds are stripped — Safari can't parse them. */
+const timeOf = (message: Message): number => new Date(message.creation.split(".")[0]).getTime()
+
+const dateBlockFor = (dateKey: string): DateBlock => ({
+    message_type: "date",
+    creation: getDateObject(`${dateKey} 00:00:00`).format("Do MMMM YYYY"),
+    name: `date-${dateKey}`,
+})
+
+/** A message continues the previous one when same sender, same day, within the gap. */
+const isContinuationOf = (message: Message, previous: Message | null): boolean => {
+    if (!previous) return false
+    if (dateKeyOf(message) !== dateKeyOf(previous)) return false
+    const sender = senderOf(message)
+    if (sender === null || sender !== senderOf(previous)) return false
+    return timeOf(message) - timeOf(previous) <= CONTINUATION_GAP_MS
+}
+
+const parsePinnedIds = (pinnedMessagesString: string): Set<string> => {
+    return new Set(
+        pinnedMessagesString
+            .split("\n")
+            .map((id) => id.trim())
+            .filter(Boolean),
+    )
+}
+
+const buildBlocks = (state: ChannelMessagesState, pinnedMessagesString: string): StreamBlock[] => {
+    const pinnedIds = parsePinnedIds(pinnedMessagesString)
+    const blocks: StreamBlock[] = []
+    let previous: Message | null = null
+    for (const id of state.order) {
+        const message = state.byId.get(id)
+        if (!message) continue
+        const dateKey = dateKeyOf(message)
+        if (!previous || dateKeyOf(previous) !== dateKey) {
+            blocks.push(dateBlockFor(dateKey))
+        }
+        const isContinuation = isContinuationOf(message, previous) ? 1 : 0
+        const isPinned = pinnedIds.has(message.name) ? 1 : 0
+        blocks.push(decorate(message, isContinuation, isPinned))
+        previous = message
+    }
+    return blocks
+}
+
+type CacheEntry = { pinnedMessagesString: string; blocks: StreamBlock[] }
+
+/**
+ * One cached result per state object. State objects are immutable — a new one
+ * is created on every change — so "same state reference" safely means
+ * "nothing changed, return the previous array". Keyed weakly so old state
+ * snapshots and their block arrays are garbage-collected.
+ */
+const blocksCache = new WeakMap<ChannelMessagesState, CacheEntry>()
+
+export const selectStreamBlocks = (
+    state: ChannelMessagesState,
+    pinnedMessagesString: string = "",
+): StreamBlock[] => {
+    const cached = blocksCache.get(state)
+    if (cached && cached.pinnedMessagesString === pinnedMessagesString) return cached.blocks
+    const blocks = buildBlocks(state, pinnedMessagesString)
+    blocksCache.set(state, { pinnedMessagesString, blocks })
+    return blocks
+}

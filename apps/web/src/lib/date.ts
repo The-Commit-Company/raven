@@ -10,10 +10,13 @@ dayjs.extend(relativeTime)
 
 const DEFAULT_TIME_ZONE = 'Asia/Kolkata'
 
-export const SYSTEM_TIMEZONE = window.frappe?.boot?.time_zone?.system || DEFAULT_TIME_ZONE
+/** Guarded: window is absent in tests/SSR */
+const frappeBoot = typeof window !== 'undefined' ? window.frappe?.boot : undefined
+
+export const SYSTEM_TIMEZONE = frappeBoot?.time_zone?.system || DEFAULT_TIME_ZONE
 
 
-export const USER_DATE_FORMAT = (window.frappe?.boot?.user?.defaults?.date_format?.toUpperCase() || window.frappe?.boot?.sysdefaults?.date_format?.toUpperCase()
+export const USER_DATE_FORMAT = (frappeBoot?.user?.defaults?.date_format?.toUpperCase() || frappeBoot?.sysdefaults?.date_format?.toUpperCase()
     || 'DD/MM/YYYY')
 
 export const FRAPPE_DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss'

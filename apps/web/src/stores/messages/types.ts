@@ -1,0 +1,53 @@
+import type { Message } from "@raven/types/common/Message"
+
+/**
+ * One channel's message window.
+ *
+ * The store holds a bounded, contiguous window of a channel's history.
+ * `order` is ascending by (creation, name) — index 0 is the oldest loaded message.
+ * When `hasNewerMessages` is true the window is detached from the live edge
+ * (e.g. after jumping to an old message) and incoming messages are NOT inserted.
+ */
+export type ChannelMessagesState = {
+    status: "idle" | "loading" | "ready" | "error"
+    error: string | null
+    /** id → message. Message references are stable unless that message changed. */
+    byId: ReadonlyMap<string, Message>
+    /** Message ids sorted ascending by (creation, name). */
+    order: readonly string[]
+    hasOlderMessages: boolean
+    hasNewerMessages: boolean
+    loadingOlder: boolean
+    loadingNewer: boolean
+}
+
+/** Response shape shared by get_messages / get_older_messages / get_newer_messages. */
+export type MessagesPage = {
+    messages: Message[]
+    has_old_messages?: boolean
+    has_new_messages?: boolean
+}
+
+/** A date divider between messages from different days. */
+export type DateBlock = {
+    message_type: "date"
+    /** Raw date key (YYYY-MM-DD) — also the formatted label consumers display. */
+    creation: string
+    name: string
+}
+
+/** What the chat stream renders: messages (decorated with continuation/pinned flags) and date dividers. */
+export type StreamBlock = Message | DateBlock
+
+export const MAX_WINDOW_SIZE = 300
+
+export const initialChannelState: ChannelMessagesState = {
+    status: "idle",
+    error: null,
+    byId: new Map(),
+    order: [],
+    hasOlderMessages: false,
+    hasNewerMessages: false,
+    loadingOlder: false,
+    loadingNewer: false,
+}
