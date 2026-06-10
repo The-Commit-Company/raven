@@ -10,6 +10,7 @@ import Search from "@pages/search/Search"
 import Threads from "@pages/threads/Threads"
 import DirectMessages, { DirectMessagesIndex } from "@pages/dm-channel/DirectMessages"
 import DirectMessage from "@pages/dm-channel/DirectMessage"
+import ThreadDrawer from "@components/features/message/ThreadDrawer"
 import WorkspaceSwitcher from "@pages/WorkspaceSwitcher"
 import { WorkspaceRedirect } from "@components/workspace-switcher/WorkspaceRedirect"
 import { FrappeProvider } from 'frappe-react-sdk'
@@ -80,13 +81,15 @@ function App() {
                 {/* Workspace: channels and settings only; search is global at /search above */}
                 <Route path=":workspaceID" element={<WorkspaceLayout />}>
                   <Route index element={<WorkspaceRedirect />} />
-                  <Route path=":id" element={<Channel />} />
-                  <Route path=":id/thread/:threadID" element={<Channel />} />
+                  <Route path=":id" element={<Channel />}>
+                    <Route path="thread/:threadID" element={<ThreadDrawer />} />
+                  </Route>
                 </Route>
                 <Route path="dm-channel" element={<DirectMessages />}>
                   <Route index element={<DirectMessagesIndex />} />
-                  <Route path=":id" element={<DirectMessage />} />
-                  <Route path=":id/thread/:threadID" element={<DirectMessage />} />
+                  <Route path=":id" element={<DirectMessage />}>
+                    <Route path="thread/:threadID" element={<ThreadDrawer />} />
+                  </Route>
                 </Route>
                 <Route path="notifications" element={<Notifications />}>
                   <Route path=":id" element={<p>Chat drawer comes here</p>} />

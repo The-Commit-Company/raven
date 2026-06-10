@@ -67,33 +67,6 @@ export interface SystemMessage extends BaseMessage {
     text: string,
 }
 
-/** Dummy type for UI-only converted-thread preview. Backend shape TBD. */
-export interface ConvertedChannelPreview {
-    root_message_owner_name?: string
-    root_message_owner_image?: string
-    root_message_snippet?: string
-    message_count?: number
-    participants?: { name: string; full_name: string; user_image?: string }[]
-    preview_replies?: { owner_name: string; owner_image?: string; snippet?: string }[]
-}
-
-/** Dummy type for UI-only forwarded-thread metadata. Backend shape TBD. */
-export interface ForwardedThreadMetadata {
-    thread_id: string
-    source_channel_id: string
-    is_source_dm: boolean
-    source_workspace: string | null
-    title: string
-    message_count: number
-    root_message_snippet: string
-    last_activity: string
-    last_message_owner_name: string
-    root_message_owner_name?: string
-    root_message_owner_image?: string
-    participants?: { name: string; full_name: string; user_image?: string }[]
-    preview_replies?: { owner_name?: string; owner_image?: string; snippet?: string }[]
-}
-
 export type DateBlock = {
     block_type: 'date',
     data: string

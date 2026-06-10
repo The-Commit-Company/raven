@@ -1,21 +1,15 @@
 import { useUser } from "@hooks/useUser"
-import { Message, type ConvertedChannelPreview } from "@raven/types/common/Message"
+import { Message } from "@raven/types/common/Message"
 import { UserAvatar } from "../UserAvatar"
 import { getDateObject } from "@lib/date"
 import { useMemo, useState } from "react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
-import { ExternalLink, ForwardIcon, UserPlus, BellOff, Hash } from "lucide-react"
+import { UserPlus, BellOff } from "lucide-react"
 import { ThreadButton, ThreadHeader } from "./ThreadMessage"
 import { cn } from "@lib/utils"
 import { ContextMenu, ContextMenuContent, ContextMenuGroup, ContextMenuItem, ContextMenuTrigger } from "@components/ui/context-menu"
 import { useIntersectionObserver } from "usehooks-ts"
-import { useLocation } from "react-router-dom"
-import { useSetAtom } from "jotai"
-import { forwardThreadModalAtom } from "@utils/channelAtoms"
-import { buildThreadUrl } from "../forward-thread/ThreadPreviewCard"
 import { MessageContent } from "./MessageContent"
-import { ConvertThreadToChannelDialog } from "../ConvertThreadToChannelDialog"
-import { ConvertedThreadPreviewCard } from "../forward-thread/ConvertedThreadPreviewCard"
 
 /**
  * Anatomy of a message
@@ -68,82 +62,10 @@ function isThreadParent(message: Message): boolean {
     return v === 1 || v === true || String(v) === "1"
 }
 
-/** Check if message has forwarded thread preview in json */
-function hasForwardedThread(message: Message): boolean {
-    const j = message.json
-    if (!j) return false
-    const parsed = typeof j === "string" ? (() => { try { return JSON.parse(j) } catch { return {} } })() : j
-    return !!parsed?.forwarded_thread
-}
-
-function getConvertedToChannelId(message: Message): string | null {
-    const j = message.json
-    if (!j) return null
-    const parsed = typeof j === "string" ? (() => { try { return JSON.parse(j) } catch { return {} } })() : j
-    return (parsed?.converted_to_channel_id as string) || null
-}
-
-function getConvertedToChannelWorkspace(message: Message): string | null {
-    const j = message.json
-    if (!j) return null
-    const parsed = typeof j === "string" ? (() => { try { return JSON.parse(j) } catch { return {} } })() : j
-    return (parsed?.converted_to_channel_workspace as string) || null
-}
-
-function getConvertedChannelPreview(message: Message): ConvertedChannelPreview | null {
-    const j = message.json
-    if (!j) return null
-    const parsed = typeof j === "string" ? (() => { try { return JSON.parse(j) } catch { return {} } })() : j
-    const p = parsed?.converted_channel_preview
-    return p && typeof p === "object" && p.root_message_owner_name && p.root_message_snippet != null ? (p as ConvertedChannelPreview) : null
-}
-
 export const MessageItem = ({ message, onInView }: { message: Message; onInView?: (message: Message) => void }) => {
 
     const [isMenuOpen, setIsMenuOpen] = useState(false)
-    const [convertDialogOpen, setConvertDialogOpen] = useState(false)
     const showThread = isThreadParent(message)
-    const setForwardThread = useSetAtom(forwardThreadModalAtom)
-    const convertedToChannelId = getConvertedToChannelId(message)
-    const convertedToChannelWorkspace = getConvertedToChannelWorkspace(message)
-    const convertedChannelPreview = getConvertedChannelPreview(message)
-    const location = useLocation()
-
-    const isDM = location.pathname.includes("/dm-channel/")
-    const workspaceMatch = location.pathname.match(/^\/([^/]+)\/channel\//)
-    const sourceWorkspace = workspaceMatch ? workspaceMatch[1] : null
-
-    const handleForwardThread = () => {
-        setForwardThread({
-            threadId: message.name,
-            sourceChannelId: message.channel_id,
-            isSourceDm: isDM,
-            sourceWorkspace: isDM ? null : sourceWorkspace ?? null,
-            title: (message.text || message.content || "").slice(0, 100),
-            messageCount: 0,
-            rootMessageSnippet: (message.text || message.content || "").slice(0, 200),
-            lastActivity: "",
-            lastMessageOwnerName: "",
-        })
-    }
-
-    const handleOpenThreadInNewTab = () => {
-        const url = buildThreadUrl(
-            {
-                thread_id: message.name,
-                source_channel_id: message.channel_id,
-                is_source_dm: isDM,
-                source_workspace: isDM ? null : sourceWorkspace ?? null,
-                title: "",
-                message_count: 0,
-                root_message_snippet: "",
-                last_activity: "",
-                last_message_owner_name: "",
-            },
-            true // fullscreen when opening in new tab
-        )
-        window.open(url, "_blank", "noopener,noreferrer")
-    }
 
     const handleJoinThread = () => {
         // TODO: Wire up join thread API
@@ -151,15 +73,6 @@ export const MessageItem = ({ message, onInView }: { message: Message; onInView?
 
     const handleMuteThread = () => {
         // TODO: Wire up mute thread API
-    }
-
-    const handleConvertThreadToChannel = () => {
-        setConvertDialogOpen(true)
-    }
-
-    const handleConvertSuccess = () => {
-        // Optionally invalidate messages so the list refetches and shows converted banner
-        setConvertDialogOpen(false)
     }
 
     const { shortTime, longTime } = useMemo(() => {
@@ -196,22 +109,14 @@ export const MessageItem = ({ message, onInView }: { message: Message; onInView?
             )}
         >
             <div>
-                {showThread && !convertedToChannelId && <ThreadHeader displayName={"TODO: Wire this up"} threadTitle={"Do not forget"} />}
-                {showThread && !convertedToChannelId && <div className={cn("absolute left-7.5 w-7 border-l border-b border-outline-gray-2 rounded-bl-lg z-0", message.is_continuation ? 'top-9 h-[calc(100%-64px)]' : 'top-[42px] h-[calc(100%-72px)]')} />}
+                {showThread && <ThreadHeader displayName={"TODO: Wire this up"} threadTitle={"Do not forget"} />}
+                {showThread && <div className={cn("absolute left-7.5 w-7 border-l border-b border-outline-gray-2 rounded-bl-lg z-0", message.is_continuation ? 'top-9 h-[calc(100%-64px)]' : 'top-[42px] h-[calc(100%-72px)]')} />}
                 {message.is_continuation === 0 ? <NonContinuationMessageHeader
                     message={message} shortTime={shortTime} longTime={longTime}
                 /> :
                     <ContinuationMessageHeader message={message} />}
 
-                {showThread && convertedToChannelId ? (
-                    <div className="ml-11 mt-2">
-                        <ConvertedThreadPreviewCard
-                            channelId={convertedToChannelId}
-                            workspace={convertedToChannelWorkspace}
-                            preview={convertedChannelPreview}
-                        />
-                    </div>
-                ) : showThread ? (
+                {showThread ? (
                     <ThreadButton
                         participants={[
                             { name: "Desirae Lipshutz", full_name: "Desirae Lipshutz", type: "User", user_image: "https://randomuser.me/api/portraits/women/44.jpg" },
@@ -231,36 +136,13 @@ export const MessageItem = ({ message, onInView }: { message: Message; onInView?
                         <UserPlus className="mr-2 h-4 w-4" />
                         Join thread
                     </ContextMenuItem>
-                    <ContextMenuItem onClick={handleOpenThreadInNewTab}>
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        Open thread in new tab
-                    </ContextMenuItem>
-                    <ContextMenuItem onClick={handleForwardThread}>
-                        <ForwardIcon className="mr-2 h-4 w-4" />
-                        Forward thread
-                    </ContextMenuItem>
                     <ContextMenuItem onClick={handleMuteThread}>
                         <BellOff className="mr-2 h-4 w-4" />
                         Mute thread
                     </ContextMenuItem>
-                    {!convertedToChannelId && (
-                        <ContextMenuItem onClick={handleConvertThreadToChannel}>
-                            <Hash className="mr-2 h-4 w-4" />
-                            Convert thread to channel
-                        </ContextMenuItem>
-                    )}
                 </ContextMenuGroup>
             )}
         </ContextMenuContent>
-
-        {showThread && (
-            <ConvertThreadToChannelDialog
-                open={convertDialogOpen}
-                onOpenChange={setConvertDialogOpen}
-                threadId={message.name}
-                onSuccess={handleConvertSuccess}
-            />
-        )}
     </ContextMenu>
 }
 

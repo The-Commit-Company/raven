@@ -2,7 +2,6 @@ import { useMemo } from "react"
 import { ForwardIcon, LucideIcon, PencilIcon, PinIcon } from "lucide-react"
 import { Message } from "@raven/types/common/Message"
 import ReplyMessage from "./ReplyMessage"
-import { ForwardedThreadMessage } from "../forward-thread/ForwardedThreadMessage"
 import TiptapRenderer from "./TiptapRenderer"
 import SearchTextRenderer from "./SearchTextRenderer"
 import _ from "@lib/translate"
@@ -19,14 +18,6 @@ const MessageBody = ({ content }: { content?: string | Record<string, unknown> |
     if (!trimmed) return null
     if (trimmed.startsWith('{') || trimmed.startsWith('[')) return <TiptapRenderer content={trimmed} />
     return <SearchTextRenderer content={trimmed} />
-}
-
-/** Treat forwarded_thread metadata as present when json blob carries it. */
-function hasForwardedThread(message: Message): boolean {
-    const j = message.json
-    if (!j) return false
-    const parsed = typeof j === "string" ? (() => { try { return JSON.parse(j) } catch { return {} } })() : j
-    return !!parsed?.forwarded_thread
 }
 
 const MessageAttributeIndicator = ({ attribute, Icon }: { attribute: string, Icon: LucideIcon }) => (
@@ -93,9 +84,6 @@ export const MessageContent = ({ message }: { message: Message }) => {
                 <MessageBody content={message.content ?? message.text} />
             )}
 
-            {message.is_forwarded === 1 && hasForwardedThread(message) && (
-                <ForwardedThreadMessage message={message} />
-            )}
         </div>
     )
 }

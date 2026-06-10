@@ -17,17 +17,3 @@ export type PollDrawerData = {
 } | null
 
 export const pollDrawerAtom = atomFamily((_channelID: string) => atom<PollDrawerData>(null))
-
-export type ForwardThreadModalData = {
-    threadId: string
-    sourceChannelId: string
-    isSourceDm: boolean
-    sourceWorkspace?: string | null
-    title: string
-    messageCount: number
-    rootMessageSnippet: string
-    lastActivity: string
-    lastMessageOwnerName: string
-} | null
-
-export const forwardThreadModalAtom = atom<ForwardThreadModalData>(null)
