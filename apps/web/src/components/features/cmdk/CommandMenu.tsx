@@ -5,6 +5,7 @@ import _ from '@lib/translate'
 import { useDebounce } from '@raven/lib/hooks/useDebounce'
 import { defaultFilter } from 'cmdk'
 import React, { useEffect, useState } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
 import { useNavigate } from 'react-router-dom'
 import { TextSearch } from 'lucide-react'
 import { useAtom, useSetAtom } from 'jotai'
@@ -24,17 +25,11 @@ const CommandMenu = () => {
     const [open, setOpen] = useAtom(commandMenuOpenAtom)
     const isMobile = useIsMobile()
 
-    useEffect(() => {
-        const down = (e: KeyboardEvent) => {
-            if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-                e.preventDefault()
-                setOpen((open) => !open)
-            }
-        }
-
-        document.addEventListener('keydown', down)
-        return () => document.removeEventListener('keydown', down)
-    }, [])
+    useHotkeys('mod+k', () => setOpen((open) => !open), {
+        preventDefault: true,
+        enableOnFormTags: true,
+        enableOnContentEditable: true,
+    })
 
     if (isMobile) {
         return (

@@ -90,15 +90,17 @@ const AppShellLayout = ({ children }: { children: React.ReactNode }) => {
     const isMobile = useIsMobile()
 
     if (isMobile) {
-        return children
+        return <div className="flex h-dvh flex-col overflow-hidden">
+            {children}
+        </div>
     }
 
-    return <div className="flex h-screen">
+    return <div className="flex h-dvh overflow-hidden">
         <PrimarySidebar />
-        {children}
+        <main className="flex min-w-0 flex-1 flex-col">
+            {children}
+        </main>
     </div>
-
-
 }
 
 export default AppShell

@@ -6,8 +6,7 @@ import ChannelMenu from "./ChannelMenu"
 import { useAtom, useSetAtom } from "jotai"
 import { channelDrawerAtom } from "@utils/channelAtoms"
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
-import { useLocation, useNavigate, useParams } from "react-router-dom"
-import { SIDEBAR_LESS_ROUTES } from "@utils/routes"
+import { useNavigate, useParams } from "react-router-dom"
 import { useChannel } from "@hooks/useChannel"
 import { useIsMobile } from "@hooks/use-mobile"
 import _ from "@lib/translate"
@@ -16,15 +15,7 @@ import CommandMenu from "@components/features/cmdk/CommandMenu"
 
 const ChannelHeader = () => {
     const channelID = useCurrentChannelID()
-    const { channel } = useChannel(channelID)
-    const location = useLocation()
-    const pathname = location.pathname
-    const isSettingsPage = pathname.startsWith("/settings")
-    const isSidebarLessPage = SIDEBAR_LESS_ROUTES.has(pathname) || isSettingsPage
-
-    // TODO: Handle collapsed state
-    const isCollapsed = false
-    const { toggleStarChannel, isStarred } = useChannel(channelID)
+    const { channel, toggleStarChannel, isStarred } = useChannel(channelID)
     const isMobile = useIsMobile()
     const navigate = useNavigate()
     const { workspaceID } = useParams()
@@ -35,43 +26,16 @@ const ChannelHeader = () => {
     const setCommandMenuOpen = useSetAtom(commandMenuOpenAtom)
 
     const onOpenMembers = () => {
-        if (isMobile && workspaceID) {
-            navigate(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/members`)
-        } else if (drawerType === 'members') {
-            setDrawerType('')
-        } else {
-            setDrawerType('members')
-        }
+        setDrawerType(drawerType === 'members' ? '' : 'members')
     }
 
     const onOpenPins = () => {
-        if (isMobile && workspaceID) {
-            navigate(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/settings?tab=pins`)
-            return
-        }
         setDrawerType('pins')
     }
 
-    // const headerStyle = isMobile
-    //     ? { top: 0, left: 0, width: "100%" }
-    //     : {
-    //         top: "var(--app-header-height, 36px)",
-    //         left: isSidebarLessPage
-    //             ? "var(--workspace-switcher-width, 60px)"
-    //             : isCollapsed
-    //                 ? "var(--sidebar-width-icon, 60px)"
-    //                 : "var(--sidebar-width, 340px)",
-    //         width: isSidebarLessPage
-    //             ? "calc(100% - var(--workspace-switcher-width, 60px))"
-    //             : isCollapsed
-    //                 ? "calc(100% - var(--sidebar-width-icon, 60px))"
-    //                 : "calc(100% - var(--sidebar-width, 340px))",
-    //     }
-
     return (
         <div
-            className="sticky top-0 flex items-center w-[calc(100vw-var(--sidebar-width)-var(--primary-sidebar-width))] justify-between border-b bg-surface-white py-1.5 px-2 z-40 transition-[left,width,top] duration-200 ease-linear"
-        // style={headerStyle}
+            className="flex w-full shrink-0 items-center justify-between border-b bg-surface-white py-1.5 px-2"
         >
             {isMobile && (
                 <Button

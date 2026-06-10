@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@components/ui/tabs';
 import { Button } from '@components/ui/button';
 import { X } from 'lucide-react';
@@ -11,7 +11,6 @@ import { UserProfileDrawer } from '@components/features/dm-channel/UserProfileDr
 import { useAtom } from 'jotai';
 import { channelDrawerAtom } from '@utils/channelAtoms';
 import { useCurrentChannelID } from '@hooks/useCurrentChannelID';
-import { useIsMobile } from '@hooks/use-mobile';
 import type { UserData } from '@db';
 import _ from '@lib/translate'
 
@@ -22,16 +21,10 @@ interface ChannelSettingsDrawerProps {
 const ChannelSettingsDrawer = ({ peerUser }: ChannelSettingsDrawerProps) => {
 
     const channelID = useCurrentChannelID()
-    const isMobile = useIsMobile()
     const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
 
-    useEffect(() => {
-        const onKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') handleClose()
-        }
-        window.addEventListener('keydown', onKeyDown)
-        return () => window.removeEventListener('keydown', onKeyDown)
-    }, [])
+    // useHotkeys keeps the callback fresh, so this always closes the drawer for the *current* channelID
+    useHotkeys('esc', () => handleClose(), { enableOnFormTags: true })
 
     const onTabChange = (value: string) => {
         setDrawerType(value as '' | 'files' | 'pins' | 'links' | 'threads' | 'info')
@@ -41,10 +34,8 @@ const ChannelSettingsDrawer = ({ peerUser }: ChannelSettingsDrawerProps) => {
         setDrawerType('')
     }
 
-    if (isMobile) return null
-
     return (
-        <div className="flex flex-col h-full max-w-md w-95">
+        <div className="flex flex-col h-full w-full">
             <div className="flex-1 overflow-hidden p-3">
                 <Tabs value={drawerType} onValueChange={onTabChange} className="flex flex-col h-full w-full">
                     <div className="flex items-center justify-between shrink-0">

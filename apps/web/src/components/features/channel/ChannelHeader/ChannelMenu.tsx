@@ -13,7 +13,6 @@ import { useChannel } from "@hooks/useChannel";
 import { useIsMobile } from "@hooks/use-mobile";
 import { channelDrawerAtom, type DrawerType } from "@utils/channelAtoms";
 import { useSetAtom } from "jotai";
-import { useNavigate, useParams } from "react-router-dom";
 import {
     Bell,
     BellOff,
@@ -28,29 +27,17 @@ import {
 import _ from "@lib/translate";
 
 export type NavProps = {
-    isMobile: boolean
-    workspaceID: string
-    channelID: string
-    navigate?: ReturnType<typeof useNavigate>
-    setDrawerType?: (type: DrawerType) => void
+    setDrawerType: (type: DrawerType) => void
 }
 
 const ChannelMenu = ({ channelID }: { channelID: string }) => {
     const { channel } = useChannel(channelID)
     const isMobile = useIsMobile()
-    const navigate = useNavigate()
-    const { workspaceID = '' } = useParams()
     const setDrawerType = useSetAtom(channelDrawerAtom(channelID))
 
     if (!channel) return null
 
-    const navProps: NavProps = {
-        isMobile,
-        workspaceID,
-        channelID,
-        navigate,
-        setDrawerType: isMobile ? undefined : setDrawerType,
-    }
+    const navProps: NavProps = { setDrawerType }
 
     return (
         <DropdownMenu>
@@ -98,14 +85,8 @@ const ChannelMenu = ({ channelID }: { channelID: string }) => {
     )
 }
 
-const SettingsButton = ({ isMobile, workspaceID, channelID, navigate, setDrawerType }: NavProps) => {
-    const onOpen = () => {
-        if (isMobile && workspaceID) {
-            navigate?.(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/settings?tab=info`)
-        } else {
-            setDrawerType?.('info')
-        }
-    }
+const SettingsButton = ({ setDrawerType }: NavProps) => {
+    const onOpen = () => setDrawerType('info')
     return (
         <DropdownMenuItem onClick={onOpen}>
             <Settings />
@@ -114,14 +95,8 @@ const SettingsButton = ({ isMobile, workspaceID, channelID, navigate, setDrawerT
     )
 }
 
-export const ChannelFilesButton = ({ isMobile, workspaceID, channelID, navigate, setDrawerType }: NavProps) => {
-    const onOpen = () => {
-        if (isMobile && workspaceID) {
-            navigate?.(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/settings?tab=files`)
-        } else {
-            setDrawerType?.('files')
-        }
-    }
+export const ChannelFilesButton = ({ setDrawerType }: NavProps) => {
+    const onOpen = () => setDrawerType('files')
     return (
         <DropdownMenuItem onClick={onOpen}>
             <Files />
@@ -130,14 +105,8 @@ export const ChannelFilesButton = ({ isMobile, workspaceID, channelID, navigate,
     )
 }
 
-export const ChannelLinksButton = ({ isMobile, workspaceID, channelID, navigate, setDrawerType }: NavProps) => {
-    const onOpen = () => {
-        if (isMobile && workspaceID) {
-            navigate?.(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/settings?tab=links`)
-        } else {
-            setDrawerType?.('links')
-        }
-    }
+export const ChannelLinksButton = ({ setDrawerType }: NavProps) => {
+    const onOpen = () => setDrawerType('links')
     return (
         <DropdownMenuItem onClick={onOpen}>
             <Link />
@@ -146,14 +115,8 @@ export const ChannelLinksButton = ({ isMobile, workspaceID, channelID, navigate,
     )
 }
 
-export const ChannelThreadsButton = ({ isMobile, workspaceID, channelID, navigate, setDrawerType }: NavProps) => {
-    const onOpen = () => {
-        if (isMobile && workspaceID) {
-            navigate?.(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/settings?tab=threads`)
-        } else {
-            setDrawerType?.('threads')
-        }
-    }
+export const ChannelThreadsButton = ({ setDrawerType }: NavProps) => {
+    const onOpen = () => setDrawerType('threads')
     return (
         <DropdownMenuItem onClick={onOpen}>
             <MessageSquareText />
@@ -162,14 +125,8 @@ export const ChannelThreadsButton = ({ isMobile, workspaceID, channelID, navigat
     )
 }
 
-const MembersButton = ({ isMobile, workspaceID, channelID, navigate, setDrawerType }: NavProps) => {
-    const onOpen = () => {
-        if (isMobile && workspaceID) {
-            navigate?.(`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(channelID)}/members`)
-        } else {
-            setDrawerType?.('members')
-        }
-    }
+const MembersButton = ({ setDrawerType }: NavProps) => {
+    const onOpen = () => setDrawerType('members')
     return (
         <DropdownMenuItem onClick={onOpen}>
             <Users />

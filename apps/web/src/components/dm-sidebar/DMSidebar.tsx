@@ -26,7 +26,7 @@ export function DMSidebar() {
     )
 
     return (
-        <div className="flex h-[calc(100vh-var(--app-header-height))]">
+        <div className="flex h-full min-h-0">
             {isLoading ? (
                 <div className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto">
                     <DMSidebarSkeleton />

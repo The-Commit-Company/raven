@@ -4,8 +4,6 @@ import Profile from "./pages/settings/Profile"
 import Appearance from "./pages/settings/Appearance"
 import Preferences from "./pages/settings/Preferences"
 import Channel from "@pages/workspace/Channel"
-import MobileChannelSettings from "@components/features/channel/ChannelSettings/MobileChannelSettings"
-import ChannelMembers from "@components/features/channel/ChannelMembers/ChannelMembers"
 import Notifications from "@pages/notifications/Notifications"
 import SavedMessages from "@pages/saved-messages/SavedMessages"
 import Search from "@pages/search/Search"
@@ -84,14 +82,11 @@ function App() {
                   <Route index element={<WorkspaceRedirect />} />
                   <Route path=":id" element={<Channel />} />
                   <Route path=":id/thread/:threadID" element={<Channel />} />
-                  <Route path=":id/settings" element={<MobileChannelSettings />} />
-                  <Route path=":id/members" element={<ChannelMembers />} />
                 </Route>
                 <Route path="dm-channel" element={<DirectMessages />}>
                   <Route index element={<DirectMessagesIndex />} />
                   <Route path=":id" element={<DirectMessage />} />
                   <Route path=":id/thread/:threadID" element={<DirectMessage />} />
-                  <Route path=":id/settings" element={<MobileChannelSettings />} />
                 </Route>
                 <Route path="notifications" element={<Notifications />}>
                   <Route path=":id" element={<p>Chat drawer comes here</p>} />

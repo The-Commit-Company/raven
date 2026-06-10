@@ -10803,6 +10803,11 @@ react-hook-form@^7.77.0:
   resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.77.0.tgz#af7e1d90d00c0418a98cf00b6f9bd5b85587c6fb"
   integrity sha512-Sslh9YDYc0GDlWT/lxasnIduNo4v3yyvqRGvmGKUre5AFjDs/HV9/OafHGD8d+sB2yoL4UIL9L8X9i0WlZZebg==
 
+react-hotkeys-hook@^5.3.2:
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/react-hotkeys-hook/-/react-hotkeys-hook-5.3.2.tgz#7715fcc43dc4be6efefe04eca22f8faa0f799567"
+  integrity sha512-DDDy9xK6mbTQ6aPlQvIl0dA/a90T/AWml4Rm21JXFDLlRHalIg4/Rv3equUQYs5xPTWq+oEl6RD7mi/nBpU3Uw==
+
 react-icons@^5.6.0:
   version "5.6.0"
   resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-5.6.0.tgz#27bcc4acbc836e762548d76041cf9b9fef4e3837"

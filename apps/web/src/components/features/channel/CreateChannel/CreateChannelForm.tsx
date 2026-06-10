@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
 import { useForm, useWatch } from 'react-hook-form'
 import { Button } from '@components/ui/button'
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react'
@@ -102,20 +103,8 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
         }
     }, [currentStep])
 
-    // Handle keyboard shortcuts
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            // ESC key to close dialog
-            if (e.key === 'Escape' && !isSubmitting) {
-                onClose()
-            }
-        }
-
-        document.addEventListener('keydown', handleKeyDown)
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown)
-        }
-    }, [onClose, isSubmitting])
+    // ESC to close the dialog (disabled while submitting)
+    useHotkeys('esc', () => onClose(), { enabled: !isSubmitting, enableOnFormTags: true })
 
     const onSubmit = async (data: ChannelCreationForm) => {
         call({

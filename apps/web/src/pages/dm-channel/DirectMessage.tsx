@@ -53,12 +53,12 @@ export default function DirectMessage() {
                 channelID={channelID}
                 onViewProfile={() => setDrawerType('info')}
             />
-            {/* <ChatContentView
+            <ChatContentView
                 channelID={channelID}
                 messages={data?.messages ?? null}
                 isLoading={isLoading}
                 contextDrawer={contextDrawer}
-            /> */}
+            />
         </div>
     )
 }

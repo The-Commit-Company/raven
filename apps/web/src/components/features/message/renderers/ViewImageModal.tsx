@@ -11,7 +11,7 @@ import { Dialog, DialogPortal, DialogOverlay } from "@components/ui/dialog"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { UserAvatar } from "../UserAvatar"
 import { UserData } from "@db"
-import { useEffect } from "react"
+import { useHotkeys } from "react-hotkeys-hook"
 
 export interface ImageFile {
     name: string
@@ -46,30 +46,10 @@ const ViewImageModal = ({
     const currentImage =
         selectedImageIndex !== null ? images[selectedImageIndex] : null
 
-    // Keyboard navigation
-    useEffect(() => {
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if (selectedImageIndex === null) return
-
-            switch (event.key) {
-                case "ArrowLeft":
-                    event.preventDefault()
-                    onPrev()
-                    break
-                case "ArrowRight":
-                    event.preventDefault()
-                    onNext()
-                    break
-                case "Escape":
-                    event.preventDefault()
-                    onClose()
-                    break
-            }
-        }
-
-        document.addEventListener("keydown", handleKeyDown)
-        return () => document.removeEventListener("keydown", handleKeyDown)
-    }, [selectedImageIndex, onPrev, onNext, onClose])
+    // Keyboard navigation — Escape is handled by the Radix Dialog itself
+    const isOpen = selectedImageIndex !== null
+    useHotkeys("left", onPrev, { enabled: isOpen, preventDefault: true }, [onPrev])
+    useHotkeys("right", onNext, { enabled: isOpen, preventDefault: true }, [onNext])
 
     return (
         <Dialog open={selectedImageIndex !== null} onOpenChange={onClose}>

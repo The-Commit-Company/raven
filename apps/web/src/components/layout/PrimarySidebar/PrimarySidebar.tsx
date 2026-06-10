@@ -16,7 +16,7 @@ import { NavLink } from "react-router"
 const PrimarySidebar = () => {
     return (
         <TooltipProvider>
-            <div className="flex flex-col h-screen justify-between items-center border-r border-outline-gray-1 bg-surface-menu-bar w-(--primary-sidebar-width) py-4">
+            <div className="flex flex-col h-full shrink-0 justify-between items-center border-r border-outline-gray-1 bg-surface-menu-bar w-(--primary-sidebar-width) py-4">
                 <div className="flex flex-col items-center gap-3">
                     <NotificationsLink />
                     <DirectMessagesLink />

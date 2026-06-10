@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@components/ui/tabs';
 import { Button } from '@components/ui/button';
 import { Loader2, X } from 'lucide-react';
@@ -11,13 +12,11 @@ import _ from '@lib/translate';
 import { useChannelMembers } from '@hooks/useChannelMembers';
 import { useChannel } from '@hooks/useChannel.ts';
 import { hasRole } from '@lib/permissions.ts';
-import { useIsMobile } from '@hooks/use-mobile';
 
 const ChannelMembersDrawer = () => {
 
     const [activeTab, setActiveTab] = useState('members')
     const channelID = useCurrentChannelID()
-    const isMobile = useIsMobile()
     const [, setDrawerType] = useAtom(channelDrawerAtom(channelID))
     const { channel } = useChannel(channelID)
     const { members, memberIds, isLoading } = useChannelMembers(channelID)
@@ -32,19 +31,11 @@ const ChannelMembersDrawer = () => {
         return false;
     }, [channel]);
 
-    useEffect(() => {
-        const onKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') handleClose()
-        }
-        window.addEventListener('keydown', onKeyDown)
-        return () => window.removeEventListener('keydown', onKeyDown)
-    }, [])
+    useHotkeys('esc', () => handleClose(), { enableOnFormTags: true })
 
     const handleClose = () => {
         setDrawerType('')
     }
-
-    if (isMobile) return null
 
     if (!channel) {
         return null
@@ -53,7 +44,7 @@ const ChannelMembersDrawer = () => {
     const showTabs = channel?.type !== 'Open' && allowSettingChange
 
     return (
-        <div className="flex flex-col h-full max-w-md w-95">
+        <div className="flex flex-col h-full w-full">
             <div className="flex-1 overflow-hidden p-3">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col w-full h-full">
                     <div className="flex items-center justify-between shrink-0">

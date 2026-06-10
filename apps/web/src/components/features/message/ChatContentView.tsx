@@ -1,19 +1,19 @@
 import { RefObject, useRef } from "react"
 import { useParams, useSearchParams } from "react-router-dom"
 import { useInView } from "react-intersection-observer"
-import { useAtom, useAtomValue } from "jotai"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import ChatStream from "@components/features/message/ChatStream"
 import ChatInput from "@components/features/ChatInput/ChatInput"
 import ThreadDrawer from "@components/features/message/ThreadDrawer"
 import { PollDrawer } from "@components/features/message/renderers/PollDrawer"
 import { MessageListSkeleton } from "@components/features/dm-channel/DirectMessagePageSkeleton"
 import { ForwardThreadModal } from "@components/features/message/forward-thread/ForwardThreadModal"
-import { pollDrawerAtom, forwardThreadModalAtom } from "@utils/channelAtoms"
+import { Drawer, DrawerContent, DrawerTitle } from "@components/ui/drawer"
+import { pollDrawerAtom, forwardThreadModalAtom, channelDrawerAtom } from "@utils/channelAtoms"
 import { useScrollToBottom } from "@hooks/useScrollToBottom"
+import { useIsMobile } from "@hooks/use-mobile"
+import _ from "@lib/translate"
 import type { Message } from "@raven/types/common/Message"
-
-/** Clears the fixed ChannelHeader/DMChannelHeader that sits at the top of the content area. */
-const DEFAULT_CONTENT_PADDING_TOP = "40px"
 
 export interface ChatContentViewProps {
     /** Channel or DM channel id (useCurrentChannelID is used by ThreadDrawer/ChatInput etc.) */
@@ -24,8 +24,6 @@ export interface ChatContentViewProps {
     isLoading?: boolean
     /** Rendered when right drawer is not thread and not poll (e.g. channel settings/members or DM drawer). Parent computes based on local state/atoms. */
     contextDrawer: React.ReactNode
-    /** Top padding for the content row (defaults to app header + second header height) */
-    contentPaddingTop?: string
 }
 
 /**
@@ -37,16 +35,18 @@ export function ChatContentView({
     messages,
     isLoading = false,
     contextDrawer,
-    contentPaddingTop = DEFAULT_CONTENT_PADDING_TOP,
 }: ChatContentViewProps) {
     const chatInputRef = useRef<HTMLFormElement>(null)
     const scrollableRef = useRef<HTMLDivElement>(null)
 
+    const isMobile = useIsMobile()
     const { threadID } = useParams<{ threadID?: string }>()
     const [searchParams] = useSearchParams()
-    const isThreadFullscreen = !!threadID && searchParams.get("fullscreen") === "1"
+    // On mobile a thread always takes over the whole content area
+    const isThreadFullscreen = !!threadID && (isMobile || searchParams.get("fullscreen") === "1")
     const pollDrawerData = useAtomValue(pollDrawerAtom(channelID))
     const [, setPollDrawerData] = useAtom(pollDrawerAtom(channelID))
+    const setChannelDrawer = useSetAtom(channelDrawerAtom(channelID))
     const forwardThreadData = useAtomValue(forwardThreadModalAtom)
     const [, setForwardThreadData] = useAtom(forwardThreadModalAtom)
 
@@ -58,16 +58,15 @@ export function ChatContentView({
         scrollElementRef: scrollableRef as RefObject<HTMLElement>,
     })
 
-    const showDrawer = !!threadID || !!pollDrawerData || !!contextDrawer
-    const drawerWidth = threadID ? (isThreadFullscreen ? "w-full" : "w-1/2") : ""
+    // Desktop-only side rail; on mobile, poll/context drawers render as bottom sheets instead
+    const showSideRail = !isMobile && (!!threadID || !!pollDrawerData || !!contextDrawer)
+    // Right rail width contract: thread takes half the content area, poll/context drawers are a fixed column
+    const drawerWidth = threadID ? "w-1/2" : "w-95 max-w-[45%]"
 
     // Fullscreen thread: only render ThreadDrawer, nothing else
     if (isThreadFullscreen) {
         return (
-            <div
-                className="flex min-h-0 flex-1 flex-col overflow-hidden p-0"
-                style={{ paddingTop: contentPaddingTop }}
-            >
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
                 <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
                     <ThreadDrawer />
                 </div>
@@ -94,12 +93,9 @@ export function ChatContentView({
     }
 
     return (
-        <div
-            className="flex min-h-0 min-w-0 flex-1 flex-row gap-0 overflow-hidden p-0"
-            style={{ paddingTop: contentPaddingTop }}
-        >
+        <div className="flex min-h-0 min-w-0 flex-1 flex-row overflow-hidden">
             {/* Left: chat stream + input */}
-            <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col transition-all duration-300">
+            <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col">
                 <div
                     ref={scrollableRef}
                     className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-auto overscroll-y-auto"
@@ -119,12 +115,10 @@ export function ChatContentView({
                 </div>
             </div>
 
-            {/* Right: thread, poll, or context drawer */}
-            {!showDrawer ? (
-                <div className="w-0" />
-            ) : (
+            {/* Right (desktop): thread, poll, or context drawer */}
+            {showSideRail && (
                 <div
-                    className={`flex h-full min-h-0 shrink-0 flex-col border-l bg-surface-white transition-all duration-300 ${drawerWidth}`}
+                    className={`flex h-full min-h-0 shrink-0 flex-col border-l bg-surface-white ${drawerWidth}`}
                 >
                     {threadID ? (
                         <ThreadDrawer />
@@ -139,6 +133,31 @@ export function ChatContentView({
                         contextDrawer
                     )}
                 </div>
+            )}
+
+            {/* Mobile: same drawers, presented as bottom sheets */}
+            {isMobile && (
+                <>
+                    <Drawer open={!!pollDrawerData} onOpenChange={(open) => !open && setPollDrawerData(null)}>
+                        <DrawerContent className="h-[85dvh]">
+                            <DrawerTitle className="sr-only">{_("Poll")}</DrawerTitle>
+                            {pollDrawerData && (
+                                <PollDrawer
+                                    user={pollDrawerData.user}
+                                    poll={pollDrawerData.poll}
+                                    currentUserVotes={pollDrawerData.currentUserVotes}
+                                    onClose={() => setPollDrawerData(null)}
+                                />
+                            )}
+                        </DrawerContent>
+                    </Drawer>
+                    <Drawer open={!!contextDrawer && !pollDrawerData} onOpenChange={(open) => !open && setChannelDrawer('')}>
+                        <DrawerContent className="h-[85dvh]">
+                            <DrawerTitle className="sr-only">{_("Channel details")}</DrawerTitle>
+                            {contextDrawer}
+                        </DrawerContent>
+                    </Drawer>
+                </>
             )}
             {forwardThreadData && (
                 <ForwardThreadModal

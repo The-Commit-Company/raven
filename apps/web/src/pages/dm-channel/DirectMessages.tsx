@@ -47,13 +47,15 @@ export default function DirectMessages() {
     // On mobile, only show if there's no DM ID
     const shouldShowSidebar = !isMobile || !id
 
-    return <div className="flex flex-col h-full overflow-hidden w-full">
+    return <div className="flex flex-col h-full min-h-0 w-full">
         {shouldShowSidebar && <AppHeader title={_("Direct Messages")} />}
-        <div className="flex sm:flex-row flex-col">
-            {shouldShowSidebar && <div className="md:w-(--dm-sidebar-width) w-screen h-screen border-r border-outline-gray-1">
+        <div className="flex min-h-0 flex-1">
+            {shouldShowSidebar && <div className="md:w-(--dm-sidebar-width) w-full shrink-0 min-h-0 border-r border-outline-gray-1">
                 <DMSidebar />
             </div>}
-            <Outlet />
+            <div className="flex min-w-0 min-h-0 flex-1 flex-col">
+                <Outlet />
+            </div>
         </div>
         {!id && <AppMobileFooter />}
     </div>

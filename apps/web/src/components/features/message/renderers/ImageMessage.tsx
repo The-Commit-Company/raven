@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useRef } from "react"
+import { useHotkeys } from "react-hotkeys-hook"
 import { UserData } from "@db"
 import { UserAvatar } from "../UserAvatar"
 import { ChevronLeft, ChevronRight } from "lucide-react"
@@ -37,27 +38,9 @@ const ImageCarousel = ({ images, onImageClick }: { images: ImageFile[], onImageC
         setCurrentIndex((prev) => (prev - 1 + images.length) % images.length)
     }
 
-    // Keyboard navigation
-    useEffect(() => {
-        const handleKeyDown = (event: KeyboardEvent) => {
-            // Only handle if this specific carousel is hovered
-            if (!isHovered) return
-
-            switch (event.key) {
-                case "ArrowLeft":
-                    event.preventDefault()
-                    prevImage()
-                    break
-                case "ArrowRight":
-                    event.preventDefault()
-                    nextImage()
-                    break
-            }
-        }
-
-        document.addEventListener("keydown", handleKeyDown)
-        return () => document.removeEventListener("keydown", handleKeyDown)
-    }, [isHovered])
+    // Keyboard navigation — only while this specific carousel is hovered
+    useHotkeys("left", prevImage, { enabled: isHovered, preventDefault: true })
+    useHotkeys("right", nextImage, { enabled: isHovered, preventDefault: true })
 
     const currentImage = images[currentIndex]
 

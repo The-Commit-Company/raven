@@ -1172,7 +1172,7 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
             )}
 
             {/* Thread preview demos — shown at top of stream so they're visible */}
-            <DateSeparator label="Today" />
+            {/* <DateSeparator label="Today" />
             <MessageItem message={dummyForwardedThreadMessage} key={dummyForwardedThreadMessage.name} />
             <MessageItem message={dummyConvertedThreadMessage} key={dummyConvertedThreadMessage.name} />
 
@@ -1193,11 +1193,11 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                     onReactionClick={handleReactionClick}
                     onAddReaction={handleAddReaction}
                 />
-            </div>
+            </div> */}
 
 
 
-            <DateSeparator label="Yesterday" />
+            {/* <DateSeparator label="Yesterday" />
 
             <div>
                 <MessageReactions
@@ -1255,10 +1255,10 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 currentUserVotes={dummyCurrentUserVotes3}
                 time="11:31 AM"
                 name="msg-50"
-            />
+            /> */}
 
             {/* Example 1: Anonymous single choice poll (user hasn't voted) */}
-            <PollVotingMessage
+            {/* <PollVotingMessage
                 user={dummyUser2}
                 poll={dummyPoll4}
                 options={dummyPoll4.options}
@@ -1267,10 +1267,10 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 onOptionSelect={(option) => {
                     console.log("Selected option:", option)
                 }}
-            />
+            /> */}
 
             {/* Example 2: Multi choice poll (user hasn't voted) */}
-            <PollVotingMessage
+            {/* <PollVotingMessage
                 user={dummyUser3}
                 poll={dummyPoll5}
                 options={dummyPoll5.options}
@@ -1282,10 +1282,10 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 onSubmit={(selectedIds) => {
                     console.log("Submitted options:", selectedIds)
                 }}
-            />
+            /> */}
 
             {/* Example 3: Single choice poll (user hasn't voted) */}
-            <PollVotingMessage
+            {/* <PollVotingMessage
                 user={dummyUser4}
                 poll={dummyPoll6}
                 options={dummyPoll6.options}
@@ -1294,10 +1294,10 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 onOptionSelect={(option) => {
                     console.log("Selected option:", option)
                 }}
-            />
+            /> */}
 
             {/* Example 4: Multi choice poll (user hasn't voted) - Anonymous */}
-            <PollVotingMessage
+            {/* <PollVotingMessage
                 user={dummyUser5}
                 poll={dummyPoll7}
                 options={dummyPoll7.options}
@@ -1309,18 +1309,18 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 onSubmit={(selectedIds) => {
                     console.log("Submitted options:", selectedIds)
                 }}
-            />
+            /> */}
 
             {/* Example 5: Closed single choice poll (user hasn't voted) - Shows results */}
-            <PollMessage
+            {/* <PollMessage
                 user={dummyUser1}
                 poll={dummyPoll8}
                 currentUserVotes={[]}
                 time="12:20 PM"
                 name="msg-poll-5"
-            />
+            /> */}
 
-            <ImageMessage
+            {/* <ImageMessage
                 user={dummyUser1}
                 images={dummySingleImage}
                 time="11:35 AM"
@@ -1335,9 +1335,9 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 message="Here's the before and after comparison you asked for"
                 name="msg-59"
             />
+ */}
 
-
-            <ImageMessage
+            {/* <ImageMessage
                 user={dummyUser1}
                 images={dummyThreeImages}
                 time="11:45 AM"
@@ -1359,12 +1359,12 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 time="11:55 AM"
                 message="Complete project documentation and assets for all platforms"
                 name="msg-77"
-            />
+            /> */}
 
 
 
             {/* Single File */}
-            <FileMessageRenderer
+            {/* <FileMessageRenderer
                 user={dummyUser1}
                 files={{
                     fileName: "Q4_Financial_Report.pdf",
@@ -1373,12 +1373,12 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 }}
                 time="12:02 PM"
                 message="Here's the quarterly financial report for review"
-            />
+            /> */}
 
 
 
             {/* Two Files - 2x1 Grid */}
-            <FileMessageRenderer
+            {/* <FileMessageRenderer
                 user={dummyUser2}
                 files={[
                     {
@@ -1394,9 +1394,9 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 ]}
                 time="12:05 PM"
                 message="Updated project proposal and sales data"
-            />
+            /> */}
             {/* Three Files - 3x1 Grid */}
-            <FileMessageRenderer
+            {/* <FileMessageRenderer
                 user={dummyUser1}
                 files={[
                     {
@@ -1417,10 +1417,10 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 ]}
                 time="12:10 PM"
                 message="Presentation, recording, and background music for the demo"
-            />
+            /> */}
 
             {/* Four Files - 3x2 Grid */}
-            <FileMessageRenderer
+            {/* <FileMessageRenderer
                 user={dummyUser2}
                 files={[
                     {
@@ -1446,7 +1446,7 @@ export default function ChatStream({ messages = [] }: { messages?: Message[] }) 
                 ]}
                 time="12:15 PM"
                 message="All project files and documentation for the team"
-            />
+            /> */}
         </div>
     )
 }

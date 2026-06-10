@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useHotkeys } from "react-hotkeys-hook"
 import { X } from "lucide-react"
 import { Button } from "@components/ui/button"
 import { ScrollArea } from "@components/ui/scroll-area"
@@ -12,13 +12,7 @@ interface ChatDrawerProps {
 }
 
 export default function ChatDrawer({ channelID, messageID, onClose }: ChatDrawerProps) {
-    useEffect(() => {
-        const onKeyDown = (e: KeyboardEvent) => {
-            if (e.key === "Escape") onClose()
-        }
-        window.addEventListener("keydown", onKeyDown)
-        return () => window.removeEventListener("keydown", onKeyDown)
-    }, [onClose])
+    useHotkeys("esc", () => onClose(), { enableOnFormTags: true })
 
     return (
         <div className="flex flex-col h-full bg-surface-white">

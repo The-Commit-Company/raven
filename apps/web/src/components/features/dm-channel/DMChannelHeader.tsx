@@ -47,10 +47,6 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
     const isOnLeave = useIsUserOnLeave(peer.name)
 
     const openTab = (tab: Exclude<DrawerType, "" | "members">) => {
-        if (isMobile) {
-            navigate(`/dm-channel/${encodeURIComponent(channelID)}/settings?tab=${tab}`)
-            return
-        }
         if (tab === "info") {
             onViewProfile?.()
             return
@@ -60,7 +56,7 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
 
     return (
         <div
-            className="sticky top-0 flex items-center md:w-[calc(100vw-var(--dm-sidebar-width)-var(--primary-sidebar-width))] w-screen justify-between border-b bg-surface-white py-1.5 px-2 z-40"
+            className="flex w-full shrink-0 items-center justify-between border-b bg-surface-white py-1.5 px-2"
         >
             {isMobile && (
                 <Button
