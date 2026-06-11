@@ -36,8 +36,23 @@ export type DateBlock = {
     name: string
 }
 
-/** What the chat stream renders: messages (decorated with continuation/pinned flags) and date dividers. */
-export type StreamBlock = Message | DateBlock
+/**
+ * Consecutive messages sent as one batch (shared `message_batch_id`) — e.g.
+ * multiple files — rendered as a single visual block (album/file group).
+ */
+export type MessageBatchBlock = {
+    message_type: "batch"
+    /** `batch-` + the shared batch id. */
+    name: string
+    /** Creation of the first (oldest) member. */
+    creation: string
+    /** Members in ascending order; each is still individually addressable. */
+    messages: Message[]
+    is_continuation: 0 | 1
+}
+
+/** What the chat stream renders: messages (decorated with continuation/pinned flags), batches, and date dividers. */
+export type StreamBlock = Message | DateBlock | MessageBatchBlock
 
 export const MAX_WINDOW_SIZE = 300
 

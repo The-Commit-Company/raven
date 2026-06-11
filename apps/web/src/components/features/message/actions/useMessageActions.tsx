@@ -94,7 +94,11 @@ export const useMessageActions = (message: Message | null): MessageAction[][] =>
                 toast.success(_("Link copied"))
             },
         })
-        if (hasFile) {
+        // No menu Download for image-album members: the right-clicked spot doesn't
+        // reliably identify ONE image (gaps/captions resolve to the batch head),
+        // and the slideshow modal has an unambiguous per-image Download anyway.
+        const isImageBatchMember = message.message_type === "Image" && !!message.message_batch_id
+        if (hasFile && !isImageBatchMember) {
             clipboard.push({
                 id: "download",
                 label: _("Download"),

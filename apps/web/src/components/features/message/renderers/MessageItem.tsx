@@ -124,11 +124,11 @@ const NonContinuationMessageHeader = ({ message, shortTime, longTime }: { messag
 
     return <div className="flex items-start gap-3">
         {user ? <UserAvatar user={user} size="md" /> : (
-            <div className="h-9 w-9 shrink-0 rounded-full bg-surface-gray-2 flex items-center justify-center text-xs font-medium text-ink-gray-4">
+            <div className="h-8 w-8 shrink-0 rounded-full bg-surface-gray-2 flex items-center justify-center text-xs font-medium text-ink-gray-4">
                 {displayName.slice(0, 2).toUpperCase()}
             </div>
         )}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
             <div className="flex items-baseline gap-2">
                 <span className="font-medium text-sm">{displayName}</span>
                 <Tooltip delayDuration={300}>

@@ -5,7 +5,10 @@ import { UserAvatar } from "../UserAvatar"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@lib/utils"
 import { Button } from "@components/ui/button"
+import { Badge } from "@components/ui/badge"
 import ViewImageModal from "./ViewImageModal"
+import _ from "@lib/translate"
+import { ReservedImage } from "./ReservedImage"
 
 export interface ImageFile {
     name: string
@@ -14,6 +17,11 @@ export interface ImageFile {
     file_size: string
     file_type: string
     file_thumbnail?: string
+    /** Stored dimensions — used to reserve the image box before load. */
+    width?: number
+    height?: number
+    /** The Raven Message this image belongs to — lets action delegation target it. */
+    message_id?: string
 }
 
 export interface ImageMessageProps {
@@ -24,7 +32,7 @@ export interface ImageMessageProps {
     name: string
 }
 
-const ImageCarousel = ({ images, onImageClick }: { images: ImageFile[], onImageClick: (image: ImageFile) => void }) => {
+export const ImageCarousel = ({ images, onImageClick }: { images: ImageFile[], onImageClick: (image: ImageFile) => void }) => {
 
     const [currentIndex, setCurrentIndex] = useState(0)
     const [isHovered, setIsHovered] = useState(false)
@@ -50,21 +58,23 @@ const ImageCarousel = ({ images, onImageClick }: { images: ImageFile[], onImageC
             className="relative group"
             tabIndex={0}
             role="region"
-            aria-label="Image carousel"
+            aria-label={_("Image carousel")}
             aria-live="polite"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            {/* Main Image */}
+            {/* Main Image — fixed 3:2 box so the carousel never resizes between slides.
+                Slides are a VIEWING surface: object-contain shows the whole image,
+                letterboxed on the gray backing (grids stay object-cover — previews crop). */}
             <div
-                className="relative cursor-pointer overflow-hidden rounded-lg border border-outline-gray-2/60"
+                data-message-id={currentImage.message_id}
+                className="relative aspect-[3/2] cursor-pointer overflow-hidden rounded-lg bg-surface-gray-1"
                 onClick={() => onImageClick(images[currentIndex])}
             >
-                <img
+                <ReservedImage
                     src={currentImage.file_thumbnail || currentImage.file_url}
                     alt={currentImage.file_name}
-                    className="w-full h-auto max-h-96 object-cover"
-                    loading="lazy"
+                    className="object-contain"
                 />
 
                 {/* Navigation arrows */}
@@ -79,9 +89,9 @@ const ImageCarousel = ({ images, onImageClick }: { images: ImageFile[], onImageC
                                 e.stopPropagation()
                                 prevImage()
                             }}
-                            title="Previous image (←)"
+                            title={_("Previous image")}
                         >
-                            <ChevronLeft className="w-4 h-4" />
+                            <ChevronLeft />
                         </Button>
                         <Button
                             variant="subtle"
@@ -92,18 +102,18 @@ const ImageCarousel = ({ images, onImageClick }: { images: ImageFile[], onImageC
                                 e.stopPropagation()
                                 nextImage()
                             }}
-                            title="Next image (→)"
+                            title={_("Next image")}
                         >
-                            <ChevronRight className="w-4 h-4" />
+                            <ChevronRight />
                         </Button>
                     </>
                 )}
 
                 {/* Image counter */}
                 {images.length > 1 && (
-                    <div className="absolute top-2 right-2 bg-surface-black/70 text-white text-xs px-2 py-1 rounded z-10">
+                    <Badge size="md" variant="solid" theme="gray" className="absolute top-2 right-2 z-10">
                         {currentIndex + 1} / {images.length}
-                    </div>
+                    </Badge>
                 )}
             </div>
 
@@ -113,6 +123,7 @@ const ImageCarousel = ({ images, onImageClick }: { images: ImageFile[], onImageC
                     {images.map((image, index) => (
                         <div
                             key={image.name}
+                            title={image.file_name}
                             className={cn(
                                 "shrink-0 cursor-pointer border-2 rounded overflow-hidden transition-all duration-200",
                                 index === currentIndex
@@ -135,48 +146,82 @@ const ImageCarousel = ({ images, onImageClick }: { images: ImageFile[], onImageC
     )
 }
 
-const ImageGrid = ({ images, onImageClick }: { images: ImageFile[], onImageClick: (image: ImageFile) => void }) => {
-    const getGridClass = (count: number) => {
-        return count === 1 ? "grid-cols-1" : "grid-cols-2"
-    }
-
-    const getImageClass = (index: number, count: number) => {
-        if (count === 1) return "col-span-1"
-        if (count === 2) return "col-span-1"
-        if (count === 3) {
-            // For 3 images: first image takes full width, other 2 below
-            return index === 0 ? "col-span-2" : "col-span-1"
-        }
-        if (count === 4) {
-            // For 4 images: 2x2 grid
-            return "col-span-1"
-        }
-        return "col-span-1"
-    }
-
+export const ImageGrid = ({ images, onImageClick }: { images: ImageFile[], onImageClick: (image: ImageFile) => void }) => {
     const displayImages = images.slice(0, 4)
+    const layout = albumLayout(displayImages)
 
     return (
-        <div className={cn("grid gap-1", getGridClass(displayImages.length))}>
+        // One rounded silhouette: the container clips, tiles stay square-edged
+        // inside with hairline gaps — no per-tile borders or rounding
+        <div className={cn("grid gap-0.5 overflow-hidden rounded-lg", layout.container)}>
             {displayImages.map((image, index) => (
                 <div
                     key={image.name}
-                    className={cn(
-                        "relative cursor-pointer overflow-hidden rounded-lg border border-outline-gray-2/60 group",
-                        getImageClass(index, displayImages.length)
-                    )}
+                    data-message-id={image.message_id}
+                    className={cn("relative cursor-pointer overflow-hidden group", layout.tiles[index])}
                     onClick={() => onImageClick(image)}
                 >
-                    <img
+                    <ReservedImage
                         src={image.file_thumbnail || image.file_url}
                         alt={image.file_name}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
                     />
                 </div>
             ))}
         </div>
     )
+}
+
+type Orientation = "wide" | "tall" | "square"
+
+const orientationOf = (image: ImageFile): Orientation => {
+    if (!image.width || !image.height) return "square"
+    const ratio = image.width / image.height
+    if (ratio > 1.2) return "wide"
+    if (ratio < 0.8) return "tall"
+    return "square"
+}
+
+/**
+ * Telegram/WhatsApp-style aspect-aware album templates. Send order is always
+ * preserved — only the arrangement adapts to the images' orientations. Every
+ * slot has a fixed aspect derived from the stored dimensions, so the album's
+ * geometry is fully determined before any image loads.
+ */
+const albumLayout = (images: ImageFile[]): { container: string; tiles: string[] } => {
+    const count = images.length
+    const first = orientationOf(images[0])
+
+    if (count === 2) {
+        const second = orientationOf(images[1])
+        // Two landscapes stack; two portraits sit side by side at portrait aspect
+        if (first === "wide" && second === "wide") {
+            return { container: "grid-cols-1", tiles: ["aspect-[2/1]", "aspect-[2/1]"] }
+        }
+        if (first === "tall" && second === "tall") {
+            return { container: "grid-cols-2", tiles: ["aspect-[3/4]", "aspect-[3/4]"] }
+        }
+        return { container: "grid-cols-2", tiles: ["aspect-square", "aspect-square"] }
+    }
+
+    if (count === 3) {
+        // Landscape lead goes on top full-width; portrait/square lead goes tall-left
+        if (first === "wide") {
+            return { container: "grid-cols-2", tiles: ["col-span-2 aspect-[2/1]", "aspect-square", "aspect-square"] }
+        }
+        return { container: "grid-cols-2", tiles: ["row-span-2 h-full", "aspect-square", "aspect-square"] }
+    }
+
+    // 4 images: landscape lead gets a cinematic top row, otherwise a 2×2 grid
+    if (first === "wide") {
+        return {
+            container: "grid-cols-3",
+            tiles: ["col-span-3 aspect-[21/9]", "aspect-square", "aspect-square", "aspect-square"],
+        }
+    }
+    return {
+        container: "grid-cols-2",
+        tiles: ["aspect-square", "aspect-square", "aspect-square", "aspect-square"],
+    }
 }
 
 const ImageMessage = ({ user, images, time, message, name }: ImageMessageProps) => {
@@ -210,8 +255,8 @@ const ImageMessage = ({ user, images, time, message, name }: ImageMessageProps) 
                 <UserAvatar user={user} size="md" />
                 <div className="flex-1">
                     <div className="flex items-baseline gap-2">
-                        <span className="font-medium text-sm">{user?.full_name || user?.name || "User"}</span>
-                        <span className="text-xs font-light text-ink-gray-4/90">{time}</span>
+                        <span className="font-medium text-sm">{user?.full_name || user?.name || _("User")}</span>
+                        <span className="text-xs font-regular text-ink-gray-4/90">{time}</span>
                     </div>
 
                     {message && (
@@ -222,7 +267,7 @@ const ImageMessage = ({ user, images, time, message, name }: ImageMessageProps) 
                     <div className="max-w-2xl">
                         {images.length === 1 ? (
                             <div
-                                className="cursor-pointer overflow-hidden rounded-lg border border-outline-gray-2/60"
+                                className="cursor-pointer overflow-hidden rounded-lg border border-outline-gray-1"
                                 onClick={() => handleImageClick(images[0])}
                             >
                                 <img

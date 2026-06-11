@@ -5,6 +5,7 @@ import { ArrowDown, LoaderCircle } from "lucide-react"
 import DateSeparator from "./renderers/DateSeparator"
 import SystemMessage from "./renderers/SystemMessage"
 import { MessageItem } from "./renderers/MessageItem"
+import { BatchMessageItem } from "./renderers/BatchMessageItem"
 import { MessageListSkeleton } from "@components/features/dm-channel/DirectMessagePageSkeleton"
 import { Button } from "@components/ui/button"
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@components/ui/empty"
@@ -166,6 +167,20 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
                             {blocks.map((block) =>
                                 block.message_type === "date" ? (
                                     <DateSeparator label={block.creation} key={block.name} />
+                                ) : block.message_type === "batch" ? (
+                                    <div
+                                        key={block.name}
+                                        data-message-id={block.messages[0].name}
+                                        className={cn(
+                                            "flex flex-col rounded-md transition-colors duration-700",
+                                            block.messages.some((member) => member.name === highlightedID) &&
+                                                "bg-surface-amber-2",
+                                            block.messages.some((member) => member.name === actionTarget?.name) &&
+                                                "bg-surface-gray-2",
+                                        )}
+                                    >
+                                        <BatchMessageItem block={block} onInView={onMessageInView} />
+                                    </div>
                                 ) : block.message_type === "System" ? (
                                     <SystemMessage
                                         message={block.text ?? ""}
@@ -180,7 +195,7 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
                                         // after paint and break exact scroll compensation on prepend.
                                         className={cn(
                                             "flex flex-col rounded-md transition-colors duration-700",
-                                            highlightedID === block.name && "bg-amber-100 dark:bg-amber-400/15",
+                                            highlightedID === block.name && "bg-surface-amber-2",
                                             actionTarget?.name === block.name && "bg-surface-gray-2",
                                         )}
                                     >

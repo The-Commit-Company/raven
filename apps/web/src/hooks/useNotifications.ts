@@ -43,7 +43,7 @@ export const useUnreadNotificationsCount = () => {
         "raven.api.notifications.get_unread_notifications_count",
         undefined,
         UNREAD_COUNT_KEY,
-        { revalidateOnFocus: true, revalidateIfStale: false }
+        { revalidateOnFocus: true, revalidateIfStale: false, dedupingInterval: 2 * 60 * 1000 }
     )
 }
 

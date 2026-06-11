@@ -40,8 +40,10 @@ export const MessageContent = ({ message }: { message: Message }) => {
         return null
     }, [message.replied_message_details])
 
+    // min-w-0: without it this flex column can't shrink below its content, so
+    // fixed-width media overflows narrow (mobile) columns and gets clipped
     return (
-        <div className="flex-1 space-y-1">
+        <div className="flex-1 min-w-0 space-y-1">
             {message.is_pinned === 1 && <MessageAttributeIndicator attribute={_("Pinned")} Icon={PinIcon} />}
             {message.is_forwarded === 1 && <MessageAttributeIndicator attribute={_("forwarded")} Icon={ForwardIcon} />}
             {message.is_edited === 1 && <MessageAttributeIndicator attribute={_("edited")} Icon={PencilIcon} />}

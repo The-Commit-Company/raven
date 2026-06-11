@@ -299,10 +299,23 @@ class RavenMessage(Document):
 		raven_channel = frappe.qb.DocType("Raven Channel")
 		query = (
 			frappe.qb.update(raven_channel)
-			.where(raven_channel.name == self.channel_id)
+			.where(
+				(raven_channel.name == self.channel_id)
+				# Newest-message-wins: a slower-committing older message must not
+				# overwrite a newer message's timestamp (parallel file uploads)
+				& (
+					raven_channel.last_message_timestamp.isnull()
+					| (raven_channel.last_message_timestamp <= self.creation)
+				)
+			)
 			.set(raven_channel.last_message_timestamp, self.creation)
 			.set(raven_channel.last_message_details, message_details)
 		)
+		# NOTE: concurrent updates to hot rows like this one require
+		# innodb_snapshot_isolation=OFF on MariaDB 11.6+ (the default ON turns
+		# lock waits into transaction-fatal 1020 errors). Frappe's denormalized
+		# write patterns (this, track_channel_visit, reply counts) all assume
+		# classic REPEATABLE READ semantics.
 		query.run()
 
 		return message_details

@@ -87,6 +87,55 @@ describe("selectStreamBlocks", () => {
         expect(selectStreamBlocks(state, "")).toBe(selectStreamBlocks(state, ""))
     })
 
+    it("groups consecutive messages sharing a batch id into one batch block", () => {
+        const state = stateOf([
+            msg("a", "2026-06-10 10:00:00.000000", { message_batch_id: "b1", message_type: "Image" }),
+            msg("b", "2026-06-10 10:00:01.000000", { message_batch_id: "b1", message_type: "Image" }),
+            msg("c", "2026-06-10 10:00:02.000000", { message_batch_id: "b1", message_type: "Image" }),
+            msg("d", "2026-06-10 10:05:00.000000"),
+        ])
+        const blocks = selectStreamBlocks(state)
+        expect(blocks.map((b) => b.message_type)).toEqual(["date", "batch", "Text"])
+        const batch = blocks[1] as Extract<(typeof blocks)[number], { message_type: "batch" }>
+        expect(batch.messages.map((m) => m.name)).toEqual(["a", "b", "c"])
+        // 'd' continues from the batch's LAST member (1 min earlier? no — 5 min gap → not continuation)
+        expect((blocks[2] as Message).is_continuation).toBe(0)
+    })
+
+    it("marks a message following a batch as continuation relative to the batch's last member", () => {
+        const state = stateOf([
+            msg("a", "2026-06-10 10:00:00.000000", { message_batch_id: "b1" }),
+            msg("b", "2026-06-10 10:00:01.000000", { message_batch_id: "b1" }),
+            msg("c", "2026-06-10 10:01:00.000000"),
+        ])
+        const blocks = selectStreamBlocks(state)
+        expect((blocks[2] as Message).is_continuation).toBe(1)
+    })
+
+    it("does not group messages without batch ids or with different batch ids", () => {
+        const state = stateOf([
+            msg("a", "2026-06-10 10:00:00.000000"),
+            msg("b", "2026-06-10 10:00:01.000000"),
+            msg("c", "2026-06-10 10:00:02.000000", { message_batch_id: "b1" }),
+            msg("d", "2026-06-10 10:00:03.000000", { message_batch_id: "b2" }),
+        ])
+        const blocks = selectStreamBlocks(state)
+        // No batch blocks: a+b have no ids, c and d are single-member batches
+        expect(blocks.filter((b) => b.message_type === "batch")).toEqual([])
+        expect(blocks.length).toBe(5) // date + 4 messages
+    })
+
+    it("breaks a batch when another sender's message interleaves", () => {
+        const state = stateOf([
+            msg("a", "2026-06-10 10:00:00.000000", { message_batch_id: "b1" }),
+            msg("x", "2026-06-10 10:00:01.000000", { owner: "bob" }),
+            msg("b", "2026-06-10 10:00:02.000000", { message_batch_id: "b1" }),
+        ])
+        const blocks = selectStreamBlocks(state)
+        // Two separate fragments around the interloper, neither big enough to batch
+        expect(blocks.filter((b) => b.message_type === "batch")).toEqual([])
+    })
+
     it("preserves block identity for unchanged messages across state changes", () => {
         const state = stateOf([
             msg("a", "2026-06-10 10:00:00.000000"),

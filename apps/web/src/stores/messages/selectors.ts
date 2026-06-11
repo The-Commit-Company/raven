@@ -1,6 +1,6 @@
 import type { Message } from "@raven/types/common/Message"
 import { getDateObject } from "@lib/date"
-import { ChannelMessagesState, DateBlock, StreamBlock } from "./types"
+import { ChannelMessagesState, DateBlock, MessageBatchBlock, StreamBlock } from "./types"
 
 /**
  * Derives the render list for the chat stream: messages in ascending order,
@@ -74,20 +74,57 @@ const parsePinnedIds = (pinnedMessagesString: string): Set<string> => {
     )
 }
 
+/** Messages batch together when sent as one batch by one sender on one day. */
+const isBatchMemberOf = (message: Message, head: Message): boolean => {
+    return (
+        message.message_batch_id === head.message_batch_id &&
+        senderOf(message) === senderOf(head) &&
+        dateKeyOf(message) === dateKeyOf(head)
+    )
+}
+
 const buildBlocks = (state: ChannelMessagesState, pinnedMessagesString: string): StreamBlock[] => {
     const pinnedIds = parsePinnedIds(pinnedMessagesString)
-    const blocks: StreamBlock[] = []
-    let previous: Message | null = null
+    const messages: Message[] = []
     for (const id of state.order) {
         const message = state.byId.get(id)
-        if (!message) continue
+        if (message) messages.push(message)
+    }
+
+    const blocks: StreamBlock[] = []
+    let previous: Message | null = null
+    for (let index = 0; index < messages.length; index++) {
+        const message = messages[index]
         const dateKey = dateKeyOf(message)
         if (!previous || dateKeyOf(previous) !== dateKey) {
             blocks.push(dateBlockFor(dateKey))
         }
         const isContinuation = isContinuationOf(message, previous) ? 1 : 0
-        const isPinned = pinnedIds.has(message.name) ? 1 : 0
-        blocks.push(decorate(message, isContinuation, isPinned))
+
+        // Consume a run of consecutive same-batch messages into one block
+        if (message.message_batch_id) {
+            const members = [message]
+            while (index + 1 < messages.length && isBatchMemberOf(messages[index + 1], message)) {
+                members.push(messages[++index])
+            }
+            if (members.length > 1) {
+                const batch: MessageBatchBlock = {
+                    message_type: "batch",
+                    name: `batch-${message.message_batch_id}`,
+                    creation: message.creation,
+                    messages: members.map((member) =>
+                        decorate(member, isContinuation, pinnedIds.has(member.name) ? 1 : 0),
+                    ),
+                    is_continuation: isContinuation,
+                }
+                blocks.push(batch)
+                // The next message's continuation compares against the batch's last member
+                previous = members[members.length - 1]
+                continue
+            }
+        }
+
+        blocks.push(decorate(message, isContinuation, pinnedIds.has(message.name) ? 1 : 0))
         previous = message
     }
     return blocks

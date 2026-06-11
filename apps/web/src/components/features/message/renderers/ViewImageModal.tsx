@@ -14,6 +14,7 @@ import { UserData } from "@db"
 import { useHotkeys } from "react-hotkeys-hook"
 import _ from "@lib/translate"
 import { toast } from "sonner"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
 
 export interface ImageFile {
     name: string
@@ -33,6 +34,18 @@ interface ViewImageModalProps {
     onImageSelect: (index: number) => void
     onNext: () => void
     onPrev: () => void
+}
+
+/** Fetches a (session-authenticated) file URL into a File for the Web Share API. */
+const fetchAsFile = async (url: string, fileName: string): Promise<File | null> => {
+    try {
+        const response = await fetch(url, { credentials: "include" })
+        if (!response.ok) return null
+        const blob = await response.blob()
+        return new File([blob], fileName || "image", { type: blob.type })
+    } catch {
+        return null
+    }
 }
 
 const ViewImageModal = ({
@@ -62,20 +75,31 @@ const ViewImageModal = ({
         anchor.click()
     }
 
-    /** Native share sheet where available, copy-link fallback elsewhere. */
+    /**
+     * Shares the image FILE itself where the platform allows it (the recipient
+     * gets the image, not a link needing a Raven session). Falls back to a URL
+     * share, then to copying the link. The image is already displayed at full
+     * resolution, so the fetch is served from the browser cache.
+     */
     const shareImage = async () => {
         if (!currentImage) return
         const url = new URL(currentImage.file_url, window.location.origin).href
-        if (navigator.share) {
-            try {
-                await navigator.share({ title: currentImage.file_name, url })
-            } catch {
-                // user dismissed the share sheet
-            }
-        } else {
-            await navigator.clipboard.writeText(url)
-            toast.success(_("Link copied"))
+
+        const file = await fetchAsFile(url, currentImage.file_name)
+        if (file && navigator.canShare?.({ files: [file] })) {
+            await navigator.share({ files: [file] }).catch(() => {
+                // user dismissed the share sheet — not a failure, no fallback
+            })
+            return
         }
+
+        if (navigator.share) {
+            await navigator.share({ title: currentImage.file_name, url }).catch(() => { })
+            return
+        }
+
+        await navigator.clipboard.writeText(url)
+        toast.success(_("Link copied"))
     }
 
     return (
@@ -89,11 +113,11 @@ const ViewImageModal = ({
                     <DialogDescription className="sr-only">{_("View Image")}</DialogDescription>
 
                     {/* Header */}
-                    <div className="flex items-center justify-between border-b bg-surface-white pb-2">
+                    <div className="flex items-center justify-between pb-4">
                         <div className="flex items-center gap-2 min-w-0">
                             <UserAvatar user={user} size="md" />
                             <div className="min-w-0">
-                                <div className="flex items-baseline gap-2">
+                                <div className="flex flex-col items-baseline gap-1">
                                     <h3 className="font-medium text-sm truncate text-ink-gray-8">
                                         {user?.full_name || user?.name || _("User")}
                                     </h3>
@@ -105,9 +129,15 @@ const ViewImageModal = ({
                         </div>
                         {currentImage && (
                             <div className="flex flex-wrap items-baseline gap-2">
-                                <span className="truncate max-w-45 text-base font-medium">
-                                    {currentImage.file_name}
-                                </span>
+                                <Tooltip>
+                                    <TooltipTrigger className="truncate max-w-64 text-base font-medium">
+                                        {currentImage.file_name}
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        {currentImage.file_name}
+                                    </TooltipContent>
+                                </Tooltip>
+
                                 {currentImage.file_size && (
                                     <Badge size="sm" variant="subtle" theme="gray">
                                         {currentImage.file_size}
@@ -124,13 +154,13 @@ const ViewImageModal = ({
                                 </>
                             )}
                             <div className="flex items-center gap-2">
-                                <Button variant="ghost" size="sm" isIconButton aria-label={_("Download")} onClick={downloadImage}>
+                                <Button variant="ghost" size="sm" isIconButton title={_("Download")} aria-label={_("Download")} onClick={downloadImage}>
                                     <Download />
                                 </Button>
-                                <Button variant="ghost" size="sm" isIconButton aria-label={_("Share")} onClick={shareImage}>
+                                <Button variant="ghost" size="sm" isIconButton title={_("Share")} aria-label={_("Share")} onClick={shareImage}>
                                     <Share2 />
                                 </Button>
-                                <Button variant="ghost" size="sm" isIconButton aria-label={_("Close")} onClick={onClose}>
+                                <Button variant="ghost" size="sm" isIconButton title={_("Close")} aria-label={_("Close")} onClick={onClose}>
                                     <X />
                                 </Button>
                             </div>
@@ -147,7 +177,7 @@ const ViewImageModal = ({
                         <>
                             <Button
                                 variant="subtle"
-                                size="sm"
+                                size="md"
                                 isIconButton
                                 onClick={onPrev}
                                 className="absolute left-4 top-1/2 -translate-y-1/2 z-10"
@@ -157,7 +187,7 @@ const ViewImageModal = ({
                             </Button>
                             <Button
                                 variant="subtle"
-                                size="sm"
+                                size="md"
                                 isIconButton
                                 onClick={onNext}
                                 className="absolute right-4 top-1/2 -translate-y-1/2 z-10"
