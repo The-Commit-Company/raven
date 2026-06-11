@@ -104,7 +104,7 @@ export const MessageItem = ({ message, onInView }: { message: Message; onInView?
         <ContextMenuTrigger
             ref={ref}
             data-message-id={message.name}
-            className={cn("group/message-item w-full overflow-hidden relative hover:bg-surface-gray-2/30 py-3 rounded-md px-3.5 transition-all duration-200",
+            className={cn("group/message-item w-full overflow-hidden relative hover:bg-surface-gray-2/30 py-2 rounded-md px-3.5 transition-all duration-200",
                 "data-[state=open]:bg-surface-gray-2/50"
             )}
         >
@@ -184,7 +184,7 @@ const NonContinuationMessageHeader = ({ message, shortTime, longTime }: { messag
 const ContinuationMessageHeader = ({ message }: { message: Message }) => {
 
     return <div className="flex items-start gap-3">
-        <div className="w-8 h-8 min-w-8 min-h-8">
+        <div className="w-8 min-w-8">
         </div>
         <MessageContent message={message} />
     </div>

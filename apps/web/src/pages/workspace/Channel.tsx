@@ -5,13 +5,11 @@ import { ChatContentView } from "@components/features/message/ChatContentView"
 import { useAtomValue } from "jotai"
 import { channelDrawerAtom } from "@utils/channelAtoms"
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
-import { useGetMessages } from "@hooks/useGetMessages"
 
 export const SETTINGS_DRAWER_TYPES = ["info", "files", "links", "threads", "pins"] as const
 
 export default function Channel() {
     const channelID = useCurrentChannelID()
-    const { data, isLoading } = useGetMessages(channelID)
     const drawerType = useAtomValue(channelDrawerAtom(channelID))
 
     const contextDrawer =
@@ -26,8 +24,6 @@ export default function Channel() {
             <ChannelHeader />
             {/* <ChatContentView
                 channelID={channelID}
-                messages={data?.messages}
-                isLoading={isLoading}
                 contextDrawer={contextDrawer}
             /> */}
         </div>

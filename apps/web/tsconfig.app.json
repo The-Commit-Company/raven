@@ -50,6 +50,9 @@
       "@utils/*": [
         "./src/utils/*"
       ],
+      "@stores/*": [
+        "./src/stores/*"
+      ],
       "@db": [
         "./src/db/db"
       ]

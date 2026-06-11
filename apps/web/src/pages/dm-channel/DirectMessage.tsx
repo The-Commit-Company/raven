@@ -3,7 +3,6 @@ import { DMChannelHeader } from "@components/features/dm-channel/DMChannelHeader
 import ChannelSettingsDrawer from "@components/features/channel/ChannelSettingsDrawer/ChannelSettingsDrawer"
 import { DirectMessagePageSkeleton } from "@components/features/dm-channel/DirectMessagePageSkeleton"
 import { ChatContentView } from "@components/features/message/ChatContentView"
-import { useGetMessages } from "@hooks/useGetMessages"
 import { useUser } from "@hooks/useUser"
 import { useAtomValue, useSetAtom } from "jotai"
 import { channelDrawerAtom } from "@utils/channelAtoms"
@@ -20,7 +19,6 @@ export default function DirectMessage() {
     const setDrawerType = useSetAtom(channelDrawerAtom(channelID))
 
     const { data: peerUser, isLoading: isPeerUserLoading } = useUser(dmChannel?.peer_user_id || "")
-    const { data, isLoading } = useGetMessages(channelID)
 
     const contextDrawer =
         SETTINGS_DRAWER_TYPES.includes(drawerType as (typeof SETTINGS_DRAWER_TYPES)[number]) && peerUser ? (
@@ -31,7 +29,7 @@ export default function DirectMessage() {
         return <Navigate to="/dm-channel" replace />
     }
 
-    if (isPeerUserLoading && !isLoading) {
+    if (isPeerUserLoading) {
         return <DirectMessagePageSkeleton />
     }
 
@@ -55,8 +53,7 @@ export default function DirectMessage() {
             />
             <ChatContentView
                 channelID={channelID}
-                messages={data?.messages ?? null}
-                isLoading={isLoading}
+                pinnedMessagesString={dmChannel?.pinned_messages_string}
                 contextDrawer={contextDrawer}
             />
         </div>

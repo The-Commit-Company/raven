@@ -23,6 +23,7 @@ export default defineConfig({
       "@hooks": path.resolve(__dirname, "./src/hooks"),
       "@pages": path.resolve(__dirname, "./src/pages"),
       "@utils": path.resolve(__dirname, "./src/utils"),
+      "@stores": path.resolve(__dirname, "./src/stores"),
       "@assets": path.resolve(__dirname, "./src/assets"),
       "@raven/types": path.resolve(__dirname, "../../packages/types"),
       "@raven/lib": path.resolve(__dirname, "../../packages/lib"),

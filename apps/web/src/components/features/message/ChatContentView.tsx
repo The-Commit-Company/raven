@@ -1,25 +1,18 @@
-import { RefObject, useRef } from "react"
 import { useOutlet } from "react-router-dom"
-import { useInView } from "react-intersection-observer"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import ChatStream from "@components/features/message/ChatStream"
 import ChatInput from "@components/features/ChatInput/ChatInput"
 import { PollDrawer } from "@components/features/message/renderers/PollDrawer"
-import { MessageListSkeleton } from "@components/features/dm-channel/DirectMessagePageSkeleton"
 import { Drawer, DrawerContent, DrawerTitle } from "@components/ui/drawer"
 import { pollDrawerAtom, channelDrawerAtom } from "@utils/channelAtoms"
-import { useScrollToBottom } from "@hooks/useScrollToBottom"
 import { useIsMobile } from "@hooks/use-mobile"
 import _ from "@lib/translate"
-import type { Message } from "@raven/types/common/Message"
 
 export interface ChatContentViewProps {
     /** Channel or DM channel id (useCurrentChannelID is used by ThreadDrawer/ChatInput etc.) */
     channelID: string
-    /** Messages for the stream; when undefined/empty and not loading, stream still renders */
-    messages?: Message[] | null
-    /** When true, show skeleton instead of ChatStream */
-    isLoading?: boolean
+    /** Newline-separated pinned message ids, passed through to the stream. */
+    pinnedMessagesString?: string
     /** Rendered when right drawer is not thread and not poll (e.g. channel settings/members or DM drawer). Parent computes based on local state/atoms. */
     contextDrawer: React.ReactNode
 }
@@ -30,27 +23,15 @@ export interface ChatContentViewProps {
  */
 export function ChatContentView({
     channelID,
-    messages,
-    isLoading = false,
+    pinnedMessagesString,
     contextDrawer,
 }: ChatContentViewProps) {
-    const chatInputRef = useRef<HTMLFormElement>(null)
-    const scrollableRef = useRef<HTMLDivElement>(null)
-
     const isMobile = useIsMobile()
     // Child route content (the thread drawer). Threads are routes; everything else in the rail is atom state.
     const threadDrawer = useOutlet()
     const pollDrawerData = useAtomValue(pollDrawerAtom(channelID))
     const [, setPollDrawerData] = useAtom(pollDrawerAtom(channelID))
     const setChannelDrawer = useSetAtom(channelDrawerAtom(channelID))
-
-    const [startRef] = useInView({})
-    const [endRef] = useInView()
-
-    useScrollToBottom({
-        stickyRef: chatInputRef as RefObject<HTMLElement>,
-        scrollElementRef: scrollableRef as RefObject<HTMLElement>,
-    })
 
     // Desktop-only side rail; on mobile, poll/context drawers render as bottom sheets instead
     const showSideRail = !isMobile && (!!threadDrawer || !!pollDrawerData || !!contextDrawer)
@@ -70,22 +51,9 @@ export function ChatContentView({
         <div className="flex min-h-0 min-w-0 flex-1 flex-row overflow-hidden">
             {/* Left: chat stream + input */}
             <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col">
-                <div
-                    ref={scrollableRef}
-                    className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-auto overscroll-y-auto"
-                >
-                    <div className="flex min-w-0 w-full flex-1 flex-col lg:mx-auto">
-                        <div className="left-0 right-0 -mb-px h-px flex-none" ref={startRef} />
-                        {isLoading ? (
-                            <MessageListSkeleton />
-                        ) : (
-                            <ChatStream messages={messages ?? undefined} />
-                        )}
-                        <div className="left-0 right-0 -mt-px h-px flex-none" ref={endRef} />
-                    </div>
-                </div>
+                <ChatStream channelID={channelID} pinnedMessagesString={pinnedMessagesString} />
                 <div className="shrink-0">
-                    <ChatInput channelID={channelID} ref={chatInputRef} />
+                    <ChatInput channelID={channelID} />
                 </div>
             </div>
 

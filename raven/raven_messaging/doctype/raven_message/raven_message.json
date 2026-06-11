@@ -203,12 +203,6 @@
    "fieldname": "blurhash",
    "fieldtype": "Small Text",
    "label": "Blurhash"
-  },
-  {
-   "fieldname": "links",
-   "fieldtype": "Table",
-   "label": "Links",
-   "options": "Raven Message Links"
   }
  ],
  "index_web_pages_for_search": 1,
