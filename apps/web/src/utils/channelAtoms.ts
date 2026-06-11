@@ -17,3 +17,11 @@ export type PollDrawerData = {
 } | null
 
 export const pollDrawerAtom = atomFamily((_channelID: string) => atom<PollDrawerData>(null))
+
+/**
+ * Message id the chat stream should navigate to (reply click, ?message_id deep
+ * link, pinned/search results later). The stream consumes it: scrolls directly
+ * when the message is in the loaded window, fetches around it otherwise, then
+ * highlights it and resets this to null.
+ */
+export const messageTargetAtom = atomFamily((_channelID: string) => atom<string | null>(null))

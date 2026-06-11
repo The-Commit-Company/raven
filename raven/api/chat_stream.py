@@ -20,7 +20,7 @@ def get_messages(channel_id: str, limit: int = 20, base_message: str | None = No
 
 	# Fetch messages for the channel
 	if base_message and frappe.db.exists("Raven Message", base_message):
-		return get_messages_around_base(channel_id, base_message)
+		return get_messages_around_base(channel_id, base_message, limit)
 
 	# Cannot use `get_all` as it does not apply the `order_by` clause to multiple fields
 	message = frappe.qb.DocType("Raven Message")
@@ -87,17 +87,19 @@ def get_messages(channel_id: str, limit: int = 20, base_message: str | None = No
 	}
 
 
-def get_messages_around_base(channel_id: str, base_message: str):
+def get_messages_around_base(channel_id: str, base_message: str, limit: int = 20):
 	"""
-	Get 10 messages before base message and 10 messages after
+	Get messages around the base message — half the limit on each side
+	(the newer half includes the base message itself)
 	"""
 	# Fetch older messages for the channel
 	from_timestamp = frappe.get_cached_value("Raven Message", base_message, "creation")
+	half_limit = max(limit // 2, 1)
 
 	# TODO: Optimize this to use a complex SQL query to fetch around the main message
-	older_messages = fetch_older_messages(channel_id, base_message, from_timestamp, 10)
+	older_messages = fetch_older_messages(channel_id, base_message, from_timestamp, half_limit)
 	newer_messages = fetch_newer_messages(
-		channel_id, base_message, from_timestamp, 10, include_from_message=True
+		channel_id, base_message, from_timestamp, half_limit, include_from_message=True
 	)
 
 	combined_messages = newer_messages.get("messages", []) + older_messages.get("messages", [])

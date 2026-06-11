@@ -4,6 +4,8 @@ import { ChartColumnIcon } from "lucide-react"
 import FileTypeIcon from "@components/common/FileIcons/FileTypeIcon"
 import { getFileExtension, getFileName } from "@raven/lib/utils/operations"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@components/ui/hover-card"
+import { useSetAtom } from "jotai"
+import { messageTargetAtom } from "@utils/channelAtoms"
 import parse from 'html-react-parser';
 
 interface RepliedMessageDetails {
@@ -16,16 +18,31 @@ interface RepliedMessageDetails {
 }
 
 export default function ReplyMessage({
-    repliedMessage
+    repliedMessage,
+    channelID,
+    linkedMessageID,
 }: {
     repliedMessage: RepliedMessageDetails
+    /** Channel the quoted message lives in (replies are always in-channel). */
+    channelID: string
+    /** Id of the original message — clicking the card jumps the stream to it. */
+    linkedMessageID?: string | null
 }) {
 
     const { data: user } = useUser(repliedMessage.owner)
+    const setMessageTarget = useSetAtom(messageTargetAtom(channelID))
+
+    const jumpToOriginal = () => {
+        if (linkedMessageID) setMessageTarget(linkedMessageID)
+    }
 
     return (
         <div className="py-0.5">
-            <div className="border-l-2 cursor-pointer border-outline-gray-3 bg-surface-gray-2/60 pl-3 py-2 flex flex-col gap-1" role='button'>
+            <div
+                className="border-l-2 cursor-pointer border-outline-gray-3 bg-surface-gray-2/60 pl-3 py-2 flex flex-col gap-1"
+                role='button'
+                onClick={jumpToOriginal}
+            >
                 <span className="text-xs text-ink-gray-4 font-medium">
                     Replying to {user?.full_name || user?.name || repliedMessage.owner}
                 </span>

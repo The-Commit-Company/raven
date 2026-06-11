@@ -1,4 +1,6 @@
-import { useRef } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { useSearchParams } from "react-router-dom"
+import { useAtom } from "jotai"
 import { ArrowDown, LoaderCircle } from "lucide-react"
 import DateSeparator from "./renderers/DateSeparator"
 import SystemMessage from "./renderers/SystemMessage"
@@ -7,11 +9,17 @@ import { MessageListSkeleton } from "@components/features/dm-channel/DirectMessa
 import { Button } from "@components/ui/button"
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@components/ui/empty"
 import { useChannelMessages } from "@stores/messages/useChannelMessages"
+import { channelMessagesStore } from "@stores/messages/store"
 import { useStreamScroll } from "./useStreamScroll"
+import { messageTargetAtom } from "@utils/channelAtoms"
 import { getDateObject } from "@lib/date"
+import { cn } from "@lib/utils"
 import _ from "@lib/translate"
 import type { Message } from "@raven/types/common/Message"
 import dayjs from "dayjs"
+
+/** How long a navigated-to message stays highlighted. */
+const HIGHLIGHT_DURATION_MS = 4000
 
 export type ChatStreamProps = {
     /** Channel, DM channel, or thread id — threads are channels too. */
@@ -28,6 +36,11 @@ export type ChatStreamProps = {
  * and drawers (channel page, DM page, thread drawer, threads page).
  */
 export default function ChatStream({ channelID, pinnedMessagesString }: ChatStreamProps) {
+    const [searchParams, setSearchParams] = useSearchParams()
+    // Deep link (?message_id= from notifications, search, shared URLs). Passed to
+    // the hook so the channel's FIRST fetch is already centered on the target.
+    const deepLinkMessageID = searchParams.get("message_id")
+
     const {
         blocks,
         isLoading,
@@ -35,12 +48,67 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
         hasOlderMessages,
         hasNewerMessages,
         loadingOlder,
+        loadingNewer,
         loadOlder,
+        loadNewer,
         jumpToLatest,
-    } = useChannelMessages(channelID, pinnedMessagesString)
+        jumpToMessage,
+    } = useChannelMessages(channelID, pinnedMessagesString, deepLinkMessageID)
 
-    const { containerRef, onScroll, isAtBottom, hasUnseenMessages, scrollToBottom } =
-        useStreamScroll({ channelID, blocks, loadOlder, hasOlderMessages })
+    const [targetMessageID, setTargetMessageID] = useAtom(messageTargetAtom(channelID))
+    const [highlightedID, setHighlightedID] = useState<string | null>(null)
+    /** Tracks the one around-fetch attempted per target, so unknown ids fail gracefully. */
+    const attemptedFetchRef = useRef<string | null>(null)
+
+    // Deep links feed the same targeting path as reply clicks.
+    useEffect(() => {
+        attemptedFetchRef.current = null
+        if (deepLinkMessageID) setTargetMessageID(deepLinkMessageID)
+    }, [channelID])
+
+    // Out-of-window target: replace the window with a page around it — once.
+    // If the fetch lands without the target (deleted/foreign id), give up quietly.
+    useEffect(() => {
+        if (!targetMessageID) return
+        if (channelMessagesStore.getState(channelID).byId.has(targetMessageID)) return
+        if (attemptedFetchRef.current === targetMessageID) {
+            setTargetMessageID(null)
+            return
+        }
+        attemptedFetchRef.current = targetMessageID
+        jumpToMessage(targetMessageID)
+    }, [targetMessageID, blocks])
+
+    /** The scroll engine centered the target: highlight it and clean up the URL. */
+    const onTargetSettled = useCallback(
+        (messageID: string) => {
+            setTargetMessageID(null)
+            setHighlightedID(messageID)
+            if (searchParams.get("message_id") === messageID) {
+                const next = new URLSearchParams(searchParams)
+                next.delete("message_id")
+                setSearchParams(next, { replace: true })
+            }
+        },
+        [searchParams, setSearchParams, setTargetMessageID],
+    )
+
+    useEffect(() => {
+        if (!highlightedID) return
+        const timer = setTimeout(() => setHighlightedID(null), HIGHLIGHT_DURATION_MS)
+        return () => clearTimeout(timer)
+    }, [highlightedID])
+
+    const { containerRef, onScroll, isAtBottom, hasUnseenMessages, scrollToBottom } = useStreamScroll({
+        channelID,
+        blocks,
+        loadOlder,
+        loadNewer,
+        hasOlderMessages,
+        hasNewerMessages,
+        targetMessageID,
+        onTargetSettled,
+    })
 
     // Tracks the newest message seen in the viewport — feeds last-seen/read
     // receipts when the read-state layer lands.
@@ -106,11 +174,23 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
                                         // flex: MessageItem's root is an inline span (Radix trigger) — flex blockifies it.
                                         // Deliberately NO content-visibility: placeholder estimates change height
                                         // after paint and break exact scroll compensation on prepend.
-                                        className="flex flex-col"
+                                        className={cn(
+                                            "flex flex-col rounded-md transition-colors duration-700",
+                                            highlightedID === block.name && "bg-amber-100 dark:bg-amber-400/15",
+                                        )}
                                     >
                                         <MessageItem message={block} onInView={onMessageInView} />
                                     </div>
                                 ),
+                            )}
+                            {/* Same constant-height rule as the top row: while the window is
+                                detached, this slot exists whether or not a fetch is running. */}
+                            {hasNewerMessages && (
+                                <div className="flex h-10 shrink-0 items-center justify-center">
+                                    {loadingNewer && (
+                                        <LoaderCircle className="h-4 w-4 animate-spin text-ink-gray-5" />
+                                    )}
+                                </div>
                             )}
                         </>
                     )}

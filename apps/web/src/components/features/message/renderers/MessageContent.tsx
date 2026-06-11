@@ -46,7 +46,11 @@ export const MessageContent = ({ message }: { message: Message }) => {
             {message.is_edited === 1 && <MessageAttributeIndicator attribute={_("edited")} Icon={PencilIcon} />}
 
             {message.linked_message && repliedMessageDetails && (
-                <ReplyMessage repliedMessage={repliedMessageDetails} />
+                <ReplyMessage
+                    repliedMessage={repliedMessageDetails}
+                    channelID={message.channel_id}
+                    linkedMessageID={message.linked_message}
+                />
             )}
 
             {message.message_type === 'Image' && (

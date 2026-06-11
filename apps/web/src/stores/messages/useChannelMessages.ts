@@ -14,8 +14,16 @@ import { channelMessagesStore } from "./store"
  * Subscribes a component to a channel's message window and triggers the
  * initial fetch. Components only ever read through this hook; all writes
  * go through the store's action methods.
+ *
+ * `initialBaseMessage` centers the FIRST fetch on a message (deep links) —
+ * without it, a plain latest-page load would race the deep link's around-fetch
+ * and whichever landed last would win the window.
  */
-export const useChannelMessages = (channelID: string, pinnedMessagesString?: string) => {
+export const useChannelMessages = (
+    channelID: string,
+    pinnedMessagesString?: string,
+    initialBaseMessage?: string | null,
+) => {
     const { call } = useContext(FrappeContext) as FrappeConfig
     const client = call as FrappeCallClient
 
@@ -25,14 +33,27 @@ export const useChannelMessages = (channelID: string, pinnedMessagesString?: str
     )
 
     useEffect(() => {
-        if (channelMessagesStore.getState(channelID).status === "idle") {
-            loadInitialMessages(client, channelID)
+        const current = channelMessagesStore.getState(channelID)
+        if (current.status === "idle") {
+            loadInitialMessages(client, channelID, initialBaseMessage ?? undefined)
+        } else if (current.hasNewerMessages) {
+            // A hydrated live-edge window renders instantly from memory, but a
+            // DETACHED window (user left while reading history) is stale by
+            // definition — discard it and come back to the present (or to the
+            // deep-link target, if this visit has one).
+            channelMessagesStore.reset(channelID)
+            loadInitialMessages(client, channelID, initialBaseMessage ?? undefined)
         }
     }, [channelID])
 
     const loadOlder = useCallback(() => loadOlderMessages(client, channelID), [channelID])
     const loadNewer = useCallback(() => loadNewerMessages(client, channelID), [channelID])
     const jumpToLatest = useCallback(() => jumpToLatestMessages(client, channelID), [channelID])
+    /** Replaces the window with a page centered on the given message. */
+    const jumpToMessage = useCallback(
+        (messageID: string) => loadInitialMessages(client, channelID, messageID),
+        [channelID],
+    )
 
     return {
         /** Render-ready blocks: messages with continuation/pinned flags + date dividers. */
@@ -47,5 +68,6 @@ export const useChannelMessages = (channelID: string, pinnedMessagesString?: str
         loadOlder,
         loadNewer,
         jumpToLatest,
+        jumpToMessage,
     }
 }

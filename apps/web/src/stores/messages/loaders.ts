@@ -24,7 +24,8 @@ export const loadInitialMessages = async (
     channelID: string,
     baseMessage?: string,
 ) => {
-    const key = `${channelID}:initial`
+    // Keyed per base message so a jump-to-message isn't swallowed by an in-flight initial load
+    const key = `${channelID}:initial:${baseMessage ?? ""}`
     if (inFlight.has(key)) return
     inFlight.add(key)
     channelMessagesStore.startLoading(channelID)
