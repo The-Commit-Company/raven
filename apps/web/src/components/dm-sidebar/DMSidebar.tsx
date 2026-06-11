@@ -2,7 +2,7 @@ import { useMemo } from "react"
 import { NavLink, useNavigate } from "react-router-dom"
 import { Virtuoso } from "react-virtuoso"
 import { useLiveQuery } from "dexie-react-hooks"
-import { useFrappeAuth, useFrappePostCall, useSWRConfig } from "frappe-react-sdk"
+import { useFrappePostCall, useSWRConfig } from "frappe-react-sdk"
 import { toast } from "sonner"
 import { Skeleton } from "@components/ui/skeleton"
 import { Badge } from "@components/ui/badge"
@@ -15,6 +15,7 @@ import { getMessageTeaser } from "@utils/messageUtils"
 import _ from "@lib/translate"
 import type { DMChannelListItem } from "@raven/types/common/ChannelListItem"
 import { useChannels } from "@hooks/useChannels"
+import { useUserCookieData } from "@hooks/useUserCookieData"
 
 export function DMSidebar() {
 
@@ -90,7 +91,8 @@ interface DMRowProps {
 
 function DMRow({ dmChannel }: DMRowProps) {
     const { data: peerUser } = useUser(dmChannel.peer_user_id)
-    const { currentUser } = useFrappeAuth()
+
+    const { name: currentUser } = useUserCookieData()
 
     if (!peerUser || peerUser.enabled === 0) return null
 
@@ -125,7 +127,7 @@ function DMRow({ dmChannel }: DMRowProps) {
 
 
 function ExtraUsersList({ dmPeerIds }: { dmPeerIds: Set<string> }) {
-    const { currentUser } = useFrappeAuth()
+    const { name: currentUser } = useUserCookieData()
 
     const users =
         useLiveQuery(
@@ -238,7 +240,7 @@ function DMRowShell({
                         {name}
                     </span>
                     {date && (
-                        <span className="text-2xs font-light text-ink-gray-4/90 shrink-0">
+                        <span className="text-2xs font-regular text-ink-gray-4 shrink-0">
                             {date}
                         </span>
                     )}

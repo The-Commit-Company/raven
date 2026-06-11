@@ -1,6 +1,5 @@
 import { useMemo } from "react"
 import { useSetAtom } from "jotai"
-import { useFrappeAuth } from "frappe-react-sdk"
 import { toast } from "sonner"
 import {
     Bookmark,
@@ -18,6 +17,7 @@ import {
 import { messageDialogAtom } from "@utils/channelAtoms"
 import _ from "@lib/translate"
 import type { Message } from "@raven/types/common/Message"
+import { useUserCookieData } from "@hooks/useUserCookieData"
 
 export type MessageAction = {
     id: string
@@ -47,7 +47,7 @@ const toPlainText = (html: string): string => {
  * upserts make resync a safe universal rollback.
  */
 export const useMessageActions = (message: Message | null): MessageAction[][] => {
-    const { currentUser } = useFrappeAuth()
+    const { name: currentUser } = useUserCookieData()
     const setDialog = useSetAtom(messageDialogAtom)
 
     return useMemo(() => {
@@ -131,20 +131,20 @@ export const useMessageActions = (message: Message | null): MessageAction[][] =>
         // Owner-only, destructive last
         const owner: MessageAction[] = isOwner
             ? [
-                  {
-                      id: "edit",
-                      label: _("Edit"),
-                      icon: Pencil,
-                      onSelect: () => setDialog({ type: "edit", message }),
-                  },
-                  {
-                      id: "delete",
-                      label: _("Delete"),
-                      icon: Trash2,
-                      danger: true,
-                      onSelect: () => setDialog({ type: "delete", message }),
-                  },
-              ]
+                {
+                    id: "edit",
+                    label: _("Edit"),
+                    icon: Pencil,
+                    onSelect: () => setDialog({ type: "edit", message }),
+                },
+                {
+                    id: "delete",
+                    label: _("Delete"),
+                    icon: Trash2,
+                    danger: true,
+                    onSelect: () => setDialog({ type: "delete", message }),
+                },
+            ]
             : []
 
         return [respond, clipboard, organize, owner].filter((group) => group.length > 0)

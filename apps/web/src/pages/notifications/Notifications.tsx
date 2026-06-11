@@ -253,7 +253,7 @@ const MentionItem = memo(({
                         <span className={cn("text-sm", !notification.is_read ? "font-semibold" : "font-medium")}>
                             {sender?.full_name ?? notification.owner}
                         </span>
-                        <span className="text-xs font-light text-ink-gray-4/90 shrink-0">
+                        <span className="text-xs font-regular text-ink-gray-4/90 shrink-0">
                             {formatRelativeDate(notification.creation)}
                         </span>
                         <ChannelContext notification={notification} />
@@ -317,7 +317,7 @@ const ReactionItem = memo(({
                         <span className={cn("text-sm", !notification.is_read ? "font-semibold" : "font-medium")}>
                             {reactorText}
                         </span>
-                        <span className="text-xs font-light text-ink-gray-4/90 shrink-0">
+                        <span className="text-xs font-regular text-ink-gray-4/90 shrink-0">
                             {formatRelativeDate(notification.creation)}
                         </span>
                         <ChannelContext notification={notification} />

@@ -194,7 +194,7 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>
-                                                    {_('Name')} <span className="text-ink-red-3">*</span>
+                                                {_('Name')} <span className="text-ink-red-3">*</span>
                                             </FormLabel>
                                             <FormControl>
                                                 <ChannelNameInput
@@ -214,7 +214,7 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>
-                                                {_('Description')} <span className="font-light text-ink-gray-4">
+                                                {_('Description')} <span className="font-regular text-ink-gray-4">
                                                     ({_('optional')})
                                                 </span>
                                             </FormLabel>

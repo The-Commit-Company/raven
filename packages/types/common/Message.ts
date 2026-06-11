@@ -31,6 +31,8 @@ export interface BaseMessage {
     isOpenInThread?: boolean,
     /** Optional JSON payload (e.g. converted_to_channel_*, forwarded_thread). Backend shape TBD. */
     json?: string | Record<string, unknown>,
+    /** Shared id stamped on messages sent together as one batch (e.g. multiple files). Consecutive messages with the same id render as one block. */
+    message_batch_id?: string | null,
 }
 
 export interface FileMessage extends BaseMessage {

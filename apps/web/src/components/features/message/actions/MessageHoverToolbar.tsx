@@ -120,7 +120,7 @@ export const MessageHoverToolbar = ({
                                         <DropdownMenuItem
                                             key={action.id}
                                             variant={action.danger ? "destructive" : "default"}
-                                            onClick={action.onSelect}
+                                            onSelect={action.onSelect}
                                         >
                                             <action.icon />
                                             <span>{action.label}</span>

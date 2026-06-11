@@ -2,6 +2,7 @@ import { useMemo } from "react"
 import { ForwardIcon, LucideIcon, PencilIcon, PinIcon } from "lucide-react"
 import { Message } from "@raven/types/common/Message"
 import ReplyMessage from "./ReplyMessage"
+import { MessageImages } from "./MessageImages"
 import TiptapRenderer from "./TiptapRenderer"
 import SearchTextRenderer from "./SearchTextRenderer"
 import _ from "@lib/translate"
@@ -11,7 +12,7 @@ import _ from "@lib/translate"
  * text with `<mark>` highlights). Backend messages store TipTap JSON as a
  * string (starts with `{`); search rows fed by sqlite FTS arrive as plain text.
  */
-const MessageBody = ({ content }: { content?: string | Record<string, unknown> | null }) => {
+export const MessageBody = ({ content }: { content?: string | Record<string, unknown> | null }) => {
     if (content == null) return null
     if (typeof content === 'object') return <TiptapRenderer content={content} />
     const trimmed = content.trim()
@@ -55,14 +56,7 @@ export const MessageContent = ({ message }: { message: Message }) => {
 
             {message.message_type === 'Image' && (
                 <>
-                    {'file' in message && message.file && (
-                        <img
-                            src={message.file}
-                            alt={message.text || 'image'}
-                            className="max-w-xs max-h-64 rounded-md object-cover border border-outline-gray-2/60"
-                            loading="lazy"
-                        />
-                    )}
+                    {'file' in message && message.file && <MessageImages messages={[message]} />}
                     {message.text && <MessageBody content={message.text} />}
                 </>
             )}

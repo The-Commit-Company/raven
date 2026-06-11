@@ -32,7 +32,6 @@ class RavenMessage(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.model.document import Document
 		from frappe.types import DF
 
 		from raven.raven_messaging.doctype.raven_mention.raven_mention import RavenMention
@@ -55,8 +54,8 @@ class RavenMessage(Document):
 		link_doctype: DF.Link | None
 		link_document: DF.DynamicLink | None
 		linked_message: DF.Link | None
-		links: DF.Table[Document]
 		mentions: DF.Table[RavenMention]
+		message_batch_id: DF.Data | None
 		message_reactions: DF.JSON | None
 		message_type: DF.Literal["Text", "Image", "File", "Poll", "System"]
 		notification: DF.Data | None

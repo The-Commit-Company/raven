@@ -2,6 +2,7 @@ import { useUser } from "@hooks/useUser"
 import { Message } from "@raven/types/common/Message"
 import { UserAvatar } from "../UserAvatar"
 import { getDateObject } from "@lib/date"
+import _ from "@lib/translate"
 import { useMemo } from "react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
 import { ThreadButton, ThreadHeader } from "./ThreadMessage"
@@ -119,7 +120,7 @@ export const MessageItem = ({ message, onInView }: { message: Message; onInView?
 const NonContinuationMessageHeader = ({ message, shortTime, longTime }: { message: Message, shortTime: string, longTime: string }) => {
 
     const { data: user } = useUser(message.owner)
-    const displayName = user?.full_name || user?.name || message.owner || "User"
+    const displayName = user?.full_name || user?.name || message.owner || _("User")
 
     return <div className="flex items-start gap-3">
         {user ? <UserAvatar user={user} size="md" /> : (
@@ -132,7 +133,7 @@ const NonContinuationMessageHeader = ({ message, shortTime, longTime }: { messag
                 <span className="font-medium text-sm">{displayName}</span>
                 <Tooltip delayDuration={300}>
                     <TooltipTrigger>
-                        <span className="text-xs font-light text-ink-gray-4/90 tabular-nums">{shortTime}</span>
+                        <span className="text-xs font-regular text-ink-gray-4">{shortTime}</span>
                     </TooltipTrigger>
                     <TooltipContent>
                         {longTime}

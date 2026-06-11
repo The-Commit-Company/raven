@@ -8,6 +8,7 @@ import {
     ContextMenuSeparator,
     ContextMenuTrigger,
 } from "@components/ui/context-menu"
+import { Button } from "@components/ui/button"
 import { Drawer, DrawerContent, DrawerTitle } from "@components/ui/drawer"
 import { channelMessagesStore } from "@stores/messages/store"
 import { messageActionTargetAtom } from "@utils/channelAtoms"
@@ -20,6 +21,13 @@ import type { Message } from "@raven/types/common/Message"
 
 /** Two taps on the same message within this window open the quick-action toolbar. */
 const DOUBLE_TAP_MS = 300
+
+/**
+ * Selections this soon after the menu opened are the tail of the opening
+ * gesture: the menu mounts under the cursor, and releasing a slow right-click
+ * lands on the first item, "selecting" it. Ignore them.
+ */
+const OPEN_GESTURE_GUARD_MS = 200
 
 /**
  * One action surface for the whole stream, via event delegation on
@@ -35,8 +43,19 @@ const DOUBLE_TAP_MS = 300
 export const MessageActionMenu = ({ channelID, children }: { channelID: string; children: React.ReactNode }) => {
     const isMobile = useIsMobile()
     const [target, setTarget] = useAtom(messageActionTargetAtom)
-    const actionGroups = useMessageActions(target)
+    /**
+     * The target atom is cleared by several close paths (menu close, toolbar
+     * dropdown close), and a clear can race a fresh right-click's set —
+     * leaving Radix open over a null target, i.e. an empty menu. Rendering
+     * from the last non-null target makes the content immune to that race;
+     * the live atom still drives the highlight and open/close.
+     */
+    const lastTargetRef = useRef<Message | null>(null)
+    if (target) lastTargetRef.current = target
+    const menuMessage = target ?? lastTargetRef.current
+    const actionGroups = useMessageActions(menuMessage)
     const lastTapRef = useRef({ messageID: "", time: 0 })
+    const menuOpenedAtRef = useRef(0)
     const wrapperRef = useRef<HTMLDivElement>(null)
     /** Hovered message + its toolbar position; null hides the toolbar. */
     const [hovered, setHovered] = useState<{ message: Message; top: number } | null>(null)
@@ -91,11 +110,18 @@ export const MessageActionMenu = ({ channelID, children }: { channelID: string; 
             return
         }
         setTarget(message)
+        menuOpenedAtRef.current = performance.now()
         // Mobile long-press: the bottom sheet opens via the target atom instead of Radix
         if (isMobile) {
             setHovered(null)
             event.preventDefault()
         }
+    }
+
+    /** Runs an action unless this "selection" is the release of the right-click that opened the menu. */
+    const selectAction = (action: MessageAction) => {
+        if (performance.now() - menuOpenedAtRef.current < OPEN_GESTURE_GUARD_MS) return
+        action.onSelect()
     }
 
     /** Mobile taps: double tap shows the quick-action toolbar, any other tap dismisses it. */
@@ -142,10 +168,10 @@ export const MessageActionMenu = ({ channelID, children }: { channelID: string; 
                             onOpenFullMenu={
                                 isMobile
                                     ? () => {
-                                          const message = hovered.message
-                                          setHovered(null)
-                                          setTarget(message)
-                                      }
+                                        const message = hovered.message
+                                        setHovered(null)
+                                        setTarget(message)
+                                    }
                                     : undefined
                             }
                         />
@@ -162,7 +188,7 @@ export const MessageActionMenu = ({ channelID, children }: { channelID: string; 
                                 <ContextMenuItem
                                     key={action.id}
                                     variant={action.danger ? "destructive" : "default"}
-                                    onClick={action.onSelect}
+                                    onSelect={() => selectAction(action)}
                                 >
                                     <action.icon />
                                     <span>{action.label}</span>
@@ -195,17 +221,17 @@ export const MessageActionMenu = ({ channelID, children }: { channelID: string; 
 }
 
 const SheetActionRow = ({ action, onDone }: { action: MessageAction; onDone: () => void }) => (
-    <button
-        className={cn(
-            "flex items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm hover:bg-surface-gray-2",
-            action.danger ? "text-ink-red-3" : "text-ink-gray-8",
-        )}
+    <Button
+        variant="ghost"
+        size="md"
+        theme={action.danger ? "red" : "gray"}
+        className={cn("w-full justify-start gap-3")}
         onClick={() => {
             action.onSelect()
             onDone()
         }}
     >
-        <action.icon className="h-4 w-4" />
+        <action.icon />
         {action.label}
-    </button>
+    </Button>
 )

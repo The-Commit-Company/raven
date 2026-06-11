@@ -50,7 +50,7 @@ export const ChannelNameInput = ({ value, onChange, channelType, disabled }: Cha
             />
             <div
                 id="channel-name-counter"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-ink-gray-4 font-light"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-ink-gray-4 font-regular"
                 aria-live="polite"
                 aria-atomic="true"
             >

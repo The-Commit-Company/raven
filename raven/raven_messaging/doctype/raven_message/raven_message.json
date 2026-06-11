@@ -9,13 +9,13 @@
  "engine": "InnoDB",
  "field_order": [
   "channel_id",
+  "message_batch_id",
   "text",
   "json",
   "message_reactions",
   "is_reply",
   "linked_message",
   "replied_message_details",
-  "links",
   "column_break_wvje",
   "is_thread",
   "message_type",
@@ -203,12 +203,18 @@
    "fieldname": "blurhash",
    "fieldtype": "Small Text",
    "label": "Blurhash"
+  },
+  {
+   "description": "Used to group messages on the frontend together",
+   "fieldname": "message_batch_id",
+   "fieldtype": "Data",
+   "label": "Message Batch ID"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-13 14:22:34.038919",
- "modified_by": "aditya.p@frappe.io",
+ "modified": "2026-06-11 19:35:37.531718",
+ "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",
  "naming_rule": "Random",

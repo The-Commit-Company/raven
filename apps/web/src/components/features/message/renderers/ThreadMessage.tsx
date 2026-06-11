@@ -34,7 +34,7 @@ const MessageContent = ({ displayName, time, message }: MessageContentProps) => 
     <div className="flex-1">
         <div className="flex items-center gap-2 mb-1">
             <span className="font-medium text-sm">{displayName}</span>
-            <span className="text-xs font-light text-ink-gray-4/90">{time}</span>
+            <span className="text-xs font-regular text-ink-gray-4/90">{time}</span>
         </div>
         <div className="text-sm text-ink-gray-8">{message}</div>
     </div>
