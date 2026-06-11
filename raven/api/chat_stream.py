@@ -7,6 +7,75 @@ from frappe.query_builder import Order
 from raven.utils import track_channel_visit
 
 
+def _message_columns(message):
+	"""The columns every chat stream endpoint returns for a message."""
+	return (
+		message.name,
+		message.owner,
+		message.creation,
+		message.modified,
+		message.text,
+		message.file,
+		message.message_type,
+		message.message_reactions,
+		message.is_reply,
+		message.linked_message,
+		message._liked_by,
+		message.channel_id,
+		message.thumbnail_width,
+		message.thumbnail_height,
+		message.file_thumbnail,
+		message.link_doctype,
+		message.link_document,
+		message.replied_message_details,
+		message.content,
+		message.is_edited,
+		message.is_forwarded,
+		message.poll_id,
+		message.is_bot_message,
+		message.bot,
+		message.hide_link_preview,
+		message.is_thread,
+		message.blurhash,
+		message.message_batch_id,
+	)
+
+
+def _complete_boundary_batch(channel_id: str, boundary, older: bool):
+	"""
+	Batches (shared message_batch_id) must never be cut at a page edge —
+	otherwise the UI renders a partial album that visibly grows when the next
+	page loads. If the boundary message of a page is part of a batch, fetch the
+	batch members that lie beyond the boundary so the page contains the whole
+	batch. Returns the extra messages in the same order as the caller's page.
+	"""
+	if not boundary.message_batch_id:
+		return []
+
+	message = frappe.qb.DocType("Raven Message")
+	if older:
+		condition = (message.creation < boundary.creation) | (
+			(message.creation == boundary.creation) & (message.name < boundary.name)
+		)
+		order = Order.desc
+	else:
+		condition = (message.creation > boundary.creation) | (
+			(message.creation == boundary.creation) & (message.name > boundary.name)
+		)
+		order = Order.asc
+
+	return (
+		frappe.qb.from_(message)
+		.select(*_message_columns(message))
+		.where(message.channel_id == channel_id)
+		.where(message.message_batch_id == boundary.message_batch_id)
+		.where(condition)
+		.orderby(message.creation, order=order)
+		.orderby(message.name, order=order)
+		.run(as_dict=True)
+	)
+
+
 @frappe.whitelist()
 def get_messages(channel_id: str, limit: int = 20, base_message: str | None = None):
 	"""
@@ -27,36 +96,7 @@ def get_messages(channel_id: str, limit: int = 20, base_message: str | None = No
 
 	messages = (
 		frappe.qb.from_(message)
-		.select(
-			message.name,
-			message.owner,
-			message.creation,
-			message.modified,
-			message.text,
-			message.file,
-			message.message_type,
-			message.message_reactions,
-			message.is_reply,
-			message.linked_message,
-			message._liked_by,
-			message.channel_id,
-			message.thumbnail_width,
-			message.thumbnail_height,
-			message.file_thumbnail,
-			message.link_doctype,
-			message.link_document,
-			message.replied_message_details,
-			message.content,
-			message.is_edited,
-			message.is_forwarded,
-			message.poll_id,
-			message.is_bot_message,
-			message.bot,
-			message.hide_link_preview,
-			message.is_thread,
-			message.blurhash,
-			message.message_batch_id,
-		)
+		.select(*_message_columns(message))
 		.where(message.channel_id == channel_id)
 		.orderby(message.creation, order=Order.desc)
 		.orderby(message.name, order=Order.desc)
@@ -68,6 +108,9 @@ def get_messages(channel_id: str, limit: int = 20, base_message: str | None = No
 
 	# Check if older messages are available
 	if len(messages) == limit:
+		# Never cut a batch at the page edge — include its remaining members
+		messages.extend(_complete_boundary_batch(channel_id, messages[-1], older=True))
+
 		# Check if there are more messages available
 		older_message = frappe.db.get_all(
 			"Raven Message",
@@ -138,36 +181,7 @@ def fetch_older_messages(
 
 	messages = (
 		frappe.qb.from_(message)
-		.select(
-			message.name,
-			message.owner,
-			message.creation,
-			message.modified,
-			message.text,
-			message.file,
-			message.message_type,
-			message.message_reactions,
-			message.is_reply,
-			message.linked_message,
-			message._liked_by,
-			message.channel_id,
-			message.thumbnail_width,
-			message.thumbnail_height,
-			message.file_thumbnail,
-			message.link_doctype,
-			message.link_document,
-			message.replied_message_details,
-			message.content,
-			message.is_edited,
-			message.is_forwarded,
-			message.poll_id,
-			message.is_bot_message,
-			message.bot,
-			message.hide_link_preview,
-			message.is_thread,
-			message.blurhash,
-			message.message_batch_id,
-		)
+		.select(*_message_columns(message))
 		.where(message.channel_id == channel_id)
 		.where(
 			(message.creation < from_timestamp)
@@ -183,6 +197,9 @@ def fetch_older_messages(
 
 	# Check if older messages are available
 	if len(messages) == limit:
+		# Never cut a batch at the page edge — include its remaining members
+		messages.extend(_complete_boundary_batch(channel_id, messages[-1], older=True))
+
 		# Check if there are more messages available
 		older_message = frappe.db.get_all(
 			"Raven Message",
@@ -251,36 +268,7 @@ def fetch_newer_messages(
 
 	messages = (
 		frappe.qb.from_(message)
-		.select(
-			message.name,
-			message.owner,
-			message.creation,
-			message.modified,
-			message.text,
-			message.file,
-			message.message_type,
-			message.message_reactions,
-			message.is_reply,
-			message.linked_message,
-			message._liked_by,
-			message.channel_id,
-			message.thumbnail_width,
-			message.thumbnail_height,
-			message.file_thumbnail,
-			message.link_doctype,
-			message.link_document,
-			message.replied_message_details,
-			message.content,
-			message.is_edited,
-			message.is_forwarded,
-			message.poll_id,
-			message.is_bot_message,
-			message.bot,
-			message.hide_link_preview,
-			message.is_thread,
-			message.blurhash,
-			message.message_batch_id,
-		)
+		.select(*_message_columns(message))
 		.where(message.channel_id == channel_id)
 		.where(condition)
 		.orderby(message.creation, order=Order.asc)
@@ -293,6 +281,9 @@ def fetch_newer_messages(
 
 	# Check if newer messages are available
 	if len(messages) == limit:
+		# Never cut a batch at the page edge — include its remaining members
+		messages.extend(_complete_boundary_batch(channel_id, messages[-1], older=False))
+
 		# Check if there are more messages available
 		newer_message = frappe.db.get_all(
 			"Raven Message",
