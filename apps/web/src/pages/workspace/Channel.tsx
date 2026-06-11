@@ -1,30 +1,20 @@
 import ChannelHeader from "@components/features/channel/ChannelHeader/ChannelHeader"
-import ChannelSettingsDrawer from "@components/features/channel/ChannelSettingsDrawer/ChannelSettingsDrawer"
-import ChannelMembersDrawer from "@components/features/channel/ChannelMembersDrawer/ChannelMembersDrawer"
 import { ChatContentView } from "@components/features/message/ChatContentView"
-import { useAtomValue } from "jotai"
-import { channelDrawerAtom } from "@utils/channelAtoms"
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
-
-export const SETTINGS_DRAWER_TYPES = ["info", "files", "links", "threads", "pins"] as const
+import { useChannel } from "@hooks/useChannel"
 
 export default function Channel() {
     const channelID = useCurrentChannelID()
-    const drawerType = useAtomValue(channelDrawerAtom(channelID))
-
-    const contextDrawer =
-        drawerType === "members" ? (
-            <ChannelMembersDrawer />
-        ) : SETTINGS_DRAWER_TYPES.includes(drawerType as (typeof SETTINGS_DRAWER_TYPES)[number]) ? (
-            <ChannelSettingsDrawer />
-        ) : null
+    const { channel } = useChannel(channelID)
 
     return (
         <div className="flex h-full min-h-0 flex-col">
             <ChannelHeader />
+            {/* TODO: Enable once the workspace sidebar layout is rebuilt (SidebarProvider's
+                min-h-svh w-full starves the outlet column, breaking the content geometry) */}
             {/* <ChatContentView
                 channelID={channelID}
-                contextDrawer={contextDrawer}
+                pinnedMessagesString={channel?.pinned_messages_string}
             /> */}
         </div>
     )

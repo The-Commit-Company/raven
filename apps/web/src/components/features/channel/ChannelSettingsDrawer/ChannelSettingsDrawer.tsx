@@ -23,6 +23,8 @@ const ChannelSettingsDrawer = ({ peerUser }: ChannelSettingsDrawerProps) => {
     const channelID = useCurrentChannelID()
     const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
 
+    const isDM = !!peerUser
+
     // useHotkeys keeps the callback fresh, so this always closes the drawer for the *current* channelID
     useHotkeys('esc', () => handleClose(), { enableOnFormTags: true })
 
@@ -40,11 +42,7 @@ const ChannelSettingsDrawer = ({ peerUser }: ChannelSettingsDrawerProps) => {
                 <Tabs value={drawerType} onValueChange={onTabChange} className="flex flex-col h-full w-full">
                     <div className="flex items-center justify-between shrink-0">
                         <TabsList variant="underline" className="grid flex-1 grid-cols-5 gap-1 px-1 h-8 border-0">
-                            {peerUser ? (
-                                <TabsTrigger value="info">{_('Profile')}</TabsTrigger>
-                            ) : (
-                                <TabsTrigger value="info">{_('Info')}</TabsTrigger>
-                            )}
+                            <TabsTrigger value="info">{isDM ? _('Profile') : _('Info')}</TabsTrigger>
                             <TabsTrigger value="files">{_('Files')}</TabsTrigger>
                             <TabsTrigger value="links">{_('Links')}</TabsTrigger>
                             <TabsTrigger value="threads">{_('Threads')}</TabsTrigger>

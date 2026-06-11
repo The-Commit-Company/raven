@@ -1,7 +1,8 @@
 import { useOutlet } from "react-router-dom"
-import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import { useAtom } from "jotai"
 import ChatStream from "@components/features/message/ChatStream"
 import ChatInput from "@components/features/ChatInput/ChatInput"
+import ChannelContextDrawer from "@components/features/channel/ChannelContextDrawer"
 import { PollDrawer } from "@components/features/message/renderers/PollDrawer"
 import { Drawer, DrawerContent, DrawerTitle } from "@components/ui/drawer"
 import { pollDrawerAtom, channelDrawerAtom } from "@utils/channelAtoms"
@@ -13,8 +14,6 @@ export interface ChatContentViewProps {
     channelID: string
     /** Newline-separated pinned message ids, passed through to the stream. */
     pinnedMessagesString?: string
-    /** Rendered when right drawer is not thread and not poll (e.g. channel settings/members or DM drawer). Parent computes based on local state/atoms. */
-    contextDrawer: React.ReactNode
 }
 
 /**
@@ -24,17 +23,16 @@ export interface ChatContentViewProps {
 export function ChatContentView({
     channelID,
     pinnedMessagesString,
-    contextDrawer,
 }: ChatContentViewProps) {
     const isMobile = useIsMobile()
     // Child route content (the thread drawer). Threads are routes; everything else in the rail is atom state.
     const threadDrawer = useOutlet()
-    const pollDrawerData = useAtomValue(pollDrawerAtom(channelID))
-    const [, setPollDrawerData] = useAtom(pollDrawerAtom(channelID))
-    const setChannelDrawer = useSetAtom(channelDrawerAtom(channelID))
+    const [pollDrawerData, setPollDrawerData] = useAtom(pollDrawerAtom(channelID))
+    const [channelDrawerType, setChannelDrawer] = useAtom(channelDrawerAtom(channelID))
+    const hasContextDrawer = channelDrawerType !== ""
 
     // Desktop-only side rail; on mobile, poll/context drawers render as bottom sheets instead
-    const showSideRail = !isMobile && (!!threadDrawer || !!pollDrawerData || !!contextDrawer)
+    const showSideRail = !isMobile && (!!threadDrawer || !!pollDrawerData || hasContextDrawer)
     // Right rail width contract: thread takes half the content area, poll/context drawers are a fixed column
     const drawerWidth = threadDrawer ? "w-1/2" : "w-95 max-w-[45%]"
 
@@ -72,7 +70,7 @@ export function ChatContentView({
                             onClose={() => setPollDrawerData(null)}
                         />
                     ) : (
-                        contextDrawer
+                        <ChannelContextDrawer />
                     )}
                 </div>
             )}
@@ -93,10 +91,10 @@ export function ChatContentView({
                             )}
                         </DrawerContent>
                     </Drawer>
-                    <Drawer open={!!contextDrawer && !pollDrawerData} onOpenChange={(open) => !open && setChannelDrawer('')}>
+                    <Drawer open={hasContextDrawer && !pollDrawerData} onOpenChange={(open) => !open && setChannelDrawer('')}>
                         <DrawerContent className="h-[85dvh]">
                             <DrawerTitle className="sr-only">{_("Channel details")}</DrawerTitle>
-                            {contextDrawer}
+                            <ChannelContextDrawer />
                         </DrawerContent>
                     </Drawer>
                 </>

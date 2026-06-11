@@ -29,11 +29,9 @@ interface DMChannelHeaderProps {
     peer: UserData
     /** DM channel id (for drawer state) */
     channelID: string
-    /** Called when user chooses "View profile" in the dropdown (desktop only) */
-    onViewProfile?: () => void
 }
 
-export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHeaderProps) {
+export function DMChannelHeader({ peer, channelID }: DMChannelHeaderProps) {
     const navigate = useNavigate()
     const isMobile = useIsMobile()
     const displayName = peer.full_name || peer.name
@@ -47,10 +45,6 @@ export function DMChannelHeader({ peer, channelID, onViewProfile }: DMChannelHea
     const isOnLeave = useIsUserOnLeave(peer.name)
 
     const openTab = (tab: Exclude<DrawerType, "" | "members">) => {
-        if (tab === "info") {
-            onViewProfile?.()
-            return
-        }
         setDrawerType(tab)
     }
 

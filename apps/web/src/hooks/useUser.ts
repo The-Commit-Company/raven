@@ -10,10 +10,12 @@ const getUser = async (userID: string) => {
 /**
  * Hook to get a user from the IndexedDB database
  * @param userID - The ID of the user to get
+ * 
+ * If an ID is not provided, the hook will return undefined.
  */
-export const useUser = (userID: string) => {
+export const useUser = (userID?: string) => {
 
-    return useSWR(getUserKey(userID), () => getUser(userID), {
+    return useSWR(userID ? getUserKey(userID) : null, () => userID ? getUser(userID) : undefined, {
         revalidateOnFocus: false,
         revalidateOnReconnect: false,
         revalidateIfStale: false,
