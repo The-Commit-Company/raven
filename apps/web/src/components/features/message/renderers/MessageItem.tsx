@@ -2,12 +2,10 @@ import { useUser } from "@hooks/useUser"
 import { Message } from "@raven/types/common/Message"
 import { UserAvatar } from "../UserAvatar"
 import { getDateObject } from "@lib/date"
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
-import { UserPlus, BellOff } from "lucide-react"
 import { ThreadButton, ThreadHeader } from "./ThreadMessage"
 import { cn } from "@lib/utils"
-import { ContextMenu, ContextMenuContent, ContextMenuGroup, ContextMenuItem, ContextMenuTrigger } from "@components/ui/context-menu"
 import { useIntersectionObserver } from "usehooks-ts"
 import { MessageContent } from "./MessageContent"
 
@@ -64,16 +62,7 @@ function isThreadParent(message: Message): boolean {
 
 export const MessageItem = ({ message, onInView }: { message: Message; onInView?: (message: Message) => void }) => {
 
-    const [isMenuOpen, setIsMenuOpen] = useState(false)
     const showThread = isThreadParent(message)
-
-    const handleJoinThread = () => {
-        // TODO: Wire up join thread API
-    }
-
-    const handleMuteThread = () => {
-        // TODO: Wire up mute thread API
-    }
 
     const { shortTime, longTime } = useMemo(() => {
         try {
@@ -100,50 +89,31 @@ export const MessageItem = ({ message, onInView }: { message: Message; onInView?
     })
 
 
-    return <ContextMenu onOpenChange={setIsMenuOpen}>
-        <ContextMenuTrigger
-            ref={ref}
-            data-message-id={message.name}
-            className={cn("group/message-item w-full overflow-hidden relative hover:bg-surface-gray-2/30 py-2 rounded-md px-3.5 transition-all duration-200",
-                "data-[state=open]:bg-surface-gray-2/50"
-            )}
-        >
-            <div>
-                {showThread && <ThreadHeader displayName={"TODO: Wire this up"} threadTitle={"Do not forget"} />}
-                {showThread && <div className={cn("absolute left-7.5 w-7 border-l border-b border-outline-gray-2 rounded-bl-lg z-0", message.is_continuation ? 'top-9 h-[calc(100%-64px)]' : 'top-[42px] h-[calc(100%-72px)]')} />}
-                {message.is_continuation === 0 ? <NonContinuationMessageHeader
-                    message={message} shortTime={shortTime} longTime={longTime}
-                /> :
-                    <ContinuationMessageHeader message={message} />}
+    // Pure render: interactivity (context menu, action sheet, dialogs) lives at
+    // the stream level via event delegation on the data-message-id wrapper.
+    return <div
+        ref={ref}
+        className="group/message-item w-full overflow-hidden relative hover:bg-surface-gray-1 py-2 rounded-md px-3.5 transition-all duration-200"
+    >
+        {showThread && <ThreadHeader displayName={"TODO: Wire this up"} threadTitle={"Do not forget"} />}
+        {showThread && <div className={cn("absolute left-7.5 w-7 border-l border-b border-outline-gray-2 rounded-bl-lg z-0", message.is_continuation ? 'top-9 h-[calc(100%-64px)]' : 'top-[42px] h-[calc(100%-72px)]')} />}
+        {message.is_continuation === 0 ? <NonContinuationMessageHeader
+            message={message} shortTime={shortTime} longTime={longTime}
+        /> :
+            <ContinuationMessageHeader message={message} />}
 
-                {showThread ? (
-                    <ThreadButton
-                        participants={[
-                            { name: "Desirae Lipshutz", full_name: "Desirae Lipshutz", type: "User", user_image: "https://randomuser.me/api/portraits/women/44.jpg" },
-                            { name: "Brandon Franci", full_name: "Brandon Franci", type: "User", user_image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" },
-                            { name: "Sarah Chen", full_name: "Sarah Chen", type: "User", user_image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" },
-                        ]}
-                        messageCount={5}
-                        threadID={message.name}
-                    />
-                ) : null}
-            </div>
-        </ContextMenuTrigger>
-        <ContextMenuContent loop>
-            {showThread && (
-                <ContextMenuGroup>
-                    <ContextMenuItem onClick={handleJoinThread}>
-                        <UserPlus className="mr-2 h-4 w-4" />
-                        Join thread
-                    </ContextMenuItem>
-                    <ContextMenuItem onClick={handleMuteThread}>
-                        <BellOff className="mr-2 h-4 w-4" />
-                        Mute thread
-                    </ContextMenuItem>
-                </ContextMenuGroup>
-            )}
-        </ContextMenuContent>
-    </ContextMenu>
+        {showThread ? (
+            <ThreadButton
+                participants={[
+                    { name: "Desirae Lipshutz", full_name: "Desirae Lipshutz", type: "User", user_image: "https://randomuser.me/api/portraits/women/44.jpg" },
+                    { name: "Brandon Franci", full_name: "Brandon Franci", type: "User", user_image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" },
+                    { name: "Sarah Chen", full_name: "Sarah Chen", type: "User", user_image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" },
+                ]}
+                messageCount={5}
+                threadID={message.name}
+            />
+        ) : null}
+    </div>
 }
 
 const NonContinuationMessageHeader = ({ message, shortTime, longTime }: { message: Message, shortTime: string, longTime: string }) => {

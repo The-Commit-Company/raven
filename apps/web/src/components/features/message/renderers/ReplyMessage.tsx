@@ -39,14 +39,14 @@ export default function ReplyMessage({
     return (
         <div className="py-0.5">
             <div
-                className="border-l-2 cursor-pointer border-outline-gray-3 bg-surface-gray-2/60 pl-3 py-2 flex flex-col gap-1"
+                className="border-l-2 cursor-pointer border-outline-gray-3 bg-surface-gray-1 pl-3 py-2 flex flex-col gap-1"
                 role='button'
                 onClick={jumpToOriginal}
             >
-                <span className="text-xs text-ink-gray-4 font-medium">
+                <span className="text-xs text-ink-gray-5 font-medium">
                     Replying to {user?.full_name || user?.name || repliedMessage.owner}
                 </span>
-                <div className="text-xs text-ink-gray-4">
+                <div className="text-xs text-ink-gray-5">
                     {repliedMessage.message_type === "Poll" &&
                         <span className="flex items-center">
                             <ChartColumnIcon className="inline mr-1 h-5 w-5 pb-0.5" />

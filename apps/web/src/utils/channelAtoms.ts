@@ -1,6 +1,7 @@
 import { atom } from "jotai";
 import { atomFamily } from "jotai/utils";
 import type { RavenPoll } from "@raven/types/RavenMessaging/RavenPoll";
+import type { Message } from "@raven/types/common/Message";
 import type { UserData } from "@db";
 
 export type DrawerType = '' | 'members' | 'files' | 'pins' | 'links' | 'threads' | 'info'
@@ -25,3 +26,19 @@ export const pollDrawerAtom = atomFamily((_channelID: string) => atom<PollDrawer
  * highlights it and resets this to null.
  */
 export const messageTargetAtom = atomFamily((_channelID: string) => atom<string | null>(null))
+
+/**
+ * The message the action menu (desktop context menu / mobile bottom sheet) is
+ * acting on. Non-null while the menu is open — the stream highlights it so the
+ * user knows which message the actions apply to. Global: one menu app-wide.
+ */
+export const messageActionTargetAtom = atom<Message | null>(null)
+
+export type MessageDialogType = "delete" | "edit" | "forward" | "reactions"
+
+/**
+ * The currently open message dialog. Separate from the menu target because
+ * dialogs outlive the menu (menu closes, dialog stays) and can also be opened
+ * from the future hover toolbar or keyboard shortcuts.
+ */
+export const messageDialogAtom = atom<{ type: MessageDialogType; message: Message } | null>(null)

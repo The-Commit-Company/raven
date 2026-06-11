@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useSearchParams } from "react-router-dom"
-import { useAtom } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
 import { ArrowDown, LoaderCircle } from "lucide-react"
 import DateSeparator from "./renderers/DateSeparator"
 import SystemMessage from "./renderers/SystemMessage"
@@ -11,7 +11,9 @@ import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@components/ui
 import { useChannelMessages } from "@stores/messages/useChannelMessages"
 import { channelMessagesStore } from "@stores/messages/store"
 import { useStreamScroll } from "./useStreamScroll"
-import { messageTargetAtom } from "@utils/channelAtoms"
+import { MessageActionMenu } from "./actions/MessageActionMenu"
+import { MessageActionDialogs } from "./actions/MessageActionDialogs"
+import { messageTargetAtom, messageActionTargetAtom } from "@utils/channelAtoms"
 import { getDateObject } from "@lib/date"
 import { cn } from "@lib/utils"
 import _ from "@lib/translate"
@@ -57,6 +59,8 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
 
     const [targetMessageID, setTargetMessageID] = useAtom(messageTargetAtom(channelID))
     const [highlightedID, setHighlightedID] = useState<string | null>(null)
+    /** Message the action menu is acting on — highlighted so the user knows the target. */
+    const actionTarget = useAtomValue(messageActionTargetAtom)
     /** Tracks the one around-fetch attempted per target, so unknown ids fail gracefully. */
     const attemptedFetchRef = useRef<string | null>(null)
 
@@ -134,11 +138,12 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
 
     return (
         <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
-            <div
-                ref={containerRef}
-                onScroll={onScroll}
-                className="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-auto [overflow-anchor:none]"
-            >
+            <MessageActionMenu channelID={channelID}>
+                <div
+                    ref={containerRef}
+                    onScroll={onScroll}
+                    className="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-auto [overflow-anchor:none]"
+                >
                 <div className="flex min-w-0 w-full flex-col px-3 pb-8">
                     {isLoading ? (
                         <MessageListSkeleton />
@@ -171,12 +176,12 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
                                     <div
                                         key={block.name}
                                         data-message-id={block.name}
-                                        // flex: MessageItem's root is an inline span (Radix trigger) — flex blockifies it.
                                         // Deliberately NO content-visibility: placeholder estimates change height
                                         // after paint and break exact scroll compensation on prepend.
                                         className={cn(
                                             "flex flex-col rounded-md transition-colors duration-700",
                                             highlightedID === block.name && "bg-amber-100 dark:bg-amber-400/15",
+                                            actionTarget?.name === block.name && "bg-surface-gray-2",
                                         )}
                                     >
                                         <MessageItem message={block} onInView={onMessageInView} />
@@ -195,7 +200,9 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
                         </>
                     )}
                 </div>
-            </div>
+                </div>
+            </MessageActionMenu>
+            <MessageActionDialogs />
 
             {showJumpButton && (
                 <div className="absolute bottom-3 right-4 z-10">
