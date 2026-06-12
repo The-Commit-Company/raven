@@ -19,16 +19,14 @@ def get_all_channels(hide_archived: bool | str = True):
 	# 1. Get "channels" - public, open, private, and DMs
 	channels = get_channel_list(hide_archived)
 
-	# 3. For every channel, we need to fetch the peer's User ID (if it's a DM)
+	# 2. Resolve each DM's peer from the denormalized dm_user_1/2 fields —
+	# no per-channel member lookups (the old get_peer_user_id path cost one
+	# cache/DB hit per DM)
 	parsed_channels = []
 	for channel in channels:
 		parsed_channel = {
 			**channel,
-			"peer_user_id": get_peer_user_id(
-				channel.get("name"),
-				channel.get("is_direct_message"),
-				channel.get("is_self_message"),
-			),
+			"peer_user_id": get_peer_user_id_from_dm_users(channel),
 		}
 
 		parsed_channels.append(parsed_channel)
@@ -37,6 +35,34 @@ def get_all_channels(hide_archived: bool | str = True):
 	dm_list = [channel for channel in parsed_channels if channel.get("is_direct_message")]
 
 	return {"channels": channel_list, "dm_channels": dm_list}
+
+
+def get_peer_user_id_from_dm_users(channel, relative_to: str | None = None) -> str | None:
+	"""
+	Resolve the DM peer from dm_user_1/dm_user_2 (set on every DM since the
+	v2.6 dedup patch) — no member-cache lookup. Self-message channels have
+	both fields set to the user, so the same comparison covers them. Falls
+	back to the member-cache lookup for the rare channel the backfill could
+	not resolve.
+
+	`channel` can be a dict row or a Raven Channel document. `relative_to`
+	defaults to the session user; message hot paths pass the sender instead
+	(background inserts can run as Administrator, who is in no DM).
+	"""
+	if not channel.get("is_direct_message"):
+		return None
+
+	me = relative_to or frappe.session.user
+	user_1 = channel.get("dm_user_1")
+	user_2 = channel.get("dm_user_2")
+	if user_1 and user_2:
+		return user_2 if user_1 == me else user_1
+
+	return get_peer_user_id(
+		channel.get("name"),
+		channel.get("is_direct_message"),
+		channel.get("is_self_message"),
+	)
 
 
 def get_channel_list(hide_archived: bool = False):
@@ -64,6 +90,8 @@ def get_channel_list(hide_archived: bool = False):
 			channel.last_message_details,
 			channel.pinned_messages_string,
 			channel.workspace,
+			channel.dm_user_1,
+			channel.dm_user_2,
 			channel_member.name.as_("member_id"),
 			channel_member.is_admin,
 			channel_member.allow_notifications,
@@ -99,9 +127,7 @@ def get_channel_list(hide_archived: bool = False):
 def get_channels(hide_archived: bool | str = False):
 	channels = get_channel_list(hide_archived)
 	for channel in channels:
-		peer_user_id = get_peer_user_id(
-			channel.get("name"), channel.get("is_direct_message"), channel.get("is_self_message")
-		)
+		peer_user_id = get_peer_user_id_from_dm_users(channel)
 		channel["peer_user_id"] = peer_user_id
 		if peer_user_id:
 			user_full_name = frappe.get_cached_value("User", peer_user_id, "full_name")

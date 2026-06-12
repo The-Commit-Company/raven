@@ -3,7 +3,7 @@ from frappe import _
 from frappe.query_builder import Order
 from frappe.query_builder.functions import Coalesce, Count
 
-from raven.api.raven_channel import get_peer_user_id, is_channel_member
+from raven.api.raven_channel import get_peer_user_id_from_dm_users, is_channel_member
 from raven.utils import get_channel_members, get_thread_reply_count
 
 
@@ -282,8 +282,8 @@ def create_thread(message_id: str):
 		# In this case, the creator is already a participant of the thread, but it's peer is not.
 
 		if channel_doc.is_direct_message == 1 and not channel_doc.is_self_message:
-			# Get the peer of the DM channel
-			peer_user_id = get_peer_user_id(channel_doc.name, 1)
+			# Get the peer of the DM channel (from dm_user fields — no member lookup)
+			peer_user_id = get_peer_user_id_from_dm_users(channel_doc)
 
 			if peer_user_id:
 				frappe.get_doc(

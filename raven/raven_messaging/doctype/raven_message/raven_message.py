@@ -10,7 +10,7 @@ from frappe.model.document import Document
 from frappe.utils import get_datetime, get_system_timezone
 from pytz import timezone, utc
 
-from raven.api.raven_channel import get_peer_user
+from raven.api.raven_channel import get_peer_user_id_from_dm_users
 from raven.notification import (
 	send_notification_for_message,
 	send_notification_to_topic,
@@ -254,19 +254,19 @@ class RavenMessage(Document):
 		if not is_dm:
 			return
 
-		# Get the bot user
-		peer_user = get_peer_user(self.channel_id, is_dm)
+		# Get the bot user — peer relative to the sender, straight from the
+		# channel's dm_user fields (no member-cache hit on every DM message)
+		peer_user_id = get_peer_user_id_from_dm_users(channel_doc, relative_to=self.owner)
 
-		if not peer_user or peer_user.get("type") != "Bot":
+		if not peer_user_id:
 			return
 
-		# Get the bot user doc
-		peer_user_doc = frappe.get_cached_doc("Raven User", peer_user.get("user_id"))
+		peer_user = frappe.get_cached_value("Raven User", peer_user_id, ["type", "bot"], as_dict=True)
 
-		if peer_user_doc.type != "Bot" or not peer_user_doc.bot:
+		if not peer_user or peer_user.type != "Bot" or not peer_user.bot:
 			return
 
-		bot = frappe.get_cached_doc("Raven Bot", peer_user_doc.bot)
+		bot = frappe.get_cached_doc("Raven Bot", peer_user.bot)
 
 		if not bot.is_ai_bot:
 			return
@@ -328,9 +328,15 @@ class RavenMessage(Document):
 
 			if not channel_doc.is_self_message:
 
-				peer_user_doc = get_peer_user(self.channel_id, 1)
+				# Peer relative to the sender via dm_user fields — the old
+				# member-cache lookup cost a Redis hit per DM message, and
+				# crashed (None.get) when the peer had been disabled
+				peer_user_id = get_peer_user_id_from_dm_users(channel_doc, relative_to=self.owner)
+				peer_type = (
+					frappe.get_cached_value("Raven User", peer_user_id, "type") if peer_user_id else None
+				)
 
-				if peer_user_doc.get("type") == "User":
+				if peer_type == "User":
 
 					frappe.publish_realtime(
 						"raven:unread_channel_count_updated",
@@ -342,7 +348,7 @@ class RavenMessage(Document):
 							"last_message_timestamp": self.creation,
 							"last_message_details": last_message_details,
 						},
-						user=peer_user_doc.user_id,
+						user=peer_user_id,
 						after_commit=True,
 					)
 

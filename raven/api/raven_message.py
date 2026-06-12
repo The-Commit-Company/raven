@@ -6,7 +6,7 @@ from frappe import _
 from frappe.query_builder import JoinType, Order
 from frappe.query_builder.functions import Coalesce, Count
 
-from raven.api.raven_channel import create_direct_message_channel, get_peer_user_id
+from raven.api.raven_channel import create_direct_message_channel, get_peer_user_id_from_dm_users
 from raven.utils import get_channel_member, is_channel_member, track_channel_visit
 
 
@@ -346,6 +346,8 @@ def get_timeline_message_content(doctype: str, docname: str | int):
 			channel.is_direct_message,
 			user.full_name,
 			channel.is_self_message,
+			channel.dm_user_1,
+			channel.dm_user_2,
 		)
 		.join(channel)
 		.on(message.channel_id == channel.name)
@@ -365,7 +367,7 @@ def get_timeline_message_content(doctype: str, docname: str | int):
 	for log in data:
 
 		if log.is_direct_message:
-			peer_user_id = get_peer_user_id(log.channel_id, log.is_direct_message, log.is_self_message)
+			peer_user_id = get_peer_user_id_from_dm_users(log)
 			if peer_user_id:
 				log["peer_user"] = frappe.db.get_value("User", peer_user_id, "full_name")
 		timeline_contents.append(
