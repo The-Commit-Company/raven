@@ -3,6 +3,7 @@ import { ForwardIcon, LucideIcon, PencilIcon, PinIcon } from "lucide-react"
 import { Message } from "@raven/types/common/Message"
 import ReplyMessage from "./ReplyMessage"
 import { MessageImages } from "./MessageImages"
+import { MessageFiles } from "./MessageFiles"
 import TiptapRenderer from "./TiptapRenderer"
 import SearchTextRenderer from "./SearchTextRenderer"
 import _ from "@lib/translate"
@@ -64,16 +65,7 @@ export const MessageContent = ({ message }: { message: Message }) => {
             )}
             {message.message_type === 'File' && (
                 <>
-                    {'file' in message && message.file && (
-                        <a
-                            href={message.file}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm text-ink-gray-8 underline hover:text-ink-gray-9 break-all"
-                        >
-                            {message.file.split('/').pop()}
-                        </a>
-                    )}
+                    {'file' in message && message.file && <MessageFiles messages={[message]} />}
                     {message.text && <MessageBody content={message.text} />}
                 </>
             )}

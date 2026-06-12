@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@lib/utils"
 import { Button } from "@components/ui/button"
 import { Badge } from "@components/ui/badge"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
 import ViewImageModal from "./ViewImageModal"
 import _ from "@lib/translate"
 import { ReservedImage } from "./ReservedImage"
@@ -121,24 +122,27 @@ export const ImageCarousel = ({ images, onImageClick }: { images: ImageFile[], o
             {images.length > 1 && (
                 <div className="flex gap-1 mt-2 overflow-x-auto">
                     {images.map((image, index) => (
-                        <div
-                            key={image.name}
-                            title={image.file_name}
-                            className={cn(
-                                "shrink-0 cursor-pointer border-2 rounded overflow-hidden transition-all duration-200",
-                                index === currentIndex
-                                    ? "border-outline-blue-4"
-                                    : "border-transparent hover:border-outline-gray-2"
-                            )}
-                            onClick={() => setCurrentIndex(index)}
-                        >
-                            <img
-                                src={image.file_thumbnail || image.file_url}
-                                alt={image.file_name}
-                                className="w-12 h-12 object-cover"
-                                loading="lazy"
-                            />
-                        </div>
+                        <Tooltip key={image.name}>
+                            <TooltipTrigger asChild>
+                                <div
+                                    className={cn(
+                                        "shrink-0 cursor-pointer border-2 rounded overflow-hidden transition-all duration-200",
+                                        index === currentIndex
+                                            ? "border-outline-blue-4"
+                                            : "border-transparent hover:border-outline-gray-2"
+                                    )}
+                                    onClick={() => setCurrentIndex(index)}
+                                >
+                                    <img
+                                        src={image.file_thumbnail || image.file_url}
+                                        alt={image.file_name}
+                                        className="w-12 h-12 object-cover"
+                                        loading="lazy"
+                                    />
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent>{image.file_name}</TooltipContent>
+                        </Tooltip>
                     ))}
                 </div>
             )}
@@ -151,14 +155,20 @@ export const ImageGrid = ({ images, onImageClick }: { images: ImageFile[], onIma
     const layout = albumLayout(displayImages)
 
     return (
-        // One rounded silhouette: the container clips, tiles stay square-edged
-        // inside with hairline gaps — no per-tile borders or rounding
-        <div className={cn("grid gap-0.5 overflow-hidden rounded-lg", layout.container)}>
+        // WhatsApp-style: each tile rounds itself (smaller radius than a single
+        // image — signals "part of a set"), gaps show the page background as
+        // clean separation lines. No borders.
+        <div className={cn("grid gap-1", layout.container)}>
             {displayImages.map((image, index) => (
                 <div
                     key={image.name}
                     data-message-id={image.message_id}
-                    className={cn("relative cursor-pointer overflow-hidden group", layout.tiles[index])}
+                    // bg: mats transparent-edged images (PNG logos/screenshots) —
+                    // invisible behind opaque photos
+                    className={cn(
+                        "relative cursor-pointer overflow-hidden rounded-md bg-surface-gray-2 group",
+                        layout.tiles[index],
+                    )}
                     onClick={() => onImageClick(image)}
                 >
                     <ReservedImage

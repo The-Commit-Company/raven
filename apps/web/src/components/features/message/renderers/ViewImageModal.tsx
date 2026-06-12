@@ -1,20 +1,15 @@
-import {
-    X,
-    Download,
-    Share2,
-    ChevronLeft,
-    ChevronRight,
-} from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@lib/utils"
 import { Button } from "@components/ui/button"
-import { Badge } from "@components/ui/badge"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@components/ui/dialog"
-import { UserAvatar } from "../UserAvatar"
+import { MediaPreviewHeader } from "./MediaPreviewHeader"
 import { UserData } from "@db"
+import { useRef } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
+import { downloadFile, shareFile } from "@lib/file"
 import _ from "@lib/translate"
 import { toast } from "sonner"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
 
 export interface ImageFile {
     name: string
@@ -36,18 +31,6 @@ interface ViewImageModalProps {
     onPrev: () => void
 }
 
-/** Fetches a (session-authenticated) file URL into a File for the Web Share API. */
-const fetchAsFile = async (url: string, fileName: string): Promise<File | null> => {
-    try {
-        const response = await fetch(url, { credentials: "include" })
-        if (!response.ok) return null
-        const blob = await response.blob()
-        return new File([blob], fileName || "image", { type: blob.type })
-    } catch {
-        return null
-    }
-}
-
 const ViewImageModal = ({
     images,
     selectedImageIndex,
@@ -58,8 +41,16 @@ const ViewImageModal = ({
     onNext,
     onPrev,
 }: ViewImageModalProps) => {
-    const currentImage =
-        selectedImageIndex !== null ? images[selectedImageIndex] : null
+    /**
+     * Content renders from the last non-null index: when closing, Radix keeps
+     * the dialog mounted through its exit animation while selectedImageIndex
+     * is already null — without this, the image and header empty out and the
+     * dialog visibly flashes as it animates away.
+     */
+    const lastIndexRef = useRef(0)
+    if (selectedImageIndex !== null) lastIndexRef.current = selectedImageIndex
+    const displayIndex = selectedImageIndex ?? lastIndexRef.current
+    const currentImage = images[displayIndex] ?? null
 
     // Keyboard navigation — Escape is handled by the Radix Dialog itself
     const isOpen = selectedImageIndex !== null
@@ -68,105 +59,46 @@ const ViewImageModal = ({
 
     const downloadImage = () => {
         if (!currentImage) return
-        const anchor = document.createElement("a")
-        anchor.href = currentImage.file_url
-        anchor.download = currentImage.file_name || ""
-        anchor.rel = "noopener"
-        anchor.click()
+        downloadFile(currentImage.file_url, currentImage.file_name)
     }
 
-    /**
-     * Shares the image FILE itself where the platform allows it (the recipient
-     * gets the image, not a link needing a Raven session). Falls back to a URL
-     * share, then to copying the link. The image is already displayed at full
-     * resolution, so the fetch is served from the browser cache.
-     */
     const shareImage = async () => {
         if (!currentImage) return
-        const url = new URL(currentImage.file_url, window.location.origin).href
-
-        const file = await fetchAsFile(url, currentImage.file_name)
-        if (file && navigator.canShare?.({ files: [file] })) {
-            await navigator.share({ files: [file] }).catch(() => {
-                // user dismissed the share sheet — not a failure, no fallback
-            })
-            return
+        if ((await shareFile(currentImage.file_url, currentImage.file_name)) === "copied") {
+            toast.success(_("Link copied"))
         }
-
-        if (navigator.share) {
-            await navigator.share({ title: currentImage.file_name, url }).catch(() => { })
-            return
-        }
-
-        await navigator.clipboard.writeText(url)
-        toast.success(_("Link copied"))
     }
 
     return (
         <Dialog open={selectedImageIndex !== null} onOpenChange={onClose}>
             {/* DialogContent mounts the portal + overlay itself — standard usage only */}
-            <DialogContent className="lg:min-w-6xl md:min-w-4xl sm:min-w-lg" showCloseButton={false}>
+            <DialogContent
+                className="lg:min-w-6xl md:min-w-4xl sm:min-w-lg"
+                showCloseButton={false}
+                // Keep initial focus off the first button (Download) — it reads as pre-selected
+                onOpenAutoFocus={(event) => event.preventDefault()}
+            >
                 <DialogHeader>
                     <DialogTitle className="sr-only">
                         {currentImage?.file_name ?? _("Image")}
                     </DialogTitle>
                     <DialogDescription className="sr-only">{_("View Image")}</DialogDescription>
 
-                    {/* Header */}
-                    <div className="flex items-center justify-between pb-4">
-                        <div className="flex items-center gap-2 min-w-0">
-                            <UserAvatar user={user} size="md" />
-                            <div className="min-w-0">
-                                <div className="flex flex-col items-baseline gap-1">
-                                    <h3 className="font-medium text-sm truncate text-ink-gray-8">
-                                        {user?.full_name || user?.name || _("User")}
-                                    </h3>
-                                    <span className="text-xs text-ink-gray-4 font-regular">
-                                        {time}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        {currentImage && (
-                            <div className="flex flex-wrap items-baseline gap-2">
-                                <Tooltip>
-                                    <TooltipTrigger className="truncate max-w-64 text-base font-medium">
-                                        {currentImage.file_name}
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        {currentImage.file_name}
-                                    </TooltipContent>
-                                </Tooltip>
-
-                                {currentImage.file_size && (
-                                    <Badge size="sm" variant="subtle" theme="gray">
-                                        {currentImage.file_size}
-                                    </Badge>
-                                )}
-                            </div>
+                    <MediaPreviewHeader
+                        user={user}
+                        time={time}
+                        fileName={currentImage?.file_name ?? _("Image")}
+                        fileSize={currentImage?.file_size}
+                        onDownload={downloadImage}
+                        onShare={shareImage}
+                        onClose={onClose}
+                    >
+                        {images.length > 1 && (
+                            <span className="text-xs px-1">
+                                {_("{0} of {1}", [String(displayIndex + 1), String(images.length)])}
+                            </span>
                         )}
-                        <div className="flex items-center gap-2">
-                            {images.length > 1 && (
-                                <>
-                                    <span className="text-xs">
-                                        {_("{0} of {1}", [String(selectedImageIndex! + 1), String(images.length)])}
-                                    </span>
-                                </>
-                            )}
-                            <div className="flex items-center gap-2">
-                                <Button variant="ghost" size="sm" isIconButton title={_("Download")} aria-label={_("Download")} onClick={downloadImage}>
-                                    <Download />
-                                </Button>
-                                <Button variant="ghost" size="sm" isIconButton title={_("Share")} aria-label={_("Share")} onClick={shareImage}>
-                                    <Share2 />
-                                </Button>
-                                <Button variant="ghost" size="sm" isIconButton title={_("Close")} aria-label={_("Close")} onClick={onClose}>
-                                    <X />
-                                </Button>
-                            </div>
-                        </div>
-
-                    </div>
+                    </MediaPreviewHeader>
                 </DialogHeader>
 
 
@@ -212,23 +144,27 @@ const ViewImageModal = ({
                     <div className="p-2 border-t">
                         <div className="flex gap-3 overflow-x-auto max-w-full justify-center">
                             {images.map((image, index) => (
-                                <div
-                                    key={image.name}
-                                    className={cn(
-                                        "shrink-0 cursor-pointer border-2 rounded-lg overflow-hidden transition-all duration-200",
-                                        index === selectedImageIndex
-                                            ? "border-outline-blue-4"
-                                            : "border-transparent hover:border-outline-gray-2"
-                                    )}
-                                    onClick={() => onImageSelect(index)}
-                                >
-                                    <img
-                                        src={image.file_thumbnail || image.file_url}
-                                        alt={image.file_name}
-                                        className="w-12 h-12 object-cover"
-                                        loading="lazy"
-                                    />
-                                </div>
+                                <Tooltip key={image.name}>
+                                    <TooltipTrigger asChild>
+                                        <div
+                                            className={cn(
+                                                "shrink-0 cursor-pointer border-2 rounded-lg overflow-hidden transition-all duration-200",
+                                                index === displayIndex
+                                                    ? "border-outline-blue-4"
+                                                    : "border-transparent hover:border-outline-gray-2"
+                                            )}
+                                            onClick={() => onImageSelect(index)}
+                                        >
+                                            <img
+                                                src={image.file_thumbnail || image.file_url}
+                                                alt={image.file_name}
+                                                className="w-12 h-12 object-cover"
+                                                loading="lazy"
+                                            />
+                                        </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>{image.file_name}</TooltipContent>
+                                </Tooltip>
                             ))}
                         </div>
                     </div>

@@ -1,14 +1,18 @@
 import { cn } from '@lib/utils'
-import { Download, ExternalLink, Share2 } from 'lucide-react'
+import { Download, Share2 } from 'lucide-react'
 import FileTypeIcon from '../FileIcons/FileTypeIcon'
 import { Button } from '@components/ui/button'
+import _ from '@lib/translate'
 
-interface FileItem {
+export interface FileItem {
     fileName: string
     fileType: string
-    fileSize: string
+    fileSize?: string
+    /** Raven Message the file belongs to — lets action delegation target it. */
+    messageId?: string
+    /** Clicking the pill opens the file (modal viewer or new tab — caller decides). */
+    onOpen?: () => void
     onDownload?: () => void
-    onView?: () => void
     onShare?: () => void
 }
 
@@ -24,32 +28,46 @@ const FileMessage = ({
     const fileArray = Array.isArray(files) ? files : [files]
 
     const renderFile = (file: FileItem) => (
-        <div className="rounded-lg border border-outline-gray-2 bg-surface-cards p-2">
+        // The pill itself is the open affordance; the buttons stop propagation
+        <div
+            className={cn(
+                "rounded-md border border-outline-gray-2 bg-surface-cards p-2",
+                file.onOpen && "cursor-pointer hover:bg-surface-gray-1 transition-colors",
+            )}
+            role={file.onOpen ? "button" : undefined}
+            onClick={file.onOpen}
+        >
             <div className="flex items-center gap-2">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                     <FileTypeIcon fileType={file.fileType} size="sm" />
                 </div>
 
                 <div className="flex-1 min-w-0">
-                    <h4 className="text-xs font-medium text-ink-gray-7 truncate">
+                    <h4 className="text-xs font-medium text-ink-gray-7 truncate" title={file.fileName}>
                         {file.fileName}
                     </h4>
-                    <p className="text-xs text-ink-gray-4">
-                        {file.fileSize}
-                    </p>
+                    {file.fileSize && (
+                        <p className="text-xs text-ink-gray-4">
+                            {file.fileSize}
+                        </p>
+                    )}
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex items-center">
-                    {file.onView && (
+                <div className="flex items-center gap-0.5">
+                    {file.onShare && (
                         <Button
                             variant="ghost"
                             size="sm"
                             isIconButton
-                            onClick={file.onView}
-                            title="View"
+                            onClick={(event) => {
+                                event.stopPropagation()
+                                file.onShare?.()
+                            }}
+                            title={_('Share')}
+                            aria-label={_('Share')}
                         >
-                            <ExternalLink />
+                            <Share2 />
                         </Button>
                     )}
 
@@ -58,22 +76,14 @@ const FileMessage = ({
                             variant="ghost"
                             size="sm"
                             isIconButton
-                            onClick={file.onDownload}
-                            title="Download"
+                            onClick={(event) => {
+                                event.stopPropagation()
+                                file.onDownload?.()
+                            }}
+                            title={_('Download')}
+                            aria-label={_('Download')}
                         >
                             <Download />
-                        </Button>
-                    )}
-
-                    {file.onShare && (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            isIconButton
-                            onClick={file.onShare}
-                            title="Share"
-                        >
-                            <Share2 />
                         </Button>
                     )}
                 </div>
@@ -83,11 +93,12 @@ const FileMessage = ({
 
     return (
         <div className={cn(
-            "w-full grid grid-cols-3 gap-2",
+            // Single file: one comfortable pill. Multiple: responsive pill grid.
+            fileArray.length === 1 ? "grid grid-cols-1 max-w-sm gap-2" : "w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2",
             className
         )}>
             {fileArray.map((file, index) => (
-                <div key={index}>
+                <div key={file.messageId ?? index} data-message-id={file.messageId}>
                     {renderFile(file)}
                 </div>
             ))}
@@ -95,4 +106,4 @@ const FileMessage = ({
     )
 }
 
-export default FileMessage 
+export default FileMessage
