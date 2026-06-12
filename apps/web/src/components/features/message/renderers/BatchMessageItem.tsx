@@ -2,6 +2,7 @@ import { useIntersectionObserver } from "usehooks-ts"
 import { MessageImages } from "./MessageImages"
 import { MessageFiles } from "./MessageFiles"
 import { MessageBody, MessageContent } from "./MessageContent"
+import { MessageReactionsRow } from "./MessageReactions"
 import { MessageRow, MessageSenderLayout } from "./MessageRow"
 import type { MessageBatchBlock } from "@stores/messages/types"
 import type { Message } from "@raven/types/common/Message"
@@ -36,15 +37,24 @@ export const BatchMessageItem = ({
     /** A batch carries one caption — whichever member has text (the composer sets it on one). */
     const caption = block.messages.find((message) => message.text)?.text
 
+    // Reactions target individual messages, so a batch can carry several rows —
+    // one per member that has any (usually at most one). Mixed batches get
+    // theirs from each member's MessageContent.
+    const memberReactions = block.messages.map((message) => (
+        <MessageReactionsRow key={message.name} message={message} />
+    ))
+
     const content = allImages ? (
         <div className="space-y-1">
             <MessageImages messages={block.messages} />
             {caption && <MessageBody content={caption} />}
+            {memberReactions}
         </div>
     ) : allFiles ? (
         <div className="space-y-1">
             <MessageFiles messages={block.messages} />
             {caption && <MessageBody content={caption} />}
+            {memberReactions}
         </div>
     ) : (
         // Mixed batch — stack members individually (each row stays addressable)

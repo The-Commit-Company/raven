@@ -6,6 +6,7 @@ import { MessageImages } from "./MessageImages"
 import { MessageFiles } from "./MessageFiles"
 import TiptapRenderer from "./TiptapRenderer"
 import SearchTextRenderer from "./SearchTextRenderer"
+import { MessageReactionsRow } from "./MessageReactions"
 import _ from "@lib/translate"
 
 /**
@@ -76,6 +77,7 @@ export const MessageContent = ({ message }: { message: Message }) => {
                 <MessageBody content={message.content ?? message.text} />
             )}
 
+            <MessageReactionsRow message={message} />
         </div>
     )
 }

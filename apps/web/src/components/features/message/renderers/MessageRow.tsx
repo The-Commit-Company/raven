@@ -90,13 +90,15 @@ export const MessageSenderLayout = ({
                 <div className="flex items-baseline gap-2">
                     <span className="font-medium text-sm">{displayName}</span>
                     <Tooltip delayDuration={300}>
-                        <TooltipTrigger>
+                        <TooltipTrigger asChild>
                             <span className="text-2xs text-ink-gray-4">{shortTime}</span>
                         </TooltipTrigger>
                         <TooltipContent>{longTime}</TooltipContent>
                     </Tooltip>
                 </div>
-                {children}
+                <div className="pt-0.5">
+                    {children}
+                </div>
             </div>
         </div>
     )
