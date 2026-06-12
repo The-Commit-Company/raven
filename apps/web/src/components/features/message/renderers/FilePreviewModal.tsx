@@ -51,7 +51,7 @@ const FilePreviewDialog = ({
     return (
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent
-                className="lg:min-w-5xl md:min-w-3xl flex h-[85vh] flex-col"
+                className="xl:min-w-7xl lg:min-w-6xl md:min-w-3xl flex h-[85vh] flex-col"
                 showCloseButton={false}
                 // Keep initial focus off the first button (Download) — it reads as pre-selected
                 onOpenAutoFocus={(event) => event.preventDefault()}

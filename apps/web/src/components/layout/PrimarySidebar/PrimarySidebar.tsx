@@ -123,7 +123,7 @@ const SavedMessageLink = () => {
     </NavLink>
 }
 
-const getWorkspaceLogo = (workspace: WorkspaceFields) => {
+export const getWorkspaceLogo = (workspace: WorkspaceFields) => {
     let logo = workspace.logo || ''
     if (!logo && workspace.workspace_name === 'Raven') {
         logo = '/assets/raven/raven-logo.png'

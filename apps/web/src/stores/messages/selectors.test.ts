@@ -87,6 +87,14 @@ describe("selectStreamBlocks", () => {
         expect(selectStreamBlocks(state, "")).toBe(selectStreamBlocks(state, ""))
     })
 
+    it("treats a null pinned string (channel with no pins) as no pins", () => {
+        const state = stateOf([msg("a", "2026-06-10 10:00:00.000000")])
+        const blocks = selectStreamBlocks(state, null) as Message[]
+        expect(blocks[1].is_pinned).toBe(0)
+        // null and "" normalize to the same cache entry
+        expect(selectStreamBlocks(state, null)).toBe(selectStreamBlocks(state, ""))
+    })
+
     it("groups consecutive messages sharing a batch id into one batch block", () => {
         const state = stateOf([
             msg("a", "2026-06-10 10:00:00.000000", { message_batch_id: "b1", message_type: "Image" }),

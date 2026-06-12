@@ -142,11 +142,14 @@ const blocksCache = new WeakMap<ChannelMessagesState, CacheEntry>()
 
 export const selectStreamBlocks = (
     state: ChannelMessagesState,
-    pinnedMessagesString: string = "",
+    // null-safe: channels with no pins store NULL in the DB, and a `= ""`
+    // parameter default only kicks in for undefined, not null
+    pinnedMessagesString?: string | null,
 ): StreamBlock[] => {
+    const pinned = pinnedMessagesString ?? ""
     const cached = blocksCache.get(state)
-    if (cached && cached.pinnedMessagesString === pinnedMessagesString) return cached.blocks
-    const blocks = buildBlocks(state, pinnedMessagesString)
-    blocksCache.set(state, { pinnedMessagesString, blocks })
+    if (cached && cached.pinnedMessagesString === pinned) return cached.blocks
+    const blocks = buildBlocks(state, pinned)
+    blocksCache.set(state, { pinnedMessagesString: pinned, blocks })
     return blocks
 }

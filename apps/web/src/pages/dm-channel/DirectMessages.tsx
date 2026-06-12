@@ -1,4 +1,4 @@
-import { useParams, Outlet, Navigate } from "react-router-dom"
+import { Outlet, Navigate, useMatch } from "react-router-dom"
 import { DMSidebar } from "@components/dm-sidebar/DMSidebar"
 import AppHeader from "@components/features/header/AppHeader"
 import { useChannels } from "@hooks/useChannels"
@@ -40,8 +40,11 @@ export function DirectMessagesIndex() {
 export default function DirectMessages() {
     const isMobile = useIsMobile()
 
-    const { id } = useParams<{ id?: string }>()
-
+    // This layout mounts above the `:id` route — useParams here only sees
+    // params matched up to this depth, so `id` was always undefined and the
+    // mobile sidebar never hid. Match the path instead (end: false keeps
+    // matching while a thread extends the URL).
+    const id = useMatch({ path: "/dm-channel/:id", end: false })?.params.id
 
     // Always show the sidebar on desktop
     // On mobile, only show if there's no DM ID

@@ -33,8 +33,8 @@ const AppHeader = ({ title, rightSlot, leftSlot, showSearchBar = true }: AppHead
 
             {/* Balance spacer */}
             <div className="min-w-48 flex justify-end items-center gap-2">
-                {showSearchBar && <MobileSearchButton />}
                 {rightSlot}
+                {showSearchBar && <MobileSearchButton />}
             </div>
         </header>
     )

@@ -74,7 +74,7 @@ const ViewImageModal = ({
         <Dialog open={selectedImageIndex !== null} onOpenChange={onClose}>
             {/* DialogContent mounts the portal + overlay itself — standard usage only */}
             <DialogContent
-                className="lg:min-w-6xl md:min-w-4xl sm:min-w-lg"
+                className="xl:min-w-7xl lg:min-w-6xl md:min-w-3xl sm:min-w-lg"
                 showCloseButton={false}
                 // Keep initial focus off the first button (Download) — it reads as pre-selected
                 onOpenAutoFocus={(event) => event.preventDefault()}

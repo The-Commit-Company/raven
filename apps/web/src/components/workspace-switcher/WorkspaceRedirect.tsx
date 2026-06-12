@@ -1,4 +1,7 @@
 import { Navigate, useParams } from "react-router-dom"
+import { useAtomValue } from "jotai"
+import { useIsMobile } from "@hooks/use-mobile"
+import { lastChannelAtom, lastWorkspaceAtom } from "@utils/lastVisitedAtoms"
 
 /**
  * Redirects to the default channel for a workspace
@@ -6,21 +9,25 @@ import { Navigate, useParams } from "react-router-dom"
  */
 export const WorkspaceRedirect = () => {
     const { workspaceID } = useParams<{ workspaceID: string }>()
+    const isMobile = useIsMobile()
+    const lastWorkspace = useAtomValue(lastWorkspaceAtom)
+    const lastChannel = useAtomValue(lastChannelAtom)
 
     if (!workspaceID) {
         return <Navigate to="/" replace />
     }
 
-    // Try to get last channel from localStorage
-    let lastChannel = ""
-    try {
-        lastChannel = JSON.parse(localStorage.getItem('ravenLastChannel') ?? '""') ?? ''
-    } catch {
-        // Ignore parse errors
+    // On mobile the channel sidebar IS the workspace index page — don't
+    // auto-open a channel over it (same as DirectMessagesIndex)
+    if (isMobile) {
+        return null
     }
 
+    // Only reuse the last channel if it was visited in THIS workspace —
+    // channel ids don't transfer across workspaces
+    const channelId = (lastWorkspace === workspaceID ? lastChannel : "") || "general"
+
     const workspaceSlug = encodeURIComponent(workspaceID)
-    const channelId = lastChannel || "general"
 
     return <Navigate to={`/${workspaceSlug}/${encodeURIComponent(channelId)}`} replace />
 }

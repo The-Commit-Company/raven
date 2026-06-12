@@ -13,15 +13,19 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@components/ui/dropdown-menu'
 import { CustomizeSidebarDialog } from './CustomizeSidebarDialog'
+import { CreateChannelDialog } from '@components/features/channel/CreateChannel/CreateChannelButton'
 import _ from "@lib/translate"
 import { useNavigate } from 'react-router-dom'
 import { useIsMobile } from '@hooks/use-mobile'
 
+/** The channel sidebar's overflow menu — create channel + sidebar view options. */
 export const CustomizeSidebarButton = ({ showMyChannelsOnly, setShowMyChannelsOnly }: { showMyChannelsOnly: boolean, setShowMyChannelsOnly: (showMyChannelsOnly: boolean) => void }) => {
     const [isOpen, setIsOpen] = useState(false)
+    const [createOpen, setCreateOpen] = useState(false)
     const navigate = useNavigate()
     const isMobile = useIsMobile()
 
@@ -43,21 +47,26 @@ export const CustomizeSidebarButton = ({ showMyChannelsOnly, setShowMyChannelsOn
                 </Dialog>
             )}
 
+            <CreateChannelDialog open={createOpen} onOpenChange={setCreateOpen} />
+
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button
                         variant="ghost"
                         size="sm"
                         isIconButton
-                        className="h-6 w-6"
-                        aria-label="More options"
+                        aria-label={_("Channel options")}
                     >
-                        <MoreVertical className="h-3 w-3" />
+                        <MoreVertical />
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" side="bottom" sideOffset={4} className="min-w-48">
+                <DropdownMenuContent align="start" side="bottom" sideOffset={4} className="min-w-64">
                     <DropdownMenuItem onClick={() => setShowMyChannelsOnly(!showMyChannelsOnly)}>
-                        <span>{_("Only show my channels")}</span>{showMyChannelsOnly && <Check className="h-4 w-4 text-ink-gray-8" />}
+                        <span>{_("Only show channels I've joined")}</span>{showMyChannelsOnly && <Check className="h-4 w-4 text-ink-gray-8" />}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => setCreateOpen(true)}>
+                        <span>{_("Create a new channel")}</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => setIsOpen(true)}>
                         <span>{_("Customize my sidebar")}</span>

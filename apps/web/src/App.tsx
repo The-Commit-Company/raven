@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import AppSettings from "./pages/AppSettings"
 import Profile from "./pages/settings/Profile"
 import Appearance from "./pages/settings/Appearance"
 import Preferences from "./pages/settings/Preferences"
@@ -11,7 +10,6 @@ import Threads from "@pages/threads/Threads"
 import DirectMessages, { DirectMessagesIndex } from "@pages/dm-channel/DirectMessages"
 import DirectMessage from "@pages/dm-channel/DirectMessage"
 import ThreadDrawer from "@components/features/message/ThreadDrawer"
-import WorkspaceSwitcher from "@pages/WorkspaceSwitcher"
 import { WorkspaceRedirect } from "@components/workspace-switcher/WorkspaceRedirect"
 import { FrappeProvider } from 'frappe-react-sdk'
 import { init } from 'emoji-mart'
@@ -25,19 +23,28 @@ import { TooltipProvider } from "@radix-ui/react-tooltip"
 import { LucideProvider } from "lucide-react"
 import { useEffect } from "react"
 import AppShell from "@components/layout/AppShell"
+import { useAtomValue } from "jotai"
+import { lastChannelAtom, lastWorkspaceAtom } from "@utils/lastVisitedAtoms"
+import { useIsMobile } from "@hooks/use-mobile"
 import WorkspaceLayout from "@pages/workspace/WorkspaceLayout"
 
-const isDesktop = window.innerWidth > 768
+/**
+ * Home ("/") redirect, evaluated at RENDER time — module-scope reads froze
+ * the last-visited values (and viewport width) at boot, so navigating home
+ * mid-session used stale targets.
+ */
+const IndexRedirect = () => {
+  const lastWorkspace = useAtomValue(lastWorkspaceAtom)
+  const lastChannel = useAtomValue(lastChannelAtom)
+  const isMobile = useIsMobile()
 
-let lastWorkspace = ""
-let lastChannel = ""
-
-try {
-  lastWorkspace = JSON.parse(localStorage.getItem('ravenLastWorkspace') ?? '""') ?? ''
-  lastChannel = JSON.parse(localStorage.getItem('ravenLastChannel') ?? '""') ?? ''
-}
-catch {
-
+  if (!lastWorkspace) return null
+  // Desktop reopens the exact channel; mobile lands on the workspace's
+  // channel list (the channel pair is written together, so it's consistent)
+  if (lastChannel && !isMobile) {
+    return <Navigate to={`/${encodeURIComponent(lastWorkspace)}/${encodeURIComponent(lastChannel)}`} replace />
+  }
+  return <Navigate to={`/${encodeURIComponent(lastWorkspace)}`} replace />
 }
 
 
@@ -77,7 +84,7 @@ function App() {
           <BrowserRouter basename={import.meta.env.VITE_BASE_NAME}>
             <Routes>
               <Route path="/" element={<AppShell />}>
-                <Route index element={lastWorkspace && lastChannel && isDesktop ? <Navigate to={`/${encodeURIComponent(lastWorkspace)}/${encodeURIComponent(lastChannel)}`} replace /> : lastWorkspace ? <Navigate to={`/${encodeURIComponent(lastWorkspace)}`} replace /> : null} />
+                <Route index element={<IndexRedirect />} />
                 {/* Workspace: channels and settings only; search is global at /search above */}
                 <Route path=":workspaceID" element={<WorkspaceLayout />}>
                   <Route index element={<WorkspaceRedirect />} />
