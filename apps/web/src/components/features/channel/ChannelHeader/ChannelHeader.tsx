@@ -11,7 +11,6 @@ import { useChannel } from "@hooks/useChannel"
 import { useIsMobile } from "@hooks/use-mobile"
 import _ from "@lib/translate"
 import { commandMenuOpenAtom } from "@components/features/cmdk/atoms"
-import CommandMenu from "@components/features/cmdk/CommandMenu"
 
 const ChannelHeader = () => {
     const channelID = useCurrentChannelID()
@@ -94,7 +93,6 @@ const ChannelHeader = () => {
                         >
                             <Command className="h-4 w-4 text-ink-gray-7" />
                         </Button>
-                        <CommandMenu />
                     </>
                 )}
                 <Tooltip>

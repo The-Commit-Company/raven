@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { getFileName } from "@raven/lib/utils/operations"
 import { useUser } from "@hooks/useUser"
-import { getDateObject } from "@lib/date"
 import ViewImageModal from "./ViewImageModal"
 import { ImageCarousel, ImageFile, ImageGrid } from "./ImageMessage"
 import { ReservedImage, fitImageBox } from "./ReservedImage"
@@ -77,7 +76,7 @@ export const MessageImages = ({ messages }: { messages: Message[] }) => {
                     images={images}
                     selectedImageIndex={selectedIndex}
                     user={sender}
-                    time={getDateObject(messages[0].creation).format("hh:mm A")}
+                    creation={messages[0].creation}
                     onClose={() => setSelectedIndex(null)}
                     onImageSelect={setSelectedIndex}
                     onNext={() => selectedIndex !== null && setSelectedIndex((selectedIndex + 1) % images.length)}

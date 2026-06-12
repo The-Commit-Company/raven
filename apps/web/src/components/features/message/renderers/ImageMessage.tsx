@@ -1,13 +1,10 @@
 import { useState, useRef } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
-import { UserData } from "@db"
-import { UserAvatar } from "../UserAvatar"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@lib/utils"
 import { Button } from "@components/ui/button"
 import { Badge } from "@components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
-import ViewImageModal from "./ViewImageModal"
 import _ from "@lib/translate"
 import { ReservedImage } from "./ReservedImage"
 
@@ -23,14 +20,6 @@ export interface ImageFile {
     height?: number
     /** The Raven Message this image belongs to — lets action delegation target it. */
     message_id?: string
-}
-
-export interface ImageMessageProps {
-    user: UserData
-    images: ImageFile[]
-    time: string
-    message?: string
-    name: string
 }
 
 export const ImageCarousel = ({ images, onImageClick }: { images: ImageFile[], onImageClick: (image: ImageFile) => void }) => {
@@ -234,82 +223,3 @@ const albumLayout = (images: ImageFile[]): { container: string; tiles: string[] 
     }
 }
 
-const ImageMessage = ({ user, images, time, message, name }: ImageMessageProps) => {
-    const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
-
-    const handleImageClick = (image: ImageFile) => {
-        const index = images.findIndex(img => img.name === image.name)
-        setSelectedImageIndex(index)
-        console.log("Image clicked in message:", name, "image:", image.name)
-    }
-
-    const closeModal = () => {
-        setSelectedImageIndex(null)
-    }
-
-    const nextImage = () => {
-        if (selectedImageIndex !== null) {
-            setSelectedImageIndex((selectedImageIndex + 1) % images.length)
-        }
-    }
-
-    const prevImage = () => {
-        if (selectedImageIndex !== null) {
-            setSelectedImageIndex((selectedImageIndex - 1 + images.length) % images.length)
-        }
-    }
-
-    return (
-        <>
-            <div className="flex items-start gap-3">
-                <UserAvatar user={user} size="md" />
-                <div className="flex-1">
-                    <div className="flex items-baseline gap-2">
-                        <span className="font-medium text-sm">{user?.full_name || user?.name || _("User")}</span>
-                        <span className="text-xs font-regular text-ink-gray-4/90">{time}</span>
-                    </div>
-
-                    {message && (
-                        <div className="text-sm text-ink-gray-8 mb-2">{message}</div>
-                    )}
-
-                    {/* Image Display */}
-                    <div className="max-w-2xl">
-                        {images.length === 1 ? (
-                            <div
-                                className="cursor-pointer overflow-hidden rounded-lg border border-outline-gray-1"
-                                onClick={() => handleImageClick(images[0])}
-                            >
-                                <img
-                                    src={images[0].file_thumbnail || images[0].file_url}
-                                    alt={images[0].file_name}
-                                    className="w-full h-auto max-h-96 object-cover"
-                                    loading="lazy"
-                                />
-                            </div>
-                        ) : images.length <= 4 ? (
-                            <ImageGrid images={images} onImageClick={handleImageClick} />
-                        ) : (
-                            <ImageCarousel images={images} onImageClick={handleImageClick} />
-                        )}
-                    </div>
-
-
-                </div>
-            </div>
-
-            <ViewImageModal
-                images={images}
-                selectedImageIndex={selectedImageIndex}
-                user={user}
-                time={time}
-                onClose={closeModal}
-                onImageSelect={setSelectedImageIndex}
-                onNext={nextImage}
-                onPrev={prevImage}
-            />
-        </>
-    )
-}
-
-export default ImageMessage 

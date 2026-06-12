@@ -1,13 +1,14 @@
-import { useMemo } from "react"
-import { NavLink, useNavigate } from "react-router-dom"
-import { Virtuoso } from "react-virtuoso"
+import { useMemo, useRef } from "react"
+import { NavLink, useMatch, useNavigate } from "react-router-dom"
+import { useHotkeys } from "react-hotkeys-hook"
+import { Virtuoso, type VirtuosoHandle } from "react-virtuoso"
 import { useLiveQuery } from "dexie-react-hooks"
 import { useFrappePostCall, useSWRConfig } from "frappe-react-sdk"
 import { toast } from "sonner"
 import { Skeleton } from "@components/ui/skeleton"
 import { Badge } from "@components/ui/badge"
 import { UserAvatar } from "@components/features/message/UserAvatar"
-import { useUser } from "@hooks/useUser"
+import { useUsersById } from "@hooks/useMessageRowLookups"
 import { db, type UserData } from "@db"
 import { cn } from "@lib/utils"
 import { formatRelativeDate } from "@lib/date"
@@ -16,42 +17,116 @@ import _ from "@lib/translate"
 import type { DMChannelListItem } from "@raven/types/common/ChannelListItem"
 import { useChannels } from "@hooks/useChannels"
 import { useUserCookieData } from "@hooks/useUserCookieData"
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@components/ui/empty"
+import { MessagesSquareIcon } from "lucide-react"
+
+/** A DM channel joined to its resolved peer — what a sidebar row renders. */
+type DMRowData = { dm: DMChannelListItem; peer: UserData }
+
+type DMListContext = { showSuggestions: boolean; dmPeerIds: Set<string> }
+
+/**
+ * Defined at module level and passed via Virtuoso's `context` prop: an inline
+ * `components={{ Footer: () => ... }}` creates a NEW component type every
+ * render, so Virtuoso would unmount/remount the footer (re-running
+ * ExtraUsersList's live query) on each sidebar render.
+ */
+const DMListFooter = ({ context }: { context?: DMListContext }) =>
+    context?.showSuggestions ? <ExtraUsersList dmPeerIds={context.dmPeerIds} /> : null
+
+const dmListComponents = { Footer: DMListFooter }
 
 export function DMSidebar() {
 
     const { dm_channels, isLoading } = useChannels()
+    const usersById = useUsersById()
+
+    /**
+     * Join channels to peer users BEFORE the virtualizer. Virtuoso items must
+     * never be zero-sized ("Zero-sized element" error), so a row component
+     * can't resolve its user async and return null while loading — every item
+     * handed to Virtuoso must be renderable. Filtering disabled/unresolvable
+     * peers happens here for the same reason. One shared lookup Map also
+     * replaces a per-row useUser subscription (see useMessageRowLookups).
+     */
+    const rows: DMRowData[] = useMemo(
+        () =>
+            dm_channels.flatMap((dm) => {
+                const peer = dm.peer_user_id ? usersById.get(dm.peer_user_id) : undefined
+                return peer && peer.enabled !== 0 ? [{ dm, peer }] : []
+            }),
+        [dm_channels, usersById]
+    )
 
     const dmPeerIds = useMemo(
         () => new Set(dm_channels.map((d) => d.peer_user_id).filter(Boolean) as string[]),
         [dm_channels]
     )
 
+    // The users table always contains at least the current user once Dexie
+    // has hydrated — an empty map means we're still loading, not "no users"
+    const usersReady = usersById.size > 0
+
+    const navigate = useNavigate()
+    const virtuosoRef = useRef<VirtuosoHandle>(null)
+    // The sidebar mounts above the `:id` route, so useParams can't see the
+    // channel; match the path instead (end: false keeps matching while a
+    // thread drawer extends the URL)
+    const routeMatch = useMatch({ path: "/dm-channel/:id", end: false })
+    const currentChannelID = routeMatch?.params.id
+
+    /** Cmd/Ctrl+Down = next channel, Cmd/Ctrl+Up = previous — clamped at the ends. */
+    const goToAdjacentChannel = (direction: 1 | -1) => {
+        if (rows.length === 0) return
+        const currentIndex = rows.findIndex((row) => row.dm.name === currentChannelID)
+        // Nothing open yet: Down enters the list from the top, Up from the bottom
+        const nextIndex =
+            currentIndex === -1
+                ? direction === 1
+                    ? 0
+                    : rows.length - 1
+                : Math.min(rows.length - 1, Math.max(0, currentIndex + direction))
+        if (nextIndex === currentIndex) return
+        navigate(`/dm-channel/${encodeURIComponent(rows[nextIndex].dm.name)}`)
+        virtuosoRef.current?.scrollIntoView({ index: nextIndex })
+    }
+
+    // Works while composing too (form tags + Tiptap's contenteditable);
+    // preventDefault stops the browser's own Cmd+Up/Down caret/scroll jumps
+    const hotkeyOptions = { enableOnFormTags: true, enableOnContentEditable: true, preventDefault: true }
+    useHotkeys("mod+down", () => goToAdjacentChannel(1), hotkeyOptions, [rows, currentChannelID])
+    useHotkeys("mod+up", () => goToAdjacentChannel(-1), hotkeyOptions, [rows, currentChannelID])
+
     return (
         <div className="flex h-full min-h-0">
-            {isLoading ? (
+            {isLoading || !usersReady ? (
                 <div className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto">
                     <DMSidebarSkeleton />
                 </div>
+            ) : rows.length === 0 ? (
+                // No virtualizer for an empty list — just the empty state and,
+                // when the org has people to suggest, the start-a-DM rows
+                <Empty>
+                    <EmptyMedia>
+                        <MessagesSquareIcon />
+                    </EmptyMedia>
+                    <EmptyHeader>
+                        <EmptyTitle>{_("No conversations yet")}</EmptyTitle>
+                        <EmptyDescription>{_("Search for a user and start a conversation.")}</EmptyDescription>
+                    </EmptyHeader>
+                </Empty>
             ) : (
                 <Virtuoso
+                    ref={virtuosoRef}
                     className="flex-1 min-h-0"
                     style={{ height: "100%" }}
-                    data={dm_channels}
+                    data={rows}
+                    context={{ showSuggestions: rows.length < 5, dmPeerIds }}
+                    computeItemKey={(_index, row) => row.dm.name}
                     defaultItemHeight={64}
-                    initialItemCount={Math.min(dm_channels.length, 10)}
                     overscan={200}
-                    components={{
-                        Footer: () =>
-                            dm_channels.length < 5 ? (
-                                <ExtraUsersList dmPeerIds={dmPeerIds} />
-                            ) : null,
-                    }}
-                    itemContent={(_index, dm) => (
-                        <DMRow
-                            key={dm.name}
-                            dmChannel={dm}
-                        />
-                    )}
+                    components={dmListComponents}
+                    itemContent={(_index, row) => <DMRow dmChannel={row.dm} peerUser={row.peer} />}
                 />
             )}
         </div>
@@ -87,14 +162,11 @@ function DMSidebarSkeleton() {
 
 interface DMRowProps {
     dmChannel: DMChannelListItem
+    peerUser: UserData
 }
 
-function DMRow({ dmChannel }: DMRowProps) {
-    const { data: peerUser } = useUser(dmChannel.peer_user_id)
-
+function DMRow({ dmChannel, peerUser }: DMRowProps) {
     const { name: currentUser } = useUserCookieData()
-
-    if (!peerUser || peerUser.enabled === 0) return null
 
     const unread =
         typeof dmChannel.last_message_details === "object" &&
@@ -106,12 +178,9 @@ function DMRow({ dmChannel }: DMRowProps) {
     const baseName = peerUser.full_name || peerUser.name
     const displayName = isSelf ? _("{0} (You)", [baseName]) : baseName
     const date = formatRelativeDate(dmChannel.last_message_timestamp)
-    const lastMessage = getMessageTeaser(dmChannel.last_message_details)
+    const lastMessage = getMessageTeaser(dmChannel.last_message_details, currentUser)
 
-    return <NavLink
-        to={`/dm-channel/${encodeURIComponent(dmChannel.name)}`}
-        className=""
-    >
+    return <NavLink to={`/dm-channel/${encodeURIComponent(dmChannel.name)}`}>
         {({ isActive }) => (
             <DMRowShell
                 user={peerUser}
@@ -180,7 +249,7 @@ function ExtraUserRow({ user }: { user: UserData }) {
             type="button"
             onClick={handleClick}
             disabled={loading}
-            className="flex w-full"
+            className="flex w-full disabled:pointer-events-none disabled:opacity-50"
         >
             <DMRowShell
                 user={user}
@@ -215,10 +284,9 @@ function DMRowShell({
         <div
             className={cn(
                 "flex w-full items-start gap-3 border-b px-3 py-3 md:py-2 text-sm leading-tight last:border-b-0 transition-colors relative text-left",
-                "hover:bg-surface-gray-2 hover:text-ink-gray-8 select-none",
-                "active:bg-surface-gray-2 active:text-ink-gray-8",
-                "disabled:opacity-50 disabled:pointer-events-none",
-                isActive && "bg-surface-gray-3 hover:bg-surface-gray-3 text-ink-gray-8"
+                "hover:bg-surface-gray-2 select-none",
+                "active:bg-surface-gray-2",
+                isActive && "bg-surface-gray-3 hover:bg-surface-gray-3"
             )}
         >
             <div className="shrink-0 self-center">
@@ -233,14 +301,14 @@ function DMRowShell({
                 <div className="flex justify-between items-center gap-2 mb-0.5">
                     <span
                         className={cn(
-                            "truncate text-base md:text-sm",
-                            unread > 0 ? "font-semibold text-ink-gray-8" : "font-normal"
+                            "truncate text-base md:text-sm text-ink-gray-8",
+                            unread > 0 ? "font-semibold" : "font-normal"
                         )}
                     >
                         {name}
                     </span>
                     {date && (
-                        <span className="text-2xs font-regular text-ink-gray-4 shrink-0">
+                        <span className="text-2xs text-ink-gray-4 shrink-0">
                             {date}
                         </span>
                     )}
@@ -250,8 +318,8 @@ function DMRowShell({
                         className={cn(
                             "line-clamp-1 text-sm md:text-xs flex-1 min-w-0",
                             unread > 0
-                                ? "font-medium text-ink-gray-8/90"
-                                : "text-ink-gray-4/80"
+                                ? "font-medium text-ink-gray-8"
+                                : "text-ink-gray-4"
                         )}
                     >
                         {lastMessage}

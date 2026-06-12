@@ -1,4 +1,3 @@
-import type React from "react"
 import { Badge } from "@components/ui/badge"
 import { Button } from "@components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
@@ -12,16 +11,14 @@ import {
     DropdownMenuTrigger,
 } from "@components/ui/dropdown-menu"
 import { UserAvatar } from "@components/features/message/UserAvatar"
-import { Bell, BellOff, BellRing, Bot, ChevronDown, ChevronLeft, Command, Files, Headset, Link, MessageSquareText, Palmtree, Pin, User, UserX } from "lucide-react"
+import { Bell, BellOff, BellRing, Bot, ChevronDown, ChevronLeft, Command, Files, Headset, Link, MessageSquareText, Palmtree, Pin, SearchIcon, User, UserX } from "lucide-react"
 import { useAtom, useSetAtom } from "jotai"
 import { commandMenuOpenAtom } from "@components/features/cmdk/atoms"
-import CommandMenu from "@components/features/cmdk/CommandMenu"
 import { useNavigate } from "react-router-dom"
 import { channelDrawerAtom, type DrawerType } from "@utils/channelAtoms"
 import { UserData } from "@db"
 import _ from "@lib/translate"
 import { useChannel } from "@hooks/useChannel"
-import { useIsMobile } from "@hooks/use-mobile"
 import { useIsUserOnLeave } from "@hooks/useIsUserOnLeave"
 
 interface DMChannelHeaderProps {
@@ -33,7 +30,6 @@ interface DMChannelHeaderProps {
 
 export function DMChannelHeader({ peer, channelID }: DMChannelHeaderProps) {
     const navigate = useNavigate()
-    const isMobile = useIsMobile()
     const displayName = peer.full_name || peer.name
     const [, setDrawerType] = useAtom(channelDrawerAtom(channelID))
     const setCommandMenuOpen = useSetAtom(commandMenuOpenAtom)
@@ -50,19 +46,21 @@ export function DMChannelHeader({ peer, channelID }: DMChannelHeaderProps) {
 
     return (
         <div
-            className="flex w-full shrink-0 items-center justify-between border-b bg-surface-white py-1.5 px-2"
+            // h-11 (not padding-driven): AppHeader matches this height on
+            // mobile so list ↔ channel navigation doesn't jump the header
+            className="flex h-11 w-full shrink-0 items-center justify-between border-b bg-surface-white px-2"
         >
-            {isMobile && (
+            <div className="flex items-center gap-1 md:hidden">
                 <Button
                     variant="ghost"
-                    size="sm"
+                    size="md"
                     isIconButton
                     onClick={() => navigate('/dm-channel')}
                     aria-label={_('Back')}
                 >
-                    <ChevronLeft className="h-4 w-4" />
+                    <ChevronLeft />
                 </Button>
-            )}
+            </div>
 
             {/* Left: Avatar/Name dropdown + pinned chip */}
             <div className="flex items-center gap-2 min-w-0">
@@ -166,22 +164,17 @@ export function DMChannelHeader({ peer, channelID }: DMChannelHeaderProps) {
             </div>
 
             {/* Right: Command menu (mobile) + Call */}
-            <div className="flex items-center gap-1 ml-auto">
-                {isMobile && (
-                    <>
-                        <Button
-                            variant="ghost"
-                            size="md"
-                            isIconButton
-                            onClick={() => setCommandMenuOpen(true)}
-                            aria-label={_("Command Menu")}
-                        >
-                            <Command className="h-4 w-4 text-ink-gray-7" />
-                        </Button>
-                        <CommandMenu />
-                    </>
-                )}
-                <Tooltip>
+            <div className="items-center gap-1 ml-auto md:hidden flex">
+                <Button
+                    variant="ghost"
+                    size="md"
+                    isIconButton
+                    onClick={() => setCommandMenuOpen(true)}
+                    aria-label={_("Command Menu")}
+                >
+                    <SearchIcon />
+                </Button>
+                {/* <Tooltip>
                     <TooltipTrigger asChild>
                         <Button variant="ghost" size="sm" isIconButton>
                             <Headset className="h-4 w-4 md:h-3 md:w-3 text-ink-gray-8/80" />
@@ -191,7 +184,7 @@ export function DMChannelHeader({ peer, channelID }: DMChannelHeaderProps) {
                     <TooltipContent>
                         <p>{_("Start call")}</p>
                     </TooltipContent>
-                </Tooltip>
+                </Tooltip> */}
             </div>
         </div>
     )

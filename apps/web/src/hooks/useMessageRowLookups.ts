@@ -1,8 +1,8 @@
-import { useMemo } from 'react'
-import { useLiveQuery } from 'dexie-react-hooks'
+import { useMemo, useSyncExternalStore } from 'react'
 import { useChannels } from '@hooks/useChannels'
 import { useWorkspaces, WorkspaceFields } from '@hooks/useWorkspaces'
-import { db, UserData } from '@db'
+import { usersStore } from '@stores/usersStore'
+import { UserData } from '@db'
 import { ChannelListItem, DMChannelListItem } from '@raven/types/common/ChannelListItem'
 
 /**
@@ -14,14 +14,9 @@ import { ChannelListItem, DMChannelListItem } from '@raven/types/common/ChannelL
  * `useMessageRowLookups()` when you need all four.
  */
 
-export const useUsersById = (): Map<string, UserData> => {
-    const users = useLiveQuery(() => db.users.toArray(), [])
-    return useMemo(() => {
-        const m = new Map<string, UserData>()
-        for (const u of users ?? []) m.set(u.name, u)
-        return m
-    }, [users])
-}
+/** All consumers share usersStore's single snapshot — see that file for why. */
+export const useUsersById = (): Map<string, UserData> =>
+    useSyncExternalStore(usersStore.subscribe, usersStore.getSnapshot)
 
 export const useChannelsById = (): Map<string, ChannelListItem> => {
     const { channels } = useChannels()

@@ -1,9 +1,10 @@
 import { commandMenuOpenAtom } from "@components/features/cmdk/atoms";
-import { Search } from "lucide-react";
+import { Search, SearchIcon } from "lucide-react";
 import _ from "@lib/translate";
 import { useSetAtom } from "jotai";
 import { Kbd, KbdGroup } from "@components/ui/kbd";
 import { KeyboardMetaKeyIcon } from "@components/ui/keyboard-keys";
+import { Button } from "@components/ui/button";
 
 const SearchButton = () => {
     const setOpen = useSetAtom(commandMenuOpenAtom)
@@ -27,6 +28,20 @@ const SearchButton = () => {
             </button>
         </div>
     )
+}
+
+export const MobileSearchButton = () => {
+
+    const setOpen = useSetAtom(commandMenuOpenAtom)
+    return <Button
+        variant="ghost"
+        size="md"
+        isIconButton
+        onClick={() => setOpen(true)}
+        aria-label={_("Command Menu")}
+    >
+        <SearchIcon />
+    </Button>
 }
 
 SearchButton.displayName = "SearchButton"

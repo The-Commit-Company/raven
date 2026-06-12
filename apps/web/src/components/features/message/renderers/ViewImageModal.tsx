@@ -24,7 +24,8 @@ interface ViewImageModalProps {
     images: ImageFile[]
     selectedImageIndex: number | null
     user: UserData
-    time: string
+    /** Raw message timestamp — MediaPreviewHeader formats it. */
+    creation: string
     onClose: () => void
     onImageSelect: (index: number) => void
     onNext: () => void
@@ -35,7 +36,7 @@ const ViewImageModal = ({
     images,
     selectedImageIndex,
     user,
-    time,
+    creation,
     onClose,
     onImageSelect,
     onNext,
@@ -86,7 +87,7 @@ const ViewImageModal = ({
 
                     <MediaPreviewHeader
                         user={user}
-                        time={time}
+                        creation={creation}
                         fileName={currentImage?.file_name ?? _("Image")}
                         fileSize={currentImage?.file_size}
                         onDownload={downloadImage}

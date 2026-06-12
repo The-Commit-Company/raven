@@ -3,6 +3,8 @@ import { Badge } from "@components/ui/badge"
 import { Button } from "@components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
 import { UserAvatar } from "../UserAvatar"
+import { useMessageTimes } from "./MessageRow"
+import { formatRelativeDate } from "@lib/date"
 import _ from "@lib/translate"
 import type { UserData } from "@db"
 
@@ -14,7 +16,7 @@ import type { UserData } from "@db"
  */
 export const MediaPreviewHeader = ({
     user,
-    time,
+    creation,
     fileName,
     fileSize,
     children,
@@ -23,77 +25,96 @@ export const MediaPreviewHeader = ({
     onClose,
 }: {
     user?: UserData
-    time?: string
+    /** Raw message timestamp — the header owns its display formatting. */
+    creation?: string
     fileName: string
     fileSize?: string
     children?: React.ReactNode
     onDownload: () => void
     onShare: () => void
     onClose: () => void
-}) => (
-    // Mobile: sender + actions share the first row, the file name wraps to its
-    // own full-width row. Desktop: all three sit side by side.
-    <div className="flex flex-wrap items-center justify-between gap-2 pb-2">
-        {user && (
-            <div className="order-1 flex min-w-0 items-center gap-2">
-                <UserAvatar user={user} size="md" />
-                <div className="flex min-w-0 flex-col gap-1">
-                    <h3 className="truncate text-sm font-medium text-ink-gray-8">
-                        {user.full_name || user.name}
-                    </h3>
-                    {time && <span className="text-xs font-regular text-ink-gray-4">{time}</span>}
+}) => {
+    const { longTime } = useMessageTimes(creation ?? "")
+    // "9:34 AM" / "Yesterday" / "Jun 2" — a bare clock time is meaningless on
+    // older messages; the full date+time lives in the tooltip (as in MessageRow)
+    const displayTime = creation ? formatRelativeDate(creation) : ""
+
+    return (
+        // Mobile: sender + actions share the first row, the file name wraps to its
+        // own full-width row. Desktop: all three sit side by side.
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-2">
+            {user && (
+                // flex-1 on BOTH side groups keeps the file name truly centered —
+                // with justify-between alone it drifts toward the narrower side
+                <div className="order-1 flex min-w-0 flex-1 items-center gap-2">
+                    <UserAvatar user={user} size="md" />
+                    <div className="flex min-w-0 flex-col gap-0.5">
+                        <h3 className="truncate text-sm font-medium text-ink-gray-8">
+                            {user.full_name || user.name}
+                        </h3>
+                        {displayTime && (
+                            <Tooltip delayDuration={300}>
+                                {/* asChild span: a focusable trigger would grab the
+                                dialog's initial focus and auto-open the tooltip */}
+                                <TooltipTrigger asChild>
+                                    <span className="w-fit text-xs text-ink-gray-4">{displayTime}</span>
+                                </TooltipTrigger>
+                                <TooltipContent>{longTime}</TooltipContent>
+                            </Tooltip>
+                        )}
+                    </div>
                 </div>
-            </div>
-        )}
-
-        <div className="order-3 flex min-w-0 basis-full flex-wrap items-baseline gap-2 sm:order-2 sm:basis-auto">
-            <Tooltip>
-                {/* asChild span: a focusable trigger would grab the dialog's
-                    initial focus and auto-open the tooltip */}
-                <TooltipTrigger asChild>
-                    <span className="max-w-64 truncate text-base font-medium">{fileName}</span>
-                </TooltipTrigger>
-                <TooltipContent>{fileName}</TooltipContent>
-            </Tooltip>
-            {fileSize && (
-                <Badge size="sm" variant="subtle" theme="gray">
-                    {fileSize}
-                </Badge>
             )}
-        </div>
 
-        <div className="order-2 flex shrink-0 items-center gap-2 sm:order-3">
-            {children}
-            <Button
-                variant="ghost"
-                size="sm"
-                isIconButton
-                title={_("Download")}
-                aria-label={_("Download")}
-                onClick={onDownload}
-            >
-                <Download />
-            </Button>
-            <Button
-                variant="ghost"
-                size="sm"
-                isIconButton
-                title={_("Share")}
-                aria-label={_("Share")}
-                onClick={onShare}
-            >
-                <Share2 />
-            </Button>
-            <Button
-                variant="ghost"
-                size="sm"
-                isIconButton
-                title={_("Close")}
-                aria-label={_("Close")}
-                onClick={onClose}
-            >
-                <X />
-            </Button>
+            <div className="order-3 flex min-w-0 basis-full flex-wrap items-center gap-2 sm:order-2 sm:basis-auto">
+                <Tooltip>
+                    {/* asChild span: a focusable trigger would grab the dialog's
+                    initial focus and auto-open the tooltip */}
+                    <TooltipTrigger asChild>
+                        <span className="max-w-64 truncate text-base font-medium">{fileName}</span>
+                    </TooltipTrigger>
+                    <TooltipContent>{fileName}</TooltipContent>
+                </Tooltip>
+                {fileSize && (
+                    <Badge size="sm" variant="subtle" theme="gray">
+                        {fileSize}
+                    </Badge>
+                )}
+            </div>
+
+            <div className="order-2 flex flex-1 shrink-0 items-center justify-end gap-2 sm:order-3">
+                {children}
+                <Button
+                    variant="ghost"
+                    size="md"
+                    isIconButton
+                    title={_("Download")}
+                    aria-label={_("Download")}
+                    onClick={onDownload}
+                >
+                    <Download />
+                </Button>
+                <Button
+                    variant="ghost"
+                    size="md"
+                    isIconButton
+                    title={_("Share")}
+                    aria-label={_("Share")}
+                    onClick={onShare}
+                >
+                    <Share2 />
+                </Button>
+                <Button
+                    variant="ghost"
+                    size="md"
+                    isIconButton
+                    title={_("Close")}
+                    aria-label={_("Close")}
+                    onClick={onClose}
+                >
+                    <X />
+                </Button>
+            </div>
         </div>
-    </div>
-)
+    )
+}

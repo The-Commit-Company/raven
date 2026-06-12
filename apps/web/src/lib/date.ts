@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import _ from '@lib/translate'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
@@ -49,13 +50,21 @@ export const convertDateToTimeString = (date: Date): string => {
     return dayjs(date).format(FRAPPE_DATETIME_FORMAT)
 }
 
-/** Format timestamp for sidebar/list (e.g. "9:34 AM", "Yesterday", or relative like "2 days ago") */
+/**
+ * Compact timestamp for sidebar/list rows, chat-app convention:
+ * today → "9:34 AM", yesterday → "Yesterday", within the week → "Tuesday",
+ * this year → "Jun 2", older → "Jun 2, 2025". ("3 days ago"-style relative
+ * phrasing is too wordy for that slot.)
+ */
 export const formatRelativeDate = (timestamp?: string) => {
   if (!timestamp) return ""
   const d = getDateObject(timestamp)
-  if (d.isAfter(dayjs().startOf("day"))) return d.format("h:mm A")
-  if (d.isAfter(dayjs().subtract(1, "day").startOf("day"))) return "Yesterday"
-  return d.fromNow()
+  const startOfToday = dayjs().startOf("day")
+  if (d.isAfter(startOfToday)) return d.format("h:mm A")
+  if (d.isAfter(startOfToday.subtract(1, "day"))) return _("Yesterday")
+  if (d.isAfter(startOfToday.subtract(6, "day"))) return d.format("dddd")
+  if (d.isSame(dayjs(), "year")) return d.format("MMM D")
+  return d.format("MMM D, YYYY")
 }
 
 /**

@@ -2,7 +2,6 @@ import { useRef } from "react"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@components/ui/dialog"
 import { MediaPreviewHeader } from "./MediaPreviewHeader"
-import { useMessageTimes } from "./MessageRow"
 import { useUser } from "@hooks/useUser"
 import { downloadFile, shareFile } from "@lib/file"
 import _ from "@lib/translate"
@@ -44,7 +43,6 @@ const FilePreviewDialog = ({
     onClose: () => void
 }) => {
     const { data: user } = useUser(file.owner)
-    const { shortTime } = useMessageTimes(file.creation)
 
     const share = async () => {
         if ((await shareFile(file.fileUrl, file.fileName)) === "copied") toast.success(_("Link copied"))
@@ -63,7 +61,7 @@ const FilePreviewDialog = ({
                     <DialogDescription className="sr-only">{_("File preview")}</DialogDescription>
                     <MediaPreviewHeader
                         user={user ?? undefined}
-                        time={shortTime}
+                        creation={file.creation}
                         fileName={file.fileName}
                         onDownload={() => downloadFile(file.fileUrl, file.fileName)}
                         onShare={share}
