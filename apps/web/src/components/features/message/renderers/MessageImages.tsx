@@ -50,6 +50,10 @@ export const MessageImages = ({ messages }: { messages: Message[] }) => {
                 // max-w-full: on narrow columns the box clamps and aspect-ratio
                 // keeps the height proportional — still fully deterministic
                 <div
+                    // message_id: in a mixed batch a lone image renders here while
+                    // the row belongs to the whole batch — delegation needs the member
+                    data-message-id={single.message_id}
+                    data-media-root=""
                     className="max-w-full cursor-pointer overflow-hidden rounded-lg"
                     style={fitImageBox(single.width, single.height)}
                     onClick={() => openImage(single)}
@@ -59,7 +63,7 @@ export const MessageImages = ({ messages }: { messages: Message[] }) => {
             ) : (
                 // Inline media caps at a reading-friendly width by design (the modal
                 // is the big-screen surface); desktops get a modestly higher cap
-                <div className="max-w-md lg:max-w-lg">
+                <div data-media-root="" className="max-w-md lg:max-w-lg">
                     {images.length <= 4 ? (
                         <ImageGrid images={images} onImageClick={openImage} />
                     ) : (

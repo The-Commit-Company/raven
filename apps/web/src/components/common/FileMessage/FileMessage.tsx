@@ -92,7 +92,9 @@ const FileMessage = ({
     )
 
     return (
-        <div className={cn(
+        // data-media-root: hard-edged media gets extra top spacing under a
+        // sender header (see MessageSenderLayout) — inert everywhere else
+        <div data-media-root="" className={cn(
             // Single file: one comfortable pill. Multiple: responsive pill grid.
             fileArray.length === 1 ? "grid grid-cols-1 max-w-sm gap-2" : "w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2",
             className

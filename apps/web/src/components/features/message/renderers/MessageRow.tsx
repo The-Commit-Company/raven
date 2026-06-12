@@ -96,7 +96,12 @@ export const MessageSenderLayout = ({
                         <TooltipContent>{longTime}</TooltipContent>
                     </Tooltip>
                 </div>
-                <div className="pt-0.5">
+                {/* Header-to-content gap lives HERE (not on content renderers)
+                    so continuation rows — which skip this branch — stay tight.
+                    pt-1 suits text (line-height adds visual leading); hard-edged
+                    media boxes (albums, file grids) read tighter, so a media
+                    root leading the content gets a nudge more. */}
+                <div className="pt-1 [&_[data-media-root]:first-child]:mt-0.5">
                     {children}
                 </div>
             </div>
