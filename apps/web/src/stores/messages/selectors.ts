@@ -1,5 +1,6 @@
 import type { Message } from "@raven/types/common/Message"
 import { getDateObject } from "@lib/date"
+import { isThreadParent } from "@utils/messageUtils"
 import { ChannelMessagesState, DateBlock, MessageBatchBlock, StreamBlock } from "./types"
 
 /**
@@ -59,6 +60,11 @@ const dateBlockFor = (dateKey: string): DateBlock => ({
 /** A message continues the previous one when same sender, same day, within the gap. */
 const isContinuationOf = (message: Message, previous: Message | null): boolean => {
     if (!previous) return false
+    // A thread parent is a continuation boundary in BOTH directions: it carries
+    // avatar-anchored thread decorations (header, participant button, connector
+    // line) that need a full header to attach to, and its trailing thread
+    // button visually closes the block — so nothing continues from it either.
+    if (isThreadParent(message) || isThreadParent(previous)) return false
     if (dateKeyOf(message) !== dateKeyOf(previous)) return false
     const sender = senderOf(message)
     if (sender === null || sender !== senderOf(previous)) return false

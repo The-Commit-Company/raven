@@ -63,6 +63,18 @@ describe("selectStreamBlocks", () => {
         expect(byName["d"].is_continuation).toBe(0) // new day, despite 60s gap
     })
 
+    it("treats a thread parent as a continuation boundary in both directions", () => {
+        const state = stateOf([
+            msg("a", "2026-06-10 10:00:00.000000"),
+            msg("b", "2026-06-10 10:00:30.000000", { is_thread: 1 }),
+            msg("c", "2026-06-10 10:01:00.000000"),
+        ])
+        const [, first, thread, after] = selectStreamBlocks(state) as Message[]
+        expect(first.is_continuation).toBe(0)
+        expect(thread.is_continuation).toBe(0) // thread parent never continues
+        expect(after.is_continuation).toBe(0) // nothing continues from a thread parent
+    })
+
     it("distinguishes bots from their owner user when grouping", () => {
         const state = stateOf([
             msg("a", "2026-06-10 10:00:00.000000"),

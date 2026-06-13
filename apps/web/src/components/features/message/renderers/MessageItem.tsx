@@ -1,9 +1,9 @@
 import { Message } from "@raven/types/common/Message"
-import { ThreadButton, ThreadHeader } from "./ThreadMessage"
-import { cn } from "@lib/utils"
+import { ThreadButton } from "./ThreadMessage"
 import { useIntersectionObserver } from "usehooks-ts"
 import { MessageContent } from "./MessageContent"
 import { MessageRow, MessageSenderLayout } from "./MessageRow"
+import { isThreadParent } from "@utils/messageUtils"
 
 /**
  * Anatomy of a message
@@ -50,12 +50,6 @@ import { MessageRow, MessageSenderLayout } from "./MessageRow"
  *
  */
 
-/** Treat is_thread as true for 1, true, or "1" so thread UI shows on both Channel and DM (API may return different types). */
-function isThreadParent(message: Message): boolean {
-    const v = message.is_thread as unknown
-    return v === 1 || v === true || String(v) === "1"
-}
-
 export const MessageItem = ({ message, onInView }: { message: Message; onInView?: (message: Message) => void }) => {
 
     const showThread = isThreadParent(message)
@@ -70,9 +64,10 @@ export const MessageItem = ({ message, onInView }: { message: Message; onInView?
 
     // Pure render: interactivity (context menu, action sheet, dialogs) lives at
     // the stream level via event delegation on the data-message-id wrapper.
+    // A thread parent is never a continuation (the selector enforces this), so
+    // the connector always anchors to the full header — no is_continuation branch.
     return <MessageRow ref={ref}>
-        {showThread && <ThreadHeader displayName={"TODO: Wire this up"} threadTitle={"Do not forget"} />}
-        {showThread && <div className={cn("absolute left-7.5 w-7 border-l border-b border-outline-gray-2 rounded-bl-lg z-0", message.is_continuation ? 'top-9 h-[calc(100%-64px)]' : 'top-[42px] h-[calc(100%-72px)]')} />}
+        {showThread && <div className="absolute left-7 w-6 border-l-2 border-b-2 border-outline-gray-1 rounded-bl-lg z-0 top-[48px] h-[calc(100%-66px)]" />}
         <MessageSenderLayout
             owner={message.owner}
             creation={message.creation}

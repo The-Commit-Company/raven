@@ -1,4 +1,17 @@
 import _ from "@lib/translate"
+import type { Message } from "@raven/types/common/Message"
+
+/**
+ * Whether a message is a thread parent (has its own sub-conversation).
+ * Defensive about the type: the API has been seen returning is_thread as 1,
+ * true, or "1". Single source of truth — both the renderer (thread
+ * decorations) and the stream selector (continuation logic) MUST agree, or a
+ * row's thread UI and its layout flag can diverge.
+ */
+export const isThreadParent = (message: Message): boolean => {
+    const value = message.is_thread as unknown
+    return value === 1 || value === true || String(value) === "1"
+}
 
 /**
  * Shape of `Raven Channel.last_message_details` — denormalized by the backend

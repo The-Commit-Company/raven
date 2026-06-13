@@ -87,11 +87,11 @@ export const MessageSenderLayout = ({
                 </div>
             )}
             <div className="flex-1 min-w-0">
-                <div className="flex items-baseline gap-2">
-                    <span className="font-medium text-sm">{displayName}</span>
+                <div className="flex items-baseline gap-1">
+                    <span className="font-medium text-xs text-ink-gray-6">{displayName}</span>
                     <Tooltip delayDuration={300}>
                         <TooltipTrigger asChild>
-                            <span className="text-2xs text-ink-gray-4">{shortTime}</span>
+                            <span className="text-xs text-ink-gray-5">· {shortTime}</span>
                         </TooltipTrigger>
                         <TooltipContent>{longTime}</TooltipContent>
                     </Tooltip>

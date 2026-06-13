@@ -20,7 +20,7 @@ export function GroupedAvatars({
     max = 3,
     size = "md",
     className,
-    borderColorClass = "border-background",
+    borderColorClass = "border-surface-white",
 }: GroupedAvatarsProps) {
 
     const totalUsers = users.length

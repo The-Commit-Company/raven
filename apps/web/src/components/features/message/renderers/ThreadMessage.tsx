@@ -1,44 +1,9 @@
-import { Hash } from "lucide-react"
 import { GroupedAvatars } from "@components/ui/grouped-avatars"
 import type { UserData } from "@db"
 import { useAtom } from "jotai"
 import { channelDrawerAtom } from "@utils/channelAtoms"
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
 import { useNavigate, useLocation } from "react-router-dom"
-
-interface ThreadHeaderProps {
-    displayName: string
-    threadTitle: string
-}
-
-export const ThreadHeader = ({ displayName, threadTitle }: ThreadHeaderProps) => (
-    <div className="flex items-center gap-1 text-xs mb-3">
-        <div className="flex items-center gap-0.5">
-            <Hash className="h-3 w-3" />
-            <span className="font-semibold">Thread</span>
-        </div>
-        <span className="text-ink-gray-4">—</span>
-        <span className="font-semibold">{displayName}</span>
-        <span className="text-ink-gray-4">started a thread:</span>
-        <span className="font-semibold">{threadTitle}</span>
-    </div>
-)
-
-interface MessageContentProps {
-    displayName: string
-    time: string
-    message: string
-}
-
-const MessageContent = ({ displayName, time, message }: MessageContentProps) => (
-    <div className="flex-1">
-        <div className="flex items-center gap-2 mb-1">
-            <span className="font-medium text-sm">{displayName}</span>
-            <span className="text-xs font-regular text-ink-gray-4/90">{time}</span>
-        </div>
-        <div className="text-sm text-ink-gray-8">{message}</div>
-    </div>
-)
 
 interface ThreadButtonProps {
     participants: UserData[]
@@ -60,18 +25,17 @@ export const ThreadButton = ({ participants, messageCount, threadID }: ThreadBut
         navigate(`${basePath}/thread/${threadID}`, { replace: true })
     }
 
+    // TODO: Use NavLink here
+
     return (
-        <div className="flex items-center ml-11 mt-2">
+        <div className="flex items-center ml-11 mt-2 text-ink-gray-7 transition-colors duration-200 hover:text-ink-gray-8 cursor-pointer">
             <div
-                className="inline-flex items-center gap-2 bg-surface-cards border border-outline-gray-2 rounded-lg px-3 py-1.5 hover:bg-surface-gray-3/50 shadow-xs cursor-pointer"
+                className="inline-flex items-center gap-2 rounded-lg cursor-pointer"
                 onClick={handleClick}
             >
-                <GroupedAvatars users={participants} max={3} size="xs" />
-                <span className="text-xs font-medium text-ink-gray-8">
-                    {messageCount} Messages
-                </span>
-                <span className="text-xs text-ink-gray-4">
-                    View thread
+                <GroupedAvatars users={participants} max={4} size="xs" />
+                <span className="text-sm">
+                    {messageCount} replies
                 </span>
             </div>
         </div>

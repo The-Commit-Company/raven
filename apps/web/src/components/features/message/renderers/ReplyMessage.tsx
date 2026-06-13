@@ -50,7 +50,7 @@ export default function ReplyMessage({
                     {repliedMessage.message_type === "Poll" &&
                         <span className="flex items-center">
                             <ChartColumnIcon className="inline mr-1 h-5 w-5 pb-0.5" />
-                            <span className="line-clamp-2">Poll: {repliedMessage.content.split("\n")[0]}</span>
+                            <span className="line-clamp-2 text-p-sm">Poll: {repliedMessage.content.split("\n")[0]}</span>
                         </span>}
 
 
@@ -61,7 +61,7 @@ export default function ReplyMessage({
                                 fileType={getFileExtension(repliedMessage.file ?? "")}
                                 size="xs"
                             />
-                            <span className="line-clamp-2">{getFileName(repliedMessage.file)}</span>
+                            <span className="line-clamp-2 text-p-sm">{getFileName(repliedMessage.file)}</span>
                         </span>
                     )}
 
@@ -75,12 +75,12 @@ export default function ReplyMessage({
                                     <ImagePreview image={repliedMessage.file} />
                                 </HoverCardContent>
                             </HoverCard>
-                            <span className="line-clamp-2">{getFileName(repliedMessage.file)}</span>
+                            <span className="line-clamp-2 text-p-sm">{getFileName(repliedMessage.file)}</span>
                         </span>
                     )}
 
                     {repliedMessage.text && (
-                        <span className="line-clamp-2">{parse(repliedMessage.content)}</span>
+                        <span className="line-clamp-2 text-p-sm">{parse(repliedMessage.content)}</span>
                     )}
                 </div>
             </div>
