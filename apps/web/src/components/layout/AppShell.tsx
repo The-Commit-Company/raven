@@ -8,6 +8,7 @@ import { AlertCircle } from "lucide-react"
 import { Outlet } from "react-router"
 import PrimarySidebar from "./PrimarySidebar/PrimarySidebar"
 import CommandMenu from "@components/features/cmdk/CommandMenu"
+import { AttachmentPreviewModal } from "@components/features/message/renderers/AttachmentPreviewModal"
 
 /**
  * The AppShell is used to wrap the entire application and provide all the utilities
@@ -81,6 +82,7 @@ const AppListeners = ({ children }: { children: React.ReactNode }) => {
     return <>
         {children}
         <CommandMenu />
+        <AttachmentPreviewModal />
     </>
 }
 

@@ -1,9 +1,12 @@
+import { useMemo } from "react"
 import { useIntersectionObserver } from "usehooks-ts"
 import { MessageImages } from "./MessageImages"
 import { MessageFiles } from "./MessageFiles"
 import { MessageBody, MessageContent } from "./MessageContent"
 import { MessageReactionsRow } from "./MessageReactions"
 import { MessageRow, MessageSenderLayout } from "./MessageRow"
+import { useIsMobile } from "@hooks/use-mobile"
+import { messagesToAttachments } from "@utils/attachmentPreview"
 import type { MessageBatchBlock } from "@stores/messages/types"
 import type { Message } from "@raven/types/common/Message"
 
@@ -24,6 +27,7 @@ export const BatchMessageItem = ({
 }) => {
     const head = block.messages[0]
     const newest = block.messages[block.messages.length - 1]
+    const isMobile = useIsMobile()
 
     const { ref } = useIntersectionObserver({
         onChange: (isIntersecting) => {
@@ -45,6 +49,11 @@ export const BatchMessageItem = ({
         (message) => message.message_type !== "Image" && message.message_type !== "File",
     )
 
+    // One combined, send-ordered set across the whole batch (images + PDFs),
+    // shared by both renderers so a mixed batch pages as ONE — arrow from the
+    // last image straight into the first PDF.
+    const attachments = useMemo(() => messagesToAttachments(block.messages, !isMobile), [block.messages, isMobile])
+
     /** A batch carries one caption — whichever member has text (the composer sets it on one). */
     const caption = block.messages.find((message) => message.text)?.text
 
@@ -56,8 +65,8 @@ export const BatchMessageItem = ({
 
     const content = (
         <div className="space-y-1">
-            {images.length > 0 && <MessageImages messages={images} />}
-            {files.length > 0 && <MessageFiles messages={files} />}
+            {images.length > 0 && <MessageImages messages={images} attachments={attachments} />}
+            {files.length > 0 && <MessageFiles messages={files} attachments={attachments} />}
             {others.map((message) => (
                 <div key={message.name} data-message-id={message.name} className="flex">
                     <MessageContent message={message} />

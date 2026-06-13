@@ -1,9 +1,9 @@
-import { useState } from "react"
+import { useMemo } from "react"
+import { useSetAtom } from "jotai"
 import { getFileName } from "@raven/lib/utils/operations"
-import { useUser } from "@hooks/useUser"
-import ViewImageModal from "./ViewImageModal"
 import { ImageCarousel, ImageFile, ImageGrid } from "./ImageMessage"
 import { ReservedImage, fitImageBox } from "./ReservedImage"
+import { attachmentPreviewAtom, messagesToAttachments, type Attachment } from "@utils/attachmentPreview"
 import type { Message } from "@raven/types/common/Message"
 
 /** A message whose `message_type` is Image — the fields the renderer needs. */
@@ -28,17 +28,24 @@ const toImageFile = (message: ImageLikeMessage): ImageFile => ({
 
 /**
  * Renders the images of one message or one batch: a single reserved box, a
- * grid (2–4), or a carousel (5+), with the slideshow modal across all of them.
- * Every box is fully sized before any image loads — message heights never
- * change after paint (the scroll engine depends on it).
+ * grid (2–4), or a carousel (5+). Clicking opens the shared attachment viewer
+ * (atom-driven, app-level) at the clicked image. Every box is fully sized
+ * before any image loads — message heights never change after paint.
+ *
+ * `attachments`: the batch's combined set (images + PDFs in send order),
+ * passed by BatchMessageItem so a mixed batch pages as one. Omitted for a
+ * standalone image message — it builds its own single-album set.
  */
-export const MessageImages = ({ messages }: { messages: Message[] }) => {
+export const MessageImages = ({ messages, attachments }: { messages: Message[]; attachments?: Attachment[] }) => {
     const images = messages.map((message) => toImageFile(message as ImageLikeMessage))
-    const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
-    const { data: sender } = useUser(messages[0].owner)
+    const setPreview = useSetAtom(attachmentPreviewAtom)
+
+    const ownSet = useMemo(() => messagesToAttachments(messages, true), [messages])
+    const previewSet = attachments ?? ownSet
 
     const openImage = (image: ImageFile) => {
-        setSelectedIndex(images.findIndex((candidate) => candidate.name === image.name))
+        const index = previewSet.findIndex((attachment) => attachment.id === image.name)
+        if (index !== -1) setPreview({ attachments: previewSet, index })
     }
 
     const single = images.length === 1 ? images[0] : null
@@ -69,21 +76,6 @@ export const MessageImages = ({ messages }: { messages: Message[] }) => {
                         <ImageCarousel images={images} onImageClick={openImage} />
                     )}
                 </div>
-            )}
-
-            {sender && (
-                <ViewImageModal
-                    images={images}
-                    selectedImageIndex={selectedIndex}
-                    user={sender}
-                    creation={messages[0].creation}
-                    onClose={() => setSelectedIndex(null)}
-                    onImageSelect={setSelectedIndex}
-                    onNext={() => selectedIndex !== null && setSelectedIndex((selectedIndex + 1) % images.length)}
-                    onPrev={() =>
-                        selectedIndex !== null && setSelectedIndex((selectedIndex - 1 + images.length) % images.length)
-                    }
-                />
             )}
         </>
     )
