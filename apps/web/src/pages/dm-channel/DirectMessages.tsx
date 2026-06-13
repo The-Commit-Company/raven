@@ -1,6 +1,5 @@
 import { Outlet, Navigate, useMatch } from "react-router-dom"
 import { DMSidebar } from "@components/dm-sidebar/DMSidebar"
-import AppHeader from "@components/features/header/AppHeader"
 import { useChannels } from "@hooks/useChannels"
 import { useIsMobile } from "@hooks/use-mobile"
 import _ from "@lib/translate"
@@ -51,12 +50,11 @@ export default function DirectMessages() {
     const shouldShowSidebar = !isMobile || !id
 
     return <div className="flex flex-col h-full min-h-0 w-full">
-        {shouldShowSidebar && <AppHeader title={_("Direct Messages")} />}
         <div className="flex min-h-0 flex-1">
-            {shouldShowSidebar && <div className="md:w-(--dm-sidebar-width) w-full shrink-0 min-h-0 border-r border-outline-gray-1">
+            {shouldShowSidebar && <div className="md:w-(--dm-sidebar-width) w-full shrink-0 min-h-0">
                 <DMSidebar />
             </div>}
-            <div className="flex min-w-0 min-h-0 flex-1 flex-col">
+            <div className="flex min-w-0 min-h-0 flex-1 flex-col bg-surface-gray-1">
                 <Outlet />
             </div>
         </div>

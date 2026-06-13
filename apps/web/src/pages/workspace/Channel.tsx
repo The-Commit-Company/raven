@@ -24,12 +24,10 @@ export default function Channel() {
     }, [workspaceID, channelID, setLastWorkspace, setLastChannel])
 
     return (
-        <div className="flex h-full min-h-0 flex-col">
-            <ChannelHeader />
-            <ChatContentView
-                channelID={channelID}
-                pinnedMessagesString={channel?.pinned_messages_string}
-            />
-        </div>
+        <ChatContentView
+            channelID={channelID}
+            header={<ChannelHeader />}
+            pinnedMessagesString={channel?.pinned_messages_string}
+        />
     )
 }

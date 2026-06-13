@@ -46,7 +46,7 @@ const CommandMenu = () => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent
-                className="fixed left-1/2 top-1.25 rounded -translate-x-1/2 translate-y-0 w-150 max-w-none sm:max-w-none p-0 gap-0 overflow-hidden [&>button:last-child]:hidden"
+                className="rounded w-150 max-w-none sm:max-w-none p-1 gap-0 overflow-hidden [&>button:last-child]:hidden"
                 aria-describedby={undefined}
             >
                 <DialogHeader className="sr-only">

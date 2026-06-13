@@ -165,6 +165,8 @@
   0px 1px 3px 0px rgba(0, 0, 0, 0.1);
 
   --shadow-textarea-active: 0px 1px 4px 0px rgba(0, 0, 0, 0.1);
+  --shadow-chat-area: 0px 0px 4px 0px rgba(0, 0, 0, 0.08),
+  0px 0.25px 1px 0px rgba(0, 0, 0, 0.25);
 
   /** Spacing **/
   --spacing-4.5: 1.125rem;
@@ -806,6 +808,7 @@
   --focus-shadow-green: 0px 0px 0px 2px rgba(94, 210, 156, 0.9);
   --focus-shadow-red: 0px 0px 0px 2px rgba(250, 156, 157, 0.9);
   --focus-shadow-amber: 0px 0px 0px 2px rgba(255, 218, 124, 0.9);
+
 
   /** Elevations **/
   --elevation-sm: 0px 1px 3px 0px rgba(0, 0, 0, 0.14), 0px 0px 1px 0px rgba(0, 0, 0, 0.14), 0px 0.25px 1.5px 0px rgba(255, 255, 255, 0.08) inset;

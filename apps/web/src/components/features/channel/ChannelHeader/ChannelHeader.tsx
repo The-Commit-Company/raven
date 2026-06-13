@@ -36,7 +36,7 @@ const ChannelHeader = () => {
         <div
             className="flex w-full shrink-0 items-center justify-between border-b bg-surface-white py-1.5 px-2"
         >
-            {isMobile && (
+            <div className="flex items-center justify-center md:hidden">
                 <Button
                     variant="ghost"
                     size="sm"
@@ -46,20 +46,19 @@ const ChannelHeader = () => {
                 >
                     <ChevronLeft className="h-4 w-4" />
                 </Button>
-            )}
+            </div>
 
             {/* Left side */}
             <div className="flex items-center gap-2 min-w-0">
                 <div className="flex items-center gap-0.5">
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="sm" isIconButton onClick={toggleStarChannel}>
-                                <Star className={`h-3 w-3 text-ink-gray-8/80 ${isStarred ? "fill-amber-300 stroke-amber-300" : ""}`} />
-                                <span className="sr-only">{_('Star')}</span>
+                            <Button variant="ghost" size="sm" isIconButton aria-label={_('Star')} onClick={toggleStarChannel}>
+                                <Star className={`${isStarred ? "fill-amber-300 stroke-amber-300" : ""}`} />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>{_('Star')}</p>
+                            {_('Star')}
                         </TooltipContent>
                     </Tooltip>
 
@@ -82,20 +81,7 @@ const ChannelHeader = () => {
 
             {/* Right side */}
             <div className="flex items-center gap-1 ml-auto">
-                {isMobile && (
-                    <>
-                        <Button
-                            variant="ghost"
-                            size="md"
-                            isIconButton
-                            onClick={() => setCommandMenuOpen(true)}
-                            aria-label={_("Command Menu")}
-                        >
-                            <Command className="h-4 w-4 text-ink-gray-7" />
-                        </Button>
-                    </>
-                )}
-                <Tooltip>
+                {/* <Tooltip>
                     <TooltipTrigger asChild>
                         <Button variant="ghost" size="sm" isIconButton>
                             <Headset className="h-4 w-4 md:h-3 md:w-3 text-ink-gray-8/80" />
@@ -105,7 +91,7 @@ const ChannelHeader = () => {
                     <TooltipContent>
                         <p>{_('Start call')}</p>
                     </TooltipContent>
-                </Tooltip>
+                </Tooltip> */}
                 <ChannelMembers onClick={onOpenMembers} channelID={channelID} />
             </div>
         </div>

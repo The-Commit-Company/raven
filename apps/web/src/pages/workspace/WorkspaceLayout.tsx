@@ -5,9 +5,9 @@ import AppMobileFooter from '@components/features/header/AppMobileFooter'
 import { useIsMobile } from '@hooks/use-mobile'
 
 /**
- * Slack-style columns: the channel sidebar is a FULL-HEIGHT column with its
- * own header (workspace switcher + menu), and the AppHeader spans only the
- * content column — structure does the alignment, no positioning tricks.
+ * Slack-style columns: a full-height channel sidebar beside the content
+ * column, which is the gray "canvas" the chat/thread/drawer islands float on
+ * (ChatContentView paints the islands; bare empty states sit on the canvas).
  */
 const WorkspaceLayout = () => {
     const isMobile = useIsMobile()
@@ -25,15 +25,12 @@ const WorkspaceLayout = () => {
         <div className='flex flex-col h-full min-h-0 w-full'>
             <div className='flex min-h-0 flex-1'>
                 {shouldShowSidebar && (
-                    <div className='md:w-(--sidebar-width) w-full shrink-0 min-h-0 border-r border-outline-gray-1'>
+                    <div className='md:w-(--sidebar-width) w-full shrink-0 min-h-0'>
                         <ChannelSidebar />
                     </div>
                 )}
 
-                <div className='flex min-w-0 min-h-0 flex-1 flex-col'>
-                    {/* Mobile gets its top bar from the sidebar header (list)
-                        or the ChannelHeader (channel) — no AppHeader there */}
-                    {!isMobile && <AppHeader />}
+                <div className='flex min-w-0 min-h-0 flex-1 flex-col bg-surface-gray-1'>
                     <Outlet />
                 </div>
             </div>

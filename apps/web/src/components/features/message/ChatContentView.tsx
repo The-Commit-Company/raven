@@ -5,6 +5,7 @@ import ChatInput from "@components/features/ChatInput/ChatInput"
 import ChannelContextDrawer from "@components/features/channel/ChannelContextDrawer"
 import { PollDrawer } from "@components/features/message/renderers/PollDrawer"
 import { Drawer, DrawerContent, DrawerTitle } from "@components/ui/drawer"
+import { Island } from "@components/layout/Island"
 import { pollDrawerAtom, channelDrawerAtom } from "@utils/channelAtoms"
 import { useIsMobile } from "@hooks/use-mobile"
 import _ from "@lib/translate"
@@ -12,16 +13,22 @@ import _ from "@lib/translate"
 export interface ChatContentViewProps {
     /** Channel or DM channel id (useCurrentChannelID is used by ThreadDrawer/ChatInput etc.) */
     channelID: string
+    /** The page header (ChannelHeader / DMChannelHeader) — rendered INSIDE the chat island. */
+    header?: React.ReactNode
     /** Newline-separated pinned message ids, passed through to the stream. */
     pinnedMessagesString?: string
 }
 
 /**
- * Shared content view for Channel and Direct Message pages.
- * Keeps layout, scroll behavior, thread drawer, and poll drawer identical so only sidebar/headers differ.
+ * Shared content view for Channel and Direct Message pages, and the island
+ * orchestrator: the chat (header + stream + input) is one Island, and the
+ * thread / poll / context drawer is a SECOND Island beside it, separated by
+ * the gray canvas gutter + gap. Mobile collapses to full-bleed — thread takes
+ * over, drawers are bottom sheets.
  */
 export function ChatContentView({
     channelID,
+    header,
     pinnedMessagesString,
 }: ChatContentViewProps) {
     const isMobile = useIsMobile()
@@ -33,33 +40,34 @@ export function ChatContentView({
 
     // Desktop-only side rail; on mobile, poll/context drawers render as bottom sheets instead
     const showSideRail = !isMobile && (!!threadDrawer || !!pollDrawerData || hasContextDrawer)
-    // Right rail width contract: thread takes half the content area, poll/context drawers are a fixed column
+    // Right island width contract: thread takes half the content area, poll/context drawers are a fixed column
     const drawerWidth = threadDrawer ? "w-1/2" : "w-95 max-w-[45%]"
 
-    // On mobile a thread takes over the whole content area
+    // On mobile a thread takes over the whole content area (its own full-bleed surface)
     if (isMobile && threadDrawer) {
         return (
-            <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-white">
                 {threadDrawer}
             </div>
         )
     }
 
     return (
-        <div className="flex min-h-0 min-w-0 flex-1 flex-row overflow-hidden">
-            {/* Left: chat stream + input */}
-            <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col">
+        // Canvas gutter: p-1 reveals the gray content-column behind as the
+        // frame; gap-1 separates the islands. Full-bleed (p-0) on mobile.
+        <div className="flex min-h-0 min-w-0 flex-1 flex-row gap-1 p-0 md:p-1">
+            {/* Chat island: header + stream + input */}
+            <Island className="flex-1">
+                {header}
                 <ChatStream channelID={channelID} pinnedMessagesString={pinnedMessagesString} />
                 <div className="shrink-0">
                     <ChatInput channelID={channelID} />
                 </div>
-            </div>
+            </Island>
 
-            {/* Right (desktop): thread, poll, or context drawer */}
+            {/* Drawer island (desktop): thread, poll, or context drawer */}
             {showSideRail && (
-                <div
-                    className={`flex h-full min-h-0 shrink-0 flex-col border-l bg-surface-white ${drawerWidth}`}
-                >
+                <Island className={`shrink-0 ${drawerWidth}`}>
                     {threadDrawer ? (
                         threadDrawer
                     ) : pollDrawerData ? (
@@ -72,7 +80,7 @@ export function ChatContentView({
                     ) : (
                         <ChannelContextDrawer />
                     )}
-                </div>
+                </Island>
             )}
 
             {/* Mobile: same drawers, presented as bottom sheets */}

@@ -34,12 +34,10 @@ export default function DirectMessage() {
     }
 
     return (
-        <div className="flex h-full min-h-0 flex-col">
-            <DMChannelHeader peer={peerUser} channelID={channelID} />
-            <ChatContentView
-                channelID={channelID}
-                pinnedMessagesString={dmChannel?.pinned_messages_string}
-            />
-        </div>
+        <ChatContentView
+            channelID={channelID}
+            header={<DMChannelHeader peer={peerUser} channelID={channelID} />}
+            pinnedMessagesString={dmChannel?.pinned_messages_string}
+        />
     )
 }

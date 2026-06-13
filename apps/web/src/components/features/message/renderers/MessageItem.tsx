@@ -67,7 +67,7 @@ export const MessageItem = ({ message, onInView }: { message: Message; onInView?
     // A thread parent is never a continuation (the selector enforces this), so
     // the connector always anchors to the full header — no is_continuation branch.
     return <MessageRow ref={ref}>
-        {showThread && <div className="absolute left-7 w-6 border-l-2 border-b-2 border-outline-gray-1 rounded-bl-lg z-0 top-[48px] h-[calc(100%-66px)]" />}
+        {showThread && <div className="absolute left-7 w-6 border-l-2 border-b-2 border-outline-gray-1 rounded-bl-2xl z-0 top-[48px] h-[calc(100%-66px)]" />}
         <MessageSenderLayout
             owner={message.owner}
             creation={message.creation}

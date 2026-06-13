@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
 import { cn } from "@lib/utils"
 
@@ -24,7 +25,18 @@ export function GroupedAvatars({
 }: GroupedAvatarsProps) {
 
     const totalUsers = users.length
-    const visibleUsers = users.slice(0, max)
+
+    // This is a decorative preview, so prefer the avatars that actually show a
+    // face: fill the visible slots with image-bearing users first, falling back
+    // to initials-only avatars only when there aren't enough. Stable within
+    // each group (original order otherwise preserved). The "+N" count is
+    // unaffected — it's always total - max, regardless of who's shown.
+    const visibleUsers = useMemo(() => {
+        const withImage = users.filter((user) => user.user_image)
+        const withoutImage = users.filter((user) => !user.user_image)
+        return [...withImage, ...withoutImage].slice(0, max)
+    }, [users, max])
+
     const remainingUsers = totalUsers - max > 0 ? Math.min(totalUsers - max, 9) : 0
 
     const sizeClasses = {

@@ -17,6 +17,7 @@ import _ from "@lib/translate"
 import type { DMChannelListItem } from "@raven/types/common/ChannelListItem"
 import { useChannels } from "@hooks/useChannels"
 import { useUserCookieData } from "@hooks/useUserCookieData"
+import { MobileSearchButton } from "@components/features/header/QuickSearch/SearchButton"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@components/ui/empty"
 import { MessagesSquareIcon } from "lucide-react"
 
@@ -98,38 +99,52 @@ export function DMSidebar() {
     useHotkeys("mod+up", () => goToAdjacentChannel(-1), hotkeyOptions, [rows, currentChannelID])
 
     return (
-        <div className="flex h-full min-h-0">
-            {isLoading || !usersReady ? (
-                <div className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto">
-                    <DMSidebarSkeleton />
-                </div>
-            ) : rows.length === 0 ? (
-                // No virtualizer for an empty list — just the empty state and,
-                // when the org has people to suggest, the start-a-DM rows
-                <Empty>
-                    <EmptyMedia>
-                        <MessagesSquareIcon />
-                    </EmptyMedia>
-                    <EmptyHeader>
-                        <EmptyTitle>{_("No conversations yet")}</EmptyTitle>
-                        <EmptyDescription>{_("Search for a user and start a conversation.")}</EmptyDescription>
-                    </EmptyHeader>
-                </Empty>
-            ) : (
-                <Virtuoso
-                    ref={virtuosoRef}
-                    className="flex-1 min-h-0"
-                    style={{ height: "100%" }}
-                    data={rows}
-                    context={{ showSuggestions: rows.length < 5, dmPeerIds }}
-                    computeItemKey={(_index, row) => row.dm.name}
-                    defaultItemHeight={64}
-                    overscan={200}
-                    components={dmListComponents}
-                    itemContent={(_index, row) => <DMRow dmChannel={row.dm} peerUser={row.peer} />}
-                />
-            )}
-        </div>
+        // Full-height column with its own header — mirrors ChannelSidebar, so
+        // both sidebars carry their heading and the content column's AppHeader
+        // is gone. Mobile sits on the page surface; desktop on the menu bar.
+        <nav className="flex h-full w-full flex-col bg-surface-white md:bg-surface-menu-bar">
+            {/* Border on mobile only (full-page list needs the separator);
+                none on desktop where the heading sits cleanly in the column */}
+            <div className="flex h-11 md:h-auto shrink-0 items-center justify-between gap-1 border-b md:border-b-0 px-2 py-2">
+                <span className="text-base font-medium text-ink-gray-8 px-1 py-1">{_("Direct Messages")}</span>
+                <span className="md:hidden">
+                    <MobileSearchButton />
+                </span>
+            </div>
+
+            <div className="flex min-h-0 flex-1 px-1">
+                {isLoading || !usersReady ? (
+                    <div className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto">
+                        <DMSidebarSkeleton />
+                    </div>
+                ) : rows.length === 0 ? (
+                    // No virtualizer for an empty list — just the empty state and,
+                    // when the org has people to suggest, the start-a-DM rows
+                    <Empty>
+                        <EmptyMedia>
+                            <MessagesSquareIcon />
+                        </EmptyMedia>
+                        <EmptyHeader>
+                            <EmptyTitle>{_("No conversations yet")}</EmptyTitle>
+                            <EmptyDescription>{_("Search for a user and start a conversation.")}</EmptyDescription>
+                        </EmptyHeader>
+                    </Empty>
+                ) : (
+                    <Virtuoso
+                        ref={virtuosoRef}
+                        className="flex-1 min-h-0"
+                        style={{ height: "100%" }}
+                        data={rows}
+                        context={{ showSuggestions: rows.length < 5, dmPeerIds }}
+                        computeItemKey={(_index, row) => row.dm.name}
+                        defaultItemHeight={64}
+                        overscan={200}
+                        components={dmListComponents}
+                        itemContent={(_index, row) => <DMRow dmChannel={row.dm} peerUser={row.peer} />}
+                    />
+                )}
+            </div>
+        </nav>
     )
 }
 
@@ -140,7 +155,7 @@ function DMSidebarSkeleton() {
             {Array.from({ length: 10 }).map((_, i) => (
                 <div
                     key={i}
-                    className="flex items-start gap-3 border-b px-3 py-3 md:py-2 last:border-b-0"
+                    className="flex items-start gap-3 px-3 py-3 md:py-2"
                 >
                     <Skeleton className="h-9 w-9 rounded-full shrink-0" />
                     <div className="flex-1 min-w-0 space-y-1.5">
@@ -180,7 +195,7 @@ function DMRow({ dmChannel, peerUser }: DMRowProps) {
     const date = formatRelativeDate(dmChannel.last_message_timestamp)
     const lastMessage = getMessageTeaser(dmChannel.last_message_details, currentUser)
 
-    return <NavLink to={`/dm-channel/${encodeURIComponent(dmChannel.name)}`}>
+    return <NavLink to={`/dm-channel/${encodeURIComponent(dmChannel.name)}`} className="py-0.5 block">
         {({ isActive }) => (
             <DMRowShell
                 user={peerUser}
@@ -283,9 +298,9 @@ function DMRowShell({
     return (
         <div
             className={cn(
-                "flex w-full items-start gap-3 border-b px-3 py-3 md:py-2 text-sm leading-tight last:border-b-0 transition-colors relative text-left",
+                "flex w-full items-start gap-3 px-3 py-3 md:py-2 text-sm rounded transition-colors relative text-left",
                 "hover:bg-surface-gray-2 select-none",
-                "active:bg-surface-gray-2",
+                "active:bg-surface-gray-3",
                 isActive && "bg-surface-gray-3 hover:bg-surface-gray-3"
             )}
         >

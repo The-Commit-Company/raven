@@ -32,7 +32,6 @@ import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
 import { cn } from "@lib/utils"
 import _ from "@lib/translate"
 import type { ChannelListItem } from "@raven/types/common/ChannelListItem"
-import { getWorkspaceLogo } from "@components/layout/PrimarySidebar/PrimarySidebar"
 
 interface GroupsState {
     [key: string]: boolean
@@ -109,18 +108,18 @@ export function ChannelSidebar() {
         // Mobile: the sidebar is a full page, so it sits on the page surface;
         // the panel tint only makes sense beside content (desktop)
         <nav className="flex h-full w-full flex-col bg-surface-white md:bg-surface-menu-bar">
-            {/* Header heights mirror AppHeader's (h-11 mobile, token desktop)
-                so the bottom border runs as one continuous line across columns */}
-            <div className="flex h-11 md:h-(--app-header-height) shrink-0 items-center justify-between gap-1 border-b pl-1 pr-2">
+            {/* Border on mobile (full-page list needs the separator); none on
+                desktop (the content island carries its own bordered header) */}
+            <div className="flex h-11 md:h-auto shrink-0 items-center justify-between gap-1 border-b md:border-b-0 px-2 py-2 md:pb-0">
                 <WorkspaceSwitcher workspaceID={workspaceID} />
-                <div className="flex items-center gap-1">
-                    <span className="md:hidden">
-                        <MobileSearchButton />
-                    </span>
+                <div className="flex items-center gap-2">
                     <CustomizeSidebarButton
                         showMyChannelsOnly={showMyChannelsOnly}
                         setShowMyChannelsOnly={setShowMyChannelsOnly}
                     />
+                    <span className="md:hidden">
+                        <MobileSearchButton />
+                    </span>
                 </div>
             </div>
 
@@ -132,7 +131,7 @@ export function ChannelSidebar() {
                     onShowAll={() => setShowMyChannelsOnly(false)}
                 />
             ) : (
-                <div ref={setScrollerRef} className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-2 py-2">
+                <div ref={setScrollerRef} className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-1 py-2">
                     <ul className="flex flex-col gap-1">
                         {groupedChannels.map(([groupName, groupChannels]) => (
                             <ChannelGroup
@@ -173,7 +172,7 @@ const ChannelSidebarSkeleton = () => (
         {Array.from({ length: 18 }).map((_, index) => (
             <div key={index} className="flex h-7 items-center gap-2 px-2">
                 <Skeleton className="h-4 w-4 rounded-sm" />
-                <Skeleton className="h-6 rounded-sm" style={{ width: `${45 + ((index * 17) % 40)}%` }} />
+                <Skeleton className="h-4 rounded-sm" style={{ width: `${45 + ((index * 17) % 40)}%` }} />
             </div>
         ))}
     </div>
@@ -237,10 +236,10 @@ const WorkspaceSwitcher = ({ workspaceID }: { workspaceID?: string }) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="min-w-0 gap-1.5 px-1.5 text-sm font-medium">
+                <Button variant="ghost" size="sm" className="min-w-0 gap-1.5 px-2 text-sm font-medium">
                     {current && <WorkspaceLogo workspace={current} />}
-                    <span className="truncate">{current?.workspace_name || workspaceID}</span>
-                    <ChevronDown />
+                    <span className="truncate text-ink-gray-8 text-sm font-medium">{current?.workspace_name || workspaceID}</span>
+                    <ChevronDown className="text-ink-gray-4" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" sideOffset={4} className="min-w-52">
@@ -258,9 +257,9 @@ const WorkspaceSwitcher = ({ workspaceID }: { workspaceID?: string }) => {
 
 /** Small square logo, first-letter fallback — same resolution as the primary rail. */
 const WorkspaceLogo = ({ workspace }: { workspace: WorkspaceFields }) => (
-    <Avatar className="h-5 w-5 shrink-0 rounded-sm">
-        <AvatarImage src={getWorkspaceLogo(workspace)} alt={workspace.workspace_name} />
-        <AvatarFallback className="rounded bg-surface-gray-2 text-2xs text-ink-gray-7">
+    <Avatar className="size-4.5 shrink-0 rounded-sm">
+        <AvatarImage src={workspace.logo} alt={workspace.workspace_name} />
+        <AvatarFallback className="rounded-none bg-surface-gray-3 text-2xs text-ink-gray-5">
             {workspace.workspace_name.charAt(0)}
         </AvatarFallback>
     </Avatar>

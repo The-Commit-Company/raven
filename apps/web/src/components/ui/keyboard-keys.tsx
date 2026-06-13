@@ -1,8 +1,6 @@
 
 export const KeyboardMetaKeyIcon = () => {
-    if (navigator.platform.toUpperCase().indexOf('MAC') >= 0) {
-        return <span className="text-sm">⌘</span>
-    } else {
-        return <span>Ctrl</span>
-    }
+    return navigator.platform.startsWith("Mac") || navigator.platform === "iPhone"
+        ? "⌘" // command key
+        : "Ctrl"; // control key
 }
