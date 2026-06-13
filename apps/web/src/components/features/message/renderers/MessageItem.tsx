@@ -1,5 +1,5 @@
 import { Message } from "@raven/types/common/Message"
-import { ThreadButton } from "./ThreadMessage"
+import { MessageThreadPill } from "./ThreadMessage"
 import { useIntersectionObserver } from "usehooks-ts"
 import { MessageContent } from "./MessageContent"
 import { MessageRow, MessageSenderLayout } from "./MessageRow"
@@ -76,17 +76,7 @@ export const MessageItem = ({ message, onInView }: { message: Message; onInView?
             <MessageContent message={message} />
         </MessageSenderLayout>
 
-        {showThread ? (
-            <ThreadButton
-                participants={[
-                    { name: "Desirae Lipshutz", full_name: "Desirae Lipshutz", type: "User", user_image: "https://randomuser.me/api/portraits/women/44.jpg" },
-                    { name: "Brandon Franci", full_name: "Brandon Franci", type: "User", user_image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" },
-                    { name: "Sarah Chen", full_name: "Sarah Chen", type: "User", user_image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" },
-                ]}
-                messageCount={5}
-                threadID={message.name}
-            />
-        ) : null}
+        {showThread ? <MessageThreadPill threadID={message.name} /> : null}
     </MessageRow>
 }
 

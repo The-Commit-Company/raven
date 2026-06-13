@@ -113,6 +113,27 @@ const buildBlocks = (state: ChannelMessagesState, pinnedMessagesString: string):
             while (index + 1 < messages.length && isBatchMemberOf(messages[index + 1], message)) {
                 members.push(messages[++index])
             }
+
+            // A batch with 2+ thread parents splits into individual messages so
+            // every thread's pill is visible — the rare case of a v2 client (no
+            // batching) threading multiple members of a v3 batch. With 0–1
+            // threads it stays grouped (the block shows a pill only if its FIRST
+            // member is the thread — see BatchMessageItem).
+            const threadParents = members.reduce((count, member) => count + (isThreadParent(member) ? 1 : 0), 0)
+
+            if (members.length > 1 && threadParents >= 2) {
+                // Re-emit members individually with per-member continuation, so
+                // thread parents (and the message after one) break the run.
+                let runPrevious: Message | null = previous
+                for (const member of members) {
+                    const memberContinuation = isContinuationOf(member, runPrevious) ? 1 : 0
+                    blocks.push(decorate(member, memberContinuation, pinnedIds.has(member.name) ? 1 : 0))
+                    runPrevious = member
+                }
+                previous = runPrevious
+                continue
+            }
+
             if (members.length > 1) {
                 const batch: MessageBatchBlock = {
                     message_type: "batch",

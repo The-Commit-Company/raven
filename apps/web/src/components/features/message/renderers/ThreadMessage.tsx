@@ -41,3 +41,17 @@ export const ThreadButton = ({ participants, messageCount, threadID }: ThreadBut
         </div>
     )
 }
+
+// TODO(thread metadata): replace with real participants/count from the thread
+// API. Both MessageItem and BatchMessageItem render through MessageThreadPill,
+// so the wiring lands here once.
+const PLACEHOLDER_PARTICIPANTS: UserData[] = [
+    { name: "Desirae Lipshutz", full_name: "Desirae Lipshutz", type: "User", user_image: "https://randomuser.me/api/portraits/women/44.jpg" },
+    { name: "Brandon Franci", full_name: "Brandon Franci", type: "User", user_image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" },
+    { name: "Sarah Chen", full_name: "Sarah Chen", type: "User", user_image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face" },
+] as UserData[]
+
+/** The "N replies" affordance under any thread-parent message (single or batch member). */
+export const MessageThreadPill = ({ threadID }: { threadID: string }) => (
+    <ThreadButton participants={PLACEHOLDER_PARTICIPANTS} messageCount={5} threadID={threadID} />
+)

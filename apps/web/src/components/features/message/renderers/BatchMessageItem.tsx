@@ -5,8 +5,10 @@ import { MessageFiles } from "./MessageFiles"
 import { MessageBody, MessageContent } from "./MessageContent"
 import { MessageReactionsRow } from "./MessageReactions"
 import { MessageRow, MessageSenderLayout } from "./MessageRow"
+import { MessageThreadPill } from "./ThreadMessage"
 import { useIsMobile } from "@hooks/use-mobile"
 import { messagesToAttachments } from "@utils/attachmentPreview"
+import { isThreadParent } from "@utils/messageUtils"
 import type { MessageBatchBlock } from "@stores/messages/types"
 import type { Message } from "@raven/types/common/Message"
 
@@ -29,6 +31,11 @@ export const BatchMessageItem = ({
     const newest = block.messages[block.messages.length - 1]
     const isMobile = useIsMobile()
 
+    // The selector keeps at most one thread parent in a batch and only the
+    // head matters here: when it's a thread, the batch shows the pill +
+    // connector, same as a single message (the selector splits 2+ thread batches).
+    const showThread = isThreadParent(head)
+
     const { ref } = useIntersectionObserver({
         onChange: (isIntersecting) => {
             // Read-tracking counts the batch as seen via its newest member
@@ -49,10 +56,21 @@ export const BatchMessageItem = ({
         (message) => message.message_type !== "Image" && message.message_type !== "File",
     )
 
-    // One combined, send-ordered set across the whole batch (images + PDFs),
-    // shared by both renderers so a mixed batch pages as ONE — arrow from the
-    // last image straight into the first PDF.
-    const attachments = useMemo(() => messagesToAttachments(block.messages, !isMobile), [block.messages, isMobile])
+    // One combined set across the whole batch (images + PDFs), shared by both
+    // renderers so a mixed batch pages as ONE. Ordered images-then-files to
+    // match the visual layout (album above the pill grid) — so the index/counter
+    // line up with what the user sees, not raw send order.
+    const attachments = useMemo(
+        () =>
+            messagesToAttachments(
+                [
+                    ...block.messages.filter((message) => message.message_type === "Image"),
+                    ...block.messages.filter((message) => message.message_type === "File"),
+                ],
+                !isMobile,
+            ),
+        [block.messages, isMobile],
+    )
 
     /** A batch carries one caption — whichever member has text (the composer sets it on one). */
     const caption = block.messages.find((message) => message.text)?.text
@@ -79,6 +97,7 @@ export const BatchMessageItem = ({
 
     return (
         <MessageRow ref={ref}>
+            {showThread && <div className="absolute left-7 w-6 border-l-2 border-b-2 border-outline-gray-1 rounded-bl-2xl z-0 top-[48px] h-[calc(100%-66px)]" />}
             <MessageSenderLayout
                 owner={head.owner}
                 creation={head.creation}
@@ -86,6 +105,8 @@ export const BatchMessageItem = ({
             >
                 {content}
             </MessageSenderLayout>
+
+            {showThread && <MessageThreadPill threadID={head.name} />}
         </MessageRow>
     )
 }

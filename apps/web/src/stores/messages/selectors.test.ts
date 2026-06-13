@@ -145,6 +145,30 @@ describe("selectStreamBlocks", () => {
         expect(blocks.length).toBe(5) // date + 4 messages
     })
 
+    it("keeps a single thread parent inside the batch (stays grouped)", () => {
+        const state = stateOf([
+            msg("a", "2026-06-10 10:00:00.000000", { message_batch_id: "b1", message_type: "Image", is_thread: 1 }),
+            msg("b", "2026-06-10 10:00:01.000000", { message_batch_id: "b1", message_type: "Image" }),
+            msg("c", "2026-06-10 10:00:02.000000", { message_batch_id: "b1", message_type: "Image" }),
+        ])
+        const blocks = selectStreamBlocks(state)
+        expect(blocks.map((b) => b.message_type)).toEqual(["date", "batch"])
+        const batch = blocks[1] as Extract<(typeof blocks)[number], { message_type: "batch" }>
+        expect(batch.messages.map((m) => m.name)).toEqual(["a", "b", "c"])
+    })
+
+    it("splits a batch into individual messages when 2+ members are threads", () => {
+        const state = stateOf([
+            msg("a", "2026-06-10 10:00:00.000000", { message_batch_id: "b1", message_type: "Image" }),
+            msg("b", "2026-06-10 10:00:01.000000", { message_batch_id: "b1", message_type: "Image", is_thread: 1 }),
+            msg("c", "2026-06-10 10:00:02.000000", { message_batch_id: "b1", message_type: "Image", is_thread: 1 }),
+        ])
+        const blocks = selectStreamBlocks(state)
+        // No batch — each renders individually so every thread pill is visible
+        expect(blocks.map((b) => b.message_type)).toEqual(["date", "Image", "Image", "Image"])
+        expect((blocks.slice(1) as Message[]).map((m) => m.name)).toEqual(["a", "b", "c"])
+    })
+
     it("breaks a batch when another sender's message interleaves", () => {
         const state = stateOf([
             msg("a", "2026-06-10 10:00:00.000000", { message_batch_id: "b1" }),
