@@ -4,6 +4,7 @@ import FileMessage, { FileItem } from "@components/common/FileMessage/FileMessag
 import { FilePreview, FilePreviewModal } from "./FilePreviewModal"
 import { getFileName } from "@raven/lib/utils/operations"
 import { downloadFile, getFileExtension, shareFile } from "@lib/file"
+import { useIsMobile } from "@hooks/use-mobile"
 import _ from "@lib/translate"
 import type { Message } from "@raven/types/common/Message"
 
@@ -22,6 +23,7 @@ const PREVIEWABLE_EXTENSIONS = new Set(["pdf"])
  */
 export const MessageFiles = ({ messages }: { messages: Message[] }) => {
     const [preview, setPreview] = useState<FilePreview | null>(null)
+    const isMobile = useIsMobile()
 
     const toFileItem = (message: FileLikeMessage): FileItem => {
         const url = message.file ?? ""
@@ -35,7 +37,10 @@ export const MessageFiles = ({ messages }: { messages: Message[] }) => {
             // TODO(layer 4): denormalize file size onto Raven Message at upload
             // (like thumbnail dims) so pills can show it without extra fetches
             onOpen: () => {
-                if (PREVIEWABLE_EXTENSIONS.has(extension)) {
+                // The preview lightbox uses <embed>, which mobile browsers
+                // won't inline-render — on mobile, open the PDF in a new tab
+                // (the native full-screen mobile PDF viewer) instead.
+                if (PREVIEWABLE_EXTENSIONS.has(extension) && !isMobile) {
                     setPreview({ fileName, fileUrl: absoluteUrl, owner: message.owner, creation: message.creation })
                 } else {
                     window.open(absoluteUrl, "_blank", "noopener")

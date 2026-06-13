@@ -2,7 +2,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@lib/utils"
 import { Button } from "@components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@components/ui/dialog"
+import { MediaLightbox } from "./MediaLightbox"
 import { MediaPreviewHeader } from "./MediaPreviewHeader"
 import { UserData } from "@db"
 import { useRef } from "react"
@@ -71,107 +71,107 @@ const ViewImageModal = ({
     }
 
     return (
-        <Dialog open={selectedImageIndex !== null} onOpenChange={onClose}>
-            {/* DialogContent mounts the portal + overlay itself — standard usage only */}
-            <DialogContent
-                className="xl:min-w-7xl lg:min-w-6xl md:min-w-3xl sm:min-w-lg"
-                showCloseButton={false}
-                // Keep initial focus off the first button (Download) — it reads as pre-selected
-                onOpenAutoFocus={(event) => event.preventDefault()}
-            >
-                <DialogHeader>
-                    <DialogTitle className="sr-only">
-                        {currentImage?.file_name ?? _("Image")}
-                    </DialogTitle>
-                    <DialogDescription className="sr-only">{_("View Image")}</DialogDescription>
-
-                    <MediaPreviewHeader
-                        user={user}
-                        creation={creation}
-                        fileName={currentImage?.file_name ?? _("Image")}
-                        fileSize={currentImage?.file_size}
-                        onDownload={downloadImage}
-                        onShare={shareImage}
-                        onClose={onClose}
-                    >
-                        {images.length > 1 && (
-                            <span className="text-xs px-1">
-                                {_("{0} of {1}", [String(displayIndex + 1), String(images.length)])}
-                            </span>
-                        )}
-                    </MediaPreviewHeader>
-                </DialogHeader>
-
-
-
-                {/* Image viewer */}
-                <div className="relative flex-1 flex items-center justify-center bg-surface-white">
+        <MediaLightbox
+            open={selectedImageIndex !== null}
+            onOpenChange={(open) => !open && onClose()}
+            title={currentImage?.file_name ?? _("Image")}
+        >
+            {/* Floating chrome over the scrim */}
+            <div className="shrink-0 p-3">
+                <MediaPreviewHeader
+                    user={user}
+                    creation={creation}
+                    fileName={currentImage?.file_name ?? _("Image")}
+                    fileSize={currentImage?.file_size}
+                    onDownload={downloadImage}
+                    onShare={shareImage}
+                    onClose={onClose}
+                >
                     {images.length > 1 && (
-                        <>
-                            <Button
-                                variant="subtle"
-                                size="md"
-                                isIconButton
-                                onClick={onPrev}
-                                className="absolute left-4 top-1/2 -translate-y-1/2 z-10"
-                                title={_("Previous image")}
-                            >
-                                <ChevronLeft />
-                            </Button>
-                            <Button
-                                variant="subtle"
-                                size="md"
-                                isIconButton
-                                onClick={onNext}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 z-10"
-                                title={_("Next image")}
-                            >
-                                <ChevronRight />
-                            </Button>
-                        </>
+                        <span className="px-1 text-xs">
+                            {_("{0} of {1}", [String(displayIndex + 1), String(images.length)])}
+                        </span>
                     )}
+                </MediaPreviewHeader>
+            </div>
 
-                    {currentImage && (
-                        <img
-                            src={currentImage.file_url}
-                            alt={currentImage.file_name}
-                            className="max-h-[65vh] max-w-full object-contain rounded-lg"
-                        />
-                    )}
-                </div>
-
-                {/* Thumbnails */}
+            {/* Image fills the viewport; clicking the dark backdrop closes */}
+            <div
+                className="relative flex min-h-0 flex-1 items-center justify-center px-4"
+                onClick={onClose}
+            >
                 {images.length > 1 && (
-                    <div className="p-2 border-t">
-                        <div className="flex gap-3 overflow-x-auto max-w-full justify-center">
-                            {images.map((image, index) => (
-                                <Tooltip key={image.name}>
-                                    <TooltipTrigger asChild>
-                                        <div
-                                            className={cn(
-                                                "shrink-0 cursor-pointer border-2 rounded-lg overflow-hidden transition-all duration-200",
-                                                index === displayIndex
-                                                    ? "border-outline-blue-4"
-                                                    : "border-transparent hover:border-outline-gray-2"
-                                            )}
-                                            onClick={() => onImageSelect(index)}
-                                        >
-                                            <img
-                                                src={image.file_thumbnail || image.file_url}
-                                                alt={image.file_name}
-                                                className="w-12 h-12 object-cover"
-                                                loading="lazy"
-                                            />
-                                        </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent>{image.file_name}</TooltipContent>
-                                </Tooltip>
-                            ))}
-                        </div>
-                    </div>
+                    <>
+                        <Button
+                            variant="subtle"
+                            size="md"
+                            isIconButton
+                            onClick={(event) => {
+                                event.stopPropagation()
+                                onPrev()
+                            }}
+                            className="absolute left-4 top-1/2 z-10 -translate-y-1/2"
+                            title={_("Previous image")}
+                        >
+                            <ChevronLeft />
+                        </Button>
+                        <Button
+                            variant="subtle"
+                            size="md"
+                            isIconButton
+                            onClick={(event) => {
+                                event.stopPropagation()
+                                onNext()
+                            }}
+                            className="absolute right-4 top-1/2 z-10 -translate-y-1/2"
+                            title={_("Next image")}
+                        >
+                            <ChevronRight />
+                        </Button>
+                    </>
                 )}
-            </DialogContent>
-        </Dialog>
+
+                {currentImage && (
+                    <img
+                        src={currentImage.file_url}
+                        alt={currentImage.file_name}
+                        className="max-h-full max-w-full object-contain"
+                        onClick={(event) => event.stopPropagation()}
+                    />
+                )}
+            </div>
+
+            {/* Thumbnail filmstrip */}
+            {images.length > 1 && (
+                <div className="shrink-0 p-3">
+                    <div className="flex max-w-full justify-center gap-2 overflow-x-auto">
+                        {images.map((image, index) => (
+                            <Tooltip key={image.name}>
+                                <TooltipTrigger asChild>
+                                    <div
+                                        className={cn(
+                                            "shrink-0 cursor-pointer overflow-hidden rounded-md border-2 transition-all duration-200",
+                                            index === displayIndex
+                                                ? "border-outline-blue-4"
+                                                : "border-transparent hover:border-outline-gray-3",
+                                        )}
+                                        onClick={() => onImageSelect(index)}
+                                    >
+                                        <img
+                                            src={image.file_thumbnail || image.file_url}
+                                            alt={image.file_name}
+                                            className="h-12 w-12 object-cover"
+                                            loading="lazy"
+                                        />
+                                    </div>
+                                </TooltipTrigger>
+                                <TooltipContent>{image.file_name}</TooltipContent>
+                            </Tooltip>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </MediaLightbox>
     )
 }
 
