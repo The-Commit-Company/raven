@@ -75,7 +75,7 @@ export const BatchMessageItem = ({
     ))
 
     const content = (
-        <div className="space-y-1">
+        <div className="space-y-2">
             {images.length > 0 && <MessageImages messages={images} attachments={attachments} />}
             {videos.length > 0 && <MessageVideo messages={videos} />}
             {audios.length > 0 && <MessageAudio messages={audios} />}

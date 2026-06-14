@@ -2,7 +2,7 @@ import { useRef } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 import { useHotkeys } from "react-hotkeys-hook"
 import { toast } from "sonner"
-import { ChevronLeft, ChevronRight, FileText, Film, Music } from "lucide-react"
+import { ChevronLeft, ChevronRight, FileText, Film, Music, MusicIcon } from "lucide-react"
 import { Button } from "@components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
 import { MediaLightbox } from "./MediaLightbox"
@@ -170,13 +170,19 @@ const AttachmentPreviewContent = ({
                     />
                 ) : current.kind === "audio" ? (
                     // Stop touchstart too, so dragging the seek slider isn't read as a page-swipe
-                    <div
-                        className="w-full max-w-md rounded-lg bg-surface-gray-1 p-3"
-                        onClick={(event) => event.stopPropagation()}
-                        onTouchStart={(event) => event.stopPropagation()}
-                    >
-                        <AudioPlayer src={current.fileUrl} />
+                    <div className="w-full max-w-sm flex flex-col gap-2">
+                        <div className="flex items-center justify-center aspect-square bg-surface-gray-1 rounded-lg">
+                            <MusicIcon className="size-12" />
+                        </div>
+                        <div
+                            className="rounded-lg bg-surface-gray-1 p-3"
+                            onClick={(event) => event.stopPropagation()}
+                            onTouchStart={(event) => event.stopPropagation()}
+                        >
+                            <AudioPlayer src={current.fileUrl} />
+                        </div>
                     </div>
+
                 ) : canEmbedPdf ? (
                     // <embed> = native PDF viewer (toolbar, zoom) at full height.
                     // max-w caps it so wide screens keep a dark backdrop to click.
@@ -258,7 +264,7 @@ const DownloadCard = ({ attachment, isMobile }: { attachment: Attachment; isMobi
 
     return (
         <div
-            className="flex w-full max-w-sm flex-col items-center gap-4 rounded-lg bg-surface-white p-10 text-center"
+            className="flex w-full max-w-sm flex-col items-center gap-4 rounded-lg bg-surface-gray-1 p-10 text-center"
             onClick={(event) => event.stopPropagation()}
         >
             <FileText className="h-12 w-12 text-ink-gray-5" />
