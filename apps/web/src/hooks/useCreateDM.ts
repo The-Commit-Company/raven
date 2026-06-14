@@ -1,0 +1,63 @@
+import { useCallback } from "react"
+import { useNavigate } from "react-router-dom"
+import { useFrappePostCall, useSWRConfig } from "frappe-react-sdk"
+import { toast } from "sonner"
+import { useChannels } from "@hooks/useChannels"
+import { getErrorMessage } from "@lib/frappe"
+import _ from "@lib/translate"
+
+/**
+ * Open the direct-message channel with a user, creating it only if needed.
+ * Shared by every "message this person" affordance — the mention hover card,
+ * the command menu, the DM sidebar — so the behaviour is identical everywhere.
+ *
+ * Fast path: the client already holds every DM channel (`useChannels`), so if a
+ * DM with this peer exists we just route to it — NO API call. The endpoint is
+ * hit only to create a DM that doesn't exist yet.
+ *
+ * `openDM` resolves with the channel id on success, or `undefined` if creation
+ * failed (a toast is shown). Callers chain their own follow-up off that — e.g.
+ * the command menu closes itself: `openDM(id).then((ok) => ok && close())`.
+ */
+export const useCreateDM = () => {
+    const navigate = useNavigate()
+    const { mutate } = useSWRConfig()
+    const { dm_channels } = useChannels()
+    const { call, loading } = useFrappePostCall<{ message: string }>(
+        "raven.api.raven_channel.create_direct_message_channel",
+    )
+
+    const goToDM = useCallback(
+        (channelID: string) => navigate(`/dm-channel/${encodeURIComponent(channelID)}`),
+        [navigate],
+    )
+
+    const openDM = useCallback(
+        (userID: string): Promise<string | undefined> => {
+            // Fast path: a DM with this peer already exists client-side — just route.
+            const existing = dm_channels.find((channel) => channel.peer_user_id === userID)
+            if (existing) {
+                goToDM(existing.name)
+                return Promise.resolve(existing.name)
+            }
+
+            // Otherwise create it, then refresh the list so it appears in the sidebar.
+            return call({ user_id: userID })
+                .then((res) => {
+                    const channelID = res?.message
+                    if (!channelID) return undefined
+                    mutate("channel_list")
+                    goToDM(channelID)
+                    return channelID
+                })
+                .catch((err) => {
+                    toast.error(_("Could not create a DM channel"), { description: getErrorMessage(err) })
+                    return undefined
+                })
+        },
+        [call, dm_channels, goToDM, mutate],
+    )
+
+    // Kept as `createDM` for callers; resolves existing DMs without an API call.
+    return { createDM: openDM, loading }
+}

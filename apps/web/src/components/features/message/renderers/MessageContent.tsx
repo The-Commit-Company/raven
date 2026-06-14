@@ -6,23 +6,23 @@ import { MessageImages } from "./MessageImages"
 import { MessageFiles } from "./MessageFiles"
 import { MessageVideo } from "./MessageVideo"
 import { MessageAudio } from "./MessageAudio"
-import TiptapRenderer from "./TiptapRenderer"
+import RichTextRenderer from "./RichTextRenderer"
 import SearchTextRenderer from "./SearchTextRenderer"
 import { MessageReactionsRow } from "./MessageReactions"
 import { getAttachmentKind } from "@utils/attachmentPreview"
 import _ from "@lib/translate"
 
 /**
- * Dispatch to TipTap (stored message JSON) vs SearchTextRenderer (FTS plain
- * text with `<mark>` highlights). Backend messages store TipTap JSON as a
- * string (starts with `{`); search rows fed by sqlite FTS arrive as plain text.
+ * Dispatch a message body string to the right renderer:
+ *  - `message.text` is Tiptap HTML (begins with a block tag) → RichTextRenderer
+ *  - sqlite FTS search snippets are plain text, optionally with `<mark>`
+ *    highlights (which would begin with `<mark`) → SearchTextRenderer
  */
-export const MessageBody = ({ content }: { content?: string | Record<string, unknown> | null }) => {
-    if (content == null) return null
-    if (typeof content === 'object') return <TiptapRenderer content={content} />
+export const MessageBody = ({ content }: { content?: string | null }) => {
+    if (!content) return null
     const trimmed = content.trim()
     if (!trimmed) return null
-    if (trimmed.startsWith('{') || trimmed.startsWith('[')) return <TiptapRenderer content={trimmed} />
+    if (trimmed.startsWith('<') && !trimmed.startsWith('<mark')) return <RichTextRenderer html={trimmed} />
     return <SearchTextRenderer content={trimmed} />
 }
 
@@ -86,7 +86,9 @@ export const MessageContent = ({ message }: { message: Message }) => {
                     {message.text && <MessageBody content={message.text} />}
                 </>
             ) : (
-                <MessageBody content={message.content ?? message.text} />
+                // Render the HTML body (message.text), NOT message.content — the
+                // latter is the backend's derived plain-text (search/teasers).
+                <MessageBody content={message.text} />
             )}
 
             <MessageReactionsRow message={message} />

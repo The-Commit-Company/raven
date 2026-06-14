@@ -10,9 +10,7 @@ import { Badge } from '@components/ui/badge'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db, UserData } from "@db"
 import { useMemo } from 'react'
-import { useFrappePostCall } from 'frappe-react-sdk'
-import { toast } from 'sonner'
-import { getErrorMessage } from '@lib/frappe'
+import { useCreateDM } from '@hooks/useCreateDM'
 import { BotIcon, Loader2 } from 'lucide-react'
 
 const UserList = ({ text }: { text: string }) => {
@@ -89,22 +87,12 @@ const DMChannelItem = ({ user, channel }: { user: UserData; channel: DMChannelLi
 }
 
 const UserItem = ({ user }: { user: UserData }) => {
-    const navigate = useNavigate()
     const setOpen = useSetAtom(commandMenuOpenAtom)
-    const { call, loading } = useFrappePostCall<{ message: string }>('raven.api.raven_channel.create_direct_message_channel')
+    const { createDM, loading } = useCreateDM()
 
     const onSelect = () => {
         if (user.enabled === 0) return
-        call({
-            user_id: user.name
-        }).then((res) => {
-            navigate(`/dm-channel/${res?.message}`)
-            setOpen(false)
-        }).catch(err => {
-            toast.error('Could not create a DM channel', {
-                description: getErrorMessage(err)
-            })
-        })
+        createDM(user.name).then((channelID) => channelID && setOpen(false))
     }
 
     return (

@@ -3,8 +3,7 @@ import { NavLink, useMatch, useNavigate } from "react-router-dom"
 import { useHotkeys } from "react-hotkeys-hook"
 import { Virtuoso, type VirtuosoHandle } from "react-virtuoso"
 import { useLiveQuery } from "dexie-react-hooks"
-import { useFrappePostCall, useSWRConfig } from "frappe-react-sdk"
-import { toast } from "sonner"
+import { useCreateDM } from "@hooks/useCreateDM"
 import { Skeleton } from "@components/ui/skeleton"
 import { Badge } from "@components/ui/badge"
 import { UserAvatar } from "@components/features/message/UserAvatar"
@@ -240,29 +239,12 @@ function ExtraUsersList({ dmPeerIds }: { dmPeerIds: Set<string> }) {
 
 
 function ExtraUserRow({ user }: { user: UserData }) {
-    const navigate = useNavigate()
-    const { mutate } = useSWRConfig()
-    const { call, loading } = useFrappePostCall<{ message: string }>(
-        "raven.api.raven_channel.create_direct_message_channel"
-    )
-
-    const handleClick = async () => {
-        try {
-            const res = await call({ user_id: user.name })
-            const channelId = res?.message
-            if (channelId) {
-                mutate("channel_list")
-                navigate(`/dm-channel/${encodeURIComponent(channelId)}`)
-            }
-        } catch {
-            toast.error(_("Could not create channel"))
-        }
-    }
+    const { createDM, loading } = useCreateDM()
 
     return (
         <button
             type="button"
-            onClick={handleClick}
+            onClick={() => createDM(user.name)}
             disabled={loading}
             className="flex w-full disabled:pointer-events-none disabled:opacity-50"
         >
