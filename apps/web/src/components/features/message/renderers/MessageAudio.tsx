@@ -30,11 +30,23 @@ const AudioCard = ({ message }: { message: FileLikeMessage }) => {
         <Tooltip>
             <TooltipTrigger asChild>
 
-                <button
+                {/* role=button, not <button>: the seek Slider is interactive and
+                    can't be nested inside a real <button> (invalid HTML). */}
+                <div
                     data-message-id={message.name}
                     data-media-root=""
+                    role="button"
+                    tabIndex={0}
+                    aria-label={playing ? _("Pause") : _("Play")}
+                    aria-pressed={playing}
                     onClick={() => toggle()}
-                    className="w-full max-w-72 group/audio h-16 flex items-center gap-1 overflow-hidden rounded-lg border border-outline-gray-2 bg-surface-white"
+                    onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault()
+                            toggle()
+                        }
+                    }}
+                    className="w-full max-w-72 group/audio h-16 flex cursor-pointer items-center gap-1 overflow-hidden rounded-lg border border-outline-gray-2 bg-surface-white outline-none focus-visible:shadow-focus-gray"
                 >
                     <audio src={message.file} {...audioProps} />
 
@@ -49,7 +61,12 @@ const AudioCard = ({ message }: { message: FileLikeMessage }) => {
                         <span className="truncate text-sm font-medium text-ink-gray-8">
                             {getFileName(message.file ?? "")}
                         </span>
-                        <div className="flex w-full items-center gap-2" onClick={(event) => event.stopPropagation()}>
+                        {/* Stop click + keydown so seeking doesn't toggle play */}
+                        <div
+                            className="flex w-full items-center gap-2"
+                            onClick={(event) => event.stopPropagation()}
+                            onKeyDown={(event) => event.stopPropagation()}
+                        >
                             <Slider
                                 value={[currentTime]}
                                 min={0}
@@ -62,7 +79,7 @@ const AudioCard = ({ message }: { message: FileLikeMessage }) => {
                             <span className="shrink-0 text-2xs tabular-nums text-ink-gray-5">{formatTime(currentTime)}</span>
                         </div>
                     </div>
-                </button>
+                </div>
             </TooltipTrigger>
             <TooltipContent>
                 {playing ? _("Click to pause") : _("Click to play")}
