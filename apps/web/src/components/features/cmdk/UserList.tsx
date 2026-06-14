@@ -13,7 +13,7 @@ import { useMemo } from 'react'
 import { useFrappePostCall } from 'frappe-react-sdk'
 import { toast } from 'sonner'
 import { getErrorMessage } from '@lib/frappe'
-import { Loader2 } from 'lucide-react'
+import { BotIcon, Loader2 } from 'lucide-react'
 
 const UserList = ({ text }: { text: string }) => {
 
@@ -72,13 +72,17 @@ const DMChannelItem = ({ user, channel }: { user: UserData; channel: DMChannelLi
             className='cursor-pointer'
         >
             {user ? (
-                <UserAvatar user={user} size="xs" showStatusIndicator={false} />
+                <UserAvatar user={user} size="xs" showStatusIndicator={false} showBotIndicator={false} />
             ) : null}
             <span className="truncate">{displayName}</span>
+            {user.type === 'Bot' && <Badge variant="subtle">
+                <BotIcon />
+                {_("Bot")}
+            </Badge>}
             {user?.enabled === 0 && (
-<Badge variant="subtle" className="ml-auto text-xs">
-    {_("Disabled")}
-</Badge>
+                <Badge variant="subtle" className="ml-auto text-xs">
+                    {_("Disabled")}
+                </Badge>
             )}
         </CommandItem>
     )
@@ -110,11 +114,15 @@ const UserItem = ({ user }: { user: UserData }) => {
             onSelect={onSelect}
             className={user.enabled === 0 ? 'cursor-not-allowed' : 'cursor-pointer'}
         >
-            <UserAvatar user={user} size="xs" showStatusIndicator={false} />
+            <UserAvatar user={user} size="xs" showStatusIndicator={false} showBotIndicator={false} />
             <span className="truncate">{user.full_name}</span>
+            {user.type === 'Bot' && <Badge variant="subtle">
+                <BotIcon />
+                {_("Bot")}
+            </Badge>}
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {user?.enabled === 0 && (
-                <Badge variant="subtle" className="ml-auto text-xs">
+                <Badge variant="subtle" className="ml-auto">
                     {_("Disabled")}
                 </Badge>
             )}

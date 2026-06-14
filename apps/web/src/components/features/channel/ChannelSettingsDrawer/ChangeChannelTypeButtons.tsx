@@ -20,7 +20,7 @@ import {
   ChannelListItem,
 } from "@raven/types/common/ChannelListItem";
 import { RavenChannel } from "@raven/types/RavenChannelManagement/RavenChannel";
-import { ChannelIconLucide } from "@components/common/ChannelIcon/ChannelIconLucide";
+import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon";
 
 export interface ChangeChannelTypeButtonsProps {
   channel: ChannelListItem;
@@ -98,7 +98,7 @@ function ChangeChannelTypeButton({
           className={`w-full flex justify-start p-3 h-auto cursor-pointer font-normal bg-transparent border border-outline-gray-2/70 rounded-lg transition-colors ${disabled ? "opacity-50 pointer-events-none" : "hover:bg-surface-gray-2/50"}`}
         >
           <div className="flex items-center gap-3">
-            <ChannelIconLucide
+            <ChannelIcon
               type={type}
               className="w-4 h-4 text-ink-gray-4"
             />

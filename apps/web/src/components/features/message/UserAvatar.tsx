@@ -2,7 +2,7 @@ import { memo, useMemo } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { cn } from '@lib/utils'
 import { UserData } from "@db"
-import { RiRobot2Fill } from 'react-icons/ri'
+import { BotIcon } from 'lucide-react'
 
 interface UserAvatarProps {
     user: UserData,
@@ -181,13 +181,13 @@ export const UserAvatar = memo<UserAvatarProps>(({
             {isBot && showBotIndicator && (
                 <span
                     className={cn(
-                        "absolute flex items-center justify-center rounded-full bg-surface-white border border-outline-gray-2",
+                        "absolute flex items-center justify-center rounded-full bg-surface-white border border-outline-gray-1",
                         sizeClasses.botContainer
                     )}
                     aria-label="Bot account"
                     role="img">
-                    <RiRobot2Fill
-                        className={cn("text-ink-blue-4", sizeClasses.bot)}
+                    <BotIcon
+                        className={cn("text-ink-gray-8", sizeClasses.bot)}
                         aria-hidden="true"
                     />
                 </span>

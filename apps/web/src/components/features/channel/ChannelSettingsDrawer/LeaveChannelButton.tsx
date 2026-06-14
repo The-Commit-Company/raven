@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router";
 import { Loader2, User } from "lucide-react";
 import { toast } from "sonner";
-import { useFrappePostCall, useSWRConfig } from "frappe-react-sdk";
 import { Button } from "@components/ui/button";
 import {
   AlertDialog,
@@ -19,7 +18,7 @@ import {
   ChannelList,
   ChannelListItem,
 } from "@raven/types/common/ChannelListItem";
-import { ChannelIconLucide } from "@components/common/ChannelIcon/ChannelIconLucide";
+import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon";
 import { useLeaveChannel } from "@hooks/useLeaveChannel";
 
 export interface LeaveChannelButtonProps {
@@ -55,7 +54,7 @@ export function LeaveChannelButton({ channel }: LeaveChannelButtonProps) {
           <AlertDialogTitle>
             <span className="inline-flex items-center gap-1">
               <span>{_("Leave")}</span>
-              <ChannelIconLucide
+              <ChannelIcon
                 type={channel.type}
                 className="w-4 h-4 translate-y-px"
               />

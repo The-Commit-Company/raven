@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { Input } from '@components/ui/input'
 import { RavenChannel } from '@raven/types/RavenChannelManagement/RavenChannel'
-import { BiGlobe, BiHash, BiLockAlt } from 'react-icons/bi'
+import { ChannelIcon } from '@components/common/ChannelIcon/ChannelIcon'
 import _ from '@lib/translate'
 
 interface ChannelNameInputProps {
@@ -21,21 +21,10 @@ export const ChannelNameInput = ({ value, onChange, channelType, disabled }: Cha
         [onChange]
     )
 
-    const getChannelIcon = () => {
-        switch (channelType) {
-            case 'Private':
-                return <BiLockAlt className="h-4 w-4" />
-            case 'Open':
-                return <BiGlobe className="h-4 w-4" />
-            default:
-                return <BiHash className="h-4 w-4" />
-        }
-    }
-
     return (
         <div className="relative">
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-gray-4" aria-hidden="true">
-                {getChannelIcon()}
+                <ChannelIcon type={channelType} className="h-4 w-4" />
             </div>
             <Input
                 value={value}

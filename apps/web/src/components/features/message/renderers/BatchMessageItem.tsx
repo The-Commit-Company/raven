@@ -89,7 +89,7 @@ export const BatchMessageItem = ({
         <MessageRow ref={ref}>
             {showThread && <div className="absolute left-7 w-6 border-l-2 border-b-2 border-outline-gray-1 rounded-bl-2xl z-0 top-[48px] h-[calc(100%-66px)]" />}
             <MessageSenderLayout
-                owner={head.owner}
+                owner={head.is_bot_message ? head.bot || '' : head.owner}
                 creation={head.creation}
                 isContinuation={block.is_continuation === 1}
             >

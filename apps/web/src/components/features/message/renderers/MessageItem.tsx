@@ -69,7 +69,7 @@ export const MessageItem = ({ message, onInView }: { message: Message; onInView?
     return <MessageRow ref={ref}>
         {showThread && <div className="absolute left-7 w-6 border-l-2 border-b-2 border-outline-gray-1 rounded-bl-2xl z-0 top-[48px] h-[calc(100%-66px)]" />}
         <MessageSenderLayout
-            owner={message.owner}
+            owner={message.is_bot_message ? message.bot || '' : message.owner}
             creation={message.creation}
             isContinuation={message.is_continuation === 1}
         >
