@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 import parse, { Element, domToReact, type DOMNode, type HTMLReactParserOptions } from "html-react-parser"
 import { UserMention, ChannelMention } from "./MessageMention"
+import { CodeBlock } from "./MessageCodeBlock"
 
 /**
  * Renders a message body from the HTML the backend stores in `message.text`
@@ -26,6 +27,13 @@ const mentionLabel = (node: Element): string =>
         .replace(/^[@#]/, "")
         .trim()
 
+/** Recursively concatenate a node's text content (for code-block bodies). */
+const textContent = (node: DOMNode): string => {
+    if ((node as { type?: string }).type === "text") return (node as { data?: string }).data ?? ""
+    if (node instanceof Element) return (node.children as DOMNode[]).map(textContent).join("")
+    return ""
+}
+
 const options: HTMLReactParserOptions = {
     replace: (node) => {
         if (!(node instanceof Element)) return
@@ -36,8 +44,8 @@ const options: HTMLReactParserOptions = {
         // (old messages at 13px, new ones at 14px). The stylesheet is the single
         // source of truth for presentation, so legacy classes are dropped here.
         // `data-*` (mentions, emoji) and inline `style` (text-align) are kept.
-        // NOTE: when code-block highlighting lands, read `language-*` off the
-        // <code> before this strips it.
+        // The one class we DO need — a code block's `language-*` — is read in the
+        // <pre> branch below, which runs on the parent before this strips a child.
         if (node.attribs?.class) delete node.attribs.class
 
         // Mentions: swap the stored span for an interactive component that
@@ -51,6 +59,19 @@ const options: HTMLReactParserOptions = {
             ) : (
                 <ChannelMention id={mentionID} fallback={fallback} />
             )
+        }
+
+        // Code blocks: <pre><code class="language-xxx">…</code></pre>. Returning
+        // an element stops recursion into the children, so the <code>'s class
+        // survives the strip above — read the language + raw text here and hand
+        // off to CodeBlock (highlighting + copy).
+        if (node.name === "pre") {
+            const codeEl = node.children.find(
+                (child): child is Element => child instanceof Element && child.name === "code",
+            )
+            const language = (codeEl?.attribs?.class ?? "").match(/language-(\S+)/)?.[1]
+            const code = textContent(codeEl ?? node).replace(/\n$/, "")
+            return <CodeBlock code={code} language={language} />
         }
 
         // Sanitize links: safe scheme only, always open in a new tab.

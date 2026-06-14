@@ -62,6 +62,21 @@
   --font-numeric--font-optical-sizing: auto;
   --font-numeric--font-variation-settings: "opsz" 24;
 
+  --font-mono: ui-monospace,
+  Menlo,
+  Monaco,
+  'Cascadia Mono',
+  'Segoe UI Mono',
+  'Roboto Mono',
+  'Oxygen Mono',
+  'Ubuntu Mono',
+  'Source Code Pro',
+  'Fira Mono',
+  'Droid Sans Mono',
+  'Consolas',
+  'Courier New',
+  monospace;
+
 
   /** Font Sizes - Web **/
   --text-2xs: 0.6875rem;
