@@ -145,7 +145,7 @@ def retract_vote(poll_id: str):
 		frappe.throw(_("You have not voted for any option in this poll."))
 	else:
 		for vote in votes:
-			frappe.delete_doc("Raven Poll Vote", vote.name)
+			frappe.delete_doc("Raven Poll Vote", vote.name, delete_permanently=True)
 
 
 @frappe.whitelist()

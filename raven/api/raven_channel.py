@@ -252,7 +252,7 @@ def leave_channel(channel_id: str):
 	)
 
 	for member in members:
-		frappe.delete_doc("Raven Channel Member", member.name)
+		frappe.delete_doc("Raven Channel Member", member.name, delete_permanently=True)
 
 	return "Ok"
 

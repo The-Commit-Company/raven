@@ -1,4 +1,3 @@
-import json
 from datetime import timedelta
 
 import frappe
@@ -47,6 +46,15 @@ def send_message(
 
 	doc.insert()
 	return doc
+
+
+@frappe.whitelist(methods=["POST"])
+def delete_messages(message_ids: list[str]):
+	"""
+	Bulk delete messages since messages can be grouped in the UI
+	"""
+	for message_id in message_ids:
+		frappe.delete_doc("Raven Message", message_id, delete_permanently=True)
 
 
 @frappe.whitelist()

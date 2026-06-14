@@ -12,7 +12,7 @@ def remove_channel_member(user_id: str, channel_id: str):
 	member = get_channel_member(channel_id, user_id)
 	# Delete raven channel member
 	if member:
-		frappe.delete_doc("Raven Channel Member", member["name"])
+		frappe.delete_doc("Raven Channel Member", member["name"], delete_permanently=True)
 	else:
 		frappe.throw(_("User is not a member of this channel"))
 
