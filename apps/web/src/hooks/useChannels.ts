@@ -13,7 +13,7 @@ export const useChannels = () => {
         {
             revalidateOnFocus: isMobile,
             // revalidateOnMount: false,
-            revalidateIfStale: false,
+            revalidateIfStale: true,
             revalidateOnReconnect: true
         }
     )

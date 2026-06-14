@@ -16,6 +16,13 @@ export default defineConfig({
     // @ts-ignore - tailwindcss is not typed
     tailwindcss()],
   resolve: {
+    // Force a SINGLE copy of these, resolved from this app's node_modules.
+    // Without it the prod build bundles two frappe-react-sdk copies (apps/web
+    // @1.15 vs the hoisted root @1.13, pulled in via @raven/lib's hooks), giving
+    // two distinct FrappeContext objects — the Provider fills one, packages/lib's
+    // hooks read the other and get null. (react/react-dom/swr deduped for the
+    // same context-identity reason — also the dup-React "invalid hook call".)
+    dedupe: ["react", "react-dom", "frappe-react-sdk", "swr"],
     alias: {
       "@": path.resolve(__dirname, "./src"),
       "@lib": path.resolve(__dirname, "./src/lib"),
