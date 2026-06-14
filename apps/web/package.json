@@ -9,6 +9,11 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
+    "gen:colors": "node scripts/generate-espresso-colors.mjs",
+    "gen:radius": "node scripts/generate-espresso-radius.mjs",
+    "gen:typography": "node scripts/generate-espresso-typography.mjs",
+    "gen:effects": "node scripts/generate-espresso-effects.mjs",
+    "gen:tokens": "yarn gen:colors && yarn gen:radius && yarn gen:typography && yarn gen:effects",
     "copy-html-entry": "cp ../../raven/public/raven_v3/index.html ../../raven/www/raven_v3.html"
   },
   "dependencies": {
