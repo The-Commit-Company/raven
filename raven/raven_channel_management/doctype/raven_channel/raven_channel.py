@@ -31,6 +31,7 @@ class RavenChannel(Document):
 		is_synced: DF.Check
 		is_thread: DF.Check
 		last_message_details: DF.JSON | None
+		last_message_id: DF.Data | None
 		last_message_timestamp: DF.Datetime | None
 		linked_doctype: DF.Link | None
 		linked_document: DF.DynamicLink | None

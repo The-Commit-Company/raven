@@ -310,6 +310,7 @@ class RavenMessage(Document):
 			)
 			.set(raven_channel.last_message_timestamp, self.creation)
 			.set(raven_channel.last_message_details, message_details)
+			.set(raven_channel.last_message_id, self.name)
 		)
 		# NOTE: concurrent updates to hot rows like this one require
 		# innodb_snapshot_isolation=OFF on MariaDB 11.6+ (the default ON turns
@@ -705,6 +706,22 @@ class RavenMessage(Document):
 	def on_trash(self):
 		# delete all the reactions for the message
 		frappe.db.delete("Raven Message Reaction", {"message": self.name})
+
+		# If this was the last message in the channel, update the last message details to null
+		# TODO: Check if this is faster or fetching the channel details from cache
+		frappe.db.set_value(
+			"Raven Channel",
+			{
+				"name": self.channel_id,
+				"last_message_id": self.name,
+			},
+			{
+				"last_message_timestamp": None,
+				"last_message_details": None,
+				"last_message_id": None,
+			},
+		)
+
 		# if the message is a thread, delete all messages in the thread and the thread channel
 		if self.is_thread:
 			# Delete the thread channel - this will automatically delete all the messages and their reactions in the thread
