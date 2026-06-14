@@ -111,9 +111,14 @@ export function DMSidebar() {
                 </span>
             </div>
 
-            <div className="flex min-h-0 flex-1 px-1">
+            {/* No horizontal padding here: it would sit OUTSIDE Virtuoso's
+                scroller (which clips overflow-x: hidden), so the active row's
+                shadow/rounded edge would be cut. The inset lives on each row
+                instead (px-2 on the NavLink/button), giving the shadow room
+                inside the clip boundary. */}
+            <div className="flex min-h-0 flex-1">
                 {isLoading || !usersReady ? (
-                    <div className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto">
+                    <div className="flex-1 min-h-0 overflow-x-hidden overflow-y-auto px-2">
                         <DMSidebarSkeleton />
                     </div>
                 ) : rows.length === 0 ? (
@@ -194,7 +199,7 @@ function DMRow({ dmChannel, peerUser }: DMRowProps) {
     const date = formatRelativeDate(dmChannel.last_message_timestamp)
     const lastMessage = getMessageTeaser(dmChannel.last_message_details, currentUser)
 
-    return <NavLink to={`/dm-channel/${encodeURIComponent(dmChannel.name)}`} className="py-0.5 block">
+    return <NavLink to={`/dm-channel/${encodeURIComponent(dmChannel.name)}`} className="block px-2 py-0.5">
         {({ isActive }) => (
             <DMRowShell
                 user={peerUser}
@@ -246,7 +251,7 @@ function ExtraUserRow({ user }: { user: UserData }) {
             type="button"
             onClick={() => createDM(user.name)}
             disabled={loading}
-            className="flex w-full disabled:pointer-events-none disabled:opacity-50"
+            className="flex w-full px-2 disabled:pointer-events-none disabled:opacity-50"
         >
             <DMRowShell
                 user={user}
@@ -280,10 +285,10 @@ function DMRowShell({
     return (
         <div
             className={cn(
-                "flex w-full items-start gap-3 px-3 py-3 md:py-2 text-sm rounded transition-colors relative text-left",
-                "hover:bg-surface-gray-2 select-none",
-                "active:bg-surface-gray-3",
-                isActive && "bg-surface-gray-3 hover:bg-surface-gray-3"
+                "flex w-full items-start gap-3 px-2 py-3 md:py-2 text-sm rounded transition-colors relative text-left",
+                "select-none",
+                "hover:bg-surface-gray-3 active:bg-surface-gray-3",
+                isActive && "bg-surface-selected hover:bg-surface-selected active:bg-surface-selected shadow-sm"
             )}
         >
             <div className="shrink-0 self-center">

@@ -368,10 +368,10 @@ const ChannelRow = ({ channel, workspaceID }: { channel: ChannelListItem; worksp
             to={`/${encodeURIComponent(workspaceID ?? "")}/${encodeURIComponent(channel.name)}`}
             className={({ isActive }) =>
                 cn(
-                    "flex h-8 min-w-0 select-none items-center gap-2 overflow-hidden rounded-md px-2 text-ink-gray-7 sm:h-7",
-                    "outline-none ring-outline-gray-3 transition-colors focus-visible:ring-2",
-                    "hover:bg-surface-gray-2 hover:text-ink-gray-8 active:bg-surface-gray-3",
-                    isActive && "bg-surface-gray-3 text-ink-gray-8 hover:bg-surface-gray-3",
+                    "flex min-w-0 select-none items-center gap-2 overflow-hidden rounded text-base px-2 text-ink-gray-6 py-1.5",
+                    "outline-none ring-outline-gray-2 transition-colors focus-visible:ring-2",
+                    "hover:bg-surface-gray-3 active:bg-surface-gray-3",
+                    isActive && "bg-surface-selected shadow-sm text-ink-gray-8 hover:bg-surface-selected active:bg-surface-selected",
                 )
             }
         >

@@ -105,7 +105,7 @@ const UserMentionCard = ({ id, fallbackLabel, isSelf }: { id: string; fallbackLa
                             {availability}
                         </span>
                     )}
-                    {user?.custom_status && <p className="text-sm text-ink-gray-7">{user.custom_status}</p>}
+                    {user?.custom_status && <p className="text-p-sm text-ink-gray-7">{user.custom_status}</p>}
                 </div>
             )}
 

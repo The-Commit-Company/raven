@@ -321,7 +321,7 @@
    stylesheet owns all the color. box-decoration-clone keeps the rounded
    background intact when a mention wraps across lines. */
 .tiptap .mention {
-  @apply box-decoration-clone rounded px-0.5 font-semibold no-underline;
+  @apply box-decoration-clone rounded px-0.5 font-medium no-underline;
 }
 
 /* Channel mentions render as <a> (NavLink) — neutralize the .tiptap a border
@@ -332,12 +332,12 @@
 
 /* Others + channels: blue text, subtle gray bg on hover only. */
 .tiptap .mention:not([data-self="true"]) {
-  @apply text-ink-blue-3 hover:bg-surface-blue-1;
+  @apply text-ink-gray-8 hover:bg-surface-gray-1;
 }
 
 /* You: persistent amber highlight — the one mention that lights up. */
 .tiptap .mention[data-self="true"] {
-  @apply text-ink-amber-3 hover:bg-surface-amber-2;
+  @apply text-ink-amber-3 hover:bg-surface-amber-2 bg-surface-amber-1;
 }
 
 /* Images & emoji. */
