@@ -3,8 +3,32 @@ import { getFileName } from "@raven/lib/utils/operations"
 import { getFileExtension } from "@lib/file"
 import type { Message } from "@raven/types/common/Message"
 
-/** A previewable message file. PDFs render via <embed> (desktop), images via <img>. */
-export type AttachmentKind = "image" | "pdf"
+/**
+ * How a message file presents: `image` <img>, `video` <video>, `audio`
+ * <audio>, `pdf` <embed> (desktop) with a mobile download fallback, `file` =
+ * no inline preview, just a download card (Google-Drive style). Classified by
+ * file EXTENSION, not the coarse Raven message_type.
+ */
+export type AttachmentKind = "image" | "video" | "audio" | "pdf" | "file"
+
+// Extension → kind. Only what browsers can actually render inline; everything
+// else falls through to a download card.
+const IMAGE_EXTENSIONS = new Set(["png", "jpg", "jpeg", "gif", "webp", "svg", "bmp", "avif", "jfif", "apng"])
+const VIDEO_EXTENSIONS = new Set(["mp4", "webm", "ogv", "m4v", "mov"])
+const AUDIO_EXTENSIONS = new Set(["mp3", "wav", "ogg", "oga", "m4a", "aac", "flac", "opus", "weba"])
+
+/** Classify a file by its extension (query string already stripped by getFileExtension). */
+export const getAttachmentKind = (url: string): AttachmentKind => {
+    const extension = getFileExtension(url)
+    if (IMAGE_EXTENSIONS.has(extension)) return "image"
+    if (VIDEO_EXTENSIONS.has(extension)) return "video"
+    if (AUDIO_EXTENSIONS.has(extension)) return "audio"
+    if (extension === "pdf") return "pdf"
+    return "file"
+}
+
+/** Display/paging order — images first, then video, audio, and docs/files last. */
+const KIND_ORDER: Record<AttachmentKind, number> = { image: 0, video: 1, audio: 2, pdf: 3, file: 4 }
 
 export interface Attachment {
     /** The owning Raven Message id — unique within a set. */
@@ -40,14 +64,12 @@ type MediaMessage = Message & {
     thumbnail_height?: number
 }
 
-/** File extensions that render inside the viewer (spreadsheets etc. can join later). */
-const PREVIEWABLE_FILE_EXTENSIONS = new Set(["pdf"])
-
-const toAttachment = (message: Message, includeFiles: boolean): Attachment | null => {
+const toAttachment = (message: Message): Attachment | null => {
     const media = message as MediaMessage
     const url = media.file
     if (!url) return null
 
+    const kind = getAttachmentKind(url)
     const base = {
         id: media.name,
         fileName: getFileName(url),
@@ -56,22 +78,25 @@ const toAttachment = (message: Message, includeFiles: boolean): Attachment | nul
         creation: media.creation,
     }
 
-    if (media.message_type === "Image") {
-        return { ...base, kind: "image", thumbnail: media.file_thumbnail, width: media.thumbnail_width, height: media.thumbnail_height }
+    if (kind === "image") {
+        return { ...base, kind, thumbnail: media.file_thumbnail, width: media.thumbnail_width, height: media.thumbnail_height }
     }
-    // Files only render inline on desktop (<embed>); includeFiles is false on mobile
-    if (media.message_type === "File" && includeFiles && PREVIEWABLE_FILE_EXTENSIONS.has(getFileExtension(url))) {
-        return { ...base, kind: "pdf" }
-    }
-    return null
+    return { ...base, kind }
 }
 
 /**
  * The ordered, navigable attachment set for a group of messages — a batch (so
- * a mixed image+PDF batch becomes ONE set you can arrow across) or a single
- * message. Images plus previewable files, in send order. Pass
- * `includeFiles: false` on mobile, where PDFs open in a new tab instead of the
- * viewer.
+ * a mixed batch becomes ONE set you can arrow across) or a single message.
+ * EVERY file is included (non-previewable types page in as a download card),
+ * ordered by kind (images, video, audio, then docs) to match the in-message
+ * layout. Per-pill tap behavior (e.g. a PDF opening in a new tab on mobile)
+ * lives in the renderer; the set itself is platform-agnostic so paging is
+ * complete on every device.
  */
-export const messagesToAttachments = (messages: Message[], includeFiles: boolean): Attachment[] =>
-    messages.map((message) => toAttachment(message, includeFiles)).filter((attachment): attachment is Attachment => attachment !== null)
+export const messagesToAttachments = (messages: Message[]): Attachment[] => {
+    const attachments = messages
+        .map(toAttachment)
+        .filter((attachment): attachment is Attachment => attachment !== null)
+    // Stable sort by kind — order within a kind is preserved
+    return attachments.sort((a, b) => KIND_ORDER[a.kind] - KIND_ORDER[b.kind])
+}

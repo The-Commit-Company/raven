@@ -4,9 +4,12 @@ import { Message } from "@raven/types/common/Message"
 import ReplyMessage from "./ReplyMessage"
 import { MessageImages } from "./MessageImages"
 import { MessageFiles } from "./MessageFiles"
+import { MessageVideo } from "./MessageVideo"
+import { MessageAudio } from "./MessageAudio"
 import TiptapRenderer from "./TiptapRenderer"
 import SearchTextRenderer from "./SearchTextRenderer"
 import { MessageReactionsRow } from "./MessageReactions"
+import { getAttachmentKind } from "@utils/attachmentPreview"
 import _ from "@lib/translate"
 
 /**
@@ -30,7 +33,24 @@ const MessageAttributeIndicator = ({ attribute, Icon }: { attribute: string, Ico
     </div>
 )
 
+/** Dispatch a single file-bearing message to the right inline renderer by kind. */
+const MessageMedia = ({ message, fileUrl }: { message: Message; fileUrl: string }) => {
+    switch (getAttachmentKind(fileUrl)) {
+        case "image":
+            return <MessageImages messages={[message]} />
+        case "video":
+            return <MessageVideo messages={[message]} />
+        case "audio":
+            return <MessageAudio messages={[message]} />
+        default:
+            // pdf + everything non-previewable → file pill (opens the viewer)
+            return <MessageFiles messages={[message]} />
+    }
+}
+
 export const MessageContent = ({ message }: { message: Message }) => {
+    const messageFile = "file" in message ? (message.file as string | undefined) : undefined
+
     const repliedMessageDetails = useMemo(() => {
         if (message.replied_message_details) {
             try {
@@ -58,22 +78,14 @@ export const MessageContent = ({ message }: { message: Message }) => {
                 />
             )}
 
-            {message.message_type === 'Image' && (
+            {/* Media dispatch is by file EXTENSION, not message_type (a video
+                arrives as message_type "File" but should render as a player) */}
+            {messageFile ? (
                 <>
-                    {'file' in message && message.file && <MessageImages messages={[message]} />}
+                    <MessageMedia message={message} fileUrl={messageFile} />
                     {message.text && <MessageBody content={message.text} />}
                 </>
-            )}
-            {message.message_type === 'File' && (
-                <>
-                    {'file' in message && message.file && <MessageFiles messages={[message]} />}
-                    {message.text && <MessageBody content={message.text} />}
-                </>
-            )}
-            {message.message_type === 'Poll' && (
-                <MessageBody content={message.content ?? message.text} />
-            )}
-            {(message.message_type === 'Text' || message.message_type === 'System' || !message.message_type) && (
+            ) : (
                 <MessageBody content={message.content ?? message.text} />
             )}
 

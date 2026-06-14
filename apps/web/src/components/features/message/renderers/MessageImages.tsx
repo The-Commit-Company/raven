@@ -40,7 +40,7 @@ export const MessageImages = ({ messages, attachments }: { messages: Message[]; 
     const images = messages.map((message) => toImageFile(message as ImageLikeMessage))
     const setPreview = useSetAtom(attachmentPreviewAtom)
 
-    const ownSet = useMemo(() => messagesToAttachments(messages, true), [messages])
+    const ownSet = useMemo(() => messagesToAttachments(messages), [messages])
     const previewSet = attachments ?? ownSet
 
     const openImage = (image: ImageFile) => {

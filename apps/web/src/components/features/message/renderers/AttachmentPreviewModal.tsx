@@ -2,16 +2,21 @@ import { useRef } from "react"
 import { useAtomValue, useSetAtom } from "jotai"
 import { useHotkeys } from "react-hotkeys-hook"
 import { toast } from "sonner"
-import { ChevronLeft, ChevronRight, FileText } from "lucide-react"
+import { ChevronLeft, ChevronRight, FileText, Film, Music } from "lucide-react"
 import { Button } from "@components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
 import { MediaLightbox } from "./MediaLightbox"
 import { MediaPreviewHeader } from "./MediaPreviewHeader"
+import { AudioPlayer } from "./AudioPlayer"
 import { useUser } from "@hooks/useUser"
+import { useIsMobile } from "@hooks/use-mobile"
 import { downloadFile, shareFile } from "@lib/file"
 import { cn } from "@lib/utils"
 import _ from "@lib/translate"
-import { attachmentPreviewAtom, type AttachmentPreviewState } from "@utils/attachmentPreview"
+import { attachmentPreviewAtom, type Attachment, type AttachmentPreviewState } from "@utils/attachmentPreview"
+
+/** Minimum horizontal travel (px) for a touch swipe to count as paging. */
+const SWIPE_THRESHOLD = 50
 
 /**
  * The single, app-wide attachment lightbox. Mounted once at the app shell;
@@ -40,9 +45,14 @@ const AttachmentPreviewContent = ({
     open: boolean
 }) => {
     const setState = useSetAtom(attachmentPreviewAtom)
+    const isMobile = useIsMobile()
     const { attachments, index } = display
     const current = attachments[index] ?? attachments[0]
     const { data: user } = useUser(current.owner)
+
+    // PDFs render inline via <embed> on desktop only — mobile browsers won't,
+    // so they fall back to the download card alongside non-previewable files.
+    const canEmbedPdf = current.kind === "pdf" && !isMobile
 
     const close = () => setState(null)
     // Wraps at the ends, matching the previous image slideshow behavior
@@ -56,6 +66,27 @@ const AttachmentPreviewContent = ({
     const hasMany = attachments.length > 1
     useHotkeys("left", () => step(-1), { enabled: open && hasMany, preventDefault: true }, [open, hasMany])
     useHotkeys("right", () => step(1), { enabled: open && hasMany, preventDefault: true }, [open, hasMany])
+
+    // Touch swipe to page (mobile). Only fires on touch devices, so desktop
+    // is unaffected. A child can opt out by stopping touchstart propagation
+    // (the audio slider does, so dragging it doesn't get read as a page-swipe).
+    const touchStart = useRef<{ x: number; y: number } | null>(null)
+    const onTouchStart = (event: React.TouchEvent) => {
+        const touch = event.touches[0]
+        touchStart.current = { x: touch.clientX, y: touch.clientY }
+    }
+    const onTouchEnd = (event: React.TouchEvent) => {
+        const start = touchStart.current
+        touchStart.current = null
+        if (!start || !hasMany) return
+        const touch = event.changedTouches[0]
+        const dx = touch.clientX - start.x
+        const dy = touch.clientY - start.y
+        // Horizontal-dominant swipe past the threshold = page; ignore vertical
+        if (Math.abs(dx) > SWIPE_THRESHOLD && Math.abs(dx) > Math.abs(dy)) {
+            step(dx < 0 ? 1 : -1)
+        }
+    }
 
     const download = () => downloadFile(current.fileUrl, current.fileName)
     const share = async () => {
@@ -86,7 +117,12 @@ const AttachmentPreviewContent = ({
                 p-4 (not px-4) gives a clickable frame on all sides — for the
                 PDF <embed>, which fills its box and swallows its own clicks,
                 that frame plus the width cap below is the only backdrop */}
-            <div className="relative flex min-h-0 flex-1 items-center justify-center p-4" onClick={close}>
+            <div
+                className="relative flex min-h-0 flex-1 items-center justify-center p-4"
+                onClick={close}
+                onTouchStart={onTouchStart}
+                onTouchEnd={onTouchEnd}
+            >
                 {hasMany && (
                     <>
                         <Button
@@ -125,9 +161,24 @@ const AttachmentPreviewContent = ({
                         className="max-h-full max-w-full object-contain"
                         onClick={(event) => event.stopPropagation()}
                     />
-                ) : (
+                ) : current.kind === "video" ? (
+                    <video
+                        src={current.fileUrl}
+                        controls
+                        className="max-h-full max-w-full"
+                        onClick={(event) => event.stopPropagation()}
+                    />
+                ) : current.kind === "audio" ? (
+                    // Stop touchstart too, so dragging the seek slider isn't read as a page-swipe
+                    <div
+                        className="w-full max-w-md rounded-lg bg-surface-gray-1 p-3"
+                        onClick={(event) => event.stopPropagation()}
+                        onTouchStart={(event) => event.stopPropagation()}
+                    >
+                        <AudioPlayer src={current.fileUrl} />
+                    </div>
+                ) : canEmbedPdf ? (
                     // <embed> = native PDF viewer (toolbar, zoom) at full height.
-                    // Desktop only — callers route mobile PDFs to a new tab.
                     // max-w caps it so wide screens keep a dark backdrop to click.
                     <embed
                         src={current.fileUrl}
@@ -135,6 +186,10 @@ const AttachmentPreviewContent = ({
                         className="h-full w-full max-w-5xl rounded-md"
                         onClick={(event) => event.stopPropagation()}
                     />
+                ) : (
+                    // No inline preview (non-previewable files, or a PDF paged
+                    // into on mobile) — a download/open card, Google-Drive style
+                    <DownloadCard attachment={current} isMobile={isMobile} />
                 )}
             </div>
 
@@ -167,7 +222,7 @@ const AttachmentPreviewContent = ({
                                                 loading="lazy"
                                             />
                                         ) : (
-                                            <FileText className="h-5 w-5 text-ink-gray-5" />
+                                            <ThumbIcon kind={attachment.kind} />
                                         )}
                                     </div>
                                 </TooltipTrigger>
@@ -178,5 +233,42 @@ const AttachmentPreviewContent = ({
                 </div>
             )}
         </MediaLightbox>
+    )
+}
+
+/** Filmstrip tile icon for non-image kinds. */
+const ThumbIcon = ({ kind }: { kind: Attachment["kind"] }) => {
+    const Icon = kind === "video" ? Film : kind === "audio" ? Music : FileText
+    return <Icon className="h-5 w-5 text-ink-gray-5" />
+}
+
+/**
+ * Centered "no preview" card for attachments we can't render inline — other
+ * file types, and a PDF paged into on mobile (which can't embed). A mobile PDF
+ * can still be viewed via the OS viewer, so it offers "Open" (new tab); other
+ * files just "Download". Stops propagation so clicking the card doesn't close;
+ * the surrounding backdrop still does.
+ */
+const DownloadCard = ({ attachment, isMobile }: { attachment: Attachment; isMobile: boolean }) => {
+    const openInTab = isMobile && attachment.kind === "pdf"
+    const action = () =>
+        openInTab
+            ? window.open(attachment.fileUrl, "_blank", "noopener")
+            : downloadFile(attachment.fileUrl, attachment.fileName)
+
+    return (
+        <div
+            className="flex w-full max-w-sm flex-col items-center gap-4 rounded-lg bg-surface-white p-10 text-center"
+            onClick={(event) => event.stopPropagation()}
+        >
+            <FileText className="h-12 w-12 text-ink-gray-5" />
+            <div className="flex flex-col gap-1">
+                <p className="font-medium text-ink-gray-8 break-all">{attachment.fileName}</p>
+                <p className="text-sm text-ink-gray-5">{_("No preview available")}</p>
+            </div>
+            <Button variant="solid" theme="gray" onClick={action}>
+                {openInTab ? _("Open") : _("Download")}
+            </Button>
+        </div>
     )
 }

@@ -66,12 +66,12 @@ export const MediaPreviewHeader = ({
                 </div>
             )}
 
-            <div className="order-3 flex min-w-0 basis-full flex-wrap items-center gap-2 sm:order-2 sm:basis-auto">
+            <div className="order-3 flex min-w-0 basis-full justify-center sm:p-0 p-2 flex-wrap items-center gap-2 sm:order-2 sm:basis-auto">
                 <Tooltip>
                     {/* asChild span: a focusable trigger would grab the dialog's
                     initial focus and auto-open the tooltip */}
                     <TooltipTrigger asChild>
-                        <span className="max-w-64 truncate text-base font-medium">{fileName}</span>
+                        <span className="sm:max-w-96 text-center truncate text-base font-medium">{fileName}</span>
                     </TooltipTrigger>
                     <TooltipContent>{fileName}</TooltipContent>
                 </Tooltip>
