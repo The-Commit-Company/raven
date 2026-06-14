@@ -77,7 +77,9 @@ class RavenChannelMember(Document):
 
 		current_user_name = frappe.get_cached_value("Raven User", frappe.session.user, "full_name")
 
-		is_thread = self.is_thread()
+		channel_details = self.get_channel_details()
+
+		is_thread = channel_details.is_thread
 
 		if not is_thread:
 			# Update the channel list for the user who left the channel
@@ -93,7 +95,7 @@ class RavenChannelMember(Document):
 		# If this was the last member of a private channel, archive the channel
 		if (
 			frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id}) == 0
-			and frappe.db.get_value("Raven Channel", self.channel_id, "type") == "Private"
+			and channel_details.type == "Private"
 		):
 			frappe.db.set_value("Raven Channel", self.channel_id, "is_archived", 1)
 
@@ -151,11 +153,12 @@ class RavenChannelMember(Document):
 
 	def check_if_user_is_member(self):
 		is_member = True
-		channel = frappe.db.get_value("Raven Channel", self.channel_id, ["type", "owner"], as_dict=True)
-		if channel.type == "Private":
+		channel_type = self.get_channel_details().type
+		owner = self.get_channel_details().owner
+		if channel_type == "Private":
 			# A user can only add members to a private channel if they are themselves member of the channel or if they are the owner of a new channel
 			if (
-				channel.owner == frappe.session.user
+				owner == frappe.session.user
 				and frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id}) == 0
 			):
 				# User is the owner of a channel and there are no members in the channel
@@ -177,11 +180,10 @@ class RavenChannelMember(Document):
 		"""
 		Subscribe the user to the topic if the channel is not a DM
 		"""
-		is_direct_message = frappe.get_cached_value(
-			"Raven Channel", self.channel_id, "is_direct_message"
-		)
 
-		is_thread = self.is_thread()
+		channel_details = self.get_channel_details()
+		is_direct_message = channel_details.is_direct_message
+		is_thread = channel_details.is_thread
 
 		if not is_thread:
 			# Update the channel list for the user who joined the channel
@@ -197,7 +199,8 @@ class RavenChannelMember(Document):
 		if not is_direct_message and self.allow_notifications:
 			subscribe_user_to_topic(self.channel_id, self.user_id)
 
-		if not is_direct_message:
+		# Don't send a system message to the channel if the channel is open
+		if not is_direct_message and not channel_details.type == "Open":
 
 			# Send a system message to the channel mentioning the member who joined
 			member_name = frappe.get_cached_value("Raven User", self.user_id, "full_name")
@@ -228,9 +231,8 @@ class RavenChannelMember(Document):
 		Check if the notification preference is changed and update the subscription
 		"""
 		if self.has_value_changed("allow_notifications"):
-			is_direct_message = frappe.get_cached_value(
-				"Raven Channel", self.channel_id, "is_direct_message"
-			)
+
+			is_direct_message = self.get_channel_details().is_direct_message
 
 			if not is_direct_message:
 				if self.allow_notifications:
@@ -259,7 +261,22 @@ class RavenChannelMember(Document):
 		return frappe.db.count("Raven Channel Member", {"channel_id": self.channel_id, "is_admin": 1})
 
 	def is_thread(self):
-		return frappe.get_cached_value("Raven Channel", self.channel_id, "is_thread")
+		return self.get_channel_details().is_thread
+
+	def get_channel_details(self):
+		"""
+		Keep a cached value of the channel details to avoid multiple database queries
+		"""
+		if self.flags.channel_details:
+			return self.flags.channel_details
+		channel_details = frappe.get_cached_value(
+			"Raven Channel",
+			self.channel_id,
+			["type", "owner", "is_direct_message", "is_thread"],
+			as_dict=True,
+		)
+		self.flags.channel_details = channel_details
+		return channel_details
 
 	def invalidate_channel_members_cache(self):
 		if not self.flags.ignore_cache_invalidation:
