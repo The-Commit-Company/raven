@@ -29,6 +29,10 @@ class RavenWorkspace(Document):
 	def on_trash(self):
 		# Delete all members when the workspace is deleted
 		frappe.db.delete("Raven Workspace Member", {"workspace": self.name})
+
+		# Delete all pinned workspaces
+		frappe.db.delete("Raven User Pinned Workspaces", {"workspace": self.name})
+
 		# Delete all channels when the workspace is deleted
 		channels = frappe.db.get_all("Raven Channel", {"workspace": self.name})
 		for channel in channels:

@@ -55,6 +55,9 @@ class RavenChannel(Document):
 		# Delete the pinned channels
 		frappe.db.delete("Raven Pinned Channels", {"channel_id": self.name})
 
+		# Delete all channel groups
+		frappe.db.delete("Raven Grouped Channels", {"channel_id": self.name})
+
 		delete_channel_members_cache(self.name)
 
 		if not self.is_thread:
