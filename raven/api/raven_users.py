@@ -11,7 +11,7 @@ def get_current_raven_user():
 	Fetches the current user's Raven User profile
 	"""
 
-	# Check if the user is a Raven User and has he "Raven User" role
+	# Check if the user is a Raven User and has the "Raven User" role
 	# If not, then throw an error
 	if not frappe.has_permission("Raven User"):
 		frappe.throw(
@@ -101,6 +101,46 @@ def is_user_on_leave(user: str):
 			return True
 
 	return False
+
+
+@frappe.whitelist(methods=["GET"])
+def get_all_users_on_leave():
+
+	if not "hrms" in frappe.get_installed_apps():
+		return []
+
+	# Check if user has Raven User role
+	if not frappe.has_permission("Raven User"):
+		frappe.throw(
+			_(
+				"You do not have a <b>Raven User</b> role. Please contact your administrator to add your user profile as a <b>Raven User</b>."
+			),
+			title=_("Insufficient permissions. Please contact your administrator."),
+		)
+
+	show_if_a_user_is_on_leave = frappe.get_single_value(
+		"Raven Settings", "show_if_a_user_is_on_leave"
+	)
+
+	if not show_if_a_user_is_on_leave:
+		return []
+
+	# Join attendance table with user table on user_id
+	attendance = frappe.qb.DocType("Attendance")
+	employee = frappe.qb.DocType("Employee")
+
+	query = (
+		frappe.qb.from_(attendance)
+		.join(employee)
+		.on(attendance.employee == employee.name)
+		.select(employee.user_id)
+		.where(attendance.status == "On Leave")
+		.where(attendance.attendance_date == frappe.utils.today())
+		.where(attendance.docstatus == 1)
+	)
+
+	# Return an array of user IDs
+	return query.run(pluck=True)
 
 
 @frappe.whitelist(methods=["POST"])
