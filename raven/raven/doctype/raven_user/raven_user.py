@@ -28,6 +28,7 @@ class RavenUser(Document):
 		bot: DF.Link | None
 		channel_groups: DF.Table[RavenChannelGroups]
 		chat_style: DF.Literal["Simple", "Left-Right"]
+		contact_number: DF.Data | None
 		custom_status: DF.Data | None
 		enabled: DF.Check
 		first_name: DF.Data | None
@@ -168,6 +169,7 @@ def add_user_to_raven(doc, method):
 					raven_user.user = doc.name
 					raven_user.full_name = doc.full_name or doc.first_name
 					raven_user.first_name = doc.first_name
+					raven_user.contact_number = doc.mobile_no
 					raven_user.enabled = doc.enabled
 					raven_user.insert(ignore_permissions=True)
 

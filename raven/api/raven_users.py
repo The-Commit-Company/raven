@@ -67,6 +67,7 @@ def get_users():
 			"type",
 			"availability_status",
 			"custom_status",
+			"contact_number",
 		],
 		order_by="full_name",
 	)
