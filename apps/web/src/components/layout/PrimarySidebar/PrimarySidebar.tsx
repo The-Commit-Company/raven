@@ -21,7 +21,7 @@ import { NavLink } from "react-router"
 const PrimarySidebar = () => {
     return (
         <TooltipProvider>
-            <div className="flex flex-col h-full shrink-0 justify-between items-center border-r border-outline-gray-modals bg-surface-menu-bar w-(--primary-sidebar-width) py-4">
+            <div className="flex flex-col h-full shrink-0 justify-between items-center border-r border-outline-gray-2 bg-surface-sidebar w-(--primary-sidebar-width) py-4">
                 <div className="flex flex-col items-center gap-3">
                     <NotificationsLink />
                     <DirectMessagesLink />
@@ -105,7 +105,7 @@ const UnreadBadge = ({ count }: { count?: number }) => {
     // Pill, not a fixed circle: a single digit stays circular (min-w == height),
     // but "9+" / two digits grow horizontally with px-1 so the glyphs aren't
     // crushed against the boundary. h-4 keeps the cap height stable either way.
-    return <span className="absolute -top-1.5 -right-1.5 h-4 min-w-4 px-1 flex tabular-nums items-center justify-center rounded-full bg-surface-red-5 dark:bg-surface-red-6 text-ink-white dark:text-ink-red-1 text-[10px] font-medium leading-none">
+    return <span className="absolute -top-1.5 -right-1.5 h-4 min-w-4 px-1 flex tabular-nums items-center justify-center rounded-full bg-surface-red-6 dark:bg-surface-red-6 text-ink-base dark:text-ink-red-1 text-[10px] font-medium leading-none">
         {count > 9 ? "9+" : count}
     </span>
 

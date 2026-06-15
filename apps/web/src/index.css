@@ -120,19 +120,6 @@
   --spacing-15: 3.75rem;
   --spacing-15.5: 3.875rem;
 
-  /** App-specific color tokens NOT in frappe-ui's colors.json (frappe uses
-      surface-base/ink-base instead of *-white, and has no gray-modals).
-      Registered here so existing utilities keep working; migrate components to
-      the canonical tokens over time, then drop these. Values in :root/.dark. **/
-  --color-surface-white: var(--surface-white);
-  --color-surface-cards: var(--surface-cards);
-  --color-surface-menu-bar: var(--surface-menu-bar);
-  --color-surface-modal: var(--surface-modal);
-  --color-surface-selected: var(--surface-selected);
-  --color-ink-white: var(--ink-white);
-  --color-outline-white: var(--outline-white);
-  --color-outline-gray-modals: var(--outline-gray-modals);
-
   /** Legacy box-shadow focus aliases for components not yet on .focus-ring.
       Point at the canonical --focus-* vars from espresso-effects.css (gray maps
       to frappe-ui's `default`; violet has no shadow-focus alias). Migrate
@@ -144,38 +131,13 @@
   --shadow-focus-amber: var(--focus-amber);
 }
 
-:root {
-  /** App-specific tokens (see @theme note above). Reference the frappe palette
-      vars defined in espresso-colors.css. **/
-  --ink-white: var(--white);
-  --surface-white: var(--white);
-  --surface-menu-bar: var(--gray-50);
-  --surface-cards: var(--white);
-  --surface-modal: var(--white);
-  --surface-selected: var(--white);
-  --outline-white: var(--white);
-  --outline-gray-modals: var(--gray-200);
-}
-
-.dark {
-  /** App-specific tokens (see @theme note above). **/
-  --ink-white: var(--gray-950);
-  --surface-white: var(--gray-950);
-  --surface-menu-bar: var(--gray-950);
-  --surface-cards: var(--gray-900);
-  --surface-modal: var(--gray-800);
-  --surface-selected: var(--gray-600);
-  --outline-white: var(--gray-950);
-  --outline-gray-modals: var(--gray-600);
-}
-
 @layer base {
   * {
-    @apply border-outline-gray-modals outline-outline-gray-modals/50;
+    @apply border-outline-gray-2 outline-outline-gray-2/50;
   }
 
   body {
-    @apply bg-surface-white text-ink-gray-8;
+    @apply bg-surface-base text-ink-gray-8;
   }
 }
 
@@ -288,16 +250,5 @@ body {
 
   &::-webkit-scrollbar {
     display: none;
-  }
-}
-
-@layer base {
-
-  button:not(:disabled),
-  [role="button"]:not(:disabled),
-  [role="tab"]:not(:disabled),
-  [role="menuitem"]:not(:disabled),
-  a {
-    cursor: pointer !important;
   }
 }

@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@lib/utils"
 import { Button } from "@components/ui/button"
 
-const inputGroupVariants = cva(cn("group/input-group relative flex w-full items-center outline-none min-w-0 border border-transparent transition-all",
+const inputGroupVariants = cva(cn("group/input-group relative flex w-full items-center outline-none min-w-0 border border-transparent transition-colors",
 
   // Variants based on alignment.
   "has-[>[data-align=inline-start]]:[&>input]:ps-2",
@@ -14,13 +14,13 @@ const inputGroupVariants = cva(cn("group/input-group relative flex w-full items-
 
 
   // Focus state.
-  "has-[[data-slot=input]:focus-visible]:bg-surface-white has-[[data-slot=input]:focus-visible]:border-outline-gray-4 has-[[data-slot=input]:focus-visible]:shadow-focus-gray",
+  "has-[[data-slot=input]:focus-visible]:bg-surface-base has-[[data-slot=input]:focus-visible]:border-outline-gray-4 has-[[data-slot=input]:focus-visible]:shadow-sm has-[[data-slot=input]:focus-visible]:focus-ring",
 
   // Disabled state
   "has-[>[data-slot=input]:disabled]:bg-surface-gray-1 has-[>[data-slot=input]:disabled]:text-ink-gray-3 has-[>[data-slot=input]:disabled]:cursor-not-allowed has-[>[data-slot=input]:disabled]:pointer-events-none",
 
   // Error state.
-  "has-[[data-slot][aria-invalid=true]]:shadow-focus-red has-[[data-slot][aria-invalid=true]]:border-outline-red-3",
+  "has-[[data-slot][aria-invalid=true]]:focus-ring-red has-[[data-slot][aria-invalid=true]]:border-outline-red-3",
 
   // Read only state
   "has-[[data-slot][aria-readonly=true]]:bg-surface-gray-1 has-[[data-slot][aria-readonly=true]]:text-ink-gray-6 has-[[data-slot][aria-readonly=true]]:pointer-events-none",
@@ -30,12 +30,12 @@ const inputGroupVariants = cva(cn("group/input-group relative flex w-full items-
     variants: {
       variant: {
         subtle: "bg-surface-gray-2",
-        outline: "bg-surface-white border-outline-gray-2"
+        outline: "bg-surface-base border-outline-gray-2"
       },
       size: {
         sm: "h-7 has-[>textarea]:h-auto rounded text-base",
         md: "h-8 has-[>textarea]:h-auto rounded text-base",
-        lg: "h-10 has-[>textarea]:h-auto rounded-md text-lg"
+        lg: "h-10 has-[>textarea]:h-auto rounded-md text-xl"
       }
     },
     defaultVariants: {
@@ -62,7 +62,7 @@ function InputGroup({ className, variant = "subtle", size = "md", ...props }: Re
 }
 
 const inputGroupAddonVariants = cva(
-  "text-ink-gray-5 flex h-auto cursor-text items-center justify-center gap-2 py-1.5 text-sm font-medium select-none [&>svg:not([class*='size-'])]:size-4 [&>kbd]:rounded-[calc(var(--radius)-5px)] group-data-[disabled=true]/input-group:opacity-50",
+  "text-ink-gray-5 flex h-auto cursor-text items-center justify-center gap-2 py-1.5 text-sm-medium select-none [&>svg:not([class*='size-'])]:size-4 [&>kbd]:rounded-[calc(var(--radius)-5px)] group-data-[disabled=true]/input-group:opacity-50",
   {
     variants: {
       align: {

@@ -47,7 +47,7 @@ export const ProgressCircle = ({ value, className, ...restSvgProps }: ProgressCi
             // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: false positive (progressbar not an interactive role)
             role="progressbar"
             viewBox={`0 0 ${size} ${size}`}
-            className={cn('size-4 text-primary', className)}
+            className={cn('size-4 text-ink-gray-8', className)}
             aria-valuenow={normalizedValue}
             aria-valuemin={0}
             aria-valuemax={100}

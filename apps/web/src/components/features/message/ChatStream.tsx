@@ -225,7 +225,7 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
                         variant="outline"
                         size="sm"
                         onClick={onJumpToPresent}
-                        className="rounded-full shadow-md bg-surface-white gap-1.5"
+                        className="rounded-full shadow-md bg-surface-base gap-1.5"
                     >
                         <ArrowDown />
                         {(hasUnseenMessages || hasNewerMessages) && (

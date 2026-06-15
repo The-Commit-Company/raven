@@ -39,7 +39,7 @@ export const SidebarPreview = ({ data }: SidebarPreviewProps) => {
     }
 
     return (
-        <div className="flex h-full flex-col bg-surface-menu-bar">
+        <div className="flex h-full flex-col bg-surface-sidebar">
             <div ref={setScrollerRef} className="min-h-0 flex-1 overflow-auto p-2 pb-12">
                 <ul className="flex flex-col gap-0.5">
                     {data.groupedChannels.map(([groupName, channels]) => (

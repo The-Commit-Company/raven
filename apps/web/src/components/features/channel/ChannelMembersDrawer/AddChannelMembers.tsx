@@ -156,7 +156,7 @@ const AddChannelMembers = ({ memberIds, channelID, onClose }: { memberIds: strin
 
             {/* Add Button */}
             {selectedUsers.length > 0 && (
-                <div className="shrink-0 p-2 bg-surface-white">
+                <div className="shrink-0 p-2 bg-surface-base">
                     <Button
                         onClick={handleAddMembers}
                         disabled={loading}

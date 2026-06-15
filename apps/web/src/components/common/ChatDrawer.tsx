@@ -15,8 +15,8 @@ export default function ChatDrawer({ channelID, messageID, onClose }: ChatDrawer
     useHotkeys("esc", () => onClose(), { enableOnFormTags: true })
 
     return (
-        <div className="flex flex-col h-full bg-surface-white">
-            <div className="flex items-center justify-between pl-4 pr-2 py-2 border-b border-outline-gray-2 shrink-0 bg-surface-white/95 backdrop-blur supports-backdrop-filter:bg-surface-white/60">
+        <div className="flex flex-col h-full bg-surface-base">
+            <div className="flex items-center justify-between pl-4 pr-2 py-2 border-b border-outline-gray-2 shrink-0 bg-surface-base/95 backdrop-blur supports-backdrop-filter:bg-surface-base/60">
                 <h2 className="text-sm font-medium">{_("Messages")}</h2>
                 <Button
                     variant="ghost"

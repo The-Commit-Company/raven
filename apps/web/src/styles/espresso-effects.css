@@ -54,36 +54,41 @@
   --focus-outline-violet: 3px solid #412d87cc;
 }
 
-@layer components {
-  .focus-ring {
-    outline: var(--focus-outline-default);
-    outline-offset: 0px;
-  }
-  .focus-ring-red {
-    outline: var(--focus-outline-red);
-    outline-offset: 0px;
-  }
-  .focus-ring-green {
-    outline: var(--focus-outline-green);
-    outline-offset: 0px;
-  }
-  .focus-ring-amber {
-    outline: var(--focus-outline-amber);
-    outline-offset: 0px;
-  }
-  .focus-ring-blue {
-    outline: var(--focus-outline-blue);
-    outline-offset: 0px;
-  }
-  .focus-ring-violet {
-    outline: var(--focus-outline-violet);
-    outline-offset: 0px;
-  }
+@utility focus-ring {
+  outline: var(--focus-outline-default);
+  outline-offset: 0px;
+}
+
+@utility focus-ring-red {
+  outline: var(--focus-outline-red);
+  outline-offset: 0px;
+}
+
+@utility focus-ring-green {
+  outline: var(--focus-outline-green);
+  outline-offset: 0px;
+}
+
+@utility focus-ring-amber {
+  outline: var(--focus-outline-amber);
+  outline-offset: 0px;
+}
+
+@utility focus-ring-blue {
+  outline: var(--focus-outline-blue);
+  outline-offset: 0px;
+}
+
+@utility focus-ring-violet {
+  outline: var(--focus-outline-violet);
+  outline-offset: 0px;
 }
 
 /* Global default focus ring (frappe-ui applies this to every focusable element
-   via :focus-visible). Suppress with focus-visible:outline-none, retheme with
-   focus-visible:focus-ring-<color>. */
-:focus-visible {
-  outline: var(--focus-outline-default);
+   via :focus-visible). Kept in @layer base so utilities override it — suppress
+   with focus-visible:outline-none, retheme with focus-visible:focus-ring-<color>. */
+@layer base {
+  :focus-visible {
+    outline: var(--focus-outline-default);
+  }
 }

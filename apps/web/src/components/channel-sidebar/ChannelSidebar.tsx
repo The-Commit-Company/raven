@@ -107,7 +107,7 @@ export function ChannelSidebar() {
     return (
         // Mobile: the sidebar is a full page, so it sits on the page surface;
         // the panel tint only makes sense beside content (desktop)
-        <nav className="flex h-full w-full flex-col bg-surface-white md:bg-surface-menu-bar">
+        <nav className="flex h-full w-full flex-col bg-surface-base md:bg-surface-sidebar">
             {/* Border on mobile (full-page list needs the separator); none on
                 desktop (the content island carries its own bordered header) */}
             <div className="flex h-11 md:h-auto shrink-0 items-center justify-between gap-1 border-b md:border-b-0 px-2 py-2 md:pb-0">
@@ -371,7 +371,7 @@ const ChannelRow = ({ channel, workspaceID }: { channel: ChannelListItem; worksp
                     "flex min-w-0 select-none items-center gap-2 overflow-hidden rounded text-base px-2 text-ink-gray-6 py-1.5",
                     "outline-none ring-outline-gray-2 transition-colors focus-visible:ring-2",
                     "hover:bg-surface-gray-3 active:bg-surface-gray-3",
-                    isActive && "bg-surface-selected shadow-sm text-ink-gray-8 hover:bg-surface-selected active:bg-surface-selected",
+                    isActive && "bg-surface-elevation-3 shadow-sm text-ink-gray-8 hover:bg-surface-elevation-3 active:bg-surface-elevation-3",
                 )
             }
         >

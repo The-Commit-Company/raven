@@ -95,7 +95,7 @@ function FormLabel({
         <Label
             data-slot="form-label"
             data-error={!!error}
-            className={className}
+            className={cn("text-p-sm-medium text-ink-gray-7", className)}
             htmlFor={formItemId}
             {...props}
         />
@@ -104,7 +104,7 @@ function FormLabel({
 
 function FormRequiredIndicator({ className, ...props }: React.ComponentProps<"span">) {
     return (
-        <span className={cn("text-ink-red-2", className)} {...props}>
+        <span className={cn("text-ink-red-6 select-none", className)} aria-hidden="true" {...props}>
             *
         </span>
     )
@@ -135,7 +135,7 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
         <p
             data-slot="form-description"
             id={formDescriptionId}
-            className={cn("text-ink-gray-5 text-p-base", className)}
+            className={cn("text-ink-gray-6 text-p-sm", className)}
             {...props}
         />
     )
@@ -153,7 +153,7 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
         <p
             data-slot="form-message"
             id={formMessageId}
-            className={cn("text-ink-red-4 text-p-base", className)}
+            className={cn("text-ink-red-6 text-p-sm whitespace-pre-line", className)}
             {...props}
         >
             {body}

@@ -66,13 +66,17 @@ const focusVars = (mode) =>
         .flatMap(([name, v]) => [`  --focus-${name}: ${v};`, `  --focus-outline-${name}: ${shadowToOutline(v)};`])
         .join("\n")
 
-// .focus-ring / .focus-ring-<color> utilities (default → bare .focus-ring).
+// focus-ring / focus-ring-<color> as Tailwind v4 @utility (default → focus-ring).
+// They MUST be real utilities (not @layer components) so variants like
+// `focus-visible:focus-ring-red` generate AND land in the utilities layer,
+// letting them override the global :focus-visible ring (which sits in @layer
+// base below). Authored @layer-components classes can't be variant-prefixed.
 const focusRing = Object.keys(fx.focus.light)
     .map((name) => {
-        const cls = name === "default" ? ".focus-ring" : `.focus-ring-${name}`
-        return `  ${cls} {\n    outline: var(--focus-outline-${name});\n    outline-offset: 0px;\n  }`
+        const util = name === "default" ? "focus-ring" : `focus-ring-${name}`
+        return `@utility ${util} {\n  outline: var(--focus-outline-${name});\n  outline-offset: 0px;\n}`
     })
-    .join("\n")
+    .join("\n\n")
 
 const out = `/* GENERATED from frappe-ui tailwind/generated/effects.json — do not hand-edit.
    Regenerate with: yarn gen:effects  (see scripts/generate-espresso-effects.mjs)
@@ -96,15 +100,15 @@ ${focusVars("light")}
 ${focusVars("dark")}
 }
 
-@layer components {
 ${focusRing}
-}
 
 /* Global default focus ring (frappe-ui applies this to every focusable element
-   via :focus-visible). Suppress with focus-visible:outline-none, retheme with
-   focus-visible:focus-ring-<color>. */
-:focus-visible {
-  outline: var(--focus-outline-default);
+   via :focus-visible). Kept in @layer base so utilities override it — suppress
+   with focus-visible:outline-none, retheme with focus-visible:focus-ring-<color>. */
+@layer base {
+  :focus-visible {
+    outline: var(--focus-outline-default);
+  }
 }
 `
 

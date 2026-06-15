@@ -40,7 +40,7 @@ function DropdownMenuContent({
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         className={cn(
-          "bg-surface-modal min-w-32 rounded-lg p-1 shadow-xl",
+          "bg-surface-elevation-2 min-w-40 rounded-lg p-1 shadow-2xl ring-1 ring-black/5 focus-visible:outline-none",
           "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-(--radix-dropdown-menu-content-available-height) origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto",
           className
         )}
@@ -58,10 +58,10 @@ function DropdownMenuGroup({
   )
 }
 
-const BASE_ITEM_STYLES = `outline-hidden select-none relative flex cursor-default items-center 
-gap-2 rounded px-2 py-1.5 text-base text-ink-gray-6 data-[variant=destructive]:text-ink-red-3 
-data-[variant=destructive]:*:[svg]:text-ink-red-3! [&_svg:not([class*='text-'])]:text-ink-gray-6 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0 
-data-disabled:pointer-events-none data-disabled:text-ink-gray-3 data-disabled:*:[svg]:text-ink-gray-3! focus:bg-surface-gray-2 data-inset:ps-8`
+const BASE_ITEM_STYLES = `focus-visible:outline-none select-none relative flex cursor-pointer items-center
+gap-2 rounded px-2 py-1.5 text-base text-ink-gray-7 data-[variant=destructive]:text-ink-red-6
+data-[variant=destructive]:*:[svg]:text-ink-red-6! data-[variant=destructive]:focus:bg-surface-red-3 [&_svg:not([class*='text-'])]:text-ink-gray-6 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0
+data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-disabled:text-ink-gray-4 data-disabled:*:[svg]:text-ink-gray-4! focus:bg-surface-gray-2 data-[state=checked]:bg-surface-gray-3 data-inset:ps-8`
 
 function DropdownMenuItem({
   className,
@@ -159,7 +159,7 @@ function DropdownMenuLabel({
       data-slot="dropdown-menu-label"
       data-inset={inset}
       className={cn(
-        "px-2 py-1.5 text-sm font-medium text-ink-gray-4 data-inset:ps-8",
+        "px-2 py-1.5 text-sm-medium text-ink-gray-4 data-inset:ps-8",
         className
       )}
       {...props}
@@ -174,7 +174,7 @@ function DropdownMenuSeparator({
   return (
     <DropdownMenuPrimitive.Separator
       data-slot="dropdown-menu-separator"
-      className={cn("bg-outline-gray-modals my-1 h-px mx-0.5", className)}
+      className={cn("bg-outline-elevation-2 my-1 h-px mx-0.5", className)}
       {...props}
     />
   )
@@ -216,7 +216,7 @@ function DropdownMenuSubTrigger({
       data-inset={inset}
       className={cn(
         BASE_ITEM_STYLES,
-        "data-[state=open]:bg-surface-gray-3",
+        "data-[state=open]:bg-surface-gray-2",
         className
       )}
       {...props}
@@ -235,7 +235,7 @@ function DropdownMenuSubContent({
     <DropdownMenuPrimitive.SubContent
       data-slot="dropdown-menu-sub-content"
       className={cn(
-        "bg-surface-modal rounded-lg p-1 shadow-xl min-w-32 text-ink-gray-6 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden",
+        "bg-surface-elevation-2 rounded-lg p-1 shadow-2xl ring-1 ring-black/5 min-w-40 text-ink-gray-6 focus-visible:outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden",
         className
       )}
       {...props}

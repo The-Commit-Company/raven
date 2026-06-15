@@ -26,7 +26,7 @@ const CustomEmojiEmptyState = ({ setOpen }: { setOpen: (open: boolean) => void }
             <EmptyStateDescription>
                 Personalize your chats with custom emojis.
                 <br />
-                Upload your own or download from <Link to='https://emoji.gg' target='_blank' className='text-primary underline'>Emoji.gg</Link>.
+                Upload your own or download from <Link to='https://emoji.gg' target='_blank' className='text-ink-blue-link underline'>Emoji.gg</Link>.
             </EmptyStateDescription>
             <Button size='sm' onClick={() => setOpen(true)}>
                 Upload
@@ -138,7 +138,7 @@ const CustomEmojiList = () => {
             description={
                 <>
                     Add custom emojis to use for your reactions. PNG, SVG and GIFs supported.
-                    <br />Need help finding one? Download from <Link to='https://emoji.gg' target='_blank' className='text-primary underline'>Emoji.gg</Link>.
+                    <br />Need help finding one? Download from <Link to='https://emoji.gg' target='_blank' className='text-ink-blue-link underline'>Emoji.gg</Link>.
                 </>
             }
             actions={

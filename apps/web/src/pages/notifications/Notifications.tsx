@@ -211,7 +211,7 @@ const ChannelContext = ({
             <div className="flex items-center gap-1 text-xs">
                 <span className="text-ink-gray-4/80">{_("in")}</span>
                 <ChannelIcon type={notification.channel_type} className="h-3 w-3 text-ink-gray-4" />
-                <span className="font-medium text-ink-gray-8/70 group-hover:text-primary group-hover:underline transition-colors">
+                <span className="font-medium text-ink-gray-8/70 group-hover:text-ink-gray-9 group-hover:underline transition-colors">
                     {notification.channel_name}
                 </span>
             </div>

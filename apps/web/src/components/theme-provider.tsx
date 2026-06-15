@@ -2,61 +2,91 @@ import * as React from "react"
 
 type Theme = "dark" | "light" | "system"
 
+const STORAGE_KEY = "raven-theme"
+
 type ThemeProviderProps = {
     children: React.ReactNode
     defaultTheme?: Theme
-    storageKey?: string
 }
 
 type ThemeProviderState = {
+    /** Theme preference selected by the user - light, dark, or system. */
     theme: Theme
     setTheme: (theme: Theme) => void
+    /** Resolved theme actually applied to the document (system → light/dark). */
+    themeValue: "light" | "dark"
 }
 
 const initialState: ThemeProviderState = {
     theme: "system",
     setTheme: () => null,
+    themeValue: "light",
 }
 
 const ThemeProviderContext = React.createContext<ThemeProviderState>(initialState)
 
-function getSystemTheme(): Theme {
+function getSystemTheme(): "light" | "dark" {
     if (typeof window === "undefined") return "light"
     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
 }
 
-function applyThemeToDocument(theme: Theme) {
-    if (typeof document === "undefined") return
+function resolveTheme(theme: Theme): "light" | "dark" {
+    return theme === "system" ? getSystemTheme() : theme
+}
 
+function applyThemeToDocument(value: "light" | "dark") {
+    if (typeof document === "undefined") return
     const root = document.documentElement
     root.classList.remove("light", "dark")
+    root.classList.add(value)
+}
 
-    const resolved = theme === "system" ? getSystemTheme() : theme
-    root.classList.add(resolved)
+function getStoredTheme(defaultTheme: Theme): Theme {
+    if (typeof window === "undefined") return defaultTheme
+    return (window.localStorage.getItem(STORAGE_KEY) as Theme | null) ?? defaultTheme
 }
 
 export function ThemeProvider({
     children,
     defaultTheme = "system",
-    storageKey = "vite-ui-theme",
     ...props
 }: ThemeProviderProps) {
+    // Read the persisted preference and apply it synchronously on init so there's
+    // no light-mode flash before the effect runs.
     const [theme, setThemeState] = React.useState<Theme>(() => {
-        if (typeof window === "undefined") {
-            return defaultTheme
-        }
-        const stored = (window.localStorage.getItem(storageKey) as Theme | null) || defaultTheme
-        applyThemeToDocument(stored)
+        const stored = getStoredTheme(defaultTheme)
+        applyThemeToDocument(resolveTheme(stored))
         return stored
     })
+    const [themeValue, setThemeValue] = React.useState<"light" | "dark">(() =>
+        resolveTheme(getStoredTheme(defaultTheme)),
+    )
+
+    React.useEffect(() => {
+        const resolved = resolveTheme(theme)
+        applyThemeToDocument(resolved)
+        setThemeValue(resolved)
+
+        // Only "system" tracks the OS; react to OS light/dark changes while open.
+        if (theme !== "system") return
+
+        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
+        const onChange = () => {
+            const next = mediaQuery.matches ? "dark" : "light"
+            applyThemeToDocument(next)
+            setThemeValue(next)
+        }
+        mediaQuery.addEventListener("change", onChange)
+        return () => mediaQuery.removeEventListener("change", onChange)
+    }, [theme])
 
     const value: ThemeProviderState = {
         theme,
+        themeValue,
         setTheme: (next: Theme) => {
             if (typeof window !== "undefined") {
-                window.localStorage.setItem(storageKey, next)
+                window.localStorage.setItem(STORAGE_KEY, next)
             }
-            applyThemeToDocument(next)
             setThemeState(next)
         },
     }

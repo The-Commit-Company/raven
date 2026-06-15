@@ -17,7 +17,7 @@ const AppHeader = ({ title, rightSlot, leftSlot, showSearchBar = true }: AppHead
     return (
         // Mobile: h-11 matches DMChannelHeader so swapping between the
         // channel list and a channel keeps the header edge steady
-        <header className="flex items-center justify-between gap-1 border-b bg-surface-white z-10 px-2 shrink-0 h-11 md:h-(--app-header-height) w-full">
+        <header className="flex items-center justify-between gap-1 border-b bg-surface-base z-10 px-2 shrink-0 h-11 md:h-(--app-header-height) w-full">
             <div className="flex items-center gap-2 min-w-48">
                 {/* Page title (optional) */}
                 <AppHeaderTitle title={title} />

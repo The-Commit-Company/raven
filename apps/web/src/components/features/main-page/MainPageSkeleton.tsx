@@ -47,7 +47,7 @@ export function MainPageSkeleton() {
     return (
         <div className="flex h-screen">
             {/* Workspace Switcher Skeleton - Left narrow bar */}
-            <div className="w-[60px] border-r border-outline-gray-2 bg-surface-menu-bar flex flex-col items-center gap-4 py-6">
+            <div className="w-[60px] border-r border-outline-gray-2 bg-surface-sidebar flex flex-col items-center gap-4 py-6">
                 <Skeleton className="w-8 h-8 rounded-md" />
                 <Skeleton className="w-8 h-8 rounded-md" />
                 <Skeleton className="w-8 h-8 rounded-md" />
@@ -56,7 +56,7 @@ export function MainPageSkeleton() {
             </div>
 
             {/* Channel Sidebar Skeleton */}
-            <div className="w-[280px] border-r border-outline-gray-2 bg-surface-menu-bar flex flex-col">
+            <div className="w-[280px] border-r border-outline-gray-2 bg-surface-sidebar flex flex-col">
                 {/* Sidebar Header */}
                 <div className="h-(--app-header-height) border-b border-outline-gray-2 px-4 flex items-center justify-between">
                     <Skeleton className="h-4 w-32" />

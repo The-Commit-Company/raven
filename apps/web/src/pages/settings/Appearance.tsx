@@ -90,8 +90,8 @@ export default function Appearance() {
                     "p-0 cursor-pointer rounded-md border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-4",
                     "w-full overflow-hidden",
                     theme === option.id
-                      ? "border-primary ring-2 ring-primary/20"
-                      : "border-outline-gray-2 hover:border-primary/50"
+                      ? "border-outline-blue-5 ring-2 ring-outline-blue-2"
+                      : "border-outline-gray-2 hover:border-outline-blue-3"
                   )}
                 >
                   <img
@@ -133,8 +133,8 @@ export default function Appearance() {
                     "p-0 cursor-pointer rounded-md border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-4",
                     "w-full overflow-hidden",
                     chatStyle === option.id
-                      ? "border-primary ring-2 ring-primary/20"
-                      : "border-outline-gray-2 hover:border-primary/50"
+                      ? "border-outline-blue-5 ring-2 ring-outline-blue-2"
+                      : "border-outline-gray-2 hover:border-outline-blue-3"
                   )}
                 >
                   <img

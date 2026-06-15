@@ -6,7 +6,7 @@ import { H1, Paragraph } from "@components/ui/typography"
 
 const NotFoundPage = () => {
     return (
-        <div className="min-h-screen w-full bg-surface-white flex items-center justify-center p-4">
+        <div className="min-h-screen w-full bg-surface-base flex items-center justify-center p-4">
             <div className="flex flex-col items-center text-center space-y-8 max-w-lg">
                 {/* Illustration */}
                 <div className="w-full max-w-md h-64 md:h-80 flex items-center justify-center">

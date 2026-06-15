@@ -187,7 +187,7 @@ const SortableItem = ({ id, index, content, onEdit, onDelete }: SortableItemProp
             {...attributes}
             // {...listeners}
             className={cn(
-                "flex items-center gap-2 rounded-md border bg-surface-cards text-sm transition-colors",
+                "flex items-center gap-2 rounded-md border bg-surface-elevation-1 text-sm transition-colors",
                 isDragging && "border-outline-gray-3/50"
             )}
         >

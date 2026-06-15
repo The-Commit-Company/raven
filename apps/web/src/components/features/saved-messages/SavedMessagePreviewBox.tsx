@@ -138,7 +138,7 @@ export const SavedMessagePreviewBox = ({
                                     className="h-6 w-6"
                                     onClick={(e) => e.stopPropagation()}
                                 >
-                                    <Clock className={cn("h-3.5 w-3.5", hasReminder && "text-primary")} />
+                                    <Clock className={cn("h-3.5 w-3.5", hasReminder && "text-ink-blue-5")} />
                                 </Button>
                             </DropdownMenuTrigger>
                         </TooltipTrigger>

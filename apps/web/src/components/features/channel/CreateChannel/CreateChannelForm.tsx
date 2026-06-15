@@ -256,7 +256,7 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                     </div>
 
                     {/* Footer - Sticky at Bottom */}
-                    <div className="border-t bg-surface-white">
+                    <div className="border-t bg-surface-base">
                         <div className="px-4 py-4">
                             {channelType !== "Open" ?
                                 (currentStep === 1 ? (
@@ -266,7 +266,6 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                                             variant="ghost"
                                             onClick={() => onClose()}
                                             disabled={isSubmitting}
-                                            className="text-sm px-4"
                                             aria-label="Cancel channel creation"
                                         >
                                             {_('Cancel')}
@@ -275,7 +274,6 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                                             <Button
                                                 type="button"
                                                 onClick={handleNext}
-                                                className="text-sm pl-5 pr-4"
                                                 aria-label="Proceed to add members step"
                                             >
                                                 {_('Add Members')}
@@ -290,7 +288,6 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                                             variant="ghost"
                                             onClick={handleBack}
                                             disabled={isSubmitting}
-                                            className="text-sm pl-3 pr-4"
                                             aria-label="Go back to channel details"
                                         >
                                             <ArrowLeftIcon className="mr-2 h-4 w-4" aria-hidden="true" />
@@ -299,7 +296,6 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                                         <Button
                                             onClick={handleSubmit(onSubmit)}
                                             disabled={isSubmitting}
-                                            className="text-sm px-5"
                                             aria-label={`Create channel with ${selectedMembers.length + 1} member${selectedMembers.length + 1 !== 1 ? 's' : ''}`}
                                         >
                                             {isSubmitting ? _('Creating...') : _(`Create Channel with ${selectedMembers.length + 1} member${selectedMembers.length + 1 !== 1 ? 's' : ''}`)}
@@ -312,7 +308,6 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                                             variant="ghost"
                                             onClick={() => onClose()}
                                             disabled={isSubmitting}
-                                            className="text-sm px-4"
                                             aria-label="Cancel channel creation"
                                         >
                                             {_('Cancel')}
@@ -320,7 +315,6 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
                                         <Button
                                             onClick={handleSubmit(onSubmit)}
                                             disabled={isSubmitting}
-                                            className="text-sm px-5"
                                             aria-label={`Create channel with ${selectedMembers.length + 1} member${selectedMembers.length + 1 !== 1 ? 's' : ''}`}
                                         >
                                             {isSubmitting ? _('Creating...') : _(`Create Channel`)}

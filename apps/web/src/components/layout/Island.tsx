@@ -12,7 +12,7 @@ import { cn } from "@lib/utils"
 export const Island = ({ children, className }: { children: React.ReactNode; className?: string }) => (
     <div
         className={cn(
-            "flex min-h-0 min-w-0 flex-col overflow-clip bg-surface-white md:rounded-lg md:shadow-chat-area",
+            "flex min-h-0 min-w-0 flex-col overflow-clip bg-surface-base md:rounded-lg md:shadow-chat-area",
             className,
         )}
     >

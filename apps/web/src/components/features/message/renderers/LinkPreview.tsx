@@ -43,7 +43,7 @@ const YoutubePreview = ({ href }: { href: string }) => {
 const WebLinkPreview = ({ href, data, onHide }: { href: string, data: LinkPreviewData, onHide?: () => void }) => {
     return (
         <div className="pt-2 max-w-[580px] relative group/linkpreview">
-            <div className="bg-surface-cards border border-outline-gray-2 rounded-lg p-0 sm:p-3 hover:shadow-xs transition-shadow">
+            <div className="bg-surface-elevation-1 border border-outline-gray-2 rounded-lg p-0 sm:p-3 hover:shadow-xs transition-shadow">
                 <a
                     href={href}
                     target="_blank"

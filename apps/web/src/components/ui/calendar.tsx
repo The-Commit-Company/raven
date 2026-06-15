@@ -31,7 +31,7 @@ function Calendar({
     <DayPicker
       showOutsideDays={showOutsideDays}
       className={cn(
-        "bg-surface-modal group/calendar p-3 [--cell-size:--spacing(8)] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent",
+        "bg-surface-elevation-2 group/calendar p-3 [--cell-size:--spacing(8)] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent",
         String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
         String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
         className
@@ -68,15 +68,15 @@ function Calendar({
           defaultClassNames.month_caption
         ),
         dropdowns: cn(
-          "w-full flex items-center text-sm font-medium justify-center h-(--cell-size) gap-1.5",
+          "w-full flex items-center text-sm-medium justify-center h-(--cell-size) gap-1.5",
           defaultClassNames.dropdowns
         ),
         dropdown_root: cn(
-          "relative has-focus:border-outline-gray-1 border border-outline-gray-2 shadow-xs has-focus:ring-outline-gray-1/50 has-focus:ring-[3px] rounded-md",
+          "relative has-focus:border-outline-gray-1 border border-outline-gray-2 shadow-sm has-focus:focus-ring rounded-md",
           defaultClassNames.dropdown_root
         ),
         dropdown: cn(
-          "absolute bg-surface-modal inset-0 opacity-0",
+          "absolute bg-surface-elevation-2 inset-0 opacity-0",
           defaultClassNames.dropdown
         ),
         caption_label: cn(
@@ -206,7 +206,7 @@ function CalendarDayButton({
       data-range-end={modifiers.range_end}
       data-range-middle={modifiers.range_middle}
       className={cn(
-        "data-[selected-single=true]:bg-surface-gray-7 data-[selected-single=true]:text-ink-white data-[range-middle=true]:bg-surface-gray-1 data-[range-middle=true]:text-ink-gray-8 data-[range-start=true]:bg-surface-gray-7 data-[range-start=true]:text-ink-white data-[range-end=true]:bg-surface-gray-7 data-[range-end=true]:text-ink-white group-data-[focused=true]/day:border-outline-gray-1 group-data-[focused=true]/day:ring-outline-gray-1/50 dark:hover:text-ink-gray-8 flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px] data-[range-end=true]:rounded-md data-[range-end=true]:rounded-e-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md data-[range-start=true]:rounded-s-md [&>span]:text-xs [&>span]:opacity-70",
+        "data-[selected-single=true]:bg-surface-gray-9 data-[selected-single=true]:text-ink-base data-[range-middle=true]:bg-surface-gray-1 data-[range-middle=true]:text-ink-gray-8 data-[range-start=true]:bg-surface-gray-9 data-[range-start=true]:text-ink-base data-[range-end=true]:bg-surface-gray-9 data-[range-end=true]:text-ink-base group-data-[focused=true]/day:border-outline-gray-1 group-data-[focused=true]/day:ring-outline-gray-1/50 dark:hover:text-ink-gray-8 flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px] data-[range-end=true]:rounded-md data-[range-end=true]:rounded-e-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md data-[range-start=true]:rounded-s-md [&>span]:text-xs [&>span]:opacity-70",
         defaultClassNames.day,
         className
       )}

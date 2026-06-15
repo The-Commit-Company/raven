@@ -13,19 +13,19 @@ function Checkbox({
     <CheckboxPrimitive.Root
       data-slot="checkbox"
       className={cn(
-        "peer border data-[state=checked]:text-ink-white shrink-0 transition-shadow outline-none align-middle",
-        "rounded-[4px]",
-        "border-ink-gray-4 data-[state=checked]:bg-ink-gray-8 data-[state=checked]:border-ink-gray-8",
+        "peer border data-[state=checked]:text-ink-base shrink-0 transition outline-none align-middle",
+        "rounded-sm",
+        "border-outline-gray-4 data-[state=checked]:bg-ink-gray-8 data-[state=checked]:border-ink-gray-8",
         // Hover state
-        "hover:border-ink-gray-5 hover:shadow-checkbox-hover hover:data-[state=checked]:bg-ink-gray-7 hover:data-[state=checked]:border-ink-gray-7",
+        "hover:border-outline-gray-7 hover:shadow-checkbox-hover hover:data-[state=checked]:bg-ink-gray-7 hover:data-[state=checked]:border-ink-gray-7",
         // Active state
-        "active:border-ink-gray-6 active:data-[state=checked]:bg-ink-gray-6 active:data-[state=checked]:border-ink-gray-6",
+        "active:border-outline-gray-6 active:data-[state=checked]:bg-ink-gray-6 active:data-[state=checked]:border-ink-gray-6",
         // Focus state
-        "focus-visible:border-ink-gray-8 focus-visible:shadow-focus-gray focus-visible:data-[state=checked]:bg-ink-gray-8 focus-visible:data-[state=checked]:border-ink-gray-8",
+        "focus-visible:border-outline-gray-8 focus-visible:focus-ring focus-visible:data-[state=checked]:bg-ink-gray-8 focus-visible:data-[state=checked]:border-ink-gray-8",
         // Disabled state
-        "disabled:border-ink-gray-3 disabled:bg-surface-gray-1 disabled:cursor-not-allowed disabled:data-[state=checked]:bg-surface-gray-3 disabled:data-[state=checked]:border-surface-gray-3 disabled:text-ink-gray-4",
+        "disabled:border-outline-gray-2 disabled:bg-surface-gray-1 disabled:cursor-not-allowed disabled:data-[state=checked]:bg-surface-gray-3 disabled:data-[state=checked]:border-surface-gray-3 disabled:text-ink-gray-4",
         // Invalid state
-        "aria-invalid:border-red-500",
+        "aria-invalid:border-outline-red-3",
         size === "sm" ? "size-3.5" : "size-4",
         className
       )}

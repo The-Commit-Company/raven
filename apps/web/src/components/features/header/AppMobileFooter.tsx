@@ -63,7 +63,7 @@ export const AppMobileFooterSkeleton = () => {
 const AppMobileFooterContainer = ({ children, className }: { children: React.ReactNode, className?: string }) => {
 
     return <div className={cn("md:hidden", className)}>
-        <div className="grid grid-cols-6 shrink-0 bg-surface-modal border-t border-outline-gray-2 standalone:pb-4 fixed bottom-0 w-screen z-10">
+        <div className="grid grid-cols-6 shrink-0 bg-surface-elevation-2 border-t border-outline-gray-2 standalone:pb-4 fixed bottom-0 w-screen z-10">
             {children}
         </div></div>
 }

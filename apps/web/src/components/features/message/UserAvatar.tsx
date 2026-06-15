@@ -26,13 +26,13 @@ const getInitials = (name: string): string => {
 const generateAvatarColor = (name: string): string => {
 
     const sampleColors = [
-        "bg-surface-green-4 text-ink-green-4",
-        "bg-surface-amber-4 text-ink-amber-4",
-        "bg-surface-red-4 text-ink-red-4",
-        "bg-surface-blue-4 text-ink-blue-4",
-        "bg-surface-violet-4 text-ink-violet-4",
-        "bg-surface-cyan-2 text-ink-gray-9",
-        "bg-surface-gray-2 text-ink-gray-9",
+        "bg-surface-green-2 text-ink-green-8",
+        "bg-surface-amber-2 text-ink-amber-8",
+        "bg-surface-red-2 text-ink-red-8",
+        "bg-surface-blue-2 text-ink-blue-8",
+        "bg-surface-violet-2 text-ink-violet-8",
+        "bg-surface-cyan-2 text-ink-cyan-8",
+        "bg-surface-gray-2 text-ink-gray-8",
     ]
     let hash = 0
     for (let i = 0; i < name.length; i++) {
@@ -98,10 +98,10 @@ const getSizeClasses = (size: 'xs' | 'sm' | 'md' | 'lg' | 'xl') => {
         case 'xl':
             return {
                 avatar: 'h-[160px] w-[160px] rounded-lg shadow-none',
-                indicator: 'h-3.5 w-3.5 -bottom-0 right-0 border-2 border-background',
+                indicator: 'h-3.5 w-3.5 -bottom-0 right-0 border-2 border-outline-base',
                 manualAvailableDot: 'h-1.5 w-1.5',
                 bot: 'h-5 w-5',
-                botContainer: 'h-7 w-7 -bottom-1 -right-1 border-2 border-background',
+                botContainer: 'h-7 w-7 -bottom-1 -right-1 border-2 border-outline-base',
                 font: 'text-3xl font-semibold',
                 fallbackRound: 'rounded-lg'
             }
@@ -159,7 +159,7 @@ export const UserAvatar = memo<UserAvatarProps>(({
             {shouldShowStatusIndicator && (
                 <span
                     className={cn(
-                        "absolute flex items-center justify-center rounded-full border-2 border-outline-white",
+                        "absolute flex items-center justify-center rounded-full border-2 border-outline-base",
                         sizeClasses.indicator,
                         availabilityStatus
                             ? getStatusIndicatorColor(availabilityStatus)
@@ -170,7 +170,7 @@ export const UserAvatar = memo<UserAvatarProps>(({
                 >
                     {showManualAvailableDot && (
                         <span
-                            className={cn("rounded-full bg-outline-white", sizeClasses.manualAvailableDot)}
+                            className={cn("rounded-full bg-surface-base", sizeClasses.manualAvailableDot)}
                             aria-hidden="true"
                         />
                     )}
@@ -181,7 +181,7 @@ export const UserAvatar = memo<UserAvatarProps>(({
             {isBot && showBotIndicator && (
                 <span
                     className={cn(
-                        "absolute flex items-center justify-center rounded-full bg-surface-white border border-outline-gray-1",
+                        "absolute flex items-center justify-center rounded-full bg-surface-base border border-outline-gray-1",
                         sizeClasses.botContainer
                     )}
                     aria-label="Bot account"

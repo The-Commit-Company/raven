@@ -50,7 +50,7 @@ export const FileDropzone = ({ files, setFiles, accept, multiple = true, onDrop,
                             setFiles?.(files.filter(file => file.name !== f.name))
                             onUpdate?.()
                         }}>
-                        <Trash2Icon className='w-4 h-4' />
+                        <Trash2Icon />
                     </Button>
                 </div>)}
             </div>

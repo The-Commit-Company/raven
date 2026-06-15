@@ -103,8 +103,8 @@ function TabsTrigger({
       data-slot="tabs-trigger"
       className={cn(
         // Common
-        "whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50",
-        "text-ink-gray-5 text-base data-[state=active]:text-ink-gray-8 hover:text-ink-gray-8 relative gap-2",
+        "whitespace-nowrap transition-colors disabled:pointer-events-none disabled:opacity-50",
+        "text-ink-gray-5 text-base data-[state=active]:text-ink-gray-9 hover:text-ink-gray-9 relative gap-2",
         "flex items-center justify-center group-data-[orientation=vertical]/tabs:w-full group-data-[orientation=vertical]/tabs:justify-start",
         // Icon Sizes - 16px for sm, 18px for md
         "[&_svg]:pointer-events-none [&_svg]:shrink-0 group-data-[size=sm]/tabs-list:[&_svg:not([class*='size-'])]:size-4 group-data-[size=md]/tabs-list:[&_svg:not([class*='size-'])]:size-4.5",
@@ -114,7 +114,7 @@ function TabsTrigger({
         // Variant: subtle, size: md
         "group-data-[variant=subtle]/tabs-list:group-data-[size=md]/tabs-list:py-1.5 group-data-[variant=subtle]/tabs-list:group-data-[size=md]/tabs-list:px-2.5 group-data-[variant=subtle]/tabs-list:group-data-[size=md]/tabs-list:rounded-[9px]",
         // Variant: subtle - active - background, text color and shadow applied
-        "group-data-[variant=subtle]/tabs-list:data-[state=active]:bg-surface-selected group-data-[variant=subtle]/tabs-list:data-[state=active]:shadow",
+        "group-data-[variant=subtle]/tabs-list:data-[state=active]:bg-surface-elevation-3 group-data-[variant=subtle]/tabs-list:data-[state=active]:shadow",
 
 
         // Variant: outline, size: sm
@@ -122,7 +122,7 @@ function TabsTrigger({
         // Variant: outline, size: md
         "group-data-[variant=outline]/tabs-list:group-data-[size=md]/tabs-list:py-1.5 group-data-[variant=outline]/tabs-list:group-data-[size=md]/tabs-list:px-2.5 group-data-[variant=outline]/tabs-list:group-data-[size=md]/tabs-list:rounded-[9px]",
         // Variant: outline - active - background, text color and shadow applied
-        "group-data-[variant=outline]/tabs-list:data-[state=active]:bg-surface-selected group-data-[variant=outline]/tabs-list:data-[state=active]:shadow",
+        "group-data-[variant=outline]/tabs-list:data-[state=active]:bg-surface-elevation-3 group-data-[variant=outline]/tabs-list:data-[state=active]:shadow",
 
         // Variant: underline - horizontal
         "group-data-[variant=underline]/tabs-list:rounded-none ",
@@ -133,7 +133,7 @@ function TabsTrigger({
         // Variant: underline, size: md
         "group-data-[orientation=horizontal]/tabs:group-data-[variant=underline]/tabs-list:group-data-[size=md]/tabs-list:py-[7px] group-data-[variant=underline]/tabs-list:group-data-[size=md]/tabs-list:font-medium",
         // Variant: underline - horizontal - active - border applied
-        "group-data-[orientation=horizontal]/tabs:group-data-[variant=underline]/tabs-list:border-b group-data-[orientation=horizontal]/tabs:group-data-[variant=underline]/tabs-list:border-b-transparent group-data-[orientation=horizontal]/tabs:group-data-[variant=underline]/tabs-list:data-[state=active]:border-b-ink-gray-8 group-data-[orientation=horizontal]/tabs:group-data-[variant=underline]/tabs-list:bottom-px",
+        "group-data-[orientation=horizontal]/tabs:group-data-[variant=underline]/tabs-list:border-b group-data-[orientation=horizontal]/tabs:group-data-[variant=underline]/tabs-list:border-b-transparent group-data-[orientation=horizontal]/tabs:group-data-[variant=underline]/tabs-list:data-[state=active]:border-b-ink-gray-9 group-data-[orientation=horizontal]/tabs:group-data-[variant=underline]/tabs-list:bottom-px",
 
 
         // Variant: underline - Vertical
@@ -143,7 +143,7 @@ function TabsTrigger({
         // Variant: underline, size: md
         "group-data-[orientation=vertical]/tabs:group-data-[variant=underline]/tabs-list:group-data-[size=md]/tabs-list:py-2 group-data-[orientation=vertical]/tabs:group-data-[variant=underline]/tabs-list:group-data-[size=md]/tabs-list:pe-2",
         // Variant: underline - vertical - active - border applied
-        "group-data-[orientation=vertical]/tabs:group-data-[variant=underline]/tabs-list:border-e group-data-[orientation=vertical]/tabs:group-data-[variant=underline]/tabs-list:border-e-transparent group-data-[orientation=vertical]/tabs:group-data-[variant=underline]/tabs-list:data-[state=active]:border-e-ink-gray-8 group-data-[orientation=vertical]/tabs:group-data-[variant=underline]/tabs-list:-right-px",
+        "group-data-[orientation=vertical]/tabs:group-data-[variant=underline]/tabs-list:border-e group-data-[orientation=vertical]/tabs:group-data-[variant=underline]/tabs-list:border-e-transparent group-data-[orientation=vertical]/tabs:group-data-[variant=underline]/tabs-list:data-[state=active]:border-e-ink-gray-9 group-data-[orientation=vertical]/tabs:group-data-[variant=underline]/tabs-list:-right-px",
 
         className
       )}

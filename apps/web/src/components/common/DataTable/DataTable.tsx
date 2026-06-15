@@ -253,7 +253,7 @@ export function DataTable<TData>({
 
             {/* Table Content */}
             {!isLoading && !error && (
-                <div className={cn("overflow-hidden bg-surface-white", !hasPagination && "flex flex-col h-full")}>
+                <div className={cn("overflow-hidden bg-surface-base", !hasPagination && "flex flex-col h-full")}>
                     {hasPagination ? (
                         <Table className={tableClassName}>
                             <TableHeader>
@@ -306,7 +306,7 @@ export function DataTable<TData>({
                             components={virtuosoComponents}
                             overscan={100}
                             fixedHeaderContent={() => (
-                                <TableRow className="bg-surface-white hover:bg-surface-white">
+                                <TableRow className="bg-surface-base hover:bg-surface-base">
                                     {columns.map((column: ColumnDef<TData>) => (
                                         <TableHead key={column.id} className={column.headerClassName}>
                                             {renderHeader(column)}

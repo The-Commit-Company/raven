@@ -42,7 +42,7 @@ const PollMessage: React.FC<PollMessageProps> = ({ user, poll, currentUserVotes,
                 </div>
 
                 <div
-                    className="w-full max-w-md bg-surface-cards border border-outline-gray-2 rounded-lg p-4 shadow-xs mt-1 cursor-pointer hover:bg-surface-gray-2/30 transition-colors"
+                    className="w-full max-w-md bg-surface-elevation-1 border border-outline-gray-2 rounded-lg p-4 shadow-xs mt-1 cursor-pointer hover:bg-surface-gray-2/30 transition-colors"
                     onClick={handleOpenDrawer}
                     role="button"
                     tabIndex={0}

@@ -31,7 +31,7 @@ const FileMessage = ({
         // The pill itself is the open affordance; the buttons stop propagation
         <div
             className={cn(
-                "rounded-md border border-outline-gray-2 bg-surface-cards p-2",
+                "rounded-md border border-outline-gray-2 bg-surface-elevation-1 p-2",
                 file.onOpen && "cursor-pointer hover:bg-surface-gray-1 transition-colors",
             )}
             role={file.onOpen ? "button" : undefined}

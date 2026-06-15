@@ -23,9 +23,9 @@ export const Stepper = ({ steps, currentStep }: StepperProps) => {
                                 className={cn(
                                     'flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium transition-all',
                                     currentStep > index &&
-                                    'bg-ink-gray-8 text-ink-white',
+                                    'bg-ink-gray-8 text-ink-base',
                                     currentStep === index &&
-                                    'bg-ink-gray-8 text-ink-white ring-2 ring-ink-gray-8/20 ring-offset-2',
+                                    'bg-ink-gray-8 text-ink-base ring-2 ring-ink-gray-8/20 ring-offset-2',
                                     currentStep < index &&
                                     'bg-surface-gray-2 text-ink-gray-4'
                                 )}

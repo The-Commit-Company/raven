@@ -83,7 +83,7 @@ export function SearchFiltersBar({ filters, channels, dmChannels, isMobile, onCh
 
             <Popover>
                 {isMobile ? (
-                    <div className="ml-auto inline-flex h-7 items-stretch rounded border border-outline-gray-2 bg-surface-white divide-x divide-outline-gray-2">
+                    <div className="ml-auto inline-flex h-7 items-stretch rounded border border-outline-gray-2 bg-surface-base divide-x divide-outline-gray-2">
                         <PopoverTrigger asChild>
                             <button
                                 type="button"

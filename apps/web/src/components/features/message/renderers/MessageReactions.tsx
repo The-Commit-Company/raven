@@ -71,7 +71,7 @@ const ReactionButton = ({ reaction, isUserReacted }: { reaction: ReactionObject;
                     className={cn(
                         "flex cursor-pointer items-center justify-center gap-1 rounded-full px-2 py-1 text-sm outline-none transition focus-visible:shadow-focus-blue",
                         isUserReacted
-                            ? "bg-surface-amber-2 text-ink-amber-4 hover:bg-surface-amber-3"
+                            ? "bg-surface-amber-2 text-ink-amber-8 hover:bg-surface-amber-3"
                             : "bg-surface-gray-2 text-ink-gray-6 hover:bg-surface-gray-3",
                     )}
                     // TODO(layer 5): toggle this reaction optimistically

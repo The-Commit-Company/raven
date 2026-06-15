@@ -117,7 +117,7 @@ function App() {
                 </Route> */}
               </Route>
             </Routes>
-            <Toaster richColors />
+            <Toaster />
           </BrowserRouter>
         </FrappeProvider>
       </TooltipProvider>

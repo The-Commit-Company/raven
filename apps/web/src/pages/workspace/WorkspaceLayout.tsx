@@ -30,7 +30,7 @@ const WorkspaceLayout = () => {
                     </div>
                 )}
 
-                <div className='flex min-w-0 min-h-0 flex-1 flex-col bg-surface-gray-1'>
+                <div className='flex min-w-0 min-h-0 flex-1 flex-col bg-surface-sidebar'>
                     <Outlet />
                 </div>
             </div>

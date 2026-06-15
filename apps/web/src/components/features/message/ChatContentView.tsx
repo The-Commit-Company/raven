@@ -46,7 +46,7 @@ export function ChatContentView({
     // On mobile a thread takes over the whole content area (its own full-bleed surface)
     if (isMobile && threadDrawer) {
         return (
-            <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-white">
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-base">
                 {threadDrawer}
             </div>
         )

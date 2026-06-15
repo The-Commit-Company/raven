@@ -21,7 +21,7 @@ export function GroupedAvatars({
     max = 3,
     size = "md",
     className,
-    borderColorClass = "border-surface-white",
+    borderColorClass = "border-surface-base",
 }: GroupedAvatarsProps) {
 
     const totalUsers = users.length
@@ -72,7 +72,7 @@ export function GroupedAvatars({
                 <Avatar
                     className={cn(
                         sizeClasses[size],
-                        "border-2 bg-surface-gray-2 text-ink-gray-4 ring-0 rounded-full text-xs",
+                        "border-2 bg-surface-gray-2 text-ink-gray-5 ring-0 rounded-full text-xs",
                         borderColorClass,
                     )}
                 >

@@ -94,7 +94,7 @@ export default function Profile() {
           {/* Row 1: Full Name | Email */}
           <div className="space-y-2">
             <Label htmlFor="fullName" className="text-sm">
-              Full Name <span className="text-destructive">*</span>
+              Full Name <span className="text-ink-red-6">*</span>
             </Label>
             <Input
               id="fullName"

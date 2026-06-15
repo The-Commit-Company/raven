@@ -146,9 +146,11 @@ export const DateField = ({ name, rules, label, isRequired, formDescription, inp
                     <Button
                         id="date-picker-button"
                         variant="ghost"
-                        className="absolute top-1/2 ltr:right-2 rtl:left-2 size-6 -translate-y-1/2"
+                        size="xs"
+                        isIconButton
+                        className="absolute top-1/2 ltr:right-2 rtl:left-2 -translate-y-1/2"
                     >
-                        <CalendarIcon className="size-3.5" />
+                        <CalendarIcon />
                         <span className="sr-only">{_("Select date")}</span>
                     </Button>
                 </PopoverTrigger>

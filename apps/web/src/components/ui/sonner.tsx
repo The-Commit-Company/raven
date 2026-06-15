@@ -1,43 +1,38 @@
 import { Toaster as Sonner, type ToasterProps } from "sonner"
-import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
-import { useTheme } from "./theme-provider"
-
-const themeMap = {
-    "Automatic": "system",
-    "Dark": "dark",
-    "Light": "light",
-}
+import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon } from "lucide-react"
+import { useTheme } from "@components/theme-provider"
+import { Spinner } from "./spinner"
 
 const Toaster = ({ ...props }: ToasterProps) => {
-    const { theme = "Automatic" } = useTheme()
+    const { theme = "system" } = useTheme()
 
     return (
         <Sonner
-            theme={themeMap[theme as keyof typeof themeMap] as ToasterProps["theme"]}
+            theme={theme}
             className="toaster group"
             icons={{
                 success: (
-                    <CircleCheckIcon className="size-4" />
+                    <CircleCheckIcon className="size-4 text-ink-green-5" />
                 ),
                 info: (
-                    <InfoIcon className="size-4" />
+                    <InfoIcon className="size-4 text-ink-blue-5" />
                 ),
                 warning: (
-                    <TriangleAlertIcon className="size-4" />
+                    <TriangleAlertIcon className="size-4 text-ink-amber-5" />
                 ),
                 error: (
-                    <OctagonXIcon className="size-4" />
+                    <OctagonXIcon className="size-4 text-ink-red-5" />
                 ),
                 loading: (
-                    <Loader2Icon className="size-4 animate-spin" />
+                    <Spinner className="size-4" />
                 ),
             }}
             style={
                 {
-                    "--normal-bg": "var(--surface-gray-1)",
-                    "--normal-text": "var(--text-ink-gray-8)",
-                    "--normal-border": "var(--outline-gray-1)",
-                    "--border-radius": "var(--radius)",
+                    "--normal-bg": "var(--surface-gray-9)",
+                    "--normal-text": "var(--ink-base)",
+                    "--normal-border": "var(--surface-gray-9)",
+                    "--border-radius": "var(--radius-md)",
                 } as React.CSSProperties
             }
             toastOptions={{

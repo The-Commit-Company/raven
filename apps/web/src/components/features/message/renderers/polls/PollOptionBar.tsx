@@ -58,7 +58,7 @@ export const PollOptionBar: React.FC<PollOptionBarProps> = ({
                         </span>
                     )}
                     {showVoters && option.voters && option.voters.length > 0 && (
-                        <GroupedAvatars users={option.voters} max={5} size="xs" borderColorClass="border-muted/60" />
+                        <GroupedAvatars users={option.voters} max={5} size="xs" borderColorClass="border-surface-base" />
                     )}
                 </div>
             </div>
@@ -100,7 +100,7 @@ export const PollOptionBar: React.FC<PollOptionBarProps> = ({
                     </span>
                 )}
                 {showVoters && option.voters && option.voters.length > 0 && (
-                    <GroupedAvatars users={option.voters} max={5} size="xs" borderColorClass="border-muted/60" />
+                    <GroupedAvatars users={option.voters} max={5} size="xs" borderColorClass="border-surface-base" />
                 )}
             </div>
         </div>

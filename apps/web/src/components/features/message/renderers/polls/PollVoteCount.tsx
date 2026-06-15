@@ -29,7 +29,7 @@ export const PollVoteCount: React.FC<PollVoteCountProps> = ({
                 {formatVoteCountWithPercentage(votes, percentage)}
             </span>
             {showAvatars && voters && voters.length > 0 && (
-                <GroupedAvatars users={voters} max={5} size="xs" borderColorClass="border-muted/60" />
+                <GroupedAvatars users={voters} max={5} size="xs" borderColorClass="border-surface-base" />
             )}
         </div>
     )

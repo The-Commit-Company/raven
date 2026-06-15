@@ -68,7 +68,7 @@ export const CustomizeSidebarDialog = ({ onClose }: { onClose: () => void }) => 
                 </div>
                 <div className="flex flex-1 min-h-0 overflow-hidden">
                     {/* Left Column - Customization */}
-                    <div className="flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden bg-surface-white p-4 pb-0">
+                    <div className="flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden bg-surface-base p-4 pb-0">
                         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0 overflow-hidden">
                             <div>
                                 <TabsList variant="subtle" size="sm" style={{ width: "fit-content" }}>
@@ -90,7 +90,7 @@ export const CustomizeSidebarDialog = ({ onClose }: { onClose: () => void }) => 
                         </Tabs>
                     </div>
                     {/* Right Column - Preview (hidden on mobile) */}
-                    <div className="hidden md:flex flex-none w-64 flex-col min-h-0 bg-surface-menu-bar/40 border-l overflow-hidden">
+                    <div className="hidden md:flex flex-none w-64 flex-col min-h-0 bg-surface-sidebar/40 border-l overflow-hidden">
                         <div className="px-4 py-3 border-b shrink-0">
                             <H3 className="text-sm font-semibold">{_("Preview")}</H3>
                         </div>

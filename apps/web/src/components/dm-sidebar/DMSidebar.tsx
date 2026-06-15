@@ -101,7 +101,7 @@ export function DMSidebar() {
         // Full-height column with its own header — mirrors ChannelSidebar, so
         // both sidebars carry their heading and the content column's AppHeader
         // is gone. Mobile sits on the page surface; desktop on the menu bar.
-        <nav className="flex h-full w-full flex-col bg-surface-white md:bg-surface-menu-bar">
+        <nav className="flex h-full w-full flex-col bg-surface-base md:bg-surface-sidebar">
             {/* Border on mobile only (full-page list needs the separator);
                 none on desktop where the heading sits cleanly in the column */}
             <div className="flex h-11 md:h-auto shrink-0 items-center justify-between gap-1 border-b md:border-b-0 px-2 py-2">
@@ -288,7 +288,7 @@ function DMRowShell({
                 "flex w-full items-start gap-3 px-2 py-3 md:py-2 text-sm rounded transition-colors relative text-left",
                 "select-none",
                 "hover:bg-surface-gray-3 active:bg-surface-gray-3",
-                isActive && "bg-surface-selected hover:bg-surface-selected active:bg-surface-selected shadow-sm"
+                isActive && "bg-surface-elevation-3 hover:bg-surface-elevation-3 active:bg-surface-elevation-3 shadow-sm"
             )}
         >
             <div className="shrink-0 self-center">
