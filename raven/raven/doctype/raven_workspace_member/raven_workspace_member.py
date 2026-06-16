@@ -95,7 +95,11 @@ class RavenWorkspaceMember(Document):
 
 def on_doctype_update():
 	"""
-	Add indexes to Raven Workspace Member table
+	Add unique constraint to Raven Workspace Member table
+	Ensures that a user can only be a member of a workspace once
 	"""
-	# Index the selector first for faster queries (less rows to sort in the next step)
-	frappe.db.add_index("Raven Workspace Member", ["workspace", "user"])
+	frappe.db.add_unique(
+		"Raven Workspace Member",
+		fields=["workspace", "user"],
+		constraint_name="unique_workspace_member",
+	)
