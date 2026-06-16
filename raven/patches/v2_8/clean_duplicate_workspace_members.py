@@ -23,37 +23,23 @@ def execute():
 	if not duplicate_workspace_members:
 		return
 
-	frappe.db.sql(
-		"""
-		UPDATE `tabRaven Workspace Member` rwm
-		INNER JOIN (
-			SELECT workspace, user, MIN(creation) as min_creation
-			FROM `tabRaven Workspace Member`
-			GROUP BY workspace, user
-			HAVING COUNT(*) > 1
-		) oldest ON rwm.workspace = oldest.workspace
-			AND rwm.user = oldest.user
-			AND rwm.creation = oldest.min_creation
-		SET rwm.is_admin = 1
-		WHERE EXISTS (
-			SELECT 1 FROM `tabRaven Workspace Member` dup
-			WHERE dup.workspace = rwm.workspace
-				AND dup.user = rwm.user
-				AND dup.is_admin = 1
+	for duplicate in duplicate_workspace_members:
+		workspace_members = frappe.get_all(
+			"Raven Workspace Member",
+			filters={"workspace": duplicate.workspace, "user": duplicate.user},
+			fields=["name", "is_admin"],
+			order_by="creation asc",
 		)
-		"""
-	)
+		if not workspace_members:
+			continue
 
-	frappe.db.sql(
-		"""
-		DELETE rwm FROM `tabRaven Workspace Member` rwm
-		INNER JOIN (
-			SELECT workspace, user, MIN(creation) as min_creation
-			FROM `tabRaven Workspace Member`
-			GROUP BY workspace, user
-			HAVING COUNT(*) > 1
-		) duplicates ON rwm.workspace = duplicates.workspace
-			AND rwm.user = duplicates.user
-			AND rwm.creation > duplicates.min_creation
-		"""
-	)
+		oldest_member = workspace_members[0]
+		other_members = workspace_members[1:]
+
+		if any(member.is_admin for member in other_members) and not oldest_member.is_admin:
+			frappe.db.set_value(
+				"Raven Workspace Member", oldest_member.name, "is_admin", 1, update_modified=False
+			)
+
+		if other_member_names := [member.name for member in other_members]:
+			frappe.db.delete("Raven Workspace Member", {"name": ["in", other_member_names]})
