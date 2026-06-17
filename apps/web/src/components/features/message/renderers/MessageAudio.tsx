@@ -46,7 +46,7 @@ const AudioCard = ({ message }: { message: FileLikeMessage }) => {
                             toggle()
                         }
                     }}
-                    className="w-full max-w-72 group/audio h-16 flex cursor-pointer items-center gap-1 overflow-hidden rounded-lg border border-outline-gray-2 bg-surface-base outline-none focus-visible:shadow-focus-gray"
+                    className="w-full max-w-72 group/audio h-16 flex cursor-pointer items-center gap-1 overflow-hidden rounded-lg border border-outline-gray-2 bg-surface-base outline-none focus-visible:focus-ring"
                 >
                     <audio src={message.file} {...audioProps} />
 

@@ -22,8 +22,7 @@
  *   @layer components  — `.focus-ring` / `.focus-ring-<color>` (outline-based)
  *   :focus-visible     — global default focus ring
  *
- * raven's app-specific shadows (shadow-switch, shadow-chat-area, …) and the
- * `shadow-focus-*` box-shadow aliases that existing components use are NOT
+ * raven's app-specific shadows (shadow-switch, shadow-chat-area, …) are NOT
  * emitted here — they live in src/index.css.
  */
 import { writeFileSync } from "fs"
@@ -83,8 +82,8 @@ const out = `/* GENERATED from frappe-ui tailwind/generated/effects.json — do 
 
    Elevations (--elevation-* / shadow utilities) and focus rings (--focus-* /
    --focus-outline-* / .focus-ring*). Elevations use the LIGHT values in both
-   modes (deliberate in Espresso 2.0). App-specific shadows and the legacy
-   shadow-focus-* aliases are kept in src/index.css. */
+   modes (deliberate in Espresso 2.0). App-specific shadows are kept in
+   src/index.css. */
 
 @theme inline {
 ${shadowReg.join("\n")}

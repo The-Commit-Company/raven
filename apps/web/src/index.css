@@ -119,16 +119,6 @@
   --spacing-14.5: 3.625rem;
   --spacing-15: 3.75rem;
   --spacing-15.5: 3.875rem;
-
-  /** Legacy box-shadow focus aliases for components not yet on .focus-ring.
-      Point at the canonical --focus-* vars from espresso-effects.css (gray maps
-      to frappe-ui's `default`; violet has no shadow-focus alias). Migrate
-      components to .focus-ring / focus-visible:focus-ring-<color>, then drop. **/
-  --shadow-focus-gray: var(--focus-default);
-  --shadow-focus-blue: var(--focus-blue);
-  --shadow-focus-green: var(--focus-green);
-  --shadow-focus-red: var(--focus-red);
-  --shadow-focus-amber: var(--focus-amber);
 }
 
 @layer base {

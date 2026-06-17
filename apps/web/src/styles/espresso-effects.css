@@ -3,8 +3,8 @@
 
    Elevations (--elevation-* / shadow utilities) and focus rings (--focus-* /
    --focus-outline-* / .focus-ring*). Elevations use the LIGHT values in both
-   modes (deliberate in Espresso 2.0). App-specific shadows and the legacy
-   shadow-focus-* aliases are kept in src/index.css. */
+   modes (deliberate in Espresso 2.0). App-specific shadows are kept in
+   src/index.css. */
 
 @theme inline {
   --shadow-sm: var(--elevation-sm);
