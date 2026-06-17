@@ -7,7 +7,8 @@ import { KeyboardMetaKeyIcon } from "@components/ui/keyboard-keys"
 import { Separator } from "@components/ui/separator"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@components/ui/tooltip"
 import { useUnreadNotificationsCount } from "@hooks/useNotifications"
-import { useWorkspaces } from "@hooks/useWorkspaces"
+import { useWorkspaces, type WorkspaceFields } from "@hooks/useWorkspaces"
+import { useDMUnread, useWorkspaceUnread } from "@stores/unread/useChannelUnread"
 import _ from "@lib/translate"
 import { cn } from "@lib/utils"
 import { useSetAtom } from "jotai"
@@ -129,10 +130,13 @@ const NotificationsLink = () => {
 }
 
 const DirectMessagesLink = () => {
+    const unread = useDMUnread()
+
     return <NavLink to="dm-channel">
         {({ isActive }) => (
             <IconBox isActive={isActive} title={_("Direct Messages")}>
                 <MessagesSquareIcon />
+                <UnreadBadge count={unread} />
             </IconBox>
         )}
     </NavLink>
@@ -164,28 +168,38 @@ const WorkspaceList = () => {
 
     return <div className="flex flex-col items-center gap-3">
         {workspaces.map((workspace) => (
-            <NavLink key={workspace.name} to={`/${workspace.name}`}>
-                {({ isActive }) => (
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <div className="relative w-(--primary-sidebar-width) flex items-center justify-center group/icon-box">
-                                <ActivePill isActive={isActive} />
-                                <Avatar className="w-8 h-8 rounded">
-                                    <AvatarImage src={workspace.logo} alt={workspace.workspace_name} />
-                                    <AvatarFallback className="text-xs bg-surface-gray-2 text-ink-gray-7">
-                                        {workspace.workspace_name.charAt(0)}
-                                    </AvatarFallback>
-                                </Avatar>
-                            </div>
-                        </TooltipTrigger>
-                        <TooltipContent side="right" align="center">
-                            {workspace.workspace_name}
-                        </TooltipContent>
-                    </Tooltip>
-                )}
-            </NavLink>
+            <WorkspaceItem key={workspace.name} workspace={workspace} />
         ))}
     </div>
+}
+
+const WorkspaceItem = ({ workspace }: { workspace: WorkspaceFields }) => {
+    const unread = useWorkspaceUnread(workspace.name)
+
+    return <NavLink to={`/${workspace.name}`}>
+        {({ isActive }) => (
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <div className="relative w-(--primary-sidebar-width) flex items-center justify-center group/icon-box">
+                        <ActivePill isActive={isActive} />
+                        {/* Badge anchors to the avatar, not the full-width rail cell */}
+                        <div className="relative">
+                            <Avatar className="w-8 h-8 rounded">
+                                <AvatarImage src={workspace.logo} alt={workspace.workspace_name} />
+                                <AvatarFallback className="text-xs bg-surface-gray-2 text-ink-gray-7">
+                                    {workspace.workspace_name.charAt(0)}
+                                </AvatarFallback>
+                            </Avatar>
+                            <UnreadBadge count={unread} />
+                        </div>
+                    </div>
+                </TooltipTrigger>
+                <TooltipContent side="right" align="center">
+                    {workspace.workspace_name}
+                </TooltipContent>
+            </Tooltip>
+        )}
+    </NavLink>
 }
 
 export default PrimarySidebar

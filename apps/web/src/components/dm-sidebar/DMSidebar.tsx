@@ -15,6 +15,7 @@ import { getMessageTeaser } from "@utils/messageUtils"
 import _ from "@lib/translate"
 import type { DMChannelListItem } from "@raven/types/common/ChannelListItem"
 import { useChannels } from "@hooks/useChannels"
+import { useChannelUnread } from "@stores/unread/useChannelUnread"
 import { useUserCookieData } from "@hooks/useUserCookieData"
 import { MobileSearchButton } from "@components/features/header/QuickSearch/SearchButton"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@components/ui/empty"
@@ -51,10 +52,20 @@ export function DMSidebar() {
      */
     const rows: DMRowData[] = useMemo(
         () =>
-            dm_channels.flatMap((dm) => {
-                const peer = dm.peer_user_id ? usersById.get(dm.peer_user_id) : undefined
-                return peer && peer.enabled !== 0 ? [{ dm, peer }] : []
-            }),
+            dm_channels
+                .flatMap((dm) => {
+                    const peer = dm.peer_user_id ? usersById.get(dm.peer_user_id) : undefined
+                    return peer && peer.enabled !== 0 ? [{ dm, peer }] : []
+                })
+                // Most recent conversation first; never-messaged DMs sink to the
+                // bottom. last_message_timestamp is a fixed-width datetime, so a
+                // string compare is chronological. Reorders live as the realtime
+                // patch updates the timestamp (see useChannelListRealtime).
+                .sort((a, b) => {
+                    const ta = a.dm.last_message_timestamp ?? ""
+                    const tb = b.dm.last_message_timestamp ?? ""
+                    return ta < tb ? 1 : ta > tb ? -1 : 0
+                }),
         [dm_channels, usersById]
     )
 
@@ -186,12 +197,7 @@ interface DMRowProps {
 
 function DMRow({ dmChannel, peerUser }: DMRowProps) {
     const { name: currentUser } = useUserCookieData()
-
-    const unread =
-        typeof dmChannel.last_message_details === "object" &&
-            dmChannel.last_message_details?.unread_count != null
-            ? Number(dmChannel.last_message_details.unread_count)
-            : 0
+    const { count: unread } = useChannelUnread(dmChannel.name)
 
     const isSelf = peerUser.name === currentUser
     const baseName = peerUser.full_name || peerUser.name

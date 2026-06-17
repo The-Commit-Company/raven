@@ -11,15 +11,13 @@ import { Button } from "@components/ui/button"
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@components/ui/empty"
 import { useChannelMessages } from "@stores/messages/useChannelMessages"
 import { channelMessagesStore } from "@stores/messages/store"
+import { useChannelReadTracker } from "@stores/unread/useChannelReadTracker"
 import { useStreamScroll } from "./useStreamScroll"
 import { MessageActionMenu } from "./actions/MessageActionMenu"
 import { MessageActionDialogs } from "./actions/MessageActionDialogs"
 import { messageTargetAtom, messageActionTargetAtom } from "@utils/channelAtoms"
-import { getDateObject } from "@lib/date"
 import { cn } from "@lib/utils"
 import _ from "@lib/translate"
-import type { Message } from "@raven/types/common/Message"
-import dayjs from "dayjs"
 
 /** How long a navigated-to message stays highlighted. */
 const HIGHLIGHT_DURATION_MS = 4000
@@ -115,15 +113,9 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
         onTargetSettled,
     })
 
-    // Tracks the newest message seen in the viewport — feeds last-seen/read
-    // receipts when the read-state layer lands.
-    const latestSeenTimestamp = useRef<dayjs.Dayjs | null>(null)
-    const onMessageInView = (message: Message) => {
-        const creation = getDateObject(message.creation)
-        if (!latestSeenTimestamp.current || creation.isAfter(latestSeenTimestamp.current)) {
-            latestSeenTimestamp.current = creation
-        }
-    }
+    // Tracks how far the user has read (the newest in-view message) and flushes
+    // that watermark to the server (last_visit), which defines unread counts.
+    const { onMessageInView } = useChannelReadTracker(channelID, { isAtBottom, hasNewerMessages })
 
     /** When the window is detached from the live edge, "down" means refetching the latest page. */
     const onJumpToPresent = () => {

@@ -5,6 +5,7 @@ import { useHotkeys } from "react-hotkeys-hook"
 import { Check, ChevronDown, ChevronRight, Hash, Star } from "lucide-react"
 import { Virtuoso, type VirtuosoHandle } from "react-virtuoso"
 import { useLocalStorage } from "usehooks-ts"
+import { useChannelUnread, useGroupUnread, useWorkspaceUnread } from "@stores/unread/useChannelUnread"
 import { Badge } from "@components/ui/badge"
 import { Button } from "@components/ui/button"
 import { Skeleton } from "@components/ui/skeleton"
@@ -244,14 +245,44 @@ const WorkspaceSwitcher = ({ workspaceID }: { workspaceID?: string }) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" sideOffset={4} className="min-w-52">
                 {workspaces.map((workspace) => (
-                    <DropdownMenuItem key={workspace.name} onClick={() => switchWorkspace(workspace)}>
-                        <WorkspaceLogo workspace={workspace} />
-                        <span className="truncate">{workspace.workspace_name}</span>
-                        {workspace.name === workspaceID && <Check className="ml-auto h-4 w-4 text-ink-gray-8" />}
-                    </DropdownMenuItem>
+                    <WorkspaceSwitcherItem
+                        key={workspace.name}
+                        workspace={workspace}
+                        isCurrent={workspace.name === workspaceID}
+                        onSelect={() => switchWorkspace(workspace)}
+                    />
                 ))}
             </DropdownMenuContent>
         </DropdownMenu>
+    )
+}
+
+const WorkspaceSwitcherItem = ({
+    workspace,
+    isCurrent,
+    onSelect,
+}: {
+    workspace: WorkspaceFields
+    isCurrent: boolean
+    onSelect: () => void
+}) => {
+    const unread = useWorkspaceUnread(workspace.name)
+
+    return (
+        <DropdownMenuItem onClick={onSelect}>
+            <WorkspaceLogo workspace={workspace} />
+            <span className="truncate">{workspace.workspace_name}</span>
+            {/* The current workspace shows the check; the others surface their unread */}
+            {isCurrent ? (
+                <Check className="ml-auto h-4 w-4 text-ink-gray-8" />
+            ) : (
+                unread > 0 && (
+                    <Badge size="sm" variant="ghost" theme="gray" className="ml-auto shrink-0">
+                        {unread > 9 ? "9+" : unread}
+                    </Badge>
+                )
+            )}
+        </DropdownMenuItem >
     )
 }
 
@@ -280,9 +311,9 @@ const ChannelGroup = ({
     open: boolean
     onOpenChange: (open: boolean) => void
 }) => {
-    // Group badge sums member unreads — shown only while collapsed (when the
-    // per-channel badges are hidden with the rows)
-    const totalUnread = channels.reduce((total, channel) => total + getUnreadCount(channel), 0)
+    // Group badge counts members with unread (a conversation count) — shown only
+    // while collapsed, when the per-channel badges are hidden with the rows
+    const totalUnread = useGroupUnread(useMemo(() => channels.map((c) => c.name), [channels]))
 
     // Slack-style: collapsing a group never hides where you ARE — the active
     // member stays visible as a single row under the collapsed header
@@ -357,11 +388,8 @@ export const ChannelGroupLabel = ({ groupName }: { groupName: string }) => {
     )
 }
 
-const getUnreadCount = (channel: ChannelListItem): number =>
-    Number(channel.last_message_details?.unread_count ?? 0)
-
 const ChannelRow = ({ channel, workspaceID }: { channel: ChannelListItem; workspaceID?: string }) => {
-    const unread = getUnreadCount(channel)
+    const { count: unread } = useChannelUnread(channel.name)
 
     return (
         <NavLink
@@ -371,6 +399,7 @@ const ChannelRow = ({ channel, workspaceID }: { channel: ChannelListItem; worksp
                     "flex min-w-0 select-none items-center gap-2 overflow-hidden rounded text-base px-2 text-ink-gray-6 py-1.5",
                     "outline-none ring-outline-gray-2 transition-colors focus-visible:ring-2",
                     "hover:bg-surface-gray-3 active:bg-surface-gray-3",
+                    unread > 0 && "text-ink-gray-7",
                     isActive && "bg-surface-elevation-3 shadow-sm text-ink-gray-8 hover:bg-surface-elevation-3 active:bg-surface-elevation-3",
                 )
             }
@@ -379,13 +408,13 @@ const ChannelRow = ({ channel, workspaceID }: { channel: ChannelListItem; worksp
             <span
                 className={cn(
                     "min-w-0 flex-1 truncate text-base md:text-sm",
-                    unread > 0 ? "font-medium" : "font-normal",
+                    unread > 0 ? "font-semibold" : "font-normal",
                 )}
             >
                 {channel.channel_name}
             </span>
             {unread > 0 && (
-                <Badge size="sm" variant="solid" theme="gray" className="shrink-0">
+                <Badge size="sm" variant="ghost" theme="gray" className="shrink-0">
                     {unread > 9 ? "9+" : unread}
                 </Badge>
             )}

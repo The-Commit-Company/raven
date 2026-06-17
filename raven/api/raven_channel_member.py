@@ -20,12 +20,20 @@ def remove_channel_member(user_id: str, channel_id: str):
 
 
 @frappe.whitelist(methods=["POST"])
-def track_visit(channel_id: str):
+def track_visit(channel_id: str, last_visit: str = None):
 	"""
 	Track the last visit of the user to the channel.
-	This is usually called when the user exits the channel (unmounts the component) after loading the latest messages in it.
+
+	`last_visit` is the read watermark — the creation timestamp of the newest
+	message the user has seen. The client flushes it (debounced) as the user
+	scrolls and on channel exit / tab hide; omitting it marks the channel read as
+	of now. The value is clamped server-side (never future, never backward).
+
+	Publishes to the user's other sessions so reading on one device clears the
+	unread badge on the rest.
 	"""
-	track_channel_visit(channel_id=channel_id, commit=True)
+	# No explicit commit: this is a POST, which auto-commits on success.
+	track_channel_visit(channel_id=channel_id, last_visit=last_visit, publish_event_for_user=True)
 	return True
 
 

@@ -11,7 +11,6 @@ export function MainPageSkeleton() {
 
     const isMobile = useIsMobile()
 
-    // TODO: Replace bottom tabs with the final proper component
     if (isMobile) {
         return <div className="flex flex-col justify-between h-screen">
             {/* Main Content Area */}
@@ -40,7 +39,6 @@ export function MainPageSkeleton() {
             </div>
             {/* Show the bottom tabs */}
             <AppMobileFooterSkeleton />
-
         </div>
     }
 

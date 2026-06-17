@@ -337,7 +337,7 @@
 
 /* You: persistent amber highlight — the one mention that lights up. */
 .tiptap .mention[data-self="true"] {
-  @apply text-ink-amber-3 hover:bg-surface-amber-2 bg-surface-amber-1;
+  @apply text-ink-amber-6 hover:bg-surface-amber-2 bg-surface-amber-1;
 }
 
 /* Images & emoji. */

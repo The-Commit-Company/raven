@@ -9,6 +9,9 @@ import { Outlet } from "react-router"
 import PrimarySidebar from "./PrimarySidebar/PrimarySidebar"
 import CommandMenu from "@components/features/cmdk/CommandMenu"
 import { AttachmentPreviewModal } from "@components/features/message/renderers/AttachmentPreviewModal"
+import { useUnreadSync } from "@stores/unread/useUnreadSync"
+import { useUnreadRealtime } from "@stores/unread/useUnreadRealtime"
+import DocumentTitle from "./DocumentTitle"
 
 /**
  * The AppShell is used to wrap the entire application and provide all the utilities
@@ -67,9 +70,13 @@ const AppListeners = ({ children }: { children: React.ReactNode }) => {
 
     const isReady = useLoadUsers()
 
+    // Seeds + reconciles channel unread counts; the realtime listener keeps them
+    // live between reconciles (and updates the DM list's last-message preview)
+    useUnreadSync()
+    useUnreadRealtime()
+
     // TODO: User list active state listener
     // TODO: Channel membership update listener
-    // TODO: Unread message count listener
     // TODO: Push notification listener
     // TODO: App update listener
     // TODO: Websocket connection listener
@@ -80,6 +87,7 @@ const AppListeners = ({ children }: { children: React.ReactNode }) => {
     }
 
     return <>
+        <DocumentTitle />
         {children}
         <CommandMenu />
         <AttachmentPreviewModal />

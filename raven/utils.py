@@ -1,4 +1,5 @@
 import frappe
+from frappe.query_builder.functions import Coalesce
 
 
 def get_raven_room():
@@ -11,26 +12,57 @@ def get_raven_room():
 	return "doctype:Raven User"
 
 
-def track_channel_visit(channel_id, user=None, commit=False, publish_event_for_user=False):
+def track_channel_visit(
+	channel_id, user=None, commit=False, publish_event_for_user=False, last_visit=None
+):
 	"""
 	Track the last visit of the user to the channel.
-	If the user is not a member of the channel, create a new member record
+	If the user is not a member of the channel, create a new member record.
+
+	`last_visit` is the read watermark — typically the creation timestamp of the
+	newest message the user has actually seen. The client flushes it (debounced)
+	as the user scrolls, so unread counts (messages with creation > last_visit)
+	track reading progress precisely instead of marking everything read on exit.
+
+	The value is clamped server-side: it can never run ahead of the server clock,
+	and it can never roll a member's existing last_visit backward — so an
+	out-of-order or stale flush from the client cannot un-read messages. When
+	omitted, "now" is used (e.g. tracking a plain visit on exit).
 	"""
 
+	# TODO(read-only): on a read replica / maintenance window the visit is
+	# silently dropped, so unread counts come back stale once writes resume. The
+	# fix is client-side — detect the read-only response and re-flush the watermark
+	# on recovery (or queue it). Handle when we harden offline/sync.
 	if frappe.flags.read_only:
 		return
 
 	if not user:
 		user = frappe.session.user
 
+	# Clamp the target to "now" — a client watermark must never be in the future
+	now_dt = frappe.utils.get_datetime(frappe.utils.now())
+	target_dt = now_dt
+	if last_visit:
+		parsed = frappe.utils.get_datetime(last_visit)
+		if parsed:
+			target_dt = min(parsed, now_dt)
+
 	# Get the channel member record
 	channel_member = get_channel_member(channel_id, user)
 
-	now = frappe.utils.now()
-
 	if channel_member:
-		# Update the last visit
-		frappe.db.set_value("Raven Channel Member", channel_member["name"], "last_visit", now)
+		# Single atomic, monotonic update: advance last_visit only when the new
+		# watermark is later than the stored one — the guard lives in the WHERE
+		# clause (Coalesce covers members who've never visited), so there's no
+		# read-modify-write window for concurrent flushes to race through.
+		member = frappe.qb.DocType("Raven Channel Member")
+		(
+			frappe.qb.update(member)
+			.set(member.last_visit, target_dt)
+			.where(member.name == channel_member["name"])
+			.where(Coalesce(member.last_visit, "2000-01-01 00:00:00") < target_dt)
+		).run()
 
 	# Else if the user is not a member of the channel and the channel is open, create a new member record
 	elif frappe.get_cached_value("Raven Channel", channel_id, "type") == "Open":
@@ -39,18 +71,25 @@ def track_channel_visit(channel_id, user=None, commit=False, publish_event_for_u
 				"doctype": "Raven Channel Member",
 				"channel_id": channel_id,
 				"user_id": frappe.session.user,
-				"last_visit": now,
+				"last_visit": target_dt,
 			}
 		).insert()
 
-	# Need to commit the changes to the database if the request is a GET request
+	# TODO(no-commit): this explicit commit only exists because some callers update
+	# last_visit during GET requests (chat_stream), which don't auto-commit. Once
+	# those move off GET-time writes, drop the `commit` param entirely — POST
+	# requests already commit on success. Kept for now to preserve v2 behaviour.
 	if commit:
 		frappe.db.commit()  # nosempgrep
 
 	if publish_event_for_user:
 		frappe.publish_realtime(
 			"raven:unread_channel_count_updated",
-			{"channel_id": channel_id, "sent_by": frappe.session.user, "last_message_timestamp": now},
+			{
+				"channel_id": channel_id,
+				"sent_by": frappe.session.user,
+				"last_message_timestamp": str(target_dt),
+			},
 			user=user,
 		)
 
