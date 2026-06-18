@@ -97,18 +97,21 @@ class RavenUser(Document):
 		if isinstance(user_image, str) and user_image.startswith("/"):
 			user_image = get_url(user_image)
 
-		if user_image and not self.user_image:
-			image_file = frappe.get_doc(
-				{
-					"doctype": "File",
-					"file_url": user_image,
-					"attached_to_doctype": "Raven User",
-					"attached_to_name": self.user,
-					"attached_to_field": "user_image",
-					"is_private": 1,
-				}
-			).insert(ignore_permissions=True)
-			self.user_image = image_file.file_url
+		try:
+			if user_image and not self.user_image:
+				image_file = frappe.get_doc(
+					{
+						"doctype": "File",
+						"file_url": user_image,
+						"attached_to_doctype": "Raven User",
+						"attached_to_name": self.user,
+						"attached_to_field": "user_image",
+						"is_private": 1,
+					}
+				).insert(ignore_permissions=True)
+				self.user_image = image_file.file_url
+		except Exception:
+			pass
 
 
 def add_user_to_raven(doc, method):
