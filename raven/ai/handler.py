@@ -1,11 +1,13 @@
 import json
 
 import frappe
+from frappe import _
 from openai import AssistantEventHandler
 from openai.types.beta.threads import Text
 from openai.types.beta.threads.runs import RunStep
 from typing_extensions import override
 
+from raven.ai.function_types import DOCTYPE_SCOPED_FUNCTION_TYPES
 from raven.ai.functions import (
 	attach_file_to_document,
 	cancel_document,
@@ -179,6 +181,30 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 
 					function_output = {}
 
+					def resolve_target_doctype(current_function=function, current_args=args):
+						if getattr(current_function, "allow_any_doctype", 0):
+							doctype = current_args.get("doctype") or current_function.reference_doctype
+							if not doctype:
+								return None, _("Please provide a valid DocType.")
+
+							if not frappe.db.exists("DocType", doctype):
+								return None, _("DocType '{0}' does not exist.").format(doctype)
+
+							return doctype, None
+
+						doctype = current_args.get("doctype")
+						if doctype and doctype != current_function.reference_doctype:
+							return None, _("This function is restricted to DocType '{0}'.").format(
+								current_function.reference_doctype
+							)
+
+						return current_function.reference_doctype, None
+
+					target_doctype = None
+					doctype_error = None
+					if function.type in DOCTYPE_SCOPED_FUNCTION_TYPES:
+						target_doctype, doctype_error = resolve_target_doctype()
+
 					if function.type == "Custom Function":
 						function_name = frappe.get_attr(function.function_path)
 
@@ -198,77 +224,104 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 							frappe.db.rollback(save_point=run_id + "_" + tool.id)
 
 					if function.type == "Get Document":
-						self.publish_event(
-							"Fetching {} {}...".format(function.reference_doctype, args.get("document_id"))
-						)
-						function_output = get_document(function.reference_doctype, **args)
+						if doctype_error:
+							function_output = {"message": doctype_error}
+						else:
+							self.publish_event("Fetching {} {}...".format(target_doctype, args.get("document_id")))
+							function_output = get_document(target_doctype, args.get("document_id"))
 
 					if function.type == "Get Multiple Documents":
-						self.publish_event(f"Fetching multiple {function.reference_doctype}s...")
-						function_output = get_documents(function.reference_doctype, **args)
+						if doctype_error:
+							function_output = {"message": doctype_error}
+						else:
+							self.publish_event(f"Fetching multiple {target_doctype}s...")
+							function_output = get_documents(target_doctype, args.get("document_ids"))
 
 					if function.type == "Submit Document":
-						self.publish_event(f"Submitting {function.reference_doctype} {args.get('document_id')}...")
-						function_output = submit_document(function.reference_doctype, **args)
+						if doctype_error:
+							function_output = {"message": doctype_error}
+						else:
+							self.publish_event(f"Submitting {target_doctype} {args.get('document_id')}...")
+							function_output = submit_document(target_doctype, args.get("document_id"))
 
 					if function.type == "Cancel Document":
-						self.publish_event(f"Cancelling {function.reference_doctype} {args.get('document_id')}...")
-						function_output = cancel_document(function.reference_doctype, **args)
+						if doctype_error:
+							function_output = {"message": doctype_error}
+						else:
+							self.publish_event(f"Cancelling {target_doctype} {args.get('document_id')}...")
+							function_output = cancel_document(target_doctype, args.get("document_id"))
 
 					if function.type == "Get Amended Document":
-						self.publish_event(
-							f"Fetching amended document for {function.reference_doctype} {args.get('document_id')}..."
-						)
-						function_output = get_amended_document(function.reference_doctype, **args)
+						if doctype_error:
+							function_output = {"message": doctype_error}
+						else:
+							self.publish_event(
+								f"Fetching amended document for {target_doctype} {args.get('document_id')}..."
+							)
+							function_output = get_amended_document(target_doctype, args.get("document_id"))
 
 					if function.type == "Delete Document":
-						self.publish_event(
-							"Deleting {} {}...".format(function.reference_doctype, args.get("document_id"))
-						)
-						function_output = delete_document(function.reference_doctype, **args)
+						if doctype_error:
+							function_output = {"message": doctype_error}
+						else:
+							self.publish_event("Deleting {} {}...".format(target_doctype, args.get("document_id")))
+							function_output = delete_document(target_doctype, args.get("document_id"))
 
 					if function.type == "Delete Multiple Documents":
-						self.publish_event(f"Deleting multiple {function.reference_doctype}s...")
-						function_output = delete_documents(function.reference_doctype, **args)
+						if doctype_error:
+							function_output = {"message": doctype_error}
+						else:
+							self.publish_event(f"Deleting multiple {target_doctype}s...")
+							function_output = delete_documents(target_doctype, args.get("document_ids"))
 
 					if function.type == "Create Document":
-						self.publish_event(f"Creating {function.reference_doctype}...")
-						function_output = create_document(function.reference_doctype, data=args, function=function)
+						if doctype_error:
+							function_output = {"message": doctype_error}
+						else:
+							payload = args.copy()
+							payload.pop("doctype", None)
+							self.publish_event(f"Creating {target_doctype}...")
+							function_output = create_document(target_doctype, data=payload, function=function)
 
-						docs_updated.append(
-							{"doctype": function.reference_doctype, "document_id": function_output.get("document_id")}
-						)
+							docs_updated.append(
+								{"doctype": target_doctype, "document_id": function_output.get("document_id")}
+							)
 
 					if function.type == "Create Multiple Documents":
-						self.publish_event(f"Creating multiple {function.reference_doctype}s...")
-						function_output = create_documents(
-							function.reference_doctype, data=args.get("data"), function=function
-						)
+						if doctype_error:
+							function_output = {"message": doctype_error}
+						else:
+							self.publish_event(f"Creating multiple {target_doctype}s...")
+							function_output = create_documents(target_doctype, data=args.get("data"), function=function)
 
-						for doc_id in function_output.get("documents"):
-							docs_updated.append({"doctype": function.reference_doctype, "document_id": doc_id})
+							for doc_id in function_output.get("documents", []):
+								docs_updated.append({"doctype": target_doctype, "document_id": doc_id})
 
 					if function.type == "Update Document":
-						self.publish_event(f"Updating {function.reference_doctype}...")
-						function_output = update_document(
-							function.reference_doctype,
-							document_id=args.get("document_id"),
-							data=args,
-							function=function,
-						)
+						if doctype_error:
+							function_output = {"message": doctype_error}
+						else:
+							payload = args.copy()
+							payload.pop("doctype", None)
+							self.publish_event(f"Updating {target_doctype}...")
+							function_output = update_document(
+								target_doctype,
+								document_id=args.get("document_id"),
+								data=payload,
+								function=function,
+							)
 
-						docs_updated.append(
-							{"doctype": function.reference_doctype, "document_id": args.get("document_id")}
-						)
+							docs_updated.append({"doctype": target_doctype, "document_id": args.get("document_id")})
 
 					if function.type == "Update Multiple Documents":
-						self.publish_event(f"Updating multiple {function.reference_doctype}s...")
-						function_output = update_documents(
-							function.reference_doctype, data=args.get("data"), function=function
-						)
+						if doctype_error:
+							function_output = {"message": doctype_error}
+						else:
+							self.publish_event(f"Updating multiple {target_doctype}s...")
+							function_output = update_documents(target_doctype, data=args.get("data"), function=function)
 
-						for doc_id in function_output.get("documents"):
-							docs_updated.append({"doctype": function.reference_doctype, "document_id": doc_id})
+							for doc_id in function_output.get("document_ids", []):
+								docs_updated.append({"doctype": target_doctype, "document_id": doc_id})
 
 					if function.type == "Attach File to Document":
 						doctype = args.get("doctype")
@@ -278,30 +331,39 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 						function_output = attach_file_to_document(doctype, document_id, file_path)
 
 					if function.type == "Get List":
-						self.publish_event(f"Fetching list of {function.reference_doctype}...")
-						function_output = get_list(
-							function.reference_doctype,
-							filters=args.get("filters"),
-							fields=args.get("fields"),
-							limit=args.get("limit", 20),
-						)
+						if doctype_error:
+							function_output = {"message": doctype_error}
+						else:
+							self.publish_event(f"Fetching list of {target_doctype}...")
+							function_output = get_list(
+								target_doctype,
+								filters=args.get("filters"),
+								fields=args.get("fields"),
+								limit=args.get("limit", 20),
+							)
 
 					if function.type == "Get Value":
-						self.publish_event(f"Fetching value for {function.reference_doctype}...")
-						function_output = get_value(
-							doctype=function.reference_doctype,
-							filters=args.get("filters"),
-							fieldname=args.get("fieldname"),
-						)
+						if doctype_error:
+							function_output = {"message": doctype_error}
+						else:
+							self.publish_event(f"Fetching value for {target_doctype}...")
+							function_output = get_value(
+								doctype=target_doctype,
+								filters=args.get("filters"),
+								fieldname=args.get("fieldname"),
+							)
 
 					if function.type == "Set Value":
-						self.publish_event(f"Setting value for {function.reference_doctype}...")
-						function_output = set_value(
-							doctype=function.reference_doctype,
-							document_id=args.get("document_id"),
-							fieldname=args.get("fieldname"),
-							value=args.get("value"),
-						)
+						if doctype_error:
+							function_output = {"message": doctype_error}
+						else:
+							self.publish_event(f"Setting value for {target_doctype}...")
+							function_output = set_value(
+								doctype=target_doctype,
+								document_id=args.get("document_id"),
+								fieldname=args.get("fieldname"),
+								value=args.get("value"),
+							)
 
 					if function.type == "Get Report Result":
 						self.publish_event(f"Running report {args.get('report_name')}...")
@@ -316,7 +378,7 @@ def stream_response(ai_thread_id: str, bot, channel_id: str):
 						{"tool_call_id": tool.id, "output": json.dumps(function_output, default=str)}
 					)
 
-				except Exception as e:
+				except Exception:
 					frappe.log_error("Raven AI Error", frappe.get_traceback())
 
 					if bot.debug_mode:

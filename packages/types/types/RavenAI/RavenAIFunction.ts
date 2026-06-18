@@ -20,6 +20,8 @@ export interface RavenAIFunction{
 	type: "Get Document" | "Get Multiple Documents" | "Get List" | "Create Document" | "Create Multiple Documents" | "Update Document" | "Update Multiple Documents" | "Delete Document" | "Delete Multiple Documents" | "Submit Document" | "Cancel Document" | "Get Amended Document" | "Custom Function" | "Send Message" | "Attach File to Document" | "Get Report Result" | "Get Value" | "Set Value"
 	/**	Reference DocType : Link - DocType	*/
 	reference_doctype?: string
+	/**	Allow Any DocType : Check	*/
+	allow_any_doctype?: 0 | 1
 	/**	Pass parameters as JSON : Check - If checked, the params will be passed as a JSON object instead of named parameters	*/
 	pass_parameters_as_json?: 0 | 1
 	/**	Requires Write Permissions : Check	*/

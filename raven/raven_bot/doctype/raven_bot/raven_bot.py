@@ -64,15 +64,20 @@ class RavenBot(Document):
 		self.validate_functions()
 
 	def validate_functions(self):
-		if not self.allow_bot_to_write_documents:
-			for f in self.bot_functions:
-				needs_write = frappe.db.get_value(
-					"Raven AI Function", f.function, "requires_write_permissions"
+		for f in self.bot_functions:
+			function_permissions = frappe.db.get_value(
+				"Raven AI Function", f.function, ["requires_write_permissions"], as_dict=True
+			)
+
+			if not function_permissions:
+				continue
+
+			if not self.allow_bot_to_write_documents and function_permissions.requires_write_permissions:
+				frappe.throw(
+					_(
+						"This agent is not allowed to write documents. Please remove the function {0} or allow the agent to write documents."
+					).format(f.function)
 				)
-				if needs_write:
-					frappe.throw(
-						f"This agent is not allowed to write documents. Please remove the function {f.function} or allow the agent to write documents."
-					)
 
 	def on_update(self):
 		"""
@@ -352,7 +357,7 @@ class RavenBot(Document):
 		added_files = [f for f in file_ids if f not in existing_vector_store_file_ids]
 
 		if added_files:
-			vector_store_file_batch = client.vector_stores.file_batches.create(
+			client.vector_stores.file_batches.create(
 				vector_store_id=self.openai_vector_store_id,
 				file_ids=added_files,
 			)

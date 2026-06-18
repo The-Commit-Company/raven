@@ -1,0 +1,16 @@
+DOCTYPE_SCOPED_FUNCTION_TYPES = (
+	"Get Document",
+	"Get Multiple Documents",
+	"Get List",
+	"Get Value",
+	"Set Value",
+	"Create Document",
+	"Create Multiple Documents",
+	"Update Document",
+	"Update Multiple Documents",
+	"Delete Document",
+	"Delete Multiple Documents",
+	"Submit Document",
+	"Cancel Document",
+	"Get Amended Document",
+)
