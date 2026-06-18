@@ -45,15 +45,15 @@ const generateAvatarColor = (name: string): string => {
 export const getStatusIndicatorColor = (status: string) => {
     switch (status) {
         case 'Available':
-            return 'bg-surface-green-5'
+            return 'bg-surface-green-7'
         case 'Away':
-            return 'bg-surface-yellow-5'
+            return 'bg-surface-amber-7'
         case 'Do not disturb':
-            return 'bg-surface-red-5'
+            return 'bg-surface-red-7'
         case 'Invisible':
-            return 'bg-surface-gray-5'
+            return 'bg-surface-gray-7'
         default:
-            return 'bg-surface-green-5'
+            return 'bg-surface-green-7'
     }
 }
 
