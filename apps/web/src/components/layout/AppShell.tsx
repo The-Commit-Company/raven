@@ -14,6 +14,7 @@ import { useUnreadRealtime } from "@stores/unread/useUnreadRealtime"
 import { useMessageRoomSubscriptions } from "@stores/messages/useMessageRoomSubscriptions"
 import { useMessagesRealtime } from "@stores/messages/useMessagesRealtime"
 import { useReconnectCatchup } from "@stores/messages/useReconnectCatchup"
+import { useChannelListRealtime } from "@hooks/useChannelListRealtime"
 import DocumentTitle from "./DocumentTitle"
 
 /**
@@ -83,6 +84,8 @@ const AppListeners = ({ children }: { children: React.ReactNode }) => {
     useMessagesRealtime()
     // Backstop: refetch messages missed during a disconnect when the socket reconnects
     useReconnectCatchup()
+    // Keeps the sidebar channel list + member lists fresh on create/archive/join/leave
+    useChannelListRealtime()
 
     // TODO: User list active state listener
     // TODO: Channel membership update listener
