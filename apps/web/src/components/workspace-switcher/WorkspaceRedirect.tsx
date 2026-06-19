@@ -1,17 +1,33 @@
 import { Navigate, useParams } from "react-router-dom"
+import { useMemo } from "react"
 import { useAtomValue } from "jotai"
 import { useIsMobile } from "@hooks/use-mobile"
+import { useChannels } from "@hooks/useChannels"
+import { useGroupedChannels } from "@raven/lib/hooks/useGroupedChannels"
+import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
 import { lastChannelAtom, lastWorkspaceAtom } from "@utils/lastVisitedAtoms"
 
 /**
- * Redirects to the default channel for a workspace
- * Uses "general" as the default channel, or the last visited channel if available
+ * Redirects a workspace's index route to a channel: the last channel visited in
+ * THIS workspace if there is one, otherwise the first channel in the sidebar's
+ * display order (Favorites → groups → ungrouped). No hardcoded "general" — that
+ * channel may not exist in the workspace, and the first listed channel is what
+ * the user expects when switching.
  */
 export const WorkspaceRedirect = () => {
     const { workspaceID } = useParams<{ workspaceID: string }>()
     const isMobile = useIsMobile()
     const lastWorkspace = useAtomValue(lastWorkspaceAtom)
     const lastChannel = useAtomValue(lastChannelAtom)
+    const { channels } = useChannels()
+    const { myProfile } = useCurrentRavenUser()
+    const { groupedChannels, ungroupedChannels } = useGroupedChannels(channels, myProfile, workspaceID, false)
+
+    // First channel in the same display order the sidebar uses.
+    const firstChannel = useMemo(
+        () => [...groupedChannels.flatMap(([, group]) => group), ...ungroupedChannels][0]?.name,
+        [groupedChannels, ungroupedChannels],
+    )
 
     if (!workspaceID) {
         return <Navigate to="/" replace />
@@ -23,11 +39,16 @@ export const WorkspaceRedirect = () => {
         return null
     }
 
-    // Only reuse the last channel if it was visited in THIS workspace —
-    // channel ids don't transfer across workspaces
-    const channelId = (lastWorkspace === workspaceID ? lastChannel : "") || "general"
+    // Reuse the last channel only if it was visited in THIS workspace — channel
+    // ids don't transfer across workspaces.
+    const lastInWorkspace = lastWorkspace === workspaceID ? lastChannel : ""
+    const target = lastInWorkspace || firstChannel
 
-    const workspaceSlug = encodeURIComponent(workspaceID)
+    // Nothing to open yet: still loading, or the workspace has no channels (the
+    // sidebar shows its empty state). Either way, don't redirect to a 404.
+    if (!target) {
+        return null
+    }
 
-    return <Navigate to={`/${workspaceSlug}/${encodeURIComponent(channelId)}`} replace />
+    return <Navigate to={`/${encodeURIComponent(workspaceID)}/${encodeURIComponent(target)}`} replace />
 }

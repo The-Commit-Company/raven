@@ -397,7 +397,10 @@ const ChannelRow = ({ channel, workspaceID }: { channel: ChannelListItem; worksp
             className={({ isActive }) =>
                 cn(
                     "flex min-w-0 select-none items-center gap-2 overflow-hidden rounded text-base px-2 text-ink-gray-6 py-1.5",
-                    "outline-none ring-outline-gray-2 transition-colors focus-visible:ring-2",
+                    // `transition` (not transition-colors) so box-shadow animates IN SYNC
+                    // with the background — Virtuoso recycles rows on workspace switch, and
+                    // transition-colors left the shadow popping while the bg cross-faded.
+                    "outline-none ring-outline-gray-2 transition focus-visible:ring-2",
                     "hover:bg-surface-gray-3 active:bg-surface-gray-3",
                     unread > 0 && "text-ink-gray-7",
                     isActive && "bg-surface-elevation-3 shadow-sm text-ink-gray-8 hover:bg-surface-elevation-3 active:bg-surface-elevation-3",

@@ -44,7 +44,7 @@ const ChannelHeader = () => {
                     onClick={() => navigate(`/${workspaceID ?? ''}`)}
                     aria-label={_('Back')}
                 >
-                    <ChevronLeft className="h-4 w-4" />
+                    <ChevronLeft />
                 </Button>
             </div>
 
@@ -53,8 +53,8 @@ const ChannelHeader = () => {
                 <div className="flex items-center gap-0.5">
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="sm" isIconButton aria-label={_('Star')} onClick={toggleStarChannel}>
-                                <Star className={`${isStarred ? "fill-amber-300 stroke-amber-300" : ""}`} />
+                            <Button variant="ghost" size="sm" isIconButton className={isStarred ? "text-yellow-500" : ""} aria-label={_('Star')} onClick={toggleStarChannel}>
+                                <Star className={isStarred ? "fill-yellow-500" : ""} />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
