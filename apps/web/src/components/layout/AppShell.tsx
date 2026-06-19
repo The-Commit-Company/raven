@@ -15,6 +15,8 @@ import { useMessageRoomSubscriptions } from "@stores/messages/useMessageRoomSubs
 import { useMessagesRealtime } from "@stores/messages/useMessagesRealtime"
 import { useReconnectCatchup } from "@stores/messages/useReconnectCatchup"
 import { useChannelListRealtime } from "@hooks/useChannelListRealtime"
+import { usePresenceSync } from "@stores/presence/usePresenceSync"
+import { useReportActiveState } from "@stores/presence/useReportActiveState"
 import DocumentTitle from "./DocumentTitle"
 
 /**
@@ -86,13 +88,13 @@ const AppListeners = ({ children }: { children: React.ReactNode }) => {
     useReconnectCatchup()
     // Keeps the sidebar channel list + member lists fresh on create/archive/join/leave
     useChannelListRealtime()
-
-    // TODO: User list active state listener
-    // TODO: Channel membership update listener
+    // Seeds + live-updates which users are online (read via useIsUserOnline)
+    usePresenceSync()
+    // Reports OUR own online state (app open / focus / 10-min idle) to the server
+    useReportActiveState()
     // TODO: Push notification listener
     // TODO: App update listener
     // TODO: Websocket connection listener
-    // TODO: Update user's active state using visibility change and idle timer
 
     if (!isReady) {
         return <MainPageSkeleton />

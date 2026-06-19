@@ -3,11 +3,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { cn } from '@lib/utils'
 import { UserData } from "@db"
 import { BotIcon } from 'lucide-react'
+import { useIsUserOnline } from '@stores/presence/useUserPresence'
+import _ from '@lib/translate'
+
+type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
 interface UserAvatarProps {
     user: UserData,
-    isActive?: boolean,
-    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl',
+    size?: AvatarSize,
     className?: string,
     showStatusIndicator?: boolean,
     showBotIndicator?: boolean,
@@ -45,15 +48,15 @@ const generateAvatarColor = (name: string): string => {
 export const getStatusIndicatorColor = (status: string) => {
     switch (status) {
         case 'Available':
-            return 'bg-surface-green-7'
+            return 'bg-surface-green-6'
         case 'Away':
-            return 'bg-surface-amber-7'
+            return 'bg-surface-amber-6'
         case 'Do not disturb':
-            return 'bg-surface-red-7'
+            return 'bg-surface-red-6'
         case 'Invisible':
-            return 'bg-surface-gray-7'
+            return 'bg-surface-gray-6'
         default:
-            return 'bg-surface-green-7'
+            return 'bg-surface-green-6'
     }
 }
 
@@ -108,9 +111,50 @@ const getSizeClasses = (size: 'xs' | 'sm' | 'md' | 'lg' | 'xl') => {
     }
 }
 
+/**
+ * Online/availability dot. Split out so it — and the per-user presence
+ * subscription it makes (useIsUserOnline) — only mount when the indicator is
+ * actually shown. Avatars rendered with showStatusIndicator={false} (member
+ * lists, search results, etc.) never subscribe and never re-render on presence
+ * changes. Combines live online presence with the user's manual availability:
+ * Invisible or (offline + no status) shows nothing.
+ */
+const StatusIndicator = memo<{ user: UserData; size: AvatarSize }>(({ user, size }) => {
+    const isOnline = useIsUserOnline(user.name)
+    const availabilityStatus = user.availability_status
+    const sizeClasses = getSizeClasses(size)
+
+    if (availabilityStatus === 'Invisible') return null
+    if (!availabilityStatus && !isOnline) return null
+
+    const statusLabel = availabilityStatus || (isOnline ? _('Online') : _('Offline'))
+    // "Available" but not actually online → hollow ring, distinct from solid live green
+    const showManualAvailableDot = availabilityStatus === 'Available' && !isOnline
+
+    return (
+        <span
+            className={cn(
+                "absolute flex items-center justify-center rounded-full border-2 border-outline-base",
+                sizeClasses.indicator,
+                availabilityStatus ? getStatusIndicatorColor(availabilityStatus) : 'bg-surface-green-6',
+            )}
+            aria-label={statusLabel}
+            role="img"
+        >
+            {showManualAvailableDot && (
+                <span
+                    className={cn("rounded-full bg-surface-base", sizeClasses.manualAvailableDot)}
+                    aria-hidden="true"
+                />
+            )}
+        </span>
+    )
+})
+
+StatusIndicator.displayName = 'StatusIndicator'
+
 export const UserAvatar = memo<UserAvatarProps>(({
     user,
-    isActive = false,
     size = 'md',
     className,
     showStatusIndicator = true,
@@ -119,24 +163,9 @@ export const UserAvatar = memo<UserAvatarProps>(({
 }) => {
     const displayName = user.full_name || user.name
     const isBot = user.type === 'Bot'
-    const availabilityStatus = user.availability_status
     const sizeClasses = getSizeClasses(size)
 
     const avatarColor = useMemo(() => addColoredFallback ? generateAvatarColor(displayName) : 'bg-surface-gray-2 text-ink-gray-9', [displayName, addColoredFallback])
-
-    const shouldShowStatusIndicator = useMemo(() => {
-        if (!showStatusIndicator) return false
-        if (availabilityStatus === 'Invisible') return false
-        return availabilityStatus || isActive
-    }, [availabilityStatus, isActive, showStatusIndicator])
-
-    const statusLabel = useMemo(() => {
-        if (availabilityStatus === 'Invisible') return ''
-        if (availabilityStatus) return availabilityStatus
-        return isActive ? 'Online' : 'Offline'
-    }, [availabilityStatus, isActive])
-
-    const showManualAvailableDot = availabilityStatus === 'Available' && !isActive
 
     return (
         <div className={cn("relative inline-block", className)}>
@@ -155,27 +184,8 @@ export const UserAvatar = memo<UserAvatarProps>(({
                 </AvatarFallback>
             </Avatar>
 
-            {/* Status Indicator */}
-            {shouldShowStatusIndicator && (
-                <span
-                    className={cn(
-                        "absolute flex items-center justify-center rounded-full border-2 border-outline-base",
-                        sizeClasses.indicator,
-                        availabilityStatus
-                            ? getStatusIndicatorColor(availabilityStatus)
-                            : 'bg-surface-green-5'
-                    )}
-                    aria-label={statusLabel}
-                    role="img"
-                >
-                    {showManualAvailableDot && (
-                        <span
-                            className={cn("rounded-full bg-surface-base", sizeClasses.manualAvailableDot)}
-                            aria-hidden="true"
-                        />
-                    )}
-                </span>
-            )}
+            {/* Status Indicator — only mounted (and only subscribes to presence) when wanted */}
+            {showStatusIndicator && <StatusIndicator user={user} size={size} />}
 
             {/* Bot Indicator */}
             {isBot && showBotIndicator && (
