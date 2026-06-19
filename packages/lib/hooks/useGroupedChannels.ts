@@ -53,6 +53,13 @@ export const useGroupedChannels = (
             }
         })
 
+        // TODO(channel-sort): channels currently keep get_all_channels' arbitrary
+        // order within each group. Channels are curated "places" (unlike DMs, which
+        // are a recency inbox), so we deliberately do NOT bubble them on new
+        // messages. Planned: sort alphabetically by channel_name within each group
+        // as the default, behind a per-user "Sort sidebar by" preference
+        // (Alphabetical / Recent activity / Unread first) — only "Recent activity"
+        // would consume last_message_timestamp. Unread stays bold + badge in place.
         const groupedChannels = Array.from(groups).filter(([, channels]) => channels.length > 0)
         const ungroupedChannels = Array.from(remainingChannels)
 

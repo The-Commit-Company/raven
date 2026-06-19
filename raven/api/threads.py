@@ -16,6 +16,20 @@ def get_number_of_replies(thread_id: str):
 
 
 @frappe.whitelist(methods=["GET"])
+def get_thread_details(thread_id: str):
+	"""
+	Get the members and count of messages in a thread
+	"""
+	if not frappe.has_permission(doctype="Raven Message", doc=thread_id, ptype="read"):
+		frappe.throw(_("You do not have permission to read this thread."), frappe.PermissionError)
+
+	return {
+		"members": get_channel_members(thread_id),
+		"message_count": get_thread_reply_count(thread_id),
+	}
+
+
+@frappe.whitelist(methods=["GET"])
 def get_all_threads(
 	workspace: str = None,
 	content: str = None,

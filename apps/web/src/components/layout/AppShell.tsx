@@ -11,6 +11,9 @@ import CommandMenu from "@components/features/cmdk/CommandMenu"
 import { AttachmentPreviewModal } from "@components/features/message/renderers/AttachmentPreviewModal"
 import { useUnreadSync } from "@stores/unread/useUnreadSync"
 import { useUnreadRealtime } from "@stores/unread/useUnreadRealtime"
+import { useMessageRoomSubscriptions } from "@stores/messages/useMessageRoomSubscriptions"
+import { useMessagesRealtime } from "@stores/messages/useMessagesRealtime"
+import { useReconnectCatchup } from "@stores/messages/useReconnectCatchup"
 import DocumentTitle from "./DocumentTitle"
 
 /**
@@ -74,6 +77,12 @@ const AppListeners = ({ children }: { children: React.ReactNode }) => {
     // live between reconciles (and updates the DM list's last-message preview)
     useUnreadSync()
     useUnreadRealtime()
+    // Joins the socket rooms of all warm channels so they get live message events
+    useMessageRoomSubscriptions()
+    // Dispatches those live message events into the message store
+    useMessagesRealtime()
+    // Backstop: refetch messages missed during a disconnect when the socket reconnects
+    useReconnectCatchup()
 
     // TODO: User list active state listener
     // TODO: Channel membership update listener

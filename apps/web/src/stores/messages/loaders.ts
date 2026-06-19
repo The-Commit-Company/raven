@@ -74,6 +74,36 @@ export const loadNewerMessages = async (client: FrappeCallClient, channelID: str
     }
 }
 
+/**
+ * Recovers messages that landed while the socket was disconnected, for a window
+ * pinned to the live edge. Unlike loadNewerMessages this isn't gated on
+ * hasNewerMessages (a live-edge window has none "known"); it fetches strictly
+ * after the newest message and merges, so it appends in place — no window
+ * replacement, no scroll jump. Detached/idle windows are skipped (they resync on
+ * their own when the user returns).
+ */
+export const catchUpNewerMessages = async (client: FrappeCallClient, channelID: string) => {
+    const state = channelMessagesStore.getState(channelID)
+    if (state.status !== "ready" || state.hasNewerMessages) return
+    const newestID = state.order[state.order.length - 1]
+    if (!newestID) return
+    const key = `${channelID}:catchup`
+    if (inFlight.has(key)) return
+    inFlight.add(key)
+    try {
+        const response = await client.get<PageResponse>("raven.api.chat_stream.get_newer_messages", {
+            channel_id: channelID,
+            from_message: newestID,
+            limit: PAGE_SIZE,
+        })
+        channelMessagesStore.setNewerPage(channelID, response.message)
+    } catch {
+        // Best effort — a failed catch-up just leaves the window stale until the user acts
+    } finally {
+        inFlight.delete(key)
+    }
+}
+
 /** Discards the detached window and refetches the live edge. */
 export const jumpToLatestMessages = async (client: FrappeCallClient, channelID: string) => {
     channelMessagesStore.reset(channelID)

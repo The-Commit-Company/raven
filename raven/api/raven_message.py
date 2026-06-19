@@ -127,11 +127,14 @@ def save_message(message_id: str, add: str | bool = False):
 
 	toggle_like("Raven Message", message_id, add)
 
-	liked_by = frappe.db.get_value("Raven Message", message_id, "_liked_by")
+	liked_by, channel_id = frappe.db.get_value(
+		"Raven Message", message_id, ["_liked_by", "channel_id"]
+	)
 
 	frappe.publish_realtime(
 		"message_saved",
 		{
+			"channel_id": channel_id,
 			"message_id": message_id,
 			"liked_by": liked_by,
 		},

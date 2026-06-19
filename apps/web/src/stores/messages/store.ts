@@ -29,6 +29,10 @@ type Listener = () => void
 class ChannelMessagesStore {
     private states = new Map<string, ChannelMessagesState>()
     private listeners = new Map<string, Set<Listener>>()
+    /** Subscribers to the SET of hydrated channels (membership), not their contents. */
+    private hydratedListeners = new Set<Listener>()
+    /** Reference-stable snapshot of hydrated channel IDs; new ref only on membership change. */
+    private hydratedIds: readonly string[] = []
 
     getState(channelID: string): ChannelMessagesState {
         let state = this.states.get(channelID)
@@ -47,10 +51,34 @@ class ChannelMessagesStore {
         }
         set.add(listener)
         this.evictStaleChannels()
+        // Membership may have changed (this channel added by the getState during
+        // the component's render, plus any evictions above). Notify here — a
+        // commit-phase entry point — never from getState, which runs during render.
+        this.notifyHydrated()
         return () => {
             set.delete(listener)
             if (set.size === 0) this.listeners.delete(channelID)
         }
+    }
+
+    /**
+     * Subscribe to changes in the SET of hydrated channels (additions / evictions),
+     * not their message contents. Used to keep socket room subscriptions in sync
+     * with the channels we keep warm in memory. Returns an unsubscribe fn.
+     */
+    subscribeHydrated(listener: Listener): () => void {
+        this.hydratedListeners.add(listener)
+        return () => this.hydratedListeners.delete(listener)
+    }
+
+    /** Reference-stable list of channels currently hydrated in memory (≤ cap). */
+    getHydratedChannelIDs(): readonly string[] {
+        return this.hydratedIds
+    }
+
+    /** Whether a channel is held in memory — unlike getState, never inserts it. */
+    isHydrated(channelID: string): boolean {
+        return this.states.has(channelID)
     }
 
     /** ----- Fetch lifecycle ----- */
@@ -158,6 +186,19 @@ class ChannelMessagesStore {
             if (this.listeners.has(channelID)) continue
             this.states.delete(channelID)
         }
+    }
+
+    /**
+     * Recompute the hydrated-channel snapshot and notify its subscribers — but
+     * only when membership actually changed, so the snapshot keeps a stable
+     * reference between changes (useSyncExternalStore depends on that).
+     */
+    private notifyHydrated() {
+        const next = [...this.states.keys()]
+        const prev = this.hydratedIds
+        if (next.length === prev.length && next.every((id, i) => id === prev[i])) return
+        this.hydratedIds = next
+        this.hydratedListeners.forEach((listener) => listener())
     }
 }
 
