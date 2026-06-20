@@ -1,6 +1,5 @@
 import { forwardRef, useCallback, useContext, useEffect, useMemo, useRef } from "react"
-import { useEditor, EditorContent } from "@tiptap/react"
-import StarterKit from "@tiptap/starter-kit"
+import { EditorContent } from "@tiptap/react"
 import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
 import { useAtom, useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
@@ -9,6 +8,7 @@ import { InputFileList, AddFileButton } from "./InputFiles"
 import SendButton from "./SendButton"
 import { CreatePollDialog } from "./CreatePollDialog"
 import { uploadedFilesAtom, uploadingFilesAtom, pendingSendAtom } from "./useFileInput"
+import { useRavenEditor } from "@components/features/editor/useRavenEditor"
 import { enqueueSend } from "@stores/messages/messageSender"
 import { useUserCookieData } from "@hooks/useUserCookieData"
 import _ from "@lib/translate"
@@ -51,22 +51,7 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
         useMemo(() => selectAtom(uploadingFilesAtom(channelID), (f) => f.some((file) => file.status === "error")), [channelID]),
     )
 
-    const editor = useEditor({
-        extensions: [StarterKit],
-        editorProps: {
-            attributes: {
-                class: "tiptap min-h-9 max-h-[40vh] overflow-y-auto px-3 py-2 focus:outline-none",
-            },
-            handleKeyDown: (_view, event) => {
-                if (event.key === "Enter" && !event.shiftKey) {
-                    event.preventDefault()
-                    sendRef.current()
-                    return true
-                }
-                return false
-            },
-        },
-    })
+    const editor = useRavenEditor({ submitRef: sendRef })
 
     /** Build the optimistic batch, clear the composer, and fire the request. */
     const dispatchSend = useCallback(() => {
@@ -133,7 +118,8 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
                     <AddFileButton channelID={channelID} />
                     <CreatePollDialog channelID={channelID} />
                 </div>
-                <div className="w-full rounded-md border border-outline-gray-2 bg-surface-white focus-within:ring-2 ring-outline-gray-3">
+                {/* data-raven-editor + relative: the mention popup anchors here (above the input) */}
+                <div data-raven-editor className="relative w-full rounded-md border border-outline-gray-2 bg-surface-white focus-within:ring-2 ring-outline-gray-3">
                     <EditorContent editor={editor} />
                 </div>
                 <SendButton onSend={handleSend} loading={pendingSend} />

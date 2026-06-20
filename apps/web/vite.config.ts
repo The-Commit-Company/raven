@@ -22,7 +22,24 @@ export default defineConfig({
     // two distinct FrappeContext objects — the Provider fills one, packages/lib's
     // hooks read the other and get null. (react/react-dom/swr deduped for the
     // same context-identity reason — also the dup-React "invalid hook call".)
-    dedupe: ["react", "react-dom", "frappe-react-sdk", "swr"],
+    //
+    // ProseMirror/Tiptap: @tiptap/pm nests its own prosemirror-model (1.25.8) while
+    // the tree also hoists 1.25.4. Two copies of prosemirror-model means a node type
+    // built by one (e.g. the Mention node) can't be put in a Fragment built by the
+    // other → "Can not convert <userMention> to a Fragment (multiple versions of
+    // prosemirror-model were loaded)". Force ONE copy of each.
+    dedupe: [
+      "react",
+      "react-dom",
+      "frappe-react-sdk",
+      "swr",
+      "@tiptap/core",
+      "@tiptap/pm",
+      "prosemirror-model",
+      "prosemirror-state",
+      "prosemirror-view",
+      "prosemirror-transform",
+    ],
     alias: {
       "@": path.resolve(__dirname, "./src"),
       "@lib": path.resolve(__dirname, "./src/lib"),
