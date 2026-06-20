@@ -8,26 +8,22 @@ import { useIsUserOnLeave } from "@hooks/useIsUserOnLeave"
 import _ from "@lib/translate"
 import { cn } from "@lib/utils"
 import { useCopyToClipboard } from "usehooks-ts"
+import { useUserCookieData } from "@hooks/useUserCookieData"
 
 interface UserProfileDrawerProps {
     user: UserData
 }
 
-async function copyToClipboard(text: string, label: string) {
-    try {
-        await navigator.clipboard.writeText(text)
-        toast.success(_("{0} copied to clipboard", [label]))
-    } catch {
-        toast.error(_("Failed to copy {0}", [label]))
-    }
-}
-
 export function UserProfileDrawer({ user }: UserProfileDrawerProps) {
+
+    const { name } = useUserCookieData()
     const isOnLeave = useIsUserOnLeave(user.name)
     const displayName = user.full_name || user.first_name || user.name
     const customStatus = user.custom_status?.trim() || ""
 
     const isDisabled = user.enabled === 0
+
+    // TODO: Add designation etc
 
     return (
         <div className="">
@@ -39,8 +35,8 @@ export function UserProfileDrawer({ user }: UserProfileDrawerProps) {
                     />
                 </div>
                 <div className="flex flex-col self-center gap-1 justify-between">
-                    <span className="text-lg-medium">
-                        {displayName}
+                    <span className="text-2xl-medium">
+                        {displayName} {name === user.name ? <span className="text-base text-ink-gray-6">({_("You")})</span> : ""}
                     </span>
                     {customStatus && (
                         <span className="text-p-xs text-ink-gray-6">{customStatus}</span>
