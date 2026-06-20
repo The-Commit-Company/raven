@@ -137,76 +137,76 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
                     onScroll={onScroll}
                     className="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-auto [overflow-anchor:none]"
                 >
-                <div className="flex min-w-0 w-full flex-col px-3 pb-8">
-                    {isLoading ? (
-                        <MessageListSkeleton />
-                    ) : error ? (
-                        <StreamError error={error} onRetry={jumpToLatest} />
-                    ) : blocks.length === 0 ? (
-                        <StreamEmpty />
-                    ) : (
-                        <>
-                            {/* Constant-height row while more history exists: the spinner only ever
+                    <div className="flex min-w-0 w-full flex-col px-3 pb-8">
+                        {isLoading ? (
+                            <MessageListSkeleton />
+                        ) : error ? (
+                            <StreamError error={error} onRetry={jumpToLatest} />
+                        ) : blocks.length === 0 ? (
+                            <StreamEmpty />
+                        ) : (
+                            <>
+                                {/* Constant-height row while more history exists: the spinner only ever
                                 changes pixels, not geometry. Height changes that move content must
                                 land atomically with `blocks` changes for scroll compensation to be exact. */}
-                            {hasOlderMessages && (
-                                <div className="flex h-10 shrink-0 items-center justify-center">
-                                    {loadingOlder && (
-                                        <LoaderCircle className="h-4 w-4 animate-spin text-ink-gray-5" />
-                                    )}
-                                </div>
-                            )}
-                            {blocks.map((block) =>
-                                block.message_type === "date" ? (
-                                    <DateSeparator label={block.creation} key={block.name} />
-                                ) : block.message_type === "batch" ? (
-                                    <div
-                                        key={block.name}
-                                        data-message-id={block.messages[0].name}
-                                        className={cn(
-                                            "flex flex-col rounded-md transition-colors duration-700",
-                                            block.messages.some((member) => member.name === highlightedID) &&
+                                {hasOlderMessages && (
+                                    <div className="flex h-10 shrink-0 items-center justify-center">
+                                        {loadingOlder && (
+                                            <LoaderCircle className="h-4 w-4 animate-spin text-ink-gray-5" />
+                                        )}
+                                    </div>
+                                )}
+                                {blocks.map((block) =>
+                                    block.message_type === "date" ? (
+                                        <DateSeparator label={block.creation} key={block.name} />
+                                    ) : block.message_type === "batch" ? (
+                                        <div
+                                            key={block.name}
+                                            data-message-id={block.messages[0].name}
+                                            className={cn(
+                                                "flex flex-col rounded-md transition-colors duration-700",
+                                                block.messages.some((member) => member.name === highlightedID) &&
                                                 "bg-surface-amber-2",
-                                            block.messages.some((member) => member.name === actionTarget?.name) &&
+                                                block.messages.some((member) => member.name === actionTarget?.name) &&
                                                 "bg-surface-gray-2",
-                                        )}
-                                    >
-                                        <BatchMessageItem block={block} onInView={onMessageInView} />
-                                    </div>
-                                ) : block.message_type === "System" ? (
-                                    <SystemMessage
-                                        message={block.text ?? ""}
-                                        time={block.creation}
-                                        key={block.name}
-                                    />
-                                ) : (
-                                    <div
-                                        key={block.name}
-                                        data-message-id={block.name}
-                                        // Deliberately NO content-visibility: placeholder estimates change height
-                                        // after paint and break exact scroll compensation on prepend.
-                                        className={cn(
-                                            "flex flex-col rounded-md transition-colors duration-700",
-                                            highlightedID === block.name && "bg-surface-amber-2",
-                                            actionTarget?.name === block.name && "bg-surface-gray-2",
-                                        )}
-                                    >
-                                        <MessageItem message={block} onInView={onMessageInView} />
-                                    </div>
-                                ),
-                            )}
-                            {/* Same constant-height rule as the top row: while the window is
+                                            )}
+                                        >
+                                            <BatchMessageItem block={block} onInView={onMessageInView} />
+                                        </div>
+                                    ) : block.message_type === "System" ? (
+                                        <SystemMessage
+                                            message={block.text ?? ""}
+                                            time={block.creation}
+                                            key={block.name}
+                                        />
+                                    ) : (
+                                        <div
+                                            key={block.name}
+                                            data-message-id={block.name}
+                                            // Deliberately NO content-visibility: placeholder estimates change height
+                                            // after paint and break exact scroll compensation on prepend.
+                                            className={cn(
+                                                "flex flex-col rounded-md transition-colors duration-700",
+                                                highlightedID === block.name && "bg-surface-amber-2",
+                                                actionTarget?.name === block.name && "bg-surface-gray-2",
+                                            )}
+                                        >
+                                            <MessageItem message={block} onInView={onMessageInView} />
+                                        </div>
+                                    ),
+                                )}
+                                {/* Same constant-height rule as the top row: while the window is
                                 detached, this slot exists whether or not a fetch is running. */}
-                            {hasNewerMessages && (
-                                <div className="flex h-10 shrink-0 items-center justify-center">
-                                    {loadingNewer && (
-                                        <LoaderCircle className="h-4 w-4 animate-spin text-ink-gray-5" />
-                                    )}
-                                </div>
-                            )}
-                        </>
-                    )}
-                </div>
+                                {hasNewerMessages && (
+                                    <div className="flex h-10 shrink-0 items-center justify-center">
+                                        {loadingNewer && (
+                                            <LoaderCircle className="h-4 w-4 animate-spin text-ink-gray-5" />
+                                        )}
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
                 </div>
             </MessageActionMenu>
             <MessageActionDialogs />
@@ -216,12 +216,16 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
                     <Button
                         variant="outline"
                         size="sm"
+                        isIconButton={hasUnseenMessages ? false : true}
                         onClick={onJumpToPresent}
-                        className="rounded-full shadow-md bg-surface-base gap-1.5"
+                        className="rounded-full shadow"
                     >
                         <ArrowDown />
-                        {(hasUnseenMessages || hasNewerMessages) && (
-                            <span className="text-xs">{_("New messages")}</span>
+                        {/* "New messages" only when one actually arrived while scrolled up.
+                            hasNewerMessages just means the window is detached (e.g. scrolled
+                            past the 300 cap, or deep-linked) — that's a plain jump-to-present. */}
+                        {hasUnseenMessages && (
+                            <span>{_("New messages")}</span>
                         )}
                     </Button>
                 </div>

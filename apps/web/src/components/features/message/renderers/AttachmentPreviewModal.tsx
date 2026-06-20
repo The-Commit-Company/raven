@@ -10,10 +10,11 @@ import { MediaPreviewHeader } from "./MediaPreviewHeader"
 import { AudioPlayer } from "./AudioPlayer"
 import { useUser } from "@hooks/useUser"
 import { useIsMobile } from "@hooks/use-mobile"
-import { downloadFile, shareFile } from "@lib/file"
+import { downloadFile, getFileExtension, shareFile } from "@lib/file"
 import { cn } from "@lib/utils"
 import _ from "@lib/translate"
 import { attachmentPreviewAtom, type Attachment, type AttachmentPreviewState } from "@utils/attachmentPreview"
+import FileTypeIcon from "@components/common/FileIcons/FileTypeIcon"
 
 /** Minimum horizontal travel (px) for a touch swipe to count as paging. */
 const SWIPE_THRESHOLD = 50
@@ -267,7 +268,7 @@ const DownloadCard = ({ attachment, isMobile }: { attachment: Attachment; isMobi
             className="flex w-full max-w-sm flex-col items-center gap-4 rounded-lg bg-surface-gray-1 p-10 text-center"
             onClick={(event) => event.stopPropagation()}
         >
-            <FileText className="h-12 w-12 text-ink-gray-5" />
+            <FileTypeIcon fileType={getFileExtension(attachment.fileName)} size='xl' />
             <div className="flex flex-col gap-1">
                 <p className="font-medium text-ink-gray-8 break-all">{attachment.fileName}</p>
                 <p className="text-sm text-ink-gray-5">{_("No preview available")}</p>

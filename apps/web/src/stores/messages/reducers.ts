@@ -1,5 +1,13 @@
 import type { Message } from "@raven/types/common/Message"
-import { ChannelMessagesState, MAX_WINDOW_SIZE, MessagesPage, initialChannelState } from "./types"
+import {
+    ChannelMessagesState,
+    MAX_WINDOW_SIZE,
+    MessageStatus,
+    MessagesPage,
+    OptimisticMessage,
+    initialChannelState,
+    isOptimistic,
+} from "./types"
 
 /**
  * Pure state transitions for a channel's message window.
@@ -199,4 +207,66 @@ export const removeMessage = (
     const byId = new Map(state.byId)
     byId.delete(messageID)
     return { ...state, byId, order: state.order.filter((id) => id !== messageID) }
+}
+
+/**
+ * Insert/update many messages in one transition (optimistic send + its ack).
+ * New ids only land at the live edge (same rule as upsertMessage); existing ones
+ * update unless stale. Trims the oldest end if over cap.
+ */
+export const upsertMessages = (
+    state: ChannelMessagesState,
+    messages: Message[],
+): ChannelMessagesState => {
+    if (messages.length === 0) return state
+    const byId = new Map(state.byId)
+    let changed = false
+    for (const message of messages) {
+        const existing = byId.get(message.name)
+        if (existing) {
+            if (!isStale(existing, message)) {
+                byId.set(message.name, message)
+                changed = true
+            }
+        } else if (!state.hasNewerMessages) {
+            byId.set(message.name, message)
+            changed = true
+        }
+    }
+    if (!changed) return state
+    const { order, trimmed } = enforceWindowCap(byId, sortIds(byId), "oldest")
+    return { ...state, byId, order, hasOlderMessages: trimmed ? true : state.hasOlderMessages }
+}
+
+/** Remove the optimistic placeholders of a send (matched by batch id), once it reconciles or is discarded. */
+export const removeOptimisticBatch = (
+    state: ChannelMessagesState,
+    batchId: string,
+): ChannelMessagesState => {
+    const toRemove = new Set<string>()
+    for (const [id, message] of state.byId) {
+        if (isOptimistic(message) && message.message_batch_id === batchId) toRemove.add(id)
+    }
+    if (toRemove.size === 0) return state
+    const byId = new Map(state.byId)
+    for (const id of toRemove) byId.delete(id)
+    return { ...state, byId, order: state.order.filter((id) => !toRemove.has(id)) }
+}
+
+/** Set the status (sending/failed) on a send's optimistic placeholders, in place. */
+export const setOptimisticStatus = (
+    state: ChannelMessagesState,
+    batchId: string,
+    status: MessageStatus,
+): ChannelMessagesState => {
+    const byId = new Map(state.byId)
+    let changed = false
+    for (const [id, message] of state.byId) {
+        if (isOptimistic(message) && message.message_batch_id === batchId && message._status !== status) {
+            byId.set(id, { ...message, _status: status } as OptimisticMessage)
+            changed = true
+        }
+    }
+    if (!changed) return state
+    return { ...state, byId }
 }

@@ -48,6 +48,81 @@ def send_message(
 	return doc
 
 
+IMAGE_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "webp", "svg", "bmp", "ico", "heic", "heif"}
+
+
+def _file_message_type(file_url: str) -> str:
+	ext = file_url.rsplit(".", 1)[-1].split("?")[0].lower() if "." in file_url else ""
+	return "Image" if ext in IMAGE_EXTENSIONS else "File"
+
+
+@frappe.whitelist(methods=["POST"])
+def send_message_with_attachments(
+	channel_id: str,
+	content: str | None = None,
+	files: list[str] | str | None = None,
+	client_id: str | None = None,
+	is_reply: bool = False,
+	linked_message: str | None = None,
+):
+	"""
+	v3 composer send. Creates one message per (already-uploaded) file URL first —
+	attachments render above the text — then the text message, all stamped with the
+	same message_batch_id when the send produces more than one message. Runs in a
+	single request transaction, so the batch is all-or-nothing.
+
+	Returns the created messages in order. The client reconciles its optimistic
+	insert against this response — the ack, not the realtime echo, is authoritative
+	for the sender.
+
+	`client_id` is a client-generated id used as the batch id (and, later, as an
+	idempotency key for retries). It is not persisted beyond the batch id.
+	"""
+	if isinstance(files, str):
+		files = frappe.parse_json(files)
+	files = files or []
+
+	content = content or ""
+	has_text = bool(frappe.utils.strip_html_tags(content).strip())
+
+	if not has_text and not files:
+		frappe.throw(_("Cannot send an empty message"))
+
+	# Every message from a send carries the client_id as its batch id: it groups
+	# multi-message sends in the UI AND lets the client match the realtime echo of
+	# each member back to its optimistic placeholder. A unique client_id per send
+	# means single messages are never falsely grouped (the renderer groups 2+ only).
+	batch_id = client_id
+
+	# Ordered message specs: attachments first (they render above the caption),
+	# then the text. TODO(layer-3): measure image dimensions for layout.
+	specs = [{"message_type": _file_message_type(file_url), "file": file_url} for file_url in files]
+	if has_text:
+		specs.append({"message_type": "Text", "text": content})
+
+	# The reply attaches to the LAST message of the batch — the caption when there
+	# is text, otherwise the final attachment. (A files-only reply must still carry
+	# the reply, which the old text-only branch dropped.)
+	if is_reply and linked_message and specs:
+		specs[-1]["is_reply"] = True
+		specs[-1]["linked_message"] = linked_message
+
+	created = []
+	for spec in specs:
+		doc = frappe.get_doc(
+			{
+				"doctype": "Raven Message",
+				"channel_id": channel_id,
+				"message_batch_id": batch_id,
+				**spec,
+			}
+		)
+		doc.insert()
+		created.append(doc)
+
+	return created
+
+
 @frappe.whitelist(methods=["POST"])
 def delete_messages(message_ids: list[str]):
 	"""

@@ -1,4 +1,5 @@
 import { cn } from '@lib/utils'
+import { CodeIcon, FileIcon, FileTextIcon, FolderArchiveIcon, ImageIcon, MusicIcon, PresentationIcon, VideoIcon } from 'lucide-react'
 
 interface FileTypeIconProps {
     fileType: string
@@ -80,9 +81,7 @@ const FileTypeIcon = ({
             case 'avi':
             case 'webm':
                 return (
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className={cn("text-white", iconSizeClasses[size])}>
-                        <path d="M16 4c-6.6 0-12 5.4-12 12s5.4 12 12 12 12-5.4 12-12S22.6 4 16 4zm-2 16.5V9.5l8 5.5-8 5.5z" fill="currentColor" />
-                    </svg>
+                    <VideoIcon />
                 )
             case 'audio':
             case 'mp3':
@@ -90,9 +89,7 @@ const FileTypeIcon = ({
             case 'ogg':
             case 'flac':
                 return (
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className={cn("text-white", iconSizeClasses[size])}>
-                        <path d="M16 4c-6.6 0-12 5.4-12 12s5.4 12 12 12 12-5.4 12-12S22.6 4 16 4zm-2 16.5V9.5l8 5.5-8 5.5z" fill="currentColor" />
-                    </svg>
+                    <MusicIcon className={cn("text-white", iconSizeClasses[size])} />
                 )
             case 'image':
             case 'jpg':
@@ -101,10 +98,7 @@ const FileTypeIcon = ({
             case 'gif':
             case 'webp':
                 return (
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className={cn("text-white", iconSizeClasses[size])}>
-                        <path d="M26 4H6c-1.1 0-2 .9-2 2v20c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM6 26V6h20v20H6z" fill="currentColor" />
-                        <path d="M10 12c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm12 8H10l4-6 3 4 2-3 7 5z" fill="currentColor" />
-                    </svg>
+                    <ImageIcon className={cn("text-white", iconSizeClasses[size])} />
                 )
             case 'zip':
             case 'rar':
@@ -112,16 +106,36 @@ const FileTypeIcon = ({
             case 'tar':
             case 'gz':
                 return (
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className={cn("text-white", iconSizeClasses[size])}>
-                        <path d="M26 4H6c-1.1 0-2 .9-2 2v20c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM6 26V6h20v20H6z" fill="currentColor" />
-                        <path d="M10 8h12v2H10V8zm0 4h12v2H10v-2zm0 4h12v2H10v-2z" fill="currentColor" />
-                    </svg>
+                    <FolderArchiveIcon className={cn("text-white", iconSizeClasses[size])} />
                 )
+            case 'key':
+                return <PresentationIcon className={cn("text-white", iconSizeClasses[size])} />
+
+            case 'txt':
+            case 'md':
+                return <FileTextIcon className={cn("text-white", iconSizeClasses[size])} />
+
+            case 'py':
+            case 'js':
+            case 'ts':
+            case 'jsx':
+            case 'tsx':
+            case 'json':
+            case 'html':
+            case 'css':
+            case 'scss':
+            case 'sass':
+            case 'java':
+            case 'c':
+            case 'cpp':
+            case 'c#':
+            case 'c++':
+            case 'php':
+                return <CodeIcon className={cn("text-white", iconSizeClasses[size])} />
+
             default:
                 return (
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className={cn("text-white", iconSizeClasses[size])}>
-                        <path d="M18 22a2 2 0 0 0 2-2V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12zM13 4l5 5h-5V4zM7 8h3v2H7V8zm0 4h10v2H7v-2zm0 4h10v2H7v-2z" fill="currentColor" />
-                    </svg>
+                    <FileIcon className={cn("text-white", iconSizeClasses[size])} />
                 )
         }
     }
@@ -159,6 +173,7 @@ const FileTypeIcon = ({
             case 'png':
             case 'gif':
             case 'webp':
+            case 'key':
                 return 'bg-blue-600'
             case 'zip':
             case 'rar':
@@ -173,7 +188,7 @@ const FileTypeIcon = ({
 
     if (showBackground) {
         return (
-            <div className={cn("rounded-lg flex items-center justify-center", getBackgroundColor(), containerClass)}>
+            <div className={cn("rounded-md flex items-center justify-center", getBackgroundColor(), containerClass)}>
                 {renderIcon()}
             </div>
         )

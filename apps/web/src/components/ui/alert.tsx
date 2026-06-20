@@ -45,7 +45,13 @@ const alertVariants = cva(
         theme: "amber",
         variant: "subtle",
         className: "bg-surface-amber-2 border-surface-amber-2"
-      }
+      },
+      {
+        theme: "red",
+        variant: "outline",
+        className: "border-outline-red-3"
+      },
+      // TODO: Add outline classes
     ],
     defaultVariants: {
       variant: "subtle",

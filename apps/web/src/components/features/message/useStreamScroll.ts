@@ -1,10 +1,21 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import type { StreamBlock } from "@stores/messages/types"
+import type { Message } from "@raven/types/common/Message"
+import { useUserCookieData } from "@hooks/useUserCookieData"
 
 /** How close to the bottom (px) still counts as "at the bottom". */
 const AT_BOTTOM_SLOP = 40
 /** Distance from either content edge (px) at which the next page starts loading. */
 const LOAD_MORE_THRESHOLD = 400
+
+/** Owner of the newest actual message in the stream (skips date dividers, unwraps batches). */
+const ownerOfNewestMessage = (blocks: StreamBlock[]): string | undefined => {
+    const last = blocks[blocks.length - 1]
+    if (!last) return undefined
+    if (last.message_type === "batch") return last.messages[last.messages.length - 1]?.owner
+    if (last.message_type === "date") return undefined
+    return (last as Message).owner
+}
 
 type StreamScrollOptions = {
     channelID: string
@@ -48,6 +59,7 @@ export const useStreamScroll = ({
     targetMessageID,
     onTargetSettled,
 }: StreamScrollOptions) => {
+    const { name: currentUser } = useUserCookieData()
     const containerRef = useRef<HTMLDivElement>(null)
     /** True while the view should follow the newest message. */
     const pinnedRef = useRef(true)
@@ -138,7 +150,15 @@ export const useStreamScroll = ({
             const delta = container.scrollHeight - metricsRef.current.scrollHeight
             if (delta > 0) container.scrollTop = metricsRef.current.scrollTop + delta
         } else if (previous.last !== null && last !== previous.last) {
-            setHasUnseenMessages(true)
+            // New message at the bottom while scrolled up: jump to it if it's our
+            // own send (you should always land on your message), else just surface
+            // the "new messages" pill.
+            if (ownerOfNewestMessage(blocks) === currentUser) {
+                container.scrollTop = container.scrollHeight
+                pinnedRef.current = true
+            } else {
+                setHasUnseenMessages(true)
+            }
         }
         metricsRef.current = { scrollTop: container.scrollTop, scrollHeight: container.scrollHeight }
 

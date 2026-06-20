@@ -24,6 +24,9 @@ type SavedEvent = { channel_id: string; message_id: string; liked_by: string }
 export const useMessagesRealtime = () => {
     useFrappeEventListener("message_created", (event: CreatedEvent) => {
         if (!event?.message_details || !channelMessagesStore.isHydrated(event.channel_id)) return
+        // Our own in-flight send: skip the echo — the send's ack reconciles the
+        // optimistic placeholder (avoids a brief duplicate if the echo beats the ack).
+        if (channelMessagesStore.isPendingSend(event.message_details.message_batch_id ?? "")) return
         channelMessagesStore.messageCreated(event.channel_id, event.message_details)
     })
 

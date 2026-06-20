@@ -1,5 +1,15 @@
 import type { Message } from "@raven/types/common/Message"
 
+/** Status of a message optimistically inserted on send, before the server ack lands. */
+export type MessageStatus = "sending" | "failed"
+
+/** A locally-created message shown immediately on send; carries `_status` until reconciled. */
+export type OptimisticMessage = Message & { _status: MessageStatus }
+
+/** Narrows to an optimistic (not-yet-server-confirmed) message. */
+export const isOptimistic = (message: Message): message is OptimisticMessage =>
+    (message as OptimisticMessage)._status !== undefined
+
 /**
  * One channel's message window.
  *

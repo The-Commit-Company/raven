@@ -7,9 +7,18 @@ import {
     markLoading,
     patchMessage,
     removeMessage,
+    removeOptimisticBatch,
+    setOptimisticStatus,
     upsertMessage,
+    upsertMessages,
 } from "./reducers"
-import { ChannelMessagesState, MessagesPage, initialChannelState } from "./types"
+import {
+    ChannelMessagesState,
+    MessagesPage,
+    OptimisticMessage,
+    initialChannelState,
+    isOptimistic,
+} from "./types"
 
 /** Channels kept hydrated in memory; least-recently-used unsubscribed channels are evicted. */
 const MAX_HYDRATED_CHANNELS = 10
@@ -33,6 +42,8 @@ class ChannelMessagesStore {
     private hydratedListeners = new Set<Listener>()
     /** Reference-stable snapshot of hydrated channel IDs; new ref only on membership change. */
     private hydratedIds: readonly string[] = []
+    /** Batch ids of sends currently optimistic in the UI — their realtime echoes are skipped until the ack reconciles. */
+    private pendingSends = new Set<string>()
 
     getState(channelID: string): ChannelMessagesState {
         let state = this.states.get(channelID)
@@ -131,6 +142,56 @@ class ChannelMessagesStore {
     /** Drops a channel's window so the next visit refetches (jump-to-latest, eviction). */
     reset(channelID: string) {
         this.update(channelID, initialChannelState)
+    }
+
+    /** ----- Optimistic send lifecycle ----- */
+
+    /** Show a send immediately. `batchId` (= client_id) ties the placeholders together and gates the echoes. */
+    addOptimisticMessages(channelID: string, batchId: string, messages: OptimisticMessage[]) {
+        this.pendingSends.add(batchId)
+        this.update(channelID, upsertMessages(this.getState(channelID), messages))
+    }
+
+    /** The send's ack landed: drop the placeholders and insert the real messages it returned. */
+    resolveOptimisticSend(channelID: string, batchId: string, realMessages: Message[]) {
+        this.pendingSends.delete(batchId)
+        let next = removeOptimisticBatch(this.getState(channelID), batchId)
+        next = upsertMessages(next, realMessages)
+        this.update(channelID, next)
+    }
+
+    /** The send failed: leave the placeholders in place, flagged failed, for retry/discard. */
+    failOptimisticSend(channelID: string, batchId: string) {
+        this.pendingSends.delete(batchId)
+        this.update(channelID, setOptimisticStatus(this.getState(channelID), batchId, "failed"))
+    }
+
+    /** Retry a failed send: flip its placeholders back to sending and re-arm the echo skip. */
+    retryOptimisticSend(channelID: string, batchId: string) {
+        this.pendingSends.add(batchId)
+        this.update(channelID, setOptimisticStatus(this.getState(channelID), batchId, "sending"))
+    }
+
+    /** Discard a failed send's placeholders. */
+    discardOptimisticSend(channelID: string, batchId: string) {
+        this.pendingSends.delete(batchId)
+        this.update(channelID, removeOptimisticBatch(this.getState(channelID), batchId))
+    }
+
+    /** The optimistic placeholders of a send, in display order — used to rebuild the payload on retry. */
+    getOptimisticMessages(channelID: string, batchId: string): Message[] {
+        const state = this.getState(channelID)
+        const out: Message[] = []
+        for (const id of state.order) {
+            const message = state.byId.get(id)
+            if (message && isOptimistic(message) && message.message_batch_id === batchId) out.push(message)
+        }
+        return out
+    }
+
+    /** True while a send's optimistic placeholders are live — its realtime echoes should be skipped. */
+    isPendingSend(batchId: string): boolean {
+        return this.pendingSends.has(batchId)
     }
 
     /** ----- Event-shaped entry points (socket dispatcher and optimistic sends call these) ----- */
