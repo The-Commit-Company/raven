@@ -35,6 +35,9 @@ class RavenMessage(Document):
 		from frappe.types import DF
 
 		from raven.raven_messaging.doctype.raven_mention.raven_mention import RavenMention
+		from raven.raven_messaging.doctype.raven_message_links.raven_message_links import (
+			RavenMessageLinks,
+		)
 
 		blurhash: DF.SmallText | None
 		bot: DF.Link | None
@@ -55,6 +58,8 @@ class RavenMessage(Document):
 		link_doctype: DF.Link | None
 		link_document: DF.DynamicLink | None
 		linked_message: DF.Link | None
+		links: DF.SmallText | None
+		links_table: DF.Table[RavenMessageLinks]
 		mentions: DF.Table[RavenMention]
 		message_batch_id: DF.Data | None
 		message_reactions: DF.JSON | None
@@ -102,7 +107,7 @@ class RavenMessage(Document):
 					preview.url = href
 					preview.deferred_insert()
 
-				self.append("links", {"url": href})
+				self.append("links_table", {"url": href})
 
 		text_content = soup.get_text(" ", strip=True)
 

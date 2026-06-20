@@ -4,6 +4,7 @@
 import re
 from urllib.parse import urljoin
 
+import frappe
 from frappe.model.document import Document
 from linkpreview import Link, LinkGrabber, LinkPreview, link_preview
 
@@ -18,13 +19,18 @@ class RavenLinkPreview(Document):
 		from frappe.types import DF
 
 		description: DF.SmallText | None
-		image: DF.AttachImage | None
+		fetched_on: DF.Datetime | None
+		image: DF.SmallText | None
 		site_name: DF.Data | None
-		title: DF.Data | None
+		title: DF.SmallText | None
 		url: DF.Data
 	# end: auto-generated types
 
 	def fetch_preview(self):
+
+		if frappe.flags.in_test or frappe.flags.in_patch or frappe.flags.in_migrate:
+			return
+
 		if not (
 			self.url.startswith("mailto")
 			or self.url.startswith("tel")
@@ -54,6 +60,8 @@ class RavenLinkPreview(Document):
 
 				if preview.image:
 					self.image = urljoin(self.url, preview.image)
+
+				self.fetched_on = frappe.utils.now_datetime()
 
 	def before_insert(self):
 		self.fetch_preview()
