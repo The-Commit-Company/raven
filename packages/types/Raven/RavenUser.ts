@@ -2,7 +2,7 @@ import { RavenPinnedChannels } from './RavenPinnedChannels'
 import { RavenChannelGroups } from '../RavenChannelManagement/RavenChannelGroups'
 import { RavenGroupedChannels } from './RavenGroupedChannels'
 
-export interface RavenUser{
+export interface RavenUser {
 	creation: string
 	name: string
 	modified: string
@@ -41,4 +41,6 @@ export interface RavenUser{
 	custom_status?: string
 	/**	Chat Style : Select	*/
 	chat_style?: "Simple" | "Left-Right"
+	/**	Contact Number : Data	*/
+	contact_number?: string
 }

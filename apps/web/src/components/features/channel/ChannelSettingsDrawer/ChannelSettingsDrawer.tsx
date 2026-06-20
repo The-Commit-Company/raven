@@ -13,6 +13,7 @@ import { channelDrawerAtom } from '@utils/channelAtoms';
 import { useCurrentChannelID } from '@hooks/useCurrentChannelID';
 import type { UserData } from '@db';
 import _ from '@lib/translate'
+import { Separator } from '@components/ui/separator';
 
 interface ChannelSettingsDrawerProps {
     peerUser?: UserData
@@ -38,33 +39,43 @@ const ChannelSettingsDrawer = ({ peerUser }: ChannelSettingsDrawerProps) => {
 
     return (
         <div className="flex flex-col h-full w-full">
-            <div className="flex-1 overflow-hidden p-3">
-                <Tabs value={drawerType} onValueChange={onTabChange} className="flex flex-col h-full w-full">
-                    <div className="flex items-center justify-between shrink-0">
-                        <TabsList variant="underline" className="grid flex-1 grid-cols-5 gap-1 px-1 h-8 border-0">
-                            <TabsTrigger value="info">{isDM ? _('Profile') : _('Info')}</TabsTrigger>
-                            <TabsTrigger value="files">{_('Files')}</TabsTrigger>
-                            <TabsTrigger value="links">{_('Links')}</TabsTrigger>
-                            <TabsTrigger value="threads">{_('Threads')}</TabsTrigger>
-                            <TabsTrigger value="pins">{_('Pins')}</TabsTrigger>
-                        </TabsList>
-                        <Button
-                            variant="ghost"
-                            className="h-7 w-7 shrink-0"
-                            onClick={handleClose}
-                            aria-label="Close drawer"
-                        >
-                            <X className="h-3 w-3" />
-                        </Button>
-                    </div>
+            <div className='flex justify-between items-center px-2.5 pl-5 h-11 border-b border-outline-gray-2'>
+                <span className='text-lg-medium'>{isDM ? _('Profile') : _('About')}</span>
+                <div>
+                    <Button
+                        variant="ghost"
+                        onClick={handleClose}
+                        isIconButton
+                        aria-label="Close drawer"
+                    >
+                        <X />
+                    </Button>
+                </div>
+            </div>
+
+            <div>
+                {peerUser ? (
+                    <UserProfileDrawer user={peerUser} />
+                ) : (
+                    <ChannelInfo channelID={channelID} />
+                )}
+            </div>
+
+
+            <div className="flex-1 overflow-hidden px-3">
+                <Tabs value={drawerType} onValueChange={onTabChange}>
+
+                    <TabsList variant="subtle">
+                        {/* <TabsTrigger value="info">{isDM ? _('Profile') : _('Info')}</TabsTrigger> */}
+                        <TabsTrigger value="files">{_('Files')}</TabsTrigger>
+                        <TabsTrigger value="links">{_('Links')}</TabsTrigger>
+                        <TabsTrigger value="threads">{_('Threads')}</TabsTrigger>
+                        <TabsTrigger value="pins">{_('Pins')}</TabsTrigger>
+                    </TabsList>
 
                     <div className="flex-1 overflow-y-auto overflow-x-hidden">
                         <TabsContent value="info">
-                            {peerUser ? (
-                                <UserProfileDrawer user={peerUser} />
-                            ) : (
-                                <ChannelInfo channelID={channelID} />
-                            )}
+
                         </TabsContent>
 
                         <TabsContent value="threads">

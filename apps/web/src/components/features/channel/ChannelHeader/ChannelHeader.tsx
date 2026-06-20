@@ -34,7 +34,7 @@ const ChannelHeader = () => {
 
     return (
         <div
-            className="flex w-full shrink-0 items-center justify-between border-b bg-surface-base py-1.5 px-2"
+            className="flex w-full shrink-0 items-center justify-between border-b border-outline-gray-2 bg-surface-base h-11 px-2"
         >
             <div className="flex items-center justify-center md:hidden">
                 <Button

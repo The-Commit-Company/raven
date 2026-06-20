@@ -92,7 +92,7 @@ const getSizeClasses = (size: 'xs' | 'sm' | 'md' | 'lg' | 'xl') => {
         case 'lg':
             return {
                 avatar: 'h-12 w-12 rounded-full',
-                indicator: 'h-3 w-3 -bottom-1 -right-1',
+                indicator: 'h-4 w-4 -bottom-0.5 -right-0.5',
                 manualAvailableDot: 'h-1 w-1',
                 bot: 'h-3 w-3',
                 botContainer: 'h-4 w-4 -bottom-1 -right-1',
@@ -100,13 +100,12 @@ const getSizeClasses = (size: 'xs' | 'sm' | 'md' | 'lg' | 'xl') => {
             }
         case 'xl':
             return {
-                avatar: 'h-[160px] w-[160px] rounded-lg shadow-none',
-                indicator: 'h-3.5 w-3.5 -bottom-0 right-0 border-2 border-outline-base',
-                manualAvailableDot: 'h-1.5 w-1.5',
-                bot: 'h-5 w-5',
+                avatar: 'h-16 w-16 rounded-full',
+                indicator: 'h-4 w-4 -bottom-0 right-0 border-2 border-outline-base',
+                manualAvailableDot: 'h-2 w-2',
+                bot: 'h-4 w-4',
                 botContainer: 'h-7 w-7 -bottom-1 -right-1 border-2 border-outline-base',
                 font: 'text-3xl font-semibold',
-                fallbackRound: 'rounded-lg'
             }
     }
 }
@@ -176,7 +175,7 @@ export const UserAvatar = memo<UserAvatarProps>(({
                     loading="lazy"
                 />
                 <AvatarFallback
-                    className={cn("font-medium select-none border-0", avatarColor, sizeClasses.font, sizeClasses.fallbackRound)}
+                    className={cn("font-medium select-none border-0", avatarColor, sizeClasses.font)}
                     // style={fallbackStyle}
                     aria-label={`${displayName} (initials)`}
                 >

@@ -103,7 +103,7 @@ function TabsTrigger({
       data-slot="tabs-trigger"
       className={cn(
         // Common
-        "whitespace-nowrap transition-colors disabled:pointer-events-none disabled:opacity-50",
+        "whitespace-nowrap transition-colors disabled:pointer-events-none disabled:opacity-50 w-full",
         "text-ink-gray-5 text-base data-[state=active]:text-ink-gray-9 hover:text-ink-gray-9 relative gap-2",
         "flex items-center justify-center group-data-[orientation=vertical]/tabs:w-full group-data-[orientation=vertical]/tabs:justify-start",
         // Icon Sizes - 16px for sm, 18px for md

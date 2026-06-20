@@ -48,7 +48,7 @@ export function DMChannelHeader({ peer, channelID }: DMChannelHeaderProps) {
         <div
             // h-11 (not padding-driven): AppHeader matches this height on
             // mobile so list ↔ channel navigation doesn't jump the header
-            className="flex h-11 w-full shrink-0 items-center justify-between border-b bg-surface-base px-2"
+            className="flex h-11 w-full shrink-0 items-center justify-between border-b border-outline-gray-2 bg-surface-base px-2"
         >
             <div className="flex items-center gap-1 md:hidden">
                 <Button

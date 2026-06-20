@@ -1,7 +1,7 @@
 import { RavenUser } from "@raven/types/Raven/RavenUser"
 import { Dexie, type EntityTable } from "dexie"
 
-export type UserData = Pick<RavenUser, 'name' | 'full_name' | 'user_image' | 'first_name' | 'enabled' | 'type' | 'availability_status' | 'custom_status'>
+export type UserData = Pick<RavenUser, 'name' | 'full_name' | 'user_image' | 'first_name' | 'enabled' | 'type' | 'availability_status' | 'custom_status' | 'contact_number'>
 
 const db = new Dexie("RavenDB") as Dexie & {
     users: EntityTable<
