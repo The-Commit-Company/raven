@@ -6,7 +6,7 @@ import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
 import { useChannel } from "@hooks/useChannel"
 import { useUser } from "@hooks/useUser"
 
-const SETTINGS_DRAWER_TYPES: DrawerType[] = ["info", "files", "links", "threads", "pins"]
+const SETTINGS_DRAWER_TYPES: DrawerType[] = ["settings", "files", "links", "threads", "pins"]
 
 /**
  * The single owner of the channel drawer's content. Reads `channelDrawerAtom`

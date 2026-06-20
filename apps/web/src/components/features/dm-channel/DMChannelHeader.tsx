@@ -5,13 +5,10 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "@components/ui/dropdown-menu"
 import { UserAvatar } from "@components/features/message/UserAvatar"
-import { Bell, BellOff, BellRing, Bot, ChevronDown, ChevronLeft, Command, Files, Headset, Link, MessageSquareText, Palmtree, Pin, SearchIcon, User, UserX } from "lucide-react"
+import { Bot, ChevronDown, ChevronLeft, Files, Link, MessageSquareText, Palmtree, Pin, SearchIcon, User, UserX } from "lucide-react"
 import { useAtom, useSetAtom } from "jotai"
 import { commandMenuOpenAtom } from "@components/features/cmdk/atoms"
 import { useNavigate } from "react-router-dom"
@@ -64,7 +61,7 @@ export function DMChannelHeader({ peer, channelID }: DMChannelHeaderProps) {
 
             {/* Left: Avatar/Name dropdown + pinned chip */}
             <div className="flex items-center gap-2 min-w-0">
-                <div className="flex items-center gap-0.5">
+                <div className="flex items-center gap-1">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild className="px-1.5">
                             <Button
@@ -81,7 +78,7 @@ export function DMChannelHeader({ peer, channelID }: DMChannelHeaderProps) {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" className="w-56">
-                            <DropdownMenuItem onClick={() => openTab("info")}>
+                            <DropdownMenuItem onClick={() => openTab("files")}>
                                 <User />
                                 <span>{_("View profile")}</span>
                             </DropdownMenuItem>
@@ -97,7 +94,7 @@ export function DMChannelHeader({ peer, channelID }: DMChannelHeaderProps) {
                                 <MessageSquareText />
                                 <span>{_("Threads")}</span>
                             </DropdownMenuItem>
-                            <DropdownMenuSub>
+                            {/* <DropdownMenuSub>
                                 <DropdownMenuSubTrigger>
                                     <Bell />
                                     <span>{_("Push notifications")}</span>
@@ -116,7 +113,7 @@ export function DMChannelHeader({ peer, channelID }: DMChannelHeaderProps) {
                                         <span>{_("Mute Channel")}</span>
                                     </DropdownMenuItem>
                                 </DropdownMenuSubContent>
-                            </DropdownMenuSub>
+                            </DropdownMenuSub> */}
                         </DropdownMenuContent>
                     </DropdownMenu>
 
@@ -139,7 +136,7 @@ export function DMChannelHeader({ peer, channelID }: DMChannelHeaderProps) {
                         </Badge>
                     )}
                     {customStatus && (
-                        <Badge size="md" variant="subtle" theme="gray">
+                        <Badge size="md" variant="subtle" theme="gray" title={customStatus} className="max-w-96 md:flex hidden justify-start truncate">
                             {customStatus}
                         </Badge>
                     )}

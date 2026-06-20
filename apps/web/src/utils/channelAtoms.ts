@@ -4,7 +4,7 @@ import type { RavenPoll } from "@raven/types/RavenMessaging/RavenPoll";
 import type { Message } from "@raven/types/common/Message";
 import type { UserData } from "@db";
 
-export type DrawerType = '' | 'members' | 'files' | 'pins' | 'links' | 'threads' | 'info'
+export type DrawerType = '' | 'members' | 'files' | 'pins' | 'links' | 'threads' | 'settings'
 
 export const channelDrawerAtom = atomFamily((_channelID: string) => atom<DrawerType>(''))
 

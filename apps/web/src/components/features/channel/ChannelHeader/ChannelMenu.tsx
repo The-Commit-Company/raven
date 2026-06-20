@@ -57,6 +57,7 @@ const ChannelMenu = ({ channelID }: { channelID: string }) => {
                 <ChannelFilesButton {...navProps} />
                 <ChannelLinksButton {...navProps} />
                 <ChannelThreadsButton {...navProps} />
+
                 <MembersButton {...navProps} />
                 {!isMobile && (
                     <DropdownMenuSub>
@@ -86,11 +87,11 @@ const ChannelMenu = ({ channelID }: { channelID: string }) => {
 }
 
 const SettingsButton = ({ setDrawerType }: NavProps) => {
-    const onOpen = () => setDrawerType('info')
+    const onOpen = () => setDrawerType('settings')
     return (
         <DropdownMenuItem onClick={onOpen}>
             <Settings />
-            <span>{_("Channel info")}</span>
+            <span>{_("Settings")}</span>
         </DropdownMenuItem>
     )
 }

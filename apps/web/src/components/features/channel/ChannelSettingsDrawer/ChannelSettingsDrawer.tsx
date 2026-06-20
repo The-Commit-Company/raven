@@ -30,7 +30,7 @@ const ChannelSettingsDrawer = ({ peerUser }: ChannelSettingsDrawerProps) => {
     useHotkeys('esc', () => handleClose(), { enableOnFormTags: true })
 
     const onTabChange = (value: string) => {
-        setDrawerType(value as '' | 'files' | 'pins' | 'links' | 'threads' | 'info')
+        setDrawerType(value as '' | 'files' | 'pins' | 'links' | 'threads' | 'settings')
     }
 
     const handleClose = () => {
@@ -66,15 +66,15 @@ const ChannelSettingsDrawer = ({ peerUser }: ChannelSettingsDrawerProps) => {
                 <Tabs value={drawerType} onValueChange={onTabChange}>
 
                     <TabsList variant="subtle">
-                        {/* <TabsTrigger value="info">{isDM ? _('Profile') : _('Info')}</TabsTrigger> */}
                         <TabsTrigger value="files">{_('Files')}</TabsTrigger>
                         <TabsTrigger value="links">{_('Links')}</TabsTrigger>
                         <TabsTrigger value="threads">{_('Threads')}</TabsTrigger>
                         <TabsTrigger value="pins">{_('Pins')}</TabsTrigger>
+                        {!isDM && <TabsTrigger value="settings">{_('Settings')}</TabsTrigger>}
                     </TabsList>
 
                     <div className="flex-1 overflow-y-auto overflow-x-hidden">
-                        <TabsContent value="info">
+                        <TabsContent value="settings">
 
                         </TabsContent>
 

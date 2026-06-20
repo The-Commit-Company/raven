@@ -74,7 +74,7 @@ const getSizeClasses = (size: 'xs' | 'sm' | 'md' | 'lg' | 'xl') => {
         case 'sm':
             return {
                 avatar: 'h-6 w-6 rounded-full',
-                indicator: 'h-2 w-2 -bottom-0.5 -right-0.5',
+                indicator: 'h-2.5 w-2.5 -bottom-0.5 -right-0.5',
                 manualAvailableDot: 'h-0.5 w-0.5',
                 bot: 'h-2 w-2',
                 botContainer: 'h-3 w-3 -bottom-0.5 -right-0.5',
