@@ -13,6 +13,12 @@ export type PostClient = {
     post: <T>(method: string, params?: Record<string, unknown>) => Promise<T>
 }
 
+/** An already-uploaded attachment going out with a send: its stable URL + size. */
+export type OutgoingFile = {
+    file_url: string
+    file_size: number
+}
+
 /** Backend datetime shape (6-digit microseconds) so the placeholder sorts at the live edge. */
 const optimisticNow = () => dayjs().format("YYYY-MM-DD HH:mm:ss.SSS") + "000"
 
@@ -25,7 +31,7 @@ export const buildOptimisticMessages = (
     batchId: string,
     owner: string,
     content: string,
-    fileURLs: string[],
+    files: OutgoingFile[],
 ): OptimisticMessage[] => {
     const creation = optimisticNow()
     const base = (extra: Partial<Message>): OptimisticMessage =>
@@ -38,11 +44,12 @@ export const buildOptimisticMessages = (
             ...extra,
         }) as unknown as OptimisticMessage
 
-    const messages = fileURLs.map((url, i) =>
+    const messages = files.map((file, i) =>
         base({
             name: `${batchId}-${i}`,
-            message_type: getAttachmentKind(url) === "image" ? "Image" : "File",
-            file: url,
+            message_type: getAttachmentKind(file.file_url) === "image" ? "Image" : "File",
+            file: file.file_url,
+            file_size: file.file_size,
         }),
     )
     if (content) {
@@ -62,13 +69,13 @@ export const submitSend = (
     channelID: string,
     batchId: string,
     content: string,
-    fileURLs: string[],
+    files: OutgoingFile[],
 ) => {
     client
         .post<{ message: Message[] }>("raven.api.raven_message.send_message_with_attachments", {
             channel_id: channelID,
             content,
-            files: fileURLs,
+            files,
             client_id: batchId,
         })
         .then((res) => channelMessagesStore.resolveOptimisticSend(channelID, batchId, res.message ?? []))
@@ -88,10 +95,13 @@ export const retrySend = (client: PostClient, channelID: string, batchId: string
     const placeholders = channelMessagesStore.getOptimisticMessages(channelID, batchId)
     if (placeholders.length === 0) return
     const content = placeholders.find((m) => m.message_type === "Text")?.text ?? ""
-    const fileURLs = placeholders
-        .map((m) => (m as { file?: string }).file)
-        .filter((url): url is string => !!url)
+    const files = placeholders
+        .filter((m) => (m as { file?: string }).file)
+        .map((m) => ({
+            file_url: (m as { file?: string }).file as string,
+            file_size: (m as { file_size?: number }).file_size ?? 0,
+        }))
 
     channelMessagesStore.retryOptimisticSend(channelID, batchId)
-    submitSend(client, channelID, batchId, content, fileURLs)
+    submitSend(client, channelID, batchId, content, files)
 }

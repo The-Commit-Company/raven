@@ -6,6 +6,7 @@ import { useMemo, useRef } from 'react'
 import FileTypeIcon from '@components/common/FileIcons/FileTypeIcon'
 import { formatBytes, getFileExtension } from '@raven/lib/utils/operations'
 import { ProgressCircle } from '@components/ui/circular-progress'
+import _ from '@lib/translate'
 
 type InputFilesProps = {
     channelID: string
@@ -67,7 +68,7 @@ const FileItem = ({ file, onRemove }: { file: FileItemType, onRemove: (file: Fil
             <div className="flex items-center size-9 justify-center">
                 {file.status === 'uploading' &&
                     <div className='flex items-center justify-center size-9'>
-                        <ProgressCircle value={file.uploadProgress ?? 0} className='text-ink-green-4' />
+                        <ProgressCircle value={file.uploadProgress ?? 0} className='text-ink-green-6' />
                     </div>}
                 {file.status === 'uploaded' && (
                     <Button
@@ -75,7 +76,7 @@ const FileItem = ({ file, onRemove }: { file: FileItemType, onRemove: (file: Fil
                         size="sm"
                         isIconButton
                         onClick={onRemoveClick}
-                        title="Remove File"
+                        title={_("Remove file")}
                     >
                         <Trash2Icon />
                     </Button>
@@ -85,10 +86,11 @@ const FileItem = ({ file, onRemove }: { file: FileItemType, onRemove: (file: Fil
                         variant="ghost"
                         size="sm"
                         isIconButton
+                        theme="red"
                         onClick={onRemoveClick}
-                        title="Remove File"
+                        title={_("Error uploading file. Remove and try again.")}
                     >
-                        <AlertCircleIcon className='text-ink-red-3' />
+                        <AlertCircleIcon />
                     </Button>
                 )}
             </div>

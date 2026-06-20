@@ -50,26 +50,81 @@ def send_message(
 
 IMAGE_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "webp", "svg", "bmp", "ico", "heic", "heif"}
 
+# Inline-image display caps (mirror the web client's reserved box). The stored
+# aspect ratio is what prevents reflow; the absolute thumbnail size only needs
+# to be reasonable.
+_IMAGE_THUMBNAIL_MAX_WIDTH = 480
+_IMAGE_THUMBNAIL_MAX_HEIGHT = 320
+
 
 def _file_message_type(file_url: str) -> str:
 	ext = file_url.rsplit(".", 1)[-1].split("?")[0].lower() if "." in file_url else ""
 	return "Image" if ext in IMAGE_EXTENSIONS else "File"
 
 
+def _set_image_dimensions(doc):
+	"""
+	Measure an already-uploaded image and store its intrinsic dimensions plus a
+	display thumbnail size, so the client can reserve the exact box before the
+	image loads — no layout shift / scroll jump on render.
+
+	Best-effort: anything PIL can't measure (SVG, unreadable upload) is skipped
+	silently and the client falls back to a default box.
+	"""
+	from frappe.core.doctype.file.utils import get_local_image
+	from PIL import ImageOps
+
+	try:
+		image, _filename, _extn = get_local_image(doc.file)
+		# Honour EXIF orientation. Phone photos are often stored rotated with an
+		# orientation tag; the browser auto-orients on display, so the box we
+		# reserve must use the *displayed* size, not the raw stored size —
+		# otherwise a portrait photo reserves a landscape box and reflows on load.
+		# In-memory only: we don't rewrite the file (browsers honour the tag).
+		image = ImageOps.exif_transpose(image)
+		width, height = image.size
+	except Exception:
+		return
+
+	if not width or not height:
+		return
+
+	doc.image_width = width
+	doc.image_height = height
+
+	if width > height:
+		thumbnail_width = min(width, _IMAGE_THUMBNAIL_MAX_WIDTH)
+		thumbnail_height = int(height * thumbnail_width / width)
+	else:
+		thumbnail_height = min(height, _IMAGE_THUMBNAIL_MAX_HEIGHT)
+		thumbnail_width = int(width * thumbnail_height / height)
+
+	doc.thumbnail_width = thumbnail_width
+	doc.thumbnail_height = thumbnail_height
+
+
 @frappe.whitelist(methods=["POST"])
 def send_message_with_attachments(
 	channel_id: str,
 	content: str | None = None,
-	files: list[str] | str | None = None,
+	files: list[dict] | str | None = None,
 	client_id: str | None = None,
 	is_reply: bool = False,
 	linked_message: str | None = None,
+	send_silently: bool = False,
 ):
 	"""
-	v3 composer send. Creates one message per (already-uploaded) file URL first —
+	v3 composer send. Creates one message per (already-uploaded) file first —
 	attachments render above the text — then the text message, all stamped with the
 	same message_batch_id when the send produces more than one message. Runs in a
 	single request transaction, so the batch is all-or-nothing.
+
+	`files` is a list of `{"file_url", "file_size"}` for the already-uploaded
+	attachments — the size is denormalized onto each message so the client can show
+	it without a File lookup. (A bare URL string per file is also tolerated.)
+
+	`send_silently` suppresses notifications for the whole batch (the flag is set on
+	every message before insert).
 
 	Returns the created messages in order. The client reconciles its optimistic
 	insert against this response — the ack, not the realtime echo, is authoritative
@@ -95,14 +150,25 @@ def send_message_with_attachments(
 	batch_id = client_id
 
 	# Ordered message specs: attachments first (they render above the caption),
-	# then the text. TODO(layer-3): measure image dimensions for layout.
-	specs = [{"message_type": _file_message_type(file_url), "file": file_url} for file_url in files]
+	# then the text. Each file carries its url + size (size is read straight from
+	# the client's upload response, so no per-file File lookup is needed here).
+	specs = []
+	for f in files:
+		file_url = f["file_url"] if isinstance(f, dict) else f
+		file_size = f.get("file_size") if isinstance(f, dict) else None
+		specs.append(
+			{
+				"message_type": _file_message_type(file_url),
+				"file": file_url,
+				"file_size": file_size or 0,
+			}
+		)
 	if has_text:
 		specs.append({"message_type": "Text", "text": content})
 
 	# The reply attaches to the LAST message of the batch — the caption when there
 	# is text, otherwise the final attachment. (A files-only reply must still carry
-	# the reply, which the old text-only branch dropped.)
+	# the reply)
 	if is_reply and linked_message and specs:
 		specs[-1]["is_reply"] = True
 		specs[-1]["linked_message"] = linked_message
@@ -117,6 +183,11 @@ def send_message_with_attachments(
 				**spec,
 			}
 		)
+		# Measure images so the client reserves the exact box (no layout shift).
+		if doc.message_type == "Image" and doc.file:
+			_set_image_dimensions(doc)
+		if send_silently:
+			doc.flags.send_silently = True
 		doc.insert()
 		created.append(doc)
 

@@ -41,6 +41,7 @@ class RavenMessage(Document):
 		channel_id: DF.Link
 		content: DF.LongText | None
 		file: DF.Attach | None
+		file_size: DF.Int
 		file_thumbnail: DF.Attach | None
 		hide_link_preview: DF.Check
 		image_height: DF.Data | None
@@ -616,6 +617,7 @@ class RavenMessage(Document):
 						"content": self.content,
 						"channel_id": self.channel_id,
 						"file": self.file,
+						"file_size": self.file_size,
 						"poll_id": self.poll_id,
 						"message_type": self.message_type,
 						"is_edited": 1 if self.is_edited else 0,
@@ -662,6 +664,7 @@ class RavenMessage(Document):
 						"channel_id": self.channel_id,
 						"content": self.content,
 						"file": self.file,
+						"file_size": self.file_size,
 						"message_type": self.message_type,
 						"is_edited": 1 if self.is_edited else 0,
 						"is_thread": self.is_thread,

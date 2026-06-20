@@ -1,5 +1,5 @@
 import { atomFamily, atomWithStorage } from 'jotai/utils'
-import { atom, useSetAtom } from 'jotai'
+import { atom, getDefaultStore, useSetAtom } from 'jotai'
 import { FrappeConfig, FrappeContext, useFrappeDeleteDoc } from 'frappe-react-sdk'
 import { useContext } from 'react'
 import { toast } from 'sonner'
@@ -8,20 +8,21 @@ import { toast } from 'sonner'
  * 
  * For file uploads, we need to consider a few scenarios:
  * 
- * 1. User selects multiple files, but then hits the send button. Some files were uploaded, some were still inflight. 
- * In such a case, we queue the message and when all files upload, we process the queue.
- * 
+ * 1. User selects multiple files, but then hits the send button. Some files were uploaded, some were still inflight.
+ * In such a case, we hold the send (pendingSendAtom) and dispatch it once every upload settles.
+ *
  * 2. User selects a file and it's being uploaded but the user then closes the tab - in this case we lose the file (acceptable)
  * 3. User selects a file and it's being uploaded - the user can switch channels when the file is being uploaded and resume once back
  * 4. User selects a file and it's uploaded - then the user refreshes the tab - the user should still see the file in the chat input.
  * 
  * To cater to the above:
- * 
+ *
  * 1. Maintain a local state for all files that are being uploaded (uploadingFilesAtom) (3)
  * 2. Maintain a local state for all files that are uploaded (uploadedFilesAtom) - which is persisted in local storage (4)
- * 3. When a file finishes uploading, update uploadedFilesAtom, and check if the file with it's ID is in any queued message (another atom) (1)
- * 4. If the file is in a queued message, process the queued message (1)
- * 
+ * 3. When a file finishes uploading, move it from uploadingFilesAtom to uploadedFilesAtom (1)
+ * 4. The send is held (pendingSendAtom) while anything is still uploading; ChatInput
+ *    watches uploadingFilesAtom and dispatches the held send once every upload settles (1)
+ *
  */
 
 export interface QueuedFileType {
@@ -63,6 +64,13 @@ export const uploadingFilesAtom = atomFamily((_channelID: string) => atom<Queued
 /** Atom to track files that are uploaded per channel */
 export const uploadedFilesAtom = atomFamily((channelID: string) => atomWithStorage<UploadedFile[]>(`uploaded-files-${channelID}`, []))
 
+/**
+ * The user pressed send while files were still uploading. We hold the send
+ * (don't drop the in-flight files) and dispatch it automatically once every
+ * upload settles. Per channel so holding in one DM doesn't block another.
+ */
+export const pendingSendAtom = atomFamily((_channelID: string) => atom<boolean>(false))
+
 
 export const useAttachFile = (channelID: string) => {
 
@@ -88,29 +96,46 @@ export const useAttachFile = (channelID: string) => {
         }))
         setUploadingFiles((prevFiles) => [...prevFiles, ...filesToBeUploaded])
 
+        // The upload can't be aborted (the SDK has no abort signal), so we instead
+        // check at settle-time whether the file is still tracked: if the user removed
+        // it mid-upload it's gone from uploadingFilesAtom, and we drop the result
+        // rather than resurrecting it (as an uploaded file or an error).
+        const store = getDefaultStore()
+        const isStillTracked = (id: string) => store.get(uploadingFilesAtom(channelID)).some((item) => item.id === id)
+
         for (const f of filesToBeUploaded) {
             file.uploadFile(f.file, {
                 doctype: 'Raven Message',
                 isPrivate: true
             }, (_uploadedBytes, _totalBytes, progress) => {
                 const progressPercentage = Math.round((progress?.progress ?? 0) * 100)
-                setUploadingFiles((prevFiles) => prevFiles.map((file) => file.id === f.id ? { ...file, uploadProgress: progressPercentage, status: 'uploading' as const } : file))
+                setUploadingFiles((prevFiles) => {
+                    const current = prevFiles.find((item) => item.id === f.id)
+                    // Skip redundant writes (the rounded % often repeats) — returning the
+                    // same reference means no notify, so subscribers don't re-render.
+                    if (!current || current.uploadProgress === progressPercentage) return prevFiles
+                    return prevFiles.map((item) => item.id === f.id ? { ...item, uploadProgress: progressPercentage, status: 'uploading' as const } : item)
+                })
             }).then(res => {
+                if (!isStillTracked(f.id)) return
                 // When upload is finished, add the file to the uploaded files atom and remove from the uploading files atom
                 setUploadedFiles((prevFiles) => [...prevFiles, {
                     fileID: res.data.message.name,
                     fileURL: res.data.message.file_url,
                     id: f.id,
                     fileName: f.fileName,
-                    size: f.size,
+                    // Prefer the server's File.file_size (authoritative); fall back to the browser size.
+                    size: res.data.message.file_size ?? f.size,
                     timestamp: f.timestamp
                 }])
-                setUploadingFiles((prevFiles) => prevFiles.filter((file) => file.id !== f.id))
+                setUploadingFiles((prevFiles) => prevFiles.filter((item) => item.id !== f.id))
 
-                // TODO: Check if this file is a part of any queued message. If yes, we need to process the message
+                // A held send (pendingSendAtom) is dispatched by ChatInput once
+                // uploadingFilesAtom drains — no per-file bookkeeping needed here.
             }).catch(() => {
+                if (!isStillTracked(f.id)) return
                 toast.error("There was an error while uploading the file " + f.file.name)
-                setUploadingFiles((prevFiles) => prevFiles.map((file) => file.id === f.id ? { ...file, status: 'error' as const } : file))
+                setUploadingFiles((prevFiles) => prevFiles.map((item) => item.id === f.id ? { ...item, status: 'error' as const } : item))
             })
         }
     }

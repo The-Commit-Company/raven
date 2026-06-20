@@ -16,6 +16,7 @@ def _message_columns(message):
 		message.modified,
 		message.text,
 		message.file,
+		message.file_size,
 		message.message_type,
 		message.message_reactions,
 		message.is_reply,

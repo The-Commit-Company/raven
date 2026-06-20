@@ -1,15 +1,18 @@
-import { forwardRef, useCallback, useContext, useEffect, useRef } from "react"
+import { forwardRef, useCallback, useContext, useEffect, useMemo, useRef } from "react"
 import { useEditor, EditorContent } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
-import { useAtom } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
+import { selectAtom } from "jotai/utils"
+import { toast } from "sonner"
 import { InputFileList, AddFileButton } from "./InputFiles"
 import SendButton from "./SendButton"
 import { CreatePollDialog } from "./CreatePollDialog"
-import { uploadedFilesAtom } from "./useFileInput"
+import { uploadedFilesAtom, uploadingFilesAtom, pendingSendAtom } from "./useFileInput"
 import { channelMessagesStore } from "@stores/messages/store"
 import { buildOptimisticMessages, submitSend } from "@stores/messages/messageSender"
 import { useUserCookieData } from "@hooks/useUserCookieData"
+import _ from "@lib/translate"
 
 interface ChatInputProps {
     channelID: string
@@ -22,14 +25,31 @@ interface ChatInputProps {
  * placeholders with the real messages; a failure flags them for inline
  * retry/discard (no toast — the inline state is the signal). The realtime echo of
  * our own send is skipped while in flight (store.isPendingSend).
+ *
+ * Layer 3: hold-for-uploads. If the user sends while files are still uploading we
+ * don't drop them — we mark the send pending and dispatch it automatically once
+ * every upload settles (pendingSendAtom). Send dispatch (dispatchSend) is split
+ * out so both the immediate path and the held path share one implementation.
  */
 const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, ref) => {
     const { call } = useContext(FrappeContext) as FrappeConfig
     const [files, setFiles] = useAtom(uploadedFilesAtom(channelID))
+    const [pendingSend, setPendingSend] = useAtom(pendingSendAtom(channelID))
     const { name: currentUser } = useUserCookieData()
 
     // The editor's keydown closure (built once) calls the latest handler via this ref.
     const sendRef = useRef<() => void>(() => {})
+
+    // A held send waits on these: any file still uploading blocks dispatch; an
+    // errored upload settles but must not be silently sent without. We subscribe
+    // to just these booleans (not the array) so per-tick upload-progress updates
+    // don't re-render this component — and with it the editor — on every percent.
+    const hasUploadsInFlight = useAtomValue(
+        useMemo(() => selectAtom(uploadingFilesAtom(channelID), (f) => f.some((file) => file.status === "uploading")), [channelID]),
+    )
+    const hasFailedUploads = useAtomValue(
+        useMemo(() => selectAtom(uploadingFilesAtom(channelID), (f) => f.some((file) => file.status === "error")), [channelID]),
+    )
 
     const editor = useEditor({
         extensions: [StarterKit],
@@ -48,16 +68,17 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
         },
     })
 
-    const handleSend = useCallback(() => {
+    /** Build the optimistic batch, clear the composer, and fire the request. */
+    const dispatchSend = useCallback(() => {
         if (!editor) return
         const isEmpty = editor.isEmpty
         if (isEmpty && files.length === 0) return
 
         const content = isEmpty ? "" : editor.getHTML()
-        const fileURLs = files.map((f) => f.fileURL)
+        const outgoingFiles = files.map((f) => ({ file_url: f.fileURL, file_size: f.size }))
         const batchId = crypto.randomUUID()
 
-        const optimistic = buildOptimisticMessages(channelID, batchId, currentUser, content, fileURLs)
+        const optimistic = buildOptimisticMessages(channelID, batchId, currentUser, content, outgoingFiles)
         channelMessagesStore.addOptimisticMessages(channelID, batchId, optimistic)
 
         // Clear the composer right away — the message is already on screen
@@ -65,8 +86,35 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
         setFiles([])
         editor.commands.focus()
 
-        submitSend(call, channelID, batchId, content, fileURLs)
+        submitSend(call, channelID, batchId, content, outgoingFiles)
     }, [editor, files, channelID, currentUser, call, setFiles])
+
+    const handleSend = useCallback(() => {
+        if (!editor) return
+        // Nothing to send — no text, no uploaded files, nothing staged (uploading or errored).
+        if (editor.isEmpty && files.length === 0 && !hasUploadsInFlight && !hasFailedUploads) return
+
+        // Files are still uploading: hold the send. An effect dispatches it once
+        // every upload settles, so the in-flight files aren't dropped.
+        if (hasUploadsInFlight) {
+            setPendingSend(true)
+            return
+        }
+
+        dispatchSend()
+    }, [editor, files, hasUploadsInFlight, hasFailedUploads, dispatchSend, setPendingSend])
+
+    // Held send: once uploads settle, dispatch (or back off if any failed so the
+    // user can remove the bad file and retry — we never send silently without it).
+    useEffect(() => {
+        if (!pendingSend || hasUploadsInFlight) return
+        setPendingSend(false)
+        if (hasFailedUploads) {
+            toast.error(_("Some files failed to upload. Remove them and send again."))
+            return
+        }
+        dispatchSend()
+    }, [pendingSend, hasUploadsInFlight, hasFailedUploads, dispatchSend, setPendingSend])
 
     useEffect(() => {
         sendRef.current = handleSend
@@ -90,7 +138,7 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
                 <div className="w-full rounded-md border border-outline-gray-2 bg-surface-white focus-within:ring-2 ring-outline-gray-3">
                     <EditorContent editor={editor} />
                 </div>
-                <SendButton onSend={handleSend} />
+                <SendButton onSend={handleSend} loading={pendingSend} />
             </div>
         </form>
     )

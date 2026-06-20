@@ -2,7 +2,7 @@ import { useMemo } from "react"
 import { toast } from "sonner"
 import { useSetAtom } from "jotai"
 import FileMessage, { FileItem } from "@components/common/FileMessage/FileMessage"
-import { getFileName } from "@raven/lib/utils/operations"
+import { formatBytes, getFileName } from "@raven/lib/utils/operations"
 import { downloadFile, getFileExtension, shareFile } from "@lib/file"
 import { useIsMobile } from "@hooks/use-mobile"
 import { attachmentPreviewAtom, getAttachmentKind, messagesToAttachments, type Attachment } from "@utils/attachmentPreview"
@@ -10,7 +10,7 @@ import _ from "@lib/translate"
 import type { Message } from "@raven/types/common/Message"
 
 /** A message whose `message_type` is File — the fields the renderer needs. */
-type FileLikeMessage = Message & { file?: string }
+type FileLikeMessage = Message & { file?: string; file_size?: number }
 
 /**
  * Renders the file pills of one message or one batch. Clicking a pill opens the
@@ -37,8 +37,8 @@ export const MessageFiles = ({ messages, attachments }: { messages: Message[]; a
             messageId: message.name,
             fileName,
             fileType: extension,
-            // TODO(layer 4): denormalize file size onto Raven Message at upload
-            // (like thumbnail dims) so pills can show it without extra fetches
+            // file_size is denormalized onto the message at send (send_message_with_attachments).
+            fileSize: message.file_size ? formatBytes(message.file_size) : undefined,
             onOpen: () => {
                 // Tapping a PDF on mobile goes straight to the OS viewer (new
                 // tab) — best reading experience; it's still in the set, so you

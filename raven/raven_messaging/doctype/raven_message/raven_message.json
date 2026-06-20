@@ -21,6 +21,7 @@
   "message_type",
   "content",
   "file",
+  "file_size",
   "image_width",
   "image_height",
   "blurhash",
@@ -209,11 +210,18 @@
    "fieldname": "message_batch_id",
    "fieldtype": "Data",
    "label": "Message Batch ID"
+  },
+  {
+   "fieldname": "file_size",
+   "fieldtype": "Int",
+   "label": "File Size",
+   "non_negative": 1,
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-11 19:35:37.531718",
+ "modified": "2026-06-20 22:04:58.713690",
  "modified_by": "Administrator",
  "module": "Raven Messaging",
  "name": "Raven Message",

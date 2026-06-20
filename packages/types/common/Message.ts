@@ -39,12 +39,16 @@ export interface FileMessage extends BaseMessage {
     text: string,
     file: string,
     message_type: 'File'
+    /** Size of the attached file in bytes (denormalized onto the message at send). */
+    file_size?: number,
 }
 
 export interface ImageMessage extends BaseMessage {
     text: string,
     file: string,
     message_type: 'Image'
+    /** Size of the attached image in bytes (denormalized onto the message at send). */
+    file_size?: number,
     thumbnail_width?: number,
     thumbnail_height?: number,
     image_thumbnail?: string,
