@@ -9,8 +9,7 @@ import { InputFileList, AddFileButton } from "./InputFiles"
 import SendButton from "./SendButton"
 import { CreatePollDialog } from "./CreatePollDialog"
 import { uploadedFilesAtom, uploadingFilesAtom, pendingSendAtom } from "./useFileInput"
-import { channelMessagesStore } from "@stores/messages/store"
-import { buildOptimisticMessages, submitSend } from "@stores/messages/messageSender"
+import { enqueueSend } from "@stores/messages/messageSender"
 import { useUserCookieData } from "@hooks/useUserCookieData"
 import _ from "@lib/translate"
 
@@ -19,17 +18,18 @@ interface ChatInputProps {
 }
 
 /**
- * Layer 2 composer: optimistic send. On send we insert placeholder messages
- * immediately (attachments first, text last, all sharing client_id as their batch
- * id), clear the input, then submit. The ack is authoritative — it replaces the
- * placeholders with the real messages; a failure flags them for inline
- * retry/discard (no toast — the inline state is the signal). The realtime echo of
- * our own send is skipped while in flight (store.isPendingSend).
+ * The message composer.
  *
- * Layer 3: hold-for-uploads. If the user sends while files are still uploading we
- * don't drop them — we mark the send pending and dispatch it automatically once
- * every upload settles (pendingSendAtom). Send dispatch (dispatchSend) is split
- * out so both the immediate path and the held path share one implementation.
+ * On send, we show the message on screen right away (attachments first, then text,
+ * all sharing one client_id so they group together), clear the input, then send to
+ * the server. The server's response is the source of truth: it replaces the
+ * shown-immediately message with the real one. A failure marks it failed with inline
+ * Retry / Discard.
+ *
+ * Hold-for-uploads: if the user sends while files are still uploading, we don't drop
+ * them — we mark the send as waiting and send it automatically once every upload
+ * finishes (pendingSendAtom). The actual send (dispatchSend) is split out so the
+ * normal path and the waiting path share one implementation.
  */
 const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, ref) => {
     const { call } = useContext(FrappeContext) as FrappeConfig
@@ -78,15 +78,13 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
         const outgoingFiles = files.map((f) => ({ file_url: f.fileURL, file_size: f.size }))
         const batchId = crypto.randomUUID()
 
-        const optimistic = buildOptimisticMessages(channelID, batchId, currentUser, content, outgoingFiles)
-        channelMessagesStore.addOptimisticMessages(channelID, batchId, optimistic)
+        // Shows the message on screen, saves it to the outbox, then sends it.
+        enqueueSend(call, { channelID, batchId, owner: currentUser, content, files: outgoingFiles })
 
         // Clear the composer right away — the message is already on screen
         editor.commands.clearContent()
         setFiles([])
         editor.commands.focus()
-
-        submitSend(call, channelID, batchId, content, outgoingFiles)
     }, [editor, files, channelID, currentUser, call, setFiles])
 
     const handleSend = useCallback(() => {

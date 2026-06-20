@@ -1,8 +1,7 @@
 import { useContext } from "react"
 import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
 import type { Message } from "@raven/types/common/Message"
-import { channelMessagesStore } from "@stores/messages/store"
-import { retrySend } from "@stores/messages/messageSender"
+import { retrySend, discardSend } from "@stores/messages/messageSender"
 import { isOptimistic } from "@stores/messages/types"
 import _ from "@lib/translate"
 
@@ -46,7 +45,7 @@ export const OptimisticStatus = ({ message }: { message: Message }) => {
             <button
                 type="button"
                 className="text-ink-gray-5 underline underline-offset-3 hover:text-ink-gray-7"
-                onClick={() => channelMessagesStore.discardOptimisticSend(channelID, batchId)}
+                onClick={() => discardSend(channelID, batchId)}
             >
                 {_("Discard")}
             </button>

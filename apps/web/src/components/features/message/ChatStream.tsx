@@ -11,6 +11,7 @@ import { Button } from "@components/ui/button"
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@components/ui/empty"
 import { useChannelMessages } from "@stores/messages/useChannelMessages"
 import { channelMessagesStore } from "@stores/messages/store"
+import { useChannelOutbox } from "@stores/messages/useChannelOutbox"
 import { useChannelReadTracker } from "@stores/unread/useChannelReadTracker"
 import { useStreamScroll } from "./useStreamScroll"
 import { MessageActionMenu } from "./actions/MessageActionMenu"
@@ -116,6 +117,10 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
     // Tracks how far the user has read (the newest in-view message) and flushes
     // that watermark to the server (last_visit), which defines unread counts.
     const { onMessageInView } = useChannelReadTracker(channelID, { isAtBottom, hasNewerMessages })
+
+    // Puts this channel's not-yet-confirmed sends (the saved outbox) back on screen,
+    // so pending/failed messages survive a refresh and reappear when you reopen it.
+    useChannelOutbox(channelID)
 
     /** When the window is detached from the live edge, "down" means refetching the latest page. */
     const onJumpToPresent = () => {

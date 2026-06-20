@@ -6,6 +6,15 @@ const IDLE_CHECK_INTERVAL_MS = 1000 * 60 // re-evaluate idleness every minute
 const ACTIVITY_EVENTS = ["mousemove", "mousedown", "keydown", "touchstart", "scroll", "wheel"] as const
 
 /**
+ * The state we last reported to the server, at module level so it survives the
+ * effect remounting. React StrictMode mounts the effect twice in dev, which
+ * otherwise fired active → inactive → active (three calls) on load.
+ */
+let reportedActive = false
+/** A cleanup's deactivate, deferred a tick so an immediate remount can cancel it. */
+let pendingDeactivate: ReturnType<typeof setTimeout> | null = null
+
+/**
  * Reports the CURRENT user's online state to the server via
  * refresh_user_active_state, which broadcasts raven:user_active_state_updated to
  * everyone (consumed by usePresenceSync, so other clients see us come and go).
@@ -24,17 +33,23 @@ export const useReportActiveState = () => {
     }, [call])
 
     useEffect(() => {
-        let active = false
+        // A pending deactivate from a just-unmounted instance (StrictMode remount, or
+        // a quick remount) — cancel it; we're active again.
+        if (pendingDeactivate) {
+            clearTimeout(pendingDeactivate)
+            pendingDeactivate = null
+        }
+
         let lastActivity = Date.now()
 
         const report = (next: boolean) => {
-            if (next === active) return
-            active = next
+            if (next === reportedActive) return
+            reportedActive = next
             callRef.current
                 .get("raven.api.user_availability.refresh_user_active_state", { deactivate: !next })
                 .catch(() => {
-                    // Best effort — revert the local flag so the next transition retries
-                    active = !next
+                    // Best effort — revert the flag so the next transition retries
+                    reportedActive = !next
                 })
         }
 
@@ -66,7 +81,13 @@ export const useReportActiveState = () => {
             clearInterval(idleCheck)
             ACTIVITY_EVENTS.forEach((event) => window.removeEventListener(event, onActivity))
             document.removeEventListener("visibilitychange", onVisibility)
-            report(false)
+            // Defer the deactivate by a tick: on a real unmount it fires, but a
+            // StrictMode remount (which runs synchronously) clears it first, so we
+            // don't churn active → inactive → active on load.
+            pendingDeactivate = setTimeout(() => {
+                pendingDeactivate = null
+                report(false)
+            }, 0)
         }
     }, [])
 }

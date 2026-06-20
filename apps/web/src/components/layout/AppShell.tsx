@@ -14,6 +14,7 @@ import { useUnreadRealtime } from "@stores/unread/useUnreadRealtime"
 import { useMessageRoomSubscriptions } from "@stores/messages/useMessageRoomSubscriptions"
 import { useMessagesRealtime } from "@stores/messages/useMessagesRealtime"
 import { useReconnectCatchup } from "@stores/messages/useReconnectCatchup"
+import { useOutboxAutoRetry } from "@stores/messages/useOutboxAutoRetry"
 import { useChannelListRealtime } from "@hooks/useChannelListRealtime"
 import { usePresenceSync } from "@stores/presence/usePresenceSync"
 import { useReportActiveState } from "@stores/presence/useReportActiveState"
@@ -86,6 +87,8 @@ const AppListeners = ({ children }: { children: React.ReactNode }) => {
     useMessagesRealtime()
     // Backstop: refetch messages missed during a disconnect when the socket reconnects
     useReconnectCatchup()
+    // Delivers persisted (pending/failed) sends from the outbox on load + reconnect/online
+    useOutboxAutoRetry()
     // Keeps the sidebar channel list + member lists fresh on create/archive/join/leave
     useChannelListRealtime()
     // Seeds + live-updates which users are online (read via useIsUserOnline)

@@ -34,6 +34,9 @@ export const loadInitialMessages = async (
             channel_id: channelID,
             limit: PAGE_SIZE,
             base_message: baseMessage,
+            // We track last_visit ourselves (useChannelReadTracker), so the fetch must
+            // not also write it — that GET-time write can deadlock with a concurrent send.
+            update_last_visit: false,
         })
         channelMessagesStore.setInitialPage(channelID, response.message)
     } catch (error) {
@@ -67,6 +70,8 @@ export const loadNewerMessages = async (client: FrappeCallClient, channelID: str
             channel_id: channelID,
             from_message: newestID,
             limit: PAGE_SIZE,
+            // last_visit is tracked client-side; don't let the fetch write it (deadlock risk).
+            update_last_visit: false,
         })
         channelMessagesStore.setNewerPage(channelID, response.message)
     } catch {
@@ -95,6 +100,8 @@ export const catchUpNewerMessages = async (client: FrappeCallClient, channelID: 
             channel_id: channelID,
             from_message: newestID,
             limit: PAGE_SIZE,
+            // last_visit is tracked client-side; don't let the fetch write it (deadlock risk).
+            update_last_visit: false,
         })
         channelMessagesStore.setNewerPage(channelID, response.message)
     } catch {

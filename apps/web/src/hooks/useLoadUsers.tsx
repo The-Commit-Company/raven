@@ -33,6 +33,31 @@ const USER_FIELDS: (keyof UserData)[] = [
     "custom_status",
 ]
 
+/**
+ * The in-progress (or finished) full user load. Module-level so the fetch runs once
+ * per page load no matter how many times the effect mounts — React StrictMode mounts
+ * it twice in dev, which otherwise fired two get_list calls (and two clear+bulkPut,
+ * briefly blanking the table). On failure we reset it so a later mount can retry.
+ */
+let usersInitialLoad: Promise<void> | null = null
+
+const loadAllUsers = async (call: FrappeConfig["call"]) => {
+    const res = await call.get<{ message: UserData[] }>("raven.api.raven_users.get_list")
+    // Full initial load: clear first so users removed since last session drop out
+    await db.users.clear()
+    await db.users.bulkPut(res.message ?? [])
+}
+
+const ensureUsersLoaded = (call: FrappeConfig["call"]) => {
+    if (!usersInitialLoad) {
+        usersInitialLoad = loadAllUsers(call).catch((error) => {
+            usersInitialLoad = null
+            throw error
+        })
+    }
+    return usersInitialLoad
+}
+
 export const useLoadUsers = () => {
     // `db` here is the Frappe DB client (getDocList), distinct from the Dexie `db` import
     const { call, db: frappeDB } = useContext(FrappeContext) as FrappeConfig
@@ -47,10 +72,8 @@ export const useLoadUsers = () => {
             const count = await db.users.count()
             if (count > 0 && !cancelled) setIsReady(true)
             try {
-                const res = await call.get<{ message: UserData[] }>("raven.api.raven_users.get_list")
-                // Full initial load: clear first so users removed since last session drop out
-                await db.users.clear()
-                await db.users.bulkPut(res.message ?? [])
+                // Deduped at module level — runs the actual fetch once per page load.
+                await ensureUsersLoaded(call)
             } catch (error) {
                 console.error("Failed to load users", error)
             } finally {

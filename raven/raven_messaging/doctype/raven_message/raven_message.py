@@ -211,7 +211,12 @@ class RavenMessage(Document):
 			}
 
 	def after_insert(self):
-		if self.message_type != "System":
+		# In a multi-message batch (one send → several messages) only the last,
+		# newest message updates the channel summary + unread event. The others would
+		# be redundant writes to the same channel row, and that repeated contention is
+		# what deadlocks when several sends land at once. The sender sets
+		# `flags.skip_channel_summary` on every batch member except the last.
+		if self.message_type != "System" and not self.flags.get("skip_channel_summary"):
 			last_message_details = self.set_last_message_timestamp()
 			self.publish_unread_count_event(last_message_details)
 

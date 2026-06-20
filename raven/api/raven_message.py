@@ -103,6 +103,69 @@ def _set_image_dimensions(doc):
 	doc.thumbnail_height = thumbnail_height
 
 
+def _get_existing_batch(client_id: str):
+	"""
+	The messages already created for a client_id (= message_batch_id), oldest first,
+	or None. This is the idempotency lookup: it runs on every send, so message_batch_id
+	is indexed (search_index on the field).
+	"""
+	names = frappe.get_all(
+		"Raven Message",
+		filters={"message_batch_id": client_id},
+		order_by="creation asc",
+		pluck="name",
+	)
+	return [frappe.get_doc("Raven Message", name) for name in names] if names else None
+
+
+def _create_batch(channel_id: str, batch_id: str | None, specs: list[dict], send_silently: bool):
+	"""Insert the batch's messages in order (attachments first, then text)."""
+	created = []
+	last_index = len(specs) - 1
+	for index, spec in enumerate(specs):
+		doc = frappe.get_doc(
+			{
+				"doctype": "Raven Message",
+				"channel_id": channel_id,
+				"message_batch_id": batch_id,
+				**spec,
+			}
+		)
+		# Measure images so the client reserves the exact box (no layout shift).
+		if doc.message_type == "Image" and doc.file:
+			_set_image_dimensions(doc)
+		if send_silently:
+			doc.flags.send_silently = True
+		# Only the last (newest) message updates the channel's last-message summary;
+		# the rest skip that write to avoid redundant contention on the channel row.
+		if index < last_index:
+			doc.flags.skip_channel_summary = True
+		doc.insert()
+		created.append(doc)
+
+	return created
+
+
+def _create_batch_idempotent(
+	channel_id: str, client_id: str, specs: list[dict], send_silently: bool
+):
+	"""
+	Create the batch at most once for a given client_id, so a retried send can't
+	duplicate. A retry (auto-retry on reconnect, or a lost ack) is sequential with
+	the attempt it repeats, and the batch is atomic (all-or-none) — so a committed
+	send is found here and returned as-is instead of being created again.
+
+	No lock: the only gap is two clients retrying the SAME send within the few-ms
+	commit window (e.g. two tabs rehydrating one outbox at the exact same instant).
+	That's rare enough that a lock — and the worker it would block — isn't worth it.
+	"""
+	existing = _get_existing_batch(client_id)
+	if existing:
+		return existing
+
+	return _create_batch(channel_id, client_id, specs, send_silently)
+
+
 @frappe.whitelist(methods=["POST"])
 def send_message_with_attachments(
 	channel_id: str,
@@ -130,8 +193,9 @@ def send_message_with_attachments(
 	insert against this response — the ack, not the realtime echo, is authoritative
 	for the sender.
 
-	`client_id` is a client-generated id used as the batch id (and, later, as an
-	idempotency key for retries). It is not persisted beyond the batch id.
+	`client_id` is a client-generated id used as the batch id AND the idempotency
+	key: a retried send (same client_id) returns the already-created messages
+	instead of duplicating them. It is not persisted beyond the batch id.
 	"""
 	if isinstance(files, str):
 		files = frappe.parse_json(files)
@@ -173,25 +237,11 @@ def send_message_with_attachments(
 		specs[-1]["is_reply"] = True
 		specs[-1]["linked_message"] = linked_message
 
-	created = []
-	for spec in specs:
-		doc = frappe.get_doc(
-			{
-				"doctype": "Raven Message",
-				"channel_id": channel_id,
-				"message_batch_id": batch_id,
-				**spec,
-			}
-		)
-		# Measure images so the client reserves the exact box (no layout shift).
-		if doc.message_type == "Image" and doc.file:
-			_set_image_dimensions(doc)
-		if send_silently:
-			doc.flags.send_silently = True
-		doc.insert()
-		created.append(doc)
+	# Without a client_id there's no idempotency key — just create.
+	if not client_id:
+		return _create_batch(channel_id, batch_id, specs, send_silently)
 
-	return created
+	return _create_batch_idempotent(channel_id, client_id, specs, send_silently)
 
 
 @frappe.whitelist(methods=["POST"])

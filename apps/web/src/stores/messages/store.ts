@@ -42,7 +42,13 @@ class ChannelMessagesStore {
     private hydratedListeners = new Set<Listener>()
     /** Reference-stable snapshot of hydrated channel IDs; new ref only on membership change. */
     private hydratedIds: readonly string[] = []
-    /** Batch ids of sends currently optimistic in the UI — their realtime echoes are skipped until the ack reconciles. */
+    /**
+     * Ids of our own sends that are shown on screen but not yet confirmed by the
+     * server. The server broadcasts every new message to everyone in the channel,
+     * including the sender — so when our own message comes back over that broadcast,
+     * we ignore it (it's already on screen) to avoid showing it twice. Cleared once
+     * the server's direct response to our send comes back.
+     */
     private pendingSends = new Set<string>()
 
     getState(channelID: string): ChannelMessagesState {
@@ -144,15 +150,17 @@ class ChannelMessagesStore {
         this.update(channelID, initialChannelState)
     }
 
-    /** ----- Optimistic send lifecycle ----- */
+    /** ----- Send lifecycle (messages shown before the server confirms them) ----- */
 
-    /** Show a send immediately. `batchId` (= client_id) ties the placeholders together and gates the echoes. */
+    /** Show a send on screen immediately. `batchId` (= client_id) groups its messages
+     *  together and marks them so the server's broadcast of them back to us is ignored. */
     addOptimisticMessages(channelID: string, batchId: string, messages: OptimisticMessage[]) {
         this.pendingSends.add(batchId)
         this.update(channelID, upsertMessages(this.getState(channelID), messages))
     }
 
-    /** The send's ack landed: drop the placeholders and insert the real messages it returned. */
+    /** The server confirmed the send: remove the shown-immediately messages and insert
+     *  the real ones it returned. */
     resolveOptimisticSend(channelID: string, batchId: string, realMessages: Message[]) {
         this.pendingSends.delete(batchId)
         let next = removeOptimisticBatch(this.getState(channelID), batchId)
@@ -160,25 +168,26 @@ class ChannelMessagesStore {
         this.update(channelID, next)
     }
 
-    /** The send failed: leave the placeholders in place, flagged failed, for retry/discard. */
+    /** The send failed: leave the messages on screen, marked failed, for Retry / Discard. */
     failOptimisticSend(channelID: string, batchId: string) {
         this.pendingSends.delete(batchId)
         this.update(channelID, setOptimisticStatus(this.getState(channelID), batchId, "failed"))
     }
 
-    /** Retry a failed send: flip its placeholders back to sending and re-arm the echo skip. */
+    /** Retry a failed send: flip its messages back to "sending" and start ignoring its
+     *  server broadcast again. */
     retryOptimisticSend(channelID: string, batchId: string) {
         this.pendingSends.add(batchId)
         this.update(channelID, setOptimisticStatus(this.getState(channelID), batchId, "sending"))
     }
 
-    /** Discard a failed send's placeholders. */
+    /** Discard a failed send's messages from the screen. */
     discardOptimisticSend(channelID: string, batchId: string) {
         this.pendingSends.delete(batchId)
         this.update(channelID, removeOptimisticBatch(this.getState(channelID), batchId))
     }
 
-    /** The optimistic placeholders of a send, in display order — used to rebuild the payload on retry. */
+    /** A send's shown-immediately messages, in display order — used to rebuild what to send on retry. */
     getOptimisticMessages(channelID: string, batchId: string): Message[] {
         const state = this.getState(channelID)
         const out: Message[] = []
@@ -189,7 +198,8 @@ class ChannelMessagesStore {
         return out
     }
 
-    /** True while a send's optimistic placeholders are live — its realtime echoes should be skipped. */
+    /** True while our own send is on screen but unconfirmed — so we ignore the server's
+     *  broadcast of it back to us (which would otherwise show it twice). */
     isPendingSend(batchId: string): boolean {
         return this.pendingSends.has(batchId)
     }

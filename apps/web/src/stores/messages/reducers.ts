@@ -93,10 +93,21 @@ export const markError = (state: ChannelMessagesState, error: string): ChannelMe
 
 /** Replace the window entirely — initial load, jump-to-message, or resync. */
 export const applyInitialPage = (
-    _state: ChannelMessagesState,
+    state: ChannelMessagesState,
     page: MessagesPage,
 ): ChannelMessagesState => {
     const byId = new Map(page.messages.map((m) => [m.name, m]))
+    // Keep the not-yet-confirmed messages we're already showing when we (re)load the
+    // newest messages. They only exist on this device — the server doesn't know about
+    // them yet — so a plain reload would make them disappear; we add them back here.
+    // This applies when loading the bottom of the chat (the newest messages, where
+    // has_new_messages is false). If we're looking at older history instead, they
+    // don't belong there, so we leave them out.
+    if (!page.has_new_messages) {
+        for (const [id, message] of state.byId) {
+            if (isOptimistic(message)) byId.set(id, message)
+        }
+    }
     return {
         ...initialChannelState,
         status: "ready",

@@ -78,10 +78,18 @@ def _complete_boundary_batch(channel_id: str, boundary, older: bool):
 
 
 @frappe.whitelist()
-def get_messages(channel_id: str, limit: int = 20, base_message: str | None = None):
+def get_messages(
+	channel_id: str, limit: int = 20, base_message: str | None = None, update_last_visit: bool = True
+):
 	"""
 	API to get list of messages for a channel, ordered by creation date (newest first)
 
+	`update_last_visit` (DEPRECATED, v2-compat): when True the fetch also advances the
+	caller's last_visit. The v3 client tracks last_visit itself (a debounced watermark
+	via raven_channel_member.track_visit), so it passes False — this avoids a write to
+	the Raven Channel Member row inside the read transaction, which can collide with a
+	concurrent message send and surface as a QueryDeadlockError (MariaDB 1020). Remove
+	this flag and the GET-time write once v2 is gone.
 	"""
 
 	# Check permission for channel access
@@ -124,7 +132,8 @@ def get_messages(channel_id: str, limit: int = 20, base_message: str | None = No
 		if len(older_message) > 0:
 			has_old_messages = True
 
-	track_channel_visit(channel_id=channel_id, commit=True)
+	if update_last_visit:
+		track_channel_visit(channel_id=channel_id, commit=True)
 	return {
 		"messages": messages,
 		"has_old_messages": has_old_messages,
@@ -221,9 +230,15 @@ def fetch_older_messages(
 
 
 @frappe.whitelist()
-def get_newer_messages(channel_id: str, from_message: str, limit: int = 20):
+def get_newer_messages(
+	channel_id: str, from_message: str, limit: int = 20, update_last_visit: bool = True
+):
 	"""
 	API to get older messages for a channel, ordered by creation date (newest first)
+
+	`update_last_visit` (DEPRECATED, v2-compat): see get_messages. v3 passes False and
+	advances last_visit itself, avoiding a GET-time write that can collide with a
+	concurrent send. Remove with v2.
 	"""
 
 	# Check permission for channel access
@@ -237,7 +252,7 @@ def get_newer_messages(channel_id: str, from_message: str, limit: int = 20):
 		channel_id, from_message, from_timestamp, limit, include_from_message=False
 	)
 
-	if response.get("has_new_messages") == False:
+	if update_last_visit and response.get("has_new_messages") == False:
 		# If no newer messages are available, we can track it as a visit to the channel
 		# There are cases when we want to publish the unread count update event for a specific user
 		# Example: The user is viewing an older message in a channel. If a new message comes up, the sidebar shows an unread count
