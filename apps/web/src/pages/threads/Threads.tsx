@@ -9,7 +9,7 @@ import ThreadsList from "@components/features/threads/ThreadsList"
 import ChatDrawer from "@components/common/ChatDrawer"
 import { ThreadMessage } from "../../types/ThreadMessage"
 import { cn } from "@lib/utils"
-import { useChannels } from "@hooks/useChannels"
+import { useChannelList } from "@stores/channels/useChannelList"
 import _ from "@lib/translate"
 import { useLiveQuery } from "dexie-react-hooks"
 import { db } from "@db"
@@ -32,7 +32,7 @@ export default function Threads() {
     const [search, setSearch] = useState('')
     const [channel, setChannel] = useState('*all')
     const users = useLiveQuery(() => db.users.toArray(), [])
-    const { channels, dm_channels } = useChannels()
+    const { channels, dmChannels } = useChannelList()
 
     return (
         <div className="flex flex-col h-screen overflow-hidden">
@@ -83,7 +83,7 @@ export default function Threads() {
                                 </div>
                                 <ChannelSelect
                                     channels={channels}
-                                    dmChannels={dm_channels}
+                                    dmChannels={dmChannels}
                                     users={users}
                                     value={channel}
                                     onValueChange={setChannel}

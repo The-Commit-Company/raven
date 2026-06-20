@@ -24,9 +24,10 @@ import { AddMembersStep } from './AddMembersStep'
 import { Stepper } from './Stepper'
 import { useChannelTypeInfo } from './useChannelTypeInfo'
 import { ChannelCreationForm, CreateChannelStep } from './types'
-import { useFrappePostCall, useSWRConfig } from 'frappe-react-sdk'
+import { useFrappePostCall } from 'frappe-react-sdk'
 import { useNavigate, useParams } from 'react-router'
-import { ChannelList, ChannelListItem } from '@raven/types/common/ChannelListItem'
+import { ChannelListItem } from '@raven/types/common/ChannelListItem'
+import { channelStore } from '@stores/channels/store'
 import _ from '@lib/translate'
 import ErrorBanner from '@components/ui/error-banner'
 
@@ -44,7 +45,6 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
 
     const { workspaceID } = useParams()
     const navigate = useNavigate()
-    const { mutate } = useSWRConfig()
 
     const { call, loading: isSubmitting, error: createChannelError, reset: resetCreateHook } = useFrappePostCall<{ message: ChannelListItem }>('raven.api.raven_channel.create_channel')
 
@@ -115,25 +115,8 @@ export const CreateChannelForm = ({ onClose: onCloseCallback, selectedWorkspace 
             workspace: selectedWorkspace || workspaceID
         }).then((result) => {
             if (result) {
-                mutate("channel_list", (data: { message: ChannelList } | undefined) => {
-                    if (data) {
-                        return {
-                            message: {
-                                ...data.message,
-                                channels: [
-                                    ...data.message.channels,
-                                    {
-                                        ...result.message,
-                                        is_admin: 1 as 1 | 0,
-                                    }
-                                ]
-                            }
-                        }
-                    }
-
-                }, {
-                    revalidate: false
-                })
+                // Optimistically add the new channel to the store (the creator is admin).
+                channelStore.upsertChannel({ ...result.message, is_admin: 1, allow_notifications: 1 })
                 onClose(result.message.name, selectedWorkspace || workspaceID)
             }
         })

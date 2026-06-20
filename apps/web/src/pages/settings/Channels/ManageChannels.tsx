@@ -5,7 +5,7 @@ import SettingsContentContainer from "@components/features/settings/SettingsCont
 import { Button } from "@components/ui/button"
 import { Dialog, DialogTrigger, DialogContent } from "@components/ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@components/ui/dropdown-menu"
-import { useChannels } from "@hooks/useChannels"
+import { useChannelList } from "@stores/channels/useChannelList"
 import _ from "@lib/translate"
 import { ChannelListItem } from "@raven/types/common/ChannelListItem"
 import { Bell, BellOff, BellRing, Loader2, Plus } from "lucide-react"
@@ -22,7 +22,7 @@ import { getErrorMessage } from "@lib/frappe"
 
 export const ManageChannels = () => {
 
-    const { channels } = useChannels()
+    const { channels } = useChannelList()
     const { workspaces } = useWorkspaces()
     const [sorting, setSorting] = useState<SortingState | null>(null)
     const [filters, setFilters] = useState<{ myChannels: string, channelType: string, workspace: string, searchQuery: string }>({ myChannels: 'All Channels', channelType: 'All Types', workspace: workspaces?.[0]?.name ?? '', searchQuery: '' })

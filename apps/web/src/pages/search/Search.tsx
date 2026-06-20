@@ -11,7 +11,7 @@ import SearchLinkResults from '@components/features/search/results/SearchLinkRes
 import SearchPollResults from '@components/features/search/results/SearchPollResults'
 import { SearchFilters } from '@components/features/search/types'
 
-import { useChannels } from '@hooks/useChannels'
+import { useChannelList } from "@stores/channels/useChannelList"
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@db'
 import { Input } from '@components/ui/input'
@@ -57,7 +57,7 @@ export default function Search() {
         mentions_me: mentionsMeFromURL,
     }
 
-    const { channels, dm_channels } = useChannels()
+    const { channels, dmChannels } = useChannelList()
     const users = useLiveQuery(() => db.users.toArray(), [])
 
     const onTabChange = (tab: SearchTab) => {
@@ -121,7 +121,7 @@ export default function Search() {
                             <SearchFiltersBar
                                 filters={filters}
                                 channels={channels}
-                                dmChannels={dm_channels}
+                                dmChannels={dmChannels}
                                 onChannelChange={setChannelFilter}
                                 onUserChange={setUserFilter}
                             />
@@ -130,7 +130,7 @@ export default function Search() {
                     <SearchActiveBadges
                         filters={filters}
                         channels={channels}
-                        dmChannels={dm_channels}
+                        dmChannels={dmChannels}
                         users={users ?? []}
                     />
                 </div>

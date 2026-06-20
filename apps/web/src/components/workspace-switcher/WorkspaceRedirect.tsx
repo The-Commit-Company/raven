@@ -2,7 +2,7 @@ import { Navigate, useParams } from "react-router-dom"
 import { useMemo } from "react"
 import { useAtomValue } from "jotai"
 import { useIsMobile } from "@hooks/use-mobile"
-import { useChannels } from "@hooks/useChannels"
+import { useChannelList } from "@stores/channels/useChannelList"
 import { useGroupedChannels } from "@raven/lib/hooks/useGroupedChannels"
 import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
 import { lastChannelAtom, lastWorkspaceAtom } from "@utils/lastVisitedAtoms"
@@ -19,7 +19,7 @@ export const WorkspaceRedirect = () => {
     const isMobile = useIsMobile()
     const lastWorkspace = useAtomValue(lastWorkspaceAtom)
     const lastChannel = useAtomValue(lastChannelAtom)
-    const { channels } = useChannels()
+    const { channels } = useChannelList()
     const { myProfile } = useCurrentRavenUser()
     const { groupedChannels, ungroupedChannels } = useGroupedChannels(channels, myProfile, workspaceID, false)
 

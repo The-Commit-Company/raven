@@ -1,21 +1,23 @@
 import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser";
 import { RavenUser } from "@raven/types/Raven/RavenUser";
+import { DMChannelListItem } from "@raven/types/common/ChannelListItem";
 import { FrappeContext, FrappeConfig } from "frappe-react-sdk";
-import { useContext, useMemo } from "react";
-import { useChannels } from "./useChannels";
+import { useContext, useMemo, useSyncExternalStore } from "react";
+import { channelStore } from "@stores/channels/store";
+import { useChannelById } from "@stores/channels/useChannelList";
 
 export function useChannel(channelID: string) {
-  const { channels, dm_channels, isLoading } = useChannels()
   const { call } = useContext(FrappeContext) as FrappeConfig
   const { myProfile, mutate: mutateUser } = useCurrentRavenUser()
 
-  const channel = useMemo(() => {
-    return channels.find((channel) => channel.name === channelID)
-  }, [channels, channelID])
+  // One per-channel subscription instead of scanning the whole list — re-renders
+  // only when THIS channel changes.
+  const found = useChannelById(channelID)
+  const isLoading = !useSyncExternalStore(channelStore.subscribe, channelStore.isLoaded)
 
-  const dmChannel = useMemo(() => {
-    return dm_channels.find((channel) => channel.name === channelID)
-  }, [dm_channels, channelID])
+  const channel = found && !found.is_direct_message ? found : undefined
+  const dmChannel =
+    found && found.is_direct_message ? (found as DMChannelListItem) : undefined
 
   const toggleStarChannel = async () => {
     return call

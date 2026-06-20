@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useSyncExternalStore } from "react"
-import { useChannels } from "@hooks/useChannels"
+import { useChannelList } from "@stores/channels/useChannelList"
 import { channelUnreadStore, type ChannelUnreadState } from "./store"
 
 /**
@@ -37,7 +37,7 @@ export const useGroupUnread = (channelIDs: string[]): number =>
  * excluded — they're workspace-agnostic and surfaced under their own entry.
  */
 export const useWorkspaceUnread = (workspaceID: string): number => {
-    const { channels } = useChannels()
+    const { channels } = useChannelList()
     const channelIDs = useMemo(
         () => channels.filter((channel) => channel.workspace === workspaceID).map((channel) => channel.name),
         [channels, workspaceID],
@@ -47,7 +47,7 @@ export const useWorkspaceUnread = (workspaceID: string): number => {
 
 /** Number of DM channels with unread (conversation count) — for the Direct Messages entry. */
 export const useDMUnread = (): number => {
-    const { dm_channels } = useChannels()
-    const channelIDs = useMemo(() => dm_channels.map((channel) => channel.name), [dm_channels])
+    const { dmChannels } = useChannelList()
+    const channelIDs = useMemo(() => dmChannels.map((channel) => channel.name), [dmChannels])
     return useGroupUnread(channelIDs)
 }

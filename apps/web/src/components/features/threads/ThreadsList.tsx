@@ -4,7 +4,7 @@ import { UserData } from "@db"
 import { ThreadPreviewBox } from "./ThreadPreviewBox"
 import { ThreadMessage, GetThreadsReturnType } from "../../../types/ThreadMessage"
 import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
-import { useChannels } from "@hooks/useChannels"
+import { useChannelList } from "@stores/channels/useChannelList"
 import { useUsersById } from "@hooks/useMessageRowLookups"
 import useUnreadThreadsCount from "@hooks/useUnreadThreadsCount"
 import { MessageListSkeleton } from "@components/features/dm-channel/DirectMessagePageSkeleton"
@@ -53,9 +53,9 @@ function ThreadPreviewBoxWrapper({
     onClick?: () => void
     isActive?: boolean
 }) {
-    const { channels, dm_channels } = useChannels()
+    const { channels, dmChannels } = useChannelList()
 
-    const dmChannel = dm_channels.find((c) => c.name === thread.channel_id)
+    const dmChannel = dmChannels.find((c) => c.name === thread.channel_id)
     const channel = channels.find((c) => c.name === thread.channel_id)
     const peer = dmChannel?.peer_user_id ? usersById.get(dmChannel.peer_user_id) : undefined
 

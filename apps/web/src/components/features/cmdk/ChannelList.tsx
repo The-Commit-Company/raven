@@ -6,10 +6,10 @@ import { commandMenuOpenAtom } from './atoms'
 import { useMemo } from 'react'
 import _ from '@lib/translate'
 import { Badge } from '@components/ui/badge'
-import { useChannels } from '@hooks/useChannels'
+import { useChannelList } from "@stores/channels/useChannelList"
 
 const ChannelList = ({ text }: { text: string }) => {
-    const { channels } = useChannels()
+    const { channels } = useChannelList()
     const navigate = useNavigate()
     const setOpen = useSetAtom(commandMenuOpenAtom)
 

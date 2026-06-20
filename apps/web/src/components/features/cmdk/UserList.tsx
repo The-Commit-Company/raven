@@ -1,6 +1,6 @@
 import { CommandGroup, CommandItem } from '@components/ui/command'
 import { UserAvatar } from '@components/features/message/UserAvatar'
-import { useChannels } from '@hooks/useChannels'
+import { useChannelList } from "@stores/channels/useChannelList"
 import { useNavigate } from 'react-router-dom'
 import { useSetAtom } from 'jotai'
 import { commandMenuOpenAtom } from './atoms'
@@ -20,25 +20,25 @@ const UserList = ({ text }: { text: string }) => {
         .toArray(),
         [text])
 
-    const { dm_channels } = useChannels()
+    const { dmChannels } = useChannelList()
 
     const mappedUsers = useMemo(() => {
         if (text) {
             if (!filteredUsers) return []
             return filteredUsers.map(user => {
-                const dmChannel = dm_channels.find(channel => channel.peer_user_id === user.name)
+                const dmChannel = dmChannels.find(channel => channel.peer_user_id === user.name)
                 return dmChannel ? { user, channel: dmChannel } : { user, channel: null }
             })
         } else {
-            return dm_channels.slice(0, 3).map(channel => {
+            return dmChannels.slice(0, 3).map(channel => {
                 const user = filteredUsers?.find(user => user.name === channel.peer_user_id) || null
                 return { user, channel }
             })
         }
-    }, [filteredUsers, dm_channels])
+    }, [filteredUsers, dmChannels])
 
     if (text && (!filteredUsers || !filteredUsers.length)) return null
-    // filteredUsers need to be mapped to dm_channels and then render DMChannelItem or UserItem based on whether dm_channel exists or not. In UserItem, we will do api call on click to create dm_channel and then navigate to that dm_channel
+    // filteredUsers need to be mapped to dmChannels and then render DMChannelItem or UserItem based on whether dm_channel exists or not. In UserItem, we will do api call on click to create dm_channel and then navigate to that dm_channel
 
     return (
         <CommandGroup heading={_("Users")}>

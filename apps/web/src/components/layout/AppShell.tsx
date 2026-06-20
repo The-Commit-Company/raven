@@ -16,6 +16,7 @@ import { useMessagesRealtime } from "@stores/messages/useMessagesRealtime"
 import { useReconnectCatchup } from "@stores/messages/useReconnectCatchup"
 import { useOutboxAutoRetry } from "@stores/messages/useOutboxAutoRetry"
 import { useChannelListRealtime } from "@hooks/useChannelListRealtime"
+import { useChannelListSync } from "@stores/channels/useChannelListSync"
 import { usePresenceSync } from "@stores/presence/usePresenceSync"
 import { useReportActiveState } from "@stores/presence/useReportActiveState"
 import DocumentTitle from "./DocumentTitle"
@@ -91,6 +92,9 @@ const AppListeners = ({ children }: { children: React.ReactNode }) => {
     useOutboxAutoRetry()
     // Keeps the sidebar channel list + member lists fresh on create/archive/join/leave
     useChannelListRealtime()
+    // Seeds the channel store (mirrors the channel_list fetch for now); store will
+    // own the fetch + realtime writes once consumers migrate off SWR
+    useChannelListSync()
     // Seeds + live-updates which users are online (read via useIsUserOnline)
     usePresenceSync()
     // Reports OUR own online state (app open / focus / 10-min idle) to the server

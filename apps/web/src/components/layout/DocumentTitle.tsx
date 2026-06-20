@@ -1,5 +1,5 @@
 import { useMatch } from "react-router-dom"
-import { useChannels } from "@hooks/useChannels"
+import { useChannelList } from "@stores/channels/useChannelList"
 import { useUsersById } from "@hooks/useMessageRowLookups"
 import { useTotalUnread } from "@stores/unread/useChannelUnread"
 import _ from "@lib/translate"
@@ -26,7 +26,7 @@ const DocumentTitle = () => {
 
 /** Human label for the open page — the channel/DM name, or a static page name. */
 const useCurrentPageLabel = (): string | null => {
-    const { channels, dm_channels } = useChannels()
+    const { channels, dmChannels } = useChannelList()
     const usersById = useUsersById()
 
     // end: false so a channel stays matched while a thread drawer extends the URL
@@ -45,7 +45,7 @@ const useCurrentPageLabel = (): string | null => {
     if (search) return _("Search")
 
     if (dmMatch) {
-        const dm = dm_channels.find((channel) => channel.name === dmMatch.params.id)
+        const dm = dmChannels.find((channel) => channel.name === dmMatch.params.id)
         const peer = dm?.peer_user_id ? usersById.get(dm.peer_user_id) : undefined
         return peer?.first_name || peer?.full_name || peer?.name || _("Direct Message")
     }

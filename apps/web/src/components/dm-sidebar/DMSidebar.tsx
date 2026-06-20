@@ -14,7 +14,7 @@ import { formatRelativeDate } from "@lib/date"
 import { getMessageTeaser } from "@utils/messageUtils"
 import _ from "@lib/translate"
 import type { DMChannelListItem } from "@raven/types/common/ChannelListItem"
-import { useChannels } from "@hooks/useChannels"
+import { useChannelList } from "@stores/channels/useChannelList"
 import { useChannelUnread } from "@stores/unread/useChannelUnread"
 import { useUserCookieData } from "@hooks/useUserCookieData"
 import { MobileSearchButton } from "@components/features/header/QuickSearch/SearchButton"
@@ -39,7 +39,7 @@ const dmListComponents = { Footer: DMListFooter }
 
 export function DMSidebar() {
 
-    const { dm_channels, isLoading } = useChannels()
+    const { dmChannels, isLoading } = useChannelList()
     const usersById = useUsersById()
 
     /**
@@ -52,7 +52,7 @@ export function DMSidebar() {
      */
     const rows: DMRowData[] = useMemo(
         () =>
-            dm_channels
+            dmChannels
                 .flatMap((dm) => {
                     const peer = dm.peer_user_id ? usersById.get(dm.peer_user_id) : undefined
                     return peer && peer.enabled !== 0 ? [{ dm, peer }] : []
@@ -66,12 +66,12 @@ export function DMSidebar() {
                     const tb = b.dm.last_message_timestamp ?? ""
                     return ta < tb ? 1 : ta > tb ? -1 : 0
                 }),
-        [dm_channels, usersById]
+        [dmChannels, usersById]
     )
 
     const dmPeerIds = useMemo(
-        () => new Set(dm_channels.map((d) => d.peer_user_id).filter(Boolean) as string[]),
-        [dm_channels]
+        () => new Set(dmChannels.map((d) => d.peer_user_id).filter(Boolean) as string[]),
+        [dmChannels]
     )
 
     // The users table always contains at least the current user once Dexie

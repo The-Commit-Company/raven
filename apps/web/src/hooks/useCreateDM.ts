@@ -2,7 +2,7 @@ import { useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { useFrappePostCall, useSWRConfig } from "frappe-react-sdk"
 import { toast } from "sonner"
-import { useChannels } from "@hooks/useChannels"
+import { useChannelList } from "@stores/channels/useChannelList"
 import { getErrorMessage } from "@lib/frappe"
 import _ from "@lib/translate"
 
@@ -11,7 +11,7 @@ import _ from "@lib/translate"
  * Shared by every "message this person" affordance — the mention hover card,
  * the command menu, the DM sidebar — so the behaviour is identical everywhere.
  *
- * Fast path: the client already holds every DM channel (`useChannels`), so if a
+ * Fast path: the client already holds every DM channel (`useChannelList`), so if a
  * DM with this peer exists we just route to it — NO API call. The endpoint is
  * hit only to create a DM that doesn't exist yet.
  *
@@ -22,7 +22,7 @@ import _ from "@lib/translate"
 export const useCreateDM = () => {
     const navigate = useNavigate()
     const { mutate } = useSWRConfig()
-    const { dm_channels } = useChannels()
+    const { dmChannels } = useChannelList()
     const { call, loading } = useFrappePostCall<{ message: string }>(
         "raven.api.raven_channel.create_direct_message_channel",
     )
@@ -35,7 +35,7 @@ export const useCreateDM = () => {
     const openDM = useCallback(
         (userID: string): Promise<string | undefined> => {
             // Fast path: a DM with this peer already exists client-side — just route.
-            const existing = dm_channels.find((channel) => channel.peer_user_id === userID)
+            const existing = dmChannels.find((channel) => channel.peer_user_id === userID)
             if (existing) {
                 goToDM(existing.name)
                 return Promise.resolve(existing.name)
@@ -55,7 +55,7 @@ export const useCreateDM = () => {
                     return undefined
                 })
         },
-        [call, dm_channels, goToDM, mutate],
+        [call, dmChannels, goToDM, mutate],
     )
 
     // Kept as `createDM` for callers; resolves existing DMs without an API call.

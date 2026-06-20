@@ -1,5 +1,5 @@
 import { useMemo, useSyncExternalStore } from 'react'
-import { useChannels } from '@hooks/useChannels'
+import { useChannelList } from "@stores/channels/useChannelList"
 import { useWorkspaces, WorkspaceFields } from '@hooks/useWorkspaces'
 import { usersStore } from '@stores/usersStore'
 import { UserData } from '@db'
@@ -19,7 +19,7 @@ export const useUsersById = (): Map<string, UserData> =>
     useSyncExternalStore(usersStore.subscribe, usersStore.getSnapshot)
 
 export const useChannelsById = (): Map<string, ChannelListItem> => {
-    const { channels } = useChannels()
+    const { channels } = useChannelList()
     return useMemo(() => {
         const m = new Map<string, ChannelListItem>()
         for (const c of channels) m.set(c.name, c)
@@ -28,12 +28,12 @@ export const useChannelsById = (): Map<string, ChannelListItem> => {
 }
 
 export const useDMsById = (): Map<string, DMChannelListItem> => {
-    const { dm_channels } = useChannels()
+    const { dmChannels } = useChannelList()
     return useMemo(() => {
         const m = new Map<string, DMChannelListItem>()
-        for (const c of dm_channels) m.set(c.name, c)
+        for (const c of dmChannels) m.set(c.name, c)
         return m
-    }, [dm_channels])
+    }, [dmChannels])
 }
 
 export const useWorkspacesById = (): Map<string, WorkspaceFields> => {
