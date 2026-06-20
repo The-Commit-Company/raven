@@ -67,7 +67,7 @@ const CommandPalette = ({ inDrawer = false }: { inDrawer?: boolean }) => {
     const location = useLocation()
     const channelID = useCurrentChannelID()
     const { channel, dmChannel } = useChannel(channelIDFromURL ? channelID : "")
-    const { data: peerUser } = useUser(dmChannel?.peer_user_id || "")
+    const peerUser = useUser(dmChannel?.peer_user_id || "")
     const isDMRoute = location.pathname.startsWith('/dm-channel') && !channelIDFromURL
 
     const debouncedText = useDebounce(text, 200)

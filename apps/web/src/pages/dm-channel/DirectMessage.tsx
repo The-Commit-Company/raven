@@ -10,15 +10,17 @@ import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from "@components/ui
 
 export default function DirectMessage() {
     const channelID = useCurrentChannelID()
-    const { dmChannel } = useChannel(channelID)
+    const { dmChannel, isLoading } = useChannel(channelID)
 
-    const { data: peerUser, isLoading: isPeerUserLoading } = useUser(dmChannel?.peer_user_id || "")
+    const peerUser = useUser(dmChannel?.peer_user_id || "")
 
     if (!channelID) {
         return <Navigate to="/dm-channel" replace />
     }
 
-    if (isPeerUserLoading) {
+    // Users are loaded app-wide before this renders, so the only real wait here
+    // is the channel list — gate the skeleton on that, not the (sync) peer lookup.
+    if (isLoading) {
         return <DirectMessagePageSkeleton />
     }
 

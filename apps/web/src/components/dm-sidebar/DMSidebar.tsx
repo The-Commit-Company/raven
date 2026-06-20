@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react"
+import { memo, useMemo, useRef } from "react"
 import { NavLink, useMatch, useNavigate } from "react-router-dom"
 import { useHotkeys } from "react-hotkeys-hook"
 import { Virtuoso, type VirtuosoHandle } from "react-virtuoso"
@@ -195,7 +195,11 @@ interface DMRowProps {
     peerUser: UserData
 }
 
-function DMRow({ dmChannel, peerUser }: DMRowProps) {
+// Memoized: the sidebar re-renders when ANY user changes (it needs the whole
+// users map to filter disabled peers + sort), but the usersStore hands back
+// reference-stable peer objects, so an unrelated user's change leaves this row's
+// props identical and it bails. Only the changed user's row actually re-renders.
+const DMRow = memo(function DMRow({ dmChannel, peerUser }: DMRowProps) {
     const { name: currentUser } = useUserCookieData()
     const { count: unread } = useChannelUnread(dmChannel.name)
 
@@ -217,7 +221,7 @@ function DMRow({ dmChannel, peerUser }: DMRowProps) {
             />
         )}
     </NavLink>
-}
+})
 
 
 function ExtraUsersList({ dmPeerIds }: { dmPeerIds: Set<string> }) {

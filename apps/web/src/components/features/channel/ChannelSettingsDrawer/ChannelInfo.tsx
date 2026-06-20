@@ -18,7 +18,7 @@ import { hasRole } from '@lib/permissions'
 
 const ChannelInfo = ({ channelID }: { channelID: string }) => {
     const { channel } = useChannel(channelID)
-    const { data: user } = useUser(channel?.owner ?? "")
+    const user = useUser(channel?.owner ?? "")
 
     if (!channel) {
         return null

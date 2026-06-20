@@ -29,7 +29,7 @@ export default function ReplyMessage({
     linkedMessageID?: string | null
 }) {
 
-    const { data: user } = useUser(repliedMessage.owner)
+    const user = useUser(repliedMessage.owner)
     const setMessageTarget = useSetAtom(messageTargetAtom(channelID))
 
     const jumpToOriginal = () => {

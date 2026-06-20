@@ -25,7 +25,7 @@ import _ from "@lib/translate"
  */
 
 export const UserMention = ({ id, fallback }: { id: string; fallback?: string }) => {
-    const { data: user } = useUser(id)
+    const user = useUser(id)
     const { name: currentUser } = useUserCookieData()
 
     const label = user?.full_name || user?.name || fallback || id
@@ -49,7 +49,7 @@ export const UserMention = ({ id, fallback }: { id: string; fallback?: string })
 
 /** Profile card body — mounted lazily by the hover card (see note above). */
 const UserMentionCard = ({ id, fallbackLabel, isSelf }: { id: string; fallbackLabel: string; isSelf: boolean }) => {
-    const { data: user } = useUser(id)
+    const user = useUser(id)
     const { createDM, loading } = useCreateDM()
 
     const fullName = user?.full_name || fallbackLabel

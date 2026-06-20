@@ -64,7 +64,7 @@ export const MessageSenderLayout = ({
     isContinuation: boolean
     children: React.ReactNode
 }) => {
-    const { data: user } = useUser(owner)
+    const user = useUser(owner)
     const displayName = user?.full_name || user?.name || owner || _("User")
     const { shortTime, longTime } = useMessageTimes(creation)
 

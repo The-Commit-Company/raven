@@ -367,7 +367,7 @@ function SavedMessagePreviewBoxWrapper({
     onUnsave?: () => void
 }) {
     // Get user data
-    const { data: userFromHook } = useUser(message.owner)
+    const userFromHook = useUser(message.owner)
     const user = userFromHook || users.find(u => u.name === message.owner) || null
 
     // Format date

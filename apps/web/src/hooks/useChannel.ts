@@ -5,7 +5,7 @@ import { useContext, useMemo } from "react";
 import { useChannels } from "./useChannels";
 
 export function useChannel(channelID: string) {
-  const { channels, dm_channels } = useChannels()
+  const { channels, dm_channels, isLoading } = useChannels()
   const { call } = useContext(FrappeContext) as FrappeConfig
   const { myProfile, mutate: mutateUser } = useCurrentRavenUser()
 
@@ -44,5 +44,6 @@ export function useChannel(channelID: string) {
     dmChannel,
     toggleStarChannel,
     isStarred,
+    isLoading,
   }
 }

@@ -75,8 +75,6 @@ export function DMChannelHeader({ peer, channelID }: DMChannelHeaderProps) {
                                 <UserAvatar
                                     user={peer}
                                     size="sm"
-                                    showStatusIndicator={false}
-                                    showBotIndicator={false}
                                 />
                                 <span className="text-sm font-medium truncate">{displayName}</span>
                                 <ChevronDown className="size-4 shrink-0" />

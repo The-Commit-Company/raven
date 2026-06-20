@@ -48,7 +48,7 @@ const AttachmentPreviewContent = ({
     const isMobile = useIsMobile()
     const { attachments, index } = display
     const current = attachments[index] ?? attachments[0]
-    const { data: user } = useUser(current.owner)
+    const user = useUser(current.owner)
 
     // PDFs render inline via <embed> on desktop only — mobile browsers won't,
     // so they fall back to the download card alongside non-previewable files.

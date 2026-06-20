@@ -20,7 +20,7 @@ const ChannelContextDrawer = () => {
     const channelID = useCurrentChannelID()
     const drawerType = useAtomValue(channelDrawerAtom(channelID))
     const { dmChannel } = useChannel(channelID)
-    const { data: peerUser } = useUser(dmChannel?.peer_user_id ?? "")
+    const peerUser = useUser(dmChannel?.peer_user_id ?? "")
 
     if (drawerType === "members") return <ChannelMembersDrawer />
     if (SETTINGS_DRAWER_TYPES.includes(drawerType)) {
