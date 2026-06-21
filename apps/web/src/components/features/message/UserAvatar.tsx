@@ -64,9 +64,9 @@ const getSizeClasses = (size: 'xs' | 'sm' | 'md' | 'lg' | 'xl') => {
     switch (size) {
         case 'xs':
             return {
-                avatar: 'h-4 w-4 rounded-full',
-                indicator: 'h-1 w-1 -bottom-0.5 -right-0.5',
-                manualAvailableDot: 'h-0.25 w-0.25',
+                avatar: 'h-5 w-5 rounded-full',
+                indicator: 'h-2 w-2 -bottom-0.5 -right-0.5 border',
+                manualAvailableDot: 'h-0.5 w-0.5',
                 bot: 'h-1.5 w-1.5',
                 botContainer: 'h-2.5 w-2.5 -bottom-0.5 -right-0.5',
                 font: '!text-[8px] font-bold'

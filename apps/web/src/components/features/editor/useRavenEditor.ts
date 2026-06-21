@@ -2,6 +2,7 @@ import { useEditor, type Editor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import type { MutableRefObject } from "react"
 import { UserMention } from "./userMention"
+import { ChannelMention } from "./channelMention"
 import { isAnySuggestionActive } from "./suggestion"
 
 /**
@@ -28,7 +29,7 @@ const EDITOR_CLASS = "tiptap min-h-9 max-h-[40vh] overflow-y-auto px-3 py-2 focu
 
 export const useRavenEditor = ({ submitRef, content, autofocus = false }: UseRavenEditorOptions): Editor | null => {
     return useEditor({
-        extensions: [StarterKit, UserMention],
+        extensions: [StarterKit, UserMention, ChannelMention],
         content,
         autofocus,
         editorProps: {

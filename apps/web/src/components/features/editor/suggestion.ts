@@ -7,8 +7,9 @@ import { PluginKey, type EditorState } from "@tiptap/pm/state"
  * item, not submit the message. Add new suggestion keys to SUGGESTION_KEYS.
  */
 export const userMentionPluginKey = new PluginKey("userMentionSuggestion")
+export const channelMentionPluginKey = new PluginKey("channelMentionSuggestion")
 
-const SUGGESTION_KEYS = [userMentionPluginKey]
+const SUGGESTION_KEYS = [userMentionPluginKey, channelMentionPluginKey]
 
 /** True while any suggestion popup is open (its plugin state is active). */
 export const isAnySuggestionActive = (state: EditorState): boolean =>
