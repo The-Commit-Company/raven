@@ -117,6 +117,34 @@
   @apply min-w-0 flex-1 overflow-x-auto border-0 bg-transparent p-0 text-inherit;
 }
 
+/* Code block INSIDE an editor (StarterKit's bare <pre>, no .code-block wrapper).
+   Scoped to [data-raven-editor] so it styles the composer only, never the rendered
+   message (which uses .code-block above). Gives the block a surface so it reads as
+   code while typing instead of plain text. */
+[data-raven-editor] .tiptap pre {
+  background: #f6f8fa;
+  @apply my-2 overflow-x-auto rounded-md border border-outline-gray-2 p-3 font-mono text-xs leading-relaxed text-ink-gray-8;
+}
+
+.dark [data-raven-editor] .tiptap pre {
+  background: #0d1117;
+}
+
+[data-raven-editor] .tiptap pre code {
+  @apply border-0 bg-transparent p-0 text-inherit;
+}
+
+/* Empty-state placeholder. The Placeholder extension adds .is-editor-empty + a
+   data-placeholder attr to the first empty paragraph; we render it via ::before.
+   Editor-only via [data-raven-editor] so rendered messages are never affected. */
+[data-raven-editor] .tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  @apply text-ink-gray-4;
+}
+
 /* highlight.js syntax tokens — GitHub light */
 .tiptap .hljs-doctag,
 .tiptap .hljs-keyword,

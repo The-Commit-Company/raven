@@ -1,7 +1,8 @@
 import { useAtomValue } from 'jotai'
 import { uploadingFilesAtom, uploadedFilesAtom, useAttachFile, useRemoveFile, FileItemType } from './useFileInput'
 import { Button } from '@components/ui/button'
-import { AlertCircleIcon, PlusIcon, Trash2Icon } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@components/ui/tooltip'
+import { AlertCircleIcon, Paperclip, Trash2Icon } from 'lucide-react'
 import { useMemo, useRef } from 'react'
 import FileTypeIcon from '@components/common/FileIcons/FileTypeIcon'
 import { formatBytes, getFileExtension } from '@raven/lib/utils/operations'
@@ -33,8 +34,11 @@ export const InputFileList = ({ channelID }: InputFilesProps) => {
 
     const onRemove = useRemoveFile(channelID)
 
+    // Nothing staged → render nothing (no empty padded strip inside the composer box).
+    if (files.length === 0) return null
+
     return (
-        <div className='flex gap-2 flex-wrap'>
+        <div className='flex gap-2 flex-wrap px-2 pt-2'>
             {files.map((file) => (
                 <FileItem key={file.id} file={file} onRemove={onRemove} />
             ))}
@@ -98,7 +102,6 @@ const FileItem = ({ file, onRemove }: { file: FileItemType, onRemove: (file: Fil
     </div>
 }
 
-/** Temp component */
 export const AddFileButton = ({ channelID }: { channelID: string }) => {
 
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -118,8 +121,13 @@ export const AddFileButton = ({ channelID }: { channelID: string }) => {
                     onAddFile(files)
                 }
             }} className='hidden' />
-        <Button variant="subtle" size="sm" isIconButton onClick={onClick} type='button'>
-            <PlusIcon />
-        </Button>
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <Button variant="ghost" size="sm" isIconButton onClick={onClick} type='button' aria-label={_("Attach file")}>
+                    <Paperclip />
+                </Button>
+            </TooltipTrigger>
+            <TooltipContent>{_("Attach file")}</TooltipContent>
+        </Tooltip>
     </>
 }

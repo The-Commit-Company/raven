@@ -1,7 +1,13 @@
 import { useEditor, type Editor } from "@tiptap/react"
+import type { AnyExtension } from "@tiptap/core"
 import StarterKit from "@tiptap/starter-kit"
-import type { MutableRefObject } from "react"
+import { Highlight } from "@tiptap/extension-highlight"
+import { TableKit } from "@tiptap/extension-table"
+import { Placeholder } from "@tiptap/extensions"
+import { useRef, type MutableRefObject } from "react"
+import { useAtomValue } from "jotai"
 import { useIsMobile } from "@hooks/use-mobile"
+import { EnterKeyBehaviourAtom } from "@utils/preferences"
 import { UserMention } from "./userMention"
 import { ChannelMention } from "./channelMention"
 import { CustomEmoji } from "./customEmoji"
@@ -21,46 +27,118 @@ import { isSuggestionPopupOpen } from "./suggestion"
 interface UseRavenEditorOptions {
     /** Invoked on Enter (without Shift). Shift+Enter inserts a newline. */
     submitRef: MutableRefObject<() => void>
+    /** Invoked on Mod+Shift+U — the caller reveals the formatting toolbar + opens the link popover. */
+    linkRef?: MutableRefObject<() => void>
     /** Initial HTML — set when editing an existing message; omit for a blank composer. */
     content?: string
     /** Autofocus on mount (e.g. inline edit). Off by default for the composer. */
     autofocus?: boolean
+    /** Empty-state hint shown in the editor (omit to show nothing, e.g. inline edit). */
+    placeholder?: string
 }
 
 /** Shared editor surface styling — the `.tiptap` class is the render/compose source of truth. */
-const EDITOR_CLASS = "tiptap min-h-9 max-h-[40vh] overflow-y-auto px-3 py-2 focus:outline-none"
+const EDITOR_CLASS = "tiptap min-h-16 max-h-[40vh] overflow-y-auto px-3 py-2.5 focus:outline-none"
 
-export const useRavenEditor = ({ submitRef, content, autofocus = false }: UseRavenEditorOptions): Editor | null => {
+export const useRavenEditor = ({ submitRef, linkRef, content, autofocus = false, placeholder }: UseRavenEditorOptions): Editor | null => {
     // Emoji `:` autocomplete is desktop-only — mobile keyboards have their own emoji,
     // and a popup on every ":" is noise. Captured at mount (a breakpoint flip
     // mid-session won't reconfigure the live editor, which is fine).
     const isMobile = useIsMobile()
-    const extensions = [StarterKit, UserMention, ChannelMention, CustomEmoji]
+
+    // The keydown closure is built once, so read the live Enter-key preference and the
+    // editor instance through refs (kept current each render) instead of closing over
+    // stale values.
+    const enterBehaviour = useAtomValue(EnterKeyBehaviourAtom)
+    const enterBehaviourRef = useRef(enterBehaviour)
+    enterBehaviourRef.current = enterBehaviour
+    const editorRef = useRef<Editor | null>(null)
+
+    // StarterKit already covers bold/italic/strike/underline, code + code blocks,
+    // lists, blockquote, hr, link, undo/redo — all round-tripped by the message
+    // renderer. We add Highlight (==text==) and tables, and configure Link for chat
+    // (don't navigate on click in the editor; auto-link typed/pasted URLs). Headings
+    // are disabled — not wanted in chat.
+    //
+    // Deliberately NOT added: text-align + headings (not wanted), code-block-lowlight
+    // (StarterKit's code block is enough; the renderer highlights on display — avoids
+    // eager highlight.js in the composer bundle), Image (attachments are file
+    // messages, not inline), FileHandler (paste/drop upload — a separate layer),
+    // Details/TaskList (no renderer+CSS yet).
+    const extensions: AnyExtension[] = [
+        StarterKit.configure({
+            heading: false,
+            link: { openOnClick: false, autolink: true, defaultProtocol: "https" },
+        }),
+        Highlight,
+        TableKit,
+        UserMention,
+        ChannelMention,
+        CustomEmoji,
+    ]
+    if (placeholder) extensions.push(Placeholder.configure({ placeholder }))
     if (!isMobile) extensions.push(EmojiSuggestion)
 
-    return useEditor({
+    const editor = useEditor({
         extensions,
         content,
-        autofocus,
+        // Never steal focus on mobile — it pops the on-screen keyboard the moment a
+        // channel opens. Desktop honours the caller's request.
+        autofocus: isMobile ? false : autofocus,
         editorProps: {
             attributes: {
                 class: EDITOR_CLASS,
             },
-            // TODO(mobile): on touch devices Enter should insert a newline and the
-            // send button submits — gate this once we wire the mobile composer.
             handleKeyDown: (_view, event) => {
-                if (event.key === "Enter" && !event.shiftKey) {
+                // Mod+Shift+U: hand off to the caller (reveal toolbar + open link popover).
+                // Not Mod+K — that's reserved for the global command palette. Plain Mod+U
+                // stays underline (handled by the Underline extension).
+                if ((event.metaKey || event.ctrlKey) && event.shiftKey && event.key.toLowerCase() === "u") {
+                    if (linkRef) {
+                        event.preventDefault()
+                        linkRef.current()
+                        return true
+                    }
+                }
+
+                if (event.key === "Enter") {
                     // A suggestion popup (@mention / #channel / :emoji:) is showing → let it
-                    // take Enter to pick the highlighted item instead of submitting. This
-                    // editorProps handler runs before the suggestion plugin, so without this
-                    // guard it would swallow Enter first.
+                    // take Enter to pick the highlighted item. This handler runs before the
+                    // suggestion plugin, so without this it would swallow Enter first.
                     if (isSuggestionPopupOpen()) return false
-                    event.preventDefault()
-                    submitRef.current()
-                    return true
+
+                    // Shift+Enter is always a newline.
+                    if (event.shiftKey) return false
+
+                    // Mobile: Enter always inserts a newline; the send button submits.
+                    if (isMobile) return false
+
+                    const ed = editorRef.current
+
+                    // Cmd/Ctrl+Enter always sends — the reliable "send" chord everywhere,
+                    // including code blocks and lists.
+                    if (event.metaKey || event.ctrlKey) {
+                        event.preventDefault()
+                        submitRef.current()
+                        return true
+                    }
+
+                    // Plain Enter sends only in "send-message" mode — and not while inside a
+                    // code block or list, where Enter must add a line / list item (use
+                    // Cmd+Enter to send from there). In "new-line" mode Enter is a newline.
+                    if (enterBehaviourRef.current === "send-message") {
+                        if (ed?.isActive("codeBlock") || ed?.isActive("listItem")) return false
+                        event.preventDefault()
+                        submitRef.current()
+                        return true
+                    }
+                    return false
                 }
                 return false
             },
         },
     })
+
+    editorRef.current = editor
+    return editor
 }

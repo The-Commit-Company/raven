@@ -4,11 +4,12 @@ import { Button } from "@components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover"
 import { useTheme } from "@components/theme-provider"
 import Picker from "@emoji-mart/react"
-import { useState } from "react"
+import { useAtom } from "jotai"
+import { EnterKeyBehaviourAtom, QuickEmojisAtom } from "@utils/preferences"
 
 export default function Preferences() {
-  const [enterKeyBehaviour, setEnterKeyBehaviour] = useState<"send-message" | "new-line">("send-message")
-  const [quickEmojis, setQuickEmojis] = useState<string[]>(["👍", "❤️", "😂", "😮", "😢"])
+  const [enterKeyBehaviour, setEnterKeyBehaviour] = useAtom(EnterKeyBehaviourAtom)
+  const [quickEmojis, setQuickEmojis] = useAtom(QuickEmojisAtom)
   const { theme } = useTheme()
 
   const handleEmojiSelect = (index: number, emoji: any) => {

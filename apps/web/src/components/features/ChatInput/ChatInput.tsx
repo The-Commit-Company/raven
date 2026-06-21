@@ -1,17 +1,25 @@
-import { forwardRef, useCallback, useContext, useEffect, useMemo, useRef } from "react"
+import { forwardRef, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { EditorContent } from "@tiptap/react"
 import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
 import { useAtom, useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { toast } from "sonner"
+import { Type } from "lucide-react"
 import { InputFileList, AddFileButton } from "./InputFiles"
 import SendButton from "./SendButton"
+import { MentionButton } from "./MentionButton"
+import { EmojiPickerButton } from "./EmojiPickerButton"
 import { CreatePollDialog } from "./CreatePollDialog"
 import { uploadedFilesAtom, uploadingFilesAtom, pendingSendAtom } from "./useFileInput"
 import { useRavenEditor } from "@components/features/editor/useRavenEditor"
+import { EditorFormattingToolbar } from "@components/features/editor/EditorFormattingToolbar"
 import { enqueueSend } from "@stores/messages/messageSender"
 import { useUserCookieData } from "@hooks/useUserCookieData"
 import _ from "@lib/translate"
+import { Button } from "@components/ui/button"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@components/ui/tooltip"
+import { cn } from "@lib/utils"
+import { Separator } from "@components/ui/separator"
 
 interface ChatInputProps {
     channelID: string
@@ -37,8 +45,19 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
     const [pendingSend, setPendingSend] = useAtom(pendingSendAtom(channelID))
     const { name: currentUser } = useUserCookieData()
 
-    // The editor's keydown closure (built once) calls the latest handler via this ref.
-    const sendRef = useRef<() => void>(() => {})
+    // Formatting toolbar visibility — off by default (clean composer), toggled by
+    // the Type button in the action bar.
+    const [showFormatting, setShowFormatting] = useState(false)
+    // Bumped by the ⌘⇧U shortcut to open the link popover (also reveals the toolbar).
+    const [linkSignal, setLinkSignal] = useState(0)
+
+    // The editor's keydown closures (built once) call the latest handlers via these refs.
+    const sendRef = useRef<() => void>(() => { })
+    const linkRef = useRef<() => void>(() => { })
+    linkRef.current = () => {
+        setShowFormatting(true)
+        setLinkSignal((n) => n + 1)
+    }
 
     // A held send waits on these: any file still uploading blocks dispatch; an
     // errored upload settles but must not be silently sent without. We subscribe
@@ -51,7 +70,7 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
         useMemo(() => selectAtom(uploadingFilesAtom(channelID), (f) => f.some((file) => file.status === "error")), [channelID]),
     )
 
-    const editor = useRavenEditor({ submitRef: sendRef })
+    const editor = useRavenEditor({ submitRef: sendRef, linkRef, autofocus: true, placeholder: _("Type a message...") })
 
     /** Build the optimistic batch, clear the composer, and fire the request. */
     const dispatchSend = useCallback(() => {
@@ -112,17 +131,48 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
             }}
             className="p-2 pb-4 w-full flex flex-col gap-2"
         >
-            <InputFileList channelID={channelID} />
-            <div className="flex gap-2 items-end rounded-sm w-full">
-                <div className="flex items-center justify-center gap-1">
-                    <AddFileButton channelID={channelID} />
-                    <CreatePollDialog channelID={channelID} />
-                </div>
-                {/* data-raven-editor + relative: the mention popup anchors here (above the input) */}
-                <div data-raven-editor className="relative w-full rounded-md border border-outline-gray-2 bg-surface-white focus-within:ring-2 ring-outline-gray-3">
+            {/* data-raven-editor + relative: the mention/emoji popups anchor here.
+                Everything lives inside the input box (Slack-style): formatting toolbar,
+                attachment previews, editor, then the action bar — all sharing one border. */}
+            <div data-raven-editor className="relative w-full rounded-lg border border-outline-gray-2 shadow-outline-base bg-surface-white focus-within:border-outline-gray-3">
+                <TooltipProvider>
+                    {editor && showFormatting && (
+                        <EditorFormattingToolbar
+                            editor={editor}
+                            linkSignal={linkSignal}
+                            onLinkConsumed={() => setLinkSignal(0)}
+                        />
+                    )}
+                    <InputFileList channelID={channelID} />
                     <EditorContent editor={editor} />
-                </div>
-                <SendButton onSend={handleSend} loading={pendingSend} />
+                    <div className="flex items-center gap-1 px-1.5 pb-1.5">
+                        <AddFileButton channelID={channelID} />
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    isIconButton
+                                    aria-label={_("Formatting")}
+                                    aria-pressed={showFormatting}
+                                    onClick={() => setShowFormatting((v) => !v)}
+                                    className={cn(showFormatting && "bg-surface-gray-3 text-ink-gray-9")}
+                                >
+                                    <Type />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>{_("Formatting")}</TooltipContent>
+                        </Tooltip>
+                        <Separator orientation="vertical" className="mx-1 h-4!" />
+                        {editor && <MentionButton editor={editor} />}
+                        {editor && <EmojiPickerButton editor={editor} />}
+                        <Separator orientation="vertical" className="mx-1 h-4!" />
+                        <CreatePollDialog channelID={channelID} />
+                        <div className="flex-1" />
+                        <SendButton onSend={handleSend} loading={pendingSend} />
+                    </div>
+                </TooltipProvider>
             </div>
         </form>
     )

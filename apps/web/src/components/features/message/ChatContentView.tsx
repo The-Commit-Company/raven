@@ -61,7 +61,10 @@ export function ChatContentView({
                 {header}
                 <ChatStream channelID={channelID} pinnedMessagesString={pinnedMessagesString} />
                 <div className="shrink-0">
-                    <ChatInput channelID={channelID} />
+                    {/* key by channel: remount per channel so the editor re-autofocuses and
+                        draft text doesn't bleed across channels (file/send state already
+                        lives in channel-keyed atoms, so a remount is safe). */}
+                    <ChatInput key={channelID} channelID={channelID} />
                 </div>
             </Island>
 

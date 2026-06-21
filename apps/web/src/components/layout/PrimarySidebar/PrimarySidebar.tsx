@@ -2,7 +2,6 @@ import { commandMenuOpenAtom } from "@components/features/cmdk/atoms"
 import NavUserMenu from "@components/features/header/NavUserMenu/NavUserMenu"
 import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar"
 import { Button } from "@components/ui/button"
-import { Kbd, KbdGroup } from "@components/ui/kbd"
 import { KeyboardMetaKeyIcon } from "@components/ui/keyboard-keys"
 import { Separator } from "@components/ui/separator"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@components/ui/tooltip"
@@ -68,12 +67,10 @@ const SearchButton = () => {
 
         </TooltipTrigger>
         <TooltipContent side="right" align="center">
-            <div className="flex items-center gap-2">
-                {_("Search")}  <KbdGroup>
-                    <Kbd className="text-ink-gray-4 text-sm font-normal items-center gap-0 flex justify-center">
-                        <KeyboardMetaKeyIcon /> K
-                    </Kbd>
-                </KbdGroup>
+            <div>
+                {_("Search")}  <span className="ms-1 text-ink-gray-4">
+                    <KeyboardMetaKeyIcon />K
+                </span>
             </div>
         </TooltipContent>
 
