@@ -105,8 +105,9 @@ export const useRavenEditor = ({ submitRef, linkRef, filesRef, cancelReplyRef, c
         extensions,
         content,
         // Never steal focus on mobile — it pops the on-screen keyboard the moment a
-        // channel opens. Desktop honours the caller's request.
-        autofocus: isMobile ? false : autofocus,
+        // channel opens. Desktop honours the caller's request, focusing at the END so a
+        // restored draft (or an edited message) puts the cursor after the text, not before it.
+        autofocus: isMobile ? false : autofocus ? "end" : false,
         editorProps: {
             attributes: {
                 class: EDITOR_CLASS,

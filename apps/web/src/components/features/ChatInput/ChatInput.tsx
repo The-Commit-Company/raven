@@ -3,6 +3,7 @@ import { EditorContent } from "@tiptap/react"
 import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
 import { useAtom, useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
+import { useDebounceCallback } from "usehooks-ts"
 import { toast } from "sonner"
 import { Type } from "lucide-react"
 import { InputFileList, AddFileButton } from "./InputFiles"
@@ -14,6 +15,7 @@ import { uploadedFilesAtom, uploadingFilesAtom, pendingSendAtom, useAttachFile }
 import { useRavenEditor } from "@components/features/editor/useRavenEditor"
 import { EditorFormattingToolbar } from "@components/features/editor/EditorFormattingToolbar"
 import { ReplyPreviewBanner } from "./ReplyPreviewBanner"
+import { loadDraft, saveDraft } from "./draft"
 import { enqueueSend } from "@stores/messages/messageSender"
 import { replyToMessageAtom } from "@utils/channelAtoms"
 import { useUserCookieData } from "@hooks/useUserCookieData"
@@ -48,6 +50,10 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
     const [pendingSend, setPendingSend] = useAtom(pendingSendAtom(channelID))
     const [replyTo, setReplyTo] = useAtom(replyToMessageAtom(channelID))
     const { name: currentUser } = useUserCookieData()
+
+    // Restore any saved draft once on mount. ChatInput is keyed by channel, so this
+    // reads the right channel's draft on every channel switch.
+    const [initialDraft] = useState(() => loadDraft(channelID))
 
     // Formatting toolbar visibility — off by default (clean composer), toggled by
     // the Type button in the action bar.
@@ -84,7 +90,28 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
         useMemo(() => selectAtom(uploadingFilesAtom(channelID), (f) => f.some((file) => file.status === "error")), [channelID]),
     )
 
-    const editor = useRavenEditor({ submitRef: sendRef, linkRef, filesRef, cancelReplyRef, autofocus: true, placeholder: _("Type a message...") })
+    const editor = useRavenEditor({ submitRef: sendRef, linkRef, filesRef, cancelReplyRef, content: initialDraft || undefined, autofocus: true, placeholder: _("Type a message...") })
+
+    // Persist the draft as the user types (debounced). Stable callback so the
+    // debounced instance — and its flush() on unmount — stay identity-stable.
+    const persistDraft = useDebounceCallback(
+        useCallback(() => {
+            if (!editor) return
+            saveDraft(channelID, editor.isEmpty ? "" : editor.getHTML())
+        }, [editor, channelID]),
+        500,
+    )
+
+    useEffect(() => {
+        if (!editor) return
+        editor.on("update", persistDraft)
+        return () => {
+            editor.off("update", persistDraft)
+            // Switching channels unmounts this — write the latest text now so it isn't
+            // lost in the debounce window.
+            persistDraft.flush()
+        }
+    }, [editor, persistDraft])
 
     /** Build the optimistic batch, clear the composer, and fire the request. */
     const dispatchSend = useCallback(() => {
@@ -117,8 +144,11 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
         editor.commands.clearContent()
         setFiles([])
         if (replyTo) setReplyTo(null)
+        // Drop the saved draft (and any pending debounced write of the old text).
+        persistDraft.cancel()
+        saveDraft(channelID, "")
         editor.commands.focus()
-    }, [editor, files, channelID, currentUser, call, setFiles, replyTo, setReplyTo])
+    }, [editor, files, channelID, currentUser, call, setFiles, replyTo, setReplyTo, persistDraft])
 
     const handleSend = useCallback(() => {
         if (!editor) return
