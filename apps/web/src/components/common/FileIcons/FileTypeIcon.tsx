@@ -24,7 +24,7 @@ const FileTypeIcon = ({
 
     const iconSizeClasses = {
         xs: 'h-5 w-5',
-        sm: 'h-5 w-5',
+        sm: 'h-7 w-7',
         md: 'h-6 w-6',
         lg: 'h-8 w-8',
         xl: 'h-10 w-10'
@@ -33,7 +33,7 @@ const FileTypeIcon = ({
     // Special sizing for PowerPoint icon due to different viewBox
     const pptIconSizeClasses = {
         xs: 'h-2.5 w-2.5',
-        sm: 'h-3.5 w-3.5',
+        sm: 'h-4 w-4',
         md: 'h-4 w-4',
         lg: 'h-5 w-5',
         xl: 'h-6 w-6'
@@ -45,7 +45,7 @@ const FileTypeIcon = ({
         switch (fileType.toLowerCase()) {
             case 'pdf':
                 return (
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className={cn("text-white", iconSizeClasses[size])}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" data-theme="light" className={cn("text-white", iconSizeClasses[size])}>
                         <path d="M7 22.9c.1-.6.5-1 .9-1.4.5-.5 1.1-.8 1.8-1.2.7-.4 1.4-.7 2.1-1 .1 0 .2-.1.2-.2.6-1.2 1.2-2.4 1.7-3.6.3-.7.5-1.4.8-2.1v-.1c-.3-.7-.6-1.5-.7-2.3-.2-.8-.2-1.6-.1-2.4.1-.5.4-.9.8-1.3.1-.1.3-.1.5-.1h.8c.2 0 .4.1.5.3.3.2.5.5.7.8.2.4.2.8.3 1.2 0 1.2-.2 2.3-.4 3.4-.1.4-.2.7-.3 1.1v.1c.6 1.1 1.4 2.1 2.2 3 .1.1.1.1.3.1 1.1-.2 2.2-.2 3.2-.2.6 0 1.3.1 1.9.4.3.2.6.4.8.7.1.2.2.4.2.6v.7c0 .2-.1.4-.3.5-.2.2-.4.5-.8.5-.2 0-.5.1-.7.1-1.6.1-2.9-.4-4.2-1.3-.2-.2-.5-.4-.7-.6-.1 0-.1-.1-.2-.1-.6.1-1.2.2-1.8.4-.8.2-1.6.5-2.4.7-.1 0-.1.1-.2.1-.5.9-1.1 1.8-1.7 2.6-.5.6-1.1 1.2-1.7 1.7-.3.2-.7.4-1.1.5h-.8c-.2 0-.3 0-.5-.1-.5-.2-.9-.6-1-1.1-.1 0-.1-.2-.1-.4zm8.8-7c-.3.8-.7 1.6-1 2.4l2.4-.6c-.5-.6-1-1.3-1.4-1.8zm4.3 2.6c.6.4 1.3.7 2 .9.3.1.5 0 .7-.1.2-.1.3-.4.1-.5 0-.1-.1-.1-.2-.1-.2-.1-.5-.1-.8-.2-.6-.1-1.2-.1-1.8 0zm-9.4 2.8s-.1 0 0 0c-.6.3-1.2.7-1.7 1.1-.3.2-.5.5-.7.8v.2c.1.1.1.1.2.1.3-.2.5-.4.7-.5.6-.5 1-1.1 1.5-1.7zM15 11.2c.1 0 .1 0 0 0 .2-.6.3-1.2.3-1.7 0-.3 0-.6-.1-.9 0-.1-.1-.1-.2-.1s-.1.1-.2.1c-.2.3-.2.6-.2 1 0 .3 0 .5.1.8.2.2.2.5.3.8z" fill="currentColor" />
                     </svg>
                 )
@@ -143,7 +143,7 @@ const FileTypeIcon = ({
     const getBackgroundColor = () => {
         switch (fileType.toLowerCase()) {
             case 'pdf':
-                return 'bg-red-700'
+                return 'bg-red-500'
             case 'doc':
             case 'docx':
                 return 'bg-[#1A5CBD]'
@@ -188,7 +188,7 @@ const FileTypeIcon = ({
 
     if (showBackground) {
         return (
-            <div className={cn("rounded-md flex items-center justify-center", getBackgroundColor(), containerClass)}>
+            <div className={cn("rounded flex items-center justify-center", getBackgroundColor(), containerClass)}>
                 {renderIcon()}
             </div>
         )
