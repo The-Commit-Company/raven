@@ -12,7 +12,7 @@ import DirectMessage from "@pages/dm-channel/DirectMessage"
 import ThreadDrawer from "@components/features/message/ThreadDrawer"
 import { WorkspaceRedirect } from "@components/workspace-switcher/WorkspaceRedirect"
 import { FrappeProvider } from 'frappe-react-sdk'
-import { init } from 'emoji-mart'
+import { initEmojiMart } from '@lib/emojiMart'
 import Cookies from 'js-cookie'
 import WorkspaceList from "@pages/settings/Workspaces/WorkspaceList"
 import { SearchLayout } from "@components/layout/SearchLayout"
@@ -184,17 +184,9 @@ function localStorageProvider() {
   return map
 }
 
-// Initialize emoji-mart
-init({
-  data: async () => {
-    const response = await fetch(
-      'https://cdn.jsdelivr.net/npm/@emoji-mart/data/sets/14/apple.json',
-    )
-
-    return response.json()
-  },
-  set: 'apple',
-})
+// Initialize emoji-mart (Apple set). Custom emojis are registered later, once
+// fetched, via useRegisterCustomEmojis (re-init keeps this data).
+initEmojiMart()
 
 const getSiteName = () => {
   if (window.frappe?.boot?.versions?.frappe.startsWith('14')) {

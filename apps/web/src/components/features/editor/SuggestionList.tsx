@@ -34,7 +34,9 @@ export function SuggestionList<T>({ items, selectedIndex, onSelect, onHover, ren
 
     return (
         <div
-            className="flex max-h-72 min-w-56 flex-col overflow-y-auto rounded-lg bg-surface-elevation-2 p-1 shadow-2xl ring-1 ring-black/5"
+            // Fixed width (not min-width) so the popup doesn't resize/shift as the
+            // longest result changes while typing; names/shortcodes truncate instead.
+            className="flex max-h-72 w-72 flex-col overflow-y-auto rounded-lg bg-surface-elevation-2 p-1 shadow-2xl ring-1 ring-black/5"
             // Keep focus in the editor when clicking a row — otherwise mousedown blurs
             // the editor, the suggestion exits, and the click never lands.
             onMouseDown={(e) => e.preventDefault()}

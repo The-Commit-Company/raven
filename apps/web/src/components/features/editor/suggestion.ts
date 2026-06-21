@@ -1,16 +1,26 @@
-import { PluginKey, type EditorState } from "@tiptap/pm/state"
+import { PluginKey } from "@tiptap/pm/state"
 
 /**
- * Plugin keys for the editor's "type a trigger → popup" extensions (mentions now;
- * #channels and :emoji: later). Kept together so the editor's Enter handler can ask
- * "is any suggestion popup open?" — when one is, Enter should pick the highlighted
- * item, not submit the message. Add new suggestion keys to SUGGESTION_KEYS.
+ * Plugin keys for the editor's "type a trigger → popup" extensions. Each Suggestion
+ * needs its own key; they're declared here so all the editor pieces share them.
  */
 export const userMentionPluginKey = new PluginKey("userMentionSuggestion")
 export const channelMentionPluginKey = new PluginKey("channelMentionSuggestion")
+export const emojiPluginKey = new PluginKey("emojiSuggestion")
 
-const SUGGESTION_KEYS = [userMentionPluginKey, channelMentionPluginKey]
+/**
+ * How many suggestion popups are currently showing items. The editor's Enter handler
+ * checks this to defer Enter to the popup (pick the highlighted item) instead of
+ * submitting. We count VISIBLE popups (items > 0), not merely "active" suggestion
+ * plugins — so a bare ":" with no matches, or "@zzz" matching nobody, still sends on
+ * Enter. The suggestion render (createSuggestion) keeps the count in sync.
+ */
+let openPopups = 0
 
-/** True while any suggestion popup is open (its plugin state is active). */
-export const isAnySuggestionActive = (state: EditorState): boolean =>
-    SUGGESTION_KEYS.some((key) => Boolean(key.getState(state)?.active))
+export const isSuggestionPopupOpen = () => openPopups > 0
+
+/** Called by a suggestion render as its popup gains/loses visible items. */
+export const setSuggestionPopupVisible = (wasVisible: boolean, isVisible: boolean) => {
+    if (isVisible && !wasVisible) openPopups += 1
+    else if (!isVisible && wasVisible) openPopups = Math.max(0, openPopups - 1)
+}

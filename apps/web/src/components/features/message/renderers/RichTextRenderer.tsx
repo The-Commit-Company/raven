@@ -19,6 +19,9 @@ import { CodeBlock } from "./MessageCodeBlock"
 /** Schemes safe to keep on an <a href>. Everything else (javascript:, data:) is dropped. */
 const SAFE_HREF = /^(https?:|mailto:|tel:|\/|#)/i
 
+/** Custom-emoji image src: same-origin (relative) or http(s) only — never data:/js:. */
+const SAFE_IMG_SRC = /^(https?:|\/)/i
+
 /** Visible text of a node, minus a leading @/# — the fallback mention label. */
 const mentionLabel = (node: Element): string =>
     node.children
@@ -59,6 +62,17 @@ const options: HTMLReactParserOptions = {
             ) : (
                 <ChannelMention id={mentionID} fallback={fallback} />
             )
+        }
+
+        // Custom emoji: an inline <img data-type="customEmoji">. Render it sized like an
+        // emoji (the author class is stripped above), src-sanitized to a safe scheme.
+        if (node.name === "img" && node.attribs?.["data-type"] === "customEmoji") {
+            const src = (node.attribs.src ?? "").trim()
+            if (!SAFE_IMG_SRC.test(src)) return <></>
+            const alt = node.attribs.alt ?? ""
+            // `emoji` class → sized by `.tiptap .emoji` (same rule as the composer),
+            // which beats `.tiptap img` on specificity. Consistent inline emoji size.
+            return <img src={src} alt={alt} title={alt} loading="lazy" className="emoji" />
         }
 
         // Code blocks: <pre><code class="language-xxx">…</code></pre>. Returning

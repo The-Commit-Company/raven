@@ -351,7 +351,10 @@
 
 .tiptap img[data-type="emoji"],
 .tiptap .emoji {
-  @apply my-0 inline h-[1.2em] w-[1.2em] align-text-bottom;
+  /* w-auto + object-contain: keep the emoji's aspect ratio (don't squish non-square
+     custom emojis). rounded-none: override `.tiptap img`'s rounded-md, which clips an
+     <img> into a circle at this size. */
+  @apply my-0 inline-block h-[1.4em] w-auto rounded-none object-contain align-text-bottom;
 }
 
 /* Tables. */

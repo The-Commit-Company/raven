@@ -17,6 +17,7 @@ import { useReconnectCatchup } from "@stores/messages/useReconnectCatchup"
 import { useOutboxAutoRetry } from "@stores/messages/useOutboxAutoRetry"
 import { useChannelListRealtime } from "@hooks/useChannelListRealtime"
 import { useChannelListSync } from "@stores/channels/useChannelListSync"
+import { useRegisterCustomEmojis } from "@hooks/useRegisterCustomEmojis"
 import { usePresenceSync } from "@stores/presence/usePresenceSync"
 import { useReportActiveState } from "@stores/presence/useReportActiveState"
 import DocumentTitle from "./DocumentTitle"
@@ -96,6 +97,8 @@ const AppListeners = ({ children }: { children: React.ReactNode }) => {
     // Seeds the channel store (mirrors the channel_list fetch for now); store will
     // own the fetch + realtime writes once consumers migrate off SWR
     useChannelListSync()
+    // Registers Raven's custom emojis with emoji-mart (composer search + pickers)
+    useRegisterCustomEmojis()
     // Seeds + live-updates which users are online (read via useIsUserOnline)
     usePresenceSync()
     // Reports OUR own online state (app open / focus / 10-min idle) to the server

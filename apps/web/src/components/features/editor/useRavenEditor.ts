@@ -1,9 +1,12 @@
 import { useEditor, type Editor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import type { MutableRefObject } from "react"
+import { useIsMobile } from "@hooks/use-mobile"
 import { UserMention } from "./userMention"
 import { ChannelMention } from "./channelMention"
-import { isAnySuggestionActive } from "./suggestion"
+import { CustomEmoji } from "./customEmoji"
+import { EmojiSuggestion } from "./emoji"
+import { isSuggestionPopupOpen } from "./suggestion"
 
 /**
  * The one Tiptap configuration shared by every place we edit a message — the main
@@ -28,8 +31,15 @@ interface UseRavenEditorOptions {
 const EDITOR_CLASS = "tiptap min-h-9 max-h-[40vh] overflow-y-auto px-3 py-2 focus:outline-none"
 
 export const useRavenEditor = ({ submitRef, content, autofocus = false }: UseRavenEditorOptions): Editor | null => {
+    // Emoji `:` autocomplete is desktop-only — mobile keyboards have their own emoji,
+    // and a popup on every ":" is noise. Captured at mount (a breakpoint flip
+    // mid-session won't reconfigure the live editor, which is fine).
+    const isMobile = useIsMobile()
+    const extensions = [StarterKit, UserMention, ChannelMention, CustomEmoji]
+    if (!isMobile) extensions.push(EmojiSuggestion)
+
     return useEditor({
-        extensions: [StarterKit, UserMention, ChannelMention],
+        extensions,
         content,
         autofocus,
         editorProps: {
@@ -38,13 +48,13 @@ export const useRavenEditor = ({ submitRef, content, autofocus = false }: UseRav
             },
             // TODO(mobile): on touch devices Enter should insert a newline and the
             // send button submits — gate this once we wire the mobile composer.
-            handleKeyDown: (view, event) => {
+            handleKeyDown: (_view, event) => {
                 if (event.key === "Enter" && !event.shiftKey) {
-                    // A suggestion popup (e.g. @mention) is open → let it take Enter to
-                    // pick the highlighted item instead of submitting the message. This
-                    // editorProps handler runs before the suggestion plugin, so without
-                    // this guard it would swallow Enter first.
-                    if (isAnySuggestionActive(view.state)) return false
+                    // A suggestion popup (@mention / #channel / :emoji:) is showing → let it
+                    // take Enter to pick the highlighted item instead of submitting. This
+                    // editorProps handler runs before the suggestion plugin, so without this
+                    // guard it would swallow Enter first.
+                    if (isSuggestionPopupOpen()) return false
                     event.preventDefault()
                     submitRef.current()
                     return true

@@ -203,8 +203,13 @@ def send_message_with_attachments(
 
 	content = content or ""
 	has_text = bool(frappe.utils.strip_html_tags(content).strip())
+	# A custom emoji is an inline <img> with no text, so strip_html_tags leaves it
+	# empty — but a message that is only a custom emoji is NOT empty. (Standard emojis
+	# are unicode text and already count as has_text.)
+	has_custom_emoji = 'data-type="customEmoji"' in content
+	has_body = has_text or has_custom_emoji
 
-	if not has_text and not files:
+	if not has_body and not files:
 		frappe.throw(_("Cannot send an empty message"))
 
 	# Every message from a send carries the client_id as its batch id: it groups
@@ -227,7 +232,7 @@ def send_message_with_attachments(
 				"file_size": file_size or 0,
 			}
 		)
-	if has_text:
+	if has_body:
 		specs.append({"message_type": "Text", "text": content})
 
 	# The reply attaches to the LAST message of the batch — the caption when there

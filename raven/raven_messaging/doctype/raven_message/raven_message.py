@@ -112,11 +112,17 @@ class RavenMessage(Document):
 		text_content = soup.get_text(" ", strip=True)
 
 		if not text_content:
-			# Check if the content has a GIF
-			for img in soup.find_all("img"):
-				if "media.tenor.com" in img.get("src"):
-					text_content = "Sent a GIF"
-					break
+			# No text — derive a preview from inline media (GIF / custom emoji), so the
+			# DM list + notifications aren't blank for an emoji-only or GIF-only message.
+			imgs = soup.find_all("img")
+			if any("media.tenor.com" in (img.get("src") or "") for img in imgs):
+				text_content = "Sent a GIF"
+			else:
+				shortcodes = [
+					img.get("alt") for img in imgs if img.get("data-type") == "customEmoji" and img.get("alt")
+				]
+				if shortcodes:
+					text_content = " ".join(shortcodes)
 
 		self.content = text_content
 
