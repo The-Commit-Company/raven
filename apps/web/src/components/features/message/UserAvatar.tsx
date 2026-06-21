@@ -14,7 +14,8 @@ interface UserAvatarProps {
     className?: string,
     showStatusIndicator?: boolean,
     showBotIndicator?: boolean,
-    addColoredFallback?: boolean
+    addColoredFallback?: boolean,
+    avatarClassName?: string,
 }
 
 const getInitials = (name: string): string => {
@@ -158,7 +159,8 @@ export const UserAvatar = memo<UserAvatarProps>(({
     className,
     showStatusIndicator = true,
     showBotIndicator = true,
-    addColoredFallback = true
+    addColoredFallback = true,
+    avatarClassName,
 }) => {
     const displayName = user.full_name || user.name
     const isBot = user.type === 'Bot'
@@ -168,7 +170,7 @@ export const UserAvatar = memo<UserAvatarProps>(({
 
     return (
         <div className={cn("relative inline-block", className)}>
-            <Avatar className={sizeClasses.avatar}>
+            <Avatar className={cn(sizeClasses.avatar, avatarClassName)}>
                 <AvatarImage
                     src={user.user_image}
                     alt={`${displayName}'s profile picture`}

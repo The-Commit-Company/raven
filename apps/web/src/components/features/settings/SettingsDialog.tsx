@@ -6,6 +6,9 @@ import { atom, useAtom } from 'jotai'
 import { BellDotIcon, BellRingIcon, BotIcon, BrainCogIcon, Building2Icon, CalendarSyncIcon, CommandIcon, CpuIcon, FileTextIcon, FolderIcon, FunctionSquareIcon, IdCardIcon, InfoIcon, PaletteIcon, PanelLeftIcon, SlidersHorizontalIcon, SmartphoneIcon, SmilePlusIcon, UserIcon, UsersIcon, WebhookIcon, ZapIcon } from 'lucide-react'
 import { useHotkeys } from 'react-hotkeys-hook';
 import { CustomizeSidebarDialog } from '../channel/CustomizeSidebar/CustomizeSidebarDialog';
+import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
+import { UserAvatar } from '../message/UserAvatar';
+import { UserData } from '@db';
 
 const SETTINGS_TAB_GROUPS: { id: string, label: string }[] = [
     { id: "settings", label: _("Settings") },
@@ -210,6 +213,8 @@ const RavenSettingsDialog = () => {
 
     useHotkeys("mod+slash", () => setOpenTab("profile"), { enableOnFormTags: true, preventDefault: true })
 
+    const { myProfile } = useCurrentRavenUser()
+
 
     return (
         <Dialog open={openTab !== ""} onOpenChange={onOpenChange}>
@@ -220,9 +225,28 @@ const RavenSettingsDialog = () => {
                 <SettingsTabs>
                     {SETTINGS_TAB_GROUPS.map((group) => (
                         <SettingsTabGroup key={group.id} header={group.label}>
-                            {SETTINGS_TABS.filter((tab) => tab.group === group.id).map((tab) => (
-                                <SettingsTabItem key={tab.id} value={tab.id} icon={<tab.icon />} label={tab.label} />
-                            ))}
+                            {SETTINGS_TABS.filter((tab) => tab.group === group.id).map((tab) => {
+
+                                if (tab.id === "profile") {
+                                    return <SettingsTabItem key={tab.id} value={tab.id}
+                                        icon={<div className='flex items-center justify-center'><UserAvatar
+                                            avatarClassName='h-4.5 w-4.5'
+                                            user={{
+                                                name: myProfile?.name || "",
+                                                full_name: myProfile?.full_name || "",
+                                                user_image: myProfile?.user_image || "",
+                                                type: myProfile?.type || "",
+                                                availability_status: myProfile?.availability_status || "",
+                                                custom_status: myProfile?.custom_status || "",
+                                                enabled: myProfile?.enabled || 1,
+                                                first_name: myProfile?.first_name || "",
+                                            } as UserData} size="xs" showStatusIndicator={false} /></div>} label={tab.label} />
+                                }
+
+                                return (
+                                    <SettingsTabItem key={tab.id} value={tab.id} icon={<tab.icon />} label={tab.label} />
+                                )
+                            })}
                         </SettingsTabGroup>
 
                     ))}

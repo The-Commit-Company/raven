@@ -15,8 +15,9 @@ import _ from "@lib/translate"
 import { GroupDnd } from "./GroupDnd"
 import { useParams } from "react-router"
 import { H3 } from "@components/ui/typography"
+import { SettingsPanelContent, SettingsPanelDescription, SettingsPanelHeader, SettingsPanelTitle } from "@components/ui/settings-dialog"
 
-export const CustomizeSidebarDialog = ({ onClose }: { onClose: () => void }) => {
+export const CustomizeSidebarDialog = ({ onClose }: { onClose?: () => void }) => {
 
     const { channels } = useChannelList()
     const { myProfile, mutate } = useCurrentRavenUser()
@@ -43,7 +44,7 @@ export const CustomizeSidebarDialog = ({ onClose }: { onClose: () => void }) => 
             updateDoc("Raven User", myProfile.name, data).then(() => {
                 toast.success(_("Sidebar updated"))
                 mutate()
-                onClose()
+                onClose?.()
             }).catch(() => {
                 toast.error(_("Failed to update sidebar"))
             })
@@ -58,60 +59,60 @@ export const CustomizeSidebarDialog = ({ onClose }: { onClose: () => void }) => 
     return (
         <FormProvider {...methods}>
             <div className="flex flex-col h-full">
-                <div className="px-6 pt-6 pb-4 border-b shrink-0">
-                    <DialogHeader>
-                        <DialogTitle className="text-xl">{_("Customize Sidebar")}</DialogTitle>
-                        <DialogDescription className="sr-only">
-                            {_("Customize your sidebar channels and groups")}
-                        </DialogDescription>
-                    </DialogHeader>
-                </div>
-                <div className="flex flex-1 min-h-0 overflow-hidden">
-                    {/* Left Column - Customization */}
-                    <div className="flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden bg-surface-base p-4 pb-0">
-                        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0 overflow-hidden">
-                            <div>
-                                <TabsList variant="subtle" size="sm" style={{ width: "fit-content" }}>
-                                    {TABS.map(tab => (
-                                        <TabsTrigger key={tab.key} value={tab.key}>{tab.label}</TabsTrigger>
-                                    ))}
-                                </TabsList>
-                            </div>
-                            <div className="flex-1 flex flex-col min-h-0">
-                                <TabsContent value="channels" className="flex-1 min-h-0">
-                                    <ChannelTable data={channelSidebarData} />
-                                </TabsContent>
-                                <TabsContent value="groups" className="flex-1 min-h-0">
-                                    <div className="h-full overflow-y-auto pr-2">
-                                        <GroupDnd />
-                                    </div>
-                                </TabsContent>
-                            </div>
-                        </Tabs>
-                    </div>
-                    {/* Right Column - Preview (hidden on mobile) */}
-                    <div className="hidden md:flex flex-none w-64 flex-col min-h-0 bg-surface-sidebar/40 border-l overflow-hidden">
-                        <div className="px-4 py-3 border-b shrink-0">
-                            <H3 className="text-sm font-semibold">{_("Preview")}</H3>
+                <SettingsPanelHeader>
+                    <SettingsPanelTitle>{_("Customize Sidebar")}</SettingsPanelTitle>
+                    <SettingsPanelDescription>
+                        {_("Customize your sidebar channels and groups")}
+                    </SettingsPanelDescription>
+                </SettingsPanelHeader>
+                <SettingsPanelContent>
+                    <div className="flex w-full py-2">
+                        {/* Left Column - Customization */}
+                        <div className="flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden bg-surface-base pb-0">
+                            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                                <div>
+                                    <TabsList variant="subtle" size="sm" style={{ width: "fit-content" }}>
+                                        {TABS.map(tab => (
+                                            <TabsTrigger key={tab.key} value={tab.key}>{tab.label}</TabsTrigger>
+                                        ))}
+                                    </TabsList>
+                                </div>
+                                <div className="flex-1 flex flex-col min-h-0">
+                                    <TabsContent value="channels" className="flex-1 min-h-0">
+                                        <ChannelTable data={channelSidebarData} />
+                                    </TabsContent>
+                                    <TabsContent value="groups" className="flex-1 min-h-0">
+                                        <div className="h-full overflow-y-auto pr-2">
+                                            <GroupDnd />
+                                        </div>
+                                    </TabsContent>
+                                </div>
+                            </Tabs>
                         </div>
-                        <SidebarPreview data={channelSidebarData} />
+                        {/* Right Column - Preview (hidden on mobile) */}
+                        <div className="hidden md:flex flex-none w-64 flex-col min-h-0 bg-surface-sidebar/40 border-l overflow-hidden">
+                            <div className="px-4 py-3 border-b shrink-0">
+                                <H3 className="text-sm font-semibold">{_("Preview")}</H3>
+                            </div>
+                            <SidebarPreview data={channelSidebarData} />
+                        </div>
                     </div>
-                </div>
-                <div className="border-t p-4 flex items-center justify-end gap-3 shrink-0">
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        onClick={onClose}
-                    >
-                        {_("Cancel")}
-                    </Button>
-                    <Button
-                        type="button"
-                        onClick={handleSubmit(onSubmit)}
-                    >
-                        {_("Save Changes")}
-                    </Button>
-                </div>
+                    <div className="border-t p-4 flex items-center justify-end gap-3 shrink-0">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={onClose}
+                        >
+                            {_("Cancel")}
+                        </Button>
+                        <Button
+                            type="button"
+                            onClick={handleSubmit(onSubmit)}
+                        >
+                            {_("Save Changes")}
+                        </Button>
+                    </div>
+                </SettingsPanelContent>
             </div>
         </FormProvider>
     )

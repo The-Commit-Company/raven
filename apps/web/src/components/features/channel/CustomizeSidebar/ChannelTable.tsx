@@ -72,17 +72,17 @@ export const ChannelTable = ({ data }: { data: ChannelSidebarData }) => {
         )
       },
     },
-    {
-      id: 'channel_description',
-      header: _('Description'),
-      accessorKey: 'channel_description',
-      size: 270,
-      cell: ({ getValue }) => (
-        <span className='text-sm text-ink-gray-4 line-clamp-1 text-ellipsis'>
-          {(getValue() as string) || '—'}
-        </span>
-      ),
-    },
+    // {
+    //   id: 'channel_description',
+    //   header: _('Description'),
+    //   accessorKey: 'channel_description',
+    //   size: 270,
+    //   cell: ({ getValue }) => (
+    //     <span className='text-sm text-ink-gray-4 line-clamp-1 text-ellipsis'>
+    //       {(getValue() as string) || '—'}
+    //     </span>
+    //   ),
+    // },
     {
       id: 'channel_group',
       header: _('Group'),
@@ -176,10 +176,10 @@ const ChannelGroupDropdown = ({ channel }: { channel: ChannelTable }) => {
     value={channel.channel_group}
     onValueChange={handleGroupChange}
   >
-    <SelectTrigger className="w-52 **:data-[slot=select-value]:truncate **:data-[slot=select-value]:block">
+    <SelectTrigger inputSize="sm" className="w-52 **:data-[slot=select-value]:truncate **:data-[slot=select-value]:block">
       <SelectValue placeholder={_('Select a group')} />
     </SelectTrigger>
-    <SelectContent className="min-w-56 max-w-72">
+    <SelectContent>
       <SelectItem value="Favorites">
         <div className="flex items-center gap-1">
           <Star className="h-3 w-3 text-ink-gray-8/80 fill-amber-300 stroke-amber-300 mr-1" />
