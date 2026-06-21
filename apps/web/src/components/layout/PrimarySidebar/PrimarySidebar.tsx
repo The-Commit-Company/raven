@@ -12,7 +12,7 @@ import { useDMUnread, useWorkspaceUnread } from "@stores/unread/useChannelUnread
 import _ from "@lib/translate"
 import { cn } from "@lib/utils"
 import { useSetAtom } from "jotai"
-import { BellIcon, BookmarkIcon, MessageSquareTextIcon, MessagesSquareIcon, SearchIcon } from "lucide-react"
+import { BellIcon, BookmarkIcon, MessageSquareTextIcon, SearchIcon, UsersRoundIcon } from "lucide-react"
 import { NavLink } from "react-router"
 
 /**
@@ -135,7 +135,7 @@ const DirectMessagesLink = () => {
     return <NavLink to="dm-channel">
         {({ isActive }) => (
             <IconBox isActive={isActive} title={_("Direct Messages")}>
-                <MessagesSquareIcon />
+                <UsersRoundIcon />
                 <UnreadBadge count={unread} />
             </IconBox>
         )}

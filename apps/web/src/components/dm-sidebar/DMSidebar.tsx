@@ -19,7 +19,7 @@ import { useChannelUnread } from "@stores/unread/useChannelUnread"
 import { useUserCookieData } from "@hooks/useUserCookieData"
 import { MobileSearchButton } from "@components/features/header/QuickSearch/SearchButton"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@components/ui/empty"
-import { MessagesSquareIcon } from "lucide-react"
+import { UsersRoundIcon } from "lucide-react"
 
 /** A DM channel joined to its resolved peer — what a sidebar row renders. */
 type DMRowData = { dm: DMChannelListItem; peer: UserData }
@@ -137,7 +137,7 @@ export function DMSidebar() {
                     // when the org has people to suggest, the start-a-DM rows
                     <Empty>
                         <EmptyMedia>
-                            <MessagesSquareIcon />
+                            <UsersRoundIcon />
                         </EmptyMedia>
                         <EmptyHeader>
                             <EmptyTitle>{_("No conversations yet")}</EmptyTitle>

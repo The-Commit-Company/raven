@@ -1,6 +1,6 @@
 import _ from '@lib/translate'
 import { cn } from '@lib/utils'
-import { BellIcon, HomeIcon, MessageSquareTextIcon, MessagesSquareIcon, SearchIcon } from 'lucide-react'
+import { BellIcon, HomeIcon, MessageSquareTextIcon, SearchIcon, UsersRoundIcon } from 'lucide-react'
 import { CircleUserRoundIcon } from "lucide-react"
 import { NavLink } from 'react-router'
 
@@ -11,7 +11,7 @@ const FOOTER_LINKS = [
         to: "/",
     },
     {
-        icon: MessagesSquareIcon,
+        icon: UsersRoundIcon,
         title: _("Direct Messages"),
         to: "/dm-channel",
     },
