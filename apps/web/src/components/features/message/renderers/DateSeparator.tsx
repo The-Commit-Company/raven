@@ -69,7 +69,7 @@ export default function DateSeparator({ label }: { label: string }) {
                 flanking lines fade out once pinned, leaving just the badge. */}
             <div
                 data-stuck={stuck}
-                className="group/date sticky top-0 z-10 py-2 -mx-8 px-8 flex items-center bg-surface-base"
+                className="group/date sticky top-0 z-50 py-2 -mx-8 px-8 flex items-center bg-surface-base"
             >
                 <Separator className="flex-1 transition-opacity group-data-[stuck=true]/date:opacity-0" />
                 <Badge variant="subtle" theme="gray" size='md'>{label}</Badge>
