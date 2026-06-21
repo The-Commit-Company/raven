@@ -8,8 +8,12 @@ import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
 import { useUserCookieData } from "@hooks/useUserCookieData"
 import { useMemo } from "react"
 import { UserData } from "@db"
+import { useSetAtom } from "jotai"
+import { settingsDialogOpenTab } from "@components/features/settings/SettingsDialog"
 
 const NavUserMenu = () => {
+
+    const setOpenSettingsDialog = useSetAtom(settingsDialogOpenTab)
 
     const { myProfile } = useCurrentRavenUser()
 
@@ -70,7 +74,7 @@ const NavUserMenu = () => {
                     </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setOpenSettingsDialog("profile")}>
                     <SettingsIcon />
                     <span>{_("Settings")}</span>
                 </DropdownMenuItem>

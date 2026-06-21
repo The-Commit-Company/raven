@@ -20,6 +20,7 @@ import { useChannelListSync } from "@stores/channels/useChannelListSync"
 import { usePresenceSync } from "@stores/presence/usePresenceSync"
 import { useReportActiveState } from "@stores/presence/useReportActiveState"
 import DocumentTitle from "./DocumentTitle"
+import RavenSettingsDialog from "@components/features/settings/SettingsDialog"
 
 /**
  * The AppShell is used to wrap the entire application and provide all the utilities
@@ -128,6 +129,7 @@ const AppShellLayout = ({ children }: { children: React.ReactNode }) => {
 
     return <div className="flex h-dvh overflow-hidden">
         <PrimarySidebar />
+        <RavenSettingsDialog />
         <main className="flex min-w-0 flex-1 flex-col">
             {children}
         </main>
