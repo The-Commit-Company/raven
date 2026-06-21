@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom"
-import { BotIcon, Loader2 } from "lucide-react"
+import { BotIcon, Loader2, UserX } from "lucide-react"
 import { useUser } from "@hooks/useUser"
 import { useUserCookieData } from "@hooks/useUserCookieData"
 import { useChannel } from "@hooks/useChannel"
@@ -7,6 +7,7 @@ import { useCreateDM } from "@hooks/useCreateDM"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@components/ui/hover-card"
 import { Badge } from "@components/ui/badge"
 import { Button } from "@components/ui/button"
+import { OnLeaveBadge } from "@components/common/OnLeaveBadge"
 import { UserAvatar, getStatusIndicatorColor } from "@components/features/message/UserAvatar"
 import { cn } from "@lib/utils"
 import _ from "@lib/translate"
@@ -62,38 +63,37 @@ const UserMentionCard = ({ id, fallbackLabel, isSelf }: { id: string; fallbackLa
         <div className="flex flex-col gap-3">
             {/* Header: avatar + name + handle, as one tight identity block. */}
             <div className="flex items-center gap-3">
-                {user ? (
-                    <UserAvatar user={user} size="md" showStatusIndicator />
-                ) : (
-                    <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface-gray-2 text-base font-medium text-ink-gray-5">
-                        {fullName.slice(0, 1).toUpperCase()}
-                    </div>
-                )}
-
-                <div className="flex min-w-0 flex-col gap-0.5">
+                <div>
+                    {user ? (
+                        <UserAvatar user={user} size="lg" showStatusIndicator />
+                    ) : (
+                        <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface-gray-2 text-base font-medium text-ink-gray-5">
+                            {fullName.slice(0, 1).toUpperCase()}
+                        </div>
+                    )}
+                </div>
+                <div className="flex min-w-0 flex-col gap-1">
                     <div className="flex items-center gap-1.5">
-                        <span className="truncate font-semibold text-ink-gray-8 text-base">{fullName}</span>
+                        <span className="truncate text-ink-gray-8 text-base-semibold">{fullName}</span>
+                    </div>
+                    <span className="truncate text-xs text-ink-gray-5">{id}</span>
+                    <div className="flex items-center gap-1 py-0.5">
                         {isBot && (
-                            <Badge variant="subtle" className="text-xs">
-                                <BotIcon className="size-3" />
+                            <Badge variant="subtle" theme="violet">
+                                <BotIcon />
                                 {_("Bot")}
                             </Badge>
                         )}
                         {user?.enabled === 0 && (
-                            <Badge variant="subtle" className="text-xs">
+                            <Badge variant="subtle">
+                                <UserX />
                                 {_("Disabled")}
                             </Badge>
                         )}
+                        <OnLeaveBadge userID={id} />
                     </div>
-                    <span className="truncate text-xs text-ink-gray-5">{id}</span>
                 </div>
             </div>
-
-            {/* TODO(realtime): show LIVE online/offline presence here once the
-                realtime layer lands — a green "Online" dot when the user is
-                connected, taking precedence over the static availability below. */}
-            {/* TODO(leave): render the "<name> is on leave" badge here once HR
-                leave data is exposed to the client (v2 had <OnLeaveBadge/>). */}
 
             {/* Availability + custom status — its own section so it's clearly
                 separated from the identity block (availability hidden when Invisible). */}

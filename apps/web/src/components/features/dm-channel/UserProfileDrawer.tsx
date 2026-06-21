@@ -1,10 +1,10 @@
 import { Badge } from "@components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
 import { UserAvatar } from "@components/features/message/UserAvatar"
-import { MailIcon, Palmtree, PhoneIcon, UserX } from "lucide-react"
+import { OnLeaveBadge } from "@components/common/OnLeaveBadge"
+import { MailIcon, PhoneIcon, UserX } from "lucide-react"
 import { toast } from "sonner"
 import type { UserData } from "@db"
-import { useIsUserOnLeave } from "@hooks/useIsUserOnLeave"
 import _ from "@lib/translate"
 import { cn } from "@lib/utils"
 import { useCopyToClipboard } from "usehooks-ts"
@@ -17,7 +17,6 @@ interface UserProfileDrawerProps {
 export function UserProfileDrawer({ user }: UserProfileDrawerProps) {
 
     const { name } = useUserCookieData()
-    const isOnLeave = useIsUserOnLeave(user.name)
     const displayName = user.full_name || user.first_name || user.name
     const customStatus = user.custom_status?.trim() || ""
 
@@ -48,12 +47,7 @@ export function UserProfileDrawer({ user }: UserProfileDrawerProps) {
                                 {_("Disabled")}
                             </Badge>
                         )}
-                        {isOnLeave && (
-                            <Badge variant="subtle" theme="orange">
-                                <Palmtree />
-                                {_("On Leave")}
-                            </Badge>
-                        )}
+                        <OnLeaveBadge userID={user.name} />
                     </div>
 
                 </div>

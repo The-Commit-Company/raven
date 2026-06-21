@@ -1,5 +1,5 @@
 import { forwardRef, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
-import { EditorContent } from "@tiptap/react"
+import { EditorContent, useEditorState } from "@tiptap/react"
 import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
 import { useAtom, useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
@@ -15,11 +15,13 @@ import { uploadedFilesAtom, uploadingFilesAtom, pendingSendAtom, useAttachFile }
 import { useRavenEditor } from "@components/features/editor/useRavenEditor"
 import { EditorFormattingToolbar } from "@components/features/editor/EditorFormattingToolbar"
 import { ReplyPreviewBanner } from "./ReplyPreviewBanner"
+import { MentionWarningBanner } from "./MentionWarningBanner"
 import { MobileComposerActions } from "./MobileComposerActions"
 import { loadDraft, saveDraft } from "./draft"
 import { useIsMobile } from "@hooks/use-mobile"
 import { enqueueSend } from "@stores/messages/messageSender"
 import { replyToMessageAtom } from "@utils/channelAtoms"
+import { useChannelById } from "@stores/channels/useChannelList"
 import { useUserCookieData } from "@hooks/useUserCookieData"
 import _ from "@lib/translate"
 import { Button } from "@components/ui/button"
@@ -53,6 +55,9 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
     const [replyTo, setReplyTo] = useAtom(replyToMessageAtom(channelID))
     const { name: currentUser } = useUserCookieData()
     const isMobile = useIsMobile()
+    // The mention warning banner (on-leave / non-member) is channel-only — DMs and DM
+    // threads have no membership to manage and you're talking to one person already.
+    const isDM = useChannelById(channelID)?.is_direct_message === 1
 
     // Restore any saved draft once on mount. ChatInput is keyed by channel, so this
     // reads the right channel's draft on every channel switch.
@@ -194,6 +199,22 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
         editor?.commands.focus()
     }, [setReplyTo, editor])
 
+    // The set of @-mentioned user ids in the draft, as a stable joined string so this
+    // only re-renders when the mention set changes (not on every keystroke). Drives
+    // the on-leave / non-member warning banner.
+    const mentionedKey = useEditorState({
+        editor,
+        selector: ({ editor }) => {
+            if (!editor) return ""
+            const ids = new Set<string>()
+            editor.state.doc.descendants((node) => {
+                if (node.type.name === "userMention" && node.attrs.id) ids.add(node.attrs.id as string)
+            })
+            return Array.from(ids).sort().join(",")
+        },
+    })
+    const mentionedIds = useMemo(() => (mentionedKey ? mentionedKey.split(",") : []), [mentionedKey])
+
     return (
         <form
             ref={ref}
@@ -203,10 +224,13 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
             }}
             className="p-3 pb-4 w-full flex flex-col gap-2"
         >
-            {/* data-raven-editor + relative: the mention/emoji popups anchor here.
-                Everything lives inside the input box (Slack-style): formatting toolbar,
-                attachment previews, editor, then the action bar — all sharing one border. */}
-            <div data-raven-editor className="relative w-full rounded-lg border border-outline-gray-2 shadow-outline-base bg-surface-white focus-within:border-outline-gray-3 overflow-y-hidden">
+            {!isDM && mentionedIds.length > 0 && <MentionWarningBanner channelID={channelID} mentionedIds={mentionedIds} />}
+            {/* Outer wrapper carries data-raven-editor and is the popup anchor: the
+                mention/emoji/#/: popups append here and sit `bottom-full` (ABOVE the box),
+                so they must NOT be clipped. The inner box keeps overflow-y-hidden so the
+                formatting toolbar's square top corners stay within the rounded border. */}
+            <div data-raven-editor className="relative w-full">
+              <div className="w-full rounded-lg border border-outline-gray-2 shadow-outline-base bg-surface-white focus-within:border-outline-gray-3 overflow-y-hidden">
                 <TooltipProvider>
 
                     {editor && showFormatting && (
@@ -255,6 +279,7 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
                         <SendButton onSend={handleSend} loading={pendingSend} />
                     </div>
                 </TooltipProvider>
+              </div>
             </div>
         </form>
     )

@@ -2,8 +2,9 @@ import { memo, useMemo } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { cn } from '@lib/utils'
 import { UserData } from "@db"
-import { BotIcon } from 'lucide-react'
+import { BotIcon, TreePalm } from 'lucide-react'
 import { useIsUserOnline } from '@stores/presence/useUserPresence'
+import { useIsUserOnLeave } from '@hooks/useIsUserOnLeave'
 import _ from '@lib/translate'
 
 type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
@@ -77,7 +78,7 @@ const getSizeClasses = (size: 'xs' | 'sm' | 'md' | 'lg' | 'xl') => {
                 avatar: 'h-6 w-6 rounded-full',
                 indicator: 'h-2.5 w-2.5 -bottom-0.5 -right-0.5',
                 manualAvailableDot: 'h-0.5 w-0.5',
-                bot: 'h-2 w-2',
+                bot: 'h-2 w-2 size-2',
                 botContainer: 'h-3 w-3 -bottom-0.5 -right-0.5',
                 font: 'text-[10px]'
             }
@@ -121,8 +122,28 @@ const getSizeClasses = (size: 'xs' | 'sm' | 'md' | 'lg' | 'xl') => {
  */
 const StatusIndicator = memo<{ user: UserData; size: AvatarSize }>(({ user, size }) => {
     const isOnline = useIsUserOnline(user.name)
+    const isOnLeave = useIsUserOnLeave(user.name)
     const availabilityStatus = user.availability_status
     const sizeClasses = getSizeClasses(size)
+
+    // On leave takes precedence over the online/availability dot — the user's vacation
+    // icon (same easter-egg pick as OnLeaveBadge) in an amber badge, sized like the bot
+    // badge so the icon is legible.
+    if (isOnLeave) {
+        return (
+            <span
+                className={cn(
+                    "absolute flex items-center justify-center rounded-full border border-outline-base bg-surface-amber-2",
+                    sizeClasses.botContainer,
+                )}
+                aria-label={_("On leave")}
+                role="img"
+                title={_("On leave")}
+            >
+                <TreePalm className={cn("text-ink-amber-8", sizeClasses.bot)} aria-hidden="true" />
+            </span>
+        )
+    }
 
     if (availabilityStatus === 'Invisible') return null
     if (!availabilityStatus && !isOnline) return null

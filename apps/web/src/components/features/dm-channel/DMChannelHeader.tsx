@@ -8,7 +8,8 @@ import {
     DropdownMenuTrigger,
 } from "@components/ui/dropdown-menu"
 import { UserAvatar } from "@components/features/message/UserAvatar"
-import { Bot, ChevronDown, ChevronLeft, Files, Link, MessageSquareText, Palmtree, Pin, SearchIcon, User, UserX } from "lucide-react"
+import { OnLeaveBadge } from "@components/common/OnLeaveBadge"
+import { Bot, ChevronDown, ChevronLeft, Files, Link, MessageSquareText, Pin, SearchIcon, User, UserX } from "lucide-react"
 import { useAtom, useSetAtom } from "jotai"
 import { commandMenuOpenAtom } from "@components/features/cmdk/atoms"
 import { useNavigate } from "react-router-dom"
@@ -16,7 +17,6 @@ import { channelDrawerAtom, type DrawerType } from "@utils/channelAtoms"
 import { UserData } from "@db"
 import _ from "@lib/translate"
 import { useChannel } from "@hooks/useChannel"
-import { useIsUserOnLeave } from "@hooks/useIsUserOnLeave"
 
 interface DMChannelHeaderProps {
     /** Peer user info (name, avatar). When from API this can extend to peer_user_id, etc. */
@@ -35,7 +35,6 @@ export function DMChannelHeader({ peer, channelID }: DMChannelHeaderProps) {
     const customStatus = peer.custom_status?.trim() || ""
     const isBot = peer.type === "Bot"
     const isDisabled = peer.enabled === 0
-    const isOnLeave = useIsUserOnLeave(peer.name)
 
     const openTab = (tab: Exclude<DrawerType, "" | "members">) => {
         setDrawerType(tab)
@@ -129,12 +128,7 @@ export function DMChannelHeader({ peer, channelID }: DMChannelHeaderProps) {
                             {_("Disabled")}
                         </Badge>
                     )}
-                    {isOnLeave && (
-                        <Badge size="md" variant="subtle" theme="orange">
-                            <Palmtree />
-                            {_("On Leave")}
-                        </Badge>
-                    )}
+                    <OnLeaveBadge userID={peer.name} size="md" />
                     {customStatus && (
                         <Badge size="md" variant="subtle" theme="gray" title={customStatus} className="max-w-96 md:flex hidden justify-start truncate">
                             {customStatus}

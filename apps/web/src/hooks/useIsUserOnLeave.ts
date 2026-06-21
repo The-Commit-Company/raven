@@ -1,21 +1,15 @@
-import { useFrappeGetCall } from "frappe-react-sdk"
+import { useCallback, useSyncExternalStore } from "react"
+import { leaveStore } from "@stores/leave/store"
 
 /**
- * Returns true if the user is currently on leave (HRMS required).
- * No-op (returns false) when HRMS is not installed.
+ * True if the user is on leave today. Store-backed: the leave set is fetched once by
+ * useLeaveSync (get_all_users_on_leave) and read here as a per-user subscription, so
+ * a component re-renders only when THAT user's leave state changes — no per-user API
+ * call. Returns false when HRMS is absent or the setting is off (the store is empty).
  */
-export function useIsUserOnLeave(user: string) {
-    const isHRInstalled = window?.frappe?.boot?.versions?.hrms !== undefined
-
-    const { data } = useFrappeGetCall<{ message: boolean }>(
-        "raven.api.raven_users.is_user_on_leave",
-        { user },
-        isHRInstalled && user ? ["is_user_on_leave", user] : null,
-        {
-            dedupingInterval: 6 * 60 * 60 * 1000,
-            revalidateOnFocus: false,
-        }
+export function useIsUserOnLeave(user: string): boolean {
+    return useSyncExternalStore(
+        useCallback((onChange) => leaveStore.subscribe(user, onChange), [user]),
+        () => leaveStore.isOnLeave(user),
     )
-
-    return data?.message ?? false
 }

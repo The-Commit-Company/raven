@@ -19,6 +19,7 @@ import { useChannelListRealtime } from "@hooks/useChannelListRealtime"
 import { useChannelListSync } from "@stores/channels/useChannelListSync"
 import { useRegisterCustomEmojis } from "@hooks/useRegisterCustomEmojis"
 import { usePresenceSync } from "@stores/presence/usePresenceSync"
+import { useLeaveSync } from "@stores/leave/useLeaveSync"
 import { useReportActiveState } from "@stores/presence/useReportActiveState"
 import DocumentTitle from "./DocumentTitle"
 import RavenSettingsDialog from "@components/features/settings/SettingsDialog"
@@ -103,6 +104,8 @@ const AppListeners = ({ children }: { children: React.ReactNode }) => {
     usePresenceSync()
     // Reports OUR own online state (app open / focus / 10-min idle) to the server
     useReportActiveState()
+    // Seeds the set of users on leave today (read via useIsUserOnLeave)
+    useLeaveSync()
     // TODO: Push notification listener
     // TODO: App update listener
     // TODO: Websocket connection listener
