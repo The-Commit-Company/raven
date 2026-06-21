@@ -1,5 +1,5 @@
 import { cn } from '@lib/utils'
-import { CodeIcon, FileIcon, FileTextIcon, FolderArchiveIcon, ImageIcon, MusicIcon, PresentationIcon, VideoIcon } from 'lucide-react'
+import { CodeIcon, FileIcon, FileTextIcon, FilmIcon, FolderArchiveIcon, ImageIcon, MusicIcon, PresentationIcon } from 'lucide-react'
 
 interface FileTypeIconProps {
     fileType: string
@@ -100,7 +100,7 @@ const FileTypeIcon = ({
             case 'avi':
             case 'webm':
                 return (
-                    <VideoIcon className={cn("text-white", iconSizeClasses[size])} />
+                    <FilmIcon className={cn("text-white", iconSizeClasses[size])} />
                 )
             case 'audio':
             case 'mp3':

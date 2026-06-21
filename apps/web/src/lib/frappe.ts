@@ -68,3 +68,7 @@ export const getUserDefault = (fieldName: string, fallback?: string) => {
 export const getBootFieldData = (fieldName: string, fallback?: string) => {
     return window.frappe?.boot?.[fieldName] ?? fallback
 }
+
+export const isInReadOnlyMode = () => {
+    return getBootFieldData('read_only') ?? false
+}

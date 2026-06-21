@@ -166,14 +166,14 @@ const AttachmentPreviewContent = ({
                     <img
                         src={current.fileUrl}
                         alt={current.fileName}
-                        className="max-h-full max-w-full object-contain"
+                        className="max-h-full max-w-[90%] object-contain"
                         onClick={(event) => event.stopPropagation()}
                     />
                 ) : current.kind === "video" ? (
                     <video
                         src={current.fileUrl}
                         controls
-                        className="max-h-full max-w-full"
+                        className="max-h-full max-w-[90%]"
                         onClick={(event) => event.stopPropagation()}
                     />
                 ) : current.kind === "audio" ? (

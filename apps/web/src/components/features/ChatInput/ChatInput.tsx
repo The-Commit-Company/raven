@@ -5,7 +5,7 @@ import { useAtom, useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { useDebounceCallback } from "usehooks-ts"
 import { toast } from "sonner"
-import { Type } from "lucide-react"
+import { Type, Lock } from "lucide-react"
 import { InputFileList, AddFileButton } from "./InputFiles"
 import SendButton from "./SendButton"
 import { MentionButton } from "./MentionButton"
@@ -22,6 +22,7 @@ import { useIsMobile } from "@hooks/use-mobile"
 import { enqueueSend } from "@stores/messages/messageSender"
 import { replyToMessageAtom } from "@utils/channelAtoms"
 import { useChannelById } from "@stores/channels/useChannelList"
+import { isInReadOnlyMode } from "@lib/frappe"
 import { useUserCookieData } from "@hooks/useUserCookieData"
 import _ from "@lib/translate"
 import { Button } from "@components/ui/button"
@@ -215,6 +216,20 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
     })
     const mentionedIds = useMemo(() => (mentionedKey ? mentionedKey.split(",") : []), [mentionedKey])
 
+    // Read-only mode (e.g. the site is mid-update): block sending entirely and explain
+    // why, in place of the composer. Checked after the hooks above so we don't break
+    // the hooks order. App-wide write-blocking is a later, broader effort.
+    if (isInReadOnlyMode()) {
+        return (
+            <div className="p-3 pb-4 w-full">
+                <div className="flex items-center justify-center gap-2 rounded-lg border border-outline-gray-2 bg-surface-gray-1 px-3 py-3 text-sm text-ink-gray-6">
+                    <Lock className="size-3 shrink-0" />
+                    <span>{_("The site is in read-only mode right now. Please wait while the site is being updated.")}</span>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <form
             ref={ref}
@@ -230,56 +245,56 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
                 so they must NOT be clipped. The inner box keeps overflow-y-hidden so the
                 formatting toolbar's square top corners stay within the rounded border. */}
             <div data-raven-editor className="relative w-full">
-              <div className="w-full rounded-lg border border-outline-gray-2 shadow-outline-base bg-surface-white focus-within:border-outline-gray-3 overflow-y-hidden">
-                <TooltipProvider>
+                <div className="w-full rounded-lg border border-outline-gray-2 shadow-outline-base bg-surface-white focus-within:border-outline-gray-3 overflow-y-hidden">
+                    <TooltipProvider>
 
-                    {editor && showFormatting && (
-                        <EditorFormattingToolbar
-                            editor={editor}
-                            linkSignal={linkSignal}
-                            onLinkConsumed={() => setLinkSignal(0)}
-                        />
-                    )}
-                    {replyTo && <ReplyPreviewBanner message={replyTo} onCancel={cancelReply} showFormatting={showFormatting} />}
-                    <InputFileList channelID={channelID} />
-                    <EditorContent editor={editor} />
-                    <div className="flex items-center gap-1 px-1.5 pb-1.5">
-                        {isMobile ? (
-                            // Mobile: secondary actions collapse into a "+" bottom sheet.
-                            <MobileComposerActions channelID={channelID} onToggleFormatting={() => setShowFormatting((v) => !v)} />
-                        ) : (
-                            <>
-                                <AddFileButton channelID={channelID} />
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            isIconButton
-                                            aria-label={_("Formatting")}
-                                            aria-pressed={showFormatting}
-                                            onClick={() => setShowFormatting((v) => !v)}
-                                            className={cn(showFormatting && "bg-surface-gray-3 text-ink-gray-9")}
-                                        >
-                                            <Type />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>{_("Formatting")}</TooltipContent>
-                                </Tooltip>
-                                <Separator orientation="vertical" className="mx-1 h-4!" />
-                                {editor && <MentionButton editor={editor} />}
-                                {editor && <EmojiPickerButton editor={editor} />}
-                                <Separator orientation="vertical" className="mx-1 h-4!" />
-                                <CreatePollDialog channelID={channelID} />
-                                <AttachFrappeDocumentDialog />
-                            </>
+                        {editor && showFormatting && (
+                            <EditorFormattingToolbar
+                                editor={editor}
+                                linkSignal={linkSignal}
+                                onLinkConsumed={() => setLinkSignal(0)}
+                            />
                         )}
-                        <div className="flex-1" />
-                        <SendButton onSend={handleSend} loading={pendingSend} />
-                    </div>
-                </TooltipProvider>
-              </div>
+                        {replyTo && <ReplyPreviewBanner message={replyTo} onCancel={cancelReply} showFormatting={showFormatting} />}
+                        <InputFileList channelID={channelID} />
+                        <EditorContent editor={editor} />
+                        <div className="flex items-center gap-1 px-1.5 pb-1.5">
+                            {isMobile ? (
+                                // Mobile: secondary actions collapse into a "+" bottom sheet.
+                                <MobileComposerActions channelID={channelID} onToggleFormatting={() => setShowFormatting((v) => !v)} />
+                            ) : (
+                                <>
+                                    <AddFileButton channelID={channelID} />
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                isIconButton
+                                                aria-label={_("Formatting")}
+                                                aria-pressed={showFormatting}
+                                                onClick={() => setShowFormatting((v) => !v)}
+                                                className={cn(showFormatting && "bg-surface-gray-3 text-ink-gray-9")}
+                                            >
+                                                <Type />
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>{_("Formatting")}</TooltipContent>
+                                    </Tooltip>
+                                    <Separator orientation="vertical" className="mx-1 h-4!" />
+                                    {editor && <MentionButton editor={editor} />}
+                                    {editor && <EmojiPickerButton editor={editor} />}
+                                    <Separator orientation="vertical" className="mx-1 h-4!" />
+                                    <CreatePollDialog channelID={channelID} />
+                                    <AttachFrappeDocumentDialog />
+                                </>
+                            )}
+                            <div className="flex-1" />
+                            <SendButton onSend={handleSend} loading={pendingSend} />
+                        </div>
+                    </TooltipProvider>
+                </div>
             </div>
         </form>
     )

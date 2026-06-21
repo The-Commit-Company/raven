@@ -83,7 +83,7 @@ const FileItem = ({ file, onRemove, onPreview }: { file: FileItemType, onRemove:
         <div className="flex items-center gap-2 p-2">
             <div className="shrink-0">
                 {showImageThumb ? (
-                    <img src={file.fileURL} alt={file.fileName} className="size-9 rounded object-cover" />
+                    <img src={file.fileURL} alt={file.fileName} className="size-7 rounded-3 object-contain bg-surface-gray-1 object-center" />
                 ) : (
                     <FileTypeIcon fileType={extension} size="lg" />
                 )}
