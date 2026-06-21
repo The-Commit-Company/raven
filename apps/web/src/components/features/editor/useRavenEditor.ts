@@ -4,6 +4,7 @@ import StarterKit from "@tiptap/starter-kit"
 import { Highlight } from "@tiptap/extension-highlight"
 import { TableKit } from "@tiptap/extension-table"
 import { Placeholder } from "@tiptap/extensions"
+import { FileHandler } from "@tiptap/extension-file-handler"
 import { useRef, type MutableRefObject } from "react"
 import { useAtomValue } from "jotai"
 import { useIsMobile } from "@hooks/use-mobile"
@@ -29,6 +30,8 @@ interface UseRavenEditorOptions {
     submitRef: MutableRefObject<() => void>
     /** Invoked on Mod+Shift+U — the caller reveals the formatting toolbar + opens the link popover. */
     linkRef?: MutableRefObject<() => void>
+    /** Invoked when files are pasted/dropped into the editor (omit to disable, e.g. inline edit). */
+    filesRef?: MutableRefObject<(files: File[]) => void>
     /** Initial HTML — set when editing an existing message; omit for a blank composer. */
     content?: string
     /** Autofocus on mount (e.g. inline edit). Off by default for the composer. */
@@ -40,7 +43,7 @@ interface UseRavenEditorOptions {
 /** Shared editor surface styling — the `.tiptap` class is the render/compose source of truth. */
 const EDITOR_CLASS = "tiptap min-h-16 max-h-[40vh] overflow-y-auto px-3 py-2.5 focus:outline-none"
 
-export const useRavenEditor = ({ submitRef, linkRef, content, autofocus = false, placeholder }: UseRavenEditorOptions): Editor | null => {
+export const useRavenEditor = ({ submitRef, linkRef, filesRef, content, autofocus = false, placeholder }: UseRavenEditorOptions): Editor | null => {
     // Emoji `:` autocomplete is desktop-only — mobile keyboards have their own emoji,
     // and a popup on every ":" is noise. Captured at mount (a breakpoint flip
     // mid-session won't reconfigure the live editor, which is fine).
@@ -60,11 +63,13 @@ export const useRavenEditor = ({ submitRef, linkRef, content, autofocus = false,
     // (don't navigate on click in the editor; auto-link typed/pasted URLs). Headings
     // are disabled — not wanted in chat.
     //
+    // FileHandler (paste/drop → upload as attachments) is added only when the caller
+    // wires filesRef — the composer does, inline edit doesn't.
+    //
     // Deliberately NOT added: text-align + headings (not wanted), code-block-lowlight
     // (StarterKit's code block is enough; the renderer highlights on display — avoids
     // eager highlight.js in the composer bundle), Image (attachments are file
-    // messages, not inline), FileHandler (paste/drop upload — a separate layer),
-    // Details/TaskList (no renderer+CSS yet).
+    // messages, not inline), Details/TaskList (no renderer+CSS yet).
     const extensions: AnyExtension[] = [
         StarterKit.configure({
             heading: false,
@@ -77,6 +82,17 @@ export const useRavenEditor = ({ submitRef, linkRef, content, autofocus = false,
         CustomEmoji,
     ]
     if (placeholder) extensions.push(Placeholder.configure({ placeholder }))
+    if (filesRef) {
+        // Paste or drop files onto the editor → hand them to the caller's upload path
+        // (same as the attach button). Pasted text isn't affected: the plugin only
+        // fires these when the clipboard/drop actually carries files.
+        extensions.push(
+            FileHandler.configure({
+                onPaste: (_editor, files) => { if (files.length) filesRef.current(files) },
+                onDrop: (_editor, files) => { if (files.length) filesRef.current(files) },
+            }),
+        )
+    }
     if (!isMobile) extensions.push(EmojiSuggestion)
 
     const editor = useEditor({

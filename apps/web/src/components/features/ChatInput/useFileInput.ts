@@ -84,7 +84,7 @@ export const useAttachFile = (channelID: string) => {
      * When a file is attached by the user, start uploading it immediately
      * The user should not wait for files to upload when they hit the send button.
      */
-    const onAddFile = (files: FileList) => {
+    const onAddFile = (files: FileList | File[]) => {
         const filesToBeUploaded = Array.from(files).map((file) => ({
             file: file,
             uploadProgress: 0,

@@ -12,6 +12,7 @@ import {
     TooltipTrigger,
 } from '@components/ui/tooltip'
 import { CreatePollForm } from './CreatePollForm'
+import _ from '@lib/translate'
 
 interface CreatePollDialogProps {
     channelID: string
@@ -29,14 +30,14 @@ export const CreatePollDialog = ({ channelID }: CreatePollDialogProps) => {
                             variant="ghost"
                             size="sm"
                             isIconButton
-                            aria-label="Create a poll"
+                            aria-label={_("Create a poll")}
                         >
                             <BarChart3 />
                         </Button>
                     </DialogTrigger>
                 </TooltipTrigger>
                 <TooltipContent side="top">
-                    Create a poll
+                    {_("Create a poll")}
                 </TooltipContent>
             </Tooltip>
             <DialogContent className="">

@@ -10,7 +10,7 @@ import SendButton from "./SendButton"
 import { MentionButton } from "./MentionButton"
 import { EmojiPickerButton } from "./EmojiPickerButton"
 import { CreatePollDialog } from "./CreatePollDialog"
-import { uploadedFilesAtom, uploadingFilesAtom, pendingSendAtom } from "./useFileInput"
+import { uploadedFilesAtom, uploadingFilesAtom, pendingSendAtom, useAttachFile } from "./useFileInput"
 import { useRavenEditor } from "@components/features/editor/useRavenEditor"
 import { EditorFormattingToolbar } from "@components/features/editor/EditorFormattingToolbar"
 import { enqueueSend } from "@stores/messages/messageSender"
@@ -20,6 +20,7 @@ import { Button } from "@components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@components/ui/tooltip"
 import { cn } from "@lib/utils"
 import { Separator } from "@components/ui/separator"
+import AttachFrappeDocumentDialog from "./AttachFrappeDocumentDialog"
 
 interface ChatInputProps {
     channelID: string
@@ -51,13 +52,16 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
     // Bumped by the ⌘⇧U shortcut to open the link popover (also reveals the toolbar).
     const [linkSignal, setLinkSignal] = useState(0)
 
-    // The editor's keydown closures (built once) call the latest handlers via these refs.
+    // The editor's keydown/paste closures (built once) call the latest handlers via these refs.
     const sendRef = useRef<() => void>(() => { })
     const linkRef = useRef<() => void>(() => { })
     linkRef.current = () => {
         setShowFormatting(true)
         setLinkSignal((n) => n + 1)
     }
+    const onAddFile = useAttachFile(channelID)
+    const filesRef = useRef<(files: File[]) => void>(() => { })
+    filesRef.current = onAddFile
 
     // A held send waits on these: any file still uploading blocks dispatch; an
     // errored upload settles but must not be silently sent without. We subscribe
@@ -70,7 +74,7 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
         useMemo(() => selectAtom(uploadingFilesAtom(channelID), (f) => f.some((file) => file.status === "error")), [channelID]),
     )
 
-    const editor = useRavenEditor({ submitRef: sendRef, linkRef, autofocus: true, placeholder: _("Type a message...") })
+    const editor = useRavenEditor({ submitRef: sendRef, linkRef, filesRef, autofocus: true, placeholder: _("Type a message...") })
 
     /** Build the optimistic batch, clear the composer, and fire the request. */
     const dispatchSend = useCallback(() => {
@@ -169,6 +173,7 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
                         {editor && <EmojiPickerButton editor={editor} />}
                         <Separator orientation="vertical" className="mx-1 h-4!" />
                         <CreatePollDialog channelID={channelID} />
+                        <AttachFrappeDocumentDialog />
                         <div className="flex-1" />
                         <SendButton onSend={handleSend} loading={pendingSend} />
                     </div>
