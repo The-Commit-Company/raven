@@ -130,7 +130,7 @@ const FileResultRowInner = ({ file, user, channel, dmChannel, peer, workspace, o
                             onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
                         />
                     ) : (
-                        <FileTypeIcon fileType={ext} size="xl" className="shrink-0 w-20 h-20" />
+                        <FileTypeIcon fileType={ext} size="4xl" />
                     )}
                     <div className="flex-1 min-w-0">
                         <h3 className="text-base md:text-sm font-medium text-ink-gray-8 truncate">{file.title || _('Untitled')}</h3>

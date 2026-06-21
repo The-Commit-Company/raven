@@ -57,9 +57,8 @@ const FileItem = ({ file, onRemove }: { file: FileItemType, onRemove: (file: Fil
     return <div className="rounded-lg border border-outline-gray-2 min-w-64">
         <div className="flex items-center gap-2 p-2">
             <div className="shrink-0">
-                <FileTypeIcon fileType={extension} size="sm" />
+                <FileTypeIcon fileType={extension} size="lg" />
             </div>
-
             <div className="flex-1 min-w-0">
                 <h4 className="text-xs font-medium text-ink-gray-8 truncate">
                     {file.fileName}

@@ -1,5 +1,5 @@
 import { UserAvatar } from '@components/features/message/UserAvatar'
-import { Download, Search } from 'lucide-react'
+import { ArrowDownToLine, Search } from 'lucide-react'
 import { useState } from 'react'
 import FileTypeIcon from '@components/common/FileIcons/FileTypeIcon'
 import { useSqliteSearch } from '@hooks/useSqliteSearch'
@@ -56,7 +56,7 @@ const ChannelFiles = ({ channelID }: { channelID: string }) => {
                                                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200 rounded-md" />
                                                     </div>
                                                 ) : (
-                                                    <FileTypeIcon fileType={file.file_type || "File"} size="sm" />
+                                                    <FileTypeIcon fileType={file.file_type || "File"} size="lg" />
                                                 )}
                                             </div>
 
@@ -66,7 +66,7 @@ const ChannelFiles = ({ channelID }: { channelID: string }) => {
                                                         <MarkdownRenderer content={file.title} />
                                                     </h3>
                                                     <a href={file.internal_link} download>
-                                                        <Download className="h-3 w-3 text-ink-gray-4 opacity-0 group-hover:opacity-100 hover:text-ink-gray-8 transition-opacity duration-200 shrink-0 mt-0.5" />
+                                                        <ArrowDownToLine className="h-3 w-3 text-ink-gray-4 opacity-0 group-hover:opacity-100 hover:text-ink-gray-8 transition-opacity duration-200 shrink-0 mt-0.5" />
                                                     </a>
                                                 </div>
 

@@ -57,9 +57,8 @@ export default function ReplyMessage({
                     {repliedMessage.message_type === "File" && (
                         <span className="flex items-center gap-2">
                             <FileTypeIcon
-                                className="rounded-sm"
                                 fileType={getFileExtension(repliedMessage.file ?? "")}
-                                size="xs"
+                                size="md"
                             />
                             <span className="line-clamp-2 text-p-sm">{getFileName(repliedMessage.file)}</span>
                         </span>

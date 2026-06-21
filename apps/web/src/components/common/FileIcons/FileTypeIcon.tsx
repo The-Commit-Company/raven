@@ -3,56 +3,75 @@ import { CodeIcon, FileIcon, FileTextIcon, FolderArchiveIcon, ImageIcon, MusicIc
 
 interface FileTypeIconProps {
     fileType: string
-    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl'
     className?: string
-    showBackground?: boolean
 }
 
 const FileTypeIcon = ({
     fileType,
     size = 'md',
     className,
-    showBackground = true
 }: FileTypeIconProps) => {
-    const sizeClasses = {
-        xs: 'h-6 w-6',
-        sm: 'h-8 w-8',
-        md: 'h-10 w-10',
-        lg: 'h-12 w-12',
-        xl: 'h-16 w-16'
+
+    const roundingClasses = {
+        xs: 'rounded-1',
+        sm: 'rounded-2',
+        md: 'rounded-2',
+        lg: 'rounded-3',
+        xl: 'rounded-3',
+        '2xl': 'rounded-4',
+        '3xl': 'rounded-5',
+        '4xl': 'rounded-xl'
     }
 
-    const iconSizeClasses = {
+
+    const sizeClasses = {
         xs: 'h-4 w-4',
         sm: 'h-5 w-5',
         md: 'h-6 w-6',
-        lg: 'h-8 w-8',
-        xl: 'h-10 w-10'
+        lg: 'h-7 w-7',
+        xl: 'h-8 w-8',
+        '2xl': 'h-10 w-10',
+        '3xl': 'h-11.5 w-11.5',
+        '4xl': 'h-20 w-20'
     }
 
+    const iconSizeClasses = {
+        xs: 'h-2.5 w-2.5',
+        sm: 'h-3.5 w-3.5',
+        md: 'h-4 w-4',
+        lg: 'h-5 w-5',
+        xl: 'h-6 w-6',
+        '2xl': 'h-7 w-7',
+        '3xl': 'h-8 w-8',
+        '4xl': 'h-10 w-10'
+    }
     // Special sizing for PowerPoint icon due to different viewBox
     const pptIconSizeClasses = {
         xs: 'h-2.5 w-2.5',
-        sm: 'h-4 w-4',
+        sm: 'h-3 w-3',
         md: 'h-4 w-4',
-        lg: 'h-5 w-5',
-        xl: 'h-6 w-6'
+        lg: 'h-4.5 w-4.5',
+        xl: 'h-5 w-5',
+        '2xl': 'h-7 w-7',
+        '3xl': 'h-8 w-8',
+        '4xl': 'h-10 w-10'
     }
 
-    const containerClass = cn(sizeClasses[size], className)
+    const containerClass = cn(sizeClasses[size], roundingClasses[size], className)
 
     const renderIcon = () => {
         switch (fileType.toLowerCase()) {
             case 'pdf':
                 return (
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" data-theme="light" className={cn("text-white", iconSizeClasses[size])}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" data-theme="light" className={"text-white"}>
                         <path d="M7 22.9c.1-.6.5-1 .9-1.4.5-.5 1.1-.8 1.8-1.2.7-.4 1.4-.7 2.1-1 .1 0 .2-.1.2-.2.6-1.2 1.2-2.4 1.7-3.6.3-.7.5-1.4.8-2.1v-.1c-.3-.7-.6-1.5-.7-2.3-.2-.8-.2-1.6-.1-2.4.1-.5.4-.9.8-1.3.1-.1.3-.1.5-.1h.8c.2 0 .4.1.5.3.3.2.5.5.7.8.2.4.2.8.3 1.2 0 1.2-.2 2.3-.4 3.4-.1.4-.2.7-.3 1.1v.1c.6 1.1 1.4 2.1 2.2 3 .1.1.1.1.3.1 1.1-.2 2.2-.2 3.2-.2.6 0 1.3.1 1.9.4.3.2.6.4.8.7.1.2.2.4.2.6v.7c0 .2-.1.4-.3.5-.2.2-.4.5-.8.5-.2 0-.5.1-.7.1-1.6.1-2.9-.4-4.2-1.3-.2-.2-.5-.4-.7-.6-.1 0-.1-.1-.2-.1-.6.1-1.2.2-1.8.4-.8.2-1.6.5-2.4.7-.1 0-.1.1-.2.1-.5.9-1.1 1.8-1.7 2.6-.5.6-1.1 1.2-1.7 1.7-.3.2-.7.4-1.1.5h-.8c-.2 0-.3 0-.5-.1-.5-.2-.9-.6-1-1.1-.1 0-.1-.2-.1-.4zm8.8-7c-.3.8-.7 1.6-1 2.4l2.4-.6c-.5-.6-1-1.3-1.4-1.8zm4.3 2.6c.6.4 1.3.7 2 .9.3.1.5 0 .7-.1.2-.1.3-.4.1-.5 0-.1-.1-.1-.2-.1-.2-.1-.5-.1-.8-.2-.6-.1-1.2-.1-1.8 0zm-9.4 2.8s-.1 0 0 0c-.6.3-1.2.7-1.7 1.1-.3.2-.5.5-.7.8v.2c.1.1.1.1.2.1.3-.2.5-.4.7-.5.6-.5 1-1.1 1.5-1.7zM15 11.2c.1 0 .1 0 0 0 .2-.6.3-1.2.3-1.7 0-.3 0-.6-.1-.9 0-.1-.1-.1-.2-.1s-.1.1-.2.1c-.2.3-.2.6-.2 1 0 .3 0 .5.1.8.2.2.2.5.3.8z" fill="currentColor" />
                     </svg>
                 )
             case 'doc':
             case 'docx':
                 return (
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className={cn("text-white", iconSizeClasses[size])}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className={cn("text-white")}>
                         <path d="M26 11.4V8.8c0-.4-.3-.8-.8-.8h-7.3V6.2h-1.4c-.2 0-.3.1-.5.1-.7.1-1.4.3-2.1.4-.7.1-1.4.2-2 .4-.7.1-1.4.2-2.2.4-.8.1-1.5.2-2.2.3-.5.1-1 .2-1.4.2H6v15.9c.8.1 1.6.3 2.4.4.8.1 1.7.3 2.5.4.8.1 1.6.3 2.4.4.8.1 1.7.3 2.5.5.3.1.7.1 1 .1h.9V24c0-.1 0-.1.1-.1h7.3c.1 0 .3 0 .4-.1.2 0 .3-.1.3-.3 0-.2.1-.3.1-.5V11.4c.1.1.1.1.1 0zm-11 1.5l-.9 3.9c-.2.7-.3 1.4-.5 2.2 0 .1-.1.1-.1.1-.2.1-.4 0-.6 0h-.6c-.1 0-.1 0-.1-.1-.1-.6-.3-1.3-.4-1.9-.2-.8-.3-1.6-.5-2.4 0 .2-.1.4-.1.6l-.6 3c0 .2-.1.5-.1.7 0 .1 0 .1-.1.1-.4 0-.8-.1-1.2-.1-.1 0-.1 0-.1-.1-.3-1.6-.6-3.2-1-4.9-.1-.3-.1-.7-.2-1v-.1h1.2c.2 1.4.5 2.8.7 4.3 0-.2.1-.4.1-.6.3-1.2.5-2.5.8-3.7 0-.1 0-.1.1-.1h1c.2 0 .2 0 .3.2.3 1.4.6 2.8.9 4.3v.1c.1-.8.3-1.6.4-2.4.1-.7.3-1.5.4-2.2 0 0 0-.1.1-.1.4 0 .8 0 1.3-.1h.1c-.2 0-.3.2-.3.3zm10.3-4.1s0 .1 0 0v14.5h-7.5v-1.8h5.9v-.9H18c-.1 0-.1 0-.1-.1v-.9c0-.1 0-.1.1-.1h5.8v-.9h-5.9v-1.1h5.8v-.9h-5.9v-1h5.8c.1 0 .1 0 .1-.1v-.7c0-.1 0-.1-.1-.1H18c-.1 0-.1 0-.1-.1v-1h5.9v-.9h-5.7c-.1 0-.1 0-.1-.1v-.9c0-.1 0-.1.1-.1h5.7v-.9h-5.9v-1.2h5.8c.1 0 .1 0 .1-.1v-.7c0-.1 0-.1-.1-.1h-5.9V9c0-.1 0-.1.1-.1h7.3c.1-.2.1-.2.1-.1z" fill="currentColor" />
                     </svg>
                 )
@@ -60,7 +79,7 @@ const FileTypeIcon = ({
             case 'xlsx':
             case 'csv':
                 return (
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className={cn("text-white", iconSizeClasses[size])}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className={cn("text-white")}>
                         <path d="M26 9.3v13.6c0 .1-.1.2-.1.3-.2.3-.5.5-.8.5h-7.7v2c-.3-.1-.7-.1-1-.2-.7-.1-1.5-.3-2.2-.4-.8-.1-1.6-.3-2.4-.4-.8-.1-1.6-.3-2.4-.4-.7-.1-1.5-.3-2.2-.4-.4-.1-.7-.1-1.1-.2V9c.1 0 .3-.1.4-.1.7-.5 1.5-.7 2.3-.8.7-.1 1.4-.3 2-.4.6-.1 1.3-.2 1.9-.4.7-.1 1.5-.3 2.2-.4.8-.1 1.5-.3 2.3-.4h.1v1.9h7.8c.4 0 .8.3.9.7v.2zm-.8-.1h-7.9v1.2H20v1.7h-2.7v.6H20v1.7h-2.7v.6H20v1.7h-2.7v.7h2.8v1.7h-2.8v.6H20v1.7h-2.7v1.2h7.9V9.2zM14.7 20.7s0-.1-.1-.1c-.7-1.4-1.5-2.8-2.2-4.2v-.2c.7-1.4 1.4-2.7 2.2-4.1V12h-.1c-.2 0-.5 0-.7.1-.3 0-.6 0-1 .1-.1 0-.1 0-.1.1-.3.6-.5 1.1-.8 1.7-.2.5-.4.9-.6 1.4-.1-.2-.1-.5-.2-.7-.3-.7-.6-1.5-.9-2.2-.1-.2-.1-.2-.3-.2-.4 0-.8.1-1.2.1h-.4v.1c.1.2.2.5.3.7l1.5 3v.1c-.6 1.2-1.3 2.4-1.9 3.6 0 .1-.1.1-.1.2h.6c.4 0 .7.1 1.1.1.1 0 .1 0 .1-.1.3-.6.6-1.2.9-1.9.1-.3.3-.6.4-.9 0-.1 0-.2.1-.3v.1c.1.2.1.4.2.5.4.8.7 1.6 1.1 2.5.1.1.1.2.3.2.5 0 1 .1 1.5.1.1.3.2.3.3.3z" fill="currentColor" />
                         <path d="M23.9 10.4v1.7h-3.1v-1.7h3.1zm-3.1 11.2v-1.7h3.1v1.7h-3.1zm0-4.7v-1.7h3.1v1.7h-3.1zm3.1-4.1v1.7h-3.1v-1.7h3.1zm0 4.8v1.7h-3.1v-1.7h3.1z" fill="currentColor" />
                     </svg>
@@ -81,7 +100,7 @@ const FileTypeIcon = ({
             case 'avi':
             case 'webm':
                 return (
-                    <VideoIcon />
+                    <VideoIcon className={cn("text-white", iconSizeClasses[size])} />
                 )
             case 'audio':
             case 'mp3':
@@ -186,16 +205,8 @@ const FileTypeIcon = ({
         }
     }
 
-    if (showBackground) {
-        return (
-            <div className={cn("rounded flex items-center justify-center", getBackgroundColor(), containerClass)}>
-                {renderIcon()}
-            </div>
-        )
-    }
-
     return (
-        <div className={containerClass}>
+        <div className={cn("flex items-center justify-center", getBackgroundColor(), containerClass)}>
             {renderIcon()}
         </div>
     )

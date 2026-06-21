@@ -1,4 +1,4 @@
-import { Download, Share2, X } from "lucide-react"
+import { ArrowDownToLineIcon, Share2, X } from "lucide-react"
 import { Badge } from "@components/ui/badge"
 import { Button } from "@components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
@@ -92,7 +92,7 @@ export const MediaPreviewHeader = ({
                     aria-label={_("Download")}
                     onClick={onDownload}
                 >
-                    <Download />
+                    <ArrowDownToLineIcon />
                 </Button>
                 <Button
                     variant="ghost"

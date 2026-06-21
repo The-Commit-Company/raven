@@ -1,5 +1,5 @@
 import { cn } from '@lib/utils'
-import { Download, Share2 } from 'lucide-react'
+import { ArrowDownToLineIcon, Download, Share2 } from 'lucide-react'
 import FileTypeIcon from '../FileIcons/FileTypeIcon'
 import { Button } from '@components/ui/button'
 import _ from '@lib/translate'
@@ -31,7 +31,7 @@ const FileMessage = ({
         // The pill itself is the open affordance; the buttons stop propagation
         <div
             className={cn(
-                "rounded-md border border-outline-gray-2 bg-surface-elevation-1 p-2",
+                "rounded-md border border-outline-gray-2 w-fit bg-surface-elevation-1 p-2",
                 file.onOpen && "cursor-pointer hover:bg-surface-gray-1 transition-colors",
             )}
             role={file.onOpen ? "button" : undefined}
@@ -39,11 +39,11 @@ const FileMessage = ({
         >
             <div className="flex items-center gap-2">
                 <div className="shrink-0">
-                    <FileTypeIcon fileType={file.fileType} size="sm" />
+                    <FileTypeIcon fileType={file.fileType} size="lg" />
                 </div>
 
                 <div className="flex-1 min-w-0">
-                    <h4 className="text-xs font-medium text-ink-gray-7 truncate" title={file.fileName}>
+                    <h4 className="text-sm text-ink-gray-8 truncate" title={file.fileName}>
                         {file.fileName}
                     </h4>
                     {file.fileSize && (
@@ -54,22 +54,7 @@ const FileMessage = ({
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex items-center gap-0.5">
-                    {file.onShare && (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            isIconButton
-                            onClick={(event) => {
-                                event.stopPropagation()
-                                file.onShare?.()
-                            }}
-                            title={_('Share')}
-                            aria-label={_('Share')}
-                        >
-                            <Share2 />
-                        </Button>
-                    )}
+                <div className="flex items-center ps-1">
 
                     {file.onDownload && (
                         <Button
@@ -83,7 +68,7 @@ const FileMessage = ({
                             title={_('Download')}
                             aria-label={_('Download')}
                         >
-                            <Download />
+                            <ArrowDownToLineIcon />
                         </Button>
                     )}
                 </div>
@@ -96,7 +81,8 @@ const FileMessage = ({
         // sender header (see MessageSenderLayout) — inert everywhere else
         <div data-media-root="" className={cn(
             // Single file: one comfortable pill. Multiple: responsive pill grid.
-            fileArray.length === 1 ? "grid grid-cols-1 max-w-sm gap-2" : "w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2",
+            "flex flex-wrap gap-2",
+            // fileArray.length === 1 ? "grid grid-cols-1 max-w-sm gap-2" : "w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2",
             className
         )}>
             {fileArray.map((file, index) => (

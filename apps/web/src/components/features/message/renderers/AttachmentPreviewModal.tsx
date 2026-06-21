@@ -268,7 +268,7 @@ const DownloadCard = ({ attachment, isMobile }: { attachment: Attachment; isMobi
             className="flex w-full max-w-sm flex-col items-center gap-4 rounded-lg bg-surface-gray-1 p-10 text-center"
             onClick={(event) => event.stopPropagation()}
         >
-            <FileTypeIcon fileType={getFileExtension(attachment.fileName)} size='xl' />
+            <FileTypeIcon fileType={getFileExtension(attachment.fileName)} size='4xl' />
             <div className="flex flex-col gap-1">
                 <p className="font-medium text-ink-gray-8 break-all">{attachment.fileName}</p>
                 <p className="text-sm text-ink-gray-5">{_("No preview available")}</p>
