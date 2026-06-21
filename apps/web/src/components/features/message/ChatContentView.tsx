@@ -6,6 +6,7 @@ import ChannelContextDrawer from "@components/features/channel/ChannelContextDra
 import { PollDrawer } from "@components/features/message/renderers/PollDrawer"
 import { Drawer, DrawerContent, DrawerTitle } from "@components/ui/drawer"
 import { Island } from "@components/layout/Island"
+import { FileDropZone } from "@components/features/ChatInput/FileDropZone"
 import { pollDrawerAtom, channelDrawerAtom } from "@utils/channelAtoms"
 import { useIsMobile } from "@hooks/use-mobile"
 import _ from "@lib/translate"
@@ -58,14 +59,16 @@ export function ChatContentView({
         <div className="flex min-h-0 min-w-0 flex-1 flex-row gap-1 p-0 md:p-1">
             {/* Chat island: header + stream + input */}
             <Island className="flex-1">
-                {header}
-                <ChatStream channelID={channelID} pinnedMessagesString={pinnedMessagesString} />
-                <div className="shrink-0">
-                    {/* key by channel: remount per channel so the editor re-autofocuses and
-                        draft text doesn't bleed across channels (file/send state already
-                        lives in channel-keyed atoms, so a remount is safe). */}
-                    <ChatInput key={channelID} channelID={channelID} />
-                </div>
+                <FileDropZone channelID={channelID}>
+                    {header}
+                    <ChatStream channelID={channelID} pinnedMessagesString={pinnedMessagesString} />
+                    <div className="shrink-0">
+                        {/* key by channel: remount per channel so the editor re-autofocuses and
+                            draft text doesn't bleed across channels (file/send state already
+                            lives in channel-keyed atoms, so a remount is safe). */}
+                        <ChatInput key={channelID} channelID={channelID} />
+                    </div>
+                </FileDropZone>
             </Island>
 
             {/* Drawer island (desktop): thread, poll, or context drawer */}

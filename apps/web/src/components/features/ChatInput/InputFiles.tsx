@@ -119,6 +119,8 @@ export const AddFileButton = ({ channelID }: { channelID: string }) => {
                 if (files) {
                     onAddFile(files)
                 }
+                // Reset so re-picking the same file fires onChange again.
+                e.target.value = ''
             }} className='hidden' />
         <Tooltip>
             <TooltipTrigger asChild>

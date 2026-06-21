@@ -3,6 +3,8 @@ import { atom, getDefaultStore, useSetAtom } from 'jotai'
 import { FrappeConfig, FrappeContext, useFrappeDeleteDoc } from 'frappe-react-sdk'
 import { useContext } from 'react'
 import { toast } from 'sonner'
+import { formatBytes, getFileExtension } from '@raven/lib/utils/operations'
+import _ from '@lib/translate'
 
 /**
  * 
@@ -72,6 +74,46 @@ export const uploadedFilesAtom = atomFamily((channelID: string) => atomWithStora
 export const pendingSendAtom = atomFamily((_channelID: string) => atom<boolean>(false))
 
 
+/**
+ * Server upload limits, read from frappe.boot:
+ * - `max_file_size`: max bytes per file (0 / absent → no limit).
+ * - `sysdefaults.allowed_file_extensions`: newline/comma list of permitted
+ *   extensions; empty → every type is allowed.
+ *
+ * TODO: large files can be uploaded in chunks (`frappe.boot.file_chunk_size`). We
+ * don't chunk yet, so anything over `max_file_size` is rejected outright for now.
+ */
+const getMaxFileSize = (): number => {
+    const size = Number(window.frappe?.boot?.max_file_size)
+    return Number.isFinite(size) && size > 0 ? size : 0
+}
+
+const getAllowedExtensions = (): string[] => {
+    const raw = window.frappe?.boot?.sysdefaults?.allowed_file_extensions
+    if (!raw) return []
+    const list = Array.isArray(raw) ? raw : String(raw).split(/[\n,]+/)
+    // Normalise to bare, lowercased extensions to match getFileExtension's output.
+    return list.map((e: string) => e.trim().toLowerCase().replace(/^\./, '')).filter(Boolean)
+}
+
+/** Drop files that exceed the size limit or aren't an allowed type, toasting each rejection. */
+const filterAllowedFiles = (files: File[]): File[] => {
+    const maxSize = getMaxFileSize()
+    const allowed = getAllowedExtensions()
+
+    return files.filter((file) => {
+        if (maxSize && file.size > maxSize) {
+            toast.error(_('{0} is too large. The maximum file size allowed is {1}.', [file.name, formatBytes(maxSize)]))
+            return false
+        }
+        if (allowed.length && !allowed.includes(getFileExtension(file.name))) {
+            toast.error(_('{0} can\'t be uploaded. Allowed file types: {1}.', [file.name, allowed.join(', ')]))
+            return false
+        }
+        return true
+    })
+}
+
 export const useAttachFile = (channelID: string) => {
 
     const { file } = useContext(FrappeContext) as FrappeConfig
@@ -85,7 +127,12 @@ export const useAttachFile = (channelID: string) => {
      * The user should not wait for files to upload when they hit the send button.
      */
     const onAddFile = (files: FileList | File[]) => {
-        const filesToBeUploaded = Array.from(files).map((file) => ({
+        // Enforce the server's size + type limits up front (covers the attach button,
+        // paste, and drop — all routed through here). Rejected files are toasted.
+        const allowedFiles = filterAllowedFiles(Array.from(files))
+        if (allowedFiles.length === 0) return
+
+        const filesToBeUploaded = allowedFiles.map((file) => ({
             file: file,
             uploadProgress: 0,
             status: 'uploading' as const,

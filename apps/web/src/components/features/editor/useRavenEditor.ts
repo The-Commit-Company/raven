@@ -83,13 +83,13 @@ export const useRavenEditor = ({ submitRef, linkRef, filesRef, content, autofocu
     ]
     if (placeholder) extensions.push(Placeholder.configure({ placeholder }))
     if (filesRef) {
-        // Paste or drop files onto the editor → hand them to the caller's upload path
-        // (same as the attach button). Pasted text isn't affected: the plugin only
-        // fires these when the clipboard/drop actually carries files.
+        // Paste files into the editor → hand them to the caller's upload path (same as
+        // the attach button). Pasted text isn't affected: the plugin only fires this
+        // when the clipboard actually carries files. Drops are handled at the pane
+        // level (FileDropZone) so the whole channel is a drop target, not just here.
         extensions.push(
             FileHandler.configure({
                 onPaste: (_editor, files) => { if (files.length) filesRef.current(files) },
-                onDrop: (_editor, files) => { if (files.length) filesRef.current(files) },
             }),
         )
     }
