@@ -48,7 +48,16 @@ interface UseRavenEditorOptions {
 }
 
 /** Shared editor surface styling — the `.tiptap` class is the render/compose source of truth. */
-const EDITOR_CLASS = "tiptap min-h-16 max-h-[40vh] overflow-y-auto px-3 py-2.5 focus:outline-none"
+/**
+ * The editor surface's min-height — shorter on mobile to spare screen space, taller on
+ * desktop. Exported so the composer can reserve the SAME height before the editor
+ * mounts (EditorContent renders empty until then), keeping the composer — and thus the
+ * message stream's height — from jumping on channel open. Both must use this exact
+ * value or the reservation won't match.
+ */
+export const EDITOR_MIN_H = "min-h-14 md:min-h-16"
+
+const EDITOR_CLASS = `tiptap ${EDITOR_MIN_H} max-h-[40vh] overflow-y-auto px-3 py-2.5 focus:outline-none`
 
 export const useRavenEditor = ({ submitRef, linkRef, filesRef, cancelReplyRef, content, autofocus = false, placeholder }: UseRavenEditorOptions): Editor | null => {
     // Emoji `:` autocomplete is desktop-only — mobile keyboards have their own emoji,

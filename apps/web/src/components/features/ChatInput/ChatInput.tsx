@@ -12,7 +12,7 @@ import { MentionButton } from "./MentionButton"
 import { EmojiPickerButton } from "./EmojiPickerButton"
 import { CreatePollDialog } from "./CreatePollDialog"
 import { uploadedFilesAtom, uploadingFilesAtom, pendingSendAtom, useAttachFile } from "./useFileInput"
-import { useRavenEditor } from "@components/features/editor/useRavenEditor"
+import { useRavenEditor, EDITOR_MIN_H } from "@components/features/editor/useRavenEditor"
 import { EditorFormattingToolbar } from "@components/features/editor/EditorFormattingToolbar"
 import { ReplyPreviewBanner } from "./ReplyPreviewBanner"
 import { MentionWarningBanner } from "./MentionWarningBanner"
@@ -266,7 +266,12 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID, isDi
                         )}
                         {replyTo && <ReplyPreviewBanner message={replyTo} onCancel={cancelReply} showFormatting={showFormatting} />}
                         <InputFileList channelID={channelID} />
-                        <EditorContent editor={editor} />
+                        {/* Reserve the editor's min-height before it mounts (EditorContent is
+                            empty until `editor` is ready) so the composer — and the stream's
+                            height — don't jump on channel open. Same class as the editor surface. */}
+                        <div className={EDITOR_MIN_H}>
+                            <EditorContent editor={editor} />
+                        </div>
                         <div className="flex items-center gap-1 px-1.5 pb-1.5">
                             {isMobile ? (
                                 // Mobile: secondary actions collapse into a "+" bottom sheet.
