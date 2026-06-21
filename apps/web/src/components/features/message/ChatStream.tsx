@@ -217,7 +217,7 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
             <MessageActionDialogs />
 
             {showJumpButton && (
-                <div className="absolute bottom-3 right-4 z-10">
+                <div className="absolute bottom-3 right-4 z-50">
                     <Button
                         variant="outline"
                         size="sm"

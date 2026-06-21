@@ -33,6 +33,12 @@ import AttachFrappeDocumentDialog from "./AttachFrappeDocumentDialog"
 
 interface ChatInputProps {
     channelID: string
+    /**
+     * Override DM detection (controls the mention warning banner). A thread composer
+     * passes its PARENT's DM status, since the thread channel itself isn't in the
+     * channel store and would otherwise read as a non-DM.
+     */
+    isDirectMessage?: boolean
 }
 
 /**
@@ -49,7 +55,7 @@ interface ChatInputProps {
  * finishes (pendingSendAtom). The actual send (dispatchSend) is split out so the
  * normal path and the waiting path share one implementation.
  */
-const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, ref) => {
+const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID, isDirectMessage }, ref) => {
     const { call } = useContext(FrappeContext) as FrappeConfig
     const [files, setFiles] = useAtom(uploadedFilesAtom(channelID))
     const [pendingSend, setPendingSend] = useAtom(pendingSendAtom(channelID))
@@ -58,7 +64,10 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
     const isMobile = useIsMobile()
     // The mention warning banner (on-leave / non-member) is channel-only — DMs and DM
     // threads have no membership to manage and you're talking to one person already.
-    const isDM = useChannelById(channelID)?.is_direct_message === 1
+    // A thread composer passes isDirectMessage (its parent's status) since the thread
+    // channel isn't in the store; otherwise self-detect from the channel.
+    const channelIsDM = useChannelById(channelID)?.is_direct_message === 1
+    const isDM = isDirectMessage ?? channelIsDM
 
     // Restore any saved draft once on mount. ChatInput is keyed by channel, so this
     // reads the right channel's draft on every channel switch.

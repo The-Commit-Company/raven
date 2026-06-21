@@ -65,6 +65,13 @@ export const useStreamScroll = ({
     const pinnedRef = useRef(true)
     /** Last seen metrics, updated on every scroll — used for prepend compensation. */
     const metricsRef = useRef({ scrollTop: 0, scrollHeight: 0 })
+    /**
+     * The message at the top of the viewport while free-scrolled, plus its offset from
+     * the container top. Lets a WIDTH change (e.g. the thread drawer opening, which
+     * reflows every row) keep that message in place — the raw scrollTop would point at
+     * different content once rows re-wrap.
+     */
+    const topAnchorRef = useRef<{ id: string; offset: number } | null>(null)
     const edgeIdsRef = useRef<{ first: string | null; last: string | null }>({ first: null, last: null })
     /** True while a smooth glide animates — pauses load-older so a prepend can't fight the animation. */
     const smoothScrollingRef = useRef(false)
@@ -91,6 +98,24 @@ export const useStreamScroll = ({
         pinnedRef.current = atBottom && !hasNewerMessages
         setIsAtBottom(atBottom)
         if (atBottom && !hasNewerMessages) setHasUnseenMessages(false)
+
+        // While free, remember the topmost visible message so a width change can keep
+        // it anchored. Probe at the horizontal CENTER (the left edge is inside the
+        // content's px-3 padding, where elementFromPoint misses the rows), scanning a
+        // few offsets down from the top to skip a date separator / load-older spinner.
+        // O(1)-ish vs. measuring every row; when pinned we anchor to the bottom instead.
+        if (!pinnedRef.current) {
+            const rect = container.getBoundingClientRect()
+            const x = rect.left + rect.width / 2
+            let block: Element | null = null
+            for (const dy of [8, 40, 80, 120]) {
+                block = document.elementFromPoint(x, rect.top + dy)?.closest("[data-message-id]") ?? null
+                if (block) break
+            }
+            if (block) {
+                topAnchorRef.current = { id: block.getAttribute("data-message-id") ?? "", offset: block.getBoundingClientRect().top - rect.top }
+            }
+        }
         // A prepend during a smooth glide would shift the animation's destination
         // out from under it — hold the prefetch until the animation settles.
         if (!smoothScrollingRef.current && container.scrollTop < LOAD_MORE_THRESHOLD) loadOlder()
@@ -170,15 +195,33 @@ export const useStreamScroll = ({
         }
     }, [blocks, targetMessageID])
 
-    // While pinned, stay pinned through any resize: the input growing as the
-    // user types, the mobile keyboard opening, media settling into place.
+    // Stay anchored through any resize. Two cases:
+    //  - Pinned (at the live edge): the input growing, the keyboard opening, media
+    //    settling — keep glued to the bottom.
+    //  - Free + a WIDTH change (the thread drawer opening/closing reflows every row):
+    //    keep the message the user was looking at in place. Height-only resizes in
+    //    free mode are left to the content layout-effect / native behaviour.
     useEffect(() => {
         const container = containerRef.current
         if (!container) return
+        let lastWidth = container.clientWidth
         const observer = new ResizeObserver(() => {
-            if (pinnedRef.current && container) {
+            const widthChanged = container.clientWidth !== lastWidth
+            lastWidth = container.clientWidth
+
+            if (pinnedRef.current) {
                 container.scrollTop = container.scrollHeight
+                return
             }
+            // Don't fight an in-progress target glide.
+            if (!widthChanged || smoothScrollingRef.current) return
+
+            const anchor = topAnchorRef.current
+            if (!anchor) return
+            const block = container.querySelector(`[data-message-id="${CSS.escape(anchor.id)}"]`)
+            if (!block) return
+            const currentOffset = block.getBoundingClientRect().top - container.getBoundingClientRect().top
+            container.scrollTop += currentOffset - anchor.offset
         })
         observer.observe(container)
         if (container.firstElementChild) observer.observe(container.firstElementChild)

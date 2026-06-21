@@ -1,6 +1,5 @@
 import { X, MoreVertical, Bell, LogOut, Trash2 } from "lucide-react"
 import { Button } from "@components/ui/button"
-import { ScrollArea } from "@components/ui/scroll-area"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -8,14 +7,21 @@ import {
     DropdownMenuTrigger,
 } from "@components/ui/dropdown-menu"
 import ChatInput from "@components/features/ChatInput/ChatInput"
+import ChatStream from "@components/features/message/ChatStream"
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
+import { useChannelById } from "@stores/channels/useChannelList"
 import { useRef } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 
 /** Rendered as a child route (`:id/thread/:threadID`) inside the chat view's drawer slot. */
 export default function ThreadDrawer() {
-    const channelID = useCurrentChannelID()
+    // A thread IS a channel (its id = the original message id), so the stream + composer
+    // target the threadID. The parent channel (the route :id) is only used to inherit
+    // DM status for the composer's mention banner (thread channels aren't in the store).
+    const { threadID } = useParams<{ threadID: string }>()
+    const parentID = useCurrentChannelID()
+    const parentIsDM = useChannelById(parentID)?.is_direct_message === 1
     const threadInputRef = useRef<HTMLFormElement>(null)
     const navigate = useNavigate()
 
@@ -70,15 +76,12 @@ export default function ThreadDrawer() {
                 </div>
             </div>
 
-            {/* Thread Messages */}
-            <ScrollArea className="flex-1">
-                <div className="flex flex-col px-4 pb-8 space-y-5">
-                </div>
-            </ScrollArea>
+            {/* Thread messages — ChatStream owns its own scroll/virtualization */}
+            {threadID && <ChatStream channelID={threadID} />}
 
-            {/* Message input */}
+            {/* Message input — posts into the thread channel */}
             <div className="shrink-0">
-                <ChatInput channelID={channelID} ref={threadInputRef} />
+                {threadID && <ChatInput channelID={threadID} ref={threadInputRef} isDirectMessage={parentIsDM} />}
             </div>
         </div>
     )

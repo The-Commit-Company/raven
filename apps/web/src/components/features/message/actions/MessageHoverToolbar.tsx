@@ -58,7 +58,7 @@ export const MessageHoverToolbar = ({
             data-message-id={message.name}
             data-hover-toolbar
             // z-30: must float above the sticky date separators (z-20)
-            className="absolute right-4 z-30 flex items-center gap-0.5 rounded-md border border-outline-gray-2 bg-surface-base p-0.5 shadow-xs"
+            className="absolute right-4 z-40 flex items-center gap-0.5 rounded-md border border-outline-gray-2 bg-surface-base p-0.5 shadow-xs"
             style={{ top }}
         >
             {QUICK_REACTIONS.map((emoji) => (

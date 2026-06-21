@@ -52,7 +52,7 @@ export const ImageStack = ({ images, onImageClick }: { images: ImageFile[]; onIm
     const boxH = Math.max(...norm.map((n) => n.h))
 
     // Only stacking order is tied to depth.
-    const zByDepth = ["z-40", "z-30", "z-20", "z-10"]
+    const zByDepth = ["z-30", "z-20", "z-10", "z-0"]
 
     // Side ALTERNATES by depth so the pile always spreads both ways (never ends
     // up lopsided); only the MAGNITUDE is seeded off the image name, so it stays
