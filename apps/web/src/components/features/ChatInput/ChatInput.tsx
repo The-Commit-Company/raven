@@ -15,7 +15,9 @@ import { uploadedFilesAtom, uploadingFilesAtom, pendingSendAtom, useAttachFile }
 import { useRavenEditor } from "@components/features/editor/useRavenEditor"
 import { EditorFormattingToolbar } from "@components/features/editor/EditorFormattingToolbar"
 import { ReplyPreviewBanner } from "./ReplyPreviewBanner"
+import { MobileComposerActions } from "./MobileComposerActions"
 import { loadDraft, saveDraft } from "./draft"
+import { useIsMobile } from "@hooks/use-mobile"
 import { enqueueSend } from "@stores/messages/messageSender"
 import { replyToMessageAtom } from "@utils/channelAtoms"
 import { useUserCookieData } from "@hooks/useUserCookieData"
@@ -50,6 +52,7 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
     const [pendingSend, setPendingSend] = useAtom(pendingSendAtom(channelID))
     const [replyTo, setReplyTo] = useAtom(replyToMessageAtom(channelID))
     const { name: currentUser } = useUserCookieData()
+    const isMobile = useIsMobile()
 
     // Restore any saved draft once on mount. ChatInput is keyed by channel, so this
     // reads the right channel's draft on every channel switch.
@@ -198,7 +201,7 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
                 e.preventDefault()
                 handleSend()
             }}
-            className="p-2 pb-4 w-full flex flex-col gap-2"
+            className="p-3 pb-4 w-full flex flex-col gap-2"
         >
             {/* data-raven-editor + relative: the mention/emoji popups anchor here.
                 Everything lives inside the input box (Slack-style): formatting toolbar,
@@ -217,30 +220,37 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
                     <InputFileList channelID={channelID} />
                     <EditorContent editor={editor} />
                     <div className="flex items-center gap-1 px-1.5 pb-1.5">
-                        <AddFileButton channelID={channelID} />
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    isIconButton
-                                    aria-label={_("Formatting")}
-                                    aria-pressed={showFormatting}
-                                    onClick={() => setShowFormatting((v) => !v)}
-                                    className={cn(showFormatting && "bg-surface-gray-3 text-ink-gray-9")}
-                                >
-                                    <Type />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>{_("Formatting")}</TooltipContent>
-                        </Tooltip>
-                        <Separator orientation="vertical" className="mx-1 h-4!" />
-                        {editor && <MentionButton editor={editor} />}
-                        {editor && <EmojiPickerButton editor={editor} />}
-                        <Separator orientation="vertical" className="mx-1 h-4!" />
-                        <CreatePollDialog channelID={channelID} />
-                        <AttachFrappeDocumentDialog />
+                        {isMobile ? (
+                            // Mobile: secondary actions collapse into a "+" bottom sheet.
+                            <MobileComposerActions channelID={channelID} onToggleFormatting={() => setShowFormatting((v) => !v)} />
+                        ) : (
+                            <>
+                                <AddFileButton channelID={channelID} />
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            isIconButton
+                                            aria-label={_("Formatting")}
+                                            aria-pressed={showFormatting}
+                                            onClick={() => setShowFormatting((v) => !v)}
+                                            className={cn(showFormatting && "bg-surface-gray-3 text-ink-gray-9")}
+                                        >
+                                            <Type />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>{_("Formatting")}</TooltipContent>
+                                </Tooltip>
+                                <Separator orientation="vertical" className="mx-1 h-4!" />
+                                {editor && <MentionButton editor={editor} />}
+                                {editor && <EmojiPickerButton editor={editor} />}
+                                <Separator orientation="vertical" className="mx-1 h-4!" />
+                                <CreatePollDialog channelID={channelID} />
+                                <AttachFrappeDocumentDialog />
+                            </>
+                        )}
                         <div className="flex-1" />
                         <SendButton onSend={handleSend} loading={pendingSend} />
                     </div>

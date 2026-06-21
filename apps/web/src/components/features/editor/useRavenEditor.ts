@@ -134,6 +134,25 @@ export const useRavenEditor = ({ submitRef, linkRef, filesRef, cancelReplyRef, c
                     return false
                 }
 
+                // Select-all then delete (Backspace/Delete): clear to a fresh empty doc.
+                // Deleting a whole-document selection can otherwise leave a lingering
+                // selection highlight on the now-empty editor instead of collapsing to a
+                // plain cursor. Note Ctrl/⌘+A is a *native* selection → ProseMirror sees a
+                // TextSelection over the text (≈ pos 1 … size-1), NOT an AllSelection at
+                // 0 … size — so match "covers essentially all content", not exact bounds.
+                if (event.key === "Backspace" || event.key === "Delete") {
+                    const ed = editorRef.current
+                    const sel = ed?.state.selection
+                    const size = ed?.state.doc.content.size ?? 0
+                    if (ed && sel && !sel.empty && sel.from <= 1 && sel.to >= size - 1) {
+                        // clearContent normalises the doc; focus("start") lands a clean
+                        // collapsed caret, syncing the DOM selection so no highlight remains.
+                        ed.chain().clearContent(true).focus("start").run()
+                        event.preventDefault()
+                        return true
+                    }
+                }
+
                 // Backspace in an empty composer cancels the active reply (v2 parity).
                 if (event.key === "Backspace") {
                     if (editorRef.current?.isEmpty && cancelReplyRef?.current()) {

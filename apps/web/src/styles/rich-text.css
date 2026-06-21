@@ -99,7 +99,7 @@
    `--code-bg` is shared by the <pre> and the collapse fade so they always agree. */
 .tiptap .code-block {
   --code-bg: #f6f8fa;
-  @apply relative my-2 overflow-hidden rounded-md border border-outline-gray-2;
+  @apply relative my-2 overflow-hidden rounded border border-outline-gray-2;
 }
 
 .dark .tiptap .code-block {
