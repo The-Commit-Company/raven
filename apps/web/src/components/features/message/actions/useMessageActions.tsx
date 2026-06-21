@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { useSetAtom } from "jotai"
+import { getDefaultStore, useSetAtom } from "jotai"
 import { toast } from "sonner"
 import {
     Bookmark,
@@ -14,7 +14,7 @@ import {
     SmilePlus,
     Trash2,
 } from "lucide-react"
-import { messageDialogAtom } from "@utils/channelAtoms"
+import { messageDialogAtom, replyToMessageAtom } from "@utils/channelAtoms"
 import _ from "@lib/translate"
 import type { Message } from "@raven/types/common/Message"
 import { useUserCookieData } from "@hooks/useUserCookieData"
@@ -59,7 +59,13 @@ export const useMessageActions = (message: Message | null): MessageAction[][] =>
 
         // Respond: reply + thread creation (join/mute need membership context we don't load here)
         const respond: MessageAction[] = [
-            { id: "reply", label: _("Reply"), icon: Reply, onSelect: stub(_("Reply")) },
+            {
+                id: "reply",
+                label: _("Reply"),
+                icon: Reply,
+                // Set the channel's reply target; the composer reads it and shows the banner.
+                onSelect: () => getDefaultStore().set(replyToMessageAtom(message.channel_id), message),
+            },
         ]
         if (!message.is_thread) {
             // TODO(layer 5): raven.api.threads.create_thread(message_id), then navigate to thread/:id

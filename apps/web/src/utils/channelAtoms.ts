@@ -34,6 +34,14 @@ export const messageTargetAtom = atomFamily((_channelID: string) => atom<string 
  */
 export const messageActionTargetAtom = atom<Message | null>(null)
 
+/**
+ * The message the composer is replying to, per channel. Set by the Reply action;
+ * the composer shows a preview banner and sends it as `linked_message`, then clears
+ * this on send or cancel. Per-channel so a reply drafted in one channel doesn't leak
+ * into another.
+ */
+export const replyToMessageAtom = atomFamily((_channelID: string) => atom<Message | null>(null))
+
 export type MessageDialogType = "delete" | "edit" | "forward" | "reactions"
 
 /**

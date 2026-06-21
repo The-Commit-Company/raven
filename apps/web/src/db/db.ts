@@ -30,6 +30,10 @@ export interface OutboxMessage {
     status: 'sending' | 'failed'
     /** When the send was first queued (ms) — orders the outbox for retry. */
     queued_at: number
+    /** Reply: id of the message being replied to (sent as linked_message). */
+    linked_message?: string
+    /** Reply: JSON snapshot of the replied message, so the reply preview renders on rehydrate. */
+    replied_message_details?: string
 }
 
 const db = new Dexie("RavenDB") as Dexie & {

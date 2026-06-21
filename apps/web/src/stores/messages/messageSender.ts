@@ -37,6 +37,7 @@ export const buildOptimisticMessages = (
     content: string,
     files: OutgoingFile[],
     creation: string = optimisticNow(),
+    reply?: { linkedMessage: string; repliedMessageDetails?: string },
 ): OptimisticMessage[] => {
     const base = (extra: Partial<Message>): OptimisticMessage =>
         ({
@@ -59,6 +60,17 @@ export const buildOptimisticMessages = (
     if (content) {
         messages.push(base({ name: `${batchId}-text`, message_type: "Text", text: content }))
     }
+
+    // Mirror the backend: the reply attaches to the LAST message of the batch (the
+    // caption when there's text, else the final attachment), so the preview renders
+    // on the same message the server will return.
+    if (reply && messages.length > 0) {
+        Object.assign(messages[messages.length - 1], {
+            is_reply: 1,
+            linked_message: reply.linkedMessage,
+            ...(reply.repliedMessageDetails ? { replied_message_details: reply.repliedMessageDetails } : {}),
+        })
+    }
     return messages
 }
 
@@ -70,17 +82,38 @@ export const buildOptimisticMessages = (
  */
 export const enqueueSend = (
     client: PostClient,
-    params: { channelID: string; batchId: string; owner: string; content: string; files: OutgoingFile[] },
+    params: {
+        channelID: string
+        batchId: string
+        owner: string
+        content: string
+        files: OutgoingFile[]
+        /** Set when this send is a reply: the message being replied to + a snapshot for the preview. */
+        linkedMessage?: string
+        repliedMessageDetails?: string
+    },
 ) => {
-    const { channelID, batchId, owner, content, files } = params
+    const { channelID, batchId, owner, content, files, linkedMessage, repliedMessageDetails } = params
     const creation = optimisticNow()
+    const reply = linkedMessage ? { linkedMessage, repliedMessageDetails } : undefined
 
-    const placeholders = buildOptimisticMessages(channelID, batchId, owner, content, files, creation)
+    const placeholders = buildOptimisticMessages(channelID, batchId, owner, content, files, creation, reply)
     channelMessagesStore.addOptimisticMessages(channelID, batchId, placeholders)
 
-    putOutbox({ client_id: batchId, channel_id: channelID, owner, content, files, creation, status: "sending", queued_at: Date.now() })
+    putOutbox({
+        client_id: batchId,
+        channel_id: channelID,
+        owner,
+        content,
+        files,
+        creation,
+        status: "sending",
+        queued_at: Date.now(),
+        linked_message: linkedMessage,
+        replied_message_details: repliedMessageDetails,
+    })
 
-    submitSend(client, channelID, batchId, content, files)
+    submitSend(client, channelID, batchId, content, files, linkedMessage)
 }
 
 /**
@@ -112,6 +145,7 @@ export const submitSend = (
     batchId: string,
     content: string,
     files: OutgoingFile[],
+    linkedMessage?: string,
 ) => {
     inFlight.add(batchId)
     return client
@@ -120,6 +154,9 @@ export const submitSend = (
             content,
             files,
             client_id: batchId,
+            // Reply: the backend attaches these to the last message of the batch.
+            is_reply: linkedMessage ? 1 : 0,
+            linked_message: linkedMessage ?? null,
         })
         .then((res) => {
             channelMessagesStore.resolveOptimisticSend(channelID, batchId, res.message ?? [])
@@ -155,10 +192,14 @@ export const retrySend = (client: PostClient, channelID: string, batchId: string
             file_url: (m as { file?: string }).file as string,
             file_size: (m as { file_size?: number }).file_size ?? 0,
         }))
+    // The reply lives on whichever placeholder carries linked_message (the last one).
+    const linkedMessage = placeholders
+        .map((m) => (m as { linked_message?: string }).linked_message)
+        .find(Boolean)
 
     channelMessagesStore.retryOptimisticSend(channelID, batchId)
     setOutboxStatus(batchId, "sending")
-    submitSend(client, channelID, batchId, content, files)
+    submitSend(client, channelID, batchId, content, files, linkedMessage)
 }
 
 /** Discard a failed send: remove it both from the screen and from the saved outbox. */
@@ -182,6 +223,7 @@ export const injectOutboxRecord = (record: OutboxMessage) => {
         record.content,
         record.files,
         record.creation,
+        record.linked_message ? { linkedMessage: record.linked_message, repliedMessageDetails: record.replied_message_details } : undefined,
     )
     channelMessagesStore.addOptimisticMessages(record.channel_id, record.client_id, placeholders)
     if (record.status === "failed") channelMessagesStore.failOptimisticSend(record.channel_id, record.client_id)
@@ -204,6 +246,7 @@ export const retryOutboxRecord = (client: PostClient, record: OutboxMessage): Pr
             record.content,
             record.files,
             record.creation,
+            record.linked_message ? { linkedMessage: record.linked_message, repliedMessageDetails: record.replied_message_details } : undefined,
         )
         channelMessagesStore.addOptimisticMessages(record.channel_id, record.client_id, placeholders)
     } else {
@@ -211,5 +254,5 @@ export const retryOutboxRecord = (client: PostClient, record: OutboxMessage): Pr
     }
 
     setOutboxStatus(record.client_id, "sending")
-    return submitSend(client, record.channel_id, record.client_id, record.content, record.files)
+    return submitSend(client, record.channel_id, record.client_id, record.content, record.files, record.linked_message)
 }

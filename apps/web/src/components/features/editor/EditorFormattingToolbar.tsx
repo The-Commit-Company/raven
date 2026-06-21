@@ -110,7 +110,7 @@ export const EditorFormattingToolbar = ({ editor, linkSignal = 0, onLinkConsumed
     })
 
     return (
-        <div className="flex items-center gap-0.5 bg-surface-gray-1 px-1.5 py-1 rounded-t-md">
+        <div className="flex items-center gap-0.5 bg-surface-gray-1 px-1.5 py-1">
             {GROUPS.map((group, i) => (
                 <Fragment key={i}>
                     {i > 0 && <Separator orientation="vertical" className="mx-1 h-4!" />}

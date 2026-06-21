@@ -11,7 +11,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@components/ui/dropdown-menu"
-import { messageActionTargetAtom } from "@utils/channelAtoms"
+import { messageActionTargetAtom, replyToMessageAtom } from "@utils/channelAtoms"
 import _ from "@lib/translate"
 import { useMessageActions } from "./useMessageActions"
 import type { Message } from "@raven/types/common/Message"
@@ -43,6 +43,7 @@ export const MessageHoverToolbar = ({
 }) => {
     const actionGroups = useMessageActions(message)
     const setActionTarget = useSetAtom(messageActionTargetAtom)
+    const setReplyTo = useSetAtom(replyToMessageAtom(message.channel_id))
     const [menuOpen, setMenuOpen] = useState(false)
 
     /** The ellipsis menu marks the message as the action target, like right-click does. */
@@ -88,8 +89,7 @@ export const MessageHoverToolbar = ({
                 size="md"
                 isIconButton
                 aria-label={_("Reply")}
-                // TODO(layer 4): focus composer in reply mode
-                onClick={() => toast.info(`${_("Reply")} — ${_("coming soon")}`)}
+                onClick={() => setReplyTo(message)}
             >
                 <Reply />
             </Button>

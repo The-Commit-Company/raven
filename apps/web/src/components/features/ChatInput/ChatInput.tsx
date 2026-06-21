@@ -13,7 +13,9 @@ import { CreatePollDialog } from "./CreatePollDialog"
 import { uploadedFilesAtom, uploadingFilesAtom, pendingSendAtom, useAttachFile } from "./useFileInput"
 import { useRavenEditor } from "@components/features/editor/useRavenEditor"
 import { EditorFormattingToolbar } from "@components/features/editor/EditorFormattingToolbar"
+import { ReplyPreviewBanner } from "./ReplyPreviewBanner"
 import { enqueueSend } from "@stores/messages/messageSender"
+import { replyToMessageAtom } from "@utils/channelAtoms"
 import { useUserCookieData } from "@hooks/useUserCookieData"
 import _ from "@lib/translate"
 import { Button } from "@components/ui/button"
@@ -44,6 +46,7 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
     const { call } = useContext(FrappeContext) as FrappeConfig
     const [files, setFiles] = useAtom(uploadedFilesAtom(channelID))
     const [pendingSend, setPendingSend] = useAtom(pendingSendAtom(channelID))
+    const [replyTo, setReplyTo] = useAtom(replyToMessageAtom(channelID))
     const { name: currentUser } = useUserCookieData()
 
     // Formatting toolbar visibility — off by default (clean composer), toggled by
@@ -62,6 +65,13 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
     const onAddFile = useAttachFile(channelID)
     const filesRef = useRef<(files: File[]) => void>(() => { })
     filesRef.current = onAddFile
+    // Escape / Backspace-when-empty cancel the active reply (reads the latest replyTo).
+    const cancelReplyRef = useRef<() => boolean>(() => false)
+    cancelReplyRef.current = () => {
+        if (!replyTo) return false
+        setReplyTo(null)
+        return true
+    }
 
     // A held send waits on these: any file still uploading blocks dispatch; an
     // errored upload settles but must not be silently sent without. We subscribe
@@ -74,7 +84,7 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
         useMemo(() => selectAtom(uploadingFilesAtom(channelID), (f) => f.some((file) => file.status === "error")), [channelID]),
     )
 
-    const editor = useRavenEditor({ submitRef: sendRef, linkRef, filesRef, autofocus: true, placeholder: _("Type a message...") })
+    const editor = useRavenEditor({ submitRef: sendRef, linkRef, filesRef, cancelReplyRef, autofocus: true, placeholder: _("Type a message...") })
 
     /** Build the optimistic batch, clear the composer, and fire the request. */
     const dispatchSend = useCallback(() => {
@@ -86,14 +96,29 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
         const outgoingFiles = files.map((f) => ({ file_url: f.fileURL, file_size: f.size }))
         const batchId = crypto.randomUUID()
 
+        // Reply context: send the linked message id + a snapshot of it so the reply
+        // preview renders immediately (the snapshot matches ReplyMessage's expected shape).
+        const linkedMessage = replyTo?.name
+        const repliedMessageDetails = replyTo
+            ? JSON.stringify({
+                text: replyTo.text ?? "",
+                content: replyTo.content ?? "",
+                file: (replyTo as typeof replyTo & { file?: string }).file ?? "",
+                message_type: replyTo.message_type,
+                owner: replyTo.owner,
+                creation: replyTo.creation,
+            })
+            : undefined
+
         // Shows the message on screen, saves it to the outbox, then sends it.
-        enqueueSend(call, { channelID, batchId, owner: currentUser, content, files: outgoingFiles })
+        enqueueSend(call, { channelID, batchId, owner: currentUser, content, files: outgoingFiles, linkedMessage, repliedMessageDetails })
 
         // Clear the composer right away — the message is already on screen
         editor.commands.clearContent()
         setFiles([])
+        if (replyTo) setReplyTo(null)
         editor.commands.focus()
-    }, [editor, files, channelID, currentUser, call, setFiles])
+    }, [editor, files, channelID, currentUser, call, setFiles, replyTo, setReplyTo])
 
     const handleSend = useCallback(() => {
         if (!editor) return
@@ -126,6 +151,16 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
         sendRef.current = handleSend
     }, [handleSend])
 
+    // When a reply is started (from a message's Reply action), focus the composer.
+    useEffect(() => {
+        if (replyTo) editor?.commands.focus()
+    }, [replyTo, editor])
+
+    const cancelReply = useCallback(() => {
+        setReplyTo(null)
+        editor?.commands.focus()
+    }, [setReplyTo, editor])
+
     return (
         <form
             ref={ref}
@@ -138,8 +173,9 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
             {/* data-raven-editor + relative: the mention/emoji popups anchor here.
                 Everything lives inside the input box (Slack-style): formatting toolbar,
                 attachment previews, editor, then the action bar — all sharing one border. */}
-            <div data-raven-editor className="relative w-full rounded-lg border border-outline-gray-2 shadow-outline-base bg-surface-white focus-within:border-outline-gray-3">
+            <div data-raven-editor className="relative w-full rounded-lg border border-outline-gray-2 shadow-outline-base bg-surface-white focus-within:border-outline-gray-3 overflow-y-hidden">
                 <TooltipProvider>
+
                     {editor && showFormatting && (
                         <EditorFormattingToolbar
                             editor={editor}
@@ -147,6 +183,7 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID }, re
                             onLinkConsumed={() => setLinkSignal(0)}
                         />
                     )}
+                    {replyTo && <ReplyPreviewBanner message={replyTo} onCancel={cancelReply} showFormatting={showFormatting} />}
                     <InputFileList channelID={channelID} />
                     <EditorContent editor={editor} />
                     <div className="flex items-center gap-1 px-1.5 pb-1.5">
