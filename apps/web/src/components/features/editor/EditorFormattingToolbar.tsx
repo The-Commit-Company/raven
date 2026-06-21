@@ -11,6 +11,7 @@ import {
     ListOrdered,
     Quote,
     Highlighter,
+    EyeOff,
     Link as LinkIcon,
     type LucideIcon,
     CheckIcon,
@@ -41,6 +42,7 @@ type Mark =
     | "orderedList"
     | "blockquote"
     | "codeBlock"
+    | "spoiler"
 
 interface FormatButton {
     mark: Mark
@@ -58,6 +60,7 @@ const GROUPS: FormatButton[][] = [
         { mark: "underline", icon: UnderlineIcon, label: _("Underline"), shortcut: combo(MOD, "U"), run: (e) => e.chain().focus().toggleUnderline().run() },
         { mark: "strike", icon: Strikethrough, label: _("Strikethrough"), shortcut: combo(MOD, SHIFT, "S"), run: (e) => e.chain().focus().toggleStrike().run() },
         { mark: "highlight", icon: Highlighter, label: _("Highlight"), shortcut: combo(MOD, SHIFT, "H"), run: (e) => e.chain().focus().toggleHighlight().run() },
+        { mark: "spoiler", icon: EyeOff, label: _("Spoiler"), shortcut: "||…||", run: (e) => e.chain().focus().toggleSpoiler().run() },
     ],
     [
         { mark: "code", icon: Code, label: _("Code"), shortcut: combo(MOD, "E"), run: (e) => e.chain().focus().toggleCode().run() },
@@ -105,6 +108,7 @@ export const EditorFormattingToolbar = ({ editor, linkSignal = 0, onLinkConsumed
             orderedList: editor.isActive("orderedList"),
             blockquote: editor.isActive("blockquote"),
             codeBlock: editor.isActive("codeBlock"),
+            spoiler: editor.isActive("spoiler"),
             link: editor.isActive("link"),
         }),
     })

@@ -1,7 +1,9 @@
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import parse, { Element, domToReact, type DOMNode, type HTMLReactParserOptions } from "html-react-parser"
 import { UserMention, ChannelMention } from "./MessageMention"
 import { CodeBlock } from "./MessageCodeBlock"
+import { cn } from "@lib/utils"
+import _ from "@lib/translate"
 
 /**
  * Renders a message body from the HTML the backend stores in `message.text`
@@ -29,6 +31,28 @@ const mentionLabel = (node: Element): string =>
         .join("")
         .replace(/^[@#]/, "")
         .trim()
+
+/** Spoiler: hidden behind a block until clicked (keyboard-accessible). */
+const Spoiler = ({ children }: { children: React.ReactNode }) => {
+    const [revealed, setRevealed] = useState(false)
+    return (
+        <span
+            className={cn("message-spoiler", revealed && "message-spoiler--revealed")}
+            role="button"
+            tabIndex={revealed ? -1 : 0}
+            aria-label={revealed ? undefined : _("Spoiler — click to reveal")}
+            onClick={() => !revealed && setRevealed(true)}
+            onKeyDown={(e) => {
+                if (!revealed && (e.key === "Enter" || e.key === " ")) {
+                    e.preventDefault()
+                    setRevealed(true)
+                }
+            }}
+        >
+            {children}
+        </span>
+    )
+}
 
 /** Recursively concatenate a node's text content (for code-block bodies). */
 const textContent = (node: DOMNode): string => {
@@ -62,6 +86,12 @@ const options: HTMLReactParserOptions = {
             ) : (
                 <ChannelMention id={mentionID} fallback={fallback} />
             )
+        }
+
+        // Spoiler: swap the stored span for a click-to-reveal component (data-spoiler
+        // survives the class-strip above, like mentions' data-*).
+        if (node.name === "span" && node.attribs?.["data-spoiler"] !== undefined) {
+            return <Spoiler>{domToReact(node.children as DOMNode[], options)}</Spoiler>
         }
 
         // Custom emoji: an inline <img data-type="customEmoji">. Render it sized like an

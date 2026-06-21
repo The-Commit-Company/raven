@@ -145,6 +145,36 @@
   @apply text-ink-gray-4;
 }
 
+/* Spoiler — in the COMPOSER it's a subtle pill so the writer sees what they've
+   marked (it's their own text). */
+[data-raven-editor] .tiptap .spoiler {
+  @apply rounded-sm bg-surface-gray-3 px-0.5 text-ink-gray-7;
+}
+
+/* Spoiler — in a RENDERED message the text hides behind a solid block until the
+   reader clicks/reveals it. Hide descendants too (a link/mention inside a spoiler
+   would otherwise show its own colour); :where() keeps that override at low
+   specificity so the revealed state still wins. */
+.tiptap .message-spoiler {
+  @apply cursor-pointer select-none rounded-sm bg-surface-gray-4 px-0.5 text-transparent transition-colors;
+}
+
+.tiptap .message-spoiler:not(.message-spoiler--revealed) :where(a, code, strong, em, s, span, img) {
+  color: transparent;
+}
+
+.tiptap .message-spoiler:hover {
+  @apply bg-surface-gray-5;
+}
+
+.tiptap .message-spoiler--revealed:hover {
+  @apply bg-surface-gray-3;
+}
+
+.tiptap .message-spoiler--revealed {
+  @apply cursor-auto select-auto bg-surface-gray-2 text-ink-gray-7;
+}
+
 /* highlight.js syntax tokens — GitHub light */
 .tiptap .hljs-doctag,
 .tiptap .hljs-keyword,

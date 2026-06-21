@@ -12,6 +12,7 @@ import { EnterKeyBehaviourAtom } from "@utils/preferences"
 import { UserMention } from "./userMention"
 import { ChannelMention } from "./channelMention"
 import { CustomEmoji } from "./customEmoji"
+import { Spoiler } from "./spoiler"
 import { EmojiSuggestion } from "./emoji"
 import { isSuggestionPopupOpen } from "./suggestion"
 
@@ -86,6 +87,7 @@ export const useRavenEditor = ({ submitRef, linkRef, filesRef, cancelReplyRef, c
         UserMention,
         ChannelMention,
         CustomEmoji,
+        Spoiler,
     ]
     if (placeholder) extensions.push(Placeholder.configure({ placeholder }))
     if (filesRef) {

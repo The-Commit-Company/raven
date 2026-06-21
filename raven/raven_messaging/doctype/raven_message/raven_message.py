@@ -109,6 +109,12 @@ class RavenMessage(Document):
 
 				self.append("links_table", {"url": href})
 
+		# Spoilers (||text||) must not leak in the derived preview (DM list, push
+		# notifications, search) — replace each spoiler's text with a placeholder
+		# before extracting plain text.
+		for spoiler in soup.find_all(attrs={"data-spoiler": True}):
+			spoiler.string = "▒▒▒▒▒▒"
+
 		text_content = soup.get_text(" ", strip=True)
 
 		if not text_content:
