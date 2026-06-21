@@ -19,6 +19,7 @@ export const MediaPreviewHeader = ({
     creation,
     fileName,
     fileSize,
+    badge,
     children,
     onDownload,
     onShare,
@@ -29,9 +30,12 @@ export const MediaPreviewHeader = ({
     creation?: string
     fileName: string
     fileSize?: string
+    /** Optional pill beside the file name (e.g. a "Preview" tag in composer mode). */
+    badge?: React.ReactNode
     children?: React.ReactNode
-    onDownload: () => void
-    onShare: () => void
+    /** Omit to hide the action — e.g. preview mode has no download/share. */
+    onDownload?: () => void
+    onShare?: () => void
     onClose: () => void
 }) => {
     const { longTime } = useMessageTimes(creation ?? "")
@@ -76,34 +80,39 @@ export const MediaPreviewHeader = ({
                     <TooltipContent>{fileName}</TooltipContent>
                 </Tooltip>
                 {fileSize && (
-                    <Badge size="sm" variant="subtle" theme="gray">
+                    <Badge variant="subtle" theme="gray">
                         {fileSize}
                     </Badge>
                 )}
+                {badge}
             </div>
 
             <div className="order-2 flex flex-1 shrink-0 items-center justify-end gap-2 sm:order-3">
                 {children}
-                <Button
-                    variant="ghost"
-                    size="md"
-                    isIconButton
-                    title={_("Download")}
-                    aria-label={_("Download")}
-                    onClick={onDownload}
-                >
-                    <ArrowDownToLineIcon />
-                </Button>
-                <Button
-                    variant="ghost"
-                    size="md"
-                    isIconButton
-                    title={_("Share")}
-                    aria-label={_("Share")}
-                    onClick={onShare}
-                >
-                    <Share2 />
-                </Button>
+                {onDownload && (
+                    <Button
+                        variant="ghost"
+                        size="md"
+                        isIconButton
+                        title={_("Download")}
+                        aria-label={_("Download")}
+                        onClick={onDownload}
+                    >
+                        <ArrowDownToLineIcon />
+                    </Button>
+                )}
+                {onShare && (
+                    <Button
+                        variant="ghost"
+                        size="md"
+                        isIconButton
+                        title={_("Share")}
+                        aria-label={_("Share")}
+                        onClick={onShare}
+                    >
+                        <Share2 />
+                    </Button>
+                )}
                 <Button
                     variant="ghost"
                     size="md"

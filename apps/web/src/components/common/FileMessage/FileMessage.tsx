@@ -32,7 +32,7 @@ const FileMessage = ({
         <div
             className={cn(
                 "rounded-md border border-outline-gray-2 w-fit bg-surface-elevation-1 p-2",
-                file.onOpen && "cursor-pointer hover:bg-surface-gray-1 transition-colors",
+                file.onOpen && "cursor-pointer hover:bg-surface-gray-1 transition-colors w-64",
             )}
             role={file.onOpen ? "button" : undefined}
             onClick={file.onOpen}

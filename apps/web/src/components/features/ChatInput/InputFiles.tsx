@@ -1,12 +1,15 @@
-import { useAtomValue } from 'jotai'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { uploadingFilesAtom, uploadedFilesAtom, useAttachFile, useRemoveFile, FileItemType } from './useFileInput'
 import { Button } from '@components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@components/ui/tooltip'
 import { AlertCircleIcon, Paperclip, Trash2Icon } from 'lucide-react'
-import { useMemo, useRef } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import FileTypeIcon from '@components/common/FileIcons/FileTypeIcon'
 import { formatBytes, getFileExtension } from '@raven/lib/utils/operations'
 import { ProgressCircle } from '@components/ui/circular-progress'
+import { attachmentPreviewAtom, stagedFilesToAttachments, getAttachmentKind } from '@utils/attachmentPreview'
+import { useUserCookieData } from '@hooks/useUserCookieData'
+import { cn } from '@lib/utils'
 import _ from '@lib/translate'
 
 type InputFilesProps = {
@@ -33,6 +36,18 @@ export const InputFileList = ({ channelID }: InputFilesProps) => {
     }, [uploadingFiles, uploadedFiles])
 
     const onRemove = useRemoveFile(channelID)
+    const setPreview = useSetAtom(attachmentPreviewAtom)
+    const { name: currentUser } = useUserCookieData()
+
+    // Open the shared attachment viewer on the clicked file. Only uploaded files have
+    // a URL, so the navigable set is those (in display order, so the index matches).
+    const onPreview = useCallback((file: FileItemType) => {
+        const uploaded = files.filter((f): f is FileItemType & { fileURL: string } => f.status === 'uploaded' && !!f.fileURL)
+        const attachments = stagedFilesToAttachments(uploaded, currentUser)
+        const index = attachments.findIndex((a) => a.id === file.id)
+        if (index === -1) return
+        setPreview({ attachments, index, mode: "preview" })
+    }, [files, currentUser, setPreview])
 
     // Nothing staged → render nothing (no empty padded strip inside the composer box).
     if (files.length === 0) return null
@@ -40,24 +55,38 @@ export const InputFileList = ({ channelID }: InputFilesProps) => {
     return (
         <div className='flex gap-2 flex-wrap px-2 pt-2'>
             {files.map((file) => (
-                <FileItem key={file.id} file={file} onRemove={onRemove} />
+                <FileItem key={file.id} file={file} onRemove={onRemove} onPreview={onPreview} />
             ))}
         </div>
     )
 }
 
-const FileItem = ({ file, onRemove }: { file: FileItemType, onRemove: (file: FileItemType) => void }) => {
+const FileItem = ({ file, onRemove, onPreview }: { file: FileItemType, onRemove: (file: FileItemType) => void, onPreview: (file: FileItemType) => void }) => {
 
     const extension = getFileExtension(file.fileName)
+    // Uploaded files can be opened in the viewer; uploading/errored can't.
+    const canPreview = file.status === 'uploaded'
+    // Show the real image for uploaded image files instead of a generic file icon.
+    const showImageThumb = canPreview && !!file.fileURL && getAttachmentKind(file.fileURL) === 'image'
 
-    const onRemoveClick = () => {
+    const onRemoveClick = (e: React.MouseEvent) => {
+        e.stopPropagation()
         onRemove(file)
     }
 
-    return <div className="rounded-lg border border-outline-gray-2 min-w-64">
+    return <div
+        className={cn("rounded-lg border border-outline-gray-2 w-64", canPreview && "cursor-pointer hover:bg-surface-gray-1")}
+        onClick={canPreview ? () => onPreview(file) : undefined}
+        role={canPreview ? "button" : undefined}
+        title={canPreview ? _("Click to preview") : undefined}
+    >
         <div className="flex items-center gap-2 p-2">
             <div className="shrink-0">
-                <FileTypeIcon fileType={extension} size="lg" />
+                {showImageThumb ? (
+                    <img src={file.fileURL} alt={file.fileName} className="size-9 rounded object-cover" />
+                ) : (
+                    <FileTypeIcon fileType={extension} size="lg" />
+                )}
             </div>
             <div className="flex-1 min-w-0">
                 <h4 className="text-xs font-medium text-ink-gray-8 truncate">

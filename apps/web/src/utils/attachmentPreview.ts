@@ -1,4 +1,5 @@
 import { atom } from "jotai"
+import dayjs from "dayjs"
 import { getFileName } from "@raven/lib/utils/operations"
 import { getFileExtension } from "@lib/file"
 import type { Message } from "@raven/types/common/Message"
@@ -41,6 +42,8 @@ export interface Attachment {
     /** Stored image dimensions, when known. */
     width?: number
     height?: number
+    /** File size in bytes, when known — shown as a badge in the viewer header. */
+    size?: number
     /** Sender + timestamp of the message, for the viewer's header. */
     owner: string
     creation: string
@@ -52,7 +55,14 @@ export interface Attachment {
  * mounted at the app shell reads this, so any surface — the stream, a thread
  * drawer, the saved-messages list — opens the same viewer via the setter.
  */
-export type AttachmentPreviewState = { attachments: Attachment[]; index: number } | null
+/**
+ * `view` (default): a sent message's attachment — sender, timestamp, download/share.
+ * `preview`: a composer-staged file before sending — no author/actions, a "Preview"
+ * badge, and (later) editing affordances like crop. Same lightbox + paging logic.
+ */
+export type AttachmentPreviewMode = "view" | "preview"
+
+export type AttachmentPreviewState = { attachments: Attachment[]; index: number; mode?: AttachmentPreviewMode } | null
 
 export const attachmentPreviewAtom = atom<AttachmentPreviewState>(null)
 
@@ -62,6 +72,7 @@ type MediaMessage = Message & {
     file_thumbnail?: string
     thumbnail_width?: number
     thumbnail_height?: number
+    file_size?: number
 }
 
 const toAttachment = (message: Message): Attachment | null => {
@@ -74,6 +85,7 @@ const toAttachment = (message: Message): Attachment | null => {
         id: media.name,
         fileName: getFileName(url),
         fileUrl: new URL(url, window.location.origin).href,
+        size: media.file_size,
         owner: media.owner,
         creation: media.creation,
     }
@@ -100,3 +112,29 @@ export const messagesToAttachments = (messages: Message[]): Attachment[] => {
     // Stable sort by kind — order within a kind is preserved
     return attachments.sort((a, b) => KIND_ORDER[a.kind] - KIND_ORDER[b.kind])
 }
+
+/** A composer-staged (already-uploaded) file, enough to preview it. */
+export interface StagedFile {
+    id: string
+    fileName: string
+    fileURL: string
+    size: number
+    timestamp: number
+}
+
+/**
+ * Build the viewer set from the composer's staged (uploaded) files, so a file can
+ * be previewed before it's sent. Kept in the SAME order the file list shows them so
+ * a clicked index lines up (NOT kind-sorted like messagesToAttachments). owner is the
+ * current user; creation is the upload time, just for the viewer header.
+ */
+export const stagedFilesToAttachments = (files: StagedFile[], owner: string): Attachment[] =>
+    files.map((file) => ({
+        id: file.id,
+        fileName: file.fileName,
+        fileUrl: new URL(file.fileURL, window.location.origin).href,
+        kind: getAttachmentKind(file.fileURL),
+        size: file.size,
+        owner,
+        creation: dayjs(file.timestamp).format("YYYY-MM-DD HH:mm:ss"),
+    }))

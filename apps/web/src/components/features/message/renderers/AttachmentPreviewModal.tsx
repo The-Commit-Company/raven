@@ -3,6 +3,7 @@ import { useAtomValue, useSetAtom } from "jotai"
 import { useHotkeys } from "react-hotkeys-hook"
 import { toast } from "sonner"
 import { ChevronLeft, ChevronRight, FileText, Film, Music, MusicIcon } from "lucide-react"
+import { Badge } from "@components/ui/badge"
 import { Button } from "@components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
 import { MediaLightbox } from "./MediaLightbox"
@@ -11,6 +12,7 @@ import { AudioPlayer } from "./AudioPlayer"
 import { useUser } from "@hooks/useUser"
 import { useIsMobile } from "@hooks/use-mobile"
 import { downloadFile, getFileExtension, shareFile } from "@lib/file"
+import { formatBytes } from "@raven/lib/utils/operations"
 import { cn } from "@lib/utils"
 import _ from "@lib/translate"
 import { attachmentPreviewAtom, type Attachment, type AttachmentPreviewState } from "@utils/attachmentPreview"
@@ -48,6 +50,7 @@ const AttachmentPreviewContent = ({
     const setState = useSetAtom(attachmentPreviewAtom)
     const isMobile = useIsMobile()
     const { attachments, index } = display
+    const isPreview = display.mode === "preview"
     const current = attachments[index] ?? attachments[0]
     const user = useUser(current.owner)
 
@@ -99,11 +102,15 @@ const AttachmentPreviewContent = ({
             {/* Floating chrome over the scrim */}
             <div className="shrink-0 p-3">
                 <MediaPreviewHeader
-                    user={user ?? undefined}
-                    creation={current.creation}
+                    // Preview mode (composer-staged files): no author, no download/share —
+                    // just a "Preview" tag. View mode (sent messages): full chrome.
+                    user={isPreview ? undefined : (user ?? undefined)}
+                    creation={isPreview ? undefined : current.creation}
                     fileName={current.fileName}
-                    onDownload={download}
-                    onShare={share}
+                    fileSize={current.size ? formatBytes(current.size) : undefined}
+                    badge={isPreview ? <Badge variant="subtle" theme="blue">{_("Preview")}</Badge> : undefined}
+                    onDownload={isPreview ? undefined : download}
+                    onShare={isPreview ? undefined : share}
                     onClose={close}
                 >
                     {hasMany && (
