@@ -7,17 +7,6 @@ export type WorkspaceFields = Pick<RavenWorkspace, 'name' | 'workspace_name' | '
     is_admin?: 0 | 1
 }
 
-/**
- * The stock Raven workspace ships without an uploaded logo — fall back to the
- * bundled mark. Resolving here means `workspace.logo` is display-ready
- * everywhere; no consumer needs a getWorkspaceLogo helper.
- */
-const resolveLogo = (workspace: WorkspaceFields): string => {
-    if (workspace.logo) return workspace.logo
-    if (workspace.workspace_name === 'Raven') return '/assets/raven/raven-logo.png'
-    return ''
-}
-
 export const useWorkspaces = () => {
     const { data, error, isLoading, mutate } = useFrappeGetCall<{ message: WorkspaceFields[] }>('raven.api.workspaces.get_list', undefined, 'workspaces_list', {
         revalidateOnFocus: false,
@@ -26,7 +15,7 @@ export const useWorkspaces = () => {
 
     // Resolve logos once and keep a stable array reference between fetches
     const workspaces = useMemo(
-        () => (data?.message ?? []).map((workspace) => ({ ...workspace, logo: resolveLogo(workspace) })),
+        () => (data?.message ?? []).map((workspace) => ({ ...workspace, logo: workspace.logo || '' })),
         [data?.message]
     )
 

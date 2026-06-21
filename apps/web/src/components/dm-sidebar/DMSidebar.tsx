@@ -301,7 +301,7 @@ function DMRowShell({
                 isActive && "bg-surface-elevation-3 hover:bg-surface-elevation-3 active:bg-surface-elevation-3 shadow-sm"
             )}
         >
-            <div className="shrink-0 self-center">
+            <div className="flex items-center justify-center">
                 <UserAvatar
                     user={user}
                     size="md"
