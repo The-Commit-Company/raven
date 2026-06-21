@@ -2,13 +2,15 @@ import { ReactRenderer } from "@tiptap/react"
 import type { ComponentType, ReactNode } from "react"
 import type { PluginKey } from "@tiptap/pm/state"
 import type { SuggestionOptions } from "@tiptap/suggestion"
+import type { MentionNodeAttrs } from "@tiptap/extension-mention"
 import { SuggestionList, type SuggestionListProps } from "./SuggestionList"
 
-/** Mention node attrs — `id` is the record id, `label` the display text at insert. */
-export interface MentionAttrs {
-    id: string
-    label: string
-}
+/**
+ * Node attrs we insert. We always provide both, but the type must stay compatible
+ * with Tiptap's MentionNodeAttrs (id/label are `string | null`) so the suggestion
+ * config slots into Mention.configure without a contravariance error.
+ */
+export type MentionAttrs = MentionNodeAttrs
 
 interface MentionSuggestionConfig<T> {
     /** Trigger character (`@`, `#`, …). */

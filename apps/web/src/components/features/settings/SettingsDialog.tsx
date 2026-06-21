@@ -3,7 +3,7 @@ import { Dialog } from '@components/ui/dialog';
 import { SettingsDialog, SettingsPanel, SettingsPanels, SettingsTabGroup, SettingsTabItem, SettingsTabs } from '@components/ui/settings-dialog';
 import _ from '@lib/translate'
 import { atom, useAtom } from 'jotai'
-import { BellDotIcon, BellRingIcon, BotIcon, BrainCogIcon, Building2Icon, CalendarSyncIcon, CommandIcon, CpuIcon, FileTextIcon, FolderIcon, FunctionSquareIcon, IdCardIcon, InfoIcon, PaletteIcon, PanelLeftIcon, SlidersHorizontalIcon, SmartphoneIcon, SmilePlusIcon, UserIcon, UsersIcon, WebhookIcon, ZapIcon } from 'lucide-react'
+import { BellDotIcon, BellRingIcon, BotIcon, BrainCogIcon, Building2Icon, CalendarSyncIcon, CommandIcon, CpuIcon, FileTextIcon, FolderIcon, FunctionSquareIcon, IdCardIcon, InfoIcon, KeyboardIcon, PaletteIcon, PanelLeftIcon, SlidersHorizontalIcon, SmartphoneIcon, SmilePlusIcon, UserIcon, UsersIcon, WebhookIcon, ZapIcon } from 'lucide-react'
 import { useHotkeys } from 'react-hotkeys-hook';
 import { CustomizeSidebarDialog } from '../channel/CustomizeSidebar/CustomizeSidebarDialog';
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
@@ -189,6 +189,13 @@ const SETTINGS_TABS: { id: string; group: (typeof SETTINGS_TAB_GROUPS)[number]["
         label: _("Mobile App"),
         icon: SmartphoneIcon,
         component: <div>Mobile App</div>
+    },
+    {
+        id: "keyboard-shortcuts",
+        group: "other",
+        label: _("Keyboard Shortcuts"),
+        icon: KeyboardIcon,
+        component: <div>Keyboard Shortcuts</div>
     },
     {
         id: "about",
