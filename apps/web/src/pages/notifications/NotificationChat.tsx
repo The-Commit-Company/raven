@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { atom, useAtomValue, useSetAtom } from "jotai"
+import { useSetAtom } from "jotai"
 import ChannelHeader from "@components/features/channel/ChannelHeader/ChannelHeader"
 import { DMChannelHeader } from "@components/features/dm-channel/DMChannelHeader"
 import { ChatContentView } from "@components/features/message/ChatContentView"
@@ -9,16 +9,14 @@ import _ from "@lib/translate"
 import { Island } from "@components/layout/Island"
 import type { UserData } from "@db"
 
-/** Session-scoped selection driving the right pane on the notifications page.
- * Cleared on refresh (in-memory). URL stays at `/notifications`, so this is the
- * single source of truth for which notification is open. */
+/** Right-pane selection on the notifications page. Owned by `Notifications`
+ * (useState there) and passed in — cleared automatically when the component unmounts on route change. */
 export type SelectedNotification = {
     channelID: string
     messageID: string
     isDirectMessage: boolean
     peer?: UserData
 }
-export const selectedNotificationAtom = atom<SelectedNotification | null>(null)
 
 export function NotificationsEmptyState() {
     return (
@@ -36,8 +34,7 @@ export function NotificationsEmptyState() {
     )
 }
 
-export default function NotificationChat() {
-    const selected = useAtomValue(selectedNotificationAtom)
+export default function NotificationChat({ selected }: { selected: SelectedNotification | null }) {
     const channelID = selected?.channelID ?? ""
     const setMessageTarget = useSetAtom(messageTargetAtom(channelID))
 

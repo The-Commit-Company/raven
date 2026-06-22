@@ -1,6 +1,5 @@
 import { useState, useCallback } from "react"
 import { Check } from "lucide-react"
-import { useAtomValue, useSetAtom } from "jotai"
 import { Virtuoso } from "react-virtuoso"
 import { useNotifications } from "@hooks/useNotifications"
 import { useUsersById } from "@hooks/useMessageRowLookups"
@@ -13,7 +12,7 @@ import { Badge } from "@components/ui/badge"
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from "@components/ui/empty"
 import { useIsMobile } from "@hooks/use-mobile"
 import AppMobileFooter from "@components/features/header/AppMobileFooter"
-import NotificationChat, { selectedNotificationAtom, type SelectedNotification } from "./NotificationChat"
+import NotificationChat, { type SelectedNotification } from "./NotificationChat"
 import { MentionItem, ReactionItem } from "./NotificationItem"
 
 type NotificationTab = "all" | "mentions" | "reactions"
@@ -39,9 +38,7 @@ const TABS: { key: NotificationTab; label: string; type: "mention" | "reaction" 
 export default function Notifications() {
     const [activeTab, setActiveTab] = useState<NotificationTab>("all")
     const [showUnread, setShowUnread] = useState(true)
-
-    const selected = useAtomValue(selectedNotificationAtom)
-    const setSelected = useSetAtom(selectedNotificationAtom)
+    const [selected, setSelected] = useState<SelectedNotification | null>(null)
     const hasSelection = !!selected
     const isMobile = useIsMobile()
 
@@ -172,7 +169,7 @@ export default function Notifications() {
                     </div>
                 )}
                 <div className="flex min-w-0 min-h-0 flex-1 flex-col bg-surface-gray-1">
-                    <NotificationChat />
+                    <NotificationChat selected={selected} />
                 </div>
             </div>
             {!hasSelection && <AppMobileFooter />}
