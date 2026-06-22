@@ -42,7 +42,7 @@ export function ChatContentView({
     // Desktop-only side rail; on mobile, poll/context drawers render as bottom sheets instead
     const showSideRail = !isMobile && (!!threadDrawer || !!pollDrawerData || hasContextDrawer)
     // Right island width contract: thread takes half the content area, poll/context drawers are a fixed column
-    const drawerWidth = threadDrawer ? "w-1/2" : "w-95 max-w-[45%]"
+    const drawerWidth = threadDrawer ? "w-1/2" : "w-96 max-w-[45%]"
 
     // On mobile a thread takes over the whole content area (its own full-bleed surface)
     if (isMobile && threadDrawer) {

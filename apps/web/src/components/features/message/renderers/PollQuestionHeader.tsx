@@ -26,11 +26,11 @@ export const PollQuestionHeader: React.FC<PollQuestionHeaderProps> = ({ poll, cl
 
     return (
         <div className={cn("flex flex-col gap-1.5", className)}>
-            <div className="flex items-start justify-between gap-2">
+            <div className="flex items-start justify-between sm:gap-4 gap-2 sm:flex-row flex-col ">
                 <span className="text-p-base-medium text-ink-gray-7 flex-1 min-w-0">
                     {poll.question}
                 </span>
-                <div className="flex items-center gap-2 shrink-0 ml-2">
+                <div className="flex items-center gap-2 shrink-0">
                     {isAnonymous && (
                         <Badge variant="subtle" theme="violet">
                             <HatGlassesIcon />

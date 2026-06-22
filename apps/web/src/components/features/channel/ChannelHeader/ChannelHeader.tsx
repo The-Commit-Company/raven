@@ -5,7 +5,6 @@ import ChannelMembers from "./ChannelMembers"
 import ChannelMenu from "./ChannelMenu"
 import { useAtom } from "jotai"
 import { channelDrawerAtom } from "@utils/channelAtoms"
-import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
 import { useNavigate, useParams } from "react-router-dom"
 import { useChannel } from "@hooks/useChannel"
 import _ from "@lib/translate"
@@ -14,12 +13,10 @@ interface ChannelHeaderProps {
     /** Override the URL-derived channel id. Used when this header is rendered outside
      * a `/:workspaceID/:id` route (eg. notifications view) and `useCurrentChannelID`
      * would otherwise fall back to `"general"`. */
-    channelID?: string
+    channelID: string
 }
 
-const ChannelHeader = ({ channelID: channelIDProp }: ChannelHeaderProps = {}) => {
-    const ChannelIDfromURL = useCurrentChannelID()
-    const channelID = channelIDProp ?? ChannelIDfromURL
+const ChannelHeader = ({ channelID }: ChannelHeaderProps) => {
     const { channel, toggleStarChannel, isStarred } = useChannel(channelID)
     const navigate = useNavigate()
     const { workspaceID } = useParams()

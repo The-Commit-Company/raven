@@ -1,4 +1,8 @@
-import React from "react"
+import React, { useMemo, useState } from "react"
+import { useFrappePostCall } from "frappe-react-sdk"
+import { toast } from "sonner"
+import { getErrorMessage } from "@lib/frappe"
+import { useUserCookieData } from "@hooks/useUserCookieData"
 import { ScrollArea } from "@components/ui/scroll-area"
 import { Button } from "@components/ui/button"
 import { Badge } from "@components/ui/badge"
@@ -8,7 +12,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@components/ui/dropdown-menu"
-import { X, MoreVertical, CheckCircle } from "lucide-react"
+import { X, MoreVertical, CheckCircle, LockIcon, ListChecksIcon, HatGlassesIcon } from "lucide-react"
 import { cn } from "@lib/utils"
 import { UserAvatar } from "../UserAvatar"
 import { getDateObject } from "@lib/date"
@@ -16,6 +20,17 @@ import type { RavenPoll } from "@raven/types/RavenMessaging/RavenPoll"
 import type { RavenPollOption } from "@raven/types/RavenMessaging/RavenPollOption"
 import type { UserData } from "@db"
 import { getOptionPercentage, getPollStatus, isUserVote } from "./poll-components"
+import {
+    AlertDialog,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@components/ui/alert-dialog"
+import _ from "@lib/translate"
+import { Separator } from "@components/ui/separator"
 
 export interface PollDrawerProps {
     user: UserData
@@ -36,51 +51,63 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
     const { isAnonymous, isDisabled: isPollClosed } = getPollStatus(poll)
     const hasVoted = currentUserVotes.length > 0
 
-    const badgeClassName = "bg-surface-gray-2 text-ink-gray-4 border-outline-gray-2"
-    let pollStatusBadge: { text: string; className: string } | null = null
+    // Only the poll's creator can close it.
+    const { name: currentUser } = useUserCookieData()
+    const isOwner = poll.owner === currentUser
 
-    if (isPollClosed) {
-        pollStatusBadge = { text: "Closed", className: badgeClassName }
-    } else if (poll.end_date) {
-        try {
-            const endDateObj = getDateObject(poll.end_date)
-            const formattedDate = endDateObj.format('MMM D, hh:mm A')
-            pollStatusBadge = { text: `Open until ${formattedDate}`, className: badgeClassName }
-        } catch {
-            pollStatusBadge = { text: "Open", className: badgeClassName }
-        }
-    } else {
-        pollStatusBadge = { text: "Open", className: badgeClassName }
+    // Retract / close both update the inline poll via the `poll_update` realtime event
+    // (usePollRealtime), so we just close the drawer on success.
+    const { call: retractVote, loading: retracting } = useFrappePostCall("raven.api.raven_poll.retract_vote")
+    const onRetract = () => {
+        retractVote({ poll_id: poll.name })
+            .then(() => onClose())
+            .catch((e) => toast.error(_("Could not retract your vote"), { description: getErrorMessage(e) }))
     }
+
+    const [confirmClose, setConfirmClose] = useState(false)
+    const { call: closePoll, loading: closing } = useFrappePostCall("raven.api.raven_poll.close_poll")
+    const onClosePoll = () => {
+        closePoll({ poll_id: poll.name })
+            // Success closes the drawer (which unmounts this dialog); keep it open on error.
+            .then(() => onClose())
+            .catch((e) => toast.error(_("Could not close the poll"), { description: getErrorMessage(e) }))
+    }
+
+    const pollStatusBadge: null | { text: string; theme: 'gray' | 'red'; icon?: React.ElementType } = useMemo(() => {
+        if (!poll.end_date) {
+            // If the poll does not have an end date, it is open indefinitely
+            return null
+        }
+        if (isPollClosed) {
+            return { text: _("Closed"), theme: "red", icon: LockIcon }
+        } else if (poll.end_date) {
+            try {
+                const endDateObj = getDateObject(poll.end_date)
+                const formattedDate = endDateObj.format('MMM D, hh:mm A')
+                return { text: _("Open until {0}", [formattedDate]), theme: "gray" }
+            } catch {
+                return { text: _("Open"), theme: "gray" }
+            }
+        } else {
+            return null
+        }
+    }, [])
 
     return (
         <div className="flex flex-col h-full w-full">
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-2 border-b shrink-0">
-                <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <h2 className="text-sm font-medium">Poll</h2>
-                    <span className="text-xs text-ink-gray-4">
-                        {totalVotes} vote{totalVotes === 1 ? "" : "s"}
-                    </span>
-                    {poll.is_multi_choice === 1 && (
-                        <>
-                            <span className="text-xs text-ink-gray-4">•</span>
-                            <span className="text-xs text-ink-gray-4">Multiple choice</span>
-                        </>
-                    )}
-                    {isAnonymous && (
-                        <>
-                            <span className="text-xs text-ink-gray-4">•</span>
-                            <span className="text-xs text-ink-gray-4">Anonymous</span>
-                        </>
-                    )}
-                </div>
-                <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between px-4 py-2 border-b h-11 shrink-0">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <h2 className="text-lg-medium mb-0">Poll</h2>
                     {pollStatusBadge && (
-                        <Badge variant="outline" className={cn("text-xs px-2 py-0.5", pollStatusBadge.className)}>
+                        <Badge variant="outline" theme={pollStatusBadge.theme}>
+                            {pollStatusBadge.icon && <pollStatusBadge.icon />}
                             {pollStatusBadge.text}
                         </Badge>
                     )}
+                </div>
+                <div className="flex items-center gap-2">
+
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button
@@ -89,15 +116,25 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                                 isIconButton
                                 aria-label="Poll settings"
                             >
-                                <MoreVertical className="h-3 w-3" />
+                                <MoreVertical />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="min-w-48">
                             <DropdownMenuItem
-                                disabled={!hasVoted || isPollClosed}
+                                disabled={!hasVoted || isPollClosed || retracting}
+                                onClick={onRetract}
                             >
-                                Retract my vote
+                                {_("Retract my vote")}
                             </DropdownMenuItem>
+                            {isOwner && (
+                                <DropdownMenuItem
+                                    variant="destructive"
+                                    disabled={isPollClosed}
+                                    onSelect={() => setConfirmClose(true)}
+                                >
+                                    {_("Close poll")}
+                                </DropdownMenuItem>
+                            )}
                         </DropdownMenuContent>
                     </DropdownMenu>
                     <Button
@@ -107,29 +144,43 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                         onClick={onClose}
                         aria-label="Close drawer"
                     >
-                        <X className="h-3 w-3" />
+                        <X />
                     </Button>
                 </div>
             </div>
-            <div className="flex-1 overflow-hidden p-3">
-                <ScrollArea className="h-full">
-                    <div className="px-1 space-y-2 pb-4">
+            <div className="flex-1 overflow-hidden">
+                <ScrollArea className="h-full p-3">
+                    <div className="px-1 space-y-3 pb-4">
                         {/* Poll Question */}
-                        <p className="text-sm font-medium text-ink-gray-8 py-1">{poll.question}</p>
-
+                        <p className="text-p-lg-medium text-ink-gray-8">{poll.question}</p>
                         {/* Poll Creator and Creation Time */}
-                        <div className="flex items-center gap-2 text-xs text-ink-gray-4 pb-2">
+                        <div className="flex items-center gap-2 text-sm text-ink-gray-7">
                             <UserAvatar
                                 user={user}
-                                size="xs"
+                                size="sm"
                                 showStatusIndicator={false}
                             />
                             <span>{user?.full_name || user?.name || "User"}</span>
-                            <span>{getDateObject(poll.creation).format('MMM D, hh:mm A')}</span>
+                            <span className="text-ink-gray-5">{getDateObject(poll.creation).format('MMM D, hh:mm A')}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Badge size='lg'>
+                                {totalVotes === 1 ? _("1 vote") : _("{0} votes", [String(totalVotes)])}
+                            </Badge>
+                            {poll.is_multi_choice !== 1 &&
+                                <Badge variant="subtle" theme="blue" size='lg'>
+                                    <ListChecksIcon /> {_("Multiple choice")}
+                                </Badge>}
+                            {isAnonymous &&
+                                <Badge variant="subtle" theme="violet">
+                                    <HatGlassesIcon /> {_("Anonymous")}
+                                </Badge>}
                         </div>
 
+
+
                         {/* Poll Options */}
-                        <div className="space-y-3">
+                        <div className="space-y-4 pt-1">
                             {poll.options.map((option) => {
                                 const percentage = getOptionPercentage(option, poll)
                                 const isCurrentUserVote = isUserVote(option.name, currentUserVotes)
@@ -145,32 +196,33 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                                         className={cn(
                                             "p-3 border rounded-lg",
                                             isCurrentUserVote
-                                                ? "border-outline-blue-4/30 bg-surface-blue-5/5"
+                                                ? "border-outline-violet-3 bg-surface-violet-1"
                                                 : "border-outline-gray-2/70"
                                         )}
                                     >
                                         <div className="space-y-3">
                                             {/* Option Header */}
-                                            <div className="flex items-center justify-between gap-3">
-                                                <div className="flex items-center gap-2 flex-1 min-w-0">
+                                            <div className="flex items-start justify-between gap-3">
+                                                <div className="flex items-start gap-2 flex-1 min-w-0">
                                                     <span
                                                         className={cn(
-                                                            "text-sm font-medium truncate",
-                                                            isCurrentUserVote ? "text-ink-gray-8" : "text-ink-gray-4"
+                                                            "text-p-base wrap-break-word min-w-0",
+                                                            isCurrentUserVote ? "text-ink-gray-8 font-medium" : "text-ink-gray-8"
                                                         )}
                                                     >
                                                         {option.option}
                                                     </span>
                                                     {isCurrentUserVote && (
-                                                        <CheckCircle className="w-4 h-4 text-ink-gray-4 shrink-0" />
+                                                        <CheckCircle className="w-4 h-4 text-ink-gray-8 shrink-0 mt-0.5" />
                                                     )}
                                                 </div>
                                                 <div className="flex items-center gap-2 shrink-0">
                                                     <span className="text-sm font-semibold text-ink-gray-8">
                                                         {optionVotes}
                                                     </span>
-                                                    <span className="text-xs text-ink-gray-4">
-                                                        ({percentage.toFixed(1)}%)
+                                                    <Separator orientation="vertical" className="bg-surface-gray-8 h-3!" />
+                                                    <span className="text-sm text-ink-gray-5">
+                                                        {percentage.toFixed(1)}%
                                                     </span>
                                                 </div>
                                             </div>
@@ -180,7 +232,7 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                                                 <div
                                                     className={cn(
                                                         "h-full rounded-full transition-all duration-500 ease-out",
-                                                        isCurrentUserVote ? "bg-ink-gray-8" : "bg-ink-gray-8/60"
+                                                        isCurrentUserVote ? "bg-surface-gray-10" : "bg-surface-gray-6"
                                                     )}
                                                     style={{ width: `${Math.max(0, Math.min(100, percentage))}%` }}
                                                 />
@@ -218,7 +270,7 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                                             )}
 
                                             {isAnonymous && optionVotes > 0 && (
-                                                <div className="text-xs text-ink-gray-4 italic pt-2 border-t">
+                                                <div className="text-xs text-ink-gray-6 italic pt-3 border-t">
                                                     {optionVotes} anonymous vote{optionVotes === 1 ? "" : "s"}
                                                 </div>
                                             )}
@@ -230,6 +282,25 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                     </div>
                 </ScrollArea>
             </div>
+
+            {/* Closing a poll stops all voting and can't be undone — confirm first. Controlled
+                (not a trigger) because the dropdown unmounts its items on close. */}
+            <AlertDialog open={confirmClose} onOpenChange={setConfirmClose}>
+                <AlertDialogContent className="sm:max-w-md">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>{_("Close this poll?")}</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            {_("No one will be able to vote once it's closed, and this can't be undone.")}
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={closing}>{_("Cancel")}</AlertDialogCancel>
+                        <Button type="button" variant="solid" theme="red" size="md" loading={closing} loadingText={_("Closing...")} onClick={onClosePoll}>
+                            {_("Close poll")}
+                        </Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     )
 }

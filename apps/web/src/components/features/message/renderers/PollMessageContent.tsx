@@ -5,6 +5,9 @@ import type { Message } from "@raven/types/common/Message"
 import type { RavenPoll } from "@raven/types/RavenMessaging/RavenPoll"
 import type { RavenPollOption } from "@raven/types/RavenMessaging/RavenPollOption"
 import { useHasBeenInView } from "@hooks/useHasBeenInView"
+import { useUsersById } from "@hooks/useMessageRowLookups"
+import { useSetAtom } from "jotai"
+import { pollDrawerAtom } from "@utils/channelAtoms"
 import { getErrorMessage } from "@lib/frappe"
 import _ from "@lib/translate"
 import { PollVotingContainer } from "./PollVotingContainer"
@@ -17,6 +20,8 @@ import { TooltipProvider } from "@components/ui/tooltip"
 type PollData = {
     poll: RavenPoll & { options: RavenPollOption[] }
     current_user_votes: { option: string; name: string }[]
+    /** option id → voter user ids (non-anonymous polls only; empty for anonymous). */
+    votes: Record<string, string[]>
 }
 
 /**
@@ -71,12 +76,47 @@ const LoadedPoll = ({ message }: { message: Message }) => {
         { revalidateOnFocus: false },
     )
     const { call: addVote } = useFrappePostCall("raven.api.raven_poll.add_vote")
+    const usersById = useUsersById()
+    const setPollDrawer = useSetAtom(pollDrawerAtom(message.channel_id))
+
+    // Live poll updates (vote / retract / close) are handled by a single app-level listener
+    // (usePollRealtime) that revalidates this poll's `["poll", message.name]` cache by key —
+    // no per-poll listener here.
 
     // Show the same skeleton while the live data loads — height-stable, no flash.
     if (isLoading || !data) return <PollSkeleton content={message.content} />
 
-    const { poll, current_user_votes } = data.message
+    const { poll, current_user_votes, votes } = data.message
     const hasVoted = current_user_votes.length > 0
+
+    // Resolve each option's voter ids → user objects (names/avatars) from the user store.
+    // Empty for anonymous polls (the backend doesn't send voters for those).
+    const votersFor = (optionId: string) =>
+        (votes[optionId] ?? []).map((id) => usersById.get(id)).filter((u) => u !== undefined)
+
+    // Clicking the poll opens the detail drawer (full voter lists, status, retract). Hosting
+    // is in ChatContentView via pollDrawerAtom; here we just hand it the data (author + the
+    // poll with each option's resolved voters in the drawer's shape).
+    const openPollDrawer = () => {
+        const author = usersById.get(message.owner)
+        if (!author) return
+        setPollDrawer({
+            user: author,
+            poll: {
+                ...poll,
+                options: poll.options.map((option) => ({
+                    ...option,
+                    voters: votersFor(option.name).map((u) => ({
+                        id: u.name,
+                        name: u.name,
+                        full_name: u.full_name,
+                        image: u.user_image ?? "",
+                    })),
+                })),
+            },
+            currentUserVotes: current_user_votes,
+        })
+    }
     const showResults = hasVoted || poll.is_disabled === 1
 
     const submitVote = (optionIds: string[]) => {
@@ -89,30 +129,48 @@ const LoadedPoll = ({ message }: { message: Message }) => {
     return (
         <div className="flex gap-2 items-start">
             <PollVotingContainer>
-                <PollQuestionHeader poll={poll} />
                 {showResults ? (
+                    // Results are read-only — the WHOLE card (question + options + count) opens
+                    // the detail drawer. Not in voting mode: that would reveal results the inline
+                    // card deliberately hides until you vote.
                     <TooltipProvider>
-                        <div className="flex w-full flex-col gap-3">
+                        <div
+                            role="button"
+                            tabIndex={0}
+                            onClick={openPollDrawer}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                    e.preventDefault()
+                                    openPollDrawer()
+                                }
+                            }}
+                            className="flex w-full cursor-pointer flex-col gap-3 rounded-md"
+                            title={_("View poll details")}
+                        >
+                            <PollQuestionHeader poll={poll} />
                             {poll.options.map((option) => (
                                 <PollOptionBar
                                     key={option.name}
-                                    option={option as PollOptionWithVoters}
+                                    option={{ ...option, voters: votersFor(option.name) } as PollOptionWithVoters}
                                     showVoters={!poll.is_anonymous}
                                     percentage={getOptionPercentage(option, poll)}
                                     isCurrentUserVote={isUserVote(option.name, current_user_votes)}
                                 />
                             ))}
+                            <span className="px-1 text-sm text-ink-gray-6">{_("{0} votes", [String(poll.total_votes ?? 0)])}</span>
                         </div>
-                        <span className="pt-1.5 px-1 text-sm text-ink-gray-6">{_("{0} votes", [String(poll.total_votes ?? 0)])}</span>
                     </TooltipProvider>
-                ) : poll.is_multi_choice === 1 ? (
-                    <MultiChoicePollVoting poll={poll} options={poll.options} onSubmit={submitVote} />
                 ) : (
-                    <SingleChoicePollVoting poll={poll} options={poll.options} onOptionSelect={(option) => submitVote([option.name])} />
+                    <>
+                        <PollQuestionHeader poll={poll} />
+                        {poll.is_multi_choice === 1 ? (
+                            <MultiChoicePollVoting poll={poll} options={poll.options} onSubmit={submitVote} />
+                        ) : (
+                            <SingleChoicePollVoting poll={poll} options={poll.options} onOptionSelect={(option) => submitVote([option.name])} />
+                        )}
+                    </>
                 )}
             </PollVotingContainer>
         </div>
-
-
     )
 }

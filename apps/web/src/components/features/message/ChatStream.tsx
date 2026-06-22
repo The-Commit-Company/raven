@@ -14,6 +14,7 @@ import { useChannelMessages } from "@stores/messages/useChannelMessages"
 import { channelMessagesStore } from "@stores/messages/store"
 import { useChannelOutbox } from "@stores/messages/useChannelOutbox"
 import { useChannelReadTracker } from "@stores/unread/useChannelReadTracker"
+import { usePollRealtime } from "@hooks/usePollRealtime"
 import { useStreamScroll } from "./useStreamScroll"
 import { MessageActionMenu } from "./actions/MessageActionMenu"
 import { MessageActionDialogs } from "./actions/MessageActionDialogs"
@@ -131,6 +132,10 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
     // Puts this channel's not-yet-confirmed sends (the saved outbox) back on screen,
     // so pending/failed messages survive a refresh and reappear when you reopen it.
     useChannelOutbox(channelID)
+
+    // Revalidates this channel's polls on a `poll_update` event (vote/retract/close).
+    // Scoped to this stream, so background channels' polls aren't refetched.
+    usePollRealtime(channelID)
 
     /** When the window is detached from the live edge, "down" means refetching the latest page. */
     const onJumpToPresent = () => {

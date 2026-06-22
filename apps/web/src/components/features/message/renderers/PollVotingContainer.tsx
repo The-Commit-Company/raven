@@ -13,7 +13,7 @@ export const PollVotingContainer: React.FC<PollVotingContainerProps> = ({
     return (
         <div
             className={cn(
-                "w-full max-w-md sm:max-w-lg my-0.5 bg-surface-elevation-3 border border-outline-gray-2 rounded-md p-4 flex flex-col gap-3",
+                "max-w-md sm:max-w-xl w-fit my-0.5 bg-surface-elevation-3 border border-outline-gray-2 rounded-md p-4 flex flex-col gap-3",
                 className
             )}
         >

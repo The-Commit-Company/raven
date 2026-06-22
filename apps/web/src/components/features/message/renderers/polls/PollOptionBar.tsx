@@ -34,13 +34,13 @@ export const PollOptionBar: React.FC<PollOptionBarProps> = ({
             <TooltipTrigger asChild>
                 <div
                     className={cn(
-                        "relative flex h-7 items-center rounded-full overflow-hidden group"
+                        "relative flex h-7 items-center rounded-full [corner-shape:squircle] overflow-hidden group"
                     )}
                 >
                     <div className={cn("absolute top-0 left-0 h-full w-full transition-all duration-300 ease-in-out", isCurrentUserVote ? "bg-surface-violet-1" : "bg-surface-gray-1")} />
                     <div
                         className={cn(
-                            "absolute top-0 left-0 h-full transition-all duration-300 ease-in-out rounded-r-full",
+                            "absolute top-0 left-0 h-full transition-all duration-300 ease-in-out",
                             isCurrentUserVote ? "bg-surface-violet-4" : "bg-surface-gray-4"
                         )}
                         style={{ width: `${percentage}%` }}
@@ -62,12 +62,12 @@ export const PollOptionBar: React.FC<PollOptionBarProps> = ({
                                 <span>
                                     {option.votes === 1 ? _("1 vote") : _("{0} votes", [String(option.votes)])}
                                 </span>
-                                <span>•</span>
-                                <span className="tabular-nums">{percentage.toFixed(0)}%</span>
+                                <span className="sm:block hidden">•</span>
+                                <span className="tabular-nums sm:block hidden">{percentage.toFixed(0)}%</span>
                             </span>
                         )}
                         {showVoters && option.voters && option.voters.length > 0 && (
-                            <GroupedAvatars users={option.voters} max={5} size="xs" borderColorClass="border-surface-base" />
+                            <GroupedAvatars users={option.voters} max={4} size="xs" borderColorClass="border-surface-base" />
                         )}
                     </div>
                 </div>
