@@ -152,7 +152,7 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                 <ScrollArea className="h-full p-3">
                     <div className="px-1 space-y-3 pb-4">
                         {/* Poll Question */}
-                        <p className="text-p-lg-medium text-ink-gray-8">{poll.question}</p>
+                        <p className="text-p-base-medium text-ink-gray-8">{poll.question}</p>
                         {/* Poll Creator and Creation Time */}
                         <div className="flex items-center gap-2 text-sm text-ink-gray-7">
                             <UserAvatar
@@ -161,14 +161,14 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                                 showStatusIndicator={false}
                             />
                             <span>{user?.full_name || user?.name || "User"}</span>
-                            <span className="text-ink-gray-5">{getDateObject(poll.creation).format('MMM D, hh:mm A')}</span>
+                            <span className="text-ink-gray-5 text-xs">{getDateObject(poll.creation).format('MMM D, hh:mm A')}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Badge size='lg'>
+                            <Badge>
                                 {totalVotes === 1 ? _("1 vote") : _("{0} votes", [String(totalVotes)])}
                             </Badge>
                             {poll.is_multi_choice !== 1 &&
-                                <Badge variant="subtle" theme="blue" size='lg'>
+                                <Badge variant="subtle" theme="blue">
                                     <ListChecksIcon /> {_("Multiple choice")}
                                 </Badge>}
                             {isAnonymous &&
@@ -197,7 +197,7 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                                             "p-3 border rounded-lg",
                                             isCurrentUserVote
                                                 ? "border-outline-violet-3 bg-surface-violet-1"
-                                                : "border-outline-gray-2/70"
+                                                : "border-outline-gray-2"
                                         )}
                                     >
                                         <div className="space-y-3">
@@ -206,22 +206,23 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                                                 <div className="flex items-start gap-2 flex-1 min-w-0">
                                                     <span
                                                         className={cn(
-                                                            "text-p-base wrap-break-word min-w-0",
+                                                            "text-p-sm wrap-break-word min-w-0",
                                                             isCurrentUserVote ? "text-ink-gray-8 font-medium" : "text-ink-gray-8"
                                                         )}
                                                     >
                                                         {option.option}
                                                     </span>
                                                     {isCurrentUserVote && (
-                                                        <CheckCircle className="w-4 h-4 text-ink-gray-8 shrink-0 mt-0.5" />
+                                                        <CheckCircle className="w-3.5 h-3.5 text-ink-gray-8 shrink-0 mt-0.5" />
                                                     )}
                                                 </div>
-                                                <div className="flex items-center gap-2 shrink-0">
+                                                {/* Added pt-px here because the paragraph has a higher line height than the text-sm font-semibold */}
+                                                <div className="flex items-center gap-1.5 shrink-0 pt-px">
                                                     <span className="text-sm font-semibold text-ink-gray-8">
                                                         {optionVotes}
                                                     </span>
-                                                    <Separator orientation="vertical" className="bg-surface-gray-8 h-3!" />
-                                                    <span className="text-sm text-ink-gray-5">
+                                                    <Separator orientation="vertical" className="bg-surface-gray-4 h-3!" />
+                                                    <span className="text-sm text-ink-gray-5 tabular-nums">
                                                         {percentage.toFixed(1)}%
                                                     </span>
                                                 </div>

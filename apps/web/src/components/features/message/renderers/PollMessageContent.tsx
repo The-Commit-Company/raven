@@ -7,7 +7,7 @@ import type { RavenPollOption } from "@raven/types/RavenMessaging/RavenPollOptio
 import { useHasBeenInView } from "@hooks/useHasBeenInView"
 import { useUsersById } from "@hooks/useMessageRowLookups"
 import { useSetAtom } from "jotai"
-import { pollDrawerAtom } from "@utils/channelAtoms"
+import { pollDrawerAtom, channelDrawerAtom } from "@utils/channelAtoms"
 import { getErrorMessage } from "@lib/frappe"
 import _ from "@lib/translate"
 import { PollVotingContainer } from "./PollVotingContainer"
@@ -54,15 +54,15 @@ const PollSkeleton = ({ content }: { content?: string | null }) => {
     const { question, options } = useMemo(() => parsePollContent(content), [content])
     return (
         <PollVotingContainer>
-            <span className="block text-p-base-medium text-ink-gray-7">{question}</span>
+            <span className="block text-p-base-medium text-ink-gray-7 max-w-md min-w-0">{question}</span>
             <div className="flex flex-col gap-3">
                 {options.map((option, i) => (
-                    <div key={i} className="flex items-center gap-2 h-7 bg-surface-gray-1 text-ellipsis animate-pulse overflow-hidden rounded-full text-sm">
-                        <span className="min-w-0 flex-1 wrap-break-word px-3.5 py-1.5 text-ink-gray-7">{option}</span>
+                    <div key={i} className="flex items-center gap-2 h-7 bg-surface-gray-1 truncate animate-pulse max-w-full rounded-full [corner-shape:squircle] text-sm">
+                        <span className="min-w-0 flex-1 wrap-break-word h-7 px-3.5 py-1.5 text-ink-gray-7 pr-[calc(12ch+14px)]">{option}</span>
                     </div>
                 ))}
             </div>
-            <span className="pt-1.5 px-1 text-sm text-ink-gray-4">Loading...</span>
+            <span className="px-1 text-sm text-ink-gray-4">Loading...</span>
         </PollVotingContainer>
     )
 }
@@ -78,6 +78,7 @@ const LoadedPoll = ({ message }: { message: Message }) => {
     const { call: addVote } = useFrappePostCall("raven.api.raven_poll.add_vote")
     const usersById = useUsersById()
     const setPollDrawer = useSetAtom(pollDrawerAtom(message.channel_id))
+    const setChannelDrawer = useSetAtom(channelDrawerAtom(message.channel_id))
 
     // Live poll updates (vote / retract / close) are handled by a single app-level listener
     // (usePollRealtime) that revalidates this poll's `["poll", message.name]` cache by key —
@@ -100,6 +101,9 @@ const LoadedPoll = ({ message }: { message: Message }) => {
     const openPollDrawer = () => {
         const author = usersById.get(message.owner)
         if (!author) return
+        // Single rail slot — opening the poll dismisses any open context drawer (a thread
+        // route stays underneath and returns when the poll closes).
+        setChannelDrawer("")
         setPollDrawer({
             user: author,
             poll: {
@@ -127,50 +131,48 @@ const LoadedPoll = ({ message }: { message: Message }) => {
     }
 
     return (
-        <div className="flex gap-2 items-start">
-            <PollVotingContainer>
-                {showResults ? (
-                    // Results are read-only — the WHOLE card (question + options + count) opens
-                    // the detail drawer. Not in voting mode: that would reveal results the inline
-                    // card deliberately hides until you vote.
-                    <TooltipProvider>
-                        <div
-                            role="button"
-                            tabIndex={0}
-                            onClick={openPollDrawer}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter" || e.key === " ") {
-                                    e.preventDefault()
-                                    openPollDrawer()
-                                }
-                            }}
-                            className="flex w-full cursor-pointer flex-col gap-3 rounded-md"
-                            title={_("View poll details")}
-                        >
-                            <PollQuestionHeader poll={poll} />
-                            {poll.options.map((option) => (
-                                <PollOptionBar
-                                    key={option.name}
-                                    option={{ ...option, voters: votersFor(option.name) } as PollOptionWithVoters}
-                                    showVoters={!poll.is_anonymous}
-                                    percentage={getOptionPercentage(option, poll)}
-                                    isCurrentUserVote={isUserVote(option.name, current_user_votes)}
-                                />
-                            ))}
-                            <span className="px-1 text-sm text-ink-gray-6">{_("{0} votes", [String(poll.total_votes ?? 0)])}</span>
-                        </div>
-                    </TooltipProvider>
-                ) : (
-                    <>
+        <PollVotingContainer>
+            {showResults ? (
+                // Results are read-only — the WHOLE card (question + options + count) opens
+                // the detail drawer. Not in voting mode: that would reveal results the inline
+                // card deliberately hides until you vote.
+                <TooltipProvider>
+                    <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={openPollDrawer}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault()
+                                openPollDrawer()
+                            }
+                        }}
+                        className="flex w-full cursor-pointer flex-col gap-3 rounded-md focus-visible:outline-none"
+                        title={_("View poll details")}
+                    >
                         <PollQuestionHeader poll={poll} />
-                        {poll.is_multi_choice === 1 ? (
-                            <MultiChoicePollVoting poll={poll} options={poll.options} onSubmit={submitVote} />
-                        ) : (
-                            <SingleChoicePollVoting poll={poll} options={poll.options} onOptionSelect={(option) => submitVote([option.name])} />
-                        )}
-                    </>
-                )}
-            </PollVotingContainer>
-        </div>
+                        {poll.options.map((option) => (
+                            <PollOptionBar
+                                key={option.name}
+                                option={{ ...option, voters: votersFor(option.name) } as PollOptionWithVoters}
+                                showVoters={!poll.is_anonymous}
+                                percentage={getOptionPercentage(option, poll)}
+                                isCurrentUserVote={isUserVote(option.name, current_user_votes)}
+                            />
+                        ))}
+                        <span className="px-1 text-sm text-ink-gray-6">{_("{0} votes", [String(poll.total_votes ?? 0)])}</span>
+                    </div>
+                </TooltipProvider>
+            ) : (
+                <>
+                    <PollQuestionHeader poll={poll} />
+                    {poll.is_multi_choice === 1 ? (
+                        <MultiChoicePollVoting poll={poll} options={poll.options} onSubmit={submitVote} />
+                    ) : (
+                        <SingleChoicePollVoting poll={poll} options={poll.options} onOptionSelect={(option) => submitVote([option.name])} />
+                    )}
+                </>
+            )}
+        </PollVotingContainer>
     )
 }

@@ -1,4 +1,5 @@
 import { useOutlet } from "react-router-dom"
+import { useHotkeys } from "react-hotkeys-hook"
 import { useAtom } from "jotai"
 import ChatStream from "@components/features/message/ChatStream"
 import ChatInput from "@components/features/ChatInput/ChatInput"
@@ -38,11 +39,28 @@ export function ChatContentView({
     const [pollDrawerData, setPollDrawerData] = useAtom(pollDrawerAtom(channelID))
     const [channelDrawerType, setChannelDrawer] = useAtom(channelDrawerAtom(channelID))
     const hasContextDrawer = channelDrawerType !== ""
+    const hasThread = !!threadDrawer
+
+    // One rail slot → the drawers are mutually exclusive, cleared at the OPEN sites (poll vs
+    // context clear each other there; opening a thread clears both via the pill's onClick). No
+    // effects. Render precedence (below) lets poll/context OVERLAY a thread; closing one brings
+    // the thread route back.
+
+    // Escape closes the top overlay (poll, then context). A thread underneath keeps its own
+    // Escape (ThreadDrawer), gated so it doesn't fire while an overlay is up.
+    useHotkeys("esc", () => {
+        if (pollDrawerData) setPollDrawerData(null)
+        else if (hasContextDrawer) setChannelDrawer("")
+    }, {
+        enableOnContentEditable: true,
+        enableOnFormTags: true
+    })
 
     // Desktop-only side rail; on mobile, poll/context drawers render as bottom sheets instead
-    const showSideRail = !isMobile && (!!threadDrawer || !!pollDrawerData || hasContextDrawer)
-    // Right island width contract: thread takes half the content area, poll/context drawers are a fixed column
-    const drawerWidth = threadDrawer ? "w-1/2" : "w-96 max-w-[45%]"
+    const showSideRail = !isMobile && (hasThread || !!pollDrawerData || hasContextDrawer)
+    // A poll/context drawer (fixed column) overlays a thread; a thread alone takes half the area.
+    const showsOverlay = !!pollDrawerData || hasContextDrawer
+    const drawerWidth = hasThread && !showsOverlay ? "w-1/2" : "w-96 max-w-[45%]"
 
     // On mobile a thread takes over the whole content area (its own full-bleed surface)
     if (isMobile && threadDrawer) {
@@ -71,20 +89,21 @@ export function ChatContentView({
                 </FileDropZone>
             </Island>
 
-            {/* Drawer island (desktop): thread, poll, or context drawer */}
+            {/* Drawer island (desktop). Poll/context overlay a thread (last-opened wins); the
+                thread reappears when they close. */}
             {showSideRail && (
                 <Island className={`shrink-0 ${drawerWidth}`}>
-                    {threadDrawer ? (
-                        threadDrawer
-                    ) : pollDrawerData ? (
+                    {pollDrawerData ? (
                         <PollDrawer
                             user={pollDrawerData.user}
                             poll={pollDrawerData.poll}
                             currentUserVotes={pollDrawerData.currentUserVotes}
                             onClose={() => setPollDrawerData(null)}
                         />
-                    ) : (
+                    ) : hasContextDrawer ? (
                         <ChannelContextDrawer />
+                    ) : (
+                        threadDrawer
                     )}
                 </Island>
             )}

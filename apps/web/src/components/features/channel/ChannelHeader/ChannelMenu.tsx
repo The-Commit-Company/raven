@@ -11,8 +11,8 @@ import {
 } from "@components/ui/dropdown-menu";
 import { useChannel } from "@hooks/useChannel";
 import { useIsMobile } from "@hooks/use-mobile";
-import { channelDrawerAtom, type DrawerType } from "@utils/channelAtoms";
-import { useSetAtom } from "jotai";
+import { type DrawerType } from "@utils/channelAtoms";
+import { useOpenChannelDrawer } from "@hooks/useChannelDrawer";
 import {
     Bell,
     BellOff,
@@ -33,7 +33,7 @@ export type NavProps = {
 const ChannelMenu = ({ channelID }: { channelID: string }) => {
     const { channel } = useChannel(channelID)
     const isMobile = useIsMobile()
-    const setDrawerType = useSetAtom(channelDrawerAtom(channelID))
+    const setDrawerType = useOpenChannelDrawer(channelID)
 
     if (!channel) return null
 

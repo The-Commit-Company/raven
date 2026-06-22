@@ -50,7 +50,7 @@ export const SingleChoicePollVoting: React.FC<SingleChoicePollVotingProps> = ({
                             key={option.name}
                             title={option.option}
                             className={cn(
-                                "flex items-center gap-2 px-3.5 bg-surface-gray-1 py-1.5 rounded-full w-full cursor-pointer transition-colors",
+                                "flex items-center gap-2 px-3.5 bg-surface-gray-1 py-1.5 rounded-full [corner-shape:squircle] w-full cursor-pointer transition-colors",
                                 !isDisabled && "hover:bg-surface-gray-3"
                             )}
                         >

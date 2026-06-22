@@ -3,8 +3,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
 import { ChevronLeft, Pin, Star } from "lucide-react"
 import ChannelMembers from "./ChannelMembers"
 import ChannelMenu from "./ChannelMenu"
-import { useAtom } from "jotai"
+import { useAtomValue } from "jotai"
 import { channelDrawerAtom } from "@utils/channelAtoms"
+import { useOpenChannelDrawer } from "@hooks/useChannelDrawer"
 import { useNavigate, useParams } from "react-router-dom"
 import { useChannel } from "@hooks/useChannel"
 import _ from "@lib/translate"
@@ -23,7 +24,8 @@ const ChannelHeader = ({ channelID }: ChannelHeaderProps) => {
 
     const pinnedCount = channel?.pinned_messages_string ? channel.pinned_messages_string.split("\n").length : 0
 
-    const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
+    const drawerType = useAtomValue(channelDrawerAtom(channelID))
+    const setDrawerType = useOpenChannelDrawer(channelID)
 
     const onOpenMembers = () => {
         setDrawerType(drawerType === 'members' ? '' : 'members')

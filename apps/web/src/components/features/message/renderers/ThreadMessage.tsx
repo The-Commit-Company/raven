@@ -2,8 +2,8 @@ import { useContext, useEffect } from "react"
 import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
 import { GroupedAvatars } from "@components/ui/grouped-avatars"
 import type { UserData } from "@db"
-import { useAtom } from "jotai"
-import { channelDrawerAtom } from "@utils/channelAtoms"
+import { useSetAtom } from "jotai"
+import { channelDrawerAtom, pollDrawerAtom } from "@utils/channelAtoms"
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
 import { useChannelMembers } from "@hooks/useChannelMembers"
 import { loadThreadDetails, useThreadReplyCount } from "@stores/threads/useThreadMeta"
@@ -21,7 +21,16 @@ interface ThreadButtonProps {
 export const ThreadButton = ({ participants, messageCount, threadID }: ThreadButtonProps) => {
     const location = useLocation()
     const channelID = useCurrentChannelID()
-    const [, setDrawerType] = useAtom(channelDrawerAtom(channelID))
+    const setDrawerType = useSetAtom(channelDrawerAtom(channelID))
+    const setPollDrawer = useSetAtom(pollDrawerAtom(channelID))
+
+    // Opening a thread takes over the rail — clear the poll + context drawers so the thread
+    // shows. Needed on a RE-click too (when a poll already overlays this thread): the route
+    // doesn't change, so only the click carries the intent to return to the thread.
+    const openThread = () => {
+        setDrawerType("")
+        setPollDrawer(null)
+    }
 
     const content = (
         <>
@@ -41,7 +50,7 @@ export const ThreadButton = ({ participants, messageCount, threadID }: ThreadBut
     const to = `${location.pathname.split("/thread")[0]}/thread/${threadID}`
 
     return (
-        <NavLink to={to} replace onClick={() => setDrawerType("")} className={({ isActive }) => cn(className, isActive && "text-ink-gray-9")}>
+        <NavLink to={to} replace onClick={openThread} className={({ isActive }) => cn(className, isActive && "text-ink-gray-9")}>
             {content}
         </NavLink>
     )

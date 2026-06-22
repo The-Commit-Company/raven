@@ -65,7 +65,7 @@ export const MultiChoicePollVoting: React.FC<MultiChoicePollVotingProps> = ({
                             title={option.option}
                             data-checked={isChecked}
                             className={cn(
-                                "flex items-center gap-2 px-3.5 py-1.5 h-7 w-full bg-surface-gray-1 data-[checked=true]:bg-surface-gray-2 rounded-full cursor-pointer transition-colors",
+                                "flex items-center gap-2 px-3.5 py-1.5 h-7 w-full bg-surface-gray-1 data-[checked=true]:bg-surface-gray-2 rounded-full [corner-shape:squircle] cursor-pointer transition-colors",
                                 !isDisabled && "hover:bg-surface-gray-2"
                             )}
                         >

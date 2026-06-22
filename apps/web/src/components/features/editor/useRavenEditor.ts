@@ -136,10 +136,15 @@ export const useRavenEditor = ({ submitRef, linkRef, filesRef, cancelReplyRef, c
                 }
 
                 // Escape cancels the active reply (but let an open suggestion popup take it).
+                // When it DOES cancel, stop propagation so the same Escape doesn't also close
+                // a drawer / the thread (those listen at the document). When there's nothing to
+                // cancel we return false WITHOUT stopping it, so Escape bubbles up and the
+                // drawer/thread hotkey can handle it.
                 if (event.key === "Escape") {
                     if (isSuggestionPopupOpen()) return false
                     if (cancelReplyRef?.current()) {
                         event.preventDefault()
+                        event.stopPropagation()
                         return true
                     }
                     return false

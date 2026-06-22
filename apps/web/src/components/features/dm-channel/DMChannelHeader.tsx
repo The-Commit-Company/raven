@@ -10,10 +10,11 @@ import {
 import { UserAvatar } from "@components/features/message/UserAvatar"
 import { OnLeaveBadge } from "@components/common/OnLeaveBadge"
 import { Bot, ChevronDown, ChevronLeft, Files, Link, MessageSquareText, Pin, SearchIcon, User, UserX } from "lucide-react"
-import { useAtom, useSetAtom } from "jotai"
+import { useSetAtom } from "jotai"
 import { commandMenuOpenAtom } from "@components/features/cmdk/atoms"
 import { useNavigate } from "react-router-dom"
-import { channelDrawerAtom, type DrawerType } from "@utils/channelAtoms"
+import { type DrawerType } from "@utils/channelAtoms"
+import { useOpenChannelDrawer } from "@hooks/useChannelDrawer"
 import { UserData } from "@db"
 import _ from "@lib/translate"
 import { useChannel } from "@hooks/useChannel"
@@ -28,7 +29,7 @@ interface DMChannelHeaderProps {
 export function DMChannelHeader({ peer, channelID }: DMChannelHeaderProps) {
     const navigate = useNavigate()
     const displayName = peer.full_name || peer.name
-    const [, setDrawerType] = useAtom(channelDrawerAtom(channelID))
+    const setDrawerType = useOpenChannelDrawer(channelID)
     const setCommandMenuOpen = useSetAtom(commandMenuOpenAtom)
     const { dmChannel } = useChannel(channelID)
     const pinnedCount = dmChannel?.pinned_messages_string ? dmChannel.pinned_messages_string.split("\n").length : 0

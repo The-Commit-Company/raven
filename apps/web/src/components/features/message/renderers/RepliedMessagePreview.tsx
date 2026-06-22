@@ -34,9 +34,9 @@ export const RepliedMessagePreview = ({ details }: { details: RepliedMessageDeta
             </span>
             <div className="text-xs text-ink-gray-5">
                 {details.message_type === "Poll" && (
-                    <span className="flex items-center">
-                        <ChartColumnIcon className="inline mr-1 h-5 w-5 pb-0.5" />
-                        <span className="line-clamp-2 text-p-sm">Poll: {details.content.split("\n")[0]}</span>
+                    <span className="flex items-center gap-1">
+                        <ChartColumnIcon className="h-3.5 w-3.5" />
+                        <span className="line-clamp-1 text-p-sm">Poll: {details.content.split("\n")[0]}</span>
                     </span>
                 )}
 

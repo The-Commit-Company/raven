@@ -8,9 +8,6 @@ export type DrawerType = '' | 'members' | 'files' | 'pins' | 'links' | 'threads'
 
 export const channelDrawerAtom = atomFamily((_channelID: string) => atom<DrawerType>(''))
 
-/** DM conversation drawer: files, links, or threads. Separate from channel drawer to avoid reusing channel code. */
-export const dmDrawerAtom = atomFamily((_dmChannelId: string) => atom<'' | 'files' | 'links' | 'threads'>(''))
-
 export type PollDrawerData = {
     user: UserData
     poll: RavenPoll
