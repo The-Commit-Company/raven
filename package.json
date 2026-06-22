@@ -4,7 +4,7 @@
   "version": "2.8.11",
   "description": "Messaging Application",
   "workspaces": [
-    "apps/*",
+    "apps/web",
     "packages/*"
   ],
   "main": "index.js",

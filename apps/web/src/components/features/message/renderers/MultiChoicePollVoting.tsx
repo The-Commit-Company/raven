@@ -92,20 +92,22 @@ export const MultiChoicePollVoting: React.FC<MultiChoicePollVotingProps> = ({
                 })}
             </div>
             <div className="flex items-center justify-between gap-2 pt-1">
-
-                {isAnonymous
-                    ? <span className="text-p-xs text-ink-gray-4 px-2">{_("Please submit your choice(s) to view the results.")} </span>
-                    : null}
-
-                {!isDisabled && (
-                    <Button
-                        size="sm"
-                        onClick={handleSubmit}
-                        disabled={selectedOptions.length === 0}
-                    >
-                        Submit
-                    </Button>
-                )}
+                <div>
+                    {isAnonymous
+                        ? <span className="text-p-xs text-ink-gray-4 px-2">{_("Please submit your choice(s) to view the results.")} </span>
+                        : null}
+                </div>
+                <div>
+                    {!isDisabled && (
+                        <Button
+                            size="sm"
+                            onClick={handleSubmit}
+                            disabled={selectedOptions.length === 0}
+                        >
+                            Submit
+                        </Button>
+                    )}
+                </div>
             </div>
         </div>
     )
