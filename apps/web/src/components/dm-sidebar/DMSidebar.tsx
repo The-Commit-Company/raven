@@ -313,7 +313,10 @@ function DMRowShell({
                 <div className="flex justify-between items-center gap-2 mb-0.5">
                     <span
                         className={cn(
-                            "truncate text-base md:text-sm text-ink-gray-8",
+                            // leading-snug: the type scale's 1.15 line-height is too tight to
+                            // contain descenders (g/y/p) once `truncate` clips overflow — Safari
+                            // cuts them on some DPIs. A looser single-line height fixes it.
+                            "truncate text-base md:text-sm leading-snug text-ink-gray-8",
                             unread > 0 ? "font-semibold" : "font-normal"
                         )}
                     >
@@ -328,7 +331,9 @@ function DMRowShell({
                 <div className="flex items-center gap-2">
                     <div
                         className={cn(
-                            "line-clamp-1 text-sm md:text-xs flex-1 min-w-0",
+                            // leading-snug: see note on the name above — line-clamp also clips
+                            // descenders at the tight 1.15 line-height on Safari.
+                            "line-clamp-1 text-sm md:text-xs leading-snug flex-1 min-w-0",
                             unread > 0
                                 ? "font-medium text-ink-gray-8"
                                 : "text-ink-gray-4"

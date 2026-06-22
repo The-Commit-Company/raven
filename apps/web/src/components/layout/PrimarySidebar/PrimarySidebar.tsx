@@ -12,8 +12,9 @@ import { useUnreadThreadsCount } from "@stores/threads/useUnreadThreads"
 import _ from "@lib/translate"
 import { cn } from "@lib/utils"
 import { useSetAtom } from "jotai"
-import { BellIcon, BookmarkIcon, MessageSquareTextIcon, SearchIcon, UsersRoundIcon } from "lucide-react"
+import { BellIcon, BookmarkIcon, MessageSquareTextIcon, MoreHorizontalIcon, SearchIcon, UsersRoundIcon } from "lucide-react"
 import { NavLink } from "react-router"
+import { settingsDialogOpenTab } from "@components/features/settings/SettingsDialog"
 
 const RavenLogo = () => {
     return <img src="/assets/raven/raven_logo.svg" alt="Raven Logo" className="w-8 h-8" />
@@ -26,7 +27,7 @@ const RavenLogo = () => {
 const PrimarySidebar = () => {
     return (
         <TooltipProvider>
-            <div className="flex flex-col h-full shrink-0 justify-between items-center border-r border-outline-gray-2 bg-surface-sidebar w-(--primary-sidebar-width) pb-4 pt-2.5">
+            <div className="flex flex-col h-full gap-2 shrink-0 justify-between items-center border-r border-outline-gray-2 bg-surface-sidebar w-(--primary-sidebar-width) pb-4 pt-2.5">
                 <div className="flex flex-col items-center gap-3">
                     <RavenLogo />
                     <div className="px-2 w-full">
@@ -60,7 +61,6 @@ const SearchButton = () => {
             <Button
                 variant="subtle"
                 size="md"
-                className=""
                 isIconButton onClick={() => setOpen(true)}
                 aria-label={_("Command Menu")}>
                 <SearchIcon className="size-4" />
@@ -175,10 +175,27 @@ const WorkspaceList = () => {
 
     const { workspaces } = useWorkspaces()
 
+    const myWorkspaces = workspaces.filter((workspace) => workspace.workspace_member_name)
+
+    const hasMoreWorkspaces = workspaces.length > myWorkspaces.length
+
+    const setSettingsDialogOpenTab = useSetAtom(settingsDialogOpenTab)
+
     return <div className="flex flex-col items-center gap-3">
-        {workspaces.map((workspace) => (
+        {myWorkspaces.map((workspace) => (
             <WorkspaceItem key={workspace.name} workspace={workspace} />
         ))}
+        {hasMoreWorkspaces && <Tooltip>
+            <TooltipTrigger asChild>
+                <Button variant="subtle" size="md" isIconButton aria-label={_("Manage Workspaces")} onClick={() => setSettingsDialogOpenTab("workspaces")}>
+                    <MoreHorizontalIcon className="size-4" />
+                </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right" align="center">
+                {_("Manage Workspaces")}
+            </TooltipContent>
+        </Tooltip>
+        }
     </div>
 }
 

@@ -53,7 +53,8 @@ export function ChatContentView({
         else if (hasContextDrawer) setChannelDrawer("")
     }, {
         enableOnContentEditable: true,
-        enableOnFormTags: true
+        enableOnFormTags: true,
+        preventDefault: true
     })
 
     // Desktop-only side rail; on mobile, poll/context drawers render as bottom sheets instead

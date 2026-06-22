@@ -56,12 +56,12 @@ const ChannelHeader = ({ channelID }: ChannelHeaderProps) => {
                 <div className="flex items-center gap-0.5">
                     <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="sm" isIconButton className={isStarred ? "text-yellow-500" : ""} aria-label={_('Star')} onClick={toggleStarChannel}>
-                                <Star className={isStarred ? "fill-yellow-500" : ""} />
+                            <Button variant="ghost" size="sm" isIconButton className={isStarred ? "text-yellow-400" : ""} aria-label={_('Star')} onClick={toggleStarChannel}>
+                                <Star className={isStarred ? "fill-yellow-400" : ""} />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                            {_('Star')}
+                            {_('Add to Favorites')}
                         </TooltipContent>
                     </Tooltip>
 
@@ -69,10 +69,10 @@ const ChannelHeader = ({ channelID }: ChannelHeaderProps) => {
 
                     {pinnedCount > 0 && <Tooltip>
                         <TooltipTrigger asChild>
-                            <Button variant="ghost" size="sm" className="gap-2" onClick={onOpenPins}>
-                                <Pin className="h-2 w-2 text-ink-gray-8/80" />
-                                <span className="sr-only">{_('Pinned')}</span>
-                                <span className="text-ink-gray-4 text-sm font-normal">{pinnedCount}</span>
+                            <Button variant="ghost" size="sm" onClick={onOpenPins} aria-label={_('View Pinned Messages')}>
+                                <Pin />
+                                <span className="sr-only">{_('View Pinned Messages')}</span>
+                                <span className="text-ink-gray-6 text-sm">{pinnedCount}</span>
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>

@@ -383,7 +383,8 @@ export const ChannelGroupLabel = ({ groupName }: { groupName: string }) => {
     return (
         <span className="flex min-w-0 items-center gap-1.5">
             {emoji && <span className="shrink-0 text-lg leading-none">{emoji}</span>}
-            <span className="truncate">{nameWithoutEmoji}</span>
+            {/* leading-snug: avoid Safari clipping descenders on the truncated label (1.15 is too tight) */}
+            <span className="truncate leading-snug">{nameWithoutEmoji}</span>
         </span>
     )
 }
@@ -410,7 +411,10 @@ const ChannelRow = ({ channel, workspaceID }: { channel: ChannelListItem; worksp
             <ChannelIcon type={channel.type || "Public"} className="h-4 w-4 shrink-0" />
             <span
                 className={cn(
-                    "min-w-0 flex-1 truncate text-base md:text-sm",
+                    // leading-snug: the type scale's 1.15 line-height is too tight to contain
+                    // descenders (g/y/p) once `truncate` clips overflow — Safari cuts them on
+                    // some DPIs. A looser single-line height fixes it.
+                    "min-w-0 flex-1 truncate text-base md:text-sm leading-snug",
                     unread > 0 ? "font-semibold" : "font-normal",
                 )}
             >
