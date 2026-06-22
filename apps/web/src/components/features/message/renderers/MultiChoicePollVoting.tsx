@@ -6,6 +6,7 @@ import type { RavenPoll } from "@raven/types/RavenMessaging/RavenPoll"
 import type { RavenPollOption } from "@raven/types/RavenMessaging/RavenPollOption"
 import { PollVoteCount, getOptionPercentage, getPollStatus } from "./poll-components"
 import type { PollOptionWithVoters } from "./poll-components"
+import _ from "@lib/translate"
 
 export interface MultiChoicePollVotingProps {
     poll: RavenPoll
@@ -52,21 +53,24 @@ export const MultiChoicePollVoting: React.FC<MultiChoicePollVotingProps> = ({
 
     return (
         <div className={cn("flex flex-col gap-2", className)}>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-3">
                 {options.map((option) => {
                     const percentage = getOptionPercentage(option, poll)
+                    const isChecked = selectedOptions.includes(option.name)
                     const optionWithVoters = option as PollOptionWithVoters
 
                     return (
                         <label
                             key={option.name}
+                            title={option.option}
+                            data-checked={isChecked}
                             className={cn(
-                                "flex items-center gap-2 p-2 rounded-sm w-full cursor-pointer transition-colors",
+                                "flex items-center gap-2 px-3.5 py-1.5 h-7 w-full bg-surface-gray-1 data-[checked=true]:bg-surface-gray-2 rounded-full cursor-pointer transition-colors",
                                 !isDisabled && "hover:bg-surface-gray-2"
                             )}
                         >
                             <Checkbox
-                                checked={selectedOptions.includes(option.name)}
+                                checked={isChecked}
                                 onCheckedChange={(checked) =>
                                     handleCheckboxChange(option.name, checked === true)
                                 }
@@ -88,20 +92,16 @@ export const MultiChoicePollVoting: React.FC<MultiChoicePollVotingProps> = ({
                 })}
             </div>
             <div className="flex items-center justify-between gap-2 pt-1">
-                <span className="text-xs text-ink-gray-4 px-2 py-1">
-                    {isDisabled
-                        ? "This poll is closed and no longer accepting votes"
-                        : isAnonymous
-                            ? "To view the poll results, please submit your choice(s)"
-                            : "You can see what others have voted while making your choice"}
-                </span>
+
+                {isAnonymous
+                    ? <span className="text-p-xs text-ink-gray-4 px-2">{_("Please submit your choice(s) to view the results.")} </span>
+                    : null}
+
                 {!isDisabled && (
                     <Button
                         size="sm"
-                        variant="outline"
                         onClick={handleSubmit}
                         disabled={selectedOptions.length === 0}
-                        className="shrink-0"
                     >
                         Submit
                     </Button>

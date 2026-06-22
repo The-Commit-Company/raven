@@ -5,6 +5,7 @@ import type { RavenPoll } from "@raven/types/RavenMessaging/RavenPoll"
 import type { RavenPollOption } from "@raven/types/RavenMessaging/RavenPollOption"
 import { PollVoteCount, getOptionPercentage, getPollStatus } from "./poll-components"
 import type { PollOptionWithVoters } from "./poll-components"
+import _ from "@lib/translate"
 
 export interface SingleChoicePollVotingProps {
     poll: RavenPoll
@@ -34,42 +35,46 @@ export const SingleChoicePollVoting: React.FC<SingleChoicePollVotingProps> = ({
     const totalVotes = poll.total_votes || 0
 
     return (
-        <RadioGroup
-            disabled={isDisabled}
-            onValueChange={handleValueChange}
-            className={cn("flex flex-col gap-1", className)}
-        >
-            {options.map((option) => {
-                const percentage = getOptionPercentage(option, poll)
-                const optionWithVoters = option as PollOptionWithVoters
+        <>
+            <RadioGroup
+                disabled={isDisabled}
+                onValueChange={handleValueChange}
+                className={cn("flex flex-col gap-3", className)}
+            >
+                {options.map((option) => {
+                    const percentage = getOptionPercentage(option, poll)
+                    const optionWithVoters = option as PollOptionWithVoters
 
-                return (
-                    <label
-                        key={option.name}
-                        className={cn(
-                            "flex items-center gap-2 p-2 rounded-sm w-full cursor-pointer transition-colors",
-                            !isDisabled && "hover:bg-surface-gray-2"
-                        )}
-                    >
-                        <RadioGroupItem
-                            value={option.name}
-                            disabled={isDisabled}
-                            className="shrink-0"
-                        />
-                        <span className="text-sm text-ink-gray-8 wrap-break-word flex-1 min-w-0">
-                            {option.option}
-                        </span>
-                        {!isAnonymous && totalVotes > 0 && (
-                            <PollVoteCount
-                                votes={option.votes || 0}
-                                percentage={percentage}
-                                voters={optionWithVoters.voters}
+                    return (
+                        <label
+                            key={option.name}
+                            title={option.option}
+                            className={cn(
+                                "flex items-center gap-2 px-3.5 bg-surface-gray-1 py-1.5 rounded-full w-full cursor-pointer transition-colors",
+                                !isDisabled && "hover:bg-surface-gray-3"
+                            )}
+                        >
+                            <RadioGroupItem
+                                value={option.name}
+                                disabled={isDisabled}
+                                className="shrink-0 text-ellipsis"
                             />
-                        )}
-                    </label>
-                )
-            })}
-        </RadioGroup>
+                            <span className="text-sm truncate text-ink-gray-7 wrap-break-word flex-1 min-w-0">
+                                {option.option}
+                            </span>
+                            {!isAnonymous && totalVotes > 0 && (
+                                <PollVoteCount
+                                    votes={option.votes || 0}
+                                    percentage={percentage}
+                                    voters={optionWithVoters.voters}
+                                />
+                            )}
+                        </label>
+                    )
+                })}
+            </RadioGroup>
+            <span className="pt-1.5 px-1 text-sm text-ink-gray-6">{poll.total_votes === 1 ? _("1 vote") : _("{0} votes", [String(poll.total_votes ?? 0)])}</span>
+        </>
     )
 }
 

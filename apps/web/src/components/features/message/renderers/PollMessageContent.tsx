@@ -12,6 +12,7 @@ import { PollQuestionHeader } from "./PollQuestionHeader"
 import { SingleChoicePollVoting } from "./SingleChoicePollVoting"
 import { MultiChoicePollVoting } from "./MultiChoicePollVoting"
 import { PollOptionBar, getOptionPercentage, isUserVote, type PollOptionWithVoters } from "./poll-components"
+import { TooltipProvider } from "@components/ui/tooltip"
 
 type PollData = {
     poll: RavenPoll & { options: RavenPollOption[] }
@@ -48,15 +49,15 @@ const PollSkeleton = ({ content }: { content?: string | null }) => {
     const { question, options } = useMemo(() => parsePollContent(content), [content])
     return (
         <PollVotingContainer>
-            <span className="mb-2 block text-sm font-medium text-ink-gray-7">{question}</span>
-            <div className="flex flex-col gap-1">
+            <span className="block text-p-base-medium text-ink-gray-7">{question}</span>
+            <div className="flex flex-col gap-3">
                 {options.map((option, i) => (
-                    <div key={i} className="flex items-center gap-2 rounded-sm p-2 text-sm text-ink-gray-5">
-                        <span className="size-4 shrink-0 rounded-full border border-outline-gray-3" />
-                        <span className="min-w-0 flex-1 wrap-break-word">{option}</span>
+                    <div key={i} className="flex items-center gap-2 h-7 bg-surface-gray-1 text-ellipsis animate-pulse overflow-hidden rounded-full text-sm">
+                        <span className="min-w-0 flex-1 wrap-break-word px-3.5 py-1.5 text-ink-gray-7">{option}</span>
                     </div>
                 ))}
             </div>
+            <span className="pt-1.5 px-1 text-sm text-ink-gray-4">Loading...</span>
         </PollVotingContainer>
     )
 }
@@ -86,27 +87,32 @@ const LoadedPoll = ({ message }: { message: Message }) => {
     }
 
     return (
-        <PollVotingContainer>
-            <PollQuestionHeader poll={poll} className="mb-2" />
-            {showResults ? (
-                <>
-                    <div className="mb-2 flex w-full flex-col gap-1">
-                        {poll.options.map((option) => (
-                            <PollOptionBar
-                                key={option.name}
-                                option={option as PollOptionWithVoters}
-                                percentage={getOptionPercentage(option, poll)}
-                                isCurrentUserVote={isUserVote(option.name, current_user_votes)}
-                            />
-                        ))}
-                    </div>
-                    <span className="text-xs text-ink-gray-4/80">{_("Total votes: {0}", [String(poll.total_votes ?? 0)])}</span>
-                </>
-            ) : poll.is_multi_choice === 1 ? (
-                <MultiChoicePollVoting poll={poll} options={poll.options} onSubmit={submitVote} />
-            ) : (
-                <SingleChoicePollVoting poll={poll} options={poll.options} onOptionSelect={(option) => submitVote([option.name])} />
-            )}
-        </PollVotingContainer>
+        <div className="flex gap-2 items-start">
+            <PollVotingContainer>
+                <PollQuestionHeader poll={poll} />
+                {showResults ? (
+                    <TooltipProvider>
+                        <div className="flex w-full flex-col gap-3">
+                            {poll.options.map((option) => (
+                                <PollOptionBar
+                                    key={option.name}
+                                    option={option as PollOptionWithVoters}
+                                    showVoters={!poll.is_anonymous}
+                                    percentage={getOptionPercentage(option, poll)}
+                                    isCurrentUserVote={isUserVote(option.name, current_user_votes)}
+                                />
+                            ))}
+                        </div>
+                        <span className="pt-1.5 px-1 text-sm text-ink-gray-6">{_("{0} votes", [String(poll.total_votes ?? 0)])}</span>
+                    </TooltipProvider>
+                ) : poll.is_multi_choice === 1 ? (
+                    <MultiChoicePollVoting poll={poll} options={poll.options} onSubmit={submitVote} />
+                ) : (
+                    <SingleChoicePollVoting poll={poll} options={poll.options} onOptionSelect={(option) => submitVote([option.name])} />
+                )}
+            </PollVotingContainer>
+        </div>
+
+
     )
 }

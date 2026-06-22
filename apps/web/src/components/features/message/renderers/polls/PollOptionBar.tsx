@@ -3,6 +3,9 @@ import { CheckCircle } from "lucide-react"
 import { cn } from "@lib/utils"
 import { GroupedAvatars } from "@components/ui/grouped-avatars"
 import type { RavenPollOption } from "@raven/types/RavenMessaging/RavenPollOption"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
+import _ from "@lib/translate"
+import { Separator } from "@components/ui/separator"
 
 export interface PollOptionWithVoters extends RavenPollOption {
     voters?: { name: string; full_name: string; user_image?: string }[]
@@ -13,7 +16,6 @@ export interface PollOptionBarProps {
     percentage: number
     isCurrentUserVote: boolean
     showVoters?: boolean
-    variant?: "default" | "compact"
 }
 
 /**
@@ -25,85 +27,67 @@ export const PollOptionBar: React.FC<PollOptionBarProps> = ({
     percentage,
     isCurrentUserVote,
     showVoters = true,
-    variant = "default",
 }) => {
     // Show a minimal bar (2%) for 0 votes
     const barWidth = percentage > 0 ? percentage : 2
 
-    if (variant === "compact") {
-        // Compact variant for search results (no progress bar)
-        return (
-            <div className="relative flex items-center min-h-5 rounded-md overflow-hidden group mb-1">
-                <div className="absolute top-0 left-0 h-full w-full transition-all duration-300 ease-in-out rounded-md bg-surface-gray-2/60" />
-                <div
-                    className="absolute top-0 left-0 h-full bg-ink-gray-8/10 transition-all duration-300 ease-in-out rounded-md"
-                    style={{ width: `${barWidth}%` }}
-                />
-                <div className="relative z-10 flex items-center flex-1 px-4 py-1.5 gap-2">
-                    <span
-                        className={cn(
-                            "truncate text-sm",
-                            isCurrentUserVote ? "text-ink-gray-8 font-medium" : "text-ink-gray-4"
-                        )}
-                    >
-                        {option.option}
-                    </span>
-                    {isCurrentUserVote && <CheckCircle className="w-3 h-3 text-ink-gray-4" />}
-                </div>
-                <div className="relative z-10 flex items-center gap-3 pr-4">
-                    {option.votes !== undefined && (
-                        <span className="text-xs text-ink-gray-4 font-medium">
-                            {option.votes} vote{option.votes === 1 ? "" : "s"} •{" "}
-                            <span className="text-xs">{percentage.toFixed(0)}%</span>
-                        </span>
-                    )}
-                    {showVoters && option.voters && option.voters.length > 0 && (
-                        <GroupedAvatars users={option.voters} max={5} size="xs" borderColorClass="border-surface-base" />
-                    )}
-                </div>
-            </div>
-        )
-    }
-
-    // Default variant with progress bar (for PollMessage)
     return (
-        <div
-            className={cn(
-                "relative flex items-center min-h-5 rounded-md overflow-hidden group mb-1 border",
-                isCurrentUserVote ? "border-outline-blue-4/30 bg-surface-blue-5/3" : "border-transparent"
-            )}
-        >
-            <div className="absolute top-0 left-0 h-full w-full transition-all duration-300 ease-in-out rounded-md bg-surface-gray-2/60" />
-            <div
-                className={cn(
-                    "absolute top-0 left-0 h-full transition-all duration-300 ease-in-out rounded-md",
-                    isCurrentUserVote ? "bg-surface-blue-5/10" : "bg-ink-gray-8/10"
-                )}
-                style={{ width: `${barWidth}%` }}
-            />
-            <div className="relative z-10 flex items-center flex-1 px-4 py-1.5 gap-2">
-                <span
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <div
                     className={cn(
-                        "truncate text-sm",
-                        isCurrentUserVote ? "text-ink-gray-8 font-medium" : "text-ink-gray-4"
+                        "relative flex h-7 items-center rounded-full overflow-hidden group"
                     )}
                 >
+                    <div className={cn("absolute top-0 left-0 h-full w-full transition-all duration-300 ease-in-out", isCurrentUserVote ? "bg-surface-violet-1" : "bg-surface-gray-1")} />
+                    <div
+                        className={cn(
+                            "absolute top-0 left-0 h-full transition-all duration-300 ease-in-out rounded-r-full",
+                            isCurrentUserVote ? "bg-surface-violet-4" : "bg-surface-gray-4"
+                        )}
+                        style={{ width: `${barWidth}%` }}
+                    />
+                    <div className="relative z-10 text-ellipsis overflow-hidden flex items-center flex-1 px-3.5 py-1.5 gap-2">
+                        <span
+                            className={cn(
+                                "truncate text-sm",
+                                isCurrentUserVote ? "text-ink-gray-9 text-sm-medium" : "text-ink-gray-7"
+                            )}
+                        >
+                            {option.option}
+                        </span>
+                        {isCurrentUserVote && <CheckCircle className="size-3 text-ink-gray-9" />}
+                    </div>
+                    <div className="relative z-10 flex items-center gap-3 pr-4">
+                        {option.votes !== undefined && (
+                            <span className="text-xs-medium text-ink-gray-6 flex items-center gap-1">
+                                <span>
+                                    {option.votes === 1 ? _("1 vote") : _("{0} votes", [String(option.votes)])}
+                                </span>
+                                <span>•</span>
+                                <span className="tabular-nums">{percentage.toFixed(0)}%</span>
+                            </span>
+                        )}
+                        {showVoters && option.voters && option.voters.length > 0 && (
+                            <GroupedAvatars users={option.voters} max={5} size="xs" borderColorClass="border-surface-base" />
+                        )}
+                    </div>
+                </div>
+            </TooltipTrigger>
+            <TooltipContent>
+                <span className="flex items-center gap-2 text-p-sm">
                     {option.option}
-                </span>
-                {isCurrentUserVote && <CheckCircle className="w-3 h-3 text-ink-gray-4" />}
-            </div>
-            <div className="relative z-10 flex items-center gap-3 pr-4">
-                {option.votes !== undefined && (
-                    <span className="text-xs text-ink-gray-4 font-medium">
-                        {option.votes} vote{option.votes === 1 ? "" : "s"} •{" "}
-                        <span className="text-xs">{percentage.toFixed(0)}%</span>
+                    <Separator orientation="vertical" className="bg-surface-gray-8 h-3!" />
+                    <span className="flex gap-1">
+                        <span>{option.votes === 1 ? _("1 vote") : _("{0} votes", [String(option.votes)])}</span>
+                        <span>•</span>
+                        <span className="tabular-nums">{percentage.toFixed(0)}%</span>
                     </span>
-                )}
-                {showVoters && option.voters && option.voters.length > 0 && (
-                    <GroupedAvatars users={option.voters} max={5} size="xs" borderColorClass="border-surface-base" />
-                )}
-            </div>
-        </div>
+                </span>
+
+            </TooltipContent>
+        </Tooltip>
+
     )
 }
 
