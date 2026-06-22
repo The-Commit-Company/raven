@@ -8,6 +8,7 @@ import { PollDrawer } from "@components/features/message/renderers/PollDrawer"
 import { Drawer, DrawerContent, DrawerTitle } from "@components/ui/drawer"
 import { Island } from "@components/layout/Island"
 import { FileDropZone } from "@components/features/ChatInput/FileDropZone"
+import { useComposerGate, ComposerArea } from "@components/features/ChatInput/composerGate"
 import { pollDrawerAtom, channelDrawerAtom } from "@utils/channelAtoms"
 import { useIsMobile } from "@hooks/use-mobile"
 import _ from "@lib/translate"
@@ -40,6 +41,10 @@ export function ChatContentView({
     const [channelDrawerType, setChannelDrawer] = useAtom(channelDrawerAtom(channelID))
     const hasContextDrawer = channelDrawerType !== ""
     const hasThread = !!threadDrawer
+
+    // Skeleton while loading, archived/not-member banner (with Join), or the composer.
+    const composerGate = useComposerGate(channelID)
+    const composerBlocked = composerGate.state !== "composer"
 
     // One rail slot → the drawers are mutually exclusive, cleared at the OPEN sites (poll vs
     // context clear each other there; opening a thread clears both via the pill's onClick). No
@@ -78,14 +83,16 @@ export function ChatContentView({
         <div className="flex min-h-0 min-w-0 flex-1 flex-row gap-1 p-0 md:p-1">
             {/* Chat island: header + stream + input */}
             <Island className="flex-1">
-                <FileDropZone channelID={channelID}>
+                <FileDropZone channelID={channelID} disabled={composerBlocked}>
                     {header}
                     <ChatStream channelID={channelID} pinnedMessagesString={pinnedMessagesString} />
                     <div className="shrink-0">
-                        {/* key by channel: remount per channel so the editor re-autofocuses and
-                            draft text doesn't bleed across channels (file/send state already
-                            lives in channel-keyed atoms, so a remount is safe). */}
-                        <ChatInput key={channelID} channelID={channelID} />
+                        <ComposerArea gate={composerGate}>
+                            {/* key by channel: remount per channel so the editor re-autofocuses and
+                                draft text doesn't bleed across channels (file/send state already
+                                lives in channel-keyed atoms, so a remount is safe). */}
+                            <ChatInput key={channelID} channelID={channelID} />
+                        </ComposerArea>
                     </div>
                 </FileDropZone>
             </Island>

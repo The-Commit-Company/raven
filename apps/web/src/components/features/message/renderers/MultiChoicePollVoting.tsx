@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useMemo } from "react"
 import { Checkbox } from "@components/ui/checkbox"
 import { Button } from "@components/ui/button"
 import { cn } from "@lib/utils"
@@ -24,7 +24,14 @@ export const MultiChoicePollVoting: React.FC<MultiChoicePollVotingProps> = ({
     onSubmit,
 }) => {
     const [selectedOptions, setSelectedOptions] = React.useState<string[]>([])
-    const isDisabled = poll.is_disabled === 1
+    const isDisabled = useMemo(() => {
+        if (poll.is_disabled === 1) return true
+
+        if (poll.max_choices && selectedOptions.length >= poll.max_choices) return true
+
+        return false
+
+    }, [poll.is_disabled, poll.max_choices, selectedOptions.length])
 
     const handleCheckboxChange = (optionId: string, checked: boolean) => {
         if (isDisabled) return

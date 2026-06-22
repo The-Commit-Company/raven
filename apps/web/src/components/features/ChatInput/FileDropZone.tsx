@@ -14,9 +14,13 @@ const isFileDrag = (e: DragEvent) => Array.from(e.dataTransfer?.types ?? []).inc
  * FileHandler only needs to handle paste. Dropped files go through the same upload
  * path as the attach button (useAttachFile → size/type validation included).
  */
-export const FileDropZone = ({ channelID, children }: { channelID: string; children: ReactNode }) => {
+export const FileDropZone = ({ channelID, children, disabled = false }: { channelID: string; children: ReactNode; disabled?: boolean }) => {
     const onAddFile = useAttachFile(channelID)
     const [isDragging, setIsDragging] = useState(false)
+
+    // Disabled (no composer — archived / not a member): render children plainly so a drop can't
+    // stage files there's no way to send.
+    if (disabled) return <div className="relative flex min-h-0 flex-1 flex-col">{children}</div>
 
     return (
         <div
