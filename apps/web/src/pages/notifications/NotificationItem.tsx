@@ -74,7 +74,7 @@ const NotificationRowLayout = ({
     channelContext?: React.ReactNode
     children: React.ReactNode
 }) => (
-    <button type="button" onClick={onClick} className="block w-full px-2 py-0.5">
+    <button type="button" onClick={onClick} className="block w-full cursor-pointer px-2 py-0.5">
         <div className={rowShellClasses(isRead, isActive)}>
             {avatar}
             <div className="flex-1 min-w-0">
