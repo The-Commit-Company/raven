@@ -2,6 +2,7 @@ import { useMatch } from "react-router-dom"
 import { useChannelList } from "@stores/channels/useChannelList"
 import { useUsersById } from "@hooks/useMessageRowLookups"
 import { useTotalUnread } from "@stores/unread/useChannelUnread"
+import { useUnreadThreadsCount } from "@stores/threads/useUnreadThreads"
 import _ from "@lib/translate"
 
 /**
@@ -14,7 +15,9 @@ import _ from "@lib/translate"
  * since "/notifications/:id" and "/dm-channel/:id" would otherwise match it.
  */
 const DocumentTitle = () => {
-    const unread = useTotalUnread()
+    // Total unread conversations = channels/DMs + threads (both conversation counts, so they
+    // add). Threads aren't in the channel unread store — they ride their own store.
+    const unread = useTotalUnread() + useUnreadThreadsCount()
     const label = useCurrentPageLabel()
 
     const appName = (window as { app_name?: string }).app_name || "Raven"
