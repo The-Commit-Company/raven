@@ -43,6 +43,8 @@ class ChannelUnreadStore {
     private globalListeners = new Set<Listener>()
     /** The channel currently open AND caught up to the live edge; exempt from increments. */
     private activeReadChannelID: string | null = null
+    /** Per-channel server last_visit at load — the read tracker's post baseline (see setServerWatermark). */
+    private serverWatermarks = new Map<string, string>()
 
     /** Reference-stable per channel: unchanged state returns the same object (and unknown → EMPTY). */
     getState(channelID: string): ChannelUnreadState {
@@ -124,6 +126,19 @@ class ChannelUnreadStore {
     /** Register the channel open at the live edge (or null). It won't accumulate increments. */
     setActiveReadChannel(channelID: string | null) {
         this.activeReadChannelID = channelID
+    }
+
+    /**
+     * The member's server-side last_visit at channel load — a PRISTINE baseline kept apart
+     * from `lastSeen` (which advances on local reads). The read tracker seeds `sentRef` from
+     * this so it won't re-post a watermark the server already has. Not reactive (no UI reads it).
+     */
+    setServerWatermark(channelID: string, timestamp?: string | null) {
+        if (timestamp) this.serverWatermarks.set(channelID, timestamp)
+    }
+
+    getServerWatermark(channelID: string): string | null {
+        return this.serverWatermarks.get(channelID) ?? null
     }
 
     /** ----- Internals ----- */

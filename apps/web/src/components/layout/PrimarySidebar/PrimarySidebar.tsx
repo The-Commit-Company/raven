@@ -8,6 +8,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@compo
 import { useUnreadNotificationsCount } from "@hooks/useNotifications"
 import { useWorkspaces, type WorkspaceFields } from "@hooks/useWorkspaces"
 import { useDMUnread, useWorkspaceUnread } from "@stores/unread/useChannelUnread"
+import { useUnreadThreadsCount } from "@stores/threads/useUnreadThreads"
 import _ from "@lib/translate"
 import { cn } from "@lib/utils"
 import { useSetAtom } from "jotai"
@@ -148,10 +149,13 @@ const DirectMessagesLink = () => {
 }
 
 const ThreadsLink = () => {
+    const unread = useUnreadThreadsCount()
+
     return <NavLink to="threads">
         {({ isActive }) => (
             <IconBox isActive={isActive} title={_("Threads")}>
                 <MessageSquareTextIcon />
+                <UnreadBadge count={unread} />
             </IconBox>
         )}
     </NavLink>

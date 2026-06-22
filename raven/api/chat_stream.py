@@ -132,12 +132,22 @@ def get_messages(
 		if len(older_message) > 0:
 			has_old_messages = True
 
+	# The member's current read watermark, so the v3 client can baseline its own last_visit
+	# tracking and skip re-posting a watermark the server already has (it tracks last_visit
+	# itself via track_visit). Read before the optional legacy write below.
+	last_visit = frappe.db.get_value(
+		"Raven Channel Member",
+		{"channel_id": channel_id, "user_id": frappe.session.user},
+		"last_visit",
+	)
+
 	if update_last_visit:
 		track_channel_visit(channel_id=channel_id, commit=True)
 	return {
 		"messages": messages,
 		"has_old_messages": has_old_messages,
 		"has_new_messages": False,
+		"last_visit": last_visit,
 	}
 
 
@@ -163,6 +173,11 @@ def get_messages_around_base(channel_id: str, base_message: str, limit: int = 20
 		**newer_messages,
 		"messages": combined_messages,
 		"from_timestamp": from_timestamp,
+		"last_visit": frappe.db.get_value(
+			"Raven Channel Member",
+			{"channel_id": channel_id, "user_id": frappe.session.user},
+			"last_visit",
+		),
 	}
 
 

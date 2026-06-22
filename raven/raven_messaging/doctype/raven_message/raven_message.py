@@ -18,6 +18,7 @@ from raven.notification import (
 	truncate_notification_content,
 )
 from raven.utils import (
+	get_channel_members,
 	get_raven_room,
 	is_channel_member,
 	refresh_thread_reply_count,
@@ -396,6 +397,8 @@ class RavenMessage(Document):
 
 			self.add_mentioned_users_to_thread()
 
+			# Broadcast to everyone: the "N replies" pill on the parent message is shown to
+			# all channel members, so the reply count must reach all of them.
 			frappe.publish_realtime(
 				"thread_reply",
 				{
@@ -407,6 +410,22 @@ class RavenMessage(Document):
 				after_commit=True,
 				room=get_raven_room(),
 			)
+
+			# Notify ONLY the thread's participants so each can update their unread-threads
+			# badge locally — a thread is unread only for its members, so this is scoped per
+			# user (no org-wide broadcast, no leaking the participant list). get_channel_members
+			# reads from the (permission-check-warmed) cache, keyed by user_id.
+			for member in get_channel_members(self.channel_id):
+				frappe.publish_realtime(
+					"raven:unread_thread_count_updated",
+					{
+						"channel_id": self.channel_id,
+						"sent_by": self.owner,
+						"last_message_timestamp": self.creation,
+					},
+					user=member,
+					after_commit=True,
+				)
 		else:
 			# This event needs to be published to all users on Raven (desk + website)
 			frappe.publish_realtime(

@@ -9,14 +9,16 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db, UserData } from "@db";
 import _ from '@lib/translate';
 import { Virtuoso } from 'react-virtuoso';
-import { useFrappePostCall, useSWRConfig } from 'frappe-react-sdk';
+import { useContext } from 'react';
+import { FrappeConfig, FrappeContext, useFrappePostCall } from 'frappe-react-sdk';
+import { loadChannelMembers } from '@hooks/useChannelMembers';
 import { toast } from 'sonner';
 import ErrorBanner from '@components/ui/error-banner';
 
 const AddChannelMembers = ({ memberIds, channelID, onClose }: { memberIds: string[], channelID: string, onClose: () => void }) => {
 
     const { call, error, loading } = useFrappePostCall('raven.api.raven_channel_member.add_channel_members')
-    const { mutate } = useSWRConfig()
+    const { call: frappeCall } = useContext(FrappeContext) as FrappeConfig
 
     const [searchQuery, setSearchQuery] = useState('')
     const [selectedUsers, setSelectedUsers] = useState<UserData[]>([])
@@ -50,7 +52,7 @@ const AddChannelMembers = ({ memberIds, channelID, onClose }: { memberIds: strin
             })
                 .then(() => {
                     toast.success(_("Members added"))
-                    mutate(["channel_members", channelID])
+                    loadChannelMembers(frappeCall, channelID, true)
                     onClose()
                 })
         }

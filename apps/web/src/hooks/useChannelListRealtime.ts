@@ -1,4 +1,6 @@
-import { useFrappeEventListener, useSWRConfig } from "frappe-react-sdk"
+import { useContext } from "react"
+import { FrappeConfig, FrappeContext, useFrappeEventListener, useSWRConfig } from "frappe-react-sdk"
+import { refetchChannelMembersIfLoaded } from "@hooks/useChannelMembers"
 
 type ChannelEvent = { channel_id: string }
 
@@ -9,15 +11,16 @@ type ChannelEvent = { channel_id: string }
  *    current user joined or left one. The payload carries only channel_id (not
  *    the channel data), so we revalidate the whole list rather than patch — and
  *    get_all_channels already filters to the user's channels.
- *  - channel_members_updated: a channel's membership changed — revalidate that
- *    channel's member list (key ["channel_members", channelID], see useChannelMembers).
+ *  - channel_members_updated: a channel's (or thread's — common to both) membership
+ *    changed. Refetch that id's member list in the channelMembersStore, but ONLY if it's
+ *    already loaded — we never build member lists for threads the user hasn't opened.
  *
- * Both the channel list and the member caches are shared app-wide, so this is
- * mounted once at the shell. SWR dedupes concurrent revalidations, so bursts
- * (e.g. several channels created at once) collapse to a single refetch.
+ * The channel list cache (SWR) and the member store are shared app-wide, so this is
+ * mounted once at the shell.
  */
 export const useChannelListRealtime = () => {
     const { mutate } = useSWRConfig()
+    const { call } = useContext(FrappeContext) as FrappeConfig
 
     // TODO: Add debouncing
 
@@ -27,6 +30,6 @@ export const useChannelListRealtime = () => {
 
     useFrappeEventListener("channel_members_updated", (event: ChannelEvent) => {
         if (!event?.channel_id) return
-        mutate(["channel_members", event.channel_id])
+        refetchChannelMembersIfLoaded(call, event.channel_id)
     })
 }

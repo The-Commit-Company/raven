@@ -20,6 +20,8 @@ import { useChannelListSync } from "@stores/channels/useChannelListSync"
 import { useRegisterCustomEmojis } from "@hooks/useRegisterCustomEmojis"
 import { usePresenceSync } from "@stores/presence/usePresenceSync"
 import { useLeaveSync } from "@stores/leave/useLeaveSync"
+import { useThreadsRealtime } from "@stores/threads/useThreadsRealtime"
+import { useUnreadThreadsSync } from "@stores/threads/useUnreadThreads"
 import { useReportActiveState } from "@stores/presence/useReportActiveState"
 import DocumentTitle from "./DocumentTitle"
 import RavenSettingsDialog from "@components/features/settings/SettingsDialog"
@@ -106,6 +108,11 @@ const AppListeners = ({ children }: { children: React.ReactNode }) => {
     useReportActiveState()
     // Seeds the set of users on leave today (read via useIsUserOnLeave)
     useLeaveSync()
+    // Patches thread reply counts (thread_reply) + the unread-threads set (participant-scoped
+    // raven:unread_thread_count_updated) live
+    useThreadsRealtime()
+    // Seeds + reconciles the unread-threads set (read via useUnreadThreadsCount)
+    useUnreadThreadsSync()
     // TODO: Push notification listener
     // TODO: App update listener
     // TODO: Websocket connection listener

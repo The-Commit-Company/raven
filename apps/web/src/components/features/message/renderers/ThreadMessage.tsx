@@ -1,10 +1,12 @@
-import { useFrappeGetCall } from "frappe-react-sdk"
+import { useContext, useEffect } from "react"
+import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
 import { GroupedAvatars } from "@components/ui/grouped-avatars"
 import type { UserData } from "@db"
 import { useAtom } from "jotai"
 import { channelDrawerAtom } from "@utils/channelAtoms"
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
-import { useUsersById } from "@hooks/useMessageRowLookups"
+import { useChannelMembers } from "@hooks/useChannelMembers"
+import { loadThreadDetails, useThreadReplyCount } from "@stores/threads/useThreadMeta"
 import { useHasBeenInView } from "@hooks/useHasBeenInView"
 import { NavLink, useLocation } from "react-router-dom"
 import { cn } from "@lib/utils"
@@ -56,27 +58,24 @@ const ThreadPillSkeleton = () => (
     </div>
 )
 
-type ThreadDetails = { members: Record<string, unknown>; message_count: number }
-
 const LoadedThreadPill = ({ threadID }: { threadID: string }) => {
-    // Mounted only once the parent message is in view → fetch fires lazily.
-    const { data } = useFrappeGetCall<{ message: ThreadDetails }>(
-        "raven.api.threads.get_thread_details",
-        { thread_id: threadID },
-        ["thread_details", threadID],
-        { revalidateOnFocus: false },
-    )
-    const usersById = useUsersById()
+    const { call } = useContext(FrappeContext) as FrappeConfig
 
-    if (!data) return <ThreadPillSkeleton />
+    // Mounted only once the parent message is in view. get_thread_details fires ONCE per
+    // thread (gated in the store) and seeds both members and the reply count; realtime keeps
+    // them live thereafter, so revisiting the channel doesn't refetch. Read both back through
+    // their stores — members autoFetch off (the seed above covers it, no get_channel_members).
+    useEffect(() => {
+        loadThreadDetails(call, threadID)
+    }, [call, threadID])
 
-    // members is the get_channel_members map (keyed by user id); resolve to UserData
-    // from the store for the avatars.
-    const participants = Object.keys(data.message.members ?? {})
-        .map((id) => usersById.get(id))
-        .filter((u): u is UserData => !!u)
+    const { members } = useChannelMembers(threadID, { autoFetch: false })
+    const replyCount = useThreadReplyCount(threadID)
 
-    return <ThreadButton participants={participants} messageCount={data.message.message_count} threadID={threadID} />
+    // Undefined until the seed lands → keep the skeleton (members arrive in the same seed).
+    if (replyCount === undefined) return <ThreadPillSkeleton />
+
+    return <ThreadButton participants={members} messageCount={replyCount} threadID={threadID} />
 }
 
 /**

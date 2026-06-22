@@ -1,4 +1,5 @@
 import { channelMessagesStore } from "./store"
+import { channelUnreadStore } from "@stores/unread/store"
 import { MessagesPage } from "./types"
 
 const PAGE_SIZE = 30
@@ -39,6 +40,9 @@ export const loadInitialMessages = async (
             update_last_visit: false,
         })
         channelMessagesStore.setInitialPage(channelID, response.message)
+        // Baseline the read tracker with the server's last_visit so it won't re-post a
+        // watermark already recorded (opening a caught-up channel writes nothing).
+        channelUnreadStore.setServerWatermark(channelID, response.message.last_visit)
     } catch (error) {
         channelMessagesStore.failLoading(channelID, errorMessage(error))
     } finally {

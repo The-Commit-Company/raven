@@ -5,9 +5,10 @@ import { UserAvatar } from '@components/features/message/UserAvatar';
 import { UserMinus, SearchIcon, PlusIcon, Crown, MessagesSquareIcon } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@components/ui/dropdown-menu';
 import _ from '@lib/translate';
-import { ChannelMemberData } from '@hooks/useChannelMembers';
+import { ChannelMemberData, loadChannelMembers } from '@hooks/useChannelMembers';
 import { Virtuoso } from 'react-virtuoso';
-import { useFrappeDeleteDoc, useFrappeUpdateDoc, useSWRConfig } from 'frappe-react-sdk';
+import { useContext } from 'react';
+import { FrappeConfig, FrappeContext, useFrappeDeleteDoc, useFrappeUpdateDoc } from 'frappe-react-sdk';
 import { toast } from 'sonner';
 import { useDebounceValue } from 'usehooks-ts';
 import { Badge } from '@components/ui/badge';
@@ -66,7 +67,7 @@ const ChannelMembersList = ({ members, channelID, allowSettingChange }: { member
 }
 
 const MembersList = ({ filteredMembers, channelID, allowSettingChange }: { filteredMembers: ChannelMemberData[], channelID: string, allowSettingChange: boolean }) => {
-    const { mutate } = useSWRConfig()
+    const { call } = useContext(FrappeContext) as FrappeConfig
     const { deleteDoc } = useFrappeDeleteDoc()
     const { updateDoc } = useFrappeUpdateDoc()
 
@@ -75,7 +76,7 @@ const MembersList = ({ filteredMembers, channelID, allowSettingChange }: { filte
         deleteDoc('Raven Channel Member', member.channel_member_name)
             .then(() => {
                 toast.success(_("Member removed"))
-                mutate(["channel_members", channelID])
+                loadChannelMembers(call, channelID, true)
             })
             .catch(() => toast.error(_("Failed to remove member")))
     }
@@ -86,7 +87,7 @@ const MembersList = ({ filteredMembers, channelID, allowSettingChange }: { filte
         updateDoc('Raven Channel Member', member.channel_member_name, { is_admin: newAdminStatus })
             .then(() => {
                 toast.success(newAdminStatus === 1 ? _("Member is now an admin") : _("Admin rights removed"))
-                mutate(["channel_members", channelID])
+                loadChannelMembers(call, channelID, true)
             })
             .catch(() => toast.error(_("Failed to update member")))
     }

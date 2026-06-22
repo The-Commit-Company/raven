@@ -3,6 +3,7 @@ import { useFrappePostCall } from "frappe-react-sdk"
 import { useDebounceCallback } from "usehooks-ts"
 import type { Message } from "@raven/types/common/Message"
 import { channelUnreadStore } from "./store"
+import { unreadThreadsStore } from "@stores/threads/unreadStore"
 
 /** How long after the last in-view message before we flush the watermark to the server. */
 const FLUSH_DELAY = 1500
@@ -44,12 +45,19 @@ export const useChannelReadTracker = (
     const flush = useCallback(() => {
         const watermark = watermarkRef.current
         if (!watermark) return
+        // First flush this mount: adopt the server's last_visit (delivered on channel load)
+        // as the baseline. Opening a channel you're already caught up on then posts nothing,
+        // since its newest message is at/below that watermark. Pristine — never advanced by
+        // local reads, unlike the unread store's lastSeen.
+        if (sentRef.current === null) sentRef.current = channelUnreadStore.getServerWatermark(channelID)
         // Fixed-width backend datetimes: lexicographic order == chronological order.
         if (sentRef.current && watermark <= sentRef.current) return
         sentRef.current = watermark
         // Optimistic local read — the badge clears instantly; the post and the
         // focus reconcile both reconverge if anything drifts.
         channelUnreadStore.markRead(channelID, watermark, caughtUpRef.current)
+        // If this is a thread, clear it from the unread-threads badge (no-op for channels).
+        unreadThreadsStore.remove(channelID)
         trackVisitRef.current({ channel_id: channelID, last_visit: watermark }).catch(() => {
             // Best effort: a dropped flush is recovered by the next flush or the
             // focus/reconnect reconcile in useUnreadSync.
@@ -75,6 +83,8 @@ export const useChannelReadTracker = (
             const caughtUp = isAtBottom && !hasNewerMessages && document.visibilityState === "visible"
             caughtUpRef.current = isAtBottom && !hasNewerMessages
             channelUnreadStore.setActiveReadChannel(caughtUp ? channelID : null)
+            // Mirror for the unread-threads badge (a thread is a channel here; no-op otherwise).
+            unreadThreadsStore.setActiveThread(caughtUp ? channelID : null)
             if (caughtUp && watermarkRef.current) channelUnreadStore.markRead(channelID, watermarkRef.current, true)
         }
         apply()
@@ -82,6 +92,7 @@ export const useChannelReadTracker = (
         return () => {
             document.removeEventListener("visibilitychange", apply)
             channelUnreadStore.setActiveReadChannel(null)
+            unreadThreadsStore.setActiveThread(null)
         }
     }, [channelID, isAtBottom, hasNewerMessages])
 

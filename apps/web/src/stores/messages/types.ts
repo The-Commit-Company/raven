@@ -36,6 +36,8 @@ export type MessagesPage = {
     messages: Message[]
     has_old_messages?: boolean
     has_new_messages?: boolean
+    /** The member's server-side read watermark at load — baselines client last_visit tracking. */
+    last_visit?: string | null
 }
 
 /** A date divider between messages from different days. */
