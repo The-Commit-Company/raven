@@ -160,13 +160,26 @@ class RavenMessage(Document):
 
 	def remove_empty_trailing_paragraphs(self, soup):
 		"""
-		Remove p, br tags that are at the end with no content
+		Remove the empty trailing <p>/<br> the editor leaves after the cursor.
+
+		Walks only the document's TOP-LEVEL trailing nodes and stops at the first one with
+		content. Crucially it does NOT descend into a non-empty paragraph: a <br> is a void
+		element (never has contents), so the old `find_all(True)` walk treated a Shift+Enter
+		line break *inside* text (e.g. `<p>a<br>b</p>`) as a trailing empty tag and stripped
+		it, collapsing the message to one line.
 		"""
-		all_tags = soup.find_all(True)
-		all_tags.reverse()
-		for tag in all_tags:
-			if tag.name in ["br", "p"] and not tag.contents:
-				tag.extract()
+		while soup.contents:
+			last = soup.contents[-1]
+			name = getattr(last, "name", None)
+			if name == "br":
+				last.extract()
+			elif name == "p" and not last.get_text(strip=True) and not last.find("img"):
+				# Truly empty paragraph (no text, no inline media) — drop it. A paragraph that
+				# contains text with <br>s has non-empty get_text, so it's kept intact.
+				last.extract()
+			elif name is None and not str(last).strip():
+				# Trailing whitespace-only text node between blocks.
+				last.extract()
 			else:
 				break
 		self.text = str(soup)

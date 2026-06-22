@@ -1,6 +1,7 @@
 import { useState, type DragEvent, type ReactNode } from "react"
 import { Upload } from "lucide-react"
 import { useAttachFile } from "./useFileInput"
+import { focusComposer } from "./composerFocus"
 import _ from "@lib/translate"
 
 /** True when the drag carries files (not selected text / an in-app element). */
@@ -34,7 +35,11 @@ export const FileDropZone = ({ channelID, children }: { channelID: string; child
                 if (!isFileDrag(e)) return
                 e.preventDefault()
                 setIsDragging(false)
-                if (e.dataTransfer.files?.length) onAddFile(e.dataTransfer.files)
+                if (e.dataTransfer.files?.length) {
+                    onAddFile(e.dataTransfer.files)
+                    // The drag took focus off the editor — hand it back.
+                    focusComposer(channelID)
+                }
             }}
         >
             {children}

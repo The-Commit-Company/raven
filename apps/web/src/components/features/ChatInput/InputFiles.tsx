@@ -75,7 +75,7 @@ const FileItem = ({ file, onRemove, onPreview }: { file: FileItemType, onRemove:
     }
 
     return <div
-        className={cn("rounded-lg border border-outline-gray-2 w-64", canPreview && "cursor-pointer hover:bg-surface-gray-1")}
+        className={cn("rounded-md border border-outline-gray-2 w-64", canPreview && "cursor-pointer hover:bg-surface-gray-1")}
         onClick={canPreview ? () => onPreview(file) : undefined}
         role={canPreview ? "button" : undefined}
         title={canPreview ? _("Click to preview") : undefined}
@@ -130,7 +130,7 @@ const FileItem = ({ file, onRemove, onPreview }: { file: FileItemType, onRemove:
     </div>
 }
 
-export const AddFileButton = ({ channelID }: { channelID: string }) => {
+export const AddFileButton = ({ channelID, onAfterAttach }: { channelID: string; onAfterAttach?: () => void }) => {
 
     const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -150,6 +150,8 @@ export const AddFileButton = ({ channelID }: { channelID: string }) => {
                 }
                 // Reset so re-picking the same file fires onChange again.
                 e.target.value = ''
+                // The file dialog stole focus — hand it back to the composer.
+                onAfterAttach?.()
             }} className='hidden' />
         <Tooltip>
             <TooltipTrigger asChild>

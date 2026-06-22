@@ -12,6 +12,7 @@ import { MentionButton } from "./MentionButton"
 import { EmojiPickerButton } from "./EmojiPickerButton"
 import { CreatePollDialog } from "./CreatePollDialog"
 import { uploadedFilesAtom, uploadingFilesAtom, pendingSendAtom, useAttachFile } from "./useFileInput"
+import { registerComposerFocus } from "./composerFocus"
 import { useRavenEditor, EDITOR_MIN_H } from "@components/features/editor/useRavenEditor"
 import { EditorFormattingToolbar } from "@components/features/editor/EditorFormattingToolbar"
 import { ReplyPreviewBanner } from "./ReplyPreviewBanner"
@@ -204,6 +205,13 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID, isDi
         if (replyTo) editor?.commands.focus()
     }, [replyTo, editor])
 
+    // Expose this channel's composer focus so the pane-level FileDropZone (and any other
+    // attach path outside this subtree) can refocus the editor after a drop.
+    useEffect(() => {
+        if (!editor) return
+        return registerComposerFocus(channelID, () => editor.commands.focus())
+    }, [channelID, editor])
+
     const cancelReply = useCallback(() => {
         setReplyTo(null)
         editor?.commands.focus()
@@ -278,7 +286,7 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID, isDi
                                 <MobileComposerActions channelID={channelID} onToggleFormatting={() => setShowFormatting((v) => !v)} />
                             ) : (
                                 <>
-                                    <AddFileButton channelID={channelID} />
+                                    <AddFileButton channelID={channelID} onAfterAttach={() => editor?.commands.focus()} />
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <Button
