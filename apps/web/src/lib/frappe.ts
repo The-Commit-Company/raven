@@ -12,7 +12,14 @@ export const getErrorMessage = (error?: FrappeError | null): string => {
     return messages.map(m => m.message).join('\n')
 }
 
+/**
+ * Standard function to parse the error messages from the FrappeError object
+ * @param error The FrappeError object to parse
+ * @returns An array of ParsedErrorMessage objects
+ */
 export const getErrorMessages = (error?: FrappeError | null): ParsedErrorMessage[] => {
+
+    // TODO: Parse Permission errors and provide a better human readable message instead of the default error message
     if (!error) return []
     let eMessages: ParsedErrorMessage[] = error?._server_messages ? JSON.parse(error?._server_messages) : []
     eMessages = eMessages.map((m) => {
@@ -27,6 +34,16 @@ export const getErrorMessages = (error?: FrappeError | null): ParsedErrorMessage
             return m
         }
     })
+
+    // @ts-expect-error - some errors have _error_message
+    if (error?._error_message) {
+        eMessages.push({
+            // @ts-expect-error - some errors have _error_message
+            message: error?._error_message,
+            title: "Error",
+            indicator: "red"
+        })
+    }
 
     if (eMessages.length === 0) {
         // Get the message from the exception by removing the exc_type
