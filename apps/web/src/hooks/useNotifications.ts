@@ -15,9 +15,10 @@ export interface NotificationObject {
     channel_id: string
     owner: string
     reactors?: string[]
-    reactions?: string[]
+    reactions?: { reaction: string; is_custom: 0 | 1 }[]
     creation: string
     text: string
+    content: string
     message_type: RavenMessage["message_type"]
     channel_type: RavenChannel["type"]
     channel_name: string
@@ -192,8 +193,15 @@ export const useNotifications = (
      * `currentData` filters out read items when `showUnread` is on, so unread tabs hide them.
      */
     const onAllRead = useCallback(() => {
+        // Unread-mode pages (`unread_only=1` in the key) — empty them.
         globalMutate(
-            (key) => Array.isArray(key) && key[0] === "raven.api.notifications.get_notifications",
+            (key) => Array.isArray(key) && key[0] === "raven.api.notifications.get_notifications" && key[3] === true,
+            () => ({ message: [] }),
+            { revalidate: false }
+        )
+        // Full-mode pages — items still exist server-side, just flagged read.
+        globalMutate(
+            (key) => Array.isArray(key) && key[0] === "raven.api.notifications.get_notifications" && key[3] !== true,
             (data: PageResult | undefined) => data && {
                 message: data.message.map((n) => ({ ...n, is_read: 1 as const })),
             },
