@@ -7,6 +7,7 @@ import { MessageFiles } from "./MessageFiles"
 import { MessageVideo } from "./MessageVideo"
 import { MessageAudio } from "./MessageAudio"
 import RichTextRenderer from "./RichTextRenderer"
+import { PollMessageContent } from "./PollMessageContent"
 import SearchTextRenderer from "./SearchTextRenderer"
 import { MessageReactionsRow } from "./MessageReactions"
 import { getAttachmentKind } from "@utils/attachmentPreview"
@@ -80,7 +81,9 @@ export const MessageContent = ({ message }: { message: Message }) => {
 
             {/* Media dispatch is by file EXTENSION, not message_type (a video
                 arrives as message_type "File" but should render as a player) */}
-            {messageFile ? (
+            {message.message_type === "Poll" ? (
+                <PollMessageContent message={message} />
+            ) : messageFile ? (
                 <>
                     <MessageMedia message={message} fileUrl={messageFile} />
                     {message.text && <MessageBody content={message.text} />}

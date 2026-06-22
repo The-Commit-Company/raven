@@ -17,6 +17,7 @@ import { useStreamScroll } from "./useStreamScroll"
 import { MessageActionMenu } from "./actions/MessageActionMenu"
 import { MessageActionDialogs } from "./actions/MessageActionDialogs"
 import { messageTargetAtom, messageActionTargetAtom } from "@utils/channelAtoms"
+import { ScrollViewportContext } from "@hooks/useHasBeenInView"
 import { cn } from "@lib/utils"
 import _ from "@lib/translate"
 
@@ -114,6 +115,12 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
         onTargetSettled,
     })
 
+    // Expose the scroll container as the in-view root (useHasBeenInView), so messages
+    // can lazily fetch their extra data only when visible. State (not the raw ref) so
+    // consumers re-render once it's available and root their observers at the container.
+    const [viewport, setViewport] = useState<HTMLElement | null>(null)
+    useEffect(() => setViewport(containerRef.current), [containerRef])
+
     // Tracks how far the user has read (the newest in-view message) and flushes
     // that watermark to the server (last_visit), which defines unread counts.
     const { onMessageInView } = useChannelReadTracker(channelID, { isAtBottom, hasNewerMessages })
@@ -135,6 +142,7 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
     const showJumpButton = !isLoading && !error && (!isAtBottom || hasNewerMessages)
 
     return (
+        <ScrollViewportContext.Provider value={viewport}>
         <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
             <MessageActionMenu channelID={channelID}>
                 <div
@@ -142,7 +150,7 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
                     onScroll={onScroll}
                     className="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-auto [overflow-anchor:none]"
                 >
-                    <div className="flex min-w-0 w-full flex-col px-3 pb-8">
+                    <div className="flex min-w-0 w-full flex-col px-3 pb-4">
                         {isLoading ? (
                             <MessageListSkeleton />
                         ) : error ? (
@@ -236,6 +244,7 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
                 </div>
             )}
         </div>
+        </ScrollViewportContext.Provider>
     )
 }
 
