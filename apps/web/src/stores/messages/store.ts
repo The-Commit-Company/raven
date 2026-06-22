@@ -150,6 +150,30 @@ class ChannelMessagesStore {
         this.update(channelID, initialChannelState)
     }
 
+    /**
+     * Recompute the "New messages" divider anchor against `watermark` (the latest read
+     * position). Used on WARM re-entry — a warm channel isn't refetched, so its
+     * `firstUnreadMessage` would otherwise stay frozen at the first load and the divider
+     * would linger after you've read everything. Sets it to the first loaded message newer
+     * than the watermark, or null when caught up.
+     */
+    refreshUnreadAnchor(channelID: string, watermark: string | null) {
+        const state = this.getState(channelID)
+        if (state.status !== "ready") return
+        let firstUnread: string | null = null
+        if (watermark) {
+            for (const id of state.order) {
+                const message = state.byId.get(id)
+                if (message && message.creation > watermark) {
+                    firstUnread = id
+                    break
+                }
+            }
+        }
+        if (state.firstUnreadMessage === firstUnread) return
+        this.update(channelID, { ...state, firstUnreadMessage: firstUnread })
+    }
+
     /** ----- Send lifecycle (messages shown before the server confirms them) ----- */
 
     /** Show a send on screen immediately. `batchId` (= client_id) groups its messages

@@ -1,7 +1,7 @@
 import type { Message } from "@raven/types/common/Message"
 import { getDateObject } from "@lib/date"
 import { isThreadParent } from "@utils/messageUtils"
-import { ChannelMessagesState, DateBlock, MessageBatchBlock, StreamBlock } from "./types"
+import { ChannelMessagesState, DateBlock, MessageBatchBlock, StreamBlock, UnreadBlock } from "./types"
 
 /**
  * Derives the render list for the chat stream: messages in ascending order,
@@ -57,6 +57,9 @@ const dateBlockFor = (dateKey: string): DateBlock => ({
     name: `date-${dateKey}`,
 })
 
+/** Singleton — the divider carries no data, so one shared (stable) reference is enough. */
+const UNREAD_BLOCK: UnreadBlock = { message_type: "unread", name: "unread-divider" }
+
 /** A message continues the previous one when same sender, same day, within the gap. */
 const isContinuationOf = (message: Message, previous: Message | null): boolean => {
     if (!previous) return false
@@ -89,7 +92,11 @@ const isBatchMemberOf = (message: Message, head: Message): boolean => {
     )
 }
 
-const buildBlocks = (state: ChannelMessagesState, pinnedMessagesString: string): StreamBlock[] => {
+const buildBlocks = (
+    state: ChannelMessagesState,
+    pinnedMessagesString: string,
+    firstUnreadMessage: string | null,
+): StreamBlock[] => {
     const pinnedIds = parsePinnedIds(pinnedMessagesString)
     const messages: Message[] = []
     for (const id of state.order) {
@@ -97,13 +104,24 @@ const buildBlocks = (state: ChannelMessagesState, pinnedMessagesString: string):
         if (message) messages.push(message)
     }
 
+    // The "New messages" divider goes before the first unread message, identified by the
+    // FROZEN id captured at entry (not a live timestamp) — so a message you send, or one that
+    // arrives while you're watching, never moves or spawns the line. -1 when caught up.
+    const firstUnreadIndex = firstUnreadMessage ? messages.findIndex((m) => m.name === firstUnreadMessage) : -1
+
     const blocks: StreamBlock[] = []
     let previous: Message | null = null
+    let unreadInserted = false
     for (let index = 0; index < messages.length; index++) {
         const message = messages[index]
         const dateKey = dateKeyOf(message)
         if (!previous || dateKeyOf(previous) !== dateKey) {
             blocks.push(dateBlockFor(dateKey))
+        }
+        // First block at/after the unread anchor → drop the divider in (after any date block).
+        if (!unreadInserted && firstUnreadIndex !== -1 && index >= firstUnreadIndex) {
+            blocks.push(UNREAD_BLOCK)
+            unreadInserted = true
         }
         const isContinuation = isContinuationOf(message, previous) ? 1 : 0
 
@@ -157,7 +175,7 @@ const buildBlocks = (state: ChannelMessagesState, pinnedMessagesString: string):
     return blocks
 }
 
-type CacheEntry = { pinnedMessagesString: string; blocks: StreamBlock[] }
+type CacheEntry = { pinnedMessagesString: string; firstUnreadMessage: string | null; blocks: StreamBlock[] }
 
 /**
  * One cached result per state object. State objects are immutable — a new one
@@ -174,9 +192,11 @@ export const selectStreamBlocks = (
     pinnedMessagesString?: string | null,
 ): StreamBlock[] => {
     const pinned = pinnedMessagesString ?? ""
+    const firstUnread = state.firstUnreadMessage
     const cached = blocksCache.get(state)
-    if (cached && cached.pinnedMessagesString === pinned) return cached.blocks
-    const blocks = buildBlocks(state, pinned)
-    blocksCache.set(state, { pinnedMessagesString: pinned, blocks })
+    if (cached && cached.pinnedMessagesString === pinned && cached.firstUnreadMessage === firstUnread)
+        return cached.blocks
+    const blocks = buildBlocks(state, pinned, firstUnread)
+    blocksCache.set(state, { pinnedMessagesString: pinned, firstUnreadMessage: firstUnread, blocks })
     return blocks
 }

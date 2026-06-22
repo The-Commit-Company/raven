@@ -79,7 +79,11 @@ def _complete_boundary_batch(channel_id: str, boundary, older: bool):
 
 @frappe.whitelist()
 def get_messages(
-	channel_id: str, limit: int = 20, base_message: str | None = None, update_last_visit: bool = True
+	channel_id: str,
+	limit: int = 20,
+	base_message: str | None = None,
+	update_last_visit: bool = True,
+	anchor_to_unread: bool = False,
 ):
 	"""
 	API to get list of messages for a channel, ordered by creation date (newest first)
@@ -90,16 +94,50 @@ def get_messages(
 	the Raven Channel Member row inside the read transaction, which can collide with a
 	concurrent message send and surface as a QueryDeadlockError (MariaDB 1020). Remove
 	this flag and the GET-time write once v2 is gone.
+
+	`anchor_to_unread` (v3): when True and the caller has unread messages (anything created
+	after their last_visit), the returned window is centered on the FIRST unread message
+	instead of the latest page — so the client can render a "New messages" divider and land
+	the user on it. Backward-compatible: v2 omits it (defaults False) and keeps getting the
+	latest page. Ignored when `base_message` is given (an explicit jump wins), and a no-op
+	when the caller has never visited (no last_visit → show recent, no divider).
 	"""
 
 	# Check permission for channel access
 	if not frappe.has_permission(doctype="Raven Channel", doc=channel_id, ptype="read"):
 		frappe.throw(_("You do not have permission to access this channel"), frappe.PermissionError)
 
-	# Fetch messages for the channel
+	# An explicit jump-to-message (reply click / deep link) always wins.
 	if base_message and frappe.db.exists("Raven Message", base_message):
 		return get_messages_around_base(channel_id, base_message, limit)
 
+	# The member's current read watermark: returned so the v3 client can baseline its own
+	# last_visit tracking, and used below to locate the unread boundary. Read before the
+	# optional legacy write further down.
+	last_visit = frappe.db.get_value(
+		"Raven Channel Member",
+		{"channel_id": channel_id, "user_id": frappe.session.user},
+		"last_visit",
+	)
+
+	# v3 unread divider: center the window on the first unread message so the client can show
+	# the "New messages" line and scroll there. Only when the caller has visited before
+	# (last_visit set) and there's something newer — otherwise fall through to the latest page.
+	if anchor_to_unread and last_visit:
+		first_unread = frappe.db.get_all(
+			"Raven Message",
+			pluck="name",
+			filters={"channel_id": channel_id, "creation": (">", last_visit)},
+			order_by="creation asc, name asc",
+			limit=1,
+		)
+		if first_unread:
+			result = get_messages_around_base(channel_id, first_unread[0], limit)
+			result["last_visit"] = last_visit
+			result["first_unread_message"] = first_unread[0]
+			return result
+
+	# Default (also the v2 path): the latest page, ordered newest-first.
 	# Cannot use `get_all` as it does not apply the `order_by` clause to multiple fields
 	message = frappe.qb.DocType("Raven Message")
 
@@ -131,15 +169,6 @@ def get_messages(
 
 		if len(older_message) > 0:
 			has_old_messages = True
-
-	# The member's current read watermark, so the v3 client can baseline its own last_visit
-	# tracking and skip re-posting a watermark the server already has (it tracks last_visit
-	# itself via track_visit). Read before the optional legacy write below.
-	last_visit = frappe.db.get_value(
-		"Raven Channel Member",
-		{"channel_id": channel_id, "user_id": frappe.session.user},
-		"last_visit",
-	)
 
 	if update_last_visit:
 		track_channel_visit(channel_id=channel_id, commit=True)

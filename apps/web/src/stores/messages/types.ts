@@ -29,6 +29,12 @@ export type ChannelMessagesState = {
     hasNewerMessages: boolean
     loadingOlder: boolean
     loadingNewer: boolean
+    /**
+     * The first unread message at channel entry (server's `first_unread_message`), or null if
+     * caught up. FROZEN — set only on the initial load, never by new/sent messages — so the
+     * "New messages" divider sits where you left off and a message you send doesn't spawn a line.
+     */
+    firstUnreadMessage: string | null
 }
 
 /** Response shape shared by get_messages / get_older_messages / get_newer_messages. */
@@ -38,6 +44,8 @@ export type MessagesPage = {
     has_new_messages?: boolean
     /** The member's server-side read watermark at load — baselines client last_visit tracking. */
     last_visit?: string | null
+    /** First unread message id when the load was anchored to unread (drives the "New messages" divider). */
+    first_unread_message?: string | null
 }
 
 /** A date divider between messages from different days. */
@@ -63,8 +71,18 @@ export type MessageBatchBlock = {
     is_continuation: 0 | 1
 }
 
-/** What the chat stream renders: messages (decorated with continuation/pinned flags), batches, and date dividers. */
-export type StreamBlock = Message | DateBlock | MessageBatchBlock
+/**
+ * The "New messages" divider — inserted once, before the first message created after the
+ * member's last_visit (the read watermark captured at channel entry). Stays put as the user
+ * reads; recomputed only on re-entry.
+ */
+export type UnreadBlock = {
+    message_type: "unread"
+    name: "unread-divider"
+}
+
+/** What the chat stream renders: messages (decorated with continuation/pinned flags), batches, date dividers, and the unread divider. */
+export type StreamBlock = Message | DateBlock | MessageBatchBlock | UnreadBlock
 
 export const MAX_WINDOW_SIZE = 300
 
@@ -77,4 +95,5 @@ export const initialChannelState: ChannelMessagesState = {
     hasNewerMessages: false,
     loadingOlder: false,
     loadingNewer: false,
+    firstUnreadMessage: null,
 }

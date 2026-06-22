@@ -7,6 +7,7 @@ import { getAttachmentKind } from "@utils/attachmentPreview"
 import { getErrorMessage } from "@lib/frappe"
 import _ from "@lib/translate"
 import { channelMessagesStore } from "./store"
+import { channelUnreadStore } from "@stores/unread/store"
 import { putOutbox, removeOutbox, setOutboxStatus, isSettling } from "./outbox"
 import type { OptimisticMessage } from "./types"
 
@@ -99,6 +100,10 @@ export const enqueueSend = (
 
     const placeholders = buildOptimisticMessages(channelID, batchId, owner, content, files, creation, reply)
     channelMessagesStore.addOptimisticMessages(channelID, batchId, placeholders)
+
+    // Sending means you're caught up — clear the unread badge instantly (the read tracker
+    // still posts track_visit to the server when the message scrolls into view).
+    channelUnreadStore.markRead(channelID, creation, true)
 
     putOutbox({
         client_id: batchId,

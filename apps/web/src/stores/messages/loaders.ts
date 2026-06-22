@@ -38,6 +38,9 @@ export const loadInitialMessages = async (
             // We track last_visit ourselves (useChannelReadTracker), so the fetch must
             // not also write it — that GET-time write can deadlock with a concurrent send.
             update_last_visit: false,
+            // Center the window on the first unread message (for the "New messages" divider)
+            // unless we're jumping to a specific message — an explicit jump wins.
+            anchor_to_unread: !baseMessage,
         })
         channelMessagesStore.setInitialPage(channelID, response.message)
         // Baseline the read tracker with the server's last_visit so it won't re-post a

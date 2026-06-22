@@ -100,6 +100,7 @@ const MembersList = ({ filteredMembers, channelID, allowSettingChange }: { filte
             itemContent={(_index, member) => (
                 <div
                     key={member.name}
+                    data-member-id={member.channel_member_name}
                     className="flex items-center justify-between"
                 >
                     <DropdownMenu>

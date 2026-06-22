@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom"
 import { useAtom, useAtomValue } from "jotai"
 import { ArrowDown, LoaderCircle } from "lucide-react"
 import DateSeparator from "./renderers/DateSeparator"
+import UnreadSeparator from "./renderers/UnreadSeparator"
 import SystemMessage from "./renderers/SystemMessage"
 import { MessageItem } from "./renderers/MessageItem"
 import { BatchMessageItem } from "./renderers/BatchMessageItem"
@@ -56,6 +57,7 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
         loadNewer,
         jumpToLatest,
         jumpToMessage,
+        firstUnreadMessage,
     } = useChannelMessages(channelID, pinnedMessagesString, deepLinkMessageID)
 
     const [targetMessageID, setTargetMessageID] = useAtom(messageTargetAtom(channelID))
@@ -113,6 +115,7 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
         hasNewerMessages,
         targetMessageID,
         onTargetSettled,
+        hasUnreadDivider: firstUnreadMessage !== null,
     })
 
     // Expose the scroll container as the in-view root (useHasBeenInView), so messages
@@ -172,6 +175,8 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
                                 {blocks.map((block) =>
                                     block.message_type === "date" ? (
                                         <DateSeparator label={block.creation} key={block.name} />
+                                    ) : block.message_type === "unread" ? (
+                                        <UnreadSeparator key={block.name} />
                                     ) : block.message_type === "batch" ? (
                                         <div
                                             key={block.name}

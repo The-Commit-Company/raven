@@ -9,6 +9,7 @@ import {
 } from "./loaders"
 import { selectStreamBlocks } from "./selectors"
 import { channelMessagesStore } from "./store"
+import { channelUnreadStore } from "@stores/unread/store"
 
 /**
  * Subscribes a component to a channel's message window and triggers the
@@ -43,6 +44,18 @@ export const useChannelMessages = (
             // deep-link target, if this visit has one).
             channelMessagesStore.reset(channelID)
             loadInitialMessages(client, channelID, initialBaseMessage ?? undefined)
+        } else {
+            // Warm live-edge re-entry: NOT refetched, so the unread divider would stay frozen
+            // at the first load and linger after you'd read everything. Recompute it against
+            // the furthest-read position — server last_visit at load (serverWatermark) or how
+            // far we've read since (lastSeen), whichever is later. Cleared if caught up; a
+            // fresh line appears before messages that arrived while away.
+            const unread = channelUnreadStore.getState(channelID)
+            const watermark = [channelUnreadStore.getServerWatermark(channelID), unread.lastSeen]
+                .filter((t): t is string => Boolean(t))
+                .sort()
+                .pop() ?? null
+            channelMessagesStore.refreshUnreadAnchor(channelID, watermark)
         }
     }, [channelID])
 
@@ -56,8 +69,11 @@ export const useChannelMessages = (
     )
 
     return {
-        /** Render-ready blocks: messages with continuation/pinned flags + date dividers. */
+        /** Render-ready blocks: messages with continuation/pinned flags + date/unread dividers.
+         * The unread divider is anchored to `state.firstUnreadMessage` (frozen at entry). */
         blocks: selectStreamBlocks(state, pinnedMessagesString),
+        /** First unread message id at entry, or null — the scroll engine lands on its divider. */
+        firstUnreadMessage: state.firstUnreadMessage,
         isLoading: state.status === "idle" || state.status === "loading",
         error: state.status === "error" ? state.error : null,
         hasOlderMessages: state.hasOlderMessages,

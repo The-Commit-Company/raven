@@ -7,6 +7,8 @@ import { useUserCookieData } from "@hooks/useUserCookieData"
 const AT_BOTTOM_SLOP = 40
 /** Distance from either content edge (px) at which the next page starts loading. */
 const LOAD_MORE_THRESHOLD = 400
+/** Gap (px) left above the "New messages" divider when landing on it, so prior context peeks in. */
+const UNREAD_ANCHOR_TOP_MARGIN = 8
 
 /** Owner of the newest actual message in the stream (skips date dividers, unwraps batches). */
 const ownerOfNewestMessage = (blocks: StreamBlock[]): string | undefined => {
@@ -29,6 +31,8 @@ type StreamScrollOptions = {
     targetMessageID: string | null
     /** Called once the target is centered in the viewport. */
     onTargetSettled: (messageID: string) => void
+    /** True when a "New messages" divider exists in this window — the engine lands on it on entry. */
+    hasUnreadDivider: boolean
 }
 
 /**
@@ -58,6 +62,7 @@ export const useStreamScroll = ({
     hasNewerMessages,
     targetMessageID,
     onTargetSettled,
+    hasUnreadDivider,
 }: StreamScrollOptions) => {
     const { name: currentUser } = useUserCookieData()
     const containerRef = useRef<HTMLDivElement>(null)
@@ -73,6 +78,8 @@ export const useStreamScroll = ({
      */
     const topAnchorRef = useRef<{ id: string; offset: number } | null>(null)
     const edgeIdsRef = useRef<{ first: string | null; last: string | null }>({ first: null, last: null })
+    /** Land on the "New messages" divider on the first content render after a channel switch. */
+    const unreadAnchorPendingRef = useRef(true)
     /** True while a smooth glide animates — pauses load-older so a prepend can't fight the animation. */
     const smoothScrollingRef = useRef(false)
 
@@ -123,10 +130,12 @@ export const useStreamScroll = ({
         if (distanceFromBottom < LOAD_MORE_THRESHOLD) loadNewer()
     }, [loadOlder, loadNewer, hasNewerMessages])
 
-    // A channel switch resets the engine: start pinned, nothing unseen.
+    // A channel switch resets the engine: start pinned, nothing unseen, and arm the
+    // one-shot "land on the unread divider" for this channel's first content render.
     useLayoutEffect(() => {
         pinnedRef.current = true
         edgeIdsRef.current = { first: null, last: null }
+        unreadAnchorPendingRef.current = true
         setIsAtBottom(true)
         setHasUnseenMessages(false)
     }, [channelID])
@@ -146,6 +155,10 @@ export const useStreamScroll = ({
         const last = blocks[blocks.length - 1].name
         const previous = edgeIdsRef.current
         edgeIdsRef.current = { first, last }
+
+        // A navigation target (deep link / reply click) owns the scroll — never let the
+        // unread anchor override where the user explicitly asked to go.
+        if (targetMessageID) unreadAnchorPendingRef.current = false
 
         if (targetMessageID) {
             // Position the target if its block is in the DOM; otherwise hold
@@ -168,6 +181,31 @@ export const useStreamScroll = ({
                 }
                 onTargetSettled(targetMessageID)
             }
+        } else if (unreadAnchorPendingRef.current) {
+            // First content render after entering the channel: land on the "New messages"
+            // divider (top-aligned, prior context peeking above) and go free, so reading from
+            // there advances the watermark only by what's actually seen. Only CONSUME the
+            // one-shot once resolved — divider found, or none expected — so a render where the
+            // divider isn't in the DOM yet can't prematurely pin us to the bottom.
+            const divider = container.querySelector("[data-unread-divider]")
+            if (divider) {
+                unreadAnchorPendingRef.current = false
+                const top =
+                    divider.getBoundingClientRect().top -
+                    container.getBoundingClientRect().top +
+                    container.scrollTop -
+                    UNREAD_ANCHOR_TOP_MARGIN
+                container.scrollTop = Math.max(0, top)
+                pinnedRef.current = false
+                // We're no longer at the live edge — tell the read tracker now, so it can't
+                // treat this as "caught up" in the frame before the scroll event lands.
+                setIsAtBottom(false)
+            } else if (!hasUnreadDivider) {
+                // Caught up — no divider coming. Pin to the bottom as usual.
+                unreadAnchorPendingRef.current = false
+                container.scrollTop = container.scrollHeight
+            }
+            // else: a divider is expected but hasn't rendered yet — keep waiting (don't pin).
         } else if (pinnedRef.current) {
             container.scrollTop = container.scrollHeight
         } else if (previous.first !== null && first !== previous.first) {

@@ -115,6 +115,9 @@ export const applyInitialPage = (
         order: sortIds(byId),
         hasOlderMessages: page.has_old_messages ?? false,
         hasNewerMessages: page.has_new_messages ?? false,
+        // Frozen at entry: only the initial load sets the unread divider anchor; later pages
+        // and new/sent messages spread `...state` and leave it untouched.
+        firstUnreadMessage: page.first_unread_message ?? null,
     }
 }
 
