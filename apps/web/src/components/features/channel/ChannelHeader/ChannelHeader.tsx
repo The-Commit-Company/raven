@@ -1,28 +1,32 @@
 import { Button } from "@components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
-import { ChevronLeft, Command, Headset, Pin, Star } from "lucide-react"
+import { ChevronLeft, Pin, Star } from "lucide-react"
 import ChannelMembers from "./ChannelMembers"
 import ChannelMenu from "./ChannelMenu"
-import { useAtom, useSetAtom } from "jotai"
+import { useAtom } from "jotai"
 import { channelDrawerAtom } from "@utils/channelAtoms"
 import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
 import { useNavigate, useParams } from "react-router-dom"
 import { useChannel } from "@hooks/useChannel"
-import { useIsMobile } from "@hooks/use-mobile"
 import _ from "@lib/translate"
-import { commandMenuOpenAtom } from "@components/features/cmdk/atoms"
 
-const ChannelHeader = () => {
-    const channelID = useCurrentChannelID()
+interface ChannelHeaderProps {
+    /** Override the URL-derived channel id. Used when this header is rendered outside
+     * a `/:workspaceID/:id` route (eg. notifications view) and `useCurrentChannelID`
+     * would otherwise fall back to `"general"`. */
+    channelID?: string
+}
+
+const ChannelHeader = ({ channelID: channelIDProp }: ChannelHeaderProps = {}) => {
+    const ChannelIDfromURL = useCurrentChannelID()
+    const channelID = channelIDProp ?? ChannelIDfromURL
     const { channel, toggleStarChannel, isStarred } = useChannel(channelID)
-    const isMobile = useIsMobile()
     const navigate = useNavigate()
     const { workspaceID } = useParams()
 
     const pinnedCount = channel?.pinned_messages_string ? channel.pinned_messages_string.split("\n").length : 0
 
     const [drawerType, setDrawerType] = useAtom(channelDrawerAtom(channelID))
-    const setCommandMenuOpen = useSetAtom(commandMenuOpenAtom)
 
     const onOpenMembers = () => {
         setDrawerType(drawerType === 'members' ? '' : 'members')

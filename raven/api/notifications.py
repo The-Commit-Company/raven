@@ -48,6 +48,7 @@ def _get_mention_notifications(limit, start, unread_only):
 			message.owner,
 			message.creation,
 			message.text,
+			message.content,
 			message.message_type,
 			channel.type.as_("channel_type"),
 			channel.channel_name,
@@ -110,6 +111,7 @@ def _get_reaction_notifications(limit, start, unread_only):
 			Max(reaction.creation).as_("creation"),
 			message.owner,
 			message.text,
+			message.content,
 			message.message_type,
 			channel.type.as_("channel_type"),
 			channel.channel_name,
@@ -133,6 +135,7 @@ def _get_reaction_notifications(limit, start, unread_only):
 			reaction.channel_id,
 			message.owner,
 			message.text,
+			message.content,
 			message.message_type,
 			channel.type,
 			channel.channel_name,
@@ -155,7 +158,7 @@ def _get_reaction_notifications(limit, start, unread_only):
 	message_ids = [r["message_id"] for r in results]
 	reaction_rows = (
 		frappe.qb.from_(reaction)
-		.select(reaction.message, reaction.owner, reaction.reaction)
+		.select(reaction.message, reaction.owner, reaction.reaction, reaction.is_custom)
 		.where(reaction.message.isin(message_ids))
 		.where(reaction.owner != user)
 		.orderby(reaction.creation, order=Order.desc)
@@ -163,14 +166,22 @@ def _get_reaction_notifications(limit, start, unread_only):
 
 	reactors_by_message = {message_id: [] for message_id in message_ids}
 	reactions_by_message = {message_id: [] for message_id in message_ids}
+	# Per-message set so the same emoji value isn't repeated when multiple reactors
+	# pick it. dict.fromkeys() still handles reactor dedup (hashable strings).
+	seen_reactions = {message_id: set() for message_id in message_ids}
 	for row in reaction_rows:
-		reactors_by_message[row["message"]].append(row["owner"])
-		reactions_by_message[row["message"]].append(row["reaction"])
+		msg_id = row["message"]
+		reactors_by_message[msg_id].append(row["owner"])
+		if row["reaction"] not in seen_reactions[msg_id]:
+			seen_reactions[msg_id].add(row["reaction"])
+			reactions_by_message[msg_id].append(
+				{"reaction": row["reaction"], "is_custom": row["is_custom"]}
+			)
 
 	for r in results:
 		r["notification_type"] = "reaction"
 		r["reactors"] = list(dict.fromkeys(reactors_by_message[r["message_id"]]))
-		r["reactions"] = list(dict.fromkeys(reactions_by_message[r["message_id"]]))
+		r["reactions"] = reactions_by_message[r["message_id"]]
 	return results
 
 

@@ -98,9 +98,7 @@ function App() {
                     <Route path="thread/:threadID" element={<ThreadDrawer />} />
                   </Route>
                 </Route>
-                <Route path="notifications" element={<Notifications />}>
-                  <Route path=":id" element={<p>Chat drawer comes here</p>} />
-                </Route>
+                <Route path="notifications" element={<Notifications />} />
                 <Route path="threads" element={<Threads />} />
                 <Route path="search" element={<SearchLayout />}>
                   <Route index element={<Search />} />
