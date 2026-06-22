@@ -1,4 +1,5 @@
-import { atomFamily, atomWithStorage } from 'jotai/utils'
+import { atomWithStorage } from 'jotai/utils'
+import { atomFamily } from 'jotai-family'
 import { atom, getDefaultStore, useSetAtom } from 'jotai'
 import { FrappeConfig, FrappeContext, useFrappeDeleteDoc } from 'frappe-react-sdk'
 import { useContext } from 'react'

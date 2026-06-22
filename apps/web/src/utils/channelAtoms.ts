@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { atomFamily } from "jotai/utils";
+import { atomFamily } from 'jotai-family'
 import type { RavenPoll } from "@raven/types/RavenMessaging/RavenPoll";
 import type { Message } from "@raven/types/common/Message";
 import type { UserData } from "@db";
