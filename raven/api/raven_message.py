@@ -501,7 +501,13 @@ def get_unread_count_for_channels():
 	)
 
 	channels_query = (
-		query.select(channel.name, channel.is_direct_message, Count(message.name).as_("unread_count"))
+		query.select(
+			channel.name,
+			channel.is_direct_message,
+			# Count a batch (a multi-part send sharing message_batch_id — e.g. several files)
+			# as ONE unread; un-batched messages fall back to their unique name.
+			Count(Coalesce(message.message_batch_id, message.name)).distinct().as_("unread_count"),
+		)
 		.groupby(channel.name, channel.is_direct_message)
 		.run(as_dict=True)
 	)

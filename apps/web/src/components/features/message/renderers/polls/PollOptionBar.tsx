@@ -28,8 +28,6 @@ export const PollOptionBar: React.FC<PollOptionBarProps> = ({
     isCurrentUserVote,
     showVoters = true,
 }) => {
-    // Show a minimal bar (2%) for 0 votes
-    const barWidth = percentage > 0 ? percentage : 2
 
     return (
         <Tooltip>
@@ -45,7 +43,7 @@ export const PollOptionBar: React.FC<PollOptionBarProps> = ({
                             "absolute top-0 left-0 h-full transition-all duration-300 ease-in-out rounded-r-full",
                             isCurrentUserVote ? "bg-surface-violet-4" : "bg-surface-gray-4"
                         )}
-                        style={{ width: `${barWidth}%` }}
+                        style={{ width: `${percentage}%` }}
                     />
                     <div className="relative z-10 text-ellipsis overflow-hidden flex items-center flex-1 px-3.5 py-1.5 gap-2">
                         <span

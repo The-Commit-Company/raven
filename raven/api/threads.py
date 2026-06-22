@@ -229,7 +229,13 @@ def get_unread_threads(workspace: str = None, thread_id: str = None):
 
 	query = (
 		frappe.qb.from_(channel)
-		.select(channel.name, channel.workspace, Count(message.name).as_("unread_count"))
+		.select(
+			channel.name,
+			channel.workspace,
+			# A batch (messages sharing message_batch_id, e.g. several files) counts as ONE
+			# unread; un-batched messages fall back to their unique name.
+			Count(Coalesce(message.message_batch_id, message.name)).distinct().as_("unread_count"),
+		)
 		.left_join(channel_member)
 		.on(
 			(channel.name == channel_member.channel_id) & (channel_member.user_id == frappe.session.user)
