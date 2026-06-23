@@ -159,7 +159,8 @@ export const useRavenEditor = ({ submitRef, linkRef, filesRef, cancelReplyRef, e
                 // Up arrow on an EMPTY editor → edit the last message (Slack-style). Gated
                 // on empty so it never hijacks caret navigation within a draft, and lets a
                 // suggestion popup take Up to move its selection.
-                if (event.key === "ArrowUp" && editLastRef) {
+                // Do not trigger this if the user is typing in the editor or switching channels
+                if (event.key === "ArrowUp" && editLastRef && !event.metaKey && !event.ctrlKey && !event.shiftKey) {
                     if (isSuggestionPopupOpen()) return false
                     if (editorRef.current?.isEmpty && editLastRef.current()) {
                         event.preventDefault()
