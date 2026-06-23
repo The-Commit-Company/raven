@@ -124,10 +124,17 @@ def get_messages(
 	# the "New messages" line and scroll there. Only when the caller has visited before
 	# (last_visit set) and there's something newer — otherwise fall through to the latest page.
 	if anchor_to_unread and last_visit:
+		# Exclude System messages ("X joined", etc.) so the divider anchors on the first real
+		# new message — and doesn't show at all when everything new is just system noise. This
+		# matches the unread COUNT, which already ignores System (get_unread_count_for_channels).
 		first_unread = frappe.db.get_all(
 			"Raven Message",
 			pluck="name",
-			filters={"channel_id": channel_id, "creation": (">", last_visit)},
+			filters={
+				"channel_id": channel_id,
+				"creation": (">", last_visit),
+				"message_type": ("!=", "System"),
+			},
 			order_by="creation asc, name asc",
 			limit=1,
 		)

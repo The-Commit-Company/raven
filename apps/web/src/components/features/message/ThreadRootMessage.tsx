@@ -85,11 +85,11 @@ export const ThreadRootMessage = ({ threadID, parentID }: { threadID: string; pa
                             {expanded ? <ChevronUp /> : <ChevronDown />}
                         </Button>
                     </div>
-                    <div className="pt-1">
+                    <div className="pt-0.5">
                         {expanded ? (
                             <MessageContent message={message} />
                         ) : (
-                            <p className="flex items-center gap-1 truncate text-sm text-ink-gray-6">
+                            <p className="flex items-center gap-1 truncate text-p-base text-ink-gray-7">
                                 {messageFile(message) && <Paperclip className="size-3.5 shrink-0 text-ink-gray-5" />}
                                 <span className="truncate">{rootPreviewText(message)}</span>
                             </p>

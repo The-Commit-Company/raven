@@ -164,7 +164,9 @@ class ChannelMessagesStore {
         if (watermark) {
             for (const id of state.order) {
                 const message = state.byId.get(id)
-                if (message && message.creation > watermark) {
+                // Skip System messages so the divider never anchors on "X joined" and the like —
+                // matches the server anchor (chat_stream.get_messages) and the unread count.
+                if (message && message.message_type !== "System" && message.creation > watermark) {
                     firstUnread = id
                     break
                 }
