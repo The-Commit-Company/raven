@@ -17,7 +17,7 @@ import _ from "@lib/translate"
  * For standard emojis the key IS the emoji; for custom emojis the key is the
  * emoji's name and `reaction` holds its image URL (verified on live data).
  */
-const parseReactions = (raw?: string | null): ReactionObject[] => {
+export const parseReactions = (raw?: string | null): ReactionObject[] => {
     if (!raw) return []
     try {
         const parsed = JSON.parse(raw) as Record<string, ReactionObject>

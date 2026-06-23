@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useAtomValue } from "jotai"
 import Picker from "@emoji-mart/react"
-import { Smile } from "lucide-react"
+import { SmilePlusIcon } from "lucide-react"
 import type { Editor } from "@tiptap/react"
 import { Button } from "@components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover"
@@ -46,7 +46,7 @@ export const EmojiPickerButton = ({ editor }: { editor: Editor }) => {
                 <TooltipTrigger asChild>
                     <PopoverTrigger asChild>
                         <Button type="button" variant="ghost" size="sm" isIconButton aria-label={_("Emoji")}>
-                            <Smile />
+                            <SmilePlusIcon />
                         </Button>
                     </PopoverTrigger>
                 </TooltipTrigger>
