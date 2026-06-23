@@ -118,6 +118,17 @@ const options: HTMLReactParserOptions = {
             return <CodeBlock code={code} language={language} />
         }
 
+        // Tables: getHTML() emits a bare <table> (no wrapper). Wrap it in the same
+        // `.tableWrapper` the editor's TableKit adds, so the shared stylesheet frames it
+        // and scrolls wide tables horizontally instead of stretching the message row.
+        if (node.name === "table") {
+            return (
+                <div className="tableWrapper">
+                    <table>{domToReact(node.children as DOMNode[], options)}</table>
+                </div>
+            )
+        }
+
         // Sanitize links: safe scheme only, always open in a new tab.
         if (node.name === "a") {
             const href = (node.attribs?.href ?? "").trim()

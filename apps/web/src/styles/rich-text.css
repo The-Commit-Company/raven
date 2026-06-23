@@ -415,15 +415,49 @@
   @apply my-0 inline-block h-[1.4em] w-auto rounded-none object-contain align-text-bottom;
 }
 
-/* Tables. */
+/* Tables — framed and horizontally scrollable, matching the ui/ Table look
+   (rounded outline frame, gray header, row dividers; see ui/table.tsx). The frame
+   lives on a wrapper, not the table, so it can scroll wide tables instead of
+   stretching the message row. getHTML() emits a BARE <table>, so RichTextRenderer
+   wraps it in the same `.tableWrapper` div the editor's TableKit adds — one rule
+   then styles both reading and editing. */
+.tiptap .tableWrapper {
+  @apply my-2 w-fit max-w-full overflow-x-auto rounded border border-outline-gray-1;
+}
+
 .tiptap table {
-  @apply my-2 border-collapse border border-outline-gray-2;
+  @apply m-0 border-collapse;
 }
 
 .tiptap th {
-  @apply border border-outline-gray-2 bg-surface-gray-2 px-2 py-1 text-left font-medium;
+  @apply border-b border-outline-gray-1 bg-surface-gray-2 px-2 py-1.5 text-start font-medium text-ink-gray-5;
 }
 
 .tiptap td {
-  @apply border border-outline-gray-2 px-2 py-1;
+  @apply border-b border-outline-gray-1 px-2 py-1.5 align-top;
+}
+
+/* The wrapper supplies the bottom frame — drop the last row's divider so the two
+   don't double up into a thick edge. */
+.tiptap tr:last-child > td {
+  @apply border-b-0;
+}
+
+/* Table editing chrome (composer only). Tables arrive via paste, but you can still
+   click in to edit: anchor the cell so the resize handle / selection overlay
+   position against it, show a column-resize bar, and tint selected cells. */
+[data-raven-editor] .tiptap :is(th, td) {
+  @apply relative;
+}
+
+[data-raven-editor] .tiptap .selectedCell {
+  @apply bg-surface-blue-1;
+}
+
+[data-raven-editor] .tiptap .column-resize-handle {
+  @apply absolute -right-px top-0 bottom-0 z-10 w-0.5 bg-surface-blue-5;
+}
+
+[data-raven-editor] .tiptap.resize-cursor {
+  cursor: col-resize;
 }
