@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 import { useAtomValue } from "jotai"
 import { selectAtom } from "jotai/utils"
-import { ForwardIcon, LucideIcon, PencilIcon, PinIcon } from "lucide-react"
+import { Edit3Icon, ForwardIcon, LucideIcon, PinIcon } from "lucide-react"
 import { Message } from "@raven/types/common/Message"
 import { editingMessageAtom } from "@utils/channelAtoms"
 import ReplyMessage from "./ReplyMessage"
@@ -16,6 +16,7 @@ import SearchTextRenderer from "./SearchTextRenderer"
 import { MessageReactionsRow } from "./MessageReactions"
 import { getAttachmentKind } from "@utils/attachmentPreview"
 import _ from "@lib/translate"
+import { Badge } from "@components/ui/badge"
 
 /**
  * Dispatch a message body string to the right renderer:
@@ -51,11 +52,26 @@ export const EditableMessageBody = ({ message }: { message: Message }) => {
     return <MessageBody content={message.text} />
 }
 
-const MessageAttributeIndicator = ({ attribute, Icon }: { attribute: string, Icon: LucideIcon }) => (
-    <div className="text-ink-gray-4 flex items-center gap-1 py-0.5">
-        <Icon className="w-4 h-4 pb-0.5" />
-        <span className="text-xs">{attribute}</span>
-    </div>
+const MessageAttributes = ({ message }: { message: Message }) => {
+    if (!message.is_pinned && !message.is_forwarded && !message.is_edited) return null
+    return (
+        <div className="flex items-center gap-1.5 py-0.5">
+            {message.is_pinned === 1 && <MessageAttributeIndicator attribute={_("Pinned")} Icon={PinIcon} theme="violet" />}
+            {message.is_forwarded === 1 && <MessageAttributeIndicator attribute={_("Forwarded")} Icon={ForwardIcon} />}
+            {message.is_edited === 1 && <MessageAttributeIndicator attribute={_("Edited")} Icon={Edit3Icon} />}
+        </div>
+    )
+}
+
+const MessageAttributeIndicator = ({ attribute, Icon, theme = "gray" }: { attribute: string, Icon: LucideIcon, theme?: "gray" | "violet" }) => (
+    <Badge theme={theme}>
+        <Icon />
+        {attribute}
+    </Badge>
+    // <div className="text-ink-gray-6 flex items-center gap-1.5 py-0.5">
+    //     <Icon className="size-3" />
+    //     <span className="text-xs">{attribute}</span>
+    // </div>
 )
 
 /** Dispatch a single file-bearing message to the right inline renderer by kind. */
@@ -91,9 +107,7 @@ export const MessageContent = ({ message }: { message: Message }) => {
     // fixed-width media overflows narrow (mobile) columns and gets clipped
     return (
         <div className="flex-1 min-w-0 space-y-1">
-            {message.is_pinned === 1 && <MessageAttributeIndicator attribute={_("Pinned")} Icon={PinIcon} />}
-            {message.is_forwarded === 1 && <MessageAttributeIndicator attribute={_("forwarded")} Icon={ForwardIcon} />}
-            {message.is_edited === 1 && <MessageAttributeIndicator attribute={_("edited")} Icon={PencilIcon} />}
+            <MessageAttributes message={message} />
 
             {message.linked_message && repliedMessageDetails && (
                 <ReplyMessage
