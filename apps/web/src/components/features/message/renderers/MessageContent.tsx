@@ -1,7 +1,10 @@
 import { useMemo } from "react"
+import { useAtomValue } from "jotai"
 import { ForwardIcon, LucideIcon, PencilIcon, PinIcon } from "lucide-react"
 import { Message } from "@raven/types/common/Message"
+import { editingMessageAtom } from "@utils/channelAtoms"
 import ReplyMessage from "./ReplyMessage"
+import { EditMessageComposer } from "./EditMessageComposer"
 import { MessageImages } from "./MessageImages"
 import { MessageFiles } from "./MessageFiles"
 import { MessageVideo } from "./MessageVideo"
@@ -25,6 +28,18 @@ export const MessageBody = ({ content }: { content?: string | null }) => {
     if (!trimmed) return null
     if (trimmed.startsWith('<') && !trimmed.startsWith('<mark')) return <RichTextRenderer html={trimmed} />
     return <SearchTextRenderer content={trimmed} />
+}
+
+/**
+ * A message's text body that swaps to the inline editor while this message is the
+ * channel's edit target (`editingMessageAtom`). Used for a standalone text/caption
+ * message and for a batch's caption-bearing member, so editing works the same way
+ * everywhere the body is shown.
+ */
+export const EditableMessageBody = ({ message }: { message: Message }) => {
+    const editingID = useAtomValue(editingMessageAtom(message.channel_id))
+    if (editingID === message.name) return <EditMessageComposer message={message} />
+    return <MessageBody content={message.text} />
 }
 
 const MessageAttributeIndicator = ({ attribute, Icon }: { attribute: string, Icon: LucideIcon }) => (
@@ -86,12 +101,13 @@ export const MessageContent = ({ message }: { message: Message }) => {
             ) : messageFile ? (
                 <>
                     <MessageMedia message={message} fileUrl={messageFile} />
-                    {message.text && <MessageBody content={message.text} />}
+                    {/* Caption (editable inline). Hidden when empty unless being edited. */}
+                    {(message.text || undefined) && <EditableMessageBody message={message} />}
                 </>
             ) : (
                 // Render the HTML body (message.text), NOT message.content — the
                 // latter is the backend's derived plain-text (search/teasers).
-                <MessageBody content={message.text} />
+                <EditableMessageBody message={message} />
             )}
 
             <MessageReactionsRow message={message} />

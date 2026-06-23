@@ -13,7 +13,8 @@ import {
     SmilePlus,
     Trash2,
 } from "lucide-react"
-import { messageDialogAtom, replyToMessageAtom } from "@utils/channelAtoms"
+import { editingMessageAtom, messageDialogAtom, replyToMessageAtom } from "@utils/channelAtoms"
+import { resolveEditTarget } from "./editTarget"
 import _ from "@lib/translate"
 import type { Message } from "@raven/types/common/Message"
 import { useUserCookieData } from "@hooks/useUserCookieData"
@@ -121,23 +122,28 @@ export const useMessageActions = (message: Message | null): MessageAction[][] =>
         }
 
         // Owner-only, destructive last
-        const owner: MessageAction[] = isOwner
-            ? [
-                {
+        const owner: MessageAction[] = []
+        if (isOwner) {
+            // Edit is inline (not a dialog): flag this message as the channel's edit
+            // target and the body renderer swaps in the editor. Hidden when there's
+            // no editable text (poll / caption-less file). A batch edits its caption.
+            const editTarget = resolveEditTarget(message)
+            if (editTarget) {
+                owner.push({
                     id: "edit",
                     label: _("Edit"),
                     icon: Pencil,
-                    onSelect: () => setDialog({ type: "edit", message }),
-                },
-                {
-                    id: "delete",
-                    label: _("Delete"),
-                    icon: Trash2,
-                    danger: true,
-                    onSelect: () => setDialog({ type: "delete", message }),
-                },
-            ]
-            : []
+                    onSelect: () => getDefaultStore().set(editingMessageAtom(editTarget.channel_id), editTarget.name),
+                })
+            }
+            owner.push({
+                id: "delete",
+                label: _("Delete"),
+                icon: Trash2,
+                danger: true,
+                onSelect: () => setDialog({ type: "delete", message }),
+            })
+        }
 
         return [respond, clipboard, organize, owner].filter((group) => group.length > 0)
     }, [message, currentUser, setDialog])

@@ -39,6 +39,12 @@ interface UseRavenEditorOptions {
      * false otherwise (key falls through to default behaviour).
      */
     cancelReplyRef?: MutableRefObject<() => boolean>
+    /**
+     * Try to edit the last message (Up arrow on an EMPTY editor). Returns true if it
+     * started an edit (key consumed), false otherwise. The main composer wires this;
+     * the inline editor omits it (no "edit previous" while already editing).
+     */
+    editLastRef?: MutableRefObject<() => boolean>
     /** Initial HTML — set when editing an existing message; omit for a blank composer. */
     content?: string
     /** Autofocus on mount (e.g. inline edit). Off by default for the composer. */
@@ -59,7 +65,7 @@ export const EDITOR_MIN_H = "min-h-14 md:min-h-16"
 
 const EDITOR_CLASS = `tiptap ${EDITOR_MIN_H} max-h-[40vh] overflow-y-auto px-3 py-2.5 focus:outline-none`
 
-export const useRavenEditor = ({ submitRef, linkRef, filesRef, cancelReplyRef, content, autofocus = false, placeholder }: UseRavenEditorOptions): Editor | null => {
+export const useRavenEditor = ({ submitRef, linkRef, filesRef, cancelReplyRef, editLastRef, content, autofocus = false, placeholder }: UseRavenEditorOptions): Editor | null => {
     // Emoji `:` autocomplete is desktop-only — mobile keyboards have their own emoji,
     // and a popup on every ":" is noise. Captured at mount (a breakpoint flip
     // mid-session won't reconfigure the live editor, which is fine).
@@ -145,6 +151,18 @@ export const useRavenEditor = ({ submitRef, linkRef, filesRef, cancelReplyRef, c
                     if (cancelReplyRef?.current()) {
                         event.preventDefault()
                         event.stopPropagation()
+                        return true
+                    }
+                    return false
+                }
+
+                // Up arrow on an EMPTY editor → edit the last message (Slack-style). Gated
+                // on empty so it never hijacks caret navigation within a draft, and lets a
+                // suggestion popup take Up to move its selection.
+                if (event.key === "ArrowUp" && editLastRef) {
+                    if (isSuggestionPopupOpen()) return false
+                    if (editorRef.current?.isEmpty && editLastRef.current()) {
+                        event.preventDefault()
                         return true
                     }
                     return false

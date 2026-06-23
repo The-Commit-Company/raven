@@ -4,7 +4,7 @@ import { MessageImages } from "./MessageImages"
 import { MessageFiles } from "./MessageFiles"
 import { MessageVideo } from "./MessageVideo"
 import { MessageAudio } from "./MessageAudio"
-import { MessageBody } from "./MessageContent"
+import { EditableMessageBody } from "./MessageContent"
 import { MessageReactionsRow } from "./MessageReactions"
 import { MessageRow, MessageSenderLayout } from "./MessageRow"
 import { MessageThreadPill } from "./ThreadMessage"
@@ -71,7 +71,7 @@ export const BatchMessageItem = ({
     const attachments = useMemo(() => messagesToAttachments(block.messages), [block.messages])
 
     /** A batch carries one caption — whichever member has text (the composer sets it on one). */
-    const caption = block.messages.find((message) => message.text)?.text
+    const captionMember = block.messages.find((message) => message.text)
 
     // A batch reply lives on one member (the send API attaches it to the last);
     // render the quote once, at the top of the block.
@@ -104,7 +104,7 @@ export const BatchMessageItem = ({
             {videos.length > 0 && <MessageVideo messages={videos} />}
             {audios.length > 0 && <MessageAudio messages={audios} />}
             {docs.length > 0 && <MessageFiles messages={docs} attachments={attachments} />}
-            {caption && <MessageBody content={caption} />}
+            {captionMember && <EditableMessageBody message={captionMember} />}
             <OptimisticStatus message={head} />
             {memberReactions}
         </div>

@@ -12,7 +12,8 @@ import type { Message } from "@raven/types/common/Message"
  * and keyboard shortcuts all open the same instances without per-message mounting.
  *
  * Each real dialog lives in ./dialogs/<Name>.tsx (extracted as its layer lands).
- * Delete is done; edit / forward / reactions are still placeholders inline below.
+ * Delete is done; edit is inline (see EditMessageComposer, no dialog); forward /
+ * reactions are still placeholders inline below.
  */
 export const MessageActionDialogs = () => {
     const [dialog, setDialog] = useAtom(messageDialogAtom)
@@ -30,18 +31,6 @@ export const MessageActionDialogs = () => {
                 message={dialog?.type === "delete" ? dialog.message : lastDeleteRef.current}
                 onClose={close}
             />
-
-            <Dialog open={dialog?.type === "edit"} onOpenChange={(open) => !open && close()}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>{_("Edit message")}</DialogTitle>
-                        <DialogDescription>
-                            {/* TODO(layer 4): mount the Tiptap composer seeded with the message content */}
-                            {_("The message editor will appear here.")}
-                        </DialogDescription>
-                    </DialogHeader>
-                </DialogContent>
-            </Dialog>
 
             <Dialog open={dialog?.type === "forward"} onOpenChange={(open) => !open && close()}>
                 <DialogContent>

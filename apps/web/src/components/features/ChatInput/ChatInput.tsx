@@ -1,7 +1,7 @@
 import { forwardRef, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { EditorContent, useEditorState } from "@tiptap/react"
 import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
-import { useAtom, useAtomValue } from "jotai"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { selectAtom } from "jotai/utils"
 import { useDebounceCallback } from "usehooks-ts"
 import { toast } from "sonner"
@@ -21,7 +21,8 @@ import { MobileComposerActions } from "./MobileComposerActions"
 import { loadDraft, saveDraft } from "./draft"
 import { useIsMobile } from "@hooks/use-mobile"
 import { enqueueSend } from "@stores/messages/messageSender"
-import { replyToMessageAtom } from "@utils/channelAtoms"
+import { editingMessageAtom, replyToMessageAtom } from "@utils/channelAtoms"
+import { getLastEditableMessage } from "@components/features/message/actions/editTarget"
 import { useChannelById } from "@stores/channels/useChannelList"
 import { isInReadOnlyMode } from "@lib/frappe"
 import { useUserCookieData } from "@hooks/useUserCookieData"
@@ -100,6 +101,16 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID, isDi
         return true
     }
 
+    // Up-arrow on the empty composer edits your last message — when it's editable.
+    const setEditing = useSetAtom(editingMessageAtom(channelID))
+    const editLastRef = useRef<() => boolean>(() => false)
+    editLastRef.current = () => {
+        const target = getLastEditableMessage(channelID, currentUser)
+        if (!target) return false
+        setEditing(target.name)
+        return true
+    }
+
     // A held send waits on these: any file still uploading blocks dispatch; an
     // errored upload settles but must not be silently sent without. We subscribe
     // to just these booleans (not the array) so per-tick upload-progress updates
@@ -111,7 +122,7 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID, isDi
         useMemo(() => selectAtom(uploadingFilesAtom(channelID), (f) => f.some((file) => file.status === "error")), [channelID]),
     )
 
-    const editor = useRavenEditor({ submitRef: sendRef, linkRef, filesRef, cancelReplyRef, content: initialDraft || undefined, autofocus: true, placeholder: _("Type a message...") })
+    const editor = useRavenEditor({ submitRef: sendRef, linkRef, filesRef, cancelReplyRef, editLastRef, content: initialDraft || undefined, autofocus: true, placeholder: _("Type a message...") })
 
     // Persist the draft as the user types (debounced). Stable callback so the
     // debounced instance — and its flush() on unmount — stay identity-stable.
