@@ -35,6 +35,7 @@ def create_poll(
 	is_multi_choice: bool = None,
 	is_anonymous: bool = None,
 	end_date: str = None,
+	max_choices: int = None,
 ) -> str:
 	"""
 	Create a new poll in the Raven Poll doctype.
@@ -51,6 +52,7 @@ def create_poll(
 			"is_anonymous": is_anonymous,
 			"end_date": end_date,
 			"channel_id": channel_id,
+			"max_choices": max_choices,
 		}
 	)
 

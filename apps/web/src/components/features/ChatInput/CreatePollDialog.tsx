@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { BarChart3 } from 'lucide-react'
 import { Button } from '@components/ui/button'
 import {
@@ -11,8 +11,12 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@components/ui/tooltip'
-import { CreatePollForm } from './CreatePollForm'
+import { Spinner } from '@components/ui/spinner'
 import _ from '@lib/translate'
+
+// The poll form (date picker, selects, form-elements) is only needed once the dialog
+// opens, so load it on demand rather than in the composer bundle.
+const CreatePollForm = lazy(() => import('./CreatePollForm').then((m) => ({ default: m.CreatePollForm })))
 
 interface CreatePollDialogProps {
     channelID: string
@@ -49,8 +53,10 @@ export const CreatePollDialog = ({ channelID, open, onOpenChange, hideTrigger }:
                     </TooltipContent>
                 </Tooltip>
             )}
-            <DialogContent className="">
-                <CreatePollForm channelID={channelID} onClose={() => setOpen(false)} />
+            <DialogContent>
+                <Suspense fallback={<div className="flex h-64 items-center justify-center"><Spinner /></div>}>
+                    <CreatePollForm channelID={channelID} onClose={() => setOpen(false)} />
+                </Suspense>
             </DialogContent>
         </Dialog>
     )
