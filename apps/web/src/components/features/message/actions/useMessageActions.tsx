@@ -1,5 +1,7 @@
-import { useMemo } from "react"
+import { useContext, useMemo } from "react"
 import { getDefaultStore, useSetAtom } from "jotai"
+import { useNavigate, useParams } from "react-router-dom"
+import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
 import { toast } from "sonner"
 import {
     Bookmark,
@@ -15,6 +17,9 @@ import {
 } from "lucide-react"
 import { editingMessageAtom, messageDialogAtom, replyToMessageAtom } from "@utils/channelAtoms"
 import { resolveEditTarget } from "./editTarget"
+import { channelMessagesStore } from "@stores/messages/store"
+import { seedThreadMeta } from "@stores/threads/useThreadMeta"
+import { getErrorMessage } from "@lib/frappe"
 import _ from "@lib/translate"
 import type { Message } from "@raven/types/common/Message"
 import { useUserCookieData } from "@hooks/useUserCookieData"
@@ -49,12 +54,20 @@ const toPlainText = (html: string): string => {
 export const useMessageActions = (message: Message | null): MessageAction[][] => {
     const { name: currentUser } = useUserCookieData()
     const setDialog = useSetAtom(messageDialogAtom)
+    const navigate = useNavigate()
+    const { call } = useContext(FrappeContext) as FrappeConfig
+    // A thread is itself a channel whose id === the parent message id, so a thread
+    // reply's channel_id equals the route's threadID. react-router scopes this param
+    // to the thread route's subtree, so the channel stream never sees it — letting us
+    // tell "inside a thread" apart from "inside a channel" without prop-drilling.
+    const { threadID } = useParams()
 
     return useMemo(() => {
         if (!message) return []
 
         const isOwner = currentUser === message.owner && !message.is_bot_message
         const hasReactions = Object.keys(JSON.parse(message.message_reactions || "{}")).length > 0
+        const inThread = message.channel_id === threadID
 
         // Respond: reply + thread creation (join/mute need membership context we don't load here)
         const respond: MessageAction[] = [
@@ -66,13 +79,28 @@ export const useMessageActions = (message: Message | null): MessageAction[][] =>
                 onSelect: () => getDefaultStore().set(replyToMessageAtom(message.channel_id), message),
             },
         ]
-        if (!message.is_thread) {
-            // TODO(layer 5): raven.api.threads.create_thread(message_id), then navigate to thread/:id
+        // Create thread only inside a channel: not on a message that already has one
+        // (is_thread), and not on a thread reply (inThread). The thread's id IS the
+        // message id; a batch threads off its last/newest member (already this target).
+        if (!message.is_thread && !inThread) {
             respond.push({
                 id: "create-thread",
                 label: _("Create thread"),
                 icon: MessageSquareText,
-                onSelect: stub(_("Create thread")),
+                onSelect: () => {
+                    const threadID = message.name
+                    // Strip any open /thread/... so we navigate from the channel base.
+                    const base = window.location.pathname.split("/thread")[0]
+                    call.post("raven.api.threads.create_thread", { message_id: threadID })
+                        .then(() => {
+                            // Reflect the new thread on the parent (shows the pill) and seed an
+                            // empty reply count, then open it.
+                            channelMessagesStore.messageEdited(message.channel_id, threadID, { is_thread: 1 })
+                            seedThreadMeta(threadID, 0)
+                            navigate(`${base}/thread/${threadID}`)
+                        })
+                        .catch((e) => toast.error(_("Could not create thread"), { description: getErrorMessage(e) }))
+                },
             })
         }
 
@@ -146,5 +174,5 @@ export const useMessageActions = (message: Message | null): MessageAction[][] =>
         }
 
         return [respond, clipboard, organize, owner].filter((group) => group.length > 0)
-    }, [message, currentUser, setDialog])
+    }, [message, currentUser, setDialog, navigate, call, threadID])
 }
