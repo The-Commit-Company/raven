@@ -59,7 +59,7 @@ export const SingleChoicePollVoting: React.FC<SingleChoicePollVotingProps> = ({
                                 disabled={isDisabled}
                                 className="shrink-0 text-ellipsis"
                             />
-                            <span className="text-sm truncate text-ink-gray-7 wrap-break-word flex-1 min-w-0">
+                            <span className="text-sm truncate text-ink-gray-7 leading-snug wrap-break-word flex-1 min-w-0">
                                 {option.option}
                             </span>
                             {!isAnonymous && totalVotes > 0 && (

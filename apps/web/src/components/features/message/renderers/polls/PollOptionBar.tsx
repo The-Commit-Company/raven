@@ -48,7 +48,7 @@ export const PollOptionBar: React.FC<PollOptionBarProps> = ({
                     <div className="relative z-10 text-ellipsis overflow-hidden flex items-center flex-1 px-3.5 py-1.5 gap-2">
                         <span
                             className={cn(
-                                "truncate text-sm",
+                                "truncate text-sm leading-snug",
                                 isCurrentUserVote ? "text-ink-gray-9 text-sm-medium" : "text-ink-gray-7"
                             )}
                         >

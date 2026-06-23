@@ -84,7 +84,7 @@ export const MultiChoicePollVoting: React.FC<MultiChoicePollVotingProps> = ({
                                 disabled={isDisabled}
                                 className="shrink-0"
                             />
-                            <span className="text-sm text-ink-gray-8 wrap-break-word flex-1 min-w-0">
+                            <span className="text-sm text-ink-gray-8 wrap-break-word flex-1 min-w-0 leading-snug">
                                 {option.option}
                             </span>
                             {!isAnonymous && totalVotes > 0 && (
