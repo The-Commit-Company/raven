@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 import { useAtomValue } from "jotai"
+import { selectAtom } from "jotai/utils"
 import { ForwardIcon, LucideIcon, PencilIcon, PinIcon } from "lucide-react"
 import { Message } from "@raven/types/common/Message"
 import { editingMessageAtom } from "@utils/channelAtoms"
@@ -37,8 +38,16 @@ export const MessageBody = ({ content }: { content?: string | null }) => {
  * everywhere the body is shown.
  */
 export const EditableMessageBody = ({ message }: { message: Message }) => {
-    const editingID = useAtomValue(editingMessageAtom(message.channel_id))
-    if (editingID === message.name) return <EditMessageComposer message={message} />
+    // Subscribe to a derived boolean (is THIS message being edited?) rather than the
+    // raw id, so toggling an edit only re-renders the affected body — not every body
+    // sharing the channel's editing atom.
+    const isEditing = useAtomValue(
+        useMemo(
+            () => selectAtom(editingMessageAtom(message.channel_id), (id) => id === message.name),
+            [message.channel_id, message.name],
+        ),
+    )
+    if (isEditing) return <EditMessageComposer message={message} />
     return <MessageBody content={message.text} />
 }
 
