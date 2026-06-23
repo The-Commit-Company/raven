@@ -1,6 +1,5 @@
 import { Fragment, useState } from "react"
 import { useSetAtom } from "jotai"
-import { toast } from "sonner"
 import { MoreHorizontal, Reply, SmilePlus } from "lucide-react"
 import { Button } from "@components/ui/button"
 import {
@@ -14,6 +13,8 @@ import {
 import { messageActionTargetAtom, replyToMessageAtom } from "@utils/channelAtoms"
 import _ from "@lib/translate"
 import { useMessageActions } from "./useMessageActions"
+import { useToggleReaction } from "./useToggleReaction"
+import { ReactionPicker } from "./ReactionPicker"
 import type { Message } from "@raven/types/common/Message"
 
 /** Slack-style defaults until frequently-used reactions land (layer 5). */
@@ -44,6 +45,7 @@ export const MessageHoverToolbar = ({
     const actionGroups = useMessageActions(message)
     const setActionTarget = useSetAtom(messageActionTargetAtom)
     const setReplyTo = useSetAtom(replyToMessageAtom(message.channel_id))
+    const toggleReaction = useToggleReaction()
     const [menuOpen, setMenuOpen] = useState(false)
 
     /** The ellipsis menu marks the message as the action target, like right-click does. */
@@ -68,22 +70,16 @@ export const MessageHoverToolbar = ({
                     size="md"
                     isIconButton
                     aria-label={`${_("React with")} ${emoji}`}
-                    // TODO(layer 5): optimistic toggle via reactions API + store.reactionsUpdated
-                    onClick={() => toast.info(`${_("Reactions")} — ${_("coming soon")}`)}
+                    onClick={() => toggleReaction(message, emoji, false)}
                 >
                     <span className="text-lg leading-none">{emoji}</span>
                 </Button>
             ))}
-            <Button
-                variant="ghost"
-                size="md"
-                isIconButton
-                aria-label={_("Add reaction")}
-                // TODO(layer 5): emoji picker
-                onClick={() => toast.info(`${_("Reactions")} — ${_("coming soon")}`)}
-            >
-                <SmilePlus />
-            </Button>
+            <ReactionPicker message={message} tooltip={_("Add reaction")} side="bottom" align="end" onOpenChange={onMenuOpenChange}>
+                <Button variant="ghost" size="md" isIconButton aria-label={_("Add reaction")}>
+                    <SmilePlus />
+                </Button>
+            </ReactionPicker>
             <Button
                 variant="ghost"
                 size="md"

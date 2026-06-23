@@ -1,4 +1,5 @@
 import { init } from "emoji-mart"
+import { atom } from "jotai"
 
 /** An emoji-mart custom emoji category (what `init({ custom })` expects). */
 export interface EmojiMartCustomCategory {
@@ -6,6 +7,14 @@ export interface EmojiMartCustomCategory {
     name: string
     emojis: { id: string; name: string; keywords: string[]; skins: { src: string }[] }[]
 }
+
+/**
+ * The registered custom-emoji categories. Every `<Picker>` must pass these via its
+ * `custom` prop — the Picker re-runs `init()` with its own props on mount, so without
+ * it the picker shows no custom emojis (and clobbers the global registration the `:`
+ * search uses). Set by useRegisterCustomEmojis once the list loads.
+ */
+export const customEmojiCategoriesAtom = atom<EmojiMartCustomCategory[]>([])
 
 const loadAppleData = async () => {
     const response = await fetch("https://cdn.jsdelivr.net/npm/@emoji-mart/data/sets/14/apple.json")

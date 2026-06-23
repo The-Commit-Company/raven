@@ -4,12 +4,14 @@ import { Button } from "@components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover"
 import { useTheme } from "@components/theme-provider"
 import Picker from "@emoji-mart/react"
-import { useAtom } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
 import { EnterKeyBehaviourAtom, QuickEmojisAtom } from "@utils/preferences"
+import { customEmojiCategoriesAtom } from "@lib/emojiMart"
 
 export default function Preferences() {
   const [enterKeyBehaviour, setEnterKeyBehaviour] = useAtom(EnterKeyBehaviourAtom)
   const [quickEmojis, setQuickEmojis] = useAtom(QuickEmojisAtom)
+  const customEmojis = useAtomValue(customEmojiCategoriesAtom)
   const { theme } = useTheme()
 
   const handleEmojiSelect = (index: number, emoji: any) => {
@@ -96,6 +98,7 @@ export default function Preferences() {
                   <Picker
                     theme={getEmojiPickerTheme()}
                     set="apple"
+                    custom={customEmojis}
                     onEmojiSelect={(emoji: any) => handleEmojiSelect(index, emoji)}
                     maxFrequentRows={2}
                     skinTonePosition="search"

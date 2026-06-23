@@ -7,6 +7,8 @@ import { db } from "@db"
 import { useUserCookieData } from "@hooks/useUserCookieData"
 import { ReactionObject } from "@raven/types/common/ChatStream"
 import type { Message } from "@raven/types/common/Message"
+import { useToggleReaction } from "../actions/useToggleReaction"
+import { ReactionPicker } from "../actions/ReactionPicker"
 import _ from "@lib/translate"
 
 /**
@@ -40,6 +42,7 @@ const parseReactions = (raw?: string | null): ReactionObject[] => {
 export const MessageReactionsRow = ({ message }: { message: Message }) => {
     const reactions = useMemo(() => parseReactions(message.message_reactions), [message.message_reactions])
     const { name: currentUser } = useUserCookieData()
+    const toggleReaction = useToggleReaction()
 
     if (reactions.length === 0) return null
 
@@ -50,14 +53,15 @@ export const MessageReactionsRow = ({ message }: { message: Message }) => {
                     key={reaction.emoji_name}
                     reaction={reaction}
                     isUserReacted={reaction.users.includes(currentUser)}
+                    onToggle={() => toggleReaction(message, reaction.reaction, reaction.is_custom, reaction.emoji_name)}
                 />
             ))}
-            <AddReactionButton />
+            <AddReactionButton message={message} />
         </div>
     )
 }
 
-const ReactionButton = ({ reaction, isUserReacted }: { reaction: ReactionObject; isUserReacted: boolean }) => {
+const ReactionButton = ({ reaction, isUserReacted, onToggle }: { reaction: ReactionObject; isUserReacted: boolean; onToggle: () => void }) => {
     return (
         <Tooltip>
             <TooltipTrigger asChild>
@@ -74,7 +78,7 @@ const ReactionButton = ({ reaction, isUserReacted }: { reaction: ReactionObject;
                             ? "bg-surface-violet-2 text-ink-violet-9 hover:bg-surface-violet-3"
                             : "bg-surface-gray-2 text-ink-gray-6 hover:bg-surface-gray-3",
                     )}
-                    // TODO(layer 5): toggle this reaction optimistically
+                    onClick={onToggle}
                     aria-label={_("{0}, {1} reactions", [reaction.emoji_name, String(reaction.count)])}
                     aria-pressed={isUserReacted}
                 >
@@ -110,21 +114,17 @@ const ReactionButton = ({ reaction, isUserReacted }: { reaction: ReactionObject;
  * have reactions — the hover toolbar is the entry point everywhere else, same
  * as v2).
  */
-const AddReactionButton = () => {
+const AddReactionButton = ({ message }: { message: Message }) => {
     return (
-        <Tooltip>
-            <TooltipTrigger asChild>
-                <button
-                    type="button"
-                    className="flex cursor-pointer items-center justify-center rounded-full px-2 py-1 text-ink-gray-5 outline-none transition bg-surface-gray-2 hover:bg-surface-gray-3 hover:text-ink-gray-7 focus-visible:focus-ring"
-                    // TODO(layer 5): open the emoji picker
-                    aria-label={_("Add reaction")}
-                >
-                    <SmilePlus className="h-4 w-4" aria-hidden="true" />
-                </button>
-            </TooltipTrigger>
-            <TooltipContent>{_("Add reaction")}</TooltipContent>
-        </Tooltip>
+        <ReactionPicker message={message} tooltip={_("Add reaction")} side="top" align="start">
+            <button
+                type="button"
+                className="flex cursor-pointer items-center justify-center rounded-full px-2 py-1 text-ink-gray-5 outline-none transition bg-surface-gray-2 hover:bg-surface-gray-3 hover:text-ink-gray-7 focus-visible:focus-ring"
+                aria-label={_("Add reaction")}
+            >
+                <SmilePlus className="h-4 w-4" aria-hidden="true" />
+            </button>
+        </ReactionPicker>
     )
 }
 
@@ -149,7 +149,7 @@ const ReactionTooltipLabel = ({ reaction }: { reaction: ReactionObject }) => {
         return users?.[index]?.full_name ?? userId
     })
 
-    return <p className="max-w-96 text-xs">{_("{0} reacted with {1}", [formatNameList(names), reaction.emoji_name])}</p>
+    return <p className="max-w-96">{_("{0} reacted with {1}", [formatNameList(names), reaction.emoji_name])}</p>
 }
 
 /** Maximum names spelled out before collapsing the rest into "and N others". */
