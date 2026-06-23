@@ -358,9 +358,12 @@ class RavenMessage(Document):
 
 		return message_details
 
-	def publish_unread_count_event(self, last_message_details=None):
+	def publish_unread_count_event(self, last_message_details=None, last_message_timestamp=None):
 
 		channel_doc = frappe.get_cached_doc("Raven Channel", self.channel_id)
+		# Send path uses this message's creation; the delete path passes the recomputed
+		# previous-message timestamp so the DM teaser reads and sorts correctly.
+		timestamp = last_message_timestamp or self.creation
 		# If the message is a direct message, then we can only send it to one user
 		if channel_doc.is_direct_message:
 
@@ -383,7 +386,7 @@ class RavenMessage(Document):
 							"play_sound": True,
 							"sent_by": self.owner,
 							"is_dm_channel": True,
-							"last_message_timestamp": self.creation,
+							"last_message_timestamp": timestamp,
 							"last_message_details": last_message_details,
 						},
 						user=peer_user_id,
@@ -398,7 +401,7 @@ class RavenMessage(Document):
 					"play_sound": False,
 					"is_dm_channel": True,
 					"sent_by": self.owner,
-					"last_message_timestamp": self.creation,
+					"last_message_timestamp": timestamp,
 					"last_message_details": last_message_details,
 				},
 				user=self.owner,
@@ -626,7 +629,14 @@ class RavenMessage(Document):
 		)
 
 		if self.message_type != "System":
-			self.publish_unread_count_event()
+			# If this delete changed the channel's last message (on_trash recomputed it),
+			# publish the new teaser so the DM sidebar updates live instead of showing the
+			# deleted message; otherwise a plain count ping.
+			recomputed = self.flags.get("recomputed_last_message")
+			if recomputed:
+				self.publish_unread_count_event(recomputed.get("details"), recomputed.get("timestamp"))
+			else:
+				self.publish_unread_count_event()
 			from raven.api.search import RavenSearch
 
 			search = RavenSearch()
@@ -767,20 +777,56 @@ class RavenMessage(Document):
 		# delete all the reactions for the message
 		frappe.db.delete("Raven Message Reaction", {"message": self.name})
 
-		# If this was the last message in the channel, update the last message details to null
-		# TODO: Check if this is faster or fetching the channel details from cache
-		frappe.db.set_value(
-			"Raven Channel",
-			{
-				"name": self.channel_id,
-				"last_message_id": self.name,
-			},
-			{
-				"last_message_timestamp": None,
-				"last_message_details": None,
-				"last_message_id": None,
-			},
-		)
+		# If this was the channel's latest message, recompute the channel summary to the
+		# PREVIOUS message instead of just nulling it — otherwise the sidebar teaser keeps
+		# showing a deleted message. Match the send path: only non-System messages become
+		# the teaser, and skip this message (still in the DB during on_trash). after_delete
+		# publishes the recomputed value (stashed on flags) so DM sidebars update live.
+		if frappe.db.get_value("Raven Channel", self.channel_id, "last_message_id") == self.name:
+			previous = frappe.db.get_all(
+				"Raven Message",
+				filters={
+					"channel_id": self.channel_id,
+					"name": ("!=", self.name),
+					"message_type": ("!=", "System"),
+				},
+				fields=["name", "creation", "content", "message_type", "owner", "is_bot_message", "bot"],
+				order_by="creation desc, name desc",
+				limit=1,
+			)
+			if previous:
+				prev = previous[0]
+				details = json.dumps(
+					{
+						"message_id": prev.name,
+						"content": prev.content,
+						"message_type": prev.message_type,
+						"owner": prev.owner,
+						"is_bot_message": prev.is_bot_message,
+						"bot": prev.bot,
+					}
+				)
+				frappe.db.set_value(
+					"Raven Channel",
+					self.channel_id,
+					{
+						"last_message_timestamp": prev.creation,
+						"last_message_details": details,
+						"last_message_id": prev.name,
+					},
+				)
+				self.flags.recomputed_last_message = {"details": details, "timestamp": prev.creation}
+			else:
+				frappe.db.set_value(
+					"Raven Channel",
+					self.channel_id,
+					{
+						"last_message_timestamp": None,
+						"last_message_details": None,
+						"last_message_id": None,
+					},
+				)
+				self.flags.recomputed_last_message = {"details": None, "timestamp": None}
 
 		# if the message is a thread, delete all messages in the thread and the thread channel
 		if self.is_thread:

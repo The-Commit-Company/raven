@@ -50,8 +50,12 @@ export const useUnreadRealtime = () => {
             channelUnreadStore.increment(event.channel_id, event.last_message_timestamp)
         }
 
-        // 2. DM list preview — only events that carry the new message details
-        if (event.last_message_details !== undefined) {
+        // 2. DM list preview — only a real SEND carries the new message details (a JSON
+        // string), and only then should we rewrite the channel's last-message fields. A
+        // delete reuses this event with last_message_details=null and the DELETED message's
+        // timestamp — patching that would null the preview and drag the DM's sort key
+        // backward (it appears to "move down"), so a falsy details value is skipped.
+        if (event.last_message_details) {
             channelStore.patchChannel(event.channel_id, {
                 last_message_details: event.last_message_details,
                 ...(event.last_message_timestamp
