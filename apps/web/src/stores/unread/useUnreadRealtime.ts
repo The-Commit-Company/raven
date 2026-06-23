@@ -47,7 +47,10 @@ export const useUnreadRealtime = () => {
                 channelUnreadStore.markRead(event.channel_id, event.last_message_timestamp, false)
             }
         } else {
-            channelUnreadStore.increment(event.channel_id, event.last_message_timestamp)
+            // Only increment this if the user is a member of the channel
+            if (channelStore.getChannel(event.channel_id)?.member_id) {
+                channelUnreadStore.increment(event.channel_id, event.last_message_timestamp)
+            }
         }
 
         // 2. DM list preview — only a real SEND carries the new message details (a JSON
