@@ -36,7 +36,9 @@ export function ChatContentView({
 }: ChatContentViewProps) {
     const isMobile = useIsMobile()
     // Child route content (the thread drawer). Threads are routes; everything else in the rail is atom state.
-    const threadDrawer = useOutlet()
+    const threadDrawer = useOutlet({
+        parentChannelID: channelID,
+    })
     const [pollDrawerData, setPollDrawerData] = useAtom(pollDrawerAtom(channelID))
     const [channelDrawerType, setChannelDrawer] = useAtom(channelDrawerAtom(channelID))
     const hasContextDrawer = channelDrawerType !== ""

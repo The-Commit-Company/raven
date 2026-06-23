@@ -1,7 +1,7 @@
 import { useRef, useState } from "react"
 import { useFrappePostCall, useFrappeDeleteDoc } from "frappe-react-sdk"
 import { useHotkeys } from "react-hotkeys-hook"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useOutletContext, useParams } from "react-router-dom"
 import { useAtom } from "jotai"
 import { toast } from "sonner"
 import { Button } from "@components/ui/button"
@@ -21,7 +21,6 @@ import ChatStream from "@components/features/message/ChatStream"
 import { ThreadHeader } from "./ThreadHeader"
 import { ThreadRootMessage } from "./ThreadRootMessage"
 import { PollDrawer } from "./renderers/PollDrawer"
-import { useCurrentChannelID } from "@hooks/useCurrentChannelID"
 import { useChannelById } from "@stores/channels/useChannelList"
 import { useChannelMembers } from "@hooks/useChannelMembers"
 import { useUserCookieData } from "@hooks/useUserCookieData"
@@ -37,8 +36,9 @@ export default function ThreadDrawer() {
     // the threadID. The parent channel (the route :id) is only used to inherit DM status for the
     // composer's mention banner, and to return focus on close.
     const { threadID } = useParams<{ threadID: string }>()
-    const parentID = useCurrentChannelID()
-    const parentIsDM = useChannelById(parentID)?.is_direct_message === 1
+    // TODO: Move this to a container and pass this down as a prop to reuse ThreadDrawer in other places like notifications, threads etc.
+    const { parentChannelID } = useOutletContext<{ parentChannelID: string }>()
+    const parentIsDM = useChannelById(parentChannelID)?.is_direct_message === 1
     const threadInputRef = useRef<HTMLFormElement>(null)
     const navigate = useNavigate()
 
@@ -63,7 +63,7 @@ export default function ThreadDrawer() {
         navigate("..", { replace: true })
         // Return focus to the parent channel's composer (it stayed mounted). Same hook the
         // attach paths use — see composerFocus.
-        focusComposer(parentID)
+        focusComposer(parentChannelID)
     }
 
     // A thread IS a channel, so leave/delete reuse the channel APIs on the threadID; both close
@@ -138,7 +138,7 @@ export default function ThreadDrawer() {
 
                 {/* Root message — what this thread is about (collapsed preview above the replies).
                     Keyed by thread so its expand state resets when you switch threads. */}
-                <ThreadRootMessage key={threadID} threadID={threadID ?? ""} parentID={parentID} />
+                <ThreadRootMessage key={threadID} threadID={threadID ?? ""} parentID={parentChannelID} />
 
                 {/* Thread messages — ChatStream owns its own scroll/virtualization */}
                 {threadID && <ChatStream channelID={threadID} />}
@@ -146,7 +146,7 @@ export default function ThreadDrawer() {
                 {/* Message input — posts into the thread channel (or skeleton / not-member banner) */}
                 <div className="shrink-0">
                     <ComposerArea gate={composerGate} isThread>
-                        {threadID && <ChatInput channelID={threadID} ref={threadInputRef} isDirectMessage={parentIsDM} />}
+                        {threadID && <ChatInput channelID={threadID} ref={threadInputRef} isDirectMessage={parentIsDM} parentChannelID={parentChannelID} />}
                     </ComposerArea>
                 </div>
             </FileDropZone>

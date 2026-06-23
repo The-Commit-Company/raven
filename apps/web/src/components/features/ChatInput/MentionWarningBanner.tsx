@@ -14,7 +14,7 @@ import _ from "@lib/translate"
  * is deferred until then. Leave is read from the store at compute time (it's seeded
  * at app start and changes daily, so it doesn't need a live subscription here).
  */
-export const MentionWarningBanner = ({ channelID, mentionedIds }: { channelID: string; mentionedIds: string[] }) => {
+export const MentionWarningBanner = ({ channelID, mentionedIds, isThread = false }: { channelID: string; mentionedIds: string[]; isThread?: boolean }) => {
     const { memberIds, isLoading } = useChannelMembers(channelID)
 
     const warnings = useMemo(() => {
@@ -36,21 +36,31 @@ export const MentionWarningBanner = ({ channelID, mentionedIds }: { channelID: s
     return (
         <div className="flex flex-col gap-1 rounded-md bg-surface-amber-2 px-3 py-2">
             {warnings.map((w) => (
-                <MentionWarningRow key={w.id} userID={w.id} onLeave={w.onLeave} notMember={w.notMember} />
+                <MentionWarningRow key={w.id} userID={w.id} onLeave={w.onLeave} notMember={w.notMember} isThread={isThread} />
             ))}
         </div>
     )
 }
 
-const MentionWarningRow = ({ userID, onLeave, notMember }: { userID: string; onLeave: boolean; notMember: boolean }) => {
+const MentionWarningRow = ({ userID, onLeave, notMember, isThread = false }: { userID: string; onLeave: boolean; notMember: boolean; isThread?: boolean }) => {
     const user = useUser(userID)
     const name = user?.full_name || user?.name || userID
 
-    const text = onLeave && notMember
-        ? _("{0} is on leave today and isn't in this channel.", [name])
-        : onLeave
-            ? _("{0} is on leave today.", [name])
-            : _("{0} isn't in this channel and won't be notified.", [name])
+    const text = useMemo(() => {
+        if (onLeave && notMember) {
+            return _("{0} is on leave today and isn't in this channel.", [name])
+        }
+        if (onLeave) {
+            return _("{0} is on leave today.", [name])
+        }
+
+        if (isThread) {
+            return _("{0} isn't in this channel and won't be added to this thread.", [name])
+        }
+
+        return _("{0} isn't in this channel and won't be notified.", [name])
+
+    }, [onLeave, notMember, isThread, name])
 
     const Icon = onLeave ? TreePalm : Info
 

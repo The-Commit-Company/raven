@@ -39,7 +39,9 @@ interface ChatInputProps {
      * passes its PARENT's DM status, since the thread channel itself isn't in the
      * channel store and would otherwise read as a non-DM.
      */
-    isDirectMessage?: boolean
+    isDirectMessage?: boolean,
+    /** Send in the parentChannelID of the thread if it is a thread */
+    parentChannelID?: string | null,
 }
 
 /**
@@ -56,7 +58,7 @@ interface ChatInputProps {
  * finishes (pendingSendAtom). The actual send (dispatchSend) is split out so the
  * normal path and the waiting path share one implementation.
  */
-const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID, isDirectMessage }, ref) => {
+const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID, isDirectMessage, parentChannelID }, ref) => {
     const { call } = useContext(FrappeContext) as FrappeConfig
     const [files, setFiles] = useAtom(uploadedFilesAtom(channelID))
     const [pendingSend, setPendingSend] = useAtom(pendingSendAtom(channelID))
@@ -256,7 +258,8 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID, isDi
             }}
             className="p-3 pb-4 w-full flex flex-col gap-2"
         >
-            {!isDM && mentionedIds.length > 0 && <MentionWarningBanner channelID={channelID} mentionedIds={mentionedIds} />}
+            {/* Warning banner is only shown for primary channels, not DMs, threads in DMs. */}
+            {!isDM && mentionedIds.length > 0 && <MentionWarningBanner channelID={parentChannelID ?? channelID} mentionedIds={mentionedIds} isThread={parentChannelID ? true : false} />}
             {/* Outer wrapper carries data-raven-editor and is the popup anchor: the
                 mention/emoji/#/: popups append here and sit `bottom-full` (ABOVE the box),
                 so they must NOT be clipped. The inner box keeps overflow-y-hidden so the
