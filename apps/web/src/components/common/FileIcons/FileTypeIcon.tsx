@@ -41,7 +41,7 @@ const FileTypeIcon = ({
         sm: 'h-3.5 w-3.5',
         md: 'h-4 w-4',
         lg: 'h-5 w-5',
-        xl: 'h-6 w-6',
+        xl: 'h-5 w-5',
         '2xl': 'h-7 w-7',
         '3xl': 'h-8 w-8',
         '4xl': 'h-10 w-10'

@@ -224,6 +224,30 @@ export const removeMessage = (
 }
 
 /**
+ * Put back messages removed optimistically (delete rollback). Unlike upsertMessage,
+ * this DELIBERATELY bypasses the live-edge guard: these ids were just in the window,
+ * so they belong back at their original (creation-ordered) position even while the
+ * window is detached (viewing history) — re-fetching would instead snap to the latest
+ * page and lose the user's place. Re-sorts; no cap trim needed (count returns to its
+ * pre-delete size, which was already within the window cap).
+ */
+export const reinsertMessages = (
+    state: ChannelMessagesState,
+    messages: readonly Message[],
+): ChannelMessagesState => {
+    const byId = new Map(state.byId)
+    let changed = false
+    for (const message of messages) {
+        if (!byId.has(message.name)) {
+            byId.set(message.name, message)
+            changed = true
+        }
+    }
+    if (!changed) return state
+    return { ...state, byId, order: sortIds(byId) }
+}
+
+/**
  * Insert/update many messages in one transition (optimistic send + its ack).
  * New ids only land at the live edge (same rule as upsertMessage); existing ones
  * update unless stale. Trims the oldest end if over cap.

@@ -186,6 +186,7 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
                                         <div
                                             key={block.name}
                                             data-message-id={block.messages[0].name}
+                                            data-batch-root=""
                                             className={cn(
                                                 "flex flex-col rounded-md transition-colors duration-700",
                                                 block.messages.some((member) => member.name === highlightedID) &&

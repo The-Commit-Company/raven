@@ -6,6 +6,7 @@ import {
     markError,
     markLoading,
     patchMessage,
+    reinsertMessages,
     removeMessage,
     removeOptimisticBatch,
     setOptimisticStatus,
@@ -242,6 +243,27 @@ class ChannelMessagesStore {
 
     messageDeleted(channelID: string, messageID: string) {
         this.update(channelID, removeMessage(this.getState(channelID), messageID))
+    }
+
+    /** Put back optimistically-deleted messages on a failed delete (see reinsertMessages). */
+    messagesRestored(channelID: string, messages: readonly Message[]) {
+        this.update(channelID, reinsertMessages(this.getState(channelID), messages))
+    }
+
+    /**
+     * All loaded members of a batch (shared message_batch_id), oldest-first — for
+     * batch-level actions (delete checklist, canonical-target resolution). Returns
+     * [] for a message with no batch id. Only scans on demand (right-click / hover),
+     * never per render.
+     */
+    batchMembers(channelID: string, batchID: string): Message[] {
+        const state = this.getState(channelID)
+        const members: Message[] = []
+        for (const id of state.order) {
+            const message = state.byId.get(id)
+            if (message?.message_batch_id === batchID) members.push(message)
+        }
+        return members
     }
 
     /** Reactions are server-authoritative: always replace the blob, never merge. */

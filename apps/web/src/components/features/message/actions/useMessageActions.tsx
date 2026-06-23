@@ -4,7 +4,6 @@ import { toast } from "sonner"
 import {
     Bookmark,
     Copy,
-    Download,
     Link,
     LucideIcon,
     MessageSquareText,
@@ -54,7 +53,6 @@ export const useMessageActions = (message: Message | null): MessageAction[][] =>
         if (!message) return []
 
         const isOwner = currentUser === message.owner && !message.is_bot_message
-        const hasFile = "file" in message && !!message.file
         const hasReactions = Object.keys(JSON.parse(message.message_reactions || "{}")).length > 0
 
         // Respond: reply + thread creation (join/mute need membership context we don't load here)
@@ -100,24 +98,8 @@ export const useMessageActions = (message: Message | null): MessageAction[][] =>
                 toast.success(_("Link copied"))
             },
         })
-        // No menu Download for image-album members: the right-clicked spot doesn't
-        // reliably identify ONE image (gaps/captions resolve to the batch head),
-        // and the slideshow modal has an unambiguous per-image Download anyway.
-        const isImageBatchMember = message.message_type === "Image" && !!message.message_batch_id
-        if (hasFile && !isImageBatchMember) {
-            clipboard.push({
-                id: "download",
-                label: _("Download"),
-                icon: Download,
-                onSelect: () => {
-                    const anchor = document.createElement("a")
-                    anchor.href = (message as Message & { file: string }).file
-                    anchor.download = ""
-                    anchor.rel = "noopener"
-                    anchor.click()
-                },
-            })
-        }
+        // No per-file Download here: it's ambiguous for a batch (which file?), and the
+        // attachment preview / lightbox already offers an unambiguous per-file download.
 
         // Organize: pin, save, reactions
         const organize: MessageAction[] = [

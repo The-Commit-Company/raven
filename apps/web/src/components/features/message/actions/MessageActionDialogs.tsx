@@ -1,57 +1,35 @@
+import { useRef } from "react"
 import { useAtom } from "jotai"
-import { toast } from "sonner"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@components/ui/alert-dialog"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@components/ui/dialog"
 import { messageDialogAtom } from "@utils/channelAtoms"
+import { DeleteMessageDialog } from "./dialogs/DeleteMessageDialog"
 import _ from "@lib/translate"
+import type { Message } from "@raven/types/common/Message"
 
 /**
- * Single instances of every message dialog, mounted once per stream and driven
- * by `messageDialogAtom` — so menu items, the future hover toolbar, and
- * keyboard shortcuts all open the same dialogs without per-message mounting.
+ * Orchestrator for message dialogs: mounted once per stream, it reads
+ * `messageDialogAtom` and mounts each dialog — so menu items, the hover toolbar,
+ * and keyboard shortcuts all open the same instances without per-message mounting.
  *
- * Bodies are placeholders; the real implementations land with layer 4/5
- * (edit needs the composer, delete/pin/save follow the optimistic contract
- * described in useMessageActions).
+ * Each real dialog lives in ./dialogs/<Name>.tsx (extracted as its layer lands).
+ * Delete is done; edit / forward / reactions are still placeholders inline below.
  */
 export const MessageActionDialogs = () => {
     const [dialog, setDialog] = useAtom(messageDialogAtom)
-
     const close = () => setDialog(null)
+
+    // Render the delete dialog from the LAST delete target so its content stays put
+    // through the close animation instead of flashing empty (same trick as the menu).
+    const lastDeleteRef = useRef<Message | null>(null)
+    if (dialog?.type === "delete") lastDeleteRef.current = dialog.message
 
     return (
         <>
-            <AlertDialog open={dialog?.type === "delete"} onOpenChange={(open) => !open && close()}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>{_("Delete message?")}</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            {_("This message will be removed for everyone in the conversation. This cannot be undone.")}
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>{_("Cancel")}</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={() => {
-                                // TODO(layer 5): optimistic delete — store.messageDeleted() + API + resync on failure
-                                toast.info(`${_("Delete")} — ${_("coming soon")}`)
-                                close()
-                            }}
-                        >
-                            {_("Delete")}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            <DeleteMessageDialog
+                open={dialog?.type === "delete"}
+                message={dialog?.type === "delete" ? dialog.message : lastDeleteRef.current}
+                onClose={close}
+            />
 
             <Dialog open={dialog?.type === "edit"} onOpenChange={(open) => !open && close()}>
                 <DialogContent>
