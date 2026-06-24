@@ -61,7 +61,11 @@ export const useGroupedChannels = (
         // (Alphabetical / Recent activity / Unread first) — only "Recent activity"
         // would consume last_message_timestamp. Unread stays bold + badge in place.
         const groupedChannels = Array.from(groups).filter(([, channels]) => channels.length > 0)
-        const ungroupedChannels = Array.from(remainingChannels)
+        const ungroupedChannels = Array.from(remainingChannels).sort((a, b) => {
+            const ta = a.last_message_timestamp ?? ""
+            const tb = b.last_message_timestamp ?? ""
+            return ta < tb ? 1 : ta > tb ? -1 : 0
+        })
 
         return { groupedChannels, ungroupedChannels }
     }, [channels, workspaceID, myProfile?.channel_groups, myProfile?.pinned_channels, myProfile?.grouped_channels, showMyChannelsOnly])

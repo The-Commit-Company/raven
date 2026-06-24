@@ -20,6 +20,8 @@ export const usePresenceSync = () => {
         {
             dedupingInterval: 1000 * 60 * 5,
             revalidateOnReconnect: true,
+            revalidateOnFocus: true,
+            focusThrottleInterval: 60_000,
         },
     )
 
