@@ -437,9 +437,7 @@ def get_saved_messages():
 	for message in messages:
 		is_thread_channel = message.pop("is_thread", 0)
 		if is_thread_channel:
-			parent_channel_id = frappe.db.get_value(
-				"Raven Message", message["channel_id"], "channel_id"
-			)
+			parent_channel_id = frappe.db.get_value("Raven Message", message["channel_id"], "channel_id")
 			message["parent_channel_id"] = parent_channel_id or message["channel_id"]
 		else:
 			message["parent_channel_id"] = message["channel_id"]
