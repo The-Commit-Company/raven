@@ -5,6 +5,8 @@ import { Separator } from "@components/ui/separator"
 import { SettingsPanelDescription, SettingsPanelHeader, SettingsPanelTitle, SettingsPanelContent } from "@components/ui/settings-dialog"
 import { Switch } from "@components/ui/switch"
 import { useTheme } from "@components/theme-provider"
+import { useSetAtom } from "jotai"
+import { chatStyleAtom, type ChatStyle } from "@utils/preferences"
 import _ from "@lib/translate"
 import { useFrappeGetDoc, useFrappePostCall, useFrappeUpdateDoc } from "frappe-react-sdk"
 import { toast } from "sonner"
@@ -357,7 +359,9 @@ const LeftRightLayoutSwitcher = () => {
 
     const { call } = useFrappePostCall('frappe.client.set_value')
 
-    const setChatStyle = (style: string) => {
+    const setChatStyleAtomValue = useSetAtom(chatStyleAtom)
+
+    const setChatStyle = (style: ChatStyle) => {
         if (!myProfile?.name) return;
         call({
             doctype: 'Raven User',
@@ -366,6 +370,8 @@ const LeftRightLayoutSwitcher = () => {
             value: style
         }).then(() => {
             window.frappe.boot.chat_style = style
+            // Drive the live layout switch — the message rows read this atom.
+            setChatStyleAtomValue(style)
             mutate()
             toast.success('Chat style updated')
         }).catch((e) => {

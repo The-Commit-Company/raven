@@ -1,4 +1,16 @@
+import { atom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
+
+export type ChatStyle = "Simple" | "Left-Right"
+
+/**
+ * Message layout: "Simple" keeps every message left (Slack-style); "Left-Right" pushes your
+ * own messages to the right (iMessage-style). This is a SERVER preference (Raven User), not a
+ * client one — so it's seeded from boot (correct on first paint) rather than localStorage, and
+ * the Appearance switcher sets it for a live change without reload. Read it with a single
+ * useAtomValue in the message rows.
+ */
+export const chatStyleAtom = atom<ChatStyle>((window.frappe?.boot?.chat_style as ChatStyle | undefined) ?? "Simple")
 
 export type EnterKeyBehaviour = "new-line" | "send-message"
 
