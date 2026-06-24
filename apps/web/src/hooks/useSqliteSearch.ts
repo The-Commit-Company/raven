@@ -19,7 +19,6 @@ export type SearchResult = {
     parent_channel_id?: string;
     mentions?: string;
     is_thread?: 1 | 0;
-    is_thread_message?: 1 | 0;
     message_type?: string;
     is_bot_message?: 1 | 0;
     bot?: string;
