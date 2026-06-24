@@ -795,6 +795,13 @@ def forward_message(message_receivers: list[dict], forwarded_message: dict):
 	"""
 	Forward a message to multiple users/ or in multiple channels
 	"""
+	# Forwarding drops the reply link (linked_message lives in the source channel); inline the
+	# replied message as a blockquote once, up front, so the quote survives every forward.
+	if forwarded_message.get("is_reply"):
+		quote = build_reply_blockquote(forwarded_message.get("replied_message_details"))
+		if quote:
+			forwarded_message["text"] = quote + (forwarded_message.get("text") or "")
+
 	for receiver in message_receivers:
 		if receiver["type"] == "User":
 			# send forwarded message as a DM to the user
@@ -838,3 +845,30 @@ def add_forwarded_message_to_channel(channel_id: str, forwarded_message: dict):
 	)
 	doc.insert()
 	return "message forwarded"
+
+
+def build_reply_blockquote(replied_message_details) -> str:
+	"""
+	Build a Tiptap-compatible blockquote (HTML) from a message's replied_message_details,
+	used when forwarding a reply so the quoted message is inlined into the forwarded body.
+	"""
+	if not replied_message_details:
+		return ""
+
+	details = replied_message_details
+	if isinstance(details, str):
+		details = frappe.parse_json(details)
+	if not details:
+		return ""
+
+	owner = details.get("owner")
+	author = (owner and frappe.get_cached_value("User", owner, "full_name")) or owner or ""
+
+	# Text replies keep their rich HTML body; for any other type (Image, File, Poll, ...)
+	# `content` holds the derived teaser (e.g. the file/image name).
+	if details.get("message_type") == "Text" and details.get("text"):
+		body = details["text"]
+	else:
+		body = f"<p>{frappe.utils.escape_html(details.get('content') or '')}</p>"
+
+	return f"<blockquote><p><strong>{frappe.utils.escape_html(author)}</strong></p>{body}</blockquote>"
