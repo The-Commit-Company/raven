@@ -475,7 +475,8 @@ def search_links(
 			message.creation,
 			message.owner.as_("author"),
 			message.content,
-			channel.is_thread,
+			# "message lives in a thread channel" — aliased to match the FTS path's field name.
+			channel.is_thread.as_("is_thread_message"),
 			channel.is_direct_message,
 			channel.type.as_("channel_type"),
 			thread_root.channel_id.as_("parent_channel_id"),

@@ -1,15 +1,14 @@
 import { useCallback } from "react"
 import { Outlet, useSearchParams } from "react-router-dom"
-import AppHeader from "@components/features/header/AppHeader"
-import _ from "@lib/translate"
 import AppMobileFooter from "@components/features/header/AppMobileFooter"
 
 /**
  * Layout for the global search page (/search).
  *
- * Desktop: workspace-switcher rail + AppHeader + content (sidebar-less AppLayout).
- * Mobile: full-screen page — no rail, no AppHeader (the Search component renders its own
- * mobile top-strip with back button + title + input, similar to channel/DM full-screen pages).
+ * Desktop: workspace-switcher rail + content (sidebar-less AppLayout). The "Search"
+ * title strip lives inside the Search page's left pane, so the split-view chat pane
+ * runs full-height beside it (matching saved messages / notifications).
+ * Mobile: full-screen page — no rail; the Search component renders its own mobile top-strip.
  *
  * Search state lives in URL params so links like /search?q=foo&channel=general work.
  */
@@ -29,7 +28,6 @@ export function SearchLayout() {
     }, [setSearchParams])
 
     return <div className="flex flex-col h-screen w-full">
-        <AppHeader title={_("Search")} showSearchBar={false} />
         <Outlet context={{ searchValue, setSearchValue }} />
         <AppMobileFooter />
     </div>

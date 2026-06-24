@@ -1,6 +1,5 @@
 import { Outlet, useMatch } from 'react-router'
 import { ChannelSidebar } from '@components/channel-sidebar/ChannelSidebar'
-import AppHeader from '@components/features/header/AppHeader'
 import AppMobileFooter from '@components/features/header/AppMobileFooter'
 import { useIsMobile } from '@hooks/use-mobile'
 

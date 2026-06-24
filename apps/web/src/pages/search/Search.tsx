@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useOutletContext, useSearchParams } from 'react-router-dom'
+import { useHotkeys } from 'react-hotkeys-hook'
 import { Search as SearchIcon, X } from 'lucide-react'
 
 import SearchTabsBar, { SearchTab } from '@components/features/search/SearchTabsBar'
@@ -9,12 +10,15 @@ import SearchMessageResults from '@components/features/search/results/SearchMess
 import SearchFileResults from '@components/features/search/results/SearchFileResults'
 import SearchLinkResults from '@components/features/search/results/SearchLinkResults'
 import SearchPollResults from '@components/features/search/results/SearchPollResults'
+import NotificationChat, { type SelectedNotification } from '@pages/notifications/NotificationChat'
+import { PageHeader } from '@components/layout/PageHeader'
 import { SearchFilters } from '@components/features/search/types'
 
 import { useChannelList } from "@stores/channels/useChannelList"
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '@db'
 import { Input } from '@components/ui/input'
+import { cn } from '@lib/utils'
 import _ from '@lib/translate'
 
 interface SearchOutletContext {
@@ -40,6 +44,16 @@ export default function Search() {
     const tabFromURL = (searchParams.get('tab') as SearchTab) || 'messages'
 
     const [activeTab, setActiveTab] = useState<SearchTab>(tabFromURL)
+    const [selected, setSelected] = useState<SelectedNotification | null>(null)
+    const hasSelection = !!selected
+
+    // Clicking the open row again collapses the pane back to a full-width list.
+    const onSelect = useCallback((selection: SelectedNotification) => {
+        setSelected(prev => prev?.messageID === selection.messageID ? null : selection)
+    }, [])
+
+    // Esc closes the pane (no visible close button — toggle the row or hit Esc).
+    useHotkeys('esc', () => setSelected(null), { enableOnFormTags: true }, [])
 
     const filters: SearchFilters = {
         query: searchValue || '',
@@ -91,7 +105,9 @@ export default function Search() {
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 placeholder={_('Search messages, files, links, polls')}
-                className="pl-9 pr-9 h-8 text-base"
+                className={cn("pl-9 pr-9 h-8 text-base",
+                    hasSelection && "bg-surface-gray-3 hover:bg-surface-gray-4"
+                )}
                 autoFocus
             />
             {searchValue && (
@@ -110,41 +126,56 @@ export default function Search() {
 
     // TODO: Add mobile search layout
     return (
-        <div className="flex flex-col h-full overflow-hidden">
-
-            <div className="shrink-0">
-                <div className="mx-auto w-full px-2 pt-2 space-y-2">
-                    {searchInput}
-                    <div className="mt-4 flex items-center gap-3 flex-wrap">
-                        <SearchTabsBar activeTab={activeTab} setActiveTab={onTabChange} />
-                        <div className="ml-auto">
-                            <SearchFiltersBar
-                                filters={filters}
-                                channels={channels}
-                                dmChannels={dmChannels}
-                                onChannelChange={setChannelFilter}
-                                onUserChange={setUserFilter}
-                            />
+        <div className={cn(
+            "flex flex-row h-full overflow-hidden",
+            hasSelection && "bg-surface-gray-1"
+        )}>
+            {/* Left pane: full width by default; exact half once a result is selected (no divider —
+                the right pane's gray canvas separates them). */}
+            <div className={cn(
+                "flex flex-col overflow-hidden min-w-0",
+                hasSelection ? "w-1/2 shrink-0" : "flex-1"
+            )}>
+                <PageHeader title={_('Search')} />
+                <div className="shrink-0">
+                    <div className="mx-auto w-full px-2 pt-2 space-y-3">
+                        {searchInput}
+                        <div className="mt-4 flex items-center gap-3 flex-wrap">
+                            <SearchTabsBar activeTab={activeTab} setActiveTab={onTabChange} />
+                            <div className="ml-auto">
+                                <SearchFiltersBar
+                                    filters={filters}
+                                    channels={channels}
+                                    dmChannels={dmChannels}
+                                    onChannelChange={setChannelFilter}
+                                    onUserChange={setUserFilter}
+                                />
+                            </div>
                         </div>
+                        <SearchActiveBadges
+                            filters={filters}
+                            channels={channels}
+                            dmChannels={dmChannels}
+                            users={users ?? []}
+                        />
                     </div>
-                    <SearchActiveBadges
-                        filters={filters}
-                        channels={channels}
-                        dmChannels={dmChannels}
-                        users={users ?? []}
-                    />
+                </div>
+
+                <div className="flex-1 min-h-0 px-3 md:px-0 pb-2">
+                    <div className="mx-auto w-full h-full">
+                        {activeTab === 'messages' && <SearchMessageResults searchValue={filters.query} filters={filters} onSelect={onSelect} selectedID={selected?.messageID} />}
+                        {activeTab === 'files' && <SearchFileResults searchValue={filters.query} filters={filters} onSelect={onSelect} selectedID={selected?.messageID} />}
+                        {activeTab === 'links' && <SearchLinkResults searchValue={filters.query} filters={filters} onSelect={onSelect} selectedID={selected?.messageID} />}
+                        {activeTab === 'polls' && <SearchPollResults searchValue={filters.query} filters={filters} onSelect={onSelect} selectedID={selected?.messageID} />}
+                    </div>
                 </div>
             </div>
 
-            <div className="flex-1 min-h-0 px-3 md:px-0 pb-2">
-                <div className="mx-auto w-full h-full">
-                    {activeTab === 'messages' && <SearchMessageResults searchValue={filters.query} filters={filters} />}
-                    {activeTab === 'files' && <SearchFileResults searchValue={filters.query} filters={filters} />}
-                    {activeTab === 'links' && <SearchLinkResults searchValue={filters.query} filters={filters} />}
-                    {activeTab === 'polls' && <SearchPollResults searchValue={filters.query} filters={filters} />}
+            {selected && (
+                <div className="w-1/2 shrink-0 flex flex-col min-h-0 bg-surface-gray-0">
+                    <NotificationChat selected={selected} />
                 </div>
-            </div>
-
+            )}
         </div>
     )
 }
