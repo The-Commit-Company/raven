@@ -59,7 +59,7 @@ export const ThreadRootMessage = ({ threadID, parentID }: { threadID: string; pa
     const authorName = author?.full_name || author?.name || _("User")
 
     return (
-        <div className="shrink-0 border-b border-outline-gray-2 px-4 py-2">
+        <div className="shrink-0 border-b border-outline-gray-1 px-4 py-2">
             <div className="flex items-start gap-2.5">
                 {author ? (
                     <UserAvatar user={author} size="md" showStatusIndicator={false} />

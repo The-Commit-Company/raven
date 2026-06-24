@@ -39,7 +39,15 @@ export const messageActionTargetAtom = atom<Message | null>(null)
  */
 export const replyToMessageAtom = atomFamily((_channelID: string) => atom<Message | null>(null))
 
-export type MessageDialogType = "delete" | "edit" | "forward" | "reactions"
+/**
+ * The message currently being edited inline, per channel (its id, or null). The
+ * message body renderer swaps `RichTextRenderer` for an inline editor when its id
+ * matches. Per-channel so an edit in one channel doesn't bleed into another. For a
+ * batch this targets the caption-bearing member (the only editable text).
+ */
+export const editingMessageAtom = atomFamily((_channelID: string) => atom<string | null>(null))
+
+export type MessageDialogType = "delete" | "forward" | "reactions"
 
 /**
  * The currently open message dialog. Separate from the menu target because

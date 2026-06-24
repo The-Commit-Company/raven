@@ -1,8 +1,9 @@
 import { useEffect } from "react"
 import { useFrappeDocTypeEventListener, useFrappeGetDocList } from "frappe-react-sdk"
 import { useDebounceCallback } from "usehooks-ts"
+import { useSetAtom } from "jotai"
 import { RavenCustomEmoji } from "@raven/types/RavenMessaging/RavenCustomEmoji"
-import { initEmojiMart } from "@lib/emojiMart"
+import { initEmojiMart, customEmojiCategoriesAtom } from "@lib/emojiMart"
 
 /** Coalesce a burst of Raven Custom Emoji changes before refetching the list. */
 const REFETCH_DEBOUNCE_MS = 1000
@@ -15,6 +16,7 @@ const REFETCH_DEBOUNCE_MS = 1000
  * Fetches the full list (limit 0) since it seeds a global registry, not a paged table.
  */
 export const useRegisterCustomEmojis = () => {
+    const setCustomCategories = useSetAtom(customEmojiCategoriesAtom)
     const { data, mutate } = useFrappeGetDocList<RavenCustomEmoji>(
         "Raven Custom Emoji",
         { fields: ["name", "emoji_name", "image", "keywords"], limit: 0 },
@@ -36,8 +38,10 @@ export const useRegisterCustomEmojis = () => {
                 keywords: emoji.keywords ? emoji.keywords.split(/[\s,]+/).filter(Boolean) : [],
                 skins: [{ src: emoji.image }],
             }))
-        if (emojis.length) initEmojiMart([{ id: "raven", name: "Custom", emojis }])
-    }, [data])
+        const categories = emojis.length ? [{ id: "raven", name: "Custom", emojis }] : []
+        initEmojiMart(categories)
+        setCustomCategories(categories)
+    }, [data, setCustomCategories])
 
     // Debounced so a batch of emoji edits (e.g. bulk add) triggers one refetch.
     const debouncedRefetch = useDebounceCallback(mutate, REFETCH_DEBOUNCE_MS)

@@ -74,9 +74,11 @@ const isContinuationOf = (message: Message, previous: Message | null): boolean =
     return timeOf(message) - timeOf(previous) <= CONTINUATION_GAP_MS
 }
 
-const parsePinnedIds = (pinnedMessagesString: string): Set<string> => {
+/** The channel's pinned message ids (newline-separated) as a set. Shared so the pin
+ *  action toggles exactly what the stream decorates as pinned. */
+export const parsePinnedIds = (pinnedMessagesString: string | null | undefined): Set<string> => {
     return new Set(
-        pinnedMessagesString
+        (pinnedMessagesString ?? "")
             .split("\n")
             .map((id) => id.trim())
             .filter(Boolean),

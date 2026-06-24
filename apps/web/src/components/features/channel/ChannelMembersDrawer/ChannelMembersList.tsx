@@ -31,8 +31,6 @@ const ChannelMembersList = ({ members, channelID, allowSettingChange }: { member
 
     return (
         <div className="flex flex-col h-full min-h-0 gap-2">
-
-            {/* Search - TODO: Convert this to InputGroup */}
             <div className="flex gap-2 px-2 shrink-0">
                 <InputGroup size="sm" variant="outline">
                     <InputGroupAddon><SearchIcon /></InputGroupAddon>

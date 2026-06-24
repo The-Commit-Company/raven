@@ -167,7 +167,7 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                             <Badge>
                                 {totalVotes === 1 ? _("1 vote") : _("{0} votes", [String(totalVotes)])}
                             </Badge>
-                            {poll.is_multi_choice !== 1 &&
+                            {poll.is_multi_choice === 1 &&
                                 <Badge variant="subtle" theme="blue">
                                     <ListChecksIcon /> {_("Multiple choice")}
                                 </Badge>}

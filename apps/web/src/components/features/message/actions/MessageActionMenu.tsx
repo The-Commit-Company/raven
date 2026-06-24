@@ -67,7 +67,17 @@ export const MessageActionMenu = ({ channelID, children }: { channelID: string; 
         const messageID = element?.getAttribute("data-message-id")
         if (!element || !messageID) return null
         const message = channelMessagesStore.getState(channelID).byId.get(messageID)
-        return message ? { message, element } : null
+        if (!message) return null
+        // A batch acts as one logical message: target its LAST (newest) member — where
+        // the reply linkage already lives — regardless of which tile was hit, and anchor
+        // the toolbar to the whole batch row so it doesn't jump between album tiles.
+        if (message.message_batch_id) {
+            const members = channelMessagesStore.batchMembers(channelID, message.message_batch_id)
+            const target = members[members.length - 1] ?? message
+            const root = (element.closest("[data-batch-root]") as HTMLElement | null) ?? element
+            return { message: target, element: root }
+        }
+        return { message, element }
     }
 
     const messageFromEvent = (event: React.MouseEvent): Message | null => blockFromEvent(event)?.message ?? null
@@ -118,9 +128,18 @@ export const MessageActionMenu = ({ channelID, children }: { channelID: string; 
         }
     }
 
-    /** Runs an action unless this "selection" is the release of the right-click that opened the menu. */
-    const selectAction = (action: MessageAction) => {
-        if (performance.now() - menuOpenedAtRef.current < OPEN_GESTURE_GUARD_MS) return
+    /**
+     * Runs an action — unless this "selection" is the release of the right-click that opened
+     * the menu. That happens when the menu opens near the viewport bottom: Radix shifts it up
+     * to fit, landing an item under the cursor, so the opening pointer-up fires onSelect on it.
+     * preventDefault keeps Radix from closing the menu on that phantom select (without it the
+     * menu would flash open and dismiss instantly); we just swallow the event.
+     */
+    const selectAction = (action: MessageAction, event: Event) => {
+        if (performance.now() - menuOpenedAtRef.current < OPEN_GESTURE_GUARD_MS) {
+            event.preventDefault()
+            return
+        }
         action.onSelect()
     }
 
@@ -179,7 +198,11 @@ export const MessageActionMenu = ({ channelID, children }: { channelID: string; 
                 </div>
             </ContextMenuTrigger>
 
-            <ContextMenuContent className="w-56">
+            {/* Keyed by target so right-clicking a DIFFERENT message while the menu is open
+                remounts the content — Radix only re-anchors to the pointer on the closed→open
+                transition, so without this the menu would stay put over the old message.
+                collisionPadding keeps it off the viewport edge. */}
+            <ContextMenuContent key={menuMessage?.name} className="w-56" collisionPadding={8}>
                 {actionGroups.map((group, index) => (
                     <Fragment key={index}>
                         {index > 0 && <ContextMenuSeparator />}
@@ -188,7 +211,7 @@ export const MessageActionMenu = ({ channelID, children }: { channelID: string; 
                                 <ContextMenuItem
                                     key={action.id}
                                     variant={action.danger ? "destructive" : "default"}
-                                    onSelect={() => selectAction(action)}
+                                    onSelect={(event) => selectAction(action, event)}
                                 >
                                     <action.icon />
                                     <span>{action.label}</span>

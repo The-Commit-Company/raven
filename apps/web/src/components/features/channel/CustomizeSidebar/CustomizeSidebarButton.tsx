@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, MoreVertical } from 'lucide-react'
+import { FilterIcon, MoreVertical, PlusIcon, SidebarIcon } from 'lucide-react'
 import { Button } from '@components/ui/button'
 import {
     Dialog,
@@ -19,14 +19,17 @@ import {
 import { CustomizeSidebarDialog } from './CustomizeSidebarDialog'
 import { CreateChannelDialog } from '@components/features/channel/CreateChannel/CreateChannelButton'
 import _ from "@lib/translate"
-import { useNavigate } from 'react-router-dom'
 import { useIsMobile } from '@hooks/use-mobile'
+import { useSetAtom } from 'jotai'
+import { settingsDialogOpenTab } from '@components/features/settings/SettingsDialog'
+import { Hash } from '@components/common/ChannelIcon/ChannelIcon'
 
 /** The channel sidebar's overflow menu — create channel + sidebar view options. */
-export const CustomizeSidebarButton = ({ showMyChannelsOnly, setShowMyChannelsOnly }: { showMyChannelsOnly: boolean, setShowMyChannelsOnly: (showMyChannelsOnly: boolean) => void }) => {
+export const CustomizeSidebarButton = () => {
     const [isOpen, setIsOpen] = useState(false)
     const [createOpen, setCreateOpen] = useState(false)
-    const navigate = useNavigate()
+
+    const setSettingsDialogAtom = useSetAtom(settingsDialogOpenTab)
     const isMobile = useIsMobile()
 
     const content = <CustomizeSidebarDialog onClose={() => setIsOpen(false)} />
@@ -60,19 +63,19 @@ export const CustomizeSidebarButton = ({ showMyChannelsOnly, setShowMyChannelsOn
                         <MoreVertical />
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" side="bottom" sideOffset={4} className="min-w-64">
-                    <DropdownMenuItem onClick={() => setShowMyChannelsOnly(!showMyChannelsOnly)}>
-                        <span>{_("Only show channels I've joined")}</span>{showMyChannelsOnly && <Check className="h-4 w-4 text-ink-gray-8" />}
+                <DropdownMenuContent align="start" side="bottom" className="min-w-64">
+                    <DropdownMenuItem onClick={() => setSettingsDialogAtom('preferences')}>
+                        <FilterIcon />{_("Filter and sort channels")}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setSettingsDialogAtom('sidebar')}>
+                        <SidebarIcon />{_("Customize my sidebar")}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setSettingsDialogAtom('channels')}>
+                        <Hash />{_("Manage channels")}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => setCreateOpen(true)}>
-                        <span>{_("Create a new channel")}</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setIsOpen(true)}>
-                        <span>{_("Customize my sidebar")}</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate('/settings/channels')}>
-                        <span>{_("Manage channels")}</span>
+                        <PlusIcon />{_("Create a new channel")}
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>

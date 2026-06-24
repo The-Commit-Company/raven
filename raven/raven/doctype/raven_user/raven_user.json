@@ -28,7 +28,11 @@
   "custom_status",
   "chat_style_section",
   "chat_style",
-  "column_break_xlzh"
+  "filter_recent_activity",
+  "filter_joined_channels",
+  "column_break_xlzh",
+  "time_format",
+  "sort_channels_by"
  ],
  "fields": [
   {
@@ -125,7 +129,7 @@
   {
    "fieldname": "chat_style_section",
    "fieldtype": "Section Break",
-   "label": "Chat Layout"
+   "label": "Preferences"
   },
   {
    "fieldname": "chat_style",
@@ -163,12 +167,39 @@
    "fieldname": "contact_number",
    "fieldtype": "Data",
    "label": "Contact Number"
+  },
+  {
+   "default": "1",
+   "description": "Checking this will remove channels without any activity in the last 30 days from the sidebar. ",
+   "fieldname": "filter_recent_activity",
+   "fieldtype": "Check",
+   "label": "Only show channels with recent activity"
+  },
+  {
+   "default": "0",
+   "description": "Turning this on will remove any public channels where you have not joined from the sidebar.",
+   "fieldname": "filter_joined_channels",
+   "fieldtype": "Check",
+   "label": "Only show channels I have joined"
+  },
+  {
+   "default": "12-hour",
+   "fieldname": "time_format",
+   "fieldtype": "Select",
+   "label": "Time Format",
+   "options": "12-hour\n24-hour"
+  },
+  {
+   "fieldname": "sort_channels_by",
+   "fieldtype": "Select",
+   "label": "Sort channels by",
+   "options": "Alphabetical Order\nRecent Activity\nUnreads First"
   }
  ],
  "grid_page_length": 50,
  "image_field": "user_image",
  "links": [],
- "modified": "2026-06-14 10:26:51.639390",
+ "modified": "2026-06-24 12:28:47.461186",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven User",

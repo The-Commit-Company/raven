@@ -43,4 +43,12 @@ export interface RavenUser {
 	chat_style?: "Simple" | "Left-Right"
 	/**	Contact Number : Data	*/
 	contact_number?: string
+	/**	Time Format : Select	*/
+	time_format?: "12-hour" | "24-hour"
+	/** Only show channels with recent activity: Check */
+	filter_recent_activity?: 0 | 1
+	/** Only show channels I have joined: Check */
+	filter_joined_channels?: 0 | 1
+	/** Sort channels by: Select */
+	sort_channels_by?: "Alphabetical Order" | "Recent Activity" | "Unreads First"
 }

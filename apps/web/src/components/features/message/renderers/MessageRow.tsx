@@ -5,6 +5,8 @@ import { getDateObject } from "@lib/date"
 import { cn } from "@lib/utils"
 import _ from "@lib/translate"
 import { UserAvatar } from "../UserAvatar"
+import { timeFormatAtom } from "@utils/preferences"
+import { useAtomValue } from "jotai"
 
 /**
  * Shared anatomy for everything rendered as a row in the chat stream
@@ -14,17 +16,25 @@ import { UserAvatar } from "../UserAvatar"
 
 /** Short (in-row) and long (tooltip) display times for a message timestamp. */
 export const useMessageTimes = (creation: string) => {
+
+    const timeFormat = useAtomValue(timeFormatAtom)
+
     return useMemo(() => {
         try {
             const dateObject = getDateObject(creation)
+            let format = "hh:mm A"
+            if (timeFormat === "24-hour") {
+                format = "HH:mm"
+            }
+
             return {
-                shortTime: dateObject.format("hh:mm A"),
-                longTime: dateObject.format("Do MMMM YYYY, hh:mm A"),
+                shortTime: dateObject.format(format),
+                longTime: dateObject.format(`Do MMMM YYYY, ${format}`),
             }
         } catch {
             return { shortTime: creation, longTime: creation }
         }
-    }, [creation])
+    }, [creation, timeFormat])
 }
 
 /** The hoverable row shell every stream row shares. */
@@ -40,7 +50,10 @@ export const MessageRow = ({
     <div
         ref={ref}
         className={cn(
-            "group/message-item w-full overflow-hidden relative hover:bg-surface-gray-1 py-2 rounded-md px-3.5 transition-all duration-200",
+            // overflow-hidden clips media to the rounded corners — but while this row
+            // holds the inline editor, drop it so the editor's mention/emoji popup
+            // (which rises above the box) isn't clipped by the row.
+            "group/message-item w-full overflow-hidden has-[[data-raven-editor]]:overflow-visible relative hover:bg-surface-gray-1 py-2 rounded-md px-3.5 transition-all duration-200",
             className,
         )}
     >

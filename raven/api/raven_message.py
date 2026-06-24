@@ -254,8 +254,20 @@ def delete_messages(message_ids: list[str]):
 	"""
 	Bulk delete messages since messages can be grouped in the UI
 	"""
-	for message_id in message_ids:
-		frappe.delete_doc("Raven Message", message_id, delete_permanently=True)
+	# Sort ascending so we delete oldest first: the newest message is the one most likely to
+	# be the channel's last message, so deleting it LAST means the channel summary is recomputed
+	# only once (and lands on the correct pre-batch message). Every member except that last one
+	# skips the channel-summary recompute/event — so the unread-count event is broadcast once
+	# instead of once per deleted message. (The per-message message_deleted + search removal
+	# still fire for each.)
+	messages = frappe.get_all(
+		"Raven Message", filters={"name": ["in", message_ids]}, order_by="creation asc", pluck="name"
+	)
+	for index, message_id in enumerate(messages):
+		doc = frappe.get_doc("Raven Message", message_id)
+		if index < len(messages) - 1:
+			doc.flags.skip_channel_summary = True
+		doc.delete(delete_permanently=True)
 
 
 @frappe.whitelist()
@@ -509,6 +521,7 @@ def get_unread_count_for_channels():
 		.where(
 			message.creation > Coalesce(channel_member.last_visit, "2000-11-11")
 		)  # Only count messages after the last visit for performance
+		.where(message.owner != frappe.session.user)
 		.left_join(message)
 		.on(channel.name == message.channel_id)
 	)
@@ -542,6 +555,7 @@ def get_unread_count_for_channel(channel_id: str):
 				"channel_id": channel_id,
 				"creation": (">", last_timestamp),
 				"message_type": ["!=", "System"],
+				"owner": ["!=", frappe.session.user],
 			},
 		)
 	else:
@@ -551,6 +565,7 @@ def get_unread_count_for_channel(channel_id: str):
 				filters={
 					"channel_id": channel_id,
 					"message_type": ["!=", "System"],
+					"owner": ["!=", frappe.session.user],
 				},
 			)
 		else:

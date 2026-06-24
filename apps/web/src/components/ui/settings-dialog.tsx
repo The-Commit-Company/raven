@@ -2,6 +2,7 @@ import * as React from "react"
 import { Tabs as TabsPrimitive, Dialog as DialogPrimitive } from "radix-ui"
 import { cn } from "@lib/utils"
 import { DialogContent } from "./dialog"
+import { Label } from "./label"
 
 /**
  * Sample Usage:
@@ -259,6 +260,30 @@ function SettingsPanelContent({
     )
 }
 
+/** Common components for forms */
+
+/** Used to render a row in a form in the settings panel */
+const SettingsFormRow = (props: React.ComponentProps<"div">) => {
+    return <div className="flex justify-between items-center gap-8 py-3" {...props} />
+}
+
+/** Used to render a label for a form field in the settings panel */
+const SettingsFormLabel = (props: React.ComponentProps<typeof Label>) => {
+    return (
+        <Label
+            htmlFor="filter_recent_activity"
+            className="text-p-base text-ink-gray-8"
+            {...props} />
+    )
+}
+
+/** Used to render a description for a form field in the settings panel */
+const SettingsFormDescription = (props: React.ComponentProps<"p">) => {
+    return (
+        <p className="text-p-sm text-ink-gray-5" {...props} />
+    )
+}
+
 export {
     SettingsDialog,
     SettingsTabs,
@@ -269,5 +294,8 @@ export {
     SettingsPanelHeader,
     SettingsPanelTitle,
     SettingsPanelDescription,
-    SettingsPanelContent
+    SettingsPanelContent,
+    SettingsFormRow,
+    SettingsFormLabel,
+    SettingsFormDescription
 }

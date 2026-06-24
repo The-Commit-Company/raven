@@ -1,10 +1,13 @@
 import { useState } from "react"
+import { useAtomValue } from "jotai"
 import Picker from "@emoji-mart/react"
-import { Smile } from "lucide-react"
+import { SmilePlusIcon } from "lucide-react"
 import type { Editor } from "@tiptap/react"
 import { Button } from "@components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
+import { useTheme } from "@components/theme-provider"
+import { customEmojiCategoriesAtom } from "@lib/emojiMart"
 import _ from "@lib/translate"
 
 /** A picked emoji from emoji-mart (`native` for standard, `src` for custom). */
@@ -18,6 +21,8 @@ type PickedEmoji = { id: string; native?: string; src?: string }
  */
 export const EmojiPickerButton = ({ editor }: { editor: Editor }) => {
     const [open, setOpen] = useState(false)
+    const { themeValue } = useTheme()
+    const customEmojis = useAtomValue(customEmojiCategoriesAtom)
 
     const onSelect = (emoji: PickedEmoji) => {
         if (emoji.native) {
@@ -41,14 +46,14 @@ export const EmojiPickerButton = ({ editor }: { editor: Editor }) => {
                 <TooltipTrigger asChild>
                     <PopoverTrigger asChild>
                         <Button type="button" variant="ghost" size="sm" isIconButton aria-label={_("Emoji")}>
-                            <Smile />
+                            <SmilePlusIcon />
                         </Button>
                     </PopoverTrigger>
                 </TooltipTrigger>
                 <TooltipContent>{_("Emoji")}</TooltipContent>
             </Tooltip>
             <PopoverContent side="top" align="start" className="w-auto border-0 p-0">
-                <Picker onEmojiSelect={onSelect} theme="auto" set="apple" previewPosition="none" />
+                <Picker onEmojiSelect={onSelect} theme={themeValue} set="apple" custom={customEmojis} previewPosition="none" />
             </PopoverContent>
         </Popover>
     )

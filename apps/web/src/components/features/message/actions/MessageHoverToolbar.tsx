@@ -1,6 +1,5 @@
 import { Fragment, useState } from "react"
-import { useSetAtom } from "jotai"
-import { toast } from "sonner"
+import { useAtomValue, useSetAtom } from "jotai"
 import { MoreHorizontal, Reply, SmilePlus } from "lucide-react"
 import { Button } from "@components/ui/button"
 import {
@@ -14,10 +13,10 @@ import {
 import { messageActionTargetAtom, replyToMessageAtom } from "@utils/channelAtoms"
 import _ from "@lib/translate"
 import { useMessageActions } from "./useMessageActions"
+import { useToggleReaction } from "./useToggleReaction"
+import { ReactionPicker } from "./ReactionPicker"
 import type { Message } from "@raven/types/common/Message"
-
-/** Slack-style defaults until frequently-used reactions land (layer 5). */
-const QUICK_REACTIONS = ["👍", "✅", "👀"]
+import { QuickEmojisAtom } from "@utils/preferences"
 
 /**
  * The floating quick-action toolbar — ONE instance per stream, positioned over
@@ -44,6 +43,7 @@ export const MessageHoverToolbar = ({
     const actionGroups = useMessageActions(message)
     const setActionTarget = useSetAtom(messageActionTargetAtom)
     const setReplyTo = useSetAtom(replyToMessageAtom(message.channel_id))
+    const toggleReaction = useToggleReaction()
     const [menuOpen, setMenuOpen] = useState(false)
 
     /** The ellipsis menu marks the message as the action target, like right-click does. */
@@ -53,6 +53,8 @@ export const MessageHoverToolbar = ({
         onMenuOpenChange(open)
     }
 
+    const quickEmojis = useAtomValue(QuickEmojisAtom)
+
     return (
         <div
             data-message-id={message.name}
@@ -61,29 +63,37 @@ export const MessageHoverToolbar = ({
             className="absolute right-4 z-40 flex items-center gap-0.5 rounded-md border border-outline-gray-2 bg-surface-base p-0.5 shadow-xs"
             style={{ top }}
         >
-            {QUICK_REACTIONS.map((emoji) => (
+            {quickEmojis.map((emoji) => (
                 <Button
-                    key={emoji}
+                    key={emoji.id}
                     variant="ghost"
                     size="md"
                     isIconButton
                     aria-label={`${_("React with")} ${emoji}`}
-                    // TODO(layer 5): optimistic toggle via reactions API + store.reactionsUpdated
-                    onClick={() => toast.info(`${_("Reactions")} — ${_("coming soon")}`)}
+                    onClick={() => toggleReaction(message, emoji.native ? emoji.native : emoji.src ?? "", emoji.src ? true : false, emoji.id)}
                 >
-                    <span className="text-lg leading-none">{emoji}</span>
+                    {emoji.src ? (
+                        <img
+                            src={emoji.src}
+                            alt={emoji.id}
+                            loading="lazy"
+                            className="h-4.5 w-4.5 object-contain"
+                            aria-hidden="true"
+                        />
+                    ) : (
+                        // em-emoji renders from the Apple set (initialized in
+                        // App.tsx) so reactions look the same on every platform
+                        <span className="flex h-4.5 w-4.5 items-center justify-center" aria-hidden="true">
+                            <em-emoji native={emoji.native} set="apple" size="1.1em" fallback={emoji.id} />
+                        </span>
+                    )}
                 </Button>
             ))}
-            <Button
-                variant="ghost"
-                size="md"
-                isIconButton
-                aria-label={_("Add reaction")}
-                // TODO(layer 5): emoji picker
-                onClick={() => toast.info(`${_("Reactions")} — ${_("coming soon")}`)}
-            >
-                <SmilePlus />
-            </Button>
+            <ReactionPicker message={message} tooltip={_("Add reaction")} side="bottom" align="end" onOpenChange={onMenuOpenChange}>
+                <Button variant="ghost" size="md" isIconButton aria-label={_("Add reaction")}>
+                    <SmilePlus />
+                </Button>
+            </ReactionPicker>
             <Button
                 variant="ghost"
                 size="md"

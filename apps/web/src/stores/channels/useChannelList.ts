@@ -26,3 +26,17 @@ export const useChannelById = (channelID: string): ChannelListItem | undefined =
     const getSnapshot = useCallback(() => channelStore.getChannel(channelID), [channelID])
     return useSyncExternalStore(subscribe, getSnapshot)
 }
+
+/**
+ * Just a channel's pinned-messages string. Subscribes to the channel but the snapshot is
+ * the primitive string, so it only re-renders when the PINS change — not on every other
+ * channel update (e.g. each incoming message's last-message tick).
+ */
+export const useChannelPinnedString = (channelID: string): string | undefined => {
+    const subscribe = useCallback(
+        (listener: () => void) => channelStore.subscribeChannel(channelID, listener),
+        [channelID],
+    )
+    const getSnapshot = useCallback(() => channelStore.getChannel(channelID)?.pinned_messages_string, [channelID])
+    return useSyncExternalStore(subscribe, getSnapshot)
+}

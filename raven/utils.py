@@ -83,12 +83,17 @@ def track_channel_visit(
 		frappe.db.commit()  # nosempgrep
 
 	if publish_event_for_user:
+		# Update all clients with the "last visit" timestamp for this channel for this user
+		# Same event is used when sending a message in v3 - but that contains the last message timestamp
+		# Which is the datetime of the latest message in the channel.
+		# This event is broadcasted back to the user to update the last visit timestamp for this channel for this user
 		frappe.publish_realtime(
 			"raven:unread_channel_count_updated",
 			{
 				"channel_id": channel_id,
 				"sent_by": frappe.session.user,
-				"last_message_timestamp": str(target_dt),
+				"last_visit": str(target_dt),
+				"event_type": "track_visit",
 			},
 			user=user,
 		)
