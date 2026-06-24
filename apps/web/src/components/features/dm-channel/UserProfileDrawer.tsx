@@ -30,7 +30,7 @@ export function UserProfileDrawer({ user }: UserProfileDrawerProps) {
                 <div>
                     <UserAvatar
                         user={user}
-                        size="xl"
+                        size="lg"
                     />
                 </div>
                 <div className="flex flex-col self-center gap-1 justify-between">

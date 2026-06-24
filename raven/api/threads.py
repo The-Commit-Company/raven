@@ -246,6 +246,7 @@ def get_unread_threads(workspace: str = None, thread_id: str = None):
 		.where(channel.is_ai_thread == 0)
 		.where(message.message_type != "System")
 		.where(message.creation > Coalesce(channel_member.last_visit, "2000-11-11"))
+		.where(message.owner != frappe.session.user)
 		.where(channel_member.user_id == frappe.session.user)
 		.groupby(channel.name)
 	)

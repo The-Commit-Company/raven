@@ -31,6 +31,8 @@ class RavenUser(Document):
 		contact_number: DF.Data | None
 		custom_status: DF.Data | None
 		enabled: DF.Check
+		filter_joined_channels: DF.Check
+		filter_recent_activity: DF.Check
 		first_name: DF.Data | None
 		full_name: DF.Data
 		grouped_channels: DF.Table[RavenGroupedChannels]

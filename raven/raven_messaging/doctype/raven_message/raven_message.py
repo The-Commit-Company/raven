@@ -22,7 +22,6 @@ from raven.utils import (
 	get_raven_room,
 	is_channel_member,
 	refresh_thread_reply_count,
-	track_channel_visit,
 )
 
 
@@ -244,7 +243,9 @@ class RavenMessage(Document):
 		# `flags.skip_channel_summary` on every batch member except the last.
 		if self.message_type != "System" and not self.flags.get("skip_channel_summary"):
 			last_message_details = self.set_last_message_timestamp()
-			self.publish_unread_count_event(last_message_details)
+			self.publish_unread_count_event(
+				event_type="new_message", last_message_details=last_message_details
+			)
 
 		if self.message_type == "Text":
 			self.handle_ai_message()
@@ -358,7 +359,9 @@ class RavenMessage(Document):
 
 		return message_details
 
-	def publish_unread_count_event(self, last_message_details=None, last_message_timestamp=None):
+	def publish_unread_count_event(
+		self, event_type, last_message_details=None, last_message_timestamp=None
+	):
 
 		channel_doc = frappe.get_cached_doc("Raven Channel", self.channel_id)
 		# Send path uses this message's creation; the delete path passes the recomputed
@@ -388,6 +391,7 @@ class RavenMessage(Document):
 							"is_dm_channel": True,
 							"last_message_timestamp": timestamp,
 							"last_message_details": last_message_details,
+							"event_type": event_type,
 						},
 						user=peer_user_id,
 						after_commit=True,
@@ -403,6 +407,7 @@ class RavenMessage(Document):
 					"sent_by": self.owner,
 					"last_message_timestamp": timestamp,
 					"last_message_details": last_message_details,
+					"event_type": event_type,
 				},
 				user=self.owner,
 				after_commit=True,
@@ -452,7 +457,8 @@ class RavenMessage(Document):
 					"sent_by": self.owner,
 					"is_dm_channel": False,
 					"is_thread": channel_doc.is_thread,
-					"last_message_timestamp": self.creation,
+					"last_message_timestamp": timestamp,
+					"event_type": event_type,
 				},
 				after_commit=True,
 				room=get_raven_room(),
@@ -629,14 +635,22 @@ class RavenMessage(Document):
 		)
 
 		if self.message_type != "System":
-			# If this delete changed the channel's last message (on_trash recomputed it),
-			# publish the new teaser so the DM sidebar updates live instead of showing the
-			# deleted message; otherwise a plain count ping.
-			recomputed = self.flags.get("recomputed_last_message")
-			if recomputed:
-				self.publish_unread_count_event(recomputed.get("details"), recomputed.get("timestamp"))
-			else:
-				self.publish_unread_count_event()
+			# Bulk delete sets `skip_channel_summary` on every message except the newest, so the
+			# unread-count event fires once (on the newest, which carries the recomputed teaser)
+			# instead of once per deleted message. The search removal below still runs for each.
+			if not self.flags.get("skip_channel_summary"):
+				# If this delete changed the channel's last message (on_trash recomputed it),
+				# publish the new teaser so the DM sidebar updates live instead of showing the
+				# deleted message; otherwise a plain count ping.
+				recomputed = self.flags.get("recomputed_last_message")
+				if recomputed:
+					self.publish_unread_count_event(
+						event_type="message_deleted",
+						last_message_details=recomputed.get("details"),
+						last_message_timestamp=recomputed.get("timestamp"),
+					)
+				else:
+					self.publish_unread_count_event(event_type="message_deleted")
 			from raven.api.search import RavenSearch
 
 			search = RavenSearch()
@@ -762,11 +776,6 @@ class RavenMessage(Document):
 				docname=self.channel_id,
 				after_commit=after_commit,
 			)
-
-			if self.message_type != "System" and not self.is_bot_message:
-				# track the visit of the user to the channel if a new message is created
-				track_channel_visit(channel_id=self.channel_id, user=self.owner)
-				# frappe.enqueue(method=track_channel_visit, channel_id=self.channel_id, user=self.owner)
 
 			# If this is a new messagge (only applicable for files in on_update), then handle the AI message
 			if self.message_type == "File" or self.message_type == "Image":
