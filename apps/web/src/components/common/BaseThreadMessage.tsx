@@ -28,10 +28,12 @@ export const BaseThreadMessage = ({
                     {user ? <UserAvatar user={user} size="md" /> : <div className="w-10 h-10 rounded-full bg-surface-gray-2" />}
                 </div>
                 <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-sm mb-1">
+                    <div className="font-medium text-base md:text-sm text-ink-gray-8 mb-1">
                         {user?.full_name || user?.name || _("User")}
                     </div>
-                    <MessageContent message={thread as unknown as Message} />
+                    <div className="[&_p]:my-0">
+                        <MessageContent message={thread as unknown as Message} />
+                    </div>
                 </div>
             </div>
 

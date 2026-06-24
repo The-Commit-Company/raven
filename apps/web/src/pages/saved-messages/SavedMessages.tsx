@@ -1,283 +1,140 @@
-import { useState } from "react"
-import { Search, X, Plus } from "lucide-react"
-import { Input } from "@components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel, SelectSeparator } from "@components/ui/select"
-import { Button } from "@components/ui/button"
-import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
-import { cn } from "@lib/utils"
-import SavedMessagesList from "@components/features/saved-messages/SavedMessagesList"
-import { ReminderDialog } from "@components/features/saved-messages/ReminderDialog"
-import { SavedMessage, SavedMessageStatus } from "../../types/SavedMessage"
-import { RavenChannel } from "@raven/types/RavenChannelManagement/RavenChannel"
-import { Tabs, TabsList, TabsTrigger } from "@components/ui/tabs"
-import { Badge } from "@components/ui/badge"
-import { H4 } from "@components/ui/typography"
-import AppHeader from "@components/features/header/AppHeader"
-import _ from "@lib/translate"
+import { useCallback, useState } from "react"
+import { useHotkeys } from "react-hotkeys-hook"
+import { Search as SearchIcon, X } from "lucide-react"
+
 import AppMobileFooter from "@components/features/header/AppMobileFooter"
+import { ChannelSelect } from "@components/common/ChannelSelect"
+import SavedMessagesList from "@components/features/saved-messages/SavedMessagesList"
+import { PageHeader } from "@components/layout/PageHeader"
+import NotificationChat, { type SelectedNotification } from "@pages/notifications/NotificationChat"
+import { Input } from "@components/ui/input"
+import { useChannelList } from "@stores/channels/useChannelList"
+import { useLiveQuery } from "dexie-react-hooks"
+import { db } from "@db"
+import { cn } from "@lib/utils"
+import _ from "@lib/translate"
 
-const TABS: { key: SavedMessageStatus; label: string }[] = [
-    { key: 'in_progress', label: 'In progress' },
-    { key: 'archived', label: 'Archived' },
-    { key: 'completed', label: 'Completed' },
-]
+// --- Reminders (not yet backed by the API — see SavedMessage doctype) ---
+// Saved messages are currently a binary `_liked_by` bookmark. Status tabs
+// (in_progress/archived/completed), `saved_at` and reminders require new
+// Raven Message fields + API support. Scaffolding kept commented for later.
+// import { ReminderDialog } from "@components/features/saved-messages/ReminderDialog"
+// import { Plus } from "lucide-react"
+// import { Tabs, TabsList, TabsTrigger } from "@components/ui/tabs"
+// import { Button } from "@components/ui/button"
+// import { SavedMessage, SavedMessageStatus } from "../../types/SavedMessage"
 
-// Dummy channels
-const dummyChannels: RavenChannel[] = [
-    {
-        name: "general",
-        channel_name: "General",
-        type: "Public",
-        is_direct_message: 0,
-        is_self_message: 0,
-        is_archived: 0,
-        workspace: "main",
-        creation: "2025-01-01T10:00:00",
-        modified: "2025-01-01T10:00:00",
-        owner: "admin",
-        modified_by: "admin",
-        docstatus: 0,
-        channel_description: "",
-        last_message_timestamp: "2025-12-18T17:18:00",
-        last_message_details: {},
-        pinned_messages_string: ""
-    },
-    {
-        name: "engineering",
-        channel_name: "Engineering",
-        type: "Public",
-        is_direct_message: 0,
-        is_self_message: 0,
-        is_archived: 0,
-        workspace: "main",
-        creation: "2025-01-01T10:00:00",
-        modified: "2025-01-01T10:00:00",
-        owner: "admin",
-        modified_by: "admin",
-        docstatus: 0,
-        channel_description: "",
-        last_message_timestamp: "2025-12-17T10:00:00",
-        last_message_details: {},
-        pinned_messages_string: ""
-    },
-    {
-        name: "development",
-        channel_name: "Development",
-        type: "Public",
-        is_direct_message: 0,
-        is_self_message: 0,
-        is_archived: 0,
-        workspace: "main",
-        creation: "2025-01-01T10:00:00",
-        modified: "2025-01-01T10:00:00",
-        owner: "admin",
-        modified_by: "admin",
-        docstatus: 0,
-        channel_description: "",
-        last_message_timestamp: "2025-12-16T14:30:00",
-        last_message_details: {},
-        pinned_messages_string: ""
-    },
-    {
-        name: "devops",
-        channel_name: "DevOps",
-        type: "Private",
-        is_direct_message: 0,
-        is_self_message: 0,
-        is_archived: 0,
-        workspace: "main",
-        creation: "2025-01-01T10:00:00",
-        modified: "2025-01-01T10:00:00",
-        owner: "admin",
-        modified_by: "admin",
-        docstatus: 0,
-        channel_description: "",
-        last_message_timestamp: "2025-12-14T11:00:00",
-        last_message_details: {},
-        pinned_messages_string: ""
-    },
-]
-
-export default function SavedMessages() {
-    const [activeTab, setActiveTab] = useState<SavedMessageStatus>('in_progress')
-    const [reminderDialogOpen, setReminderDialogOpen] = useState(false)
-    const [reminderMessage, setReminderMessage] = useState<SavedMessage | null>(null)
+const SavedMessages = () => {
     const [search, setSearch] = useState('')
-    const [channel, setChannel] = useState('all')
+    const [channel, setChannel] = useState('*all')
+    const [selected, setSelected] = useState<SelectedNotification | null>(null)
+    const { channels, dmChannels } = useChannelList()
+    const users = useLiveQuery(() => db.users.toArray(), [])
+    const hasSelection = !!selected
 
-    const channels = dummyChannels.filter(c => !c.is_direct_message)
-    const selectedChannel = dummyChannels.find(c => c.name === channel)
+    // Clicking the open row again collapses the pane back to a full-width list.
+    const onSelect = useCallback((selection: SelectedNotification) => {
+        setSelected(prev => prev?.messageID === selection.messageID ? null : selection)
+    }, [])
 
-    const handleSetReminder = (message: SavedMessage, option: string) => {
-        if (option === 'custom') {
-            setReminderMessage(message)
-            setReminderDialogOpen(true)
-        } else {
-            // Handle quick reminder options
-            // This would typically call an API to set the reminder
-            console.log('Setting reminder for message:', message.name, 'option:', option)
-        }
-    }
+    // Esc closes the pane (no visible close button — toggle the row or hit Esc).
+    useHotkeys('esc', () => setSelected(null), { enableOnFormTags: true }, [])
 
-    const handleReminderSave = (data: { date: Date; time: string; description: string }) => {
-        if (reminderMessage) {
-            // This would typically call an API to save the reminder
-            console.log('Saving reminder:', {
-                messageID: reminderMessage.name,
-                date: data.date,
-                time: data.time,
-                description: data.description
-            })
-            setReminderDialogOpen(false)
-            setReminderMessage(null)
-        }
-    }
-
-    const handleMarkComplete = (message: SavedMessage) => {
-        // This would typically call an API to mark as complete
-        console.log('Marking as complete:', message.name)
-    }
-
-    const handleArchive = (message: SavedMessage) => {
-        // This would typically call an API to archive
-        console.log('Archiving:', message.name)
-    }
-
-    const handleUnsave = (message: SavedMessage) => {
-        // This would typically call an API to unsave
-        console.log('Unsaving:', message.name)
-    }
-
-    // Get count for active tab
-    const getTabCount = (status: SavedMessageStatus) => {
-        if (status === 'in_progress') return 4
-        if (status === 'archived') return 3
-        if (status === 'completed') return 3
-        return 0
-    }
-
-    // Saved messages page is a sidebar-less page, so it only has the workspace switcher (60px)
-    const headerLeft = "var(--workspace-switcher-width, 60px)"
-    const headerWidth = "calc(100% - var(--workspace-switcher-width, 60px))"
+    const searchInput = (
+        <div className="relative">
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-gray-4 pointer-events-none" />
+            <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={_('Search saved messages')}
+                className={cn("pl-9 pr-9 h-8 text-base",
+                    hasSelection && "bg-surface-gray-3 hover:bg-surface-gray-4"
+                )}
+                autoFocus
+            />
+            {search && (
+                <button
+                    type="button"
+                    onClick={() => setSearch('')}
+                    aria-label={_('Clear search')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-ink-gray-4 hover:text-ink-gray-8"
+                >
+                    <X className="h-4 w-4" />
+                </button>
+            )}
+        </div>
+    )
 
     return (
-        <div className="flex flex-col h-full overflow-hidden w-full">
-            <AppHeader
-                title={_("Saved Messages")} />
-
+        <div className={cn(
+            "flex flex-col h-screen overflow-hidden",
+            hasSelection && "bg-surface-gray-1"
+        )}>
             <div className="flex flex-1 overflow-hidden">
-                <div className="flex-1 flex flex-col overflow-hidden">
-                    <div className="px-4 pt-4 shrink-0 space-y-3">
-                        {/* Tabs */}
-                        <div className="flex gap-2 items-center">
-                            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as SavedMessageStatus)}>
+                {/* Left pane: full width by default; exact half once a row is selected (no divider — the
+                    right pane's gray canvas separates them). */}
+                <div className={cn(
+                    "flex flex-col min-w-0",
+                    hasSelection ? "w-1/2 shrink-0" : "flex-1"
+                )}>
+                    <PageHeader title={_('Saved Messages')} />
+
+                    <div className="shrink-0 px-2 pt-2 pb-3 space-y-2">
+                        {searchInput}
+                        <div className="mt-4 flex items-center gap-2">
+                            {/* --- Reminders: tabs + add-reminder button (commented until backend support) --- */}
+                            {/* <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as SavedMessageStatus)}>
                                 <TabsList variant="subtle" size="sm">
                                     {TABS.map(tab => (
-                                        <TabsTrigger key={tab.key} value={tab.key}>
-                                            {tab.label}
-                                            {getTabCount(tab.key) > 0 && <Badge variant="subtle" size="sm" theme="gray">{getTabCount(tab.key)}</Badge>}
-                                        </TabsTrigger>
+                                        <TabsTrigger key={tab.key} value={tab.key}>{_(tab.label)}</TabsTrigger>
                                     ))}
                                 </TabsList>
-                            </Tabs>
-                            <Button
-                                variant="outline"
+                            </Tabs> */}
+                            <ChannelSelect
+                                channels={channels}
+                                dmChannels={dmChannels}
+                                users={users}
+                                value={channel}
+                                onValueChange={setChannel}
+                                placeholder={_('Channel')}
+                                allowAll
+                                allLabel={_('Any Channel')}
+                                searchable
                                 size="sm"
-                                className="ml-auto h-7 text-xs"
-                                onClick={() => setReminderDialogOpen(true)}
-                            >
+                                showLabel={false}
+                                dropdownClassName="w-68"
+                                triggerClassName="w-40"
+                            />
+                            {/* <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setReminderDialogOpen(true)}>
                                 <Plus className="h-3.5 w-3.5 mr-1.5" />
-                                Add reminder
-                            </Button>
-                        </div>
-
-                        {/* Search and Channel Filter */}
-                        <div className="flex flex-row items-end gap-2">
-                            <div className="relative flex-1 min-w-50">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-ink-gray-4 pointer-events-none" />
-                                <Input
-                                    placeholder="Search saved messages..."
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    className="pl-8 pr-8 text-sm"
-                                />
-                                {search && (
-                                    <Button isIconButton variant="ghost" size="sm" aria-label="Clear search" onClick={() => setSearch("")}>
-                                        <X className="h-3.5 w-3.5" />
-                                    </Button>
-                                )}
-                            </div>
-                            <Select value={channel} onValueChange={setChannel}>
-                                <SelectTrigger inputSize="sm" className="w-fit min-w-35 sm:min-w-45 text-sm [&>span]:px-2">
-                                    {selectedChannel && channel !== 'all' ? (
-                                        <div className="flex items-center gap-1.5">
-                                            {selectedChannel.is_direct_message === 1 ? (
-                                                <span className="h-3.5 w-3.5 rounded bg-surface-gray-2 flex items-center justify-center text-[10px] font-bold text-ink-gray-4">?</span>
-                                            ) : (
-                                                <ChannelIcon
-                                                    type={selectedChannel.type as 'Public' | 'Private' | 'Open'}
-                                                    className="h-3.5 w-3.5"
-                                                />
-                                            )}
-                                            <span className="text-xs font-medium">
-                                                {selectedChannel.channel_name || selectedChannel.name}
-                                            </span>
-                                        </div>
-                                    ) : (
-                                        <SelectValue placeholder="Channel" />
-                                    )}
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">Any Channel</SelectItem>
-                                    {channels.length > 0 && (
-                                        <>
-                                            <SelectSeparator />
-                                            <SelectGroup>
-                                                <SelectLabel>Channels</SelectLabel>
-                                                {channels.map((channelItem: RavenChannel) => (
-                                                    <SelectItem key={channelItem.name} value={channelItem.name}>
-                                                        <div className="flex items-center gap-2">
-                                                            <ChannelIcon
-                                                                type={channelItem.type as 'Public' | 'Private' | 'Open'}
-                                                                className="h-4 w-4"
-                                                            />
-                                                            <span>{channelItem.channel_name || channelItem.name}</span>
-                                                        </div>
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </>
-                                    )}
-                                </SelectContent>
-                            </Select>
+                                {_("Add reminder")}
+                            </Button> */}
                         </div>
                     </div>
 
-                    {/* Messages list */}
-                    <div className="flex-1 overflow-hidden">
+                    <div className="flex-1 min-h-0 px-3 md:px-0 pb-2">
                         <SavedMessagesList
-                            status={activeTab}
-                            onMarkComplete={handleMarkComplete}
-                            onSetReminder={handleSetReminder}
-                            onArchive={handleArchive}
-                            onUnsave={handleUnsave}
                             searchQuery={search}
-                            channelFilter={channel}
+                            channel={channel}
+                            onSelect={onSelect}
+                            selectedID={selected?.messageID}
                         />
                     </div>
                 </div>
+
+                {selected && (
+                    <div className="w-1/2 shrink-0 flex flex-col min-h-0 bg-surface-gray-0">
+                        <NotificationChat selected={selected} />
+                    </div>
+                )}
             </div>
 
-            {/* Reminder Dialog */}
-            <ReminderDialog
-                open={reminderDialogOpen}
-                onOpenChange={setReminderDialogOpen}
-                onSave={handleReminderSave}
-                initialDate={reminderMessage?.reminder_date ? new Date(reminderMessage.reminder_date) : undefined}
-                initialTime={reminderMessage?.reminder_time}
-                initialDescription={reminderMessage?.reminder_description}
-            />
+            {/* --- Reminder dialog (commented until backend support) --- */}
+            {/* <ReminderDialog ... /> */}
+
             <AppMobileFooter />
         </div>
     )
 }
+
+export default SavedMessages

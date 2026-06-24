@@ -1,10 +1,11 @@
 import { Badge } from "@components/ui/badge"
 import { cn } from "@lib/utils"
+import { RESULT_ROW_ACTIVE_CLASS } from "@components/common/MessageResultBlock/MessageResultBlock"
 import { UserData } from "@db"
 import { BaseThreadMessage } from "@components/common/BaseThreadMessage"
 import { ThreadChannelDetails } from "./ThreadsList"
 import { ThreadMessage } from "src/types/ThreadMessage"
-import { formatDate } from "@lib/date"
+import { formatRelativeDate } from "@lib/date"
 
 interface ThreadPreviewBoxProps {
     user: UserData | null
@@ -25,13 +26,14 @@ export const ThreadPreviewBox = ({
 }: ThreadPreviewBoxProps) => {
 
     return (
+        <div className="px-2 py-0.5">
         <div
             onClick={onClick}
             className={cn(
-                "group block px-6 py-4 hover:bg-surface-gray-3/50 transition-colors relative cursor-pointer border-b border-outline-gray-2",
-                "focus:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-4 focus-visible:ring-inset",
-                isActive && "bg-surface-gray-2/30",
-                unreadCount > 0 && !isActive && "bg-surface-gray-2/10"
+                "group block rounded px-6 py-4 transition-colors relative cursor-pointer select-none",
+                "hover:bg-surface-gray-3 focus:outline-none focus-visible:bg-surface-gray-3",
+                isActive && RESULT_ROW_ACTIVE_CLASS,
+                unreadCount > 0 && !isActive && "bg-surface-gray-1"
             )}
         >
             {/* Connecting line from avatar to participants - only show for non-DM threads */}
@@ -46,7 +48,7 @@ export const ThreadPreviewBox = ({
                         <span>{channelDetails.channelIcon}</span>
                     )}
                     <span className="font-medium text-xs">{channelDetails.channelName}</span>
-                    <span className="text-xs text-ink-gray-4">{formatDate(thread.last_message_timestamp, "D MMMM YYYY h:mm A")}</span>
+                    <span className="text-xs text-ink-gray-4">{formatRelativeDate(thread.last_message_timestamp)}</span>
                 </div>
             )}
 
@@ -68,6 +70,7 @@ export const ThreadPreviewBox = ({
                     </Badge>
                 </div>
             )}
+        </div>
         </div>
     )
 }

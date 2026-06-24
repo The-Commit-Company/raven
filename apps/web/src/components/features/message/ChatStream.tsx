@@ -68,11 +68,14 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
     /** Tracks the one around-fetch attempted per target, so unknown ids fail gracefully. */
     const attemptedFetchRef = useRef<string | null>(null)
 
-    // Deep links feed the same targeting path as reply clicks.
+    // Deep links feed the same targeting path as reply clicks. Re-run when the
+    // message id changes too (not just the channel): a deep link into the channel
+    // you're already viewing — e.g. consecutive jumps from search — keeps the same
+    // channelID, so gating on channelID alone would skip the highlight.
     useEffect(() => {
         attemptedFetchRef.current = null
         if (deepLinkMessageID) setTargetMessageID(deepLinkMessageID)
-    }, [channelID])
+    }, [channelID, deepLinkMessageID])
 
     // Out-of-window target: replace the window with a page around it — once.
     // If the fetch lands without the target (deleted/foreign id), give up quietly.

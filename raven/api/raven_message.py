@@ -425,6 +425,7 @@ def get_saved_messages():
 			raven_message.message_reactions,
 			raven_message._liked_by,
 			raven_channel.workspace,
+			raven_channel.is_thread,
 			raven_message.thumbnail_width,
 			raven_message.thumbnail_height,
 			raven_message.is_bot_message,
@@ -440,6 +441,18 @@ def get_saved_messages():
 	)  # Add DISTINCT keyword to retrieve only unique messages
 
 	messages = query.run(as_dict=True)
+
+	# Resolve each message's real (parent) channel so the client can filter and route
+	# thread replies. A thread message lives in a thread channel (Raven Channel.is_thread = 1)
+	# whose name equals the thread's root message; the parent is that root message's channel.
+	# Non-thread messages are their own parent.
+	for message in messages:
+		is_thread_channel = message.pop("is_thread", 0)
+		if is_thread_channel:
+			parent_channel_id = frappe.db.get_value("Raven Message", message["channel_id"], "channel_id")
+			message["parent_channel_id"] = parent_channel_id or message["channel_id"]
+		else:
+			message["parent_channel_id"] = message["channel_id"]
 
 	return messages
 

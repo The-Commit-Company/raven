@@ -11,6 +11,7 @@ import { Button } from "@components/ui/button"
 import { Badge } from "@components/ui/badge"
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from "@components/ui/empty"
 import { useIsMobile } from "@hooks/use-mobile"
+import { PageHeader } from "@components/layout/PageHeader"
 import AppMobileFooter from "@components/features/header/AppMobileFooter"
 import NotificationChat, { type SelectedNotification } from "./NotificationChat"
 import { MentionItem, ReactionItem } from "./NotificationItem"
@@ -86,16 +87,13 @@ export default function Notifications() {
                 {shouldShowSidebar && (
                     <div className="md:w-(--notifications-sidebar-width) w-full shrink-0 min-h-0">
                         <nav className="flex h-full w-full flex-col bg-surface-base md:bg-surface-sidebar">
-                            <div className="flex h-11 md:h-auto shrink-0 items-center gap-2 border-b md:border-b-0 px-2 py-2">
-                                <span className="px-1 py-1 text-base font-medium text-ink-gray-8">
-                                    {_("Notifications")}
-                                </span>
+                            <PageHeader title={_("Notifications")}>
                                 {unreadCount > 0 && (
                                     <Badge variant="subtle" size="sm" theme="gray">
                                         {unreadCount > 99 ? "99+" : unreadCount}
                                     </Badge>
                                 )}
-                            </div>
+                            </PageHeader>
 
                             <div className="shrink-0 px-2 pb-2">
                                 <Tabs value={activeTab} onValueChange={(v) => onTabChange(v as NotificationTab)}>

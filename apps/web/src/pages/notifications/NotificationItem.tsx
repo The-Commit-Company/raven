@@ -24,7 +24,7 @@ const ChannelContext = ({
 }) => {
     if (notification.is_thread) {
         return (
-            <div className="flex items-center gap-1 text-xs text-ink-gray-4/80">
+            <div className="flex items-center gap-1 text-xs text-ink-gray-4">
                 <MessageSquare className="w-3 h-3" />
                 <span>{_("Thread")}</span>
             </div>
@@ -82,7 +82,7 @@ const NotificationRowLayout = ({
                     <span className={cn("text-sm", !isRead ? "font-semibold" : "font-medium")}>
                         {name}
                     </span>
-                    <span className="text-xs font-regular text-ink-gray-4/90 shrink-0">
+                    <span className="text-xs font-regular text-ink-gray-4 shrink-0">
                         {relativeDate}
                     </span>
                     {channelContext}

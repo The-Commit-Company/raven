@@ -475,7 +475,6 @@ def search_links(
 			message.creation,
 			message.owner.as_("author"),
 			message.content,
-			channel.is_thread,
 			channel.is_direct_message,
 			channel.type.as_("channel_type"),
 			thread_root.channel_id.as_("parent_channel_id"),

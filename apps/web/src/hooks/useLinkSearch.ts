@@ -9,7 +9,6 @@ export type LinkSearchResult = {
     creation: string
     author: string
     content: string
-    is_thread: 0 | 1
     is_direct_message: 0 | 1
     channel_type: string
     parent_channel_id?: string

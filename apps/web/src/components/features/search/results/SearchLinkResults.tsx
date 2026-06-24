@@ -1,10 +1,9 @@
 import { memo } from 'react'
 import { Virtuoso } from 'react-virtuoso'
-import { useNavigate } from 'react-router-dom'
 import { useFrappeEventListener } from 'frappe-react-sdk'
 import { ExternalLink, FileBox, MessageSquareMore } from 'lucide-react'
 import _ from '@lib/translate'
-import { formatDate } from '@lib/date'
+import { formatRelativeDate } from '@lib/date'
 import { UserAvatar } from '@components/features/message/UserAvatar'
 import { ChannelIcon } from '@components/common/ChannelIcon/ChannelIcon'
 import { Skeleton } from '@components/ui/skeleton'
@@ -14,16 +13,21 @@ import { UserData } from '@db'
 import { WorkspaceFields } from '@hooks/useWorkspaces'
 import { ChannelListItem, DMChannelListItem } from '@raven/types/common/ChannelListItem'
 import { useMessageRowLookups } from '@hooks/useMessageRowLookups'
-import { buildMessageUrl } from '@components/common/MessageResultBlock/messageUrl'
+import type { SelectedNotification } from '@pages/notifications/NotificationChat'
+import { RESULT_ROW_ACTIVE_CLASS } from '@components/common/MessageResultBlock/MessageResultBlock'
+import { cn } from '@lib/utils'
 import { SearchFilters } from '../types'
 
 interface SearchLinkResultsProps {
     searchValue?: string
     filters: SearchFilters
+    /** Opens the link's message in the right-pane split view. */
+    onSelect: (selection: SelectedNotification) => void
+    /** Open row id — highlights the active result. */
+    selectedID?: string
 }
 
-const SearchLinkResults = ({ searchValue, filters }: SearchLinkResultsProps) => {
-    const navigate = useNavigate()
+const SearchLinkResults = ({ searchValue, filters, onSelect, selectedID }: SearchLinkResultsProps) => {
     const { results, isLoading, error, mutate } = useLinkSearch(searchValue, filters, 100)
     const { usersById, channelById, dmById, workspaceById } = useMessageRowLookups()
 
@@ -46,17 +50,27 @@ const SearchLinkResults = ({ searchValue, filters }: SearchLinkResultsProps) => 
             initialItemCount={Math.min(results.length, 10)}
             computeItemKey={(_idx, link) => `${link.id}::${link.url}`}
             itemContent={(_idx, link) => {
-                const channel = channelById.get(link.channel_id)
-                const dmChannel = dmById.get(link.channel_id)
+                // Thread replies live in a thread channel; resolve display against the
+                // real (parent) channel so selection carries the routing-ready id.
+                const baseChannelId = link.parent_channel_id ?? link.channel_id
+                const channel = channelById.get(baseChannelId)
+                const dmChannel = dmById.get(baseChannelId)
+                const peer = dmChannel ? usersById.get(dmChannel.peer_user_id) : undefined
                 return (
                     <LinkResultRow
                         link={link}
                         user={usersById.get(link.author)}
                         channel={channel}
                         dmChannel={dmChannel}
-                        peer={dmChannel ? usersById.get(dmChannel.peer_user_id) : undefined}
+                        peer={peer}
                         workspace={channel?.workspace ? workspaceById.get(channel.workspace) : undefined}
-                        onClick={() => navigate(buildMessageUrl(link.channel_id, channel, dmChannel, link.id))}
+                        className={selectedID === link.id ? RESULT_ROW_ACTIVE_CLASS : undefined}
+                        onClick={() => onSelect({
+                            channelID: baseChannelId,
+                            messageID: link.id,
+                            isDirectMessage: !!dmChannel,
+                            peer,
+                        })}
                     />
                 )
             }}
@@ -72,28 +86,33 @@ interface LinkResultRowProps {
     peer?: UserData
     workspace?: WorkspaceFields
     onClick: () => void
+    className?: string
 }
 
-const LinkResultRowInner = ({ link, user, channel, dmChannel, peer, workspace, onClick }: LinkResultRowProps) => {
+const LinkResultRowInner = ({ link, user, channel, dmChannel, peer, workspace, onClick, className }: LinkResultRowProps) => {
     const url = link.url
     const hostname = (() => { try { return new URL(url).hostname } catch { return url } })()
     const faviconUrl = `https://icons.duckduckgo.com/ip2/${hostname}.ico`
     const peerName = peer?.full_name ?? dmChannel?.peer_user_id ?? ''
-    const dateLabel = formatDate(link.creation, 'D MMMM YYYY, h:mm A')
+    const relativeDate = formatRelativeDate(link.creation)
 
     return (
+        <div className="px-2 py-0.5">
         <div
             role="button"
             tabIndex={0}
             onClick={onClick}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick() } }}
-            className="group relative flex gap-3 p-3 pb-4 rounded transition-colors cursor-pointer hover:bg-surface-gray-1 active:bg-surface-gray-2"
+            className={cn(
+                "group flex gap-3 px-2 py-3 md:py-2 rounded transition-colors text-left select-none cursor-pointer hover:bg-surface-gray-3 active:bg-surface-gray-3 focus-visible:bg-surface-gray-3 focus-visible:outline-none",
+                className
+            )}
         >
-            <span aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-outline-gray-2 mx-1" />
             {user && <UserAvatar user={user} size="md" showStatusIndicator={false} />}
             <div className="flex-1 min-w-0">
-                <div className="flex items-baseline gap-1.5 text-base md:text-sm">
+                <div className="flex items-baseline gap-1.5 flex-wrap text-base md:text-sm">
                     {user && <span className="font-medium text-ink-gray-8 truncate">{user.full_name}</span>}
+                    <span className="shrink-0 text-xs text-ink-gray-4">{relativeDate}</span>
                     {workspace && (
                         <>
                             <span className="text-ink-gray-4 shrink-0">·</span>
@@ -114,14 +133,13 @@ const LinkResultRowInner = ({ link, user, channel, dmChannel, peer, workspace, o
                             <span className="text-ink-gray-4 truncate min-w-0 -ml-0.5">{peerName}</span>
                         </>
                     )}
-                    <span className="ml-auto shrink-0 text-xs text-ink-gray-4">{dateLabel}</span>
                 </div>
 
                 <div className="flex gap-3 mt-2">
                     {/* Cascade preview → favicon → FileBox. Both <img> share the same onError swap chain:
                         - primary image fails → swap to favicon
                         - favicon fails → hide img, the always-rendered FileBox sits behind and shows through. */}
-                    <div className="relative w-20 h-20 rounded-md bg-surface-gray-2 shrink-0 border border-outline-gray-2/40 overflow-hidden flex items-center justify-center">
+                    <div className="relative w-20 h-20 rounded-md bg-surface-gray-2 shrink-0 border border-outline-gray-2 overflow-hidden flex items-center justify-center">
                         <FileBox className="w-8 h-8 text-ink-gray-4" />
                         <img
                             src={link.image || faviconUrl}
@@ -151,7 +169,7 @@ const LinkResultRowInner = ({ link, user, channel, dmChannel, peer, workspace, o
                                 onClick={(e) => { e.stopPropagation(); window.open(url, '_blank', 'noopener,noreferrer') }}
                             />
                         </div>
-                        <div className="flex items-center gap-1.5 text-xs text-ink-gray-4/70 mt-0.5">
+                        <div className="flex items-center gap-1.5 text-xs text-ink-gray-4 mt-0.5">
                             <img src={faviconUrl} alt="" className="w-3 h-3" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }} />
                             <span className="truncate">{link.site_name || hostname}</span>
                         </div>
@@ -161,6 +179,7 @@ const LinkResultRowInner = ({ link, user, channel, dmChannel, peer, workspace, o
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     )
 }
