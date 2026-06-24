@@ -5,6 +5,8 @@ import { getDateObject } from "@lib/date"
 import { cn } from "@lib/utils"
 import _ from "@lib/translate"
 import { UserAvatar } from "../UserAvatar"
+import { timeFormatAtom } from "@utils/preferences"
+import { useAtomValue } from "jotai"
 
 /**
  * Shared anatomy for everything rendered as a row in the chat stream
@@ -14,17 +16,25 @@ import { UserAvatar } from "../UserAvatar"
 
 /** Short (in-row) and long (tooltip) display times for a message timestamp. */
 export const useMessageTimes = (creation: string) => {
+
+    const timeFormat = useAtomValue(timeFormatAtom)
+
     return useMemo(() => {
         try {
             const dateObject = getDateObject(creation)
+            let format = "hh:mm A"
+            if (timeFormat === "24-hour") {
+                format = "HH:mm"
+            }
+
             return {
-                shortTime: dateObject.format("hh:mm A"),
-                longTime: dateObject.format("Do MMMM YYYY, hh:mm A"),
+                shortTime: dateObject.format(format),
+                longTime: dateObject.format(`Do MMMM YYYY, ${format}`),
             }
         } catch {
             return { shortTime: creation, longTime: creation }
         }
-    }, [creation])
+    }, [creation, timeFormat])
 }
 
 /** The hoverable row shell every stream row shares. */

@@ -2,6 +2,7 @@ import { atom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
 
 export type ChatStyle = "Simple" | "Left-Right"
+export type TimeFormat = "12-hour" | "24-hour"
 
 /**
  * Message layout: "Simple" keeps every message left (Slack-style); "Left-Right" pushes your
@@ -11,6 +12,11 @@ export type ChatStyle = "Simple" | "Left-Right"
  * useAtomValue in the message rows.
  */
 export const chatStyleAtom = atom<ChatStyle>((window.frappe?.boot?.chat_style as ChatStyle | undefined) ?? "Simple")
+
+/**
+ * Time format: "12-hour" displays times like "12:00 PM"; "24-hour" displays times like "12:00" in all messages.
+ */
+export const timeFormatAtom = atom<TimeFormat>((window.frappe?.boot?.time_format as TimeFormat | undefined) ?? "12-hour")
 
 export type EnterKeyBehaviour = "new-line" | "send-message"
 
@@ -28,5 +34,11 @@ export const EnterKeyBehaviourAtom = atomWithStorage<EnterKeyBehaviour>(
     { getOnInit: true },
 )
 
+interface QuickEmoji {
+    id: string
+    src?: string,
+    native?: string
+}
+
 /** Favourite emojis offered as one-tap message reactions. */
-export const QuickEmojisAtom = atomWithStorage<string[]>("raven-quick-emojis", ["👍", "✅", "👀", "🎉"])
+export const QuickEmojisAtom = atomWithStorage<QuickEmoji[]>("raven-quick-emojis-list", [{ id: "👍", native: "👍" }, { id: "✅", native: "✅" }, { id: "👀", native: "👀" }, { id: "🎉", native: "🎉" }])

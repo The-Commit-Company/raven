@@ -10,6 +10,7 @@ import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
 import { UserAvatar } from '../message/UserAvatar';
 import { UserData } from '@db';
 import Appearance from './panels/Appearance';
+import Preferences from './panels/Preferences';
 
 const SETTINGS_TAB_GROUPS: { id: string, label: string }[] = [
     { id: "settings", label: _("Settings") },
@@ -47,7 +48,7 @@ const SETTINGS_TABS: { id: string; group: (typeof SETTINGS_TAB_GROUPS)[number]["
         group: "settings",
         label: _("Preferences"),
         icon: SlidersHorizontalIcon,
-        component: <div>Preferences</div>
+        component: <Preferences />
     },
     {
         id: "sidebar",

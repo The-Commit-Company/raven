@@ -38,6 +38,8 @@ class RavenUser(Document):
 		grouped_channels: DF.Table[RavenGroupedChannels]
 		last_mention_viewed_on: DF.Datetime | None
 		pinned_channels: DF.Table[RavenPinnedChannels]
+		sort_channels_by: DF.Literal["Alphabetical Order", "Recent Activity", "Unreads First"]
+		time_format: DF.Literal["12-hour", "24-hour"]
 		type: DF.Literal["User", "Bot"]
 		user: DF.Link | None
 		user_image: DF.AttachImage | None

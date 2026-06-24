@@ -52,12 +52,10 @@ export function ChannelSidebar() {
     const { channels, isLoading } = useChannelList()
     const { myProfile } = useCurrentRavenUser()
     const { workspaceID } = useParams()
-    const [showMyChannelsOnly, setShowMyChannelsOnly] = useState(false)
     const { groupedChannels, ungroupedChannels } = useGroupedChannels(
         channels,
         myProfile,
         workspaceID,
-        showMyChannelsOnly,
     )
 
     const [groupsState, setGroupsState] = useLocalStorage<GroupsState>("channel-sidebar-groups-state", {})
@@ -114,10 +112,7 @@ export function ChannelSidebar() {
             <div className="flex h-11 md:h-auto shrink-0 items-center justify-between gap-1 border-b md:border-b-0 px-2 py-2 md:pb-0">
                 <WorkspaceSwitcher workspaceID={workspaceID} />
                 <div className="flex items-center gap-2">
-                    <CustomizeSidebarButton
-                        showMyChannelsOnly={showMyChannelsOnly}
-                        setShowMyChannelsOnly={setShowMyChannelsOnly}
-                    />
+                    <CustomizeSidebarButton />
                     <span className="md:hidden">
                         <MobileSearchButton />
                     </span>
@@ -127,10 +122,7 @@ export function ChannelSidebar() {
             {loading ? (
                 <ChannelSidebarSkeleton />
             ) : isEmpty ? (
-                <EmptyChannels
-                    filtered={showMyChannelsOnly}
-                    onShowAll={() => setShowMyChannelsOnly(false)}
-                />
+                <EmptyChannels />
             ) : (
                 <div ref={setScrollerRef} className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-1 py-2">
                     <ul className="flex flex-col gap-1">
@@ -179,26 +171,7 @@ const ChannelSidebarSkeleton = () => (
     </div>
 )
 
-const EmptyChannels = ({ filtered, onShowAll }: { filtered: boolean; onShowAll: () => void }) => {
-    // "Filter hid everything" must be distinguishable from "no channels" —
-    // otherwise the my-channels toggle reads as data loss
-    if (filtered) {
-        return (
-            <Empty>
-                <EmptyHeader>
-                    <EmptyTitle>{_("No channels match")}</EmptyTitle>
-                    <EmptyDescription>
-                        {_("You are not a member of any channel in this workspace.")}
-                    </EmptyDescription>
-                </EmptyHeader>
-                <EmptyContent>
-                    <Button variant="outline" theme="gray" size="sm" onClick={onShowAll}>
-                        {_("Show all channels")}
-                    </Button>
-                </EmptyContent>
-            </Empty>
-        )
-    }
+const EmptyChannels = () => {
 
     return (
         <Empty>

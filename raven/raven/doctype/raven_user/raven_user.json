@@ -30,7 +30,9 @@
   "chat_style",
   "filter_recent_activity",
   "filter_joined_channels",
-  "column_break_xlzh"
+  "column_break_xlzh",
+  "time_format",
+  "sort_channels_by"
  ],
  "fields": [
   {
@@ -179,12 +181,25 @@
    "fieldname": "filter_joined_channels",
    "fieldtype": "Check",
    "label": "Only show channels I have joined"
+  },
+  {
+   "default": "12-hour",
+   "fieldname": "time_format",
+   "fieldtype": "Select",
+   "label": "Time Format",
+   "options": "12-hour\n24-hour"
+  },
+  {
+   "fieldname": "sort_channels_by",
+   "fieldtype": "Select",
+   "label": "Sort channels by",
+   "options": "Alphabetical Order\nRecent Activity\nUnreads First"
   }
  ],
  "grid_page_length": 50,
  "image_field": "user_image",
  "links": [],
- "modified": "2026-06-24 05:34:51.641603",
+ "modified": "2026-06-24 12:28:47.461186",
  "modified_by": "Administrator",
  "module": "Raven",
  "name": "Raven User",

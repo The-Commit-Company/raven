@@ -87,7 +87,7 @@ const ReactionButton = ({ reaction, isUserReacted, onToggle }: { reaction: React
                             src={reaction.reaction}
                             alt={reaction.emoji_name}
                             loading="lazy"
-                            className="h-4 w-4 object-contain"
+                            className="h-4.5 w-4.5 object-contain"
                             aria-hidden="true"
                         />
                     ) : (

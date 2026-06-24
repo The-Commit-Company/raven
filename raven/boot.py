@@ -12,9 +12,12 @@ def boot_session(bootinfo):
 	document_link_override = frappe.get_hooks("raven_document_link_override")
 
 	if frappe.session.user and frappe.session.user != "Guest":
-		chat_style = frappe.db.get_value("Raven User", frappe.session.user, "chat_style")
+		chat_style, time_format = frappe.db.get_value(
+			"Raven User", frappe.session.user, ["chat_style", "time_format"]
+		)
 	else:
 		chat_style = "Simple"
+		time_format = "12-hour"
 
 	if document_link_override and len(document_link_override) > 0:
 		bootinfo.raven_document_link_override = True
@@ -25,6 +28,7 @@ def boot_session(bootinfo):
 		bootinfo.tenor_api_key = "AIzaSyAWkuhLwbMxOlvn_o5fxBke1grUZ7F3ma4"  # should we remove this?
 
 	bootinfo.chat_style = chat_style if chat_style else "Simple"
+	bootinfo.raven_time_format = time_format if time_format else "12-hour"
 
 	bootinfo.push_notification_service = (
 		raven_settings.push_notification_service
