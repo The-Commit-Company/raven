@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import Profile from "./pages/settings/Profile"
-import Preferences from "./pages/settings/Preferences"
 import Channel from "@pages/workspace/Channel"
 import Notifications from "@pages/notifications/Notifications"
 import SavedMessages from "@pages/saved-messages/SavedMessages"

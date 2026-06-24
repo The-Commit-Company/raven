@@ -286,7 +286,7 @@ const ChannelGroup = ({
 }) => {
     // Group badge counts members with unread (a conversation count) — shown only
     // while collapsed, when the per-channel badges are hidden with the rows
-    const totalUnread = useGroupUnread(useMemo(() => channels.map((c) => c.name), [channels]))
+    const totalUnread = useGroupUnread(useMemo(() => channels.filter((c) => !c.muted).map((c) => c.name), [channels]))
 
     // Slack-style: collapsing a group never hides where you ARE — the active
     // member stays visible as a single row under the collapsed header
@@ -376,7 +376,7 @@ const ChannelRow = ({ channel, workspaceID }: { channel: ChannelListItem; worksp
                     // transition-colors left the shadow popping while the bg cross-faded.
                     "outline-none ring-outline-gray-2 transition focus-visible:ring-2",
                     "hover:bg-surface-gray-3 active:bg-surface-gray-3",
-                    unread > 0 && "text-ink-gray-7",
+                    unread > 0 && !channel.muted && "text-ink-gray-7",
                     isActive && "bg-surface-elevation-3 shadow-sm text-ink-gray-8 hover:bg-surface-elevation-3 active:bg-surface-elevation-3",
                 )
             }
@@ -388,12 +388,12 @@ const ChannelRow = ({ channel, workspaceID }: { channel: ChannelListItem; worksp
                     // descenders (g/y/p) once `truncate` clips overflow — Safari cuts them on
                     // some DPIs. A looser single-line height fixes it.
                     "min-w-0 flex-1 truncate text-base md:text-sm leading-snug",
-                    unread > 0 ? "font-semibold" : "font-normal",
+                    unread > 0 && !channel.muted ? "font-semibold" : "font-normal",
                 )}
             >
                 {channel.channel_name}
             </span>
-            {unread > 0 && (
+            {unread > 0 && !channel.muted && (
                 <Badge size="sm" variant="ghost" theme="gray" className="shrink-0">
                     {unread > 9 ? "9+" : unread}
                 </Badge>

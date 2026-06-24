@@ -19,6 +19,7 @@ const sameChannel = (a: ChannelListItem, b: ChannelListItem): boolean =>
     a.member_id === b.member_id &&
     a.is_admin === b.is_admin &&
     a.allow_notifications === b.allow_notifications &&
+    a.muted === b.muted &&
     (a as DMChannelListItem).peer_user_id === (b as DMChannelListItem).peer_user_id
 
 /**

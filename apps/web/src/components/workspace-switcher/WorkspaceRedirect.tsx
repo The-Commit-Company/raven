@@ -21,7 +21,7 @@ export const WorkspaceRedirect = () => {
     const lastChannel = useAtomValue(lastChannelAtom)
     const { channels } = useChannelList()
     const { myProfile } = useCurrentRavenUser()
-    const { groupedChannels, ungroupedChannels } = useGroupedChannels(channels, myProfile, workspaceID, false)
+    const { groupedChannels, ungroupedChannels } = useGroupedChannels(channels, myProfile, workspaceID)
 
     // First channel in the same display order the sidebar uses.
     const firstChannel = useMemo(

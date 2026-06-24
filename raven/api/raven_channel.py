@@ -95,6 +95,7 @@ def get_channel_list(hide_archived: bool = False):
 			channel_member.name.as_("member_id"),
 			channel_member.is_admin,
 			channel_member.allow_notifications,
+			channel_member.muted,
 		)
 		.left_join(channel_member)
 		.on(
