@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import Profile from "./pages/settings/Profile"
-import Appearance from "./pages/settings/Appearance"
 import Preferences from "./pages/settings/Preferences"
 import Channel from "@pages/workspace/Channel"
 import Notifications from "@pages/notifications/Notifications"
@@ -107,7 +106,6 @@ function App() {
                 {/* <Route path="settings" element={<AppSettings />}>
                   <Route index element={<Navigate to="profile" replace />} />
                   <Route path="profile" element={<Profile />} />
-                  <Route path="appearance" element={<Appearance />} />
                   <Route path="preferences" element={<Preferences />} />
                   <Route path="workspaces" element={<WorkspaceList />} />
                   <Route path="channels" element={<ManageChannels />} />

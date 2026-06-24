@@ -9,6 +9,7 @@ import { CustomizeSidebarDialog } from '../channel/CustomizeSidebar/CustomizeSid
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
 import { UserAvatar } from '../message/UserAvatar';
 import { UserData } from '@db';
+import Appearance from './panels/Appearance';
 
 const SETTINGS_TAB_GROUPS: { id: string, label: string }[] = [
     { id: "settings", label: _("Settings") },
@@ -39,7 +40,7 @@ const SETTINGS_TABS: { id: string; group: (typeof SETTINGS_TAB_GROUPS)[number]["
         group: "settings",
         label: _("Appearance"),
         icon: PaletteIcon,
-        component: <div>Appearance</div>
+        component: <Appearance />
     },
     {
         id: "preferences",

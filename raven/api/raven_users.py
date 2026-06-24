@@ -27,6 +27,7 @@ def get_current_raven_user():
 @frappe.whitelist(methods=["POST"])
 def update_raven_user(**args):
 	"""
+	Deprecated in v3
 	Updates the current user's Raven User profile
 	"""
 
