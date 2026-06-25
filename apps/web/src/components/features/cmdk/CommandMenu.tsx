@@ -71,6 +71,7 @@ const CommandPalette = ({ inDrawer = false }: { inDrawer?: boolean }) => {
     const isDMRoute = location.pathname.startsWith('/dm-channel') && !channelIDFromURL
 
     const debouncedText = useDebounce(text, 200)
+    const isMobile = useIsMobile()
 
     const customFilter = (value: string, search: string, keywords?: string[]) => {
         const score = defaultFilter ? defaultFilter(value, search, keywords) : 1
@@ -86,7 +87,7 @@ const CommandPalette = ({ inDrawer = false }: { inDrawer?: boolean }) => {
             className={inDrawer ? "flex flex-col flex-1 min-h-0 bg-transparent" : ""}
         >
             <CommandInput
-                autoFocus
+                autoFocus={!isMobile}
                 value={text}
                 onValueChange={(v) => setText(v.slice(0, 140))}
                 maxLength={140}
