@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { useHotkeys } from "react-hotkeys-hook"
 import { Search, X } from "lucide-react"
 import { Switch } from "@components/ui/switch"
@@ -11,9 +11,9 @@ import NotificationChat, { type SelectedNotification } from "@pages/notification
 import { ThreadMessage } from "../../types/ThreadMessage"
 import { cn } from "@lib/utils"
 import { useChannelList } from "@stores/channels/useChannelList"
+import { unreadThreadsStore } from "@stores/threads/unreadStore"
 import _ from "@lib/translate"
-import { useLiveQuery } from "dexie-react-hooks"
-import { db } from "@db"
+import { useUsersById } from "@hooks/useMessageRowLookups"
 import { PageHeader } from "@components/layout/PageHeader"
 import AppMobileFooter from "@components/features/header/AppMobileFooter"
 
@@ -31,13 +31,20 @@ export default function Threads() {
     const [onlyShowUnread, setOnlyShowUnread] = useState(false)
     const [search, setSearch] = useState('')
     const [channel, setChannel] = useState('*all')
-    const users = useLiveQuery(() => db.users.toArray(), [])
+    const usersById = useUsersById()
+    const users = useMemo(() => [...usersById.values()], [usersById])
     const { channels, dmChannels } = useChannelList()
     const hasSelection = !!selected
 
     // A thread IS a channel (id = thread.name); the pane renders its stream + composer.
     // Clicking the open row again collapses the pane back to a full-width list.
     const onThreadClick = useCallback((thread: ThreadMessage) => {
+        // Engaging with a thread = reading it: clear its unread dot immediately (idempotent,
+        // safe on a toggle-close too). The right-pane stream's read tracker flushes the
+        // watermark to the server (track_visit); this is the optimistic local clear so the dot
+        // doesn't linger until the next reconcile. Done outside setSelected so the store
+        // notify isn't a side effect inside a state updater (which races the list re-render).
+        unreadThreadsStore.remove(thread.name)
         setSelected(prev => prev?.channelID === thread.name ? null : {
             channelID: thread.name,
             messageID: '',
@@ -123,7 +130,7 @@ export default function Threads() {
                             </div>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto">
+                        <div className="flex-1 min-h-0">
                             <ThreadsList
                                 threadType={activeTab}
                                 searchQuery={search}
