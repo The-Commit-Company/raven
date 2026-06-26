@@ -3,7 +3,7 @@ from frappe import _
 
 from raven.utils import delete_channel_members_cache, get_channel_member
 from raven.utils import get_channel_members as get_channel_members_util
-from raven.utils import get_workspace_members, track_channel_visit
+from raven.utils import get_workspace_members, set_channel_unread, track_channel_visit
 
 
 @frappe.whitelist()
@@ -45,6 +45,17 @@ def track_visit(channel_id: str, last_visit: str = None):
 		channel_id=channel_id, last_visit=last_visit, publish_event_for_user=publish_event_for_user
 	)
 	return True
+
+
+@frappe.whitelist(methods=["POST"])
+def mark_channel_as_unread(channel_id: str, message_id: str = None):
+	"""
+	Mark a channel as unread for the current user. Message-anchored: the anchor
+	message and everything after it become unread. Returns the resulting unread
+	count (also broadcast to the user's other sessions for live badge updates).
+	"""
+	frappe.has_permission("Raven Channel", doc=channel_id, throw=True)
+	return set_channel_unread(channel_id=channel_id, message_id=message_id)
 
 
 @frappe.whitelist(methods=["POST"])

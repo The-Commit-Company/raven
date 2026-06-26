@@ -573,6 +573,38 @@ def get_unread_count_for_channel(channel_id: str):
 
 
 @frappe.whitelist()
+def get_message_readers(message_id: str):
+	"""
+	Return the channel members who have read `message_id`.
+
+	A member has read the message when their `last_visit` watermark is at or
+	after the message's creation. The message author is excluded (they
+	trivially read their own message). Accepted caveat: in Open channels a user
+	who can see the channel but has no Raven Channel Member record (never
+	visited) does not appear.
+	"""
+	message = frappe.db.get_value(
+		"Raven Message", message_id, ["channel_id", "creation", "owner"], as_dict=True
+	)
+	if not message:
+		frappe.throw(_("Message not found"))
+
+	frappe.has_permission("Raven Channel", doc=message.channel_id, throw=True)
+
+	member = frappe.qb.DocType("Raven Channel Member")
+	readers = (
+		frappe.qb.from_(member)
+		.select(member.user_id, member.last_visit)
+		.where(member.channel_id == message.channel_id)
+		.where(member.last_visit >= message.creation)
+		.where(member.user_id != message.owner)
+		.orderby(member.last_visit, order=Order.asc)
+		.run(as_dict=True)
+	)
+	return readers
+
+
+@frappe.whitelist()
 def get_timeline_message_content(doctype: str, docname: str | int):
 	channel = frappe.qb.DocType("Raven Channel")
 	channel_member = frappe.qb.DocType("Raven Channel Member")
@@ -871,4 +903,6 @@ def build_reply_blockquote(replied_message_details) -> str:
 	else:
 		body = f"<p>{frappe.utils.escape_html(details.get('content') or '')}</p>"
 
-	return f"<blockquote><p><strong>{frappe.utils.escape_html(author)}</strong></p>{body}</blockquote>"
+	return (
+		f"<blockquote><p><strong>{frappe.utils.escape_html(author)}</strong></p>{body}</blockquote>"
+	)
