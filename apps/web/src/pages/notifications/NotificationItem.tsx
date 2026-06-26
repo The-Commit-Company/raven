@@ -1,7 +1,7 @@
 import { Fragment, memo } from "react"
 import { MessageSquare } from "lucide-react"
 import { cn } from "@lib/utils"
-import { type NotificationObject } from "@hooks/useNotifications"
+import { type NotificationObject } from "@stores/notifications/reducers"
 import { UserAvatar } from "@components/features/message/UserAvatar"
 import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
 import { formatRelativeDate } from "@lib/date"
