@@ -340,7 +340,7 @@ const ChannelGroup = ({
 }
 
 /** Group heading: "Favorites" gets a star, custom groups show their leading emoji. */
-export const ChannelGroupLabel = ({ groupName, isHighlighted }: { groupName: string, isHighlighted: boolean }) => {
+export const ChannelGroupLabel = ({ groupName, isHighlighted = false }: { groupName: string, isHighlighted?: boolean }) => {
     if (groupName === "Favorites") {
         return (
             <span className="flex min-w-0 items-center gap-2">
