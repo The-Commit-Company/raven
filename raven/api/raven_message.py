@@ -871,4 +871,6 @@ def build_reply_blockquote(replied_message_details) -> str:
 	else:
 		body = f"<p>{frappe.utils.escape_html(details.get('content') or '')}</p>"
 
-	return f"<blockquote><p><strong>{frappe.utils.escape_html(author)}</strong></p>{body}</blockquote>"
+	return (
+		f"<blockquote><p><strong>{frappe.utils.escape_html(author)}</strong></p>{body}</blockquote>"
+	)
