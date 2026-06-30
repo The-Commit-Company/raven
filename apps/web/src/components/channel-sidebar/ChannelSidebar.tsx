@@ -210,14 +210,14 @@ const WorkspaceSwitcher = ({ workspaceID }: { workspaceID?: string }) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="min-w-0 gap-1.5 px-2 text-sm font-medium">
+                <Button variant="ghost" size="sm">
                     {current && <WorkspaceLogo workspace={current} />}
-                    <span className="truncate text-ink-gray-8 text-sm font-medium">{current?.workspace_name || workspaceID}</span>
-                    <ChevronDown className="text-ink-gray-4" />
+                    <span className="truncate text-ink-gray-8 text-sm-medium">{current?.workspace_name || workspaceID}</span>
+                    <ChevronDown />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" sideOffset={4} className="min-w-52">
-                {workspaces.map((workspace) => (
+                {workspaces.filter(w => w.workspace_member_name).map((workspace) => (
                     <WorkspaceSwitcherItem
                         key={workspace.name}
                         workspace={workspace}
@@ -300,20 +300,22 @@ const ChannelGroup = ({
                 <CollapsibleTrigger asChild>
                     <button
                         type="button"
-                        className="flex h-8 w-full cursor-pointer select-none items-center gap-2 rounded-md px-2 text-sm text-ink-gray-7 outline-none ring-outline-gray-3 transition-colors hover:bg-surface-gray-2 hover:text-ink-gray-8 focus-visible:ring-2"
+                        className="flex h-8 w-full justify-between cursor-pointer select-none items-center gap-2 rounded-md px-2 text-sm text-ink-gray-7 outline-none ring-outline-gray-3 transition-colors hover:bg-surface-gray-2 hover:text-ink-gray-8 focus-visible:ring-2"
                     >
+                        <div className="flex items-center gap-1">
+                            <ChannelGroupLabel groupName={groupName} isHighlighted={!open && totalUnread > 0} />
+                            {totalUnread > 0 && (
+                                <Badge
+                                    size="sm"
+                                    variant="ghost"
+                                    theme="gray"
+                                    className="shrink-0 opacity-0 transition-opacity group-data-[state=closed]/collapsible:opacity-100"
+                                >
+                                    {totalUnread > 9 ? "9+" : totalUnread}
+                                </Badge>
+                            )}
+                        </div>
                         <ChevronRight className="h-4 w-4 shrink-0 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                        <ChannelGroupLabel groupName={groupName} />
-                        {totalUnread > 0 && (
-                            <Badge
-                                size="sm"
-                                variant="solid"
-                                theme="gray"
-                                className="ml-auto shrink-0 opacity-0 transition-opacity group-data-[state=closed]/collapsible:opacity-100"
-                            >
-                                {totalUnread > 9 ? "9+" : totalUnread}
-                            </Badge>
-                        )}
                     </button>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
@@ -338,12 +340,12 @@ const ChannelGroup = ({
 }
 
 /** Group heading: "Favorites" gets a star, custom groups show their leading emoji. */
-export const ChannelGroupLabel = ({ groupName }: { groupName: string }) => {
+export const ChannelGroupLabel = ({ groupName, isHighlighted = false }: { groupName: string, isHighlighted?: boolean }) => {
     if (groupName === "Favorites") {
         return (
             <span className="flex min-w-0 items-center gap-2">
                 <Star className="h-4 w-4 shrink-0 text-ink-gray-6" />
-                <span className="truncate">{_("Favorites")}</span>
+                <span className={cn("truncate leading-snug text-sm", isHighlighted ? "text-ink-gray-10 text-sm-medium" : "text-ink-gray-7")}>{_("Favorites")}</span>
             </span>
         )
     }
@@ -357,7 +359,7 @@ export const ChannelGroupLabel = ({ groupName }: { groupName: string }) => {
         <span className="flex min-w-0 items-center gap-1.5">
             {emoji && <span className="shrink-0 text-lg leading-none">{emoji}</span>}
             {/* leading-snug: avoid Safari clipping descenders on the truncated label (1.15 is too tight) */}
-            <span className="truncate leading-snug">{nameWithoutEmoji}</span>
+            <span className={cn("truncate leading-snug text-sm", isHighlighted ? "text-ink-gray-10 text-sm-medium" : "text-ink-gray-7")}>{nameWithoutEmoji}</span>
         </span>
     )
 }

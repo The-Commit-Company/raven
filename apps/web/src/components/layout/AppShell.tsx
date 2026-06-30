@@ -144,7 +144,7 @@ const AppShellLayout = ({ children }: { children: React.ReactNode }) => {
         </div>
     }
 
-    return <div className="flex h-dvh overflow-hidden">
+    return <div className="flex h-dvh overflow-hidden bg-surface-elevation-1">
         <PrimarySidebar />
         <RavenSettingsDialog />
         <main className="flex min-w-0 flex-1 flex-col">

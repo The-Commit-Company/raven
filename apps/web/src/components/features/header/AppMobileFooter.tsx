@@ -1,5 +1,8 @@
+import { useUnreadNotificationsCount } from '@hooks/useNotifications'
 import _ from '@lib/translate'
 import { cn } from '@lib/utils'
+import { useUnreadThreadsCount } from '@stores/threads/useUnreadThreads'
+import { useDMUnread } from '@stores/unread/useChannelUnread'
 import { BellIcon, HomeIcon, MessageSquareTextIcon, SearchIcon, UsersRoundIcon } from 'lucide-react'
 import { CircleUserRoundIcon } from "lucide-react"
 import { NavLink } from 'react-router'
@@ -41,9 +44,24 @@ const AppMobileFooter = () => {
     return (
         // Add a height to the container to avoid adding padding on every page
         <AppMobileFooterContainer className='h-16'>
-            {FOOTER_LINKS.map((link) => (
-                <FooterNavLink key={link.to} to={link.to} title={link.title} icon={<link.icon />} />
-            ))}
+            <FooterNavLink
+                icon={<HomeIcon />}
+                to="/"
+                title={_("Home")}
+            />
+            <DirectMessageLink />
+            <ThreadsLink />
+            <NotificationsLink />
+            <FooterNavLink
+                icon={<SearchIcon />}
+                title={_("Search")}
+                to={"/search"}
+            />
+            <FooterNavLink
+                icon={<CircleUserRoundIcon />}
+                title={_("Profile")}
+                to={"/profile"}
+            />
         </AppMobileFooterContainer>
     )
 }
@@ -68,20 +86,72 @@ const AppMobileFooterContainer = ({ children, className }: { children: React.Rea
         </div></div>
 }
 
-const AppMobileFooterButton = ({ icon, title, isActive }: { icon: React.ReactNode, title: string, isActive: boolean }) => {
+const AppMobileFooterButton = ({ icon, title, isActive, badgeCount }: { icon: React.ReactNode, title: string, isActive: boolean, badgeCount?: number }) => {
 
     return <div data-active={isActive} title={title} className={cn(
         "flex items-center flex-col py-3 justify-center text-ink-gray-4 active:scale-95 data-active:text-ink-gray-9 [&>svg]:size-6 data-active:[&>svg]:text-ink-gray-7"
     )}>
-        {icon}
+        <div className='relative'>
+            {icon}
+            <UnreadBadge count={badgeCount} />
+        </div>
+
     </div>
 }
 
-const FooterNavLink = ({ to, icon, title }: { to: string; icon: React.ReactNode; title: string }) => {
+const UnreadBadge = ({ count }: { count?: number }) => {
+
+    if (!count || count === 0) return null
+
+    // Pill, not a fixed circle: a single digit stays circular (min-w == height),
+    // but "9+" / two digits grow horizontally with px-1 so the glyphs aren't
+    // crushed against the boundary. h-4 keeps the cap height stable either way.
+    return <span className="absolute -top-2 -right-2.5 h-4 min-w-4 px-1 flex items-center justify-center rounded-full bg-surface-red-6 dark:bg-surface-red-6 text-ink-base dark:text-ink-red-1 text-[10px] leading-none">
+        {count > 9 ? "9+" : count}
+    </span>
+
+}
+
+const DirectMessageLink = () => {
+    const unread = useDMUnread()
+
+    return <FooterNavLink
+        icon={<UsersRoundIcon />}
+        title={_("Direct Messages")}
+        to={"/dm-channel"}
+        badgeCount={unread}
+    />
+}
+
+const NotificationsLink = () => {
+    const { data: unreadCountData } = useUnreadNotificationsCount()
+    const unreadCount = unreadCountData?.message ?? 0
+
+    // TODO: Add realtime event listeners here to update the unread count when new notifications are created or read
+
+    return <FooterNavLink
+        icon={<BellIcon />}
+        title={_("Notifications")}
+        to={"/notifications"}
+        badgeCount={unreadCount}
+    />
+}
+
+const ThreadsLink = () => {
+    const unread = useUnreadThreadsCount()
+
+    return <FooterNavLink
+        icon={<MessageSquareTextIcon />}
+        title={_("Threads")}
+        to={"/threads"}
+        badgeCount={unread}
+    />
+}
+const FooterNavLink = ({ to, icon, title, badgeCount }: { to: string; icon: React.ReactNode; title: string, badgeCount?: number }) => {
     return (
         <NavLink to={to}>
             {({ isActive }) => (
-                <AppMobileFooterButton icon={icon} title={title} isActive={isActive} />
+                <AppMobileFooterButton icon={icon} title={title} isActive={isActive} badgeCount={badgeCount} />
             )}
         </NavLink>
     )

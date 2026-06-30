@@ -294,7 +294,7 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID, isDi
                         <div className={EDITOR_MIN_H}>
                             <EditorContent editor={editor} />
                         </div>
-                        <div className="flex items-center gap-1 px-1.5 pb-1.5">
+                        <div className="flex items-center gap-1 px-1 pb-1">
                             {isMobile ? (
                                 // Mobile: secondary actions collapse into a "+" bottom sheet.
                                 <MobileComposerActions channelID={channelID} onToggleFormatting={() => setShowFormatting((v) => !v)} />
@@ -310,7 +310,10 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID, isDi
                                                 isIconButton
                                                 aria-label={_("Formatting")}
                                                 aria-pressed={showFormatting}
-                                                onClick={() => setShowFormatting((v) => !v)}
+                                                onClick={() => {
+                                                    setShowFormatting((v) => !v)
+                                                    editor?.commands.focus()
+                                                }}
                                                 className={cn(showFormatting && "bg-surface-gray-3 text-ink-gray-9")}
                                             >
                                                 <Type />

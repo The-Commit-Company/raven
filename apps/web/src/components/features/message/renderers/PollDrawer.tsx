@@ -96,7 +96,7 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
     return (
         <div className="flex flex-col h-full w-full">
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-2 border-b h-11 shrink-0">
+            <div className="flex items-center justify-between px-4 py-2 md:border-b h-11 shrink-0">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                     <h2 className="text-lg-medium mb-0">Poll</h2>
                     {pollStatusBadge && (
@@ -143,6 +143,7 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                         isIconButton
                         onClick={onClose}
                         aria-label="Close drawer"
+                        className="md:inline-flex hidden"
                     >
                         <X />
                     </Button>
@@ -196,8 +197,8 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                                         className={cn(
                                             "p-3 border rounded-lg",
                                             isCurrentUserVote
-                                                ? "border-outline-violet-3 bg-surface-violet-1"
-                                                : "border-outline-gray-2"
+                                                ? "border-outline-violet-3 bg-surface-violet-1 dark:border-outline-gray-3 dark:bg-surface-elevation-2"
+                                                : "border-outline-gray-1"
                                         )}
                                     >
                                         <div className="space-y-3">
@@ -207,7 +208,7 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                                                     <span
                                                         className={cn(
                                                             "text-p-sm wrap-break-word min-w-0",
-                                                            isCurrentUserVote ? "text-ink-gray-8 font-medium" : "text-ink-gray-8"
+                                                            isCurrentUserVote ? "text-ink-gray-8 text-p-sm-medium" : "text-ink-gray-8"
                                                         )}
                                                     >
                                                         {option.option}

@@ -295,7 +295,7 @@ function DMRowShell({
     return (
         <div
             className={cn(
-                "flex w-full items-start gap-3 px-2 py-3 md:py-2 text-sm rounded transition-colors relative text-left",
+                "flex w-full items-center gap-3 px-2 py-3 md:py-2 text-sm rounded transition-colors relative text-left",
                 "select-none",
                 "hover:bg-surface-gray-3 active:bg-surface-gray-3",
                 isActive && "bg-surface-elevation-3 hover:bg-surface-elevation-3 active:bg-surface-elevation-3 shadow-sm"
@@ -328,8 +328,8 @@ function DMRowShell({
                         </span>
                     )}
                 </div>
-                <div className="flex items-center gap-2">
-                    <div
+                {(lastMessage || unread > 0) && <div className="flex items-center gap-2">
+                    {lastMessage && <div
                         className={cn(
                             // leading-snug: see note on the name above — line-clamp also clips
                             // descenders at the tight 1.15 line-height on Safari.
@@ -340,13 +340,13 @@ function DMRowShell({
                         )}
                     >
                         {lastMessage}
-                    </div>
+                    </div>}
                     {unread > 0 && (
                         <Badge size="sm" variant="subtle" theme="gray">
                             {unread > 9 ? "9+" : unread}
                         </Badge>
                     )}
-                </div>
+                </div>}
             </div>
         </div>
     )
