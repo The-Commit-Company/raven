@@ -267,7 +267,7 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID, isDi
                 e.preventDefault()
                 handleSend()
             }}
-            className="px-3 pb-4 w-full flex flex-col gap-2"
+            className="px-3 pb-3 w-full flex flex-col gap-2"
         >
             {/* Warning banner is only shown for primary channels, not DMs, threads in DMs. */}
             {!isDM && mentionedIds.length > 0 && <MentionWarningBanner channelID={parentChannelID ?? channelID} mentionedIds={mentionedIds} isThread={parentChannelID ? true : false} />}
