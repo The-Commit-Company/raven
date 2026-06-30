@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useSetAtom } from "jotai"
 import { NavLink, useMatch, useNavigate, useParams } from "react-router-dom"
 import { useHotkeys } from "react-hotkeys-hook"
@@ -28,6 +28,7 @@ import { MobileSearchButton } from "@components/features/header/QuickSearch/Sear
 import { useWorkspaces, type WorkspaceFields } from "@hooks/useWorkspaces"
 import { lastChannelAtom, lastWorkspaceAtom } from "@utils/lastVisitedAtoms"
 import { useChannelList } from "@stores/channels/useChannelList"
+import { usePrefetchChannel, setChannelListScrolling } from "@stores/messages/usePrefetchChannel"
 import { useGroupedChannels } from "@raven/lib/hooks/useGroupedChannels"
 import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
 import { cn } from "@lib/utils"
@@ -63,6 +64,9 @@ export function ChannelSidebar() {
 
     const navigate = useNavigate()
     const virtuosoRef = useRef<VirtuosoHandle>(null)
+    // Reset the scroll-suppression flag if we unmount mid-scroll (Virtuoso's isScrolling(false)
+    // wouldn't fire), so prefetch isn't left globally suppressed.
+    useEffect(() => () => setChannelListScrolling(false), [])
     // Active channel from the URL (the sidebar mounts above the :id route,
     // so useParams can't see it; end: false tolerates an open thread)
     const currentChannelID = useMatch({ path: "/:workspaceID/:id", end: false })?.params.id
@@ -146,6 +150,7 @@ export function ChannelSidebar() {
                             ref={virtuosoRef}
                             customScrollParent={scrollerRef}
                             data={ungroupedChannels}
+                            isScrolling={setChannelListScrolling}
                             computeItemKey={(_index, channel) => channel.name}
                             itemContent={(_index, channel) => (
                                 <div className="pb-1">
@@ -366,9 +371,11 @@ export const ChannelGroupLabel = ({ groupName, isHighlighted = false }: { groupN
 
 const ChannelRow = ({ channel, workspaceID }: { channel: ChannelListItem; workspaceID?: string }) => {
     const { count: unread } = useChannelUnread(channel.name)
+    const prefetchHandlers = usePrefetchChannel(channel.name, unread > 0)
 
     return (
         <NavLink
+            {...prefetchHandlers}
             to={`/${encodeURIComponent(workspaceID ?? "")}/${encodeURIComponent(channel.name)}`}
             className={({ isActive }) =>
                 cn(

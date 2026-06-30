@@ -1,4 +1,4 @@
-import { memo, useMemo, useRef } from "react"
+import { memo, useEffect, useMemo, useRef } from "react"
 import { NavLink, useMatch, useNavigate } from "react-router-dom"
 import { useHotkeys } from "react-hotkeys-hook"
 import { Virtuoso, type VirtuosoHandle } from "react-virtuoso"
@@ -16,6 +16,7 @@ import _ from "@lib/translate"
 import type { DMChannelListItem } from "@raven/types/common/ChannelListItem"
 import { useChannelList } from "@stores/channels/useChannelList"
 import { useChannelUnread } from "@stores/unread/useChannelUnread"
+import { usePrefetchChannel, setChannelListScrolling } from "@stores/messages/usePrefetchChannel"
 import { useUserCookieData } from "@hooks/useUserCookieData"
 import { MobileSearchButton } from "@components/features/header/QuickSearch/SearchButton"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@components/ui/empty"
@@ -41,6 +42,10 @@ export function DMSidebar() {
 
     const { dmChannels, isLoading } = useChannelList()
     const usersById = useUsersById()
+
+    // Reset scroll-suppression if we unmount mid-scroll (Virtuoso's isScrolling(false) wouldn't
+    // fire), so prefetch isn't left globally suppressed.
+    useEffect(() => () => setChannelListScrolling(false), [])
 
     /**
      * Join channels to peer users BEFORE the virtualizer. Virtuoso items must
@@ -151,6 +156,7 @@ export function DMSidebar() {
                         style={{ height: "100%" }}
                         data={rows}
                         context={{ showSuggestions: rows.length < 5, dmPeerIds }}
+                        isScrolling={setChannelListScrolling}
                         computeItemKey={(_index, row) => row.dm.name}
                         defaultItemHeight={64}
                         overscan={200}
@@ -202,6 +208,7 @@ interface DMRowProps {
 const DMRow = memo(function DMRow({ dmChannel, peerUser }: DMRowProps) {
     const { name: currentUser } = useUserCookieData()
     const { count: unread } = useChannelUnread(dmChannel.name)
+    const prefetchHandlers = usePrefetchChannel(dmChannel.name, unread > 0)
 
     const isSelf = peerUser.name === currentUser
     const baseName = peerUser.full_name || peerUser.name
@@ -209,7 +216,7 @@ const DMRow = memo(function DMRow({ dmChannel, peerUser }: DMRowProps) {
     const date = formatRelativeDate(dmChannel.last_message_timestamp)
     const lastMessage = getMessageTeaser(dmChannel.last_message_details, currentUser)
 
-    return <NavLink to={`/dm-channel/${encodeURIComponent(dmChannel.name)}`} className="block px-2 py-0.5">
+    return <NavLink {...prefetchHandlers} to={`/dm-channel/${encodeURIComponent(dmChannel.name)}`} className="block px-2 py-0.5">
         {({ isActive }) => (
             <DMRowShell
                 user={peerUser}
