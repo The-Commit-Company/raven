@@ -1,0 +1,17 @@
+{
+  "name": "Raven",
+  "short_name": "Raven",
+  "description": "Simple, work messaging tool.",
+  "start_url": "/raven_v3/",
+  "scope": "/raven_v3/",
+  "id": "/raven_v3",
+  "display": "standalone",
+  "background_color": "#191919",
+  "theme_color": "#191919",
+  "lang": "en",
+  "icons": [
+    { "src": "/assets/raven/manifest/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/assets/raven/manifest/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/assets/raven/manifest/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
