@@ -25,6 +25,7 @@ type SavedMessageRow = {
     name: string
     owner: string
     creation: string
+    is_thread: 0 | 1
     text?: string
     channel_id: string
     file?: string
@@ -143,6 +144,7 @@ const SavedMessagesList = ({ searchQuery, channel, onSelect, selectedID }: Saved
                             messageID: r.name,
                             isDirectMessage: !!dmChannel,
                             peer,
+                            isThread: !!r.is_thread,
                         })}
                     />
                 )

@@ -159,6 +159,7 @@ export const MentionItem = memo(({
         onSelect({
             channelID: notification.channel_id,
             messageID: notification.message_id,
+            isThread: !!notification.is_thread,
             isDirectMessage: !!notification.is_direct_message,
             peer: notification.is_direct_message ? sender : undefined,
         })
@@ -214,6 +215,7 @@ export const ReactionItem = memo(({
             messageID: notification.message_id,
             isDirectMessage: !!notification.is_direct_message,
             peer: notification.is_direct_message ? reactorsData[0] : undefined,
+            isThread: !!notification.is_thread,
         })
     }
 
