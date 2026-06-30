@@ -62,12 +62,32 @@
     --scroll-fade-b-size,
     var(--scroll-fade-size, min(12%, calc(var(--spacing) * 10)))
   );
+  /* Eased (smoothstep) alpha ramp, sampled finely so it reads as a smooth curve, NOT fading all
+     the way to transparent: the edge floors at 0.25 (content dims, never vanishes — softer, and
+     images don't disappear), ramping up to a full 1 for the message body. The opaque end MUST be
+     1 or every message would be permanently dimmed. Stops collapse to the edge when the size
+     animates to 0 (reveal preserved: no dimming of the true first/last message at rest). Tune the
+     floor — higher (≈0.4) = subtler dim, lower (≈0.1) = stronger fade. */
   --scroll-fade-block: linear-gradient(
     to bottom,
-    transparent 0,
-    #000 var(--scroll-fade-t, 0px),
-    #000 calc(100% - var(--scroll-fade-b, 0px)),
-    transparent 100%
+    rgba(0, 0, 0, 0.25) 0,
+    rgba(0, 0, 0, 0.282) calc(var(--scroll-fade-t, 0px) * 0.125),
+    rgba(0, 0, 0, 0.367) calc(var(--scroll-fade-t, 0px) * 0.25),
+    rgba(0, 0, 0, 0.487) calc(var(--scroll-fade-t, 0px) * 0.375),
+    rgba(0, 0, 0, 0.625) calc(var(--scroll-fade-t, 0px) * 0.5),
+    rgba(0, 0, 0, 0.763) calc(var(--scroll-fade-t, 0px) * 0.625),
+    rgba(0, 0, 0, 0.883) calc(var(--scroll-fade-t, 0px) * 0.75),
+    rgba(0, 0, 0, 0.968) calc(var(--scroll-fade-t, 0px) * 0.875),
+    rgba(0, 0, 0, 1) var(--scroll-fade-t, 0px),
+    rgba(0, 0, 0, 1) calc(100% - var(--scroll-fade-b, 0px)),
+    rgba(0, 0, 0, 0.968) calc(100% - var(--scroll-fade-b, 0px) * 0.875),
+    rgba(0, 0, 0, 0.883) calc(100% - var(--scroll-fade-b, 0px) * 0.75),
+    rgba(0, 0, 0, 0.763) calc(100% - var(--scroll-fade-b, 0px) * 0.625),
+    rgba(0, 0, 0, 0.625) calc(100% - var(--scroll-fade-b, 0px) * 0.5),
+    rgba(0, 0, 0, 0.487) calc(100% - var(--scroll-fade-b, 0px) * 0.375),
+    rgba(0, 0, 0, 0.367) calc(100% - var(--scroll-fade-b, 0px) * 0.25),
+    rgba(0, 0, 0, 0.282) calc(100% - var(--scroll-fade-b, 0px) * 0.125),
+    rgba(0, 0, 0, 0.25) 100%
   );
   -webkit-mask-image: var(--scroll-fade-mask, var(--scroll-fade-block));
   mask-image: var(--scroll-fade-mask, var(--scroll-fade-block));

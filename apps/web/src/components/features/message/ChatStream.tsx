@@ -189,9 +189,10 @@ export default function ChatStream({ channelID, pinnedMessagesString }: ChatStre
                         <div
                             ref={containerRef}
                             onScroll={handleScroll}
-                            // Smaller fade than the shadcn default (40px), and a tighter bottom since it
-                            // sits right above the chat input's padded edge.
-                            className="scroll-fade [--scroll-fade-t-size:2rem] [--scroll-fade-b-size:1rem] flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-auto [overflow-anchor:none]"
+                            // Keep the fade very subtle: a small mask only nibbles the very edge. A
+                            // container mask unavoidably fades ANY content at the edge (incl. images),
+                            // so the smaller the region the less an image visibly dissolves on scroll.
+                            className="dark:scroll-fade [--scroll-fade-t-size:2rem] [--scroll-fade-b-size:2rem] flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden overflow-y-auto [overflow-anchor:none]"
                         >
                             <div className="flex min-w-0 w-full flex-col px-3 pb-4">
                                 {isLoading ? (
