@@ -5,7 +5,7 @@ import { useUnreadThreadsCount } from '@stores/threads/useUnreadThreads'
 import { useDMUnread } from '@stores/unread/useChannelUnread'
 import { BellIcon, HomeIcon, MessageSquareTextIcon, SearchIcon, UsersRoundIcon } from 'lucide-react'
 import { CircleUserRoundIcon } from "lucide-react"
-import { NavLink } from 'react-router'
+import { NavLink, useMatch } from 'react-router'
 
 const FOOTER_LINKS = [
     {
@@ -15,7 +15,7 @@ const FOOTER_LINKS = [
     },
     {
         icon: UsersRoundIcon,
-        title: _("Direct Messages"),
+        title: _("DMs"),
         to: "/dm-channel",
     },
     {
@@ -29,11 +29,6 @@ const FOOTER_LINKS = [
         to: "/notifications",
     },
     {
-        icon: SearchIcon,
-        title: _("Search"),
-        to: "/search",
-    },
-    {
         icon: CircleUserRoundIcon,
         title: _("Profile"),
         to: "/profile",
@@ -44,19 +39,10 @@ const AppMobileFooter = () => {
     return (
         // Add a height to the container to avoid adding padding on every page
         <AppMobileFooterContainer className='h-16'>
-            <FooterNavLink
-                icon={<HomeIcon />}
-                to="/"
-                title={_("Home")}
-            />
+            <HomeLink />
             <DirectMessageLink />
             <ThreadsLink />
             <NotificationsLink />
-            <FooterNavLink
-                icon={<SearchIcon />}
-                title={_("Search")}
-                to={"/search"}
-            />
             <FooterNavLink
                 icon={<CircleUserRoundIcon />}
                 title={_("Profile")}
@@ -81,7 +67,7 @@ export const AppMobileFooterSkeleton = () => {
 const AppMobileFooterContainer = ({ children, className }: { children: React.ReactNode, className?: string }) => {
 
     return <div className={cn("md:hidden", className)}>
-        <div className="grid grid-cols-6 shrink-0 bg-surface-elevation-2 border-t border-outline-gray-2 standalone:pb-4 fixed bottom-0 w-screen z-10">
+        <div className="grid grid-cols-5 shrink-0 bg-surface-elevation-2 border-t border-outline-gray-2 standalone:pb-4 fixed bottom-0 w-screen z-10">
             {children}
         </div></div>
 }
@@ -89,11 +75,14 @@ const AppMobileFooterContainer = ({ children, className }: { children: React.Rea
 const AppMobileFooterButton = ({ icon, title, isActive, badgeCount }: { icon: React.ReactNode, title: string, isActive: boolean, badgeCount?: number }) => {
 
     return <div data-active={isActive} title={title} className={cn(
-        "flex items-center flex-col py-3 justify-center text-ink-gray-4 active:scale-95 data-active:text-ink-gray-9 [&>svg]:size-6 data-active:[&>svg]:text-ink-gray-7"
+        "flex items-center flex-col py-3 justify-center overflow-hidden text-ink-gray-4 active:scale-95 data-active:text-ink-gray-9 [&>svg]:size-6 data-active:[&>svg]:text-ink-gray-7"
     )}>
-        <div className='relative'>
-            {icon}
-            <UnreadBadge count={badgeCount} />
+        <div className='flex flex-col items-center justify-center gap-2'>
+            <div className='relative'>
+                {icon}
+                <UnreadBadge count={badgeCount} />
+            </div>
+            <span className='text-2xs-medium text-center'>{title}</span>
         </div>
 
     </div>
@@ -106,7 +95,7 @@ const UnreadBadge = ({ count }: { count?: number }) => {
     // Pill, not a fixed circle: a single digit stays circular (min-w == height),
     // but "9+" / two digits grow horizontally with px-1 so the glyphs aren't
     // crushed against the boundary. h-4 keeps the cap height stable either way.
-    return <span className="absolute -top-2 -right-2.5 h-4 min-w-4 px-1 flex items-center justify-center rounded-full bg-surface-red-6 dark:bg-surface-red-6 text-ink-base dark:text-ink-red-1 text-[10px] leading-none">
+    return <span className="absolute -top-2 -right-4 h-4 min-w-4 px-1 flex items-center justify-center rounded-full bg-surface-red-6 dark:bg-surface-red-6 text-ink-base dark:text-ink-red-1 text-[10px] leading-none">
         {count > 9 ? "9+" : count}
     </span>
 
@@ -117,7 +106,7 @@ const DirectMessageLink = () => {
 
     return <FooterNavLink
         icon={<UsersRoundIcon />}
-        title={_("Direct Messages")}
+        title={_("DMs")}
         to={"/dm-channel"}
         badgeCount={unread}
     />
@@ -149,7 +138,7 @@ const ThreadsLink = () => {
 }
 const FooterNavLink = ({ to, icon, title, badgeCount }: { to: string; icon: React.ReactNode; title: string, badgeCount?: number }) => {
     return (
-        <NavLink to={to}>
+        <NavLink to={to} end>
             {({ isActive }) => (
                 <AppMobileFooterButton icon={icon} title={title} isActive={isActive} badgeCount={badgeCount} />
             )}
@@ -159,4 +148,21 @@ const FooterNavLink = ({ to, icon, title, badgeCount }: { to: string; icon: Reac
 
 const FooterNavLinkSkeleton = ({ title, icon }: { title: string, icon: React.ReactNode }) => {
     return <AppMobileFooterButton icon={icon} title={title} isActive={false} />
+}
+
+const HomeLink = () => {
+    const isWorkspaceHome = Boolean(useMatch({ path: "/:workspaceID", end: true }))
+    const isIndex = Boolean(useMatch({ path: "/", end: true }))
+
+    return (
+        <NavLink to="/">
+            {() => (
+                <AppMobileFooterButton
+                    icon={<HomeIcon />}
+                    title={_("Home")}
+                    isActive={isWorkspaceHome || isIndex}
+                />
+            )}
+        </NavLink>
+    )
 }
