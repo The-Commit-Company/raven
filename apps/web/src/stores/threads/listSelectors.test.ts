@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import type { ThreadMessage } from "@/types/ThreadMessage"
+import type { ThreadMessage } from "src/types/ThreadMessage"
 import { applyInitialPage, initialThreadListState } from "./listReducers"
 import { selectThreadRows } from "./listSelectors"
 

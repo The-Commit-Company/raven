@@ -6,9 +6,10 @@ import { selectThreadRows } from "./listSelectors"
 import {
     loadInitialThreads,
     loadMoreThreads,
-    loadSearchThreads,
     reconcileFirstPage,
+    reloadThreads,
     type ThreadCall,
+    type ThreadFilters,
 } from "./listLoaders"
 
 type Options = {
@@ -22,7 +23,22 @@ export const useThreadList = (tab: ThreadTab, { channel, onlyShowUnread, search 
     const client = call as ThreadCall
     const query = search.trim()
     const isSearch = query.length > 0
-    const viewKey = isSearch ? searchViewKey(tab) : tab
+    const channelActive = !!channel && channel !== "*all"
+
+    // One window per view. Search is a re-runnable snapshot (`<tab>:search`). Otherwise each
+    // (channel, unread) combo gets its OWN live, realtime-bumped, warm-reusable window keyed
+    // `<tab>:f:<channel>:<u|a>`, and the filters are pushed to the server (see ThreadFilters)
+    // so every view is complete + dense — no client-side filtering over a partial window.
+    const viewKey = isSearch
+        ? searchViewKey(tab)
+        : channelActive || onlyShowUnread
+          ? `${tab}:f:${channelActive ? channel : "all"}:${onlyShowUnread ? "u" : "a"}`
+          : tab
+
+    const filters: ThreadFilters = useMemo(
+        () => ({ channel, content: isSearch ? query : undefined, onlyShowUnread }),
+        [channel, isSearch, query, onlyShowUnread],
+    )
 
     const state = useSyncExternalStore(
         useCallback((onChange) => threadListStore.subscribe(viewKey, onChange), [viewKey]),
@@ -38,45 +54,47 @@ export const useThreadList = (tab: ThreadTab, { channel, onlyShowUnread, search 
         () => unreadThreadsStore.getSnapshot(),
     )
 
-    // Live tab: fetch the first page on first visit.
+    // Live / filtered view: fetch the first page on first visit (warm-reused afterwards).
     useEffect(() => {
         if (isSearch) return
-        loadInitialThreads(client, tab)
-    }, [client, tab, isSearch])
+        loadInitialThreads(client, tab, viewKey, filters)
+    }, [client, tab, viewKey, isSearch, filters])
 
-    // Search: (re)fetch the snapshot when the query or channel changes.
+    // Search: replace the snapshot whenever the query (or channel) changes.
     useEffect(() => {
         if (!isSearch) return
-        loadSearchThreads(client, tab, query, channel)
-    }, [client, tab, query, channel, isSearch])
+        reloadThreads(client, tab, viewKey, filters)
+    }, [client, tab, viewKey, isSearch, filters])
 
-    // New-unread-thread reconcile: if an unread id isn't in the live window, refetch
-    // the first page once (the event has no row data). Keyed on the unread snapshot —
-    // NOT on `state` — so unrelated live bumps don't re-trigger it, and an id that can
-    // never surface (Other-tab membership, beyond first page) won't spin.
+    // New-unread-thread reconcile: if an unread id isn't in this view's window, refetch the
+    // first page once (the event has no row data). Keyed on the (viewKey, unread snapshot)
+    // pair — NOT on `state` — so unrelated live bumps don't re-trigger it, and an id that can
+    // never surface (Other-tab membership, a different channel filter) won't spin.
     const reconcilingRef = useRef(false)
-    const reconciledForRef = useRef<ReadonlySet<string> | null>(null)
+    const reconciledRef = useRef<{ viewKey: string; set: ReadonlySet<string> } | null>(null)
     useEffect(() => {
         if (isSearch) return
-        if (reconciledForRef.current === unreadSet) return
-        const current = threadListStore.getState(tab)
+        if (reconciledRef.current?.viewKey === viewKey && reconciledRef.current?.set === unreadSet) return
+        const current = threadListStore.getState(viewKey)
         if (current.status !== "ready") return
         let missing = false
         for (const id of unreadSet) {
-            if (!current.byId.has(id)) { missing = true; break }
+            if (!current.byId.has(id)) {
+                missing = true
+                break
+            }
         }
         if (!missing || reconcilingRef.current) return
         reconcilingRef.current = true
-        reconciledForRef.current = unreadSet
-        reconcileFirstPage(client, tab).finally(() => {
+        reconciledRef.current = { viewKey, set: unreadSet }
+        reconcileFirstPage(client, tab, viewKey, filters).finally(() => {
             reconcilingRef.current = false
         })
-    }, [client, tab, isSearch, unreadSet])
+    }, [client, tab, isSearch, viewKey, unreadSet, filters])
 
     const loadMore = useCallback(() => {
-        if (isSearch) return
-        loadMoreThreads(client, tab)
-    }, [client, tab, isSearch])
+        loadMoreThreads(client, tab, viewKey, filters)
+    }, [client, tab, viewKey, filters])
 
     const rows = useMemo(
         () => selectThreadRows(state, { channelFilter: channel, onlyShowUnread, unreadSet }),

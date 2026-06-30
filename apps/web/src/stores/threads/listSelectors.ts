@@ -1,4 +1,4 @@
-import type { ThreadMessage } from "@/types/ThreadMessage"
+import type { ThreadMessage } from "src/types/ThreadMessage"
 import { ThreadListState } from "./listReducers"
 
 /** A thread row decorated with its live unread flag for the list to render. */

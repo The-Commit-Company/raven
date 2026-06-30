@@ -1,11 +1,15 @@
-import { memo, useCallback, useMemo } from "react"
+import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
 import { Virtuoso } from "react-virtuoso"
 import { UserData } from "@db"
 import { ThreadPreviewBox } from "./ThreadPreviewBox"
-import { ThreadMessage } from "@/types/ThreadMessage"
+import { ThreadMessage } from "src/types/ThreadMessage"
 import { ChannelIcon } from "@components/common/ChannelIcon/ChannelIcon"
 import { useMessageRowLookups } from "@hooks/useMessageRowLookups"
+import { useChannelMembers } from "@hooks/useChannelMembers"
+import { ScrollViewportContext, useHasBeenInView } from "@hooks/useHasBeenInView"
 import { useThreadList } from "@stores/threads/useThreadList"
+import { loadThreadDetails, useThreadReplyCount } from "@stores/threads/useThreadMeta"
 import type { ThreadRowData } from "@stores/threads/listSelectors"
 import { MessageListSkeleton } from "@components/features/dm-channel/DirectMessagePageSkeleton"
 import type { ChannelListItem, DMChannelListItem } from "@raven/types/common/ChannelListItem"
@@ -66,6 +70,25 @@ const ThreadRow = memo(function ThreadRow({
     const peer = dmChannel?.peer_user_id ? usersById.get(dmChannel.peer_user_id) : undefined
     const user = usersById.get(thread.owner) ?? null
 
+    // Members + reply count come from the stores, lazily. A regular channel thread fetches its
+    // details (members + count) ONCE the row actually scrolls into view — gated on
+    // useHasBeenInView (not mere mount), because Virtuoso mounts more rows than are visible, so
+    // mount-gating would over-fetch the whole first page. Warms the same stores the thread pill
+    // + detail use (and loadThreadDetails self-dedupes, so a thread already loaded by a channel
+    // pill isn't refetched). DM/AI threads derive their avatar from the peer/bot — no fetch.
+    const { call } = useContext(FrappeContext) as FrappeConfig
+    const { ref: inViewRef, hasBeenInView } = useHasBeenInView({ rootMargin: "200px" })
+    const isChannelThread = thread.is_dm_thread !== 1 && thread.is_ai_thread !== 1
+    useEffect(() => {
+        if (isChannelThread && hasBeenInView) loadThreadDetails(call, thread.name)
+    }, [call, thread.name, isChannelThread, hasBeenInView])
+
+    // Members from the store (seeded by loadThreadDetails, kept live by channel_members_updated).
+    const { members } = useChannelMembers(thread.name, { autoFetch: false })
+    // Count from threadMetaStore (live via thread_reply); falls back to the row's fetch-time
+    // value until this row's details land.
+    const replyCount = useThreadReplyCount(thread.name) ?? thread.reply_count
+
     const channelDetails: ThreadChannelDetails = useMemo(() => {
         if (thread.is_dm_thread === 1) {
             return {
@@ -81,23 +104,24 @@ const ThreadRow = memo(function ThreadRow({
                     <ChannelIcon type={channel.type as "Public" | "Private" | "Open"} className="h-3.5 w-3.5" />
                 ),
                 isDirectMessage: false,
-                participants: (thread.participants ?? [])
-                    .map((p) => usersById.get(p.user_id))
-                    .filter((u): u is UserData => Boolean(u)),
+                participants: members,
             }
         }
         return { channelName: undefined, channelIcon: undefined, isDirectMessage: false, participants: [] }
-    }, [channel, dmChannel, usersById, thread.is_dm_thread, thread.participants, peer])
+    }, [channel, dmChannel, members, thread.is_dm_thread, peer])
 
     return (
-        <ThreadPreviewBox
-            user={user}
-            isUnread={isUnread}
-            thread={thread}
-            channelDetails={channelDetails}
-            onClick={onClick}
-            isActive={isActive}
-        />
+        <div ref={inViewRef}>
+            <ThreadPreviewBox
+                user={user}
+                isUnread={isUnread}
+                thread={thread}
+                replyCount={replyCount}
+                channelDetails={channelDetails}
+                onClick={onClick}
+                isActive={isActive}
+            />
+        </div>
     )
 })
 
@@ -114,6 +138,8 @@ export default function ThreadsList({
         onlyShowUnread,
         search: searchQuery ?? "",
     })
+
+    const [scroller, setScroller] = useState<HTMLElement | null>(null)
 
     const { usersById, channelById, dmById } = useMessageRowLookups()
     const lookups = useMemo<RowLookups>(
@@ -164,23 +190,29 @@ export default function ThreadsList({
     }
 
     return (
-        <Virtuoso
-            data={rows}
-            style={{ height: "100%" }}
-            endReached={endReached}
-            overscan={200}
-            defaultItemHeight={80}
-            context={listContext}
-            components={listComponents}
-            computeItemKey={(_index, thread) => thread.name}
-            itemContent={(_index, thread) => (
-                <ThreadRow
-                    thread={thread}
-                    lookups={lookups}
-                    onSelect={onThreadClick}
-                    isActive={activeThreadID === thread.name}
-                />
-            )}
-        />
+        // Root in-view detection at Virtuoso's scroll container so a row fetches its details
+        // only when it's actually near-visible — Virtuoso mounts more rows than are on screen,
+        // so gating on mount would over-fetch (see ThreadRow).
+        <ScrollViewportContext.Provider value={scroller}>
+            <Virtuoso
+                data={rows}
+                style={{ height: "100%" }}
+                scrollerRef={(ref) => setScroller(ref as HTMLElement | null)}
+                endReached={endReached}
+                overscan={200}
+                defaultItemHeight={140}
+                context={listContext}
+                components={listComponents}
+                computeItemKey={(_index, thread) => thread.name}
+                itemContent={(_index, thread) => (
+                    <ThreadRow
+                        thread={thread}
+                        lookups={lookups}
+                        onSelect={onThreadClick}
+                        isActive={activeThreadID === thread.name}
+                    />
+                )}
+            />
+        </ScrollViewportContext.Provider>
     )
 }

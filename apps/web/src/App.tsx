@@ -97,7 +97,9 @@ function App() {
                   </Route>
                 </Route>
                 <Route path="notifications" element={<Notifications />} />
-                <Route path="threads" element={<Threads />} />
+                <Route path="threads" element={<Threads />}>
+                  <Route path=":threadID" element={<ThreadDrawer />} />
+                </Route>
                 <Route path="search" element={<SearchLayout />}>
                   <Route index element={<Search />} />
                 </Route>

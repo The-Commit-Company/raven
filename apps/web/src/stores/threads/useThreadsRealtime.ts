@@ -37,8 +37,8 @@ export const useThreadsRealtime = () => {
     // Broadcast to everyone — keeps the "N replies" pill live for all channel members.
     useFrappeEventListener("thread_reply", (event: ThreadReplyEvent) => {
         if (!event?.channel_id) return
+        // Count → threadMetaStore (the list + pill read it there); order → list windows.
         threadMetaStore.patch(event.channel_id, event.number_of_replies, event.last_message_timestamp)
-        // Live re-sort: bump the thread to the top of any loaded tab window it's in.
         threadListStore.bump(event.channel_id, event.last_message_timestamp)
     })
 

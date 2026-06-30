@@ -14,6 +14,8 @@ interface BaseThreadMessageProps {
     thread: ThreadMessage
     channelDetails: ThreadChannelDetails
     showConnectorLine?: boolean
+    /** Live reply count (threadMetaStore). Falls back to the row's `reply_count` when absent. */
+    replyCount?: number
     /** Shows an unread presence dot beside the reply count. */
     isUnread?: boolean
 }
@@ -22,8 +24,10 @@ export const BaseThreadMessage = ({
     user,
     thread,
     channelDetails,
+    replyCount,
     isUnread
 }: BaseThreadMessageProps) => {
+    const count = replyCount ?? thread.reply_count ?? 0
     return (
         <div className="relative">
 
@@ -47,9 +51,9 @@ export const BaseThreadMessage = ({
                 {!channelDetails.isDirectMessage ? (
                     <GroupedAvatars users={channelDetails.participants} max={3} size="xs" />
                 ) : null}
-                {thread.reply_count && thread.reply_count > 0 ? (
+                {count > 0 ? (
                     <span className={cn("text-xs text-ink-gray-8", isUnread ? "font-bold" : "font-semibold")}>
-                        {_(`${thread.reply_count} ${thread.reply_count === 1 ? 'Reply' : 'Replies'}`)}
+                        {_(`${count} ${count === 1 ? 'Reply' : 'Replies'}`)}
                     </span>
                 ) : null}
                 {isUnread && (

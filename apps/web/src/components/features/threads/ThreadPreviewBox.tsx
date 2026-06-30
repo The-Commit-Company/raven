@@ -10,6 +10,8 @@ interface ThreadPreviewBoxProps {
     user: UserData | null
     thread: ThreadMessage
     isUnread: boolean
+    /** Live reply count (threadMetaStore); falls back to thread.reply_count in BaseThreadMessage. */
+    replyCount?: number
     channelDetails: ThreadChannelDetails
     onClick?: () => void
     isActive?: boolean
@@ -19,6 +21,7 @@ export const ThreadPreviewBox = ({
     user,
     thread,
     isUnread,
+    replyCount,
     channelDetails,
     onClick,
     isActive
@@ -56,6 +59,7 @@ export const ThreadPreviewBox = ({
                     channelDetails={channelDetails}
                     showConnectorLine={false}
                     thread={thread}
+                    replyCount={replyCount}
                     isUnread={isUnread}
                 />
             </div>

@@ -1,4 +1,4 @@
-import type { ThreadMessage } from "@/types/ThreadMessage"
+import type { ThreadMessage } from "src/types/ThreadMessage"
 
 export type ThreadTab = "participating" | "other" | "ai"
 
@@ -103,7 +103,11 @@ export const mergePage = (
     }
 }
 
-/** A new reply advanced a thread's timestamp — patch it and re-sort it to the top. */
+/**
+ * A new reply advanced a thread's timestamp — patch it and re-sort it to the top. The reply
+ * COUNT isn't touched here: the list reads it from threadMetaStore (live via thread_reply),
+ * so this reducer only owns ORDER. No-op when not strictly newer.
+ */
 export const bumpThread = (
     state: ThreadListState,
     threadID: string,

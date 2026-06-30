@@ -26,6 +26,7 @@ import { useChannelMembers } from "@hooks/useChannelMembers"
 import { useUserCookieData } from "@hooks/useUserCookieData"
 import { focusComposer } from "@components/features/ChatInput/composerFocus"
 import { unreadThreadsStore } from "@stores/threads/unreadStore"
+import { threadListStore } from "@stores/threads/listStore"
 import { pollDrawerAtom } from "@utils/channelAtoms"
 import { getErrorMessage } from "@lib/frappe"
 import _ from "@lib/translate"
@@ -68,14 +69,16 @@ export default function ThreadDrawer() {
 
     // A thread IS a channel, so leave/delete reuse the channel APIs on the threadID; both close
     // the thread on success. Threads aren't in the channel_list SWR cache, so (unlike channel
-    // leave/delete) there's nothing to patch there — we only drop the thread from the
-    // unread-threads badge, since we'll no longer get its participant-scoped unread event.
+    // leave/delete) there's nothing to patch there — we drop the thread from the unread-threads
+    // badge (no more participant-scoped events) and from the threads-list windows so it doesn't
+    // linger in the list. (On leave it may reappear under "Other" on that tab's next refetch.)
     const { call: leaveThread, loading: leaving } = useFrappePostCall("raven.api.raven_channel.leave_channel")
     const onLeaveThread = () => {
         if (!threadID) return
         leaveThread({ channel_id: threadID })
             .then(() => {
                 unreadThreadsStore.remove(threadID)
+                threadListStore.removeEverywhere(threadID)
                 toast.success(_("You left the thread"))
                 handleClose()
             })
@@ -90,6 +93,7 @@ export default function ThreadDrawer() {
         deleteDoc("Raven Channel", threadID)
             .then(() => {
                 unreadThreadsStore.remove(threadID)
+                threadListStore.removeEverywhere(threadID)
                 toast.success(_("Thread deleted"))
                 handleClose()
             })

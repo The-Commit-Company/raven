@@ -1,4 +1,4 @@
-import type { ThreadMessage } from "@/types/ThreadMessage"
+import type { ThreadMessage } from "src/types/ThreadMessage"
 import {
     ThreadListState,
     ThreadTab,
@@ -103,15 +103,24 @@ class ThreadListStore {
         this.update(viewKey, removeThread(this.getState(viewKey), threadID))
     }
 
+    /** Drop a thread from EVERY window — it left/was deleted, so it's gone from all views. */
+    removeEverywhere(threadID: string) {
+        for (const viewKey of this.states.keys()) {
+            this.update(viewKey, removeThread(this.getState(viewKey), threadID))
+        }
+    }
+
     /** ----- Realtime ----- */
 
     /**
-     * Apply a thread_reply to every LIVE tab window that already holds the thread.
-     * Skips detached search views (keys containing ":") — those are snapshots.
+     * Apply a thread_reply to every LIVE window that already holds the thread (the default
+     * tab AND its filter-combo views, `<tab>:f:...`) — re-sorts it to the top by timestamp.
+     * The reply count lives in threadMetaStore, not here. Skips only detached SEARCH
+     * snapshots (`<tab>:search`), which shouldn't re-order under the user mid-search.
      */
     bump(threadID: string, lastMessageTimestamp: string) {
         for (const viewKey of this.states.keys()) {
-            if (viewKey.includes(":")) continue
+            if (viewKey.endsWith(":search")) continue
             this.update(viewKey, bumpThread(this.getState(viewKey), threadID, lastMessageTimestamp))
         }
     }

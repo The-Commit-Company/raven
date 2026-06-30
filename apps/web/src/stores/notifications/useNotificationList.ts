@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useMemo, useSyncExternalStore } from "react"
 import { FrappeConfig, FrappeContext, useSWRConfig } from "frappe-react-sdk"
 import { UNREAD_COUNT_KEY } from "@hooks/useNotifications"
-import { notificationListStore, type NotificationTab } from "./store"
+import { notificationListStore, type NotificationFilters, type NotificationTab } from "./store"
 import { selectNotificationRows } from "./selectors"
 import {
     loadInitialNotifications,
@@ -13,26 +13,37 @@ import {
 type CountResult = { message: number }
 
 /**
- * Reads the single merged notifications window and applies the `type` tab filter
- * (all/mention/reaction) + the unread toggle client-side. Seeds the window once;
- * tab/filter changes never refetch. `loadMore` paginates the merged feed lazily.
+ * Reads the notifications window for the active `type` (all/mention/reaction) + unread
+ * toggle. Each filter combo is its OWN server-filtered, paginated window (keyed
+ * `<type>[:unread]`), so the unread toggle and the tabs are complete and never stall.
+ * The window is also filtered client-side so reading a notification removes it from the
+ * unread view live; `loadMore` paginates the server slice lazily.
  */
 export const useNotificationList = (type: NotificationTab, { unreadOnly }: { unreadOnly: boolean }) => {
     const { call } = useContext(FrappeContext) as FrappeConfig
     const client = call as NotificationCall
     const { mutate: globalMutate } = useSWRConfig()
 
-    const state = useSyncExternalStore(notificationListStore.subscribe, notificationListStore.getState)
+    const viewKey = `${type}${unreadOnly ? ":unread" : ""}`
+    const filters: NotificationFilters = useMemo(
+        () => ({ notificationType: type === "all" ? undefined : type, unreadOnly }),
+        [type, unreadOnly],
+    )
+
+    const state = useSyncExternalStore(
+        useCallback((onChange) => notificationListStore.subscribe(viewKey, onChange), [viewKey]),
+        () => notificationListStore.getState(viewKey),
+    )
 
     useEffect(() => {
-        loadInitialNotifications(client)
-    }, [client])
+        loadInitialNotifications(client, viewKey, filters)
+    }, [client, viewKey, filters])
 
     const rows = useMemo(() => selectNotificationRows(state, { type, unreadOnly }), [state, type, unreadOnly])
 
     const loadMore = useCallback(() => {
-        loadMoreNotifications(client)
-    }, [client])
+        loadMoreNotifications(client, viewKey, filters)
+    }, [client, viewKey, filters])
 
     // Optimistic update + POST only. The server fires message_notifications_read /
     // all_notifications_read back to us (user-scoped), and useNotificationsRealtime
@@ -49,11 +60,11 @@ export const useNotificationList = (type: NotificationTab, { unreadOnly }: { unr
             client
                 .post("raven.api.notifications.mark_message_notifications_read", { message_id: messageId })
                 .catch(() => {
-                    reconcileFirstPage(client)
+                    reconcileFirstPage(client, viewKey, filters)
                     globalMutate(UNREAD_COUNT_KEY)
                 })
         },
-        [client, globalMutate],
+        [client, globalMutate, viewKey, filters],
     )
 
     const markAllRead = useCallback(() => {
