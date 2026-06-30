@@ -31,6 +31,8 @@ import {
 } from "@components/ui/alert-dialog"
 import _ from "@lib/translate"
 import { Separator } from "@components/ui/separator"
+import { useAtomValue } from "jotai"
+import { timeFormatAtom } from "@utils/preferences"
 
 export interface PollDrawerProps {
     user: UserData
@@ -73,6 +75,8 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
             .catch((e) => toast.error(_("Could not close the poll"), { description: getErrorMessage(e) }))
     }
 
+    const timeFormat = useAtomValue(timeFormatAtom)
+
     const pollStatusBadge: null | { text: string; theme: 'gray' | 'red'; icon?: React.ElementType } = useMemo(() => {
         if (!poll.end_date) {
             // If the poll does not have an end date, it is open indefinitely
@@ -83,7 +87,7 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
         } else if (poll.end_date) {
             try {
                 const endDateObj = getDateObject(poll.end_date)
-                const formattedDate = endDateObj.format('MMM D, hh:mm A')
+                const formattedDate = endDateObj.format(timeFormat === "12-hour" ? "MMM D, h:mma" : "MMM D, HH:mm")
                 return { text: _("Open until {0}", [formattedDate]), theme: "gray" }
             } catch {
                 return { text: _("Open"), theme: "gray" }
@@ -162,7 +166,7 @@ export const PollDrawer: React.FC<PollDrawerProps> = ({
                                 showStatusIndicator={false}
                             />
                             <span>{user?.full_name || user?.name || "User"}</span>
-                            <span className="text-ink-gray-5 text-xs">{getDateObject(poll.creation).format('MMM D, hh:mm A')}</span>
+                            <span className="text-ink-gray-5 text-xs">{getDateObject(poll.creation).format(timeFormat === "12-hour" ? "MMM D, h:mma" : "MMM D, HH:mm")}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Badge>

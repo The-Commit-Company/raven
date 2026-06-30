@@ -159,11 +159,11 @@ export default function Threads() {
                 </div>
                 <div className="flex min-h-0 min-w-0 flex-1 flex-row gap-1 p-0 md:p-1">
                     <Island className="w-full h-full shrink-0">
-                        <div>
+                        <div className="flex flex-col flex-1 min-h-0">
                             {hasThread ? (
                                 <Outlet context={{ parentChannelID }} />
                             ) : (
-                                <Empty className="h-dvh">
+                                <Empty className="h-full">
                                     <EmptyHeader>
                                         <EmptyDescription>{_("Select a thread to view the conversation.")}</EmptyDescription>
                                     </EmptyHeader>

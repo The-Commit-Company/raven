@@ -9,6 +9,8 @@ import { channelMessagesStore } from "@stores/messages/store"
 import type { Message } from "@raven/types/common/Message"
 import { getDateObject } from "@lib/date"
 import _ from "@lib/translate"
+import { useAtomValue } from "jotai"
+import { timeFormatAtom } from "@utils/preferences"
 
 /**
  * The thread's root (parent) message. A thread's id IS that message's id, so when the thread
@@ -53,6 +55,8 @@ const rootPreviewText = (message: Message): string => {
  * message resolves. (Key it by threadID at the call site so the expand state resets per thread.)
  */
 export const ThreadRootMessage = ({ threadID, parentID }: { threadID: string; parentID?: string }) => {
+
+    const timeFormat = useAtomValue(timeFormatAtom)
     const message = useThreadRootMessage(threadID, parentID)
     const [expanded, setExpanded] = useState(false)
     const author = useUser(message && message.is_bot_message ? (message.bot ?? message.owner) : message?.owner)
@@ -75,7 +79,7 @@ export const ThreadRootMessage = ({ threadID, parentID }: { threadID: string; pa
                     <div className="flex items-center gap-2">
                         <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink-gray-9">{authorName}</span>
                         <span className="shrink-0 text-xs text-ink-gray-5">
-                            {getDateObject(message.creation).format("MMM D, h:mm A")}
+                            {getDateObject(message.creation).format(timeFormat === "12-hour" ? "MMM D, h:mma" : "MMM D, HH:mm")}
                         </span>
                         <Button
                             variant="ghost"
