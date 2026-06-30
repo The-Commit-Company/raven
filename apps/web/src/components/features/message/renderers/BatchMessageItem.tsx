@@ -40,10 +40,11 @@ export const BatchMessageItem = ({
     const head = block.messages[0]
     const newest = block.messages[block.messages.length - 1]
 
-    // The selector keeps at most one thread parent in a batch and only the
-    // head matters here: when it's a thread, the batch shows the pill +
-    // connector, same as a single message (the selector splits 2+ thread batches).
-    const showThread = isThreadParent(head)
+    // The selector keeps at most one thread parent in a batch (it splits 2+ into
+    // individual messages). Batch actions — including create-thread — resolve to the
+    // NEWEST member (see blockFromEvent), so that's where a thread is created, and the
+    // batch shows the pill + connector when its newest member is the thread parent.
+    const showThread = isThreadParent(newest)
 
     const { ref } = useIntersectionObserver({
         onChange: (isIntersecting) => {
@@ -121,7 +122,7 @@ export const BatchMessageItem = ({
                 {content}
             </MessageSenderLayout>
 
-            {showThread && <MessageThreadPill threadID={head.name} />}
+            {showThread && <MessageThreadPill threadID={newest.name} />}
         </MessageRow>
     )
 }
