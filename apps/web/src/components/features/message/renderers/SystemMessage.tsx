@@ -17,8 +17,8 @@ const SystemMessage: React.FC<SystemMessageProps> = ({ message, time }) => {
         try {
             const dateObj = getDateObject(time)
             return {
-                shortTime: dateObj.format(timeFormat === "12-hour" ? "h:mma" : "HH:mm"),
-                longTime: dateObj.format(timeFormat === "12-hour" ? "Do MMMM YYYY, h:mma" : "Do MMMM YYYY, HH:mm"),
+                shortTime: dateObj.format(timeFormat === "12-hour" ? "hh:mm a" : "HH:mm"),
+                longTime: dateObj.format(timeFormat === "12-hour" ? "Do MMMM YYYY, hh:mm a" : "Do MMMM YYYY, HH:mm"),
             }
         }
         catch (error) {
