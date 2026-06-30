@@ -251,7 +251,7 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID, isDi
     // the hooks order. App-wide write-blocking is a later, broader effort.
     if (isInReadOnlyMode()) {
         return (
-            <div className="p-3 pb-4 w-full">
+            <div className="px-3 pb-4 w-full">
                 <div className="flex items-center justify-center gap-2 rounded-lg border border-outline-gray-2 bg-surface-gray-1 px-3 py-3 text-sm text-ink-gray-6">
                     <Lock className="size-3 shrink-0" />
                     <span>{_("The site is in read-only mode right now. Please wait while the site is being updated.")}</span>
@@ -267,7 +267,7 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID, isDi
                 e.preventDefault()
                 handleSend()
             }}
-            className="p-3 pb-4 w-full flex flex-col gap-2"
+            className="px-3 pb-4 w-full flex flex-col gap-2"
         >
             {/* Warning banner is only shown for primary channels, not DMs, threads in DMs. */}
             {!isDM && mentionedIds.length > 0 && <MentionWarningBanner channelID={parentChannelID ?? channelID} mentionedIds={mentionedIds} isThread={parentChannelID ? true : false} />}
