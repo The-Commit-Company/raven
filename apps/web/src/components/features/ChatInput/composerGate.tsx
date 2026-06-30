@@ -98,7 +98,7 @@ const ComposerBlockedBanner = ({
     return <div className="p-3 pb-4 w-full">
         <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-outline-gray-2 bg-surface-gray-1 px-3 py-4 text-sm text-ink-gray-6">
             {archived ? <Archive className="size-5 shrink-0" /> : <UserRoundX className="size-5 shrink-0" />}
-            <span>
+            <span className="text-p-sm">
                 {message}
             </span>
             {!archived && onJoin && (

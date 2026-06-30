@@ -46,6 +46,8 @@ export default function Threads() {
     const navigate = useNavigate()
     const { threadID } = useParams<{ threadID: string }>()
     const { state } = useLocation()
+    // The click carries the parent channel via nav state; on a cold refresh it's absent and
+    // ThreadDrawerRoute resolves it from the thread's (already-fetched) root message instead.
     const parentChannelID = (state as ThreadNavState)?.parentChannelID
     const hasThread = !!threadID
 

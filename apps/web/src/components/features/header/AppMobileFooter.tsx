@@ -1,7 +1,9 @@
 import { useUnreadNotificationsCount } from '@hooks/useNotifications'
 import _ from '@lib/translate'
 import { cn } from '@lib/utils'
+import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser'
 import { useUnreadThreadsCount } from '@stores/threads/useUnreadThreads'
+import { useWorkspaces } from '@hooks/useWorkspaces'
 import { useDMUnread } from '@stores/unread/useChannelUnread'
 import { BellIcon, HomeIcon, MessageSquareTextIcon, SearchIcon, UsersRoundIcon } from 'lucide-react'
 import { CircleUserRoundIcon } from "lucide-react"
@@ -43,11 +45,7 @@ const AppMobileFooter = () => {
             <DirectMessageLink />
             <ThreadsLink />
             <NotificationsLink />
-            <FooterNavLink
-                icon={<CircleUserRoundIcon />}
-                title={_("Profile")}
-                to={"/profile"}
-            />
+            <ProfileLink />
         </AppMobileFooterContainer>
     )
 }
@@ -151,8 +149,16 @@ const FooterNavLinkSkeleton = ({ title, icon }: { title: string, icon: React.Rea
 }
 
 const HomeLink = () => {
-    const isWorkspaceHome = Boolean(useMatch({ path: "/:workspaceID", end: true }))
+    // Home is active on a workspace route (`/:workspaceID` or a channel/thread under it) and on
+    // the index. The catch: `/:workspaceID` is a single dynamic segment, so it also matches the
+    // sibling top-level routes (/threads, /dm-channel, /notifications, /profile, /search, …) —
+    // which is why Home looked "always active". Disambiguate by checking the first segment
+    // against the REAL workspaces, not just "any string".
+    const { workspaces } = useWorkspaces()
+    const wsMatch = useMatch("/:workspaceID/*")
     const isIndex = Boolean(useMatch({ path: "/", end: true }))
+    const ws = wsMatch?.params.workspaceID
+    const isWorkspaceRoute = !!ws && workspaces.some((w) => w.name === ws)
 
     return (
         <NavLink to="/">
@@ -160,9 +166,20 @@ const HomeLink = () => {
                 <AppMobileFooterButton
                     icon={<HomeIcon />}
                     title={_("Home")}
-                    isActive={isWorkspaceHome || isIndex}
+                    isActive={isIndex || isWorkspaceRoute}
                 />
             )}
         </NavLink>
     )
+}
+
+const ProfileLink = () => {
+
+    const { myProfile } = useCurrentRavenUser()
+
+    return <FooterNavLink
+        icon={myProfile?.user_image ? <img src={myProfile.user_image} alt="Profile" className="size-6 bg-surface-gray-2 rounded-full object-cover" /> : <CircleUserRoundIcon />}
+        title={_("Profile")}
+        to={"/profile"}
+    />
 }

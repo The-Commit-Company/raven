@@ -7,7 +7,7 @@ import Search from "@pages/search/Search"
 import Threads from "@pages/threads/Threads"
 import DirectMessages, { DirectMessagesIndex } from "@pages/dm-channel/DirectMessages"
 import DirectMessage from "@pages/dm-channel/DirectMessage"
-import ThreadDrawer from "@components/features/message/ThreadDrawer"
+import ThreadDrawerRoute from "@components/features/message/ThreadDrawerRoute"
 import { WorkspaceRedirect } from "@components/workspace-switcher/WorkspaceRedirect"
 import { FrappeProvider } from 'frappe-react-sdk'
 import { initEmojiMart } from '@lib/emojiMart'
@@ -99,18 +99,18 @@ function App() {
                 <Route path=":workspaceID" element={<WorkspaceLayout />}>
                   <Route index element={<WorkspaceRedirect />} />
                   <Route path=":id" element={<Channel />}>
-                    <Route path="thread/:threadID" element={<ThreadDrawer />} />
+                    <Route path="thread/:threadID" element={<ThreadDrawerRoute />} />
                   </Route>
                 </Route>
                 <Route path="dm-channel" element={<DirectMessages />}>
                   <Route index element={<DirectMessagesIndex />} />
                   <Route path=":id" element={<DirectMessage />}>
-                    <Route path="thread/:threadID" element={<ThreadDrawer />} />
+                    <Route path="thread/:threadID" element={<ThreadDrawerRoute />} />
                   </Route>
                 </Route>
                 <Route path="notifications" element={<Notifications />} />
                 <Route path="threads" element={<Threads />}>
-                  <Route path=":threadID" element={<ThreadDrawer />} />
+                  <Route path=":threadID" element={<ThreadDrawerRoute />} />
                 </Route>
                 <Route path="search" element={<SearchLayout />}>
                   <Route index element={<Search />} />

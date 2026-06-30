@@ -16,10 +16,13 @@ import _ from "@lib/translate"
  * from the store and skip the fetch (v2 always refetched). Falls back to a single-doc fetch for
  * deep links / when the parent has scrolled out of the window.
  */
-const useThreadRootMessage = (threadID: string, parentID: string): Message | undefined => {
+const useThreadRootMessage = (threadID: string, parentID?: string): Message | undefined => {
+    // No parent (e.g. a cold threads-page deep-link) → the store read just misses ("" has no
+    // window) and we fall through to the single-doc fetch, which resolves the root by threadID.
+    const lookupID = parentID ?? ""
     const fromStore = useSyncExternalStore(
-        useCallback((cb) => channelMessagesStore.subscribe(parentID, cb), [parentID]),
-        () => channelMessagesStore.getState(parentID).byId.get(threadID),
+        useCallback((cb) => channelMessagesStore.subscribe(lookupID, cb), [lookupID]),
+        () => channelMessagesStore.getState(lookupID).byId.get(threadID),
     )
     // Null swrKey disables the fetch when the store already has the message.
     const { data } = useFrappeGetDoc<Message>(
@@ -49,7 +52,7 @@ const rootPreviewText = (message: Message): string => {
  * toggle that reveals the full message via the shared renderer. Renders nothing until the
  * message resolves. (Key it by threadID at the call site so the expand state resets per thread.)
  */
-export const ThreadRootMessage = ({ threadID, parentID }: { threadID: string; parentID: string }) => {
+export const ThreadRootMessage = ({ threadID, parentID }: { threadID: string; parentID?: string }) => {
     const message = useThreadRootMessage(threadID, parentID)
     const [expanded, setExpanded] = useState(false)
     const author = useUser(message && message.is_bot_message ? (message.bot ?? message.owner) : message?.owner)

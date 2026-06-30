@@ -14,6 +14,7 @@ import { useUnreadRealtime } from "@stores/unread/useUnreadRealtime"
 import { useMessageRoomSubscriptions } from "@stores/messages/useMessageRoomSubscriptions"
 import { useMessagesRealtime } from "@stores/messages/useMessagesRealtime"
 import { useReconnectCatchup } from "@stores/messages/useReconnectCatchup"
+import { useActiveSocketConnection } from "@hooks/useActiveSocketConnection"
 import { useOutboxAutoRetry } from "@stores/messages/useOutboxAutoRetry"
 import { useChannelListRealtime } from "@hooks/useChannelListRealtime"
 import { useChannelListSync } from "@stores/channels/useChannelListSync"
@@ -92,6 +93,9 @@ const AppListeners = ({ children }: { children: React.ReactNode }) => {
     useMessageRoomSubscriptions()
     // Dispatches those live message events into the message store
     useMessagesRealtime()
+    // Health-checks the socket on focus and force-reconnects a dead one (e.g. after a
+    // backgrounded tab suspended it) — the reconnect then drives useReconnectCatchup
+    useActiveSocketConnection()
     // Backstop: refetch messages missed during a disconnect when the socket reconnects
     useReconnectCatchup()
     // Delivers persisted (pending/failed) sends from the outbox on load + reconnect/online
@@ -119,7 +123,6 @@ const AppListeners = ({ children }: { children: React.ReactNode }) => {
     useNotificationsRealtime()
     // TODO: Push notification listener
     // TODO: App update listener
-    // TODO: Websocket connection listener
 
     if (!isReady) {
         return <MainPageSkeleton />
