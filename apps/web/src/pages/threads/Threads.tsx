@@ -145,7 +145,7 @@ export default function Threads() {
                 <div className="flex flex-1 overflow-hidden">
                     {hasThread ? <Outlet context={{ parentChannelID }} /> : list}
                 </div>
-                <AppMobileFooter />
+                {hasThread ? null : <AppMobileFooter />}
             </div>
         )
     }

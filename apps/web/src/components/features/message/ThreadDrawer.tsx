@@ -128,7 +128,7 @@ export default function ThreadDrawer({
     }
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full w-full">
             {/* Whole-thread drop target (mirrors the channel pane); disabled when you can't post,
                 so a drop can't stage files there's no composer to send them from. */}
             <FileDropZone channelID={threadID ?? ""} disabled={composerGate.state !== "composer"}>
