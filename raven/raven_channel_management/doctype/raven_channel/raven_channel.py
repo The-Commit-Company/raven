@@ -180,7 +180,7 @@ class RavenChannel(Document):
 					_("You don't have permission to archive/unarchive this channel"),
 					frappe.PermissionError,
 				)
-		if not self.flags.is_created_by_bot:
+		if not self.flags.is_created_by_bot and not self.flags.ignore_channel_member_check:
 			if self.type == "Private" or self.type == "Public":
 				if (
 					self.owner == frappe.session.user

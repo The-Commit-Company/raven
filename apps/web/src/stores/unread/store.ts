@@ -123,6 +123,17 @@ class ChannelUnreadStore {
         this.update(channelID, { count: caughtUp ? 0 : state.count, lastSeen: timestamp })
     }
 
+    /**
+     * Mark a channel unread back to `watermark` with a server-computed `count`.
+     * The deliberate BACKWARD counterpart to markRead (which is forward-only and
+     * would drop this): the user marked a channel/message unread, rolling
+     * last_visit backward server-side, so we set lastSeen backward and the count
+     * directly. Mirrors set_channel_unread's guard bypass on the backend.
+     */
+    markUnread(channelID: string, watermark: string, count: number) {
+        this.update(channelID, { count, lastSeen: watermark })
+    }
+
     /** Register the channel open at the live edge (or null). It won't accumulate increments. */
     setActiveReadChannel(channelID: string | null) {
         this.activeReadChannelID = channelID

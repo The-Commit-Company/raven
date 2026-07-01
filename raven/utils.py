@@ -1,4 +1,8 @@
+from datetime import timedelta
+
 import frappe
+from frappe import _
+from frappe.query_builder import Order
 from frappe.query_builder.functions import Coalesce
 
 
@@ -97,6 +101,105 @@ def track_channel_visit(
 			},
 			user=user,
 		)
+
+
+def set_channel_unread(channel_id: str, message_id: str = None, user: str = None):
+	"""
+	Mark a channel unread by rolling `last_visit` backward to just below an
+	anchor message — the anchor and everything after it become unread.
+
+	Anchor: `message_id` when given, else the latest non-System message in the
+	channel. The new watermark is set one microsecond below the anchor's
+	creation, so the anchor becomes the first unread message and everything
+	before it stays read (when the anchor is the channel's first message this
+	marks the whole channel unread).
+
+	This is the one intentional *backward* watermark move, so it writes
+	`last_visit` directly and bypasses the monotonic guard in
+	`track_channel_visit`. Creates a Raven Channel Member record if the user has
+	none, but ONLY for Open channels (mirrors `track_channel_visit`). For
+	non-Open channels with no member record this is a no-op — inserting a member
+	record there would fire `after_insert` and emit a spurious "X joined." system
+	message, which must not happen for a read-state operation.
+	"""
+	if not user:
+		user = frappe.session.user
+
+	message = frappe.qb.DocType("Raven Message")
+
+	# Resolve the anchor message's creation.
+	if message_id:
+		anchor = frappe.db.get_value(
+			"Raven Message", message_id, ["channel_id", "creation"], as_dict=True
+		)
+		if not anchor or anchor.channel_id != channel_id:
+			frappe.throw(_("Message does not belong to this channel"))
+	else:
+		anchor_rows = (
+			frappe.qb.from_(message)
+			.select(message.creation)
+			.where(message.channel_id == channel_id)
+			.where(message.message_type != "System")
+			.orderby(message.creation, order=Order.desc)
+			.orderby(message.name, order=Order.desc)
+			.limit(1)
+			.run(as_dict=True)
+		)
+		if not anchor_rows:
+			# No eligible message — nothing to mark unread.
+			return
+		anchor = anchor_rows[0]
+
+	# Anchor (and everything after) must be unread. Consumers test unread as
+	# `message.creation > last_visit` (timestamp-only) and `creation` is
+	# datetime(6), so a watermark one microsecond below the anchor makes the
+	# anchor the first unread message while every earlier message stays read.
+	# This also handles "anchor is the first message" (whole channel unread)
+	# without a sentinel, and avoids a separate previous-message query.
+	new_watermark = frappe.utils.get_datetime(anchor.creation) - timedelta(microseconds=1)
+
+	channel_member = get_channel_member(channel_id, user)
+	if channel_member:
+		# Direct backward write — deliberately no monotonic guard.
+		frappe.db.set_value("Raven Channel Member", channel_member["name"], "last_visit", new_watermark)
+	else:
+		# Only auto-create a member record for Open channels (mirrors
+		# track_channel_visit). Inserting into a non-Open channel fires
+		# after_insert, which posts a public "X joined." system message — an
+		# unwanted side effect for a read-state operation.
+		if frappe.get_cached_value("Raven Channel", channel_id, "type") != "Open":
+			return
+
+		# insert() bypasses the monotonic guard in before_insert (which sets
+		# last_visit to now()), so we correct the watermark with set_value after.
+		new_member = frappe.get_doc(
+			{
+				"doctype": "Raven Channel Member",
+				"channel_id": channel_id,
+				"user_id": user,
+			}
+		).insert(ignore_permissions=True)
+		# RavenChannelMember.before_insert force-sets last_visit = now(), so we
+		# insert first, then correct the watermark backward via set_value. There is
+		# a negligible same-request window where the record reads as fully read.
+		frappe.db.set_value("Raven Channel Member", new_member.name, "last_visit", new_watermark)
+
+	from raven.api.raven_message import get_unread_count_for_channel
+
+	unread_count = get_unread_count_for_channel(channel_id)
+
+	frappe.publish_realtime(
+		"raven:unread_channel_count_updated",
+		{
+			"channel_id": channel_id,
+			"sent_by": user,
+			"last_visit": str(new_watermark),
+			"event_type": "mark_unread",
+			"unread_count": unread_count,
+		},
+		user=user,
+	)
+	return unread_count
 
 
 # Workspace Members
