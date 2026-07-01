@@ -90,6 +90,9 @@ extend_bootinfo = "raven.boot.boot_session"
 
 # before_install = "raven.install.before_install"
 after_install = "raven.install.after_install"
+# Backfills the Reminder bot on existing sites (after_install covers fresh installs).
+# Imperative because Raven has no standard-bot sync yet — see get_reminder_bot's docstring.
+after_migrate = ["raven.scheduler.send_reminders.get_reminder_bot"]
 # after_sync = ""
 
 # Uninstallation
@@ -178,7 +181,9 @@ scheduler_events = {
 	],
 	"cron": {
 		# run every 5 minutes
-		"*/5 * * * *": ["raven.scheduler.close_expired_polls.close_expired_polls"]
+		"*/5 * * * *": ["raven.scheduler.close_expired_polls.close_expired_polls"],
+		# run every minute
+		"* * * * *": ["raven.scheduler.send_reminders.send_due_reminders"],
 	},
 }
 
