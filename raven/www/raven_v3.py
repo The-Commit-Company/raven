@@ -60,7 +60,7 @@ def get_context(context):
 
 	# TODO: Update all favicons here and delete all v2 icons later
 	context["icon_96"] = favicon or "/assets/raven/icons/icon-96x96.png"
-	context["apple_touch_icon"] = favicon or "/assets/raven/icons/icon-180x180.png"
+	context["apple_touch_icon"] = favicon or "/assets/raven/icons/icon-192x192.png"
 	context["mask_icon"] = favicon or "/assets/raven/raven_logo.svg"
 	context["favicon_svg"] = favicon or "/assets/raven/raven_logo.svg"
 	context["favicon_ico"] = favicon or "/assets/raven/favicon.ico"
