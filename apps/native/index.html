@@ -8,6 +8,9 @@
     /* Same wordmark font as the RN app's landing screen. */
     @font-face { font-family: "Cal Sans"; src: url("/CalSans-SemiBold.otf") format("opentype"); font-display: swap; }
     /* Espresso palette, both modes (tokens from apps/web espresso-colors.css). */
+    /* env() is 0 in Android WebView; Capacitor injects these names inline there. */
+    :root { --safe-area-inset-top: env(safe-area-inset-top); --safe-area-inset-right: env(safe-area-inset-right);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom); --safe-area-inset-left: env(safe-area-inset-left); }
     :root { color-scheme: light dark;
             --bg: #ffffff; --fg: #171717; --card: #f3f3f3; --border: #e2e2e2;
             --muted: #7c7c7c; --focus: #0d8ef8; --error: #e03434; --danger: #b41d1d; }
@@ -21,7 +24,7 @@
     body { margin: 0; font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--fg);
            /* Android WebView reports a 0 top inset; keep the title clear of the status bar. */
            padding-top: 28px; /* fallback for WebViews without max() */
-           padding: max(env(safe-area-inset-top), 28px) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);}
+           padding: max(var(--safe-area-inset-top), 28px) var(--safe-area-inset-right) var(--safe-area-inset-bottom) var(--safe-area-inset-left);}
     /* Mirrors the RN landing screen: a centered column with the wordmark on top. */
     #app { max-width: 480px; margin: 0 auto; padding: 0 24px 24px; min-height: 82dvh;
            display: flex; flex-direction: column; justify-content: center; gap: 12px; }

@@ -120,7 +120,7 @@ const ComposerBlockedBanner = ({
     return <div className="md:px-3 md:pb-3 w-full">
         {/* max(inset, 1rem): Android Chrome reports a 0 safe-area inset (unlike
             iOS's 34px), which left this flush against the screen bottom. */}
-        <div className="flex md:min-h-[98px] flex-col items-center justify-center gap-2 md:rounded-lg rounded-none md:border border-t border-outline-gray-2 bg-surface-gray-1 md:px-3 px-4 py-4 standalone:pb-[max(env(safe-area-inset-bottom),1rem)] text-sm text-ink-gray-6">
+        <div className="flex md:min-h-[98px] flex-col items-center justify-center gap-2 md:rounded-lg rounded-none md:border border-t border-outline-gray-2 bg-surface-gray-1 md:px-3 px-4 py-4 standalone:pb-[max(var(--safe-area-inset-bottom),1rem)] text-sm text-ink-gray-6">
             <span className="text-p-base text-center">
                 {message}
             </span>

@@ -20,7 +20,7 @@ const customEmojiLabel = (reaction: ReactionObject) => `:${reaction.emoji_name}:
  *  pb-0 so rows can scroll to its true bottom edge, scroll-fade softening the cut.
  *  Desktop keeps its old edge-to-edge panel (env() has no home indicator there). */
 const PANEL_SCROLLER =
-    "max-h-80 min-h-80 overflow-y-auto px-4 md:px-6 scroll-fade max-md:pb-[calc(env(safe-area-inset-bottom)+1rem)]"
+    "max-h-80 min-h-80 overflow-y-auto px-4 md:px-6 scroll-fade max-md:pb-[calc(var(--safe-area-inset-bottom)+1rem)]"
 
 /** Renders one reaction's glyph — a custom emoji image, or the Apple-set native emoji. */
 const EmojiGlyph = ({ reaction }: { reaction: ReactionObject }) =>

@@ -1,5 +1,4 @@
 import { SplashScreen } from "@capacitor/splash-screen"
-import { armSplashFallback } from "./splash"
 import { FirebaseMessaging } from "@capacitor-firebase/messaging"
 import { Preferences } from "@capacitor/preferences"
 import { reauth, signOut } from "./auth"
@@ -15,7 +14,6 @@ const root = document.getElementById("app")!
 const AUTO_NAV_GAP_MS = 15000
 
 const boot = async () => {
-    armSplashFallback(8000)
     // In-app theme choice outranks the system theme on the picker too.
     const theme = await Preferences.get({ key: APP_THEME_KEY }).catch(() => ({ value: null }))
     const override = themeClass(theme.value)

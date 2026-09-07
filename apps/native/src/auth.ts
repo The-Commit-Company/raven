@@ -5,7 +5,6 @@ import { SplashScreen } from "@capacitor/splash-screen"
 import { SecureStoragePlugin } from "capacitor-secure-storage-plugin"
 import { codeChallengeS256, randomString } from "./pkce"
 import { RavenShell } from "./shell"
-import { disarmSplashFallback } from "./splash"
 
 // Host segment is required: Foundation parses "scheme:?code=…" with a nil query.
 export const REDIRECT_URL = "raven.thecommit.company://oauth"
@@ -130,9 +129,7 @@ export const defaultDeps: AuthDeps = {
         // Native timer survives the navigation away from this page: a failed
         // remote load can strand the splash for at most showDuration.
         show: () => {
-            // The boot fallback would hide this splash mid-login. Not awaited:
-            // with autoHide the plugin only resolves once the splash is gone.
-            disarmSplashFallback()
+            // Not awaited: with autoHide the plugin only resolves once the splash is gone.
             SplashScreen.show({ autoHide: true, showDuration: 15000 }).catch(() => { })
         },
         hide: () => SplashScreen.hide().catch(() => { }),

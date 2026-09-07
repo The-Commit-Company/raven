@@ -413,7 +413,7 @@ const AttachmentPreviewContent = ({
                         // Extra bottom padding on mobile = the home-indicator
                         // safe area, so the tiles sit clear of the OS home /
                         // app-switch swipe zone (zero on devices without one).
-                        "shrink-0 p-3 transition-opacity duration-150 max-md:absolute max-md:inset-x-0 max-md:bottom-0 max-md:z-20 max-md:pb-[calc(0.75rem+env(safe-area-inset-bottom))]",
+                        "shrink-0 p-3 transition-opacity duration-150 max-md:absolute max-md:inset-x-0 max-md:bottom-0 max-md:z-20 max-md:pb-[calc(0.75rem+var(--safe-area-inset-bottom))]",
                         chromeHidden && "pointer-events-none opacity-0",
                     )}
                     onClick={(event) => { if (event.target === event.currentTarget) close() }}

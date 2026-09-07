@@ -153,7 +153,7 @@ export const ReadReceiptsList = ({
         )
         if (sheet) {
             return (
-                <div className="flex items-center px-3 pt-2 text-lg pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+                <div className="flex items-center px-3 pt-2 text-lg pb-[calc(var(--safe-area-inset-bottom)+1rem)]">
                     {seenLine}
                 </div>
             )
@@ -192,7 +192,7 @@ export const ReadReceiptsList = ({
         // reach the drawer's true edge with scroll-fade softening the cut, and
         // the non-scrolling branches (skeleton, empty) just pad past the home
         // indicator.
-        const sheetBottomPad = "pb-[calc(env(safe-area-inset-bottom)+1rem)]"
+        const sheetBottomPad = "pb-[calc(var(--safe-area-inset-bottom)+1rem)]"
         return isLoading ? (
             <div className={sheetBottomPad}>
                 <ReadersSkeleton rows={skeletonRows} />

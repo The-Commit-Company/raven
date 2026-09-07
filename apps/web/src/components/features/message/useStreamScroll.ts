@@ -236,10 +236,13 @@ export const useStreamScroll = ({
                     container.scrollTop -
                     UNREAD_ANCHOR_TOP_MARGIN
                 container.scrollTop = Math.max(0, top)
-                pinnedRef.current = false
-                // We're no longer at the live edge — tell the read tracker now, so it can't
-                // treat this as "caught up" in the frame before the scroll event lands.
-                setIsAtBottom(false)
+                // Decide "at bottom" from geometry, not from the scroll event this write
+                // may not fire: a short stream keeps the divider and the live edge both on
+                // screen, and a no-op scrollTop write never fires a scroll event, which
+                // would leave the read tracker uncaught-up until the next reconcile.
+                const atBottom = container.scrollHeight - container.scrollTop - container.clientHeight <= AT_BOTTOM_SLOP
+                pinnedRef.current = atBottom
+                setIsAtBottom(atBottom)
             } else if (!hasUnreadDivider) {
                 // Caught up — no divider coming. Pin to the bottom as usual.
                 unreadAnchorPendingRef.current = false

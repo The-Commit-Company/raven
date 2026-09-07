@@ -16,7 +16,10 @@ const config: CapacitorConfig = {
     android: { allowMixedContent: false },
     plugins: {
         Keyboard: { resize: "native" },
-        SplashScreen: { launchAutoHide: false },
+        // The web app hides the launch splash once it has rendered; the native timer
+        // covers sites that never do (old bundle, site down). A JS timer in the shell
+        // cannot: it dies when the WebView navigates to the site.
+        SplashScreen: { launchAutoHide: true, launchShowDuration: 8000 },
     },
 }
 
