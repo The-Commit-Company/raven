@@ -13,6 +13,13 @@ scan({
 import { initPushNotifications, isStandalone } from "@lib/push";
 import { initNativePush } from "@/native/push";
 import { hideNativeSplash } from "@/native/splash";
+
+// Push needs boot (firebase_client_config); the shell keeps its splash up until here.
+const afterBoot = () => {
+  if (isNative()) initNativePush()
+  initPushNotifications()
+  if (isNative()) hideNativeSplash()
+}
 import { isNative } from "@/native/platform";
 
 // Tag the document before first paint so `standalone:` styles apply in the shell
@@ -30,10 +37,7 @@ if (import.meta.env.DEV) {
       if (!window.frappe) window.frappe = {};
       window.frappe.boot = v
       window.frappe._messages = window.frappe.boot["__messages"];
-      // After boot lands — push config (firebase_client_config) comes from it
-      if (isNative()) initNativePush()
-      initPushNotifications()
-      if (isNative()) hideNativeSplash()
+      afterBoot()
 
       createRoot(document.getElementById('root')!).render(
         <StrictMode>
@@ -74,9 +78,7 @@ if (import.meta.env.DEV) {
       }
     }, 3000)
   }
-  if (isNative()) initNativePush()
-  initPushNotifications()
-  if (isNative()) hideNativeSplash()
+  afterBoot()
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <ThemeProvider>

@@ -13,8 +13,7 @@ export const syncStatusBar = (theme: "light" | "dark", background: string) => {
         .then(async ({ StatusBar, Style }) => {
             await StatusBar.setStyle({ style: theme === "dark" ? Style.Dark : Style.Light })
             if (nativePlatform() !== "android") return
-            // Android < 15 reports no CSS insets — lay the page out below the bar instead.
-            await StatusBar.setOverlaysWebView({ overlay: false }).catch(() => { })
+            // Bar colour only applies below Android 15; the shell pads the page on 15+.
             const hex = toHex(background)
             if (hex) await StatusBar.setBackgroundColor({ color: hex }).catch(() => { })
         })

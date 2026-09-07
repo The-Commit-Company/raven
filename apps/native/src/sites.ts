@@ -6,7 +6,6 @@ import { unsubscribeSitePush } from "./push"
 import { RavenShell } from "./shell"
 
 export type Site = { url: string; name: string; clientId?: string; logo?: string }
-export type SiteInfo = { url: string; name: string; clientId?: string; logo?: string }
 
 const SITES_KEY = "sites"
 
@@ -22,21 +21,16 @@ export const normalizeSiteUrl = (input: string): string | null => {
     }
 }
 
-type JsonResponse = { ok: boolean; json: () => Promise<any>; url?: string }
+type JsonResponse = { ok: boolean; data: any; url?: string }
 
 // Native request: the picker page is capacitor://localhost, and real sites send no CORS headers.
 export const nativeGetJson = async (url: string): Promise<JsonResponse> => {
     const res = await CapacitorHttp.get({ url, connectTimeout: 8000, readTimeout: 8000 })
     // res.url is the final URL after redirects.
-    return { ok: res.status >= 200 && res.status < 300, json: async () => res.data, url: res.url }
+    return { ok: res.status >= 200 && res.status < 300, data: res.data, url: res.url }
 }
 
-const originOf = (url: string | undefined): string | null => {
-    if (!url) return null
-    try { return new URL(url).origin } catch { return null }
-}
-
-export const validateSite = async (url: string, getJson = nativeGetJson): Promise<SiteInfo | null> => {
+export const validateSite = async (url: string, getJson = nativeGetJson): Promise<Site | null> => {
     let name: string
     let origin = url
     try {
@@ -44,9 +38,8 @@ export const validateSite = async (url: string, getJson = nativeGetJson): Promis
         if (!res.ok) return null
         // Save the origin the site answers from (apex → www, http → https): the
         // navigation gate matches origins exactly, redirects included.
-        origin = originOf(res.url) ?? url
-        const body = await res.json()
-        name = body?.message?.app_name ?? "Raven"
+        origin = (res.url && normalizeSiteUrl(res.url)) || url
+        name = res.data?.message?.app_name ?? "Raven"
     } catch {
         return null
     }
@@ -56,7 +49,7 @@ export const validateSite = async (url: string, getJson = nativeGetJson): Promis
         // OAuth is optional; a missing client id just falls back to the site login page.
         const res = await getJson(`${origin}/api/method/raven.api.raven_mobile.get_client_id`)
         if (res.ok) {
-            const message = (await res.json())?.message
+            const message = res.data?.message
             // Sites without native_auth (older Raven) advertise no native_login:
             // keep them on the web login page instead of an OAuth flow that cannot complete.
             clientId = (message?.native_login && message?.client_id) || undefined

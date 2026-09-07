@@ -14,14 +14,12 @@ public class RavenApplication extends Application {
         applyStoredNightMode(this);
     }
 
-    /** Also called on every resume; returns true when the mode actually changed. */
-    static boolean applyStoredNightMode(Context context) {
+    /** Also called on every resume. */
+    static void applyStoredNightMode(Context context) {
         String theme = context.getSharedPreferences("CapacitorStorage", Context.MODE_PRIVATE).getString("appTheme", null);
         int mode = "dark".equals(theme) ? AppCompatDelegate.MODE_NIGHT_YES
                 : "light".equals(theme) ? AppCompatDelegate.MODE_NIGHT_NO
                 : AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
-        if (AppCompatDelegate.getDefaultNightMode() == mode) return false;
-        AppCompatDelegate.setDefaultNightMode(mode);
-        return true;
+        if (AppCompatDelegate.getDefaultNightMode() != mode) AppCompatDelegate.setDefaultNightMode(mode);
     }
 }

@@ -66,13 +66,13 @@ describe("normalizeSiteUrl", () => {
 })
 
 describe("nativeGetJson", () => {
-    it("wraps CapacitorHttp.get into ok + json + final url with 8 s timeouts", async () => {
+    it("wraps CapacitorHttp.get into ok + data + final url with 8 s timeouts", async () => {
         CapacitorHttp.get.mockResolvedValue({ status: 200, data: { message: { app_name: "X" } }, url: "https://www.a.com/api" })
         const res = await nativeGetJson("https://a.com/api")
         expect(CapacitorHttp.get).toHaveBeenCalledWith({ url: "https://a.com/api", connectTimeout: 8000, readTimeout: 8000 })
         expect(res.ok).toBe(true)
         expect(res.url).toBe("https://www.a.com/api")
-        expect(await res.json()).toEqual({ message: { app_name: "X" } })
+        expect(res.data).toEqual({ message: { app_name: "X" } })
     })
     it("maps non-2xx statuses to ok: false", async () => {
         CapacitorHttp.get.mockResolvedValue({ status: 500, data: null })
@@ -83,13 +83,13 @@ describe("nativeGetJson", () => {
 describe("validateSite", () => {
     it("returns app name and client id on 200", async () => {
         const getJson = vi.fn()
-            .mockResolvedValueOnce({ ok: true, json: async () => ({ message: { app_name: "Acme Chat" } }) })
-            .mockResolvedValueOnce({ ok: true, json: async () => ({ message: { client_id: "CID", native_login: true, app_name: "Acme", logo: "/logo.png" } }) })
+            .mockResolvedValueOnce({ ok: true, data: ({ message: { app_name: "Acme Chat" } }) })
+            .mockResolvedValueOnce({ ok: true, data: ({ message: { client_id: "CID", native_login: true, app_name: "Acme", logo: "/logo.png" } }) })
         expect(await validateSite("https://a.com", getJson)).toEqual({ url: "https://a.com", name: "Acme", clientId: "CID", logo: "/logo.png" })
     })
     it("reports the origin the site actually answered from after a redirect", async () => {
         const getJson = vi.fn()
-            .mockResolvedValueOnce({ ok: true, url: "https://www.a.com/api/method/raven.api.login.get_context", json: async () => ({ message: { app_name: "Acme" } }) })
+            .mockResolvedValueOnce({ ok: true, url: "https://www.a.com/api/method/raven.api.login.get_context", data: ({ message: { app_name: "Acme" } }) })
             .mockRejectedValueOnce(new Error("x"))
         expect((await validateSite("https://a.com", getJson))?.url).toBe("https://www.a.com")
         // The second probe goes to the resolved origin so its client id belongs to the same site.
@@ -97,15 +97,15 @@ describe("validateSite", () => {
     })
     it("ignores the client id on sites too old for native login", async () => {
         const getJson = vi.fn()
-            .mockResolvedValueOnce({ ok: true, json: async () => ({ message: { app_name: "Acme Chat" } }) })
-            .mockResolvedValueOnce({ ok: true, json: async () => ({ message: { client_id: "CID", app_name: "Acme" } }) })
+            .mockResolvedValueOnce({ ok: true, data: ({ message: { app_name: "Acme Chat" } }) })
+            .mockResolvedValueOnce({ ok: true, data: ({ message: { client_id: "CID", app_name: "Acme" } }) })
         expect(await validateSite("https://a.com", getJson)).toEqual({ url: "https://a.com", name: "Acme" })
         expect(getJson).toHaveBeenCalledWith(expect.stringContaining("/api/method/raven.api.login.get_context"))
         expect(getJson).toHaveBeenCalledWith(expect.stringContaining("/api/method/raven.api.raven_mobile.get_client_id"))
     })
     it("returns app name with undefined client id when the second call fails", async () => {
         const getJson = vi.fn()
-            .mockResolvedValueOnce({ ok: true, json: async () => ({ message: { app_name: "Acme Chat" } }) })
+            .mockResolvedValueOnce({ ok: true, data: ({ message: { app_name: "Acme Chat" } }) })
             .mockRejectedValueOnce(new Error("x"))
         expect(await validateSite("https://a.com", getJson)).toEqual({ url: "https://a.com", name: "Acme Chat" })
     })

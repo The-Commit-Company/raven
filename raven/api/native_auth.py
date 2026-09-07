@@ -47,7 +47,7 @@ def login_with_token(access_token: str, redirect_to: str | None = None):
 	"""Turn an OAuth access token (minted for Raven's OAuth Client) into a session cookie.
 
 	The Capacitor shell posts here as a top-level navigation after the PKCE flow, so the
-	WebView receives the sid cookie and lands on /raven already logged in."""
+	WebView receives the sid cookie and opens /raven already logged in."""
 	user = _resolve_user(access_token)
 	# Scope narrowing is deliberately not honoured: Raven's client is minted with "all openid".
 	frappe.local.login_manager.login_as(user)

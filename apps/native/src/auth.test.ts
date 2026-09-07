@@ -67,7 +67,7 @@ describe("loginWithToken", () => {
 
 describe("decideReauth", () => {
     it("refreshes when a refresh token and a client id exist", () => {
-        expect(decideReauth({ refreshToken: "r", accessToken: "a", expiresAt: 0 }, "CLIENT")).toBe("refresh")
+        expect(decideReauth({ refreshToken: "r", accessToken: "a" }, "CLIENT")).toBe("refresh")
     })
     it("signs in interactively with a client id but no tokens", () => {
         expect(decideReauth(null, "CLIENT")).toBe("signin")
@@ -76,7 +76,7 @@ describe("decideReauth", () => {
         expect(decideReauth(null, undefined)).toBe("site-login")
     })
     it("falls back to the site login page with a refresh token but no client id", () => {
-        expect(decideReauth({ refreshToken: "r", accessToken: "a", expiresAt: 0 }, undefined)).toBe("site-login")
+        expect(decideReauth({ refreshToken: "r", accessToken: "a" }, undefined)).toBe("site-login")
     })
 })
 
@@ -121,7 +121,7 @@ const makeDeps = (over: Partial<AuthDeps> = {}) => {
 const TOKEN_URL = "https://a.com/api/method/frappe.integrations.oauth2.get_token"
 
 describe("signIn", () => {
-    it("runs the PKCE dance and logs in with the exchanged token", async () => {
+    it("runs the PKCE flow and logs in with the exchanged token", async () => {
         const { deps, store, emit, removedUrl, removedFinished } = makeDeps()
         const pending = signIn("https://a.com", "CLIENT", "/raven/x", deps)
         await pump()
@@ -299,7 +299,7 @@ describe("signIn cancel path", () => {
 describe("reauth", () => {
     it("refreshes the token and logs in once", async () => {
         const { deps, store } = makeDeps()
-        store.map.set("https://a.com", { accessToken: "OLD", refreshToken: "RR", expiresAt: 0 })
+        store.map.set("https://a.com", { accessToken: "OLD", refreshToken: "RR" })
         await reauth("https://a.com", "/raven/x", "CLIENT", deps)
         expect(deps.post).toHaveBeenCalledWith(TOKEN_URL, { grant_type: "refresh_token", refresh_token: "RR", client_id: "CLIENT" })
         expect(deps.login).toHaveBeenCalledTimes(1)
@@ -309,7 +309,7 @@ describe("reauth", () => {
     })
     it("clears cookies and runs beforeLogin before the refreshed login", async () => {
         const { deps, store } = makeDeps()
-        store.map.set("https://a.com", { accessToken: "OLD", refreshToken: "RR", expiresAt: 0 })
+        store.map.set("https://a.com", { accessToken: "OLD", refreshToken: "RR" })
         const beforeLogin = vi.fn(async () => { })
         await reauth("https://a.com", "/raven/x", "CLIENT", deps, { beforeLogin })
         const loginOrder = (deps.login as any).mock.invocationCallOrder[0]
@@ -332,7 +332,7 @@ describe("reauth", () => {
             return { status: 200, data: { access_token: "NEW", refresh_token: "R2", expires_in: 3600 } }
         })
         const { deps, store, emit } = makeDeps({ post })
-        store.map.set("https://a.com", { accessToken: "OLD", refreshToken: "RR", expiresAt: 0 })
+        store.map.set("https://a.com", { accessToken: "OLD", refreshToken: "RR" })
         const pending = reauth("https://a.com", "/raven/x", "CLIENT", deps)
         await pump()
         emit(`${REDIRECT_URL}?state=STATE&code=CODE1`)
@@ -359,7 +359,7 @@ describe("reauth", () => {
 describe("signOut", () => {
     it("revokes refresh then access token and clears the store even when post fails", async () => {
         const { deps, store } = makeDeps({ post: vi.fn(async () => { throw new Error("net") }) })
-        store.map.set("https://a.com", { accessToken: "ACC", refreshToken: "REF", expiresAt: 0 })
+        store.map.set("https://a.com", { accessToken: "ACC", refreshToken: "REF" })
         await expect(signOut("https://a.com", deps)).resolves.toBeUndefined()
         expect(store.remove).toHaveBeenCalledWith("https://a.com")
         expect(deps.post).toHaveBeenCalledTimes(2)

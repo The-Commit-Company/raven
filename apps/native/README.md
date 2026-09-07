@@ -11,19 +11,19 @@ The shell bundles only a site picker. It navigates the WebView to
 `server.allowNavigation: ["*"]` is only there because the saved-site list is
 dynamic. The shell's own plugin (`RavenShellPlugin`, iOS + Android) gates every
 main-frame http(s) navigation: saved sites and the shell load in the WebView,
-anything else opens in the system browser. Never widen that gate — every page
+anything else opens in the system browser. Do not widen that gate — every page
 that loads in the WebView gets the full plugin bridge, including the keychain
 tokens. Its JS contract lives in `packages/lib/utils/ravenShell.ts`.
 
 ## Before first store submission
 
-Checklist — the committed project still carries Capacitor template assets and
-the RN listing (1.1.4) must be beaten:
+Checklist — the store versions must be higher than the RN listing (1.1.4):
 
-- App icons + splash art: native trees still use Capacitor's template assets —
-  plan real artwork before release.
-- Versions must exceed the RN listing (1.1.4): set to 2.0.0 / build 200 (done
-  in step 4 below).
+- App icons + splash art: done. Android uses vector drawables (`drawable/ic_launcher_foreground.xml`,
+  `drawable/splash.xml`) built from `raven/public/raven_logo.svg`; the legacy `mipmap-*/ic_launcher*.png`
+  (Android 7) and the iOS 1024 icon + two splash images were exported from the same SVG.
+- Versions: 2.0.0 / build 200 (already set in `project.pbxproj` and
+  `android/app/build.gradle`).
 - Verify the archived .ipa entitlement `aps-environment=production`.
 - Apple Push capability on the App ID `raven.thecommit.company`.
 - iOS share extension wired (manual step 2).
@@ -69,6 +69,12 @@ Committed native projects already include:
   (send-intent@7 targets 35).
 - Picker built with `target: es2017` (old Android WebViews reject optional
   chaining).
+- Android: `MainActivity` pads the WebView by the system-bar insets itself
+  (`SystemBars.insetsHandling: "disable"`, `StatusBar.overlaysWebView: false`).
+  Capacitor's default hands the insets to the page as CSS variables, which a
+  site running an older bundle never reads, so it would draw under the status
+  and gesture bars. On Android the page's `--safe-area-inset-*` are therefore 0;
+  iOS keeps `env()` and the `.native #root` padding.
 
 ## OAuth sign-in
 
@@ -90,8 +96,7 @@ client. Tokens live in the iOS/Android keychain (SecureStorage).
 - Opening a site from the picker goes through `reauth`: a stored refresh token
   is exchanged silently and posted to `login_with_token`; the system browser is
   opened for OAuth only when there is no token. "Switch site" keeps the session,
-  tokens and push
-  subscription, so coming back is silent too.
+  tokens and push subscription, so coming back is silent too.
 - `login_with_token` is a top-level POST. Frappe CSRF-rejects it when the
   WebView still holds a live `sid` for that site, so the shell expires the
   site's cookies (`RavenShell.clearSiteCookies`) right before posting.
@@ -156,7 +161,7 @@ until it is present. CI must inject both before building.
 
 Production talks https only; the committed config allows no cleartext. Local
 dev overrides live in two gitignored files, absent on CI and fresh checkouts,
-so release builds stay locked down:
+so release builds keep the https-only config:
 
 - `capacitor.config.local.json` — merged into `capacitor.config.ts` at
   `cap sync` time (a warning line is printed when applied):
@@ -173,7 +178,7 @@ so release builds stay locked down:
   is needed because Capacitor turns scheme-less `allowNavigation` entries into
   `https://…` origin rules. Re-run `npx cap sync` after editing. If you build
   a release binary on a machine that has this file, run a sync with the file
-  moved aside first — the values are baked into the app at sync time.
+  renamed first — the values are written into the native projects at sync time.
 
 On Android, `server.cleartext: true` also makes `cap sync` write
 `android:usesCleartextTraffic="true"` into the generated (gitignored)

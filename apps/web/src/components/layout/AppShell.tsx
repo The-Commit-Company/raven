@@ -164,7 +164,7 @@ const AppListeners = ({ children }: { children: React.ReactNode }) => {
     // access lost): message store + socket room, stale last-visited, and a
     // redirect off the dead route if it's on screen
     useRemovedChannelCleanup()
-    // Native shell: push-tap routing (Task 6), Android back (Task 8).
+    // Native shell: push-tap routing, share intake, Android back.
     useNativeBridge()
 
     if (!isReady) {

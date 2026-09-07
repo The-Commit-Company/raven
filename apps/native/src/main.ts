@@ -18,7 +18,7 @@ const boot = async () => {
     const theme = await Preferences.get({ key: APP_THEME_KEY }).catch(() => ({ value: null }))
     const override = themeClass(theme.value)
     if (override) document.documentElement.classList.add(override)
-    // The picker is the persistent floor; it sits behind the splash while we decide.
+    // The picker renders first; the splash covers it until the auto-open decision.
     await renderPicker(root)
     registerPickerBack()
 
@@ -73,14 +73,13 @@ const boot = async () => {
     let hadTarget = false
     // Tap → share intake → defaultSite, in that order.
     if (tapped) { hadTarget = true; if (await go(tapped)) return }
+    const site = await getDefaultSite()
     if (await captureShareIntent()) {
-        const site = await getDefaultSite()
         if (site) { hadTarget = true; if (await go(`${site}${SHARE_TARGET_PATH}`)) return }
         // Not delivered (no site yet, or the site failed to load): whichever site the
         // user opens from the picker opens the share target instead of /raven.
         setPickerRedirect(SHARE_TARGET_PATH)
     }
-    const site = await getDefaultSite()
     if (site) { hadTarget = true; if (await go(`${site}/raven`)) return }
 
     await SplashScreen.hide().catch(() => { })
@@ -90,5 +89,5 @@ const boot = async () => {
 }
 boot().catch(async () => {
     await SplashScreen.hide().catch(() => { })
-    renderPicker(root)
+    renderPicker(root).catch(() => { })
 })

@@ -1,4 +1,3 @@
-// src/native/push.ts
 import { callNotificationAPI } from "@lib/pushApi"
 import { pushTokenKey } from "@raven/lib/utils/nativeKeys"
 import { nativePlatform } from "./platform"
@@ -82,7 +81,7 @@ export const initNativePush = () => {
     if (!isNativePushEnabled()) return
     messaging().then(async ({ fm }) => {
         const { receive } = await fm.checkPermissions()
-        if (receive === "denied") { await disableNativePush(); return }   // OS revoked: kill local + server token
+        if (receive === "denied") { await disableNativePush(); return }   // OS revoked: remove local and server token
         if (receive !== "granted") return                                  // "prompt" is ambiguous — keep the token, skip this refresh
         // Listen BEFORE getToken so a rotation in that window is not missed.
         await fm.addListener("tokenReceived", ({ token }) => syncToken(token).catch(() => { }))

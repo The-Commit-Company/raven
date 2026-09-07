@@ -16,15 +16,20 @@ const config: CapacitorConfig = {
     android: { allowMixedContent: false },
     plugins: {
         Keyboard: { resize: "native" },
-        // The web app hides the launch splash once it has rendered; the native timer
-        // covers sites that never do (old bundle, site down). A JS timer in the shell
-        // cannot: it dies when the WebView navigates to the site.
+        // Insets are applied natively in MainActivity so sites running a bundle
+        // without native CSS still sit inside the system bars. No CSS variables.
+        SystemBars: { insetsHandling: "disable" },
+        // Android < 15: lay the page out below the status bar instead of behind it.
+        StatusBar: { overlaysWebView: false },
+        // The web app hides the launch splash once rendered; the native timer covers
+        // sites that never do (old bundle, site down). A shell JS timer cannot: it is
+        // discarded when the WebView navigates to the site.
         SplashScreen: { launchAutoHide: true, launchShowDuration: 8000 },
     },
 }
 
 // Machine-local dev overrides (plain http to a local bench). Gitignored, so
-// CI and fresh checkouts never see it and release configs stay locked down.
+// CI and fresh checkouts never see it, so release configs keep the https-only values.
 const localPath = join(__dirname, "capacitor.config.local.json")
 if (existsSync(localPath)) {
     const local = JSON.parse(readFileSync(localPath, "utf8"))

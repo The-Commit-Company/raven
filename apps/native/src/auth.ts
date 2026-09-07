@@ -8,8 +8,8 @@ import { RavenShell } from "./shell"
 
 // Host segment is required: Foundation parses "scheme:?code=…" with a nil query.
 export const REDIRECT_URL = "raven.thecommit.company://oauth"
-export const SCOPE = "all openid"
-export type StoredTokens = { accessToken: string; refreshToken?: string; expiresAt: number }
+const SCOPE = "all openid"
+export type StoredTokens = { accessToken: string; refreshToken?: string }
 export type Callback = { code?: string; state?: string; error?: string; error_description?: string }
 
 export const buildAuthorizeUrl = (site: string, clientId: string, state: string, challenge: string): string => {
@@ -62,7 +62,7 @@ export const tokenStore = {
 }
 
 // Top-level POST: no CORS, the token stays out of the URL, and the response's
-// sid cookie lands in the WebView before it follows the redirect to /raven.
+// sid cookie is stored in the WebView before it follows the redirect to /raven.
 export const loginWithToken = (site: string, accessToken: string, redirectTo = "/raven", doc: Document = document) => {
     const form = doc.createElement("form")
     form.method = "post"
@@ -79,11 +79,9 @@ export const loginWithToken = (site: string, accessToken: string, redirectTo = "
     form.remove()
 }
 
-const fromResponse = (r: { access_token?: string; refresh_token?: string; expires_in?: number; expires_at?: number }, prev?: StoredTokens | null): StoredTokens => ({
+const fromResponse = (r: { access_token?: string; refresh_token?: string }, prev?: StoredTokens | null): StoredTokens => ({
     accessToken: r.access_token ?? "",
     refreshToken: r.refresh_token ?? prev?.refreshToken,
-    // The token endpoint emits expires_in; expires_at (ms epoch) may come from elsewhere.
-    expiresAt: r.expires_at ? Number(r.expires_at) : Date.now() + (r.expires_in ?? 3600) * 1000,
 })
 
 export type AuthDeps = {
@@ -127,7 +125,7 @@ export const defaultDeps: AuthDeps = {
     login: loginWithToken,
     progress: {
         // Native timer survives the navigation away from this page: a failed
-        // remote load can strand the splash for at most showDuration.
+        // remote load leaves the splash up for at most showDuration.
         show: () => {
             // Not awaited: with autoHide the plugin only resolves once the splash is gone.
             SplashScreen.show({ autoHide: true, showDuration: 15000 }).catch(() => { })
@@ -228,7 +226,7 @@ export const signIn = async (site: string, clientId: string, redirectTo = "/rave
     await completeLogin(site, tokens.accessToken, redirectTo, deps, hooks)
 }
 
-export type ReauthPlan = "refresh" | "signin" | "site-login"
+type ReauthPlan = "refresh" | "signin" | "site-login"
 export const decideReauth = (tokens: StoredTokens | null, clientId?: string): ReauthPlan =>
     tokens?.refreshToken && clientId ? "refresh" : clientId ? "signin" : "site-login"
 
@@ -240,7 +238,6 @@ export const reauth = async (site: string, to: string, clientId?: string, deps: 
         return
     }
     if (plan === "refresh") {
-        // decideReauth only picks refresh when a client id is present.
         const cid = clientId!
         let next: StoredTokens
         deps.progress.show()

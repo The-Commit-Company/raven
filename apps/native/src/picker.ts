@@ -9,7 +9,7 @@ export const setPickerRedirect = (path: string) => { redirectTo = path }
 
 const TRASH_ICON = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>`
 
-// Just enough travel to tuck the avatar away.
+// Swipe distance: the avatar width.
 const REVEAL_WIDTH = 48
 let closeOpenRow: (() => void) | null = null
 
@@ -54,8 +54,8 @@ export const showError = (message: string) => {
     if (error) error.textContent = message
 }
 
-export const openSite = async (site: Site) => {
-    if (!site.clientId || !site.logo) {
+export const openSite = async (site: Site, validated = false) => {
+    if (!validated && (!site.clientId || !site.logo)) {
         // Sites saved before OAuth/logo support (or before the admin created the client) pick it up here.
         const info = await validateSite(site.url)
         if (info) {
@@ -97,7 +97,8 @@ export const renderPicker = async (root: HTMLElement) => {
       </section>
       <form id="add">
         <label class="label" for="url">Site URL</label>
-        <input id="url" type="url" placeholder="raven.frappe.cloud" autocapitalize="none" autocorrect="off" />
+        <!-- type="text": a type="url" input rejects a bare host before submit; normalizeSiteUrl adds https. -->
+        <input id="url" type="text" inputmode="url" placeholder="raven.frappe.cloud" autocapitalize="none" autocorrect="off" spellcheck="false" />
         <button type="submit" class="primary">Add Site</button>
       </form>
       <p id="error" role="alert"></p>`
@@ -124,7 +125,7 @@ export const renderPicker = async (root: HTMLElement) => {
         const trash = document.createElement("button"); trash.className = "trash"; trash.setAttribute("aria-label", "Remove site")
         trash.innerHTML = TRASH_ICON
         trash.addEventListener("click", async () => {
-            // Surgical removal keeps the list's scroll position.
+            // Remove only this row so the list keeps its scroll position.
             await removeSite(site.url)
             li.remove()
             existing.hidden = list.children.length === 0
@@ -143,10 +144,7 @@ export const renderPicker = async (root: HTMLElement) => {
             const url = normalizeSiteUrl(root.querySelector<HTMLInputElement>("#url")!.value)
             const info = url ? await validateSite(url) : null
             if (!url || !info) { showError("Could not reach a Raven site at that address."); return }
-            // Keep the client id so opening this site can sign in via OAuth.
-            const site = { url: info.url, name: info.name, clientId: info.clientId, logo: info.logo }
-            await saveSite(site)
-            await openSite(site)
+            await openSite(info, true)
         } finally {
             button.disabled = false
         }

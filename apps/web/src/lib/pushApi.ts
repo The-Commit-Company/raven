@@ -1,9 +1,5 @@
-/**
- * POST to a whitelisted raven.api.notification method (plain fetch — no hook
- * context here). Shared by the web push module (lib/push) and the native push
- * module (native/push); kept in its own file so neither import cycle nor the
- * Capacitor bridge drags into the other.
- */
+// POST to a whitelisted raven.api.notification method (plain fetch, no hook context).
+// Own file: lib/push and native/push both use it without importing each other.
 export const callNotificationAPI = async (method: "subscribe" | "unsubscribe", body: Record<string, string | undefined>) => {
     const response = await fetch(`/api/method/raven.api.notification.${method}`, {
         method: "POST",

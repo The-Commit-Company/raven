@@ -35,10 +35,11 @@ const ShareTarget = () => {
     // Native shares arrive as a stashed Preferences payload, not GET params:
     // read it once (files stashed for the composer) and render like the rest.
     const [nativeParams, setNativeParams] = useState<URLSearchParams | null>(null)
+    const isNativeShare = params.get("native") === "1"
     // location.key: a second warm share re-navigates here with identical params.
     const { key: locationKey } = useLocation()
     useEffect(() => {
-        if (params.get("native") !== "1") return
+        if (!isNativeShare) return
         let disposed = false
         setNativeParams(null)
         takePendingShare().then(async (share) => {
@@ -48,7 +49,7 @@ const ShareTarget = () => {
             setNativeParams(pendingShareToParams(share))
         }).catch(() => setNativeParams(new URLSearchParams()))
         return () => { disposed = true }
-    }, [params, locationKey])
+    }, [isNativeShare, locationKey])
     const { channels, dmChannels } = useChannelList()
     const [query, setQuery] = useState("")
 
@@ -74,9 +75,9 @@ const ShareTarget = () => {
     // Nothing shared (e.g. the page was opened directly) — go home. While a
     // native payload is still loading, hold off: it may yet produce a share.
     useEffect(() => {
-        if (params.get("native") === "1" && !nativeParams) return
+        if (isNativeShare && !nativeParams) return
         if (!hasShare) navigate("/", { replace: true })
-    }, [hasShare, navigate, nativeParams, params])
+    }, [hasShare, navigate, nativeParams, isNativeShare])
 
     // Subscribe to the users map: on a cold start at /share-target (how the OS
     // share sheet opens the app), the rows render BEFORE the users load — a
@@ -118,7 +119,7 @@ const ShareTarget = () => {
         navigate(target, { replace: true })
     }
 
-    if (params.get("native") === "1" && !nativeParams) return <ShareTargetSkeleton />
+    if (isNativeShare && !nativeParams) return <ShareTargetSkeleton />
     if (!hasShare) return null
 
     return (

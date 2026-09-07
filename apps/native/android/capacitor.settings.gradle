@@ -2,6 +2,9 @@
 include ':capacitor-android'
 project(':capacitor-android').projectDir = new File('../../../node_modules/@capacitor/android/capacitor')
 
+include ':capacitor-firebase-messaging'
+project(':capacitor-firebase-messaging').projectDir = new File('../../../node_modules/@capacitor-firebase/messaging/android')
+
 include ':capacitor-app'
 project(':capacitor-app').projectDir = new File('../../../node_modules/@capacitor/app/android')
 
@@ -28,9 +31,6 @@ project(':capacitor-splash-screen').projectDir = new File('../../../node_modules
 
 include ':capacitor-status-bar'
 project(':capacitor-status-bar').projectDir = new File('../../../node_modules/@capacitor/status-bar/android')
-
-include ':capacitor-firebase-messaging'
-project(':capacitor-firebase-messaging').projectDir = new File('../../../node_modules/@capacitor-firebase/messaging/android')
 
 include ':capawesome-capacitor-badge'
 project(':capawesome-capacitor-badge').projectDir = new File('../../../node_modules/@capawesome/capacitor-badge/android')

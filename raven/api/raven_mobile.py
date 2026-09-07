@@ -53,9 +53,7 @@ def create_oauth_client():
 	oauth_client.scopes = "all openid"
 	# Second URI is for the Capacitor shell: Foundation drops the query of a bare
 	# "scheme:?code=…" URL, so iOS needs a host in the redirect.
-	oauth_client.redirect_uris = (
-		"raven.thecommit.company: raven.thecommit.company://oauth"  # space-separated
-	)
+	oauth_client.redirect_uris = "raven.thecommit.company: raven.thecommit.company://oauth"
 	oauth_client.default_redirect_uri = "raven.thecommit.company:"
 	oauth_client.grant_type = "Authorization Code"
 	oauth_client.response_type = "Code"

@@ -2,7 +2,7 @@ import Foundation
 import Capacitor
 import WebKit
 
-/// Shell glue for the remote Raven pages (contract: packages/lib/utils/ravenShell.ts):
+/// Shell plugin for the remote Raven pages (contract: packages/lib/utils/ravenShell.ts):
 /// navigation gate and per-site cookie clearing. Share intents come from send-intent's
 /// extension here, so the Android-only methods resolve as no-ops.
 @objc(RavenShellPlugin)
@@ -26,7 +26,7 @@ public class RavenShellPlugin: CAPPlugin, CAPBridgedPlugin {
         // Embeds (sub-frames) keep Capacitor's default policy.
         if let frame = navigationAction.targetFrame, !frame.isMainFrame { return nil }
         if allowedOrigins().contains(Self.origin(of: url)) { return false }
-        DispatchQueue.main.async { UIApplication.shared.open(url) }
+        UIApplication.shared.open(url)
         return true
     }
 

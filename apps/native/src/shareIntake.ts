@@ -5,7 +5,7 @@ import { intentToPendingShare, PENDING_SHARE_KEY, type ShareIntent } from "@rave
 import { RavenShell } from "./shell"
 
 /** Android: MainActivity's SEND intent via the shell plugin. iOS: send-intent's share extension. */
-export const readShareIntent = async (): Promise<ShareIntent | null> => {
+const readShareIntent = async (): Promise<ShareIntent | null> => {
     if (Capacitor.getPlatform() === "android") {
         const { intent } = await RavenShell.getShareIntent()
         if (!intent) return null

@@ -3,7 +3,7 @@ import Capacitor
 
 // Installed PWAs get iOS's edge back-swipe for free; a WKWebView has to opt in.
 // The web app's useMobileBack already treats it as a plain history.back().
-// Instantiated by SceneDelegate (the storyboard root is not used at runtime).
+// Root view controller of Main.storyboard.
 class RavenBridgeViewController: CAPBridgeViewController {
     // App-local plugins are not in the generated plugin list; register by instance.
     override func capacitorDidLoad() {

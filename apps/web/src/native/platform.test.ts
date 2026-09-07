@@ -1,4 +1,3 @@
-// src/native/platform.test.ts
 import { afterEach, describe, expect, it } from "vitest"
 import { isNative, nativePlatform, shellOrigin } from "./platform"
 

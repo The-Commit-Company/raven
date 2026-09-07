@@ -10,7 +10,7 @@ export type PushDeps = {
     post: (url: string, body: Record<string, string>, bearer: string) => Promise<{ status: number }>
 }
 
-export const defaultPushDeps: PushDeps = {
+const defaultPushDeps: PushDeps = {
     pushToken: async (site) => (await Preferences.get({ key: pushTokenKey(site) })).value,
     clearPushToken: (site) => Preferences.remove({ key: pushTokenKey(site) }),
     accessToken: async (site) => (await tokenStore.get(site))?.accessToken ?? null,

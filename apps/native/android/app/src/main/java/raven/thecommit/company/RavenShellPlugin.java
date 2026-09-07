@@ -30,12 +30,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.HashSet;
 import java.util.Set;
 import org.json.JSONArray;
 
 /**
- * Shell glue for the remote Raven pages (contract: packages/lib/utils/ravenShell.ts):
+ * Shell plugin for the remote Raven pages (contract: packages/lib/utils/ravenShell.ts):
  * navigation gate, bridge injection for saved sites, share intents, per-site cookie clearing.
  */
 @CapacitorPlugin(name = "RavenShell")
@@ -44,6 +45,8 @@ public class RavenShellPlugin extends Plugin {
     private static final String SITES_KEY = "sites";
 
     private ScriptHandler scriptHandler;
+    // Capacitor rebuilds its injector on every getJSInjector() call; read the script once.
+    private String bridgeScript;
 
     @Override
     public void load() {
@@ -94,12 +97,13 @@ public class RavenShellPlugin extends Plugin {
         try {
             getActivity().startActivity(new Intent(Intent.ACTION_VIEW, url).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } catch (ActivityNotFoundException ignored) {
-            // No browser: dropping the navigation is still safer than loading it here.
+            // No browser: drop the navigation rather than load it in the WebView.
         }
     }
 
     private static String origin(Uri url) {
-        String origin = url.getScheme() + "://" + url.getHost();
+        // Lowercased like the iOS gate and like URL.origin in the saved list.
+        String origin = (url.getScheme() + "://" + url.getHost()).toLowerCase(Locale.ROOT);
         return url.getPort() == -1 ? origin : origin + ":" + url.getPort();
     }
 
@@ -141,19 +145,21 @@ public class RavenShellPlugin extends Plugin {
         Set<String> origins = siteOrigins();
         if (origins.isEmpty()) return;
         try {
-            Bridge bridge = getBridge();
-            Method getInjector = Bridge.class.getDeclaredMethod("getJSInjector");
-            getInjector.setAccessible(true);
-            Object injector = getInjector.invoke(bridge);
-            if (injector == null) return;
-            // JSInjector is package-private; reach its script through reflection too.
-            Method getScript = injector.getClass().getMethod("getScriptString");
-            getScript.setAccessible(true);
-            String script = (String) getScript.invoke(injector);
-            scriptHandler = WebViewCompat.addDocumentStartJavaScript(bridge.getWebView(), script, origins);
+            if (bridgeScript == null) bridgeScript = readBridgeScript();
+            scriptHandler = WebViewCompat.addDocumentStartJavaScript(getBridge().getWebView(), bridgeScript, origins);
         } catch (Exception e) {
             Logger.error("RavenShell: bridge script not registered for the saved sites", e);
         }
+    }
+
+    // Bridge.getJSInjector and JSInjector are not public; both are read by reflection.
+    private String readBridgeScript() throws Exception {
+        Method getInjector = Bridge.class.getDeclaredMethod("getJSInjector");
+        getInjector.setAccessible(true);
+        Object injector = getInjector.invoke(getBridge());
+        Method getScript = injector.getClass().getMethod("getScriptString");
+        getScript.setAccessible(true);
+        return (String) getScript.invoke(injector);
     }
 
     @PluginMethod
@@ -175,7 +181,8 @@ public class RavenShellPlugin extends Plugin {
     @Override
     protected void handleOnNewIntent(Intent intent) {
         if (!isShare(intent)) return;
-        // Warm share: make it readable through getShareIntent() and notify the page.
+        // Warm share (BridgeActivity also routes the launch intent here): expose it to
+        // getShareIntent() and notify the page.
         getActivity().setIntent(intent);
         notifyListeners("shareReceived", new JSObject(), true);
     }
@@ -228,7 +235,10 @@ public class RavenShellPlugin extends Plugin {
     }
 
     private Uri copyToCache(Uri uri, String name) {
-        File dir = new File(getContext().getCacheDir(), "shared/" + System.nanoTime());
+        // One share at a time: drop the copies of the previous one.
+        File root = new File(getContext().getCacheDir(), "shared");
+        deleteRecursively(root);
+        File dir = new File(root, String.valueOf(System.nanoTime()));
         if (!dir.mkdirs()) return null;
         File file = new File(dir, name.replace('/', '_'));
         try (InputStream in = getContext().getContentResolver().openInputStream(uri);
@@ -242,6 +252,13 @@ public class RavenShellPlugin extends Plugin {
             Logger.error("RavenShell: could not copy shared file", e);
             return null;
         }
+    }
+
+    private static void deleteRecursively(File file) {
+        File[] children = file.listFiles();
+        if (children != null) for (File child : children) deleteRecursively(child);
+        //noinspection ResultOfMethodCallIgnored
+        file.delete();
     }
 
     private String displayName(Uri uri) {

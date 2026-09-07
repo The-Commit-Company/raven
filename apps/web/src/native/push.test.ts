@@ -1,4 +1,3 @@
-// src/native/push.test.ts
 import { describe, expect, it } from "vitest"
 import { resolveNotificationTarget } from "./push"
 
