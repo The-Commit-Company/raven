@@ -13,6 +13,8 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>
+        <!-- First frame behind the system bars, before paintCanvas runs. -->
+        <item name="android:windowBackground">@color/shell_background</item>
     </style>
 
 

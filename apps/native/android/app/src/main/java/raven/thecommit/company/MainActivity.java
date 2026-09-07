@@ -2,6 +2,7 @@ package raven.thecommit.company;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import androidx.core.graphics.Insets;
@@ -57,10 +58,12 @@ public class MainActivity extends BridgeActivity {
         paintCanvas();
     }
 
-    // Theme-aware canvas behind the page, from a day/night resource.
+    // Theme-aware canvas behind the page and, on Android 15+, behind the transparent
+    // system bars. Set on the window: PhoneWindow repaints its own background over
+    // one set on the decor view, showing AppCompat's #303030 instead.
     private void paintCanvas() {
         int background = getResources().getColor(R.color.shell_background, getTheme());
         getBridge().getWebView().setBackgroundColor(background);
-        getWindow().getDecorView().setBackgroundColor(background);
+        getWindow().setBackgroundDrawable(new ColorDrawable(background));
     }
 }
