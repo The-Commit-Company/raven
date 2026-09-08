@@ -1,22 +1,27 @@
-import { useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import { isNative } from "./platform"
-import { resolveNotificationTarget, subscribeNotificationTaps } from "./push"
-import { registerAndroidBack } from "./back"
+import { useEffect, useRef } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
+import { isNative, listenNative } from "./platform"
+import { resolveNotificationTarget, subscribeForeignSiteNotifications, subscribeNotificationTaps } from "./push"
+import { isRootPath, registerAndroidBack } from "./back"
 import { intentToPendingShare, readShareIntent, stashPendingShare, subscribeShareReceived } from "./shareIn"
 
 export const useNativeBridge = () => {
     const navigate = useNavigate()
+    // Read at back-press time; the listener below is registered once.
+    const { pathname } = useLocation()
+    const pathRef = useRef(pathname)
+    useEffect(() => { pathRef.current = pathname }, [pathname])
     useEffect(() => {
         if (!isNative()) return
         let disposed = false
-        const unBack = registerAndroidBack()
+        const unBack = registerAndroidBack(() => isRootPath(pathRef.current))
         const unTap = subscribeNotificationTaps((data) => {
             const target = resolveNotificationTarget(data, window.location.origin)
             if (!target) return
             if (target.kind === "same-site") navigate(target.path)
             else window.location.href = target.url
         })
+        const unForeign = subscribeForeignSiteNotifications()
         // Warm-start shares: the app is already open when the user shares into it,
         // so the shell's cold-start capture never runs; deliver it from here.
         const deliverShare = async () => {
@@ -35,21 +40,16 @@ export const useNativeBridge = () => {
         // A share can arrive while no page listens (picker, boot, login reload). The
         // plugin holds it, so re-read on mount and on every foreground.
         deliverShare()
-        let unAppState: (() => void) | undefined
-        import("@capacitor/app").then(async ({ App }) => {
-            if (disposed) return
-            const handle = await App.addListener("appStateChange", ({ isActive }) => {
-                if (isActive) deliverShare()
-            })
-            if (disposed) { handle.remove().catch(() => { }); return }
-            unAppState = () => handle.remove().catch(() => { })
-        }).catch(() => { })
+        const unAppState = listenNative(async () => (await import("@capacitor/app")).App.addListener("appStateChange", ({ isActive }) => {
+            if (isActive) deliverShare()
+        }))
         return () => {
             disposed = true
             unBack()
             unTap()
+            unForeign()
             unShare()
-            unAppState?.()
+            unAppState()
         }
     }, [navigate])
 }

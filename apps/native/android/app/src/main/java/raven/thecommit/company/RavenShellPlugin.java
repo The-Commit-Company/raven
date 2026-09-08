@@ -1,5 +1,8 @@
 package raven.thecommit.company;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.Context;
@@ -11,6 +14,7 @@ import android.webkit.CookieManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
+import androidx.core.app.NotificationCompat;
 import androidx.webkit.ScriptHandler;
 import androidx.webkit.WebViewCompat;
 import androidx.webkit.WebViewFeature;
@@ -30,8 +34,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Collections;
-import java.util.Locale;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Locale;
 import java.util.Set;
 import org.json.JSONArray;
 
@@ -168,6 +173,35 @@ public class RavenShellPlugin extends Plugin {
             registerBridgeScript();
             call.resolve();
         });
+    }
+
+    // ---- foreground notifications --------------------------------------------------
+
+    // Android shows a push only while the app is in the background; the page re-posts
+    // a foreground push from another saved site through here.
+    @PluginMethod
+    public void showNotification(PluginCall call) {
+        Context context = getContext();
+        int id = (int) (System.currentTimeMillis() % Integer.MAX_VALUE);
+        // Same extras as an FCM tap, so the messaging plugin reports notificationActionPerformed.
+        Intent tap = new Intent(context, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        tap.putExtra("google.message_id", "raven-" + id);
+        JSObject data = call.getObject("data", new JSObject());
+        for (Iterator<String> keys = data.keys(); keys.hasNext();) {
+            String key = keys.next();
+            tap.putExtra(key, data.getString(key));
+        }
+        PendingIntent pending = PendingIntent.getActivity(context, id, tap, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+        Notification notification = new NotificationCompat.Builder(context, RavenApplication.MESSAGES_CHANNEL)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle(call.getString("title", ""))
+            .setContentText(call.getString("body", ""))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setContentIntent(pending)
+            .build();
+        context.getSystemService(NotificationManager.class).notify(id, notification);
+        call.resolve();
     }
 
     // ---- share intents ----------------------------------------------------------

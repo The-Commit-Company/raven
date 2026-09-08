@@ -1,12 +1,14 @@
 import { useState } from "react"
 import { NavLink, Navigate } from "react-router"
 import { toast } from "sonner"
-import { Bookmark, Bell, LogOut, Sun, Moon, SunMoon, ChevronDown, Edit, SlidersHorizontal, ChevronRight } from "lucide-react"
+import { ArrowLeftRight, Bookmark, Bell, LogOut, Sun, Moon, SunMoon, ChevronDown, Edit, SlidersHorizontal, ChevronRight } from "lucide-react"
 import useCurrentRavenUser from "@raven/lib/hooks/useCurrentRavenUser"
 import { useTheme } from "@components/theme-provider"
 import { useLogout } from "@hooks/useLogout"
 import { useIsMobile } from "@hooks/use-mobile"
 import { useIsPushNotificationEnabled } from "@hooks/fetchers/useIsPushNotificationEnabled"
+import { isNative } from "@/native/platform"
+import { switchSite } from "@/native/back"
 import { ProfileRow } from "@components/features/profile/ProfileRow"
 import { EditProfileDrawer } from "@components/features/profile/EditProfileDrawer"
 import { PreferencesDrawer } from "@components/features/profile/PreferencesDrawer"
@@ -137,6 +139,10 @@ const Profile = () => {
 
                 </div>
                 <div className="px-1">
+                    {/* Native shell: back to the site picker, session kept. */}
+                    {isNative() && (
+                        <ProfileRow icon={ArrowLeftRight} label={_("Switch site")} onClick={() => switchSite()} className="mt-4 rounded-lg" />
+                    )}
                     {/* Log out */}
                     <ProfileRow icon={LogOut} label={_("Log out")} destructive onClick={() => setConfirmLogoutOpen(true)} className="mt-4 rounded-lg" />
                 </div>

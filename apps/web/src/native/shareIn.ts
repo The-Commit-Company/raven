@@ -2,7 +2,7 @@
 // into what the ShareTarget page and the composer consume. The mapping itself is
 // shared with the shell: @raven/lib/utils/shareIntent.
 import { PENDING_SHARE_KEY, type PendingShare, type ShareIntent } from "@raven/lib/utils/shareIntent"
-import { nativePlatform } from "./platform"
+import { listenNative, nativePlatform } from "./platform"
 import { ravenShell } from "./shell"
 
 export { intentToPendingShare, PENDING_SHARE_KEY, type PendingShare } from "@raven/lib/utils/shareIntent"
@@ -26,20 +26,13 @@ export const readShareIntent = async (): Promise<ShareIntent | null> => {
 
 /** Fires when a share arrives while the app is open. iOS: send-intent's DOM event; Android: the shell plugin. */
 export const subscribeShareReceived = (handler: () => void): (() => void) => {
-    let disposed = false
-    let handle: { remove: () => Promise<void> } | undefined
     window.addEventListener("sendIntentReceived", handler)
-    if (nativePlatform() === "android") {
-        ravenShell().then(async ({ shell }) => {
-            const h = await shell.addListener("shareReceived", handler)
-            if (disposed) { h.remove().catch(() => { }); return }
-            handle = h
-        }).catch(() => { })
-    }
+    const unNative = nativePlatform() === "android"
+        ? listenNative(async () => (await ravenShell()).shell.addListener("shareReceived", handler))
+        : () => { }
     return () => {
-        disposed = true
         window.removeEventListener("sendIntentReceived", handler)
-        handle?.remove().catch(() => { })
+        unNative()
     }
 }
 

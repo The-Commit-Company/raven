@@ -4,4 +4,5 @@
     <string name="title_activity_main">Raven</string>
     <string name="package_name">raven.thecommit.company</string>
     <string name="custom_url_scheme">raven.thecommit.company</string>
+    <string name="messages_channel">Messages</string>
 </resources>

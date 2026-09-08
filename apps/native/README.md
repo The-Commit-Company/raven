@@ -69,6 +69,14 @@ Committed native projects already include:
   (send-intent@7 targets 35).
 - Picker built with `target: es2017` (old Android WebViews reject optional
   chaining).
+- Android back on a root page (workspace home, DMs, threads, notifications,
+  profile) returns to the picker with the session kept, like the "Switch site"
+  row on the mobile Profile page. Deeper pages go one step back in history.
+- Android shows a push only while the app is in the background. A foreground
+  push from another saved site is re-posted by `RavenShell.showNotification`
+  (`apps/web/src/native/push.ts`); its tap carries the FCM extras, so the
+  messaging plugin routes it like any other tap. iOS shows foreground banners
+  itself.
 - Android: `MainActivity` pads the WebView by the system-bar insets itself
   (`SystemBars.insetsHandling: "disable"`, `StatusBar.overlaysWebView: false`).
   Capacitor's default hands the insets to the page as CSS variables, which a

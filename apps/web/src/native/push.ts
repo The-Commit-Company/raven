@@ -1,6 +1,7 @@
 import { callNotificationAPI } from "@lib/pushApi"
 import { pushTokenKey } from "@raven/lib/utils/nativeKeys"
-import { nativePlatform } from "./platform"
+import { listenNative, nativePlatform } from "./platform"
+import { ravenShell } from "./shell"
 
 // localStorage key is raven- prefixed so useLogout's prefix wipe already cleans it up.
 export const NATIVE_TOKEN_KEY = "raven-native-fcm-token"
@@ -65,15 +66,21 @@ export const resolveNotificationTarget = (data: Record<string, string>, currentO
     return { kind: "same-site" as const, path: path + url.search + url.hash }
 }
 
-export const subscribeNotificationTaps = (handler: (data: Record<string, string>) => void): (() => void) => {
-    let disposed = false
-    let handle: { remove: () => Promise<void> } | undefined
-    messaging().then(async ({ fm }) => {
-        const h = await fm.addListener("notificationActionPerformed", (e) => handler((e.notification.data ?? {}) as Record<string, string>))
-        if (disposed) { h.remove().catch(() => { }); return }
-        handle = h
-    }).catch(() => { })
-    return () => { disposed = true; handle?.remove().catch(() => { }) }
+export const subscribeNotificationTaps = (handler: (data: Record<string, string>) => void): (() => void) =>
+    listenNative(async () => (await messaging()).fm.addListener("notificationActionPerformed", (e) =>
+        handler((e.notification.data ?? {}) as Record<string, string>)))
+
+// Android shows a push only while the app is in the background; in the foreground the
+// plugin hands it to the page. Re-post the ones from another saved site through the
+// shell. The open site's own messages arrive through realtime already.
+export const subscribeForeignSiteNotifications = (): (() => void) => {
+    if (nativePlatform() !== "android") return () => { }
+    return listenNative(async () => (await messaging()).fm.addListener("notificationReceived", async ({ notification }) => {
+        const data = (notification.data ?? {}) as Record<string, string>
+        if (resolveNotificationTarget(data, window.location.origin)?.kind !== "other-site") return
+        const { shell } = await ravenShell()
+        await shell.showNotification({ title: notification.title, body: notification.body, data })
+    }))
 }
 
 // Startup: refresh a rotated token for already-subscribed devices.

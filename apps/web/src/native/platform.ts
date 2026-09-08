@@ -14,3 +14,13 @@ export const nativePlatform = (): "ios" | "android" | "web" => {
 
 export const shellOrigin = (): string =>
     nativePlatform() === "ios" ? "capacitor://localhost" : "https://localhost"
+
+type Handle = { remove: () => Promise<void> }
+// Registers a plugin listener and returns its disposer. Disposing before the
+// registration resolves still removes the listener.
+export const listenNative = (register: () => Promise<Handle>): (() => void) => {
+    let disposed = false
+    let handle: Handle | undefined
+    register().then((h) => { if (disposed) h.remove().catch(() => { }); else handle = h }).catch(() => { })
+    return () => { disposed = true; handle?.remove().catch(() => { }) }
+}

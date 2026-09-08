@@ -51,6 +51,9 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
+
+        <!-- Background pushes use the same channel as RavenShell.showNotification. -->
+        <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="raven_messages" />
     </application>
 
     <!-- Permissions -->
