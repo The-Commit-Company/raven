@@ -14,12 +14,20 @@ export const isRootPath = (pathname: string) => {
 // Android hardware-back: back to the picker from a root page, else one step back
 // in history. Decided by route only: the WebView's canGoBack flag misses the
 // router's pushState entries, and the launch redirect always leaves one behind.
-export const registerAndroidBack = (isRoot: () => boolean): (() => void) => {
+export const registerAndroidBack = (isRoot: () => boolean, goRoot: () => void): (() => void) => {
     if (nativePlatform() !== "android") return () => { }
     return listenNative(async () => (await import("@capacitor/app")).App.addListener("backButton", () => {
         if (isRoot()) switchSite()
-        else window.history.back()
+        // No history on a cold-start deep link (tap, share): go to the workspace home.
+        else if (window.history.length > 1) window.history.back()
+        else goRoot()
     }))
+}
+
+// Open another saved site and make it the one the next launch auto-opens.
+export const openOtherSite = async (url: string) => {
+    await import("@capacitor/preferences").then(({ Preferences }) => Preferences.set({ key: DEFAULT_SITE_KEY, value: new URL(url).origin })).catch(() => { })
+    window.location.href = url
 }
 
 // Back to the picker. Session, tokens and push stay: switching is not signing out,

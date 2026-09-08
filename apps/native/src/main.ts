@@ -42,7 +42,12 @@ const boot = async () => {
         }
         // Arms the 15 s guard: if login_with_token rejects, the next launch falls back to the picker.
         await Preferences.set({ key: LAST_AUTO_NAV_KEY, value: String(Date.now()) })
-        await reauth(relogin, params.get("to") || "/raven", site.clientId)
+        try {
+            await reauth(relogin, params.get("to") || "/raven", site.clientId)
+        } catch (e) {
+            await SplashScreen.hide().catch(() => { })
+            showError(`Sign-in failed: ${String((e as { message?: string })?.message ?? e)}`)
+        }
         return
     }
     if (signout) {
@@ -58,7 +63,7 @@ const boot = async () => {
             clearTimeout(timer)
             const d = (e.notification.data ?? {}) as Record<string, string>
             resolve(d.message_url || d.click_action || d.base_url || null)
-        })
+        }).catch(() => { })
     })
     const tapped = await tapPromise
     // Re-entering within 15 s means the site didn't load — fall back to the picker.
@@ -67,20 +72,23 @@ const boot = async () => {
     const go = async (url: string): Promise<boolean> => {
         if (recent) return false
         await Preferences.set({ key: LAST_AUTO_NAV_KEY, value: String(Date.now()) })
-        window.location.href = url
+        // replace: the shell must not sit in the site's history behind its first page.
+        window.location.replace(url)
         return true
     }
     let hadTarget = false
     // Tap → share intake → defaultSite, in that order.
     if (tapped) { hadTarget = true; if (await go(tapped)) return }
     const site = await getDefaultSite()
-    if (await captureShareIntent()) {
-        if (site) { hadTarget = true; if (await go(`${site}${SHARE_TARGET_PATH}`)) return }
-        // Not delivered (no site yet, or the site failed to load): whichever site the
-        // user opens from the picker opens the share target instead of /raven.
+    // ?share=1: the web app stashed a warm share and defers the site choice here.
+    const shared = params.get("share") === "1" || await captureShareIntent()
+    if (shared) {
+        // With several saved sites the user picks the destination.
+        const target = (await loadSites()).length > 1 ? null : site
+        if (target) { hadTarget = true; if (await go(`${target}${SHARE_TARGET_PATH}`)) return }
+        // Whichever site the user opens from the picker opens the share target instead of /raven.
         setPickerRedirect(SHARE_TARGET_PATH)
-    }
-    if (site) { hadTarget = true; if (await go(`${site}/raven`)) return }
+    } else if (site) { hadTarget = true; if (await go(`${site}/raven`)) return }
 
     await SplashScreen.hide().catch(() => { })
     if (recent && hadTarget) {

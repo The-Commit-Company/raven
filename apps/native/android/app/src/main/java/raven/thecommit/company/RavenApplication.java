@@ -24,7 +24,6 @@ public class RavenApplication extends Application {
         }
     }
 
-    /** Also called on every resume. */
     static void applyStoredNightMode(Context context) {
         String theme = context.getSharedPreferences("CapacitorStorage", Context.MODE_PRIVATE).getString("appTheme", null);
         int mode = "dark".equals(theme) ? AppCompatDelegate.MODE_NIGHT_YES

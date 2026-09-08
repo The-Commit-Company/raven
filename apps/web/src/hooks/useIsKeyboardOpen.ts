@@ -11,7 +11,8 @@ import { subscribeNativeKeyboard } from "@/native/keyboard"
  * space floating above the keyboard. Consumers drop that padding when this returns true.
  *
  * Scoped + blur-accurate by design: the primary signal is the editor's own focus (`editor.isFocused`
- * driven by its `focus`/`blur` events), so an unrelated input elsewhere on screen can't flip it, and
+ * driven by its `focus`/`blur` events), so in a browser an unrelated input elsewhere on screen
+ * can't flip it (on native the keyboard plugin's show/hide events are authoritative), and
  * ProseMirror's reliable `blur` event is the backstop that restores the padding. The visualViewport
  * shrink is a secondary signal — pure viewport math is flaky in a standalone iOS PWA (innerHeight can
  * shrink with the keyboard, and page scroll eats the gap), so it's an OR, not the source of truth.

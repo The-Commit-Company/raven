@@ -14,12 +14,13 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(RavenShellPlugin.class);
-        // A share only ever arrives as a fresh launch or onNewIntent. A recreated
-        // activity (process death, Recents) gets the task's root SEND intent again;
-        // drop it, or the share the user already sent replays.
+        // A share or notification tap only ever arrives as a fresh launch or onNewIntent.
+        // A recreated activity (process death, Recents) gets the task's root intent
+        // again; drop it, or the share or tap the user already acted on replays.
         Intent launch = getIntent();
         boolean fromHistory = launch != null && (launch.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0;
-        if (RavenShellPlugin.isShare(launch) && (savedInstanceState != null || fromHistory)) setIntent(new Intent());
+        boolean replayable = RavenShellPlugin.isShare(launch) || (launch != null && launch.hasExtra("google.message_id"));
+        if (replayable && (savedInstanceState != null || fromHistory)) setIntent(new Intent());
         super.onCreate(savedInstanceState);
         applySystemBarInsets();
     }

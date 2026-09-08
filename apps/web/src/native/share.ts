@@ -13,6 +13,11 @@ export const shareFileNative = async (
         ])
         const res = await fetch(absoluteUrl, { credentials: 'include' })
         if (!res.ok) return 'failed'
+        // Too big for the bridge: share the link without downloading the body.
+        if (Number(res.headers.get('content-length')) > MAX_NATIVE_FILE_SHARE_BYTES) {
+            await Share.share({ title: fileName, url: absoluteUrl })
+            return 'shared'
+        }
         const blob = await res.blob()
         if (blob.size > MAX_NATIVE_FILE_SHARE_BYTES) {
             await Share.share({ title: fileName, url: absoluteUrl })

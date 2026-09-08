@@ -1,6 +1,9 @@
 import frappe
 from frappe.utils.change_log import get_versions
 
+# The Capacitor shell's redirect URI; the RN app used the bare "raven.thecommit.company:".
+NATIVE_REDIRECT_URI = "raven.thecommit.company://oauth"
+
 
 @frappe.whitelist(allow_guest=True)
 def get_client_id():
@@ -18,11 +21,16 @@ def get_client_id():
 	raven_version = app_versions["raven"]
 	frappe_version = app_versions["frappe"]
 
+	client_id = frappe.db.get_single_value("Raven Settings", "oauth_client")
+	redirect_uris = (
+		frappe.db.get_value("OAuth Client", client_id, "redirect_uris") if client_id else None
+	)
+
 	return {
-		"client_id": frappe.db.get_single_value("Raven Settings", "oauth_client"),
-		# Capability flag: the native shell only takes the OAuth path on sites that
-		# ship raven.api.native_auth; older sites fall back to the web login page.
-		"native_login": True,
+		"client_id": client_id,
+		# Capability flag: the shell takes the OAuth path only when the client
+		# accepts its redirect URI; older sites fall back to the web login page.
+		"native_login": NATIVE_REDIRECT_URI in (redirect_uris or ""),
 		"system_timezone": frappe.get_system_settings("time_zone"),
 		"app_name": app_name,
 		"sitename": frappe.local.site,
@@ -53,7 +61,7 @@ def create_oauth_client():
 	oauth_client.scopes = "all openid"
 	# Second URI is for the Capacitor shell: Foundation drops the query of a bare
 	# "scheme:?code=…" URL, so iOS needs a host in the redirect.
-	oauth_client.redirect_uris = "raven.thecommit.company: raven.thecommit.company://oauth"
+	oauth_client.redirect_uris = f"raven.thecommit.company: {NATIVE_REDIRECT_URI}"
 	oauth_client.default_redirect_uri = "raven.thecommit.company:"
 	oauth_client.grant_type = "Authorization Code"
 	oauth_client.response_type = "Code"

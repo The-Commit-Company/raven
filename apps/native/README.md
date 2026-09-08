@@ -124,7 +124,12 @@ uses the shell origin when it needs to return control: on iOS it navigates to
 `capacitor://localhost/?relogin=<site origin>&to=<path>` and on Android to
 `https://localhost/?relogin=<site origin>&to=<path>`; the same applies for
 `?signout=<site origin>`. These are user-visible recoveries, so they bypass the
-splash auto-nav. `raven.thecommit.company://oauth` is only the OAuth redirect URI (the RN app's bare `raven.thecommit.company:` loses its query in Foundation's URL parser; re-run `create_oauth_client` on sites provisioned before this change so the client lists both). On Android it is received by `MainActivity`'s VIEW intent-filter (scheme + host, `singleTask` → `appUrlOpen`); on iOS by `CFBundleURLTypes`.
+splash auto-nav. `raven.thecommit.company://oauth` is only the OAuth redirect URI.
+The RN app's bare `raven.thecommit.company:` loses its query in Foundation's URL
+parser, so the client lists both; the `add_native_oauth_redirect` patch adds the
+new one to clients created earlier. On Android the redirect is received by
+`MainActivity`'s VIEW intent-filter (scheme + host, `singleTask` → `appUrlOpen`);
+on iOS by `CFBundleURLTypes`.
 
 To test silent re-login, quit the app first, then kill the session server-side:
 `bench --site <site> execute frappe.sessions.clear_sessions --kwargs '{"user":"<user>","force":True}'`
@@ -223,8 +228,8 @@ the picker.
 
 ## iOS back-swipe
 
-`RavenBridgeViewController` (set as the window root in `SceneDelegate.swift`,
-subclassing `CAPBridgeViewController`) turns on `allowsBackForwardNavigationGestures` —
+`RavenBridgeViewController` (the storyboard's root, subclassing
+`CAPBridgeViewController`) turns on `allowsBackForwardNavigationGestures` —
 WKWebView leaves it off, while installed PWAs get the edge swipe from iOS.
 The web app's `useMobileBack` treats it as a normal `history.back()`.
 
@@ -282,6 +287,12 @@ reloads the WebView from the shell URL and drops the page the user was on.
   without an OAuth client) leaves the WebView: the provider's page is not a
   saved site, so the gate opens it in the system browser and the session ends
   up there. Provision the OAuth client instead.
+- iOS: the gate covers main-frame loads. An iframe on a saved site can still
+  post to Capacitor's message handler (Capacitor's default; Android rejects
+  sub-frame posts). Only saved sites can embed such an iframe.
+- Android WebView older than 89: the per-origin bridge script cannot be
+  registered, and Capacitor's local server injects the bridge into every HTML
+  page it proxies instead. Such WebViews cannot run the v3 bundle anyway.
 
 ## Manual test matrix
 

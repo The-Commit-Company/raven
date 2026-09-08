@@ -121,7 +121,7 @@ export const defaultDeps: AuthDeps = {
     },
     store: tokenStore,
     clearCookies: (site) => RavenShell.clearSiteCookies({ url: site }).catch(() => { }),
-    navigate: (url) => { window.location.href = url },
+    navigate: (url) => { window.location.replace(url) },
     login: loginWithToken,
     progress: {
         // Native timer survives the navigation away from this page: a failed
@@ -136,7 +136,7 @@ export const defaultDeps: AuthDeps = {
 }
 
 /** beforeLogin runs after the token is stored and before the login POST unloads the page. */
-export type LoginHooks = { beforeLogin?: () => Promise<void> }
+type LoginHooks = { beforeLogin?: () => Promise<void> }
 
 const completeLogin = async (site: string, token: string, redirectTo: string, deps: AuthDeps, hooks: LoginHooks) => {
     await deps.clearCookies(site)
@@ -264,6 +264,8 @@ export const reauth = async (site: string, to: string, clientId?: string, deps: 
         await completeLogin(site, next.accessToken, to, deps, hooks)
         return
     }
+    // The browser opens next; a launch splash left up would outlast a cancel.
+    await deps.progress.hide()
     await signIn(site, clientId!, to, deps, hooks)
 }
 
@@ -271,7 +273,7 @@ export const signOut = async (site: string, deps: AuthDeps = defaultDeps) => {
     const tokens = await deps.store.get(site)
     await deps.store.remove(site)
     if (!tokens) return
-    // Best effort; the session cookie is already gone by the time we get here.
+    // Best effort. Callers clear the site cookies first (Frappe CSRF).
     const revoke = (token: string, hint: string) =>
         deps.post(`${site}/api/method/frappe.integrations.oauth2.revoke_token`, { token, token_type_hint: hint }).catch(() => { })
     if (tokens.refreshToken) await revoke(tokens.refreshToken, "refresh_token")

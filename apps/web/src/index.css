@@ -250,10 +250,9 @@
     overscroll-behavior: none;
   }
 
-  /* Capacitor shell only: WKWebView draws no status bar (unlike installed PWAs,
-     where iOS paints an opaque one above the page) — reserve the top inset once,
-     here at the root, instead of padding every header. On #root, not body:
-     Radix's scroll lock rewrites body padding on every modal open. */
+  /* Capacitor shell only: WKWebView draws no status bar, so the top inset is
+     reserved once here. On #root, not body: Radix's scroll lock rewrites body
+     padding on every modal open. */
   .native #root {
     padding-top: env(safe-area-inset-top);
   }

@@ -1,11 +1,17 @@
 import { defaultDeps, reauth } from "./auth"
+import { SHARE_TARGET_PATH } from "@raven/lib/utils/shareIntent"
 import { loadSites, normalizeSiteUrl, removeSite, saveSite, setDefaultSite, validateSite, type Site } from "./sites"
 
 let pickerRoot: HTMLElement | null = null
 let redirectTo = "/raven"
 
 /** Path the next opened site navigates to, e.g. the share target after a cold-start share. */
-export const setPickerRedirect = (path: string) => { redirectTo = path }
+export const setPickerRedirect = (path: string) => {
+    redirectTo = path
+    const label = document.querySelector<HTMLElement>("#existing .label")
+    if (label) label.textContent = pickerLabel()
+}
+const pickerLabel = () => (redirectTo === SHARE_TARGET_PATH ? "Share to" : "Select an existing site")
 
 const TRASH_ICON = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>`
 
@@ -73,7 +79,7 @@ export const openSite = async (site: Site, validated = false) => {
     }
     if (!site.clientId) {
         await persist()
-        window.location.href = `${site.url}${redirectTo}`
+        window.location.replace(`${site.url}${redirectTo}`)
         return
     }
     // Stored refresh token → silent login; none → the system browser runs the OAuth
@@ -91,7 +97,7 @@ export const renderPicker = async (root: HTMLElement) => {
     root.innerHTML = `
       <h1 class="wordmark">raven</h1>
       <section id="existing" hidden>
-        <p class="label">Select an existing site</p>
+        <p class="label">${pickerLabel()}</p>
         <ul id="sites"></ul>
         <div class="or"><hr /><span>or</span><hr /></div>
       </section>
@@ -110,7 +116,7 @@ export const renderPicker = async (root: HTMLElement) => {
         const open = document.createElement("button"); open.className = "open"
         if (site.logo) {
             const avatar = document.createElement("img"); avatar.className = "avatar"
-            avatar.src = site.url + site.logo; avatar.alt = ""
+            avatar.src = new URL(site.logo, site.url).href; avatar.alt = ""
             open.appendChild(avatar)
         } else {
             const avatar = document.createElement("span"); avatar.className = "avatar"

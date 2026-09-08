@@ -2,6 +2,8 @@
 // (apps/web/src/native). Native code reads some of them too: Android
 // SharedPreferences "CapacitorStorage", iOS UserDefaults "CapacitorStorage.<key>".
 
+/** Saved sites (JSON array of { url, name, clientId?, logo? }), owned by the shell's picker. */
+export const SITES_KEY = "sites"
 /** Site origin the shell auto-opens at launch. */
 export const DEFAULT_SITE_KEY = "defaultSite"
 /** Epoch ms of the last auto-open; the web app clears it once it has loaded. */

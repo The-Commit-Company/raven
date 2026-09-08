@@ -13,6 +13,7 @@ scan({
 import { initPushNotifications, isStandalone } from "@lib/push";
 import { initNativePush } from "@/native/push";
 import { hideNativeSplash } from "@/native/splash";
+import { isNative } from "@/native/platform";
 
 // Push needs boot (firebase_client_config); the shell keeps its splash up until here.
 const afterBoot = () => {
@@ -20,7 +21,6 @@ const afterBoot = () => {
   initPushNotifications()
   if (isNative()) hideNativeSplash()
 }
-import { isNative } from "@/native/platform";
 
 // Tag the document before first paint so `standalone:` styles apply in the shell
 // (WKWebView never matches the display-mode media query).

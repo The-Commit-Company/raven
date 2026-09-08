@@ -1,13 +1,12 @@
 import { CapacitorHttp } from "@capacitor/core"
 import { Preferences } from "@capacitor/preferences"
-import { DEFAULT_SITE_KEY } from "@raven/lib/utils/nativeKeys"
+import { DEFAULT_SITE_KEY, SITES_KEY } from "@raven/lib/utils/nativeKeys"
 import { signOut } from "./auth"
 import { unsubscribeSitePush } from "./push"
 import { RavenShell } from "./shell"
 
 export type Site = { url: string; name: string; clientId?: string; logo?: string }
 
-const SITES_KEY = "sites"
 
 export const normalizeSiteUrl = (input: string): string | null => {
     const trimmed = input.trim()
@@ -23,7 +22,7 @@ export const normalizeSiteUrl = (input: string): string | null => {
 
 type JsonResponse = { ok: boolean; data: any; url?: string }
 
-// Native request: the picker page is capacitor://localhost, and real sites send no CORS headers.
+// Native request: the picker runs on the shell origin, and real sites send no CORS headers.
 export const nativeGetJson = async (url: string): Promise<JsonResponse> => {
     const res = await CapacitorHttp.get({ url, connectTimeout: 8000, readTimeout: 8000 })
     // res.url is the final URL after redirects.
@@ -83,6 +82,8 @@ export const removeSite = async (url: string) => {
     await Preferences.set({ key: SITES_KEY, value: JSON.stringify(sites) })
     await syncShell()
     if ((await getDefaultSite()) === url) await setDefaultSite(null)
+    // A live session cookie would fail Frappe's CSRF check on the posts below.
+    await RavenShell.clearSiteCookies({ url }).catch(() => { })
     // Unsubscribe needs the access token, so it runs before the revoke.
     await unsubscribeSitePush(url)
     await signOut(url)

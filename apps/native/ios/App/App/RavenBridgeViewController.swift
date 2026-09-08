@@ -1,8 +1,6 @@
 import UIKit
 import Capacitor
 
-// Installed PWAs get iOS's edge back-swipe for free; a WKWebView has to opt in.
-// The web app's useMobileBack already treats it as a plain history.back().
 // Root view controller of Main.storyboard.
 class RavenBridgeViewController: CAPBridgeViewController {
     // App-local plugins are not in the generated plugin list; register by instance.
@@ -12,6 +10,7 @@ class RavenBridgeViewController: CAPBridgeViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Installed PWAs get iOS's edge back-swipe; a WKWebView has to opt in.
         webView?.allowsBackForwardNavigationGestures = true
 
         // Theme-aware canvas behind the page (pre-load, overscroll, insets);

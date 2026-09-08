@@ -1,4 +1,5 @@
 import re
+from urllib.parse import unquote
 
 import frappe
 from frappe import _
@@ -30,11 +31,13 @@ def _resolve_user(access_token: str) -> str:
 
 def _safe_redirect(redirect_to: str | None) -> str:
 	# Relative Raven paths only — never an absolute URL from the client.
+	# Checked unquoted as well: browsers resolve %2e%2e as a dot segment.
+	path = unquote(redirect_to or "")
 	if (
 		redirect_to
-		and (redirect_to in ("/raven", "/raven/") or redirect_to.startswith("/raven/"))
-		and "//" not in redirect_to
-		and ".." not in redirect_to
+		and (path in ("/raven", "/raven/") or path.startswith("/raven/"))
+		and "//" not in path
+		and ".." not in path
 		and re.fullmatch(r"[A-Za-z0-9/._~%\-?=&#]+", redirect_to)
 	):
 		return redirect_to

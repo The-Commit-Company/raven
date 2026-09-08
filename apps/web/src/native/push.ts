@@ -24,7 +24,11 @@ const mirrorToken = async (token: string | null) => {
     else await Preferences.remove({ key })
 }
 
-const syncToken = async (token: string) => {
+// Serialised: a rotation event and getToken can report the same token together.
+let syncing: Promise<void> = Promise.resolve()
+const syncToken = (token: string) => (syncing = syncing.then(() => subscribeToken(token)))
+
+const subscribeToken = async (token: string) => {
     const old = localStorage.getItem(NATIVE_TOKEN_KEY)
     if (old === token) return
     if (old) await callNotificationAPI("unsubscribe", { fcm_token: old }).catch(() => { })
@@ -61,6 +65,8 @@ export const resolveNotificationTarget = (data: Record<string, string>, currentO
     if (!raw) return null
     let url: URL
     try { url = new URL(raw) } catch { return null }
+    // The payload is server data; only web URLs may be assigned to location.
+    if (url.protocol !== "https:" && url.protocol !== "http:") return null
     if (url.origin !== currentOrigin) return { kind: "other-site" as const, url: url.href }
     const path = url.pathname.replace(/^\/raven/, "") || "/"
     return { kind: "same-site" as const, path: path + url.search + url.hash }

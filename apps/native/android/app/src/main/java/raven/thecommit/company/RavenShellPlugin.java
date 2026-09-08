@@ -100,16 +100,19 @@ public class RavenShellPlugin extends Plugin {
     private void openExternally(Uri url) {
         // Called from WebView threads as well; the launch itself is thread-agnostic.
         try {
-            getActivity().startActivity(new Intent(Intent.ACTION_VIEW, url).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            getActivity().startActivity(new Intent(Intent.ACTION_VIEW, url));
         } catch (ActivityNotFoundException ignored) {
             // No browser: drop the navigation rather than load it in the WebView.
         }
     }
 
+    // Same form as URL.origin in the saved list: lowercased, default port dropped.
     private static String origin(Uri url) {
-        // Lowercased like the iOS gate and like URL.origin in the saved list.
-        String origin = (url.getScheme() + "://" + url.getHost()).toLowerCase(Locale.ROOT);
-        return url.getPort() == -1 ? origin : origin + ":" + url.getPort();
+        String scheme = url.getScheme().toLowerCase(Locale.ROOT);
+        String origin = scheme + "://" + String.valueOf(url.getHost()).toLowerCase(Locale.ROOT);
+        int port = url.getPort();
+        boolean defaultPort = port == -1 || ("https".equals(scheme) && port == 443) || ("http".equals(scheme) && port == 80);
+        return defaultPort ? origin : origin + ":" + port;
     }
 
     /** Saved sites, as written by apps/native/src/sites.ts through @capacitor/preferences. */
@@ -236,6 +239,8 @@ public class RavenShellPlugin extends Plugin {
     }
 
     private JSObject readShare(Intent intent) {
+        // One share at a time: drop the cached copies of the previous one.
+        deleteRecursively(new File(getContext().getCacheDir(), "shared"));
         JSObject first = readItem(intent, 0);
         JSArray more = new JSArray();
         ClipData clip = intent.getClipData();
@@ -269,10 +274,7 @@ public class RavenShellPlugin extends Plugin {
     }
 
     private Uri copyToCache(Uri uri, String name) {
-        // One share at a time: drop the copies of the previous one.
-        File root = new File(getContext().getCacheDir(), "shared");
-        deleteRecursively(root);
-        File dir = new File(root, String.valueOf(System.nanoTime()));
+        File dir = new File(getContext().getCacheDir(), "shared/" + System.nanoTime());
         if (!dir.mkdirs()) return null;
         File file = new File(dir, name.replace('/', '_'));
         try (InputStream in = getContext().getContentResolver().openInputStream(uri);

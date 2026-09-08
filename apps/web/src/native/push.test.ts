@@ -21,6 +21,9 @@ describe("resolveNotificationTarget", () => {
         expect(resolveNotificationTarget({ message_url: "https://b.com/raven/message/M1" }, origin))
             .toEqual({ kind: "other-site", url: "https://b.com/raven/message/M1" })
     })
+    it("rejects non-web schemes", () => {
+        expect(resolveNotificationTarget({ message_url: "javascript:alert(1)" }, origin)).toBeNull()
+    })
     it("returns null with no url", () => {
         expect(resolveNotificationTarget({}, origin)).toBeNull()
     })

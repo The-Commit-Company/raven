@@ -30,9 +30,12 @@ public class RavenShellPlugin: CAPPlugin, CAPBridgedPlugin {
         return true
     }
 
+    // Same form as URL.origin in the saved list: lowercased, default port dropped.
     private static func origin(of url: URL) -> String {
-        let base = "\(url.scheme?.lowercased() ?? "")://\(url.host?.lowercased() ?? "")"
-        return url.port.map { "\(base):\($0)" } ?? base
+        let scheme = url.scheme?.lowercased() ?? ""
+        let base = "\(scheme)://\(url.host?.lowercased() ?? "")"
+        guard let port = url.port, !(scheme == "https" && port == 443), !(scheme == "http" && port == 80) else { return base }
+        return "\(base):\(port)"
     }
 
     /// Saved sites, as written by apps/native/src/sites.ts through @capacitor/preferences.

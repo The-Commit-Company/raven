@@ -1,10 +1,6 @@
 import UIKit
 import Capacitor
-#if canImport(SendIntentPlugin)
 import SendIntentPlugin
-#elseif canImport(SendIntent)
-import SendIntent
-#endif
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
@@ -12,6 +8,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // The window and its RavenBridgeViewController root come from Main.storyboard.
         applyStoredTheme()
+        // A cold-start share arrives here, not in openURLContexts; the proxy replays
+        // the URL only into its own handler.
+        for context in connectionOptions.urlContexts where context.url.scheme == "raven" { receiveShare(context.url) }
 
         SceneDelegateProxy.shared.scene(scene, willConnectTo: session, options: connectionOptions)
     }

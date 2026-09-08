@@ -8,7 +8,7 @@ const { CapacitorHttp, syncAllowedOrigins, prefs, signOut, unsubscribeSitePush }
     signOut: vi.fn(async () => { }),
     unsubscribeSitePush: vi.fn(async () => { }),
 }))
-vi.mock("@capacitor/core", () => ({ CapacitorHttp, registerPlugin: () => ({ syncAllowedOrigins }) }))
+vi.mock("@capacitor/core", () => ({ CapacitorHttp, registerPlugin: () => ({ syncAllowedOrigins, clearSiteCookies: async () => { } }) }))
 vi.mock("./auth", () => ({ signOut }))
 vi.mock("./push", () => ({ unsubscribeSitePush }))
 vi.mock("@capacitor/preferences", () => ({
