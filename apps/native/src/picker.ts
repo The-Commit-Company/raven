@@ -119,7 +119,8 @@ export const renderPicker = async (root: HTMLElement) => {
         }
         const meta = document.createElement("span"); meta.className = "meta"
         const name = document.createElement("span"); name.className = "name"; name.textContent = site.name
-        const url = document.createElement("span"); url.className = "url"; url.textContent = site.url
+        // Host only: the scheme is https for every saved site outside local dev.
+        const url = document.createElement("span"); url.className = "url"; url.textContent = new URL(site.url).host
         meta.append(name, url)
         open.appendChild(meta)
         const trash = document.createElement("button"); trash.className = "trash"; trash.setAttribute("aria-label", "Remove site")

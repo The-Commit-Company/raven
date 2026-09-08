@@ -307,13 +307,14 @@ describe("reauth", () => {
         expect(store.set).toHaveBeenCalledWith("https://a.com", expect.objectContaining({ accessToken: "NEW", refreshToken: "R2" }))
         expect(deps.openBrowser).not.toHaveBeenCalled()
     })
-    it("clears cookies and runs beforeLogin before the refreshed login", async () => {
+    it("clears cookies before the refresh post and runs beforeLogin before the login", async () => {
         const { deps, store } = makeDeps()
         store.map.set("https://a.com", { accessToken: "OLD", refreshToken: "RR" })
         const beforeLogin = vi.fn(async () => { })
         await reauth("https://a.com", "/raven/x", "CLIENT", deps, { beforeLogin })
         const loginOrder = (deps.login as any).mock.invocationCallOrder[0]
-        expect((deps.clearCookies as any).mock.invocationCallOrder[0]).toBeLessThan(loginOrder)
+        // A live sid on the token post would fail Frappe's CSRF check.
+        expect((deps.clearCookies as any).mock.invocationCallOrder[0]).toBeLessThan((deps.post as any).mock.invocationCallOrder[0])
         expect(beforeLogin.mock.invocationCallOrder[0]).toBeLessThan(loginOrder)
     })
     it("passes the hooks through to the interactive sign-in", async () => {

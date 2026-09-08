@@ -237,6 +237,9 @@ export const reauth = async (site: string, to: string, clientId?: string, deps: 
         deps.navigate(`${site}/login?redirect-to=${encodeURIComponent(to)}`)
         return
     }
+    // Token posts carry the WebView's cookies: a live sid without a CSRF token is
+    // rejected (CSRFTokenError), so the site's session is dropped before them.
+    await deps.clearCookies(site)
     if (plan === "refresh") {
         const cid = clientId!
         let next: StoredTokens

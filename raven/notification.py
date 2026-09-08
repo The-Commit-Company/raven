@@ -116,6 +116,12 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 		if channel_doc.is_direct_message:
 			channel_name = ""
 
+		# The hostname tells sites apart on a device signed in to several; the app
+		# name cannot, it defaults to "Raven". The tag is per site for the same reason:
+		# a shared tag replaces the other site's notification for the same channel id.
+		site = get_site_name()
+		tag = f"{site}:{message.channel_id}"
+
 		content = message.get_notification_message_content()
 
 		# Truncate the message content to fit within FCM payload limits
@@ -160,11 +166,11 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 				{
 					"users": replied_users,
 					"notification": {
-						"title": f"{message_owner} replied{channel_name}",
+						"title": f"{message_owner} replied{channel_name} · {site}",
 						"body": truncated_content,
 					},
 					"data": data,
-					"tag": message.channel_id,
+					"tag": tag,
 					"click_action": url,
 					"image": image,
 				}
@@ -175,11 +181,11 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 				{
 					"users": mentioned_users,
 					"notification": {
-						"title": f"{message_owner} mentioned you{channel_name}",
+						"title": f"{message_owner} mentioned you{channel_name} · {site}",
 						"body": truncated_content,
 					},
 					"data": data,
-					"tag": message.channel_id,
+					"tag": tag,
 					"click_action": url,
 					"image": image,
 				}
@@ -190,11 +196,11 @@ def send_push_notification_via_raven_cloud(message, raven_settings):
 				{
 					"users": final_users,
 					"notification": {
-						"title": f"{message_owner}{channel_name}",
+						"title": f"{message_owner}{channel_name} · {site}",
 						"body": truncated_content,
 					},
 					"data": data,
-					"tag": message.channel_id,
+					"tag": tag,
 					"click_action": url,
 					"image": image,
 				}
