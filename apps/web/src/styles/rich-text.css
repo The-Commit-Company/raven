@@ -85,7 +85,7 @@
    --ink-gray-3 → --ink-gray-6). pb-0.5 adds the gap frappe-ui gets for free
    from its looser line-height; our chat lines are denser. */
 .tiptap a {
-  @apply border-b border-ink-gray-3 text-ink-gray-8 no-underline transition-colors hover:border-ink-gray-6;
+  @apply border-b border-ink-gray-4 text-ink-gray-8 no-underline transition-colors hover:border-ink-gray-6;
 }
 
 /* Inline code (not inside a <pre>): calm gray pill, matching frappe-ui v3 —
