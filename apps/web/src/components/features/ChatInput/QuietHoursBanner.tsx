@@ -125,10 +125,10 @@ const QuietHoursBannerContent = ({ mode, onDismiss }: { mode: QuietSendMode; onD
 
     const text =
         mode === "auto"
-            ? _("It's after hours - your messages will be sent silently.")
+            ? _("It's outside working hours - your messages will be sent silently.")
             : isMobile
-                ? _("It's after hours - hold Send to message without pinging anyone.")
-                : _("It's after hours - send silently to let people rest (⌘⇧↵).")
+                ? _("It's outside working hours - hold the send to message without pinging anyone.")
+                : _("It's outside working hours - send silently to let people rest (⌘⇧↵).")
 
     return (
         <div className="flex items-center gap-1.5 rounded-md bg-surface-gray-2 dark:bg-surface-elevation-2 py-1 pl-3 pr-1 md:mx-0 mx-1">
