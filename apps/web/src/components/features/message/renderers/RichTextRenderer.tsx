@@ -3,6 +3,7 @@ import { Element, Text, domToReact, htmlToDOM, type DOMNode, type HTMLReactParse
 import { UserMention, ChannelMention } from "./MessageMention"
 import { CodeBlock } from "./MessageCodeBlock"
 import { MessageLink } from "./LinkPreviewCard"
+import { MAYBE_PHONE_RE, splitPhoneRuns } from "@utils/phoneDetection"
 import { cn } from "@lib/utils"
 import _ from "@lib/translate"
 
@@ -62,8 +63,48 @@ const textContent = (node: DOMNode): string => {
     return ""
 }
 
+/* --------------------------- Phone detection --------------------------- */
+
+/** Detection logic lives in @utils/phoneDetection (pure + unit-tested); this
+ *  renderer only maps the runs onto anchors. */
+const linkifyPhoneNumbers = (text: string): React.ReactNode[] | null => {
+    const runs = splitPhoneRuns(text)
+    if (!runs) return null
+    return runs.map((run, i) =>
+        run.href ? (
+            <a key={i} href={run.href}>
+                {run.text}
+            </a>
+        ) : (
+            run.text
+        ),
+    )
+}
+
+/** True when the text sits inside a link or code — no tel: links there. */
+const insidePhoneExemptAncestor = (node: Text): boolean => {
+    let parent = node.parent as Element | null
+    while (parent) {
+        const name = (parent as Element).name
+        if (name === "a" || name === "code" || name === "pre") return true
+        parent = (parent as { parent?: Element | null }).parent ?? null
+    }
+    return false
+}
+
 const options: HTMLReactParserOptions = {
     replace: (node) => {
+        // Phone numbers in plain text become tel: links, detected at RENDER
+        // time — old messages and other clients' sends get them too, and
+        // nothing changes in stored content. Never inside an existing link or
+        // code. Jumbomoji is unaffected (digits already disqualify it).
+        if (node instanceof Text) {
+            if (!node.data || !MAYBE_PHONE_RE.test(node.data)) return
+            if (insidePhoneExemptAncestor(node)) return
+            const parts = linkifyPhoneNumbers(node.data)
+            return parts ? <>{parts}</> : undefined
+        }
+
         if (!(node instanceof Element)) return
 
         // Strip author classes. v2 Raven baked presentational utilities (e.g.
