@@ -25,6 +25,9 @@ const config: CapacitorConfig = {
         // sites that never do (old bundle, site down). A shell JS timer cannot: it is
         // discarded when the WebView navigates to the site.
         SplashScreen: { launchAutoHide: true, launchShowDuration: 8000 },
+        // iOS shows no foreground push itself; like Android, the page re-posts the
+        // ones from other sites and the open site's own arrive through realtime.
+        FirebaseMessaging: { presentationOptions: [] },
     },
 }
 

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import { loadSites, normalizeSiteUrl, removeSite, saveSite, validateSite, nativeGetJson } from "./sites"
+import { isSavedSite, loadSites, normalizeSiteUrl, removeSite, saveSite, validateSite, nativeGetJson } from "./sites"
 
 const { CapacitorHttp, syncAllowedOrigins, prefs, signOut, unsubscribeSitePush } = vi.hoisted(() => ({
     CapacitorHttp: { get: vi.fn() },
@@ -112,5 +112,14 @@ describe("validateSite", () => {
     it("returns null on non-200 or network error", async () => {
         expect(await validateSite("https://a.com", vi.fn().mockResolvedValue({ ok: false }))).toBeNull()
         expect(await validateSite("https://a.com", vi.fn().mockRejectedValue(new Error("x")))).toBeNull()
+    })
+})
+
+describe("isSavedSite", () => {
+    it("matches a message URL on a saved site by origin only", async () => {
+        prefs.clear()
+        await saveSite({ url: "https://a.com", name: "A" })
+        expect(await isSavedSite("https://a.com/raven/dm-channel/x")).toBe(true)
+        expect(await isSavedSite("https://b.com/raven")).toBe(false)
     })
 })

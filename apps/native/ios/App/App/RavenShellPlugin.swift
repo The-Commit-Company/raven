@@ -14,7 +14,29 @@ public class RavenShellPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "clearShareIntent", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "clearSiteCookies", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "syncAllowedOrigins", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "showNotification", returnType: CAPPluginReturnPromise),
     ]
+
+    override public func load() {
+        // Taps on notifications posted here route to the push handler, so the page
+        // gets the same notificationActionPerformed event as for a push.
+        bridge?.notificationRouter.localNotificationHandler = self
+    }
+
+    // MARK: - Foreground notifications
+
+    // A foreground push is handed to the page (presentationOptions []); the page
+    // re-posts the ones from another saved site through here.
+    @objc func showNotification(_ call: CAPPluginCall) {
+        let content = UNMutableNotificationContent()
+        content.title = call.getString("title") ?? ""
+        content.body = call.getString("body") ?? ""
+        content.userInfo = call.getObject("data") ?? [:]
+        content.sound = .default
+        // A tagged post replaces the previous one for the same conversation.
+        let request = UNNotificationRequest(identifier: call.getString("tag") ?? UUID().uuidString, content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request) { _ in call.resolve() }
+    }
 
     // MARK: - Navigation gate
 
@@ -70,10 +92,12 @@ public class RavenShellPlugin: CAPPlugin, CAPBridgedPlugin {
         DispatchQueue.main.async { [weak self] in
             let store = (self?.webView?.configuration.websiteDataStore ?? WKWebsiteDataStore.default()).httpCookieStore
             store.getAllCookies { cookies in
+                // Host-only cookies of a parent site (example.com vs chat.example.com) stay.
                 let matching = cookies.filter { cookie in
-                    var domain = cookie.domain.lowercased()
-                    if domain.hasPrefix(".") { domain.removeFirst() }
-                    return host == domain || host.hasSuffix("." + domain)
+                    let domain = cookie.domain.lowercased()
+                    guard domain.hasPrefix(".") else { return domain == host }
+                    let parent = String(domain.dropFirst())
+                    return host == parent || host.hasSuffix("." + parent)
                 }
                 let group = DispatchGroup()
                 for cookie in matching {
@@ -100,5 +124,15 @@ public class RavenShellPlugin: CAPPlugin, CAPBridgedPlugin {
     @objc func syncAllowedOrigins(_ call: CAPPluginCall) {
         // The user script already runs on every origin; the gate above does the limiting.
         call.resolve()
+    }
+}
+
+extension RavenShellPlugin: NotificationHandlerProtocol {
+    public func willPresent(notification: UNNotification) -> UNNotificationPresentationOptions {
+        [.banner, .list, .sound]
+    }
+
+    public func didReceive(response: UNNotificationResponse) {
+        bridge?.notificationRouter.pushNotificationHandler?.didReceive(response: response)
     }
 }

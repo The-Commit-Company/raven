@@ -2,7 +2,7 @@
 // into what the ShareTarget page and the composer consume. The mapping itself is
 // shared with the shell: @raven/lib/utils/shareIntent.
 import { PENDING_SHARE_KEY, type PendingShare, type ShareIntent } from "@raven/lib/utils/shareIntent"
-import { SITES_KEY } from "@raven/lib/utils/nativeKeys"
+import { savedSiteOrigins } from "./sites"
 import { listenNative, nativePlatform } from "./platform"
 import { ravenShell } from "./shell"
 
@@ -11,11 +11,7 @@ export { intentToPendingShare, type PendingShare } from "@raven/lib/utils/shareI
 let sharedFiles: File[] = []
 
 /** Number of sites saved in the shell's picker. */
-export const savedSiteCount = async (): Promise<number> => {
-    const { Preferences } = await import("@capacitor/preferences")
-    const { value } = await Preferences.get({ key: SITES_KEY })
-    try { return value ? (JSON.parse(value) as unknown[]).length : 0 } catch { return 0 }
-}
+export const savedSiteCount = async (): Promise<number> => (await savedSiteOrigins()).length
 
 /** Android: MainActivity's SEND intent via the shell plugin. iOS: send-intent's share extension. */
 export const readShareIntent = async (): Promise<ShareIntent | null> => {

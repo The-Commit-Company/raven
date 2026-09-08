@@ -55,7 +55,7 @@ export const disableNativePush = async (): Promise<void> => {
     if (!token) return
     localStorage.removeItem(NATIVE_TOKEN_KEY)
     await mirrorToken(null).catch(() => { })
-    try { await (await messaging()).fm.deleteToken() } catch (e) { console.error("deleteToken failed", e) }
+    // Server row only: the device token is shared by every site signed in on this device.
     try { await callNotificationAPI("unsubscribe", { fcm_token: token }) } catch (e) { console.error("unsubscribe failed", e) }
 }
 
@@ -76,16 +76,40 @@ export const subscribeNotificationTaps = (handler: (data: Record<string, string>
     listenNative(async () => (await messaging()).fm.addListener("notificationActionPerformed", (e) =>
         handler((e.notification.data ?? {}) as Record<string, string>)))
 
-// Android shows a push only while the app is in the background; in the foreground the
-// plugin hands it to the page. Re-post the ones from another saved site through the
-// shell. The open site's own messages arrive through realtime already.
+// Channel id of a tray entry for the site at `hostname`. Android reports the FCM
+// tag (`<host>:<channel>`); iOS reports the payload data, whose site URL is checked
+// instead. Another site's entry maps to undefined, which the read sweep leaves alone.
+export const trayChannelId = (tag: string | null | undefined, data: Record<string, string>, hostname: string) => {
+    if (tag) return tag.startsWith(`${hostname}:`) ? tag.slice(hostname.length + 1) : undefined
+    try {
+        return new URL(data.base_url || data.message_url).hostname === hostname ? data.channel_id : undefined
+    } catch {
+        return undefined
+    }
+}
+
+// Tray entries in the shape the read sweep uses.
+export const getNativeDeliveredNotifications = async () => {
+    const { fm } = await messaging()
+    const { notifications } = await fm.getDeliveredNotifications()
+    return notifications.map((n) => ({
+        tag: trayChannelId(n.tag, (n.data ?? {}) as Record<string, string>, window.location.hostname),
+        close: () => { fm.removeDeliveredNotifications({ notifications: [n] }).catch(() => { }) },
+    }))
+}
+
+// A push that arrives while the app is in the foreground is handed to the page, not
+// shown (iOS: presentationOptions []). Re-post the ones from another saved site through
+// the shell; the open site's own messages arrive through realtime already.
 export const subscribeForeignSiteNotifications = (): (() => void) => {
-    if (nativePlatform() !== "android") return () => { }
     return listenNative(async () => (await messaging()).fm.addListener("notificationReceived", async ({ notification }) => {
         const data = (notification.data ?? {}) as Record<string, string>
-        if (resolveNotificationTarget(data, window.location.origin)?.kind !== "other-site") return
+        const target = resolveNotificationTarget(data, window.location.origin)
+        if (target?.kind !== "other-site") return
         const { shell } = await ravenShell()
-        await shell.showNotification({ title: notification.title, body: notification.body, data })
+        // Same tag form as the server's, so the other site's sweep can clear it.
+        const tag = data.channel_id ? `${new URL(target.url).hostname}:${data.channel_id}` : undefined
+        await shell.showNotification({ title: notification.title, body: notification.body, tag, data })
     }))
 }
 

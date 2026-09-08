@@ -1,5 +1,6 @@
 import { DEFAULT_SITE_KEY } from "@raven/lib/utils/nativeKeys"
 import { listenNative, nativePlatform, shellOrigin } from "./platform"
+import { savedSiteOrigins } from "./sites"
 
 // Single-segment pages that are not footer roots (App.tsx routes).
 const SUBPAGES = new Set(["search", "saved-messages", "share-target"])
@@ -24,9 +25,13 @@ export const registerAndroidBack = (isRoot: () => boolean, goRoot: () => void): 
     }))
 }
 
-// Open another saved site and make it the one the next launch auto-opens.
+// Open another site; a saved one also becomes the one the next launch auto-opens.
+// A push from a removed site still opens (the gate sends it to the browser).
 export const openOtherSite = async (url: string) => {
-    await import("@capacitor/preferences").then(({ Preferences }) => Preferences.set({ key: DEFAULT_SITE_KEY, value: new URL(url).origin })).catch(() => { })
+    const origin = new URL(url).origin
+    if ((await savedSiteOrigins()).includes(origin)) {
+        await import("@capacitor/preferences").then(({ Preferences }) => Preferences.set({ key: DEFAULT_SITE_KEY, value: origin })).catch(() => { })
+    }
     window.location.href = url
 }
 

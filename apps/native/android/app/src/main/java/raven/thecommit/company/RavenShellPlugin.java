@@ -185,6 +185,7 @@ public class RavenShellPlugin extends Plugin {
     @PluginMethod
     public void showNotification(PluginCall call) {
         Context context = getContext();
+        String tag = call.getString("tag");
         int id = (int) (System.currentTimeMillis() % Integer.MAX_VALUE);
         // Same extras as an FCM tap, so the messaging plugin reports notificationActionPerformed.
         Intent tap = new Intent(context, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -203,7 +204,9 @@ public class RavenShellPlugin extends Plugin {
             .setAutoCancel(true)
             .setContentIntent(pending)
             .build();
-        context.getSystemService(NotificationManager.class).notify(id, notification);
+        // (tag, 0) is the identity FCM posts under, so a tagged post replaces the
+        // background entry for the same conversation as well as an earlier re-post.
+        context.getSystemService(NotificationManager.class).notify(tag, tag != null ? 0 : id, notification);
         call.resolve();
     }
 

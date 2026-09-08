@@ -2,7 +2,7 @@ import { SplashScreen } from "@capacitor/splash-screen"
 import { FirebaseMessaging } from "@capacitor-firebase/messaging"
 import { Preferences } from "@capacitor/preferences"
 import { reauth, signOut } from "./auth"
-import { getDefaultSite, loadSites, setDefaultSite } from "./sites"
+import { getDefaultSite, isSavedSite, loadSites, setDefaultSite } from "./sites"
 import { captureShareIntent } from "./shareIntake"
 import { SHARE_TARGET_PATH } from "@raven/lib/utils/shareIntent"
 import { APP_THEME_KEY, LAST_AUTO_NAV_KEY } from "@raven/lib/utils/nativeKeys"
@@ -56,13 +56,17 @@ const boot = async () => {
     }
 
     // A tap that launched the app fires before any page listens; capture it here.
-    // Cold-start taps arrive within a few ms; 300 ms bounds the wait.
+    // Cold-start taps arrive within a few ms; 300 ms bounds the wait. Later taps,
+    // with the picker still up, open the tapped site if it is saved.
+    let pickerShown = false
     const tapPromise = new Promise<string | null>((resolve) => {
         const timer = setTimeout(() => resolve(null), 300)
-        FirebaseMessaging.addListener("notificationActionPerformed", (e) => {
+        FirebaseMessaging.addListener("notificationActionPerformed", async (e) => {
             clearTimeout(timer)
             const d = (e.notification.data ?? {}) as Record<string, string>
-            resolve(d.message_url || d.click_action || d.base_url || null)
+            const url = d.message_url || d.click_action || d.base_url || null
+            resolve(url)
+            if (pickerShown && url && await isSavedSite(url)) window.location.replace(url)
         }).catch(() => { })
     })
     const tapped = await tapPromise
@@ -78,7 +82,8 @@ const boot = async () => {
     }
     let hadTarget = false
     // Tap → share intake → defaultSite, in that order.
-    if (tapped) { hadTarget = true; if (await go(tapped)) return }
+    // A push from a removed site must not become the auto-open target.
+    if (tapped && await isSavedSite(tapped)) { hadTarget = true; if (await go(tapped)) return }
     const site = await getDefaultSite()
     // ?share=1: the web app stashed a warm share and defers the site choice here.
     const shared = params.get("share") === "1" || await captureShareIntent()
@@ -94,6 +99,7 @@ const boot = async () => {
     if (recent && hadTarget) {
         showError("Could not open your site. Pick it again or add another.")
     }
+    pickerShown = true
 }
 boot().catch(async () => {
     await SplashScreen.hide().catch(() => { })

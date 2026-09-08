@@ -61,6 +61,12 @@ export const validateSite = async (url: string, getJson = nativeGetJson): Promis
     return { url: origin, name, clientId, logo }
 }
 
+/** Whether `url` is on a saved site; anything else the navigation gate sends to the browser. */
+export const isSavedSite = async (url: string) => {
+    const origin = normalizeSiteUrl(url)
+    return !!origin && (await loadSites()).some((s) => s.url === origin)
+}
+
 export const loadSites = async (): Promise<Site[]> => {
     const { value } = await Preferences.get({ key: SITES_KEY })
     if (!value) return []
@@ -76,7 +82,7 @@ export const saveSite = async (site: Site) => {
     await syncShell()
 }
 
-/** Forgets a site along with its push row and OAuth tokens; a push for a forgotten site would open in the browser. */
+/** Forgets a site along with its push row and OAuth tokens. */
 export const removeSite = async (url: string) => {
     const sites = (await loadSites()).filter((s) => s.url !== url)
     await Preferences.set({ key: SITES_KEY, value: JSON.stringify(sites) })

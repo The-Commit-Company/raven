@@ -72,11 +72,12 @@ Committed native projects already include:
 - Android back on a root page (workspace home, DMs, threads, notifications,
   profile) returns to the picker with the session kept, like the "Switch site"
   row on the mobile Profile page. Deeper pages go one step back in history.
-- Android shows a push only while the app is in the background. A foreground
-  push from another saved site is re-posted by `RavenShell.showNotification`
-  (`apps/web/src/native/push.ts`); its tap carries the FCM extras, so the
-  messaging plugin routes it like any other tap. iOS shows foreground banners
-  itself.
+- A push that arrives while the app is in the foreground is not shown by the OS
+  (iOS: `presentationOptions []`); the page re-posts the ones from another saved
+  site through `RavenShell.showNotification` (`apps/web/src/native/push.ts`). Its
+  tap reaches the messaging plugin's `notificationActionPerformed` on both
+  platforms (Android: FCM extras on the intent; iOS: the shell is the local
+  notification handler and forwards to the push handler).
 - Android: `MainActivity` pads the WebView by the system-bar insets itself
   (`SystemBars.insetsHandling: "disable"`, `StatusBar.overlaysWebView: false`).
   Capacitor's default hands the insets to the page as CSS variables, which a

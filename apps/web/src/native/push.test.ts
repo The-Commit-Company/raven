@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { resolveNotificationTarget } from "./push"
+import { resolveNotificationTarget, trayChannelId } from "./push"
 
 describe("resolveNotificationTarget", () => {
     const origin = "https://a.com"
@@ -26,5 +26,19 @@ describe("resolveNotificationTarget", () => {
     })
     it("returns null with no url", () => {
         expect(resolveNotificationTarget({}, origin)).toBeNull()
+    })
+})
+
+describe("trayChannelId", () => {
+    it("strips this site's prefix from an Android tag", () => {
+        expect(trayChannelId("a.com:general", {}, "a.com")).toBe("general")
+    })
+    it("ignores another site's tag", () => {
+        expect(trayChannelId("b.com:general", {}, "a.com")).toBeUndefined()
+    })
+    it("uses the payload's channel id when there is no tag (iOS), only for this site", () => {
+        expect(trayChannelId(null, { channel_id: "general", base_url: "https://a.com" }, "a.com")).toBe("general")
+        expect(trayChannelId(null, { channel_id: "general", base_url: "https://b.com" }, "a.com")).toBeUndefined()
+        expect(trayChannelId(undefined, { channel_id: "general" }, "a.com")).toBeUndefined()
     })
 })

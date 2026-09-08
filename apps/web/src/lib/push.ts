@@ -21,7 +21,7 @@
 
 import { isNative } from "@/native/platform"
 import { callNotificationAPI } from "@lib/pushApi"
-import { disableNativePush, enableNativePush, isNativePushEnabled } from "@/native/push"
+import { disableNativePush, enableNativePush, getNativeDeliveredNotifications, isNativePushEnabled } from "@/native/push"
 
 // v2 stored the token under this exact key (`firebase_token_${projectName}`).
 // Reusing it means devices that enabled push on v2 stay "enabled" after the v3
@@ -202,14 +202,18 @@ export const disablePush = async (): Promise<void> => {
     }
 }
 
+/** What the read sweep needs from a tray entry: the channel/thread id it was tagged with. */
+export type DeliveredNotification = { tag?: string; close: () => void }
+
 /**
- * All notifications currently in THIS device's system tray (empty when there's
- * no service worker). Each is tagged with its channel/thread id — and the tag
- * makes a newer notification replace the older one, so there's at most one per
- * conversation. Used to sweep out entries for already-read conversations.
+ * All notifications currently in THIS device's system tray. Each is tagged with
+ * its channel/thread id — the tag makes a newer notification replace the older
+ * one, so there's at most one per conversation. Used to sweep out entries for
+ * already-read conversations.
  */
-export const getDeliveredNotifications = async (): Promise<Notification[]> => {
+export const getDeliveredNotifications = async (): Promise<DeliveredNotification[]> => {
     try {
+        if (isNative()) return await getNativeDeliveredNotifications()
         const registration = await swRegistration
         return (await registration?.getNotifications()) ?? []
     } catch {

@@ -11,8 +11,8 @@ export type RavenShellPlugin = {
     clearSiteCookies(options: { url: string }): Promise<void>
     /** Android: re-register the bridge script for the saved sites after the list changed. No-op on iOS. */
     syncAllowedOrigins(): Promise<void>
-    /** Android: post a notification; its tap reports through FirebaseMessaging's notificationActionPerformed. Not registered on iOS. */
-    showNotification(options: { title?: string; body?: string; data: Record<string, string> }): Promise<void>
+    /** Post a notification; its tap reports through FirebaseMessaging's notificationActionPerformed. */
+    showNotification(options: { title?: string; body?: string; tag?: string; data: Record<string, string> }): Promise<void>
     /** Android: a warm share arrived (onNewIntent). iOS dispatches the `sendIntentReceived` DOM event instead. */
     addListener(event: "shareReceived", listener: () => void): Promise<{ remove(): Promise<void> }>
 }
