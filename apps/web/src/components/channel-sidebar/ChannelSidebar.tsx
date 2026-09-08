@@ -6,6 +6,7 @@ import { Check, ChevronDown, ChevronRight, Hash, PencilLine, Star } from "lucide
 import { Virtuoso, type VirtuosoHandle } from "react-virtuoso"
 import { useLocalStorage } from "usehooks-ts"
 import { useChannelUnread, useGroupUnreadCount, useWorkspaceUnread } from "@stores/unread/useChannelUnread"
+import { channelUnreadStore } from "@stores/unread/store"
 import { Badge } from "@components/ui/badge"
 import { Button } from "@components/ui/button"
 import { Skeleton } from "@components/ui/skeleton"
@@ -86,27 +87,38 @@ export function ChannelSidebar() {
         [groupedChannels, ungroupedChannels],
     )
 
-    /** Cmd/Ctrl+Down = next channel, Cmd/Ctrl+Up = previous — clamped at the ends. */
-    const goToAdjacentChannel = (direction: 1 | -1) => {
+    /** Option+Down = next channel, Option+Up = previous. With Shift, the
+     *  nearest channel with UNREAD messages in that direction (the current
+     *  channel is skipped — it's being read). No candidate = no-op. */
+    const goToAdjacentChannel = (direction: 1 | -1, unreadOnly = false) => {
         if (flatChannels.length === 0) return
         const currentIndex = flatChannels.findIndex((channel) => channel.name === currentChannelID)
-        const nextIndex =
-            currentIndex === -1
-                ? direction === 1
-                    ? 0
-                    : flatChannels.length - 1
-                : Math.min(flatChannels.length - 1, Math.max(0, currentIndex + direction))
-        if (nextIndex === currentIndex) return
-        const target = flatChannels[nextIndex]
-        navigate(`/${encodeURIComponent(workspaceID ?? "")}/${encodeURIComponent(target.name)}`)
-        // Only the ungrouped list is virtualized — keep its active row in view
-        const ungroupedIndex = ungroupedChannels.indexOf(target)
-        if (ungroupedIndex !== -1) virtuosoRef.current?.scrollIntoView({ index: ungroupedIndex })
+        // Walk outward from the neighbor (or in from the list's edge when the
+        // current route isn't in this list), taking the first that qualifies.
+        let index = currentIndex === -1 ? (direction === 1 ? 0 : flatChannels.length - 1) : currentIndex + direction
+        while (index >= 0 && index < flatChannels.length) {
+            const target = flatChannels[index]
+            // Imperative store read — a keypress needs a snapshot, not a subscription.
+            if (!unreadOnly || channelUnreadStore.getState(target.name).count > 0) {
+                navigate(`/${encodeURIComponent(workspaceID ?? "")}/${encodeURIComponent(target.name)}`)
+                // Only the ungrouped list is virtualized — keep its active row in view
+                const ungroupedIndex = ungroupedChannels.indexOf(target)
+                if (ungroupedIndex !== -1) virtuosoRef.current?.scrollIntoView({ index: ungroupedIndex })
+                return
+            }
+            index += direction
+        }
     }
 
+    // Alt/Option, NOT mod (the Slack/Discord convention): Cmd+Up/Down is core
+    // macOS text editing (jump to start/end of the draft) and the composer is
+    // always focused, so a mod binding stole it mid-typing. Option+arrows'
+    // native meaning (paragraph jump) is obscure enough to own unconditionally.
     const hotkeyOptions = { enableOnFormTags: true, enableOnContentEditable: true, preventDefault: true }
-    useHotkeys("mod+down", () => goToAdjacentChannel(1), hotkeyOptions, [flatChannels, currentChannelID])
-    useHotkeys("mod+up", () => goToAdjacentChannel(-1), hotkeyOptions, [flatChannels, currentChannelID])
+    useHotkeys("alt+down", () => goToAdjacentChannel(1), hotkeyOptions, [flatChannels, currentChannelID])
+    useHotkeys("alt+up", () => goToAdjacentChannel(-1), hotkeyOptions, [flatChannels, currentChannelID])
+    useHotkeys("alt+shift+down", () => goToAdjacentChannel(1, true), hotkeyOptions, [flatChannels, currentChannelID])
+    useHotkeys("alt+shift+up", () => goToAdjacentChannel(-1, true), hotkeyOptions, [flatChannels, currentChannelID])
 
     const loading = isLoading || !myProfile
     const isEmpty = groupedChannels.length === 0 && ungroupedChannels.length === 0

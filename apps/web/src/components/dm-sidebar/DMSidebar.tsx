@@ -18,6 +18,7 @@ import _ from "@lib/translate"
 import type { DMChannelListItem } from "@raven/types/common/ChannelListItem"
 import { useDMChannels } from "@stores/channels/useChannelList"
 import { useChannelUnread } from "@stores/unread/useChannelUnread"
+import { channelUnreadStore } from "@stores/unread/store"
 import { usePrefetchChannel, setChannelListScrolling } from "@stores/messages/usePrefetchChannel"
 import { useUserCookieData } from "@hooks/useUserCookieData"
 import { MobileSearchButton } from "@components/features/header/QuickSearch/SearchButton"
@@ -100,27 +101,37 @@ export function DMSidebar() {
     const routeMatch = useMatch({ path: "/dm-channel/:id", end: false })
     const currentChannelID = routeMatch?.params.id
 
-    /** Cmd/Ctrl+Down = next channel, Cmd/Ctrl+Up = previous — clamped at the ends. */
-    const goToAdjacentChannel = (direction: 1 | -1) => {
+    /** Option+Down = next DM, Option+Up = previous. With Shift, the nearest DM
+     *  with UNREAD messages in that direction (the current one is skipped —
+     *  it's being read). No candidate = no-op. */
+    const goToAdjacentChannel = (direction: 1 | -1, unreadOnly = false) => {
         if (rows.length === 0) return
         const currentIndex = rows.findIndex((row) => row.dm.name === currentChannelID)
-        // Nothing open yet: Down enters the list from the top, Up from the bottom
-        const nextIndex =
-            currentIndex === -1
-                ? direction === 1
-                    ? 0
-                    : rows.length - 1
-                : Math.min(rows.length - 1, Math.max(0, currentIndex + direction))
-        if (nextIndex === currentIndex) return
-        navigate(`/dm-channel/${encodeURIComponent(rows[nextIndex].dm.name)}`)
-        virtuosoRef.current?.scrollIntoView({ index: nextIndex })
+        // Walk outward from the neighbor (or in from the list's edge when
+        // nothing is open yet), taking the first row that qualifies.
+        let index = currentIndex === -1 ? (direction === 1 ? 0 : rows.length - 1) : currentIndex + direction
+        while (index >= 0 && index < rows.length) {
+            const target = rows[index].dm.name
+            // Imperative store read — a keypress needs a snapshot, not a subscription.
+            if (!unreadOnly || channelUnreadStore.getState(target).count > 0) {
+                navigate(`/dm-channel/${encodeURIComponent(target)}`)
+                virtuosoRef.current?.scrollIntoView({ index })
+                return
+            }
+            index += direction
+        }
     }
 
-    // Works while composing too (form tags + Tiptap's contenteditable);
-    // preventDefault stops the browser's own Cmd+Up/Down caret/scroll jumps
+    // Alt/Option, NOT mod (the Slack/Discord convention): Cmd+Up/Down is core
+    // macOS text editing (jump to start/end of the draft) and the composer is
+    // always focused, so a mod binding stole it mid-typing. Works while
+    // composing (form tags + Tiptap's contenteditable) — Option+arrows' native
+    // paragraph jump is obscure enough to own unconditionally.
     const hotkeyOptions = { enableOnFormTags: true, enableOnContentEditable: true, preventDefault: true }
-    useHotkeys("mod+down", () => goToAdjacentChannel(1), hotkeyOptions, [rows, currentChannelID])
-    useHotkeys("mod+up", () => goToAdjacentChannel(-1), hotkeyOptions, [rows, currentChannelID])
+    useHotkeys("alt+down", () => goToAdjacentChannel(1), hotkeyOptions, [rows, currentChannelID])
+    useHotkeys("alt+up", () => goToAdjacentChannel(-1), hotkeyOptions, [rows, currentChannelID])
+    useHotkeys("alt+shift+down", () => goToAdjacentChannel(1, true), hotkeyOptions, [rows, currentChannelID])
+    useHotkeys("alt+shift+up", () => goToAdjacentChannel(-1, true), hotkeyOptions, [rows, currentChannelID])
 
     return (
         // Full-height column with its own header — mirrors ChannelSidebar, so
