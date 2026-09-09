@@ -236,7 +236,8 @@ The web app's `useMobileBack` treats it as a normal `history.back()`.
 
 ## RavenShell plugin
 
-`apps/native/android/.../RavenShellPlugin.java` and
+`apps/native/android/.../RavenShellPlugin.java` (the Android re-post's
+conversation layout is in `ConversationNotification.java` beside it) and
 `apps/native/ios/App/App/RavenShellPlugin.swift`; contract in
 `packages/lib/utils/ravenShell.ts`.
 

@@ -107,9 +107,12 @@ export const subscribeForeignSiteNotifications = (): (() => void) => {
         const target = resolveNotificationTarget(data, window.location.origin)
         if (target?.kind !== "other-site") return
         const { shell } = await ravenShell()
+        const site = new URL(target.url).hostname
         // Same tag form as the server's, so the other site's sweep can clear it.
-        const tag = data.channel_id ? `${new URL(target.url).hostname}:${data.channel_id}` : undefined
-        await shell.showNotification({ title: notification.title, body: notification.body, tag, data })
+        const tag = data.channel_id ? `${site}:${data.channel_id}` : undefined
+        // The server suffixes the site onto the title for OS-rendered pushes; here it is the header.
+        const title = (notification.title ?? "").replace(/ · [^·]+$/, "")
+        await shell.showNotification({ title, body: notification.body, site, image: data.image || undefined, tag, data })
     }))
 }
 

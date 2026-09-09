@@ -30,12 +30,28 @@ public class RavenShellPlugin: CAPPlugin, CAPBridgedPlugin {
     @objc func showNotification(_ call: CAPPluginCall) {
         let content = UNMutableNotificationContent()
         content.title = call.getString("title") ?? ""
+        content.subtitle = call.getString("site") ?? ""
         content.body = call.getString("body") ?? ""
         content.userInfo = call.getObject("data") ?? [:]
         content.sound = .default
-        // A tagged post replaces the previous one for the same conversation.
-        let request = UNNotificationRequest(identifier: call.getString("tag") ?? UUID().uuidString, content: content, trigger: nil)
-        UNUserNotificationCenter.current().add(request) { _ in call.resolve() }
+        // One thread per conversation, so iOS stacks its notifications together.
+        if let tag = call.getString("tag") { content.threadIdentifier = tag }
+        let identifier = call.getString("tag") ?? UUID().uuidString
+        let post = {
+            // A tagged post replaces the previous one for the same conversation.
+            let request = UNNotificationRequest(identifier: identifier, content: content, trigger: nil)
+            UNUserNotificationCenter.current().add(request) { _ in call.resolve() }
+        }
+        // Sender avatar as the attachment; a missing or slow image just leaves it out.
+        guard let image = call.getString("image"), let url = URL(string: image) else { return post() }
+        URLSession.shared.downloadTask(with: url) { location, _, _ in
+            if let location = location {
+                let file = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).\(url.pathExtension.isEmpty ? "jpg" : url.pathExtension)")
+                try? FileManager.default.moveItem(at: location, to: file)
+                if let attachment = try? UNNotificationAttachment(identifier: "avatar", url: file) { content.attachments = [attachment] }
+            }
+            post()
+        }.resume()
     }
 
     // MARK: - Navigation gate
