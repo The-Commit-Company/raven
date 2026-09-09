@@ -7,6 +7,10 @@ import proxyOptions from "./proxyOptions";
 import babel from '@rolldown/plugin-babel';
 import { VitePWA } from "vite-plugin-pwa"
 
+// VITE_NATIVE=1: the Capacitor bundle. Plain HTML entry, no service worker,
+// served from the app's own origin at /, output consumed by apps/native.
+const native = process.env.VITE_NATIVE === "1"
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -16,7 +20,7 @@ export default defineConfig({
     }),
     // @ts-ignore - tailwindcss is not typed
     tailwindcss(),
-    VitePWA({
+    ...(native ? [] : [VitePWA({
       strategies: "injectManifest",
       srcDir: "src",
       filename: "sw.js",
@@ -35,7 +39,7 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
       },
       devOptions: { enabled: false },
-    }),
+    })]),
   ],
   resolve: {
     // Force a SINGLE copy of these, resolved from this app's node_modules.
@@ -81,10 +85,11 @@ export default defineConfig({
     proxy: proxyOptions
   },
   build: {
-    outDir: "../../raven/public/raven",
+    outDir: native ? "dist-native" : "../../raven/public/raven",
     emptyOutDir: true,
     target: "es2015",
     rollupOptions: {
+      input: native ? "native.html" : "index.html",
       onwarn(warning, warn) {
         if (warning.code === "MODULE_LEVEL_DIRECTIVE") {
           return
