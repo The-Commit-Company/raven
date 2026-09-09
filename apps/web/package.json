@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build --base=/assets/raven/raven/ && yarn copy-html-entry",
-    "build:native": "tsc -b && VITE_NATIVE=1 vite build --base=/ && mv dist-native/native.html dist-native/index.html",
+    "build:native": "tsc -b && vite build --mode native --base=/ && mv dist-native/native.html dist-native/index.html",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",

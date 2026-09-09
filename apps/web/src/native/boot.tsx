@@ -1,26 +1,28 @@
-import { StrictMode } from "react"
+import { StrictMode, type ReactNode } from "react"
 import { createRoot } from "react-dom/client"
 import { ThemeProvider } from "@components/theme-provider"
-import _ from "@lib/translate"
-import { nativePlatform } from "./platform"
+import { setSessionLostHandler, startSession } from "./session"
+import { getDefaultSite, loadSites, setDefaultSite } from "./sites"
+import { SessionScreen } from "./SessionScreen"
+import { SitePicker } from "./SitePicker"
 import { hideNativeSplash } from "./splash"
 
-// Layer 1 placeholder; layer 2 replaces it with the site picker and session flow.
-const Placeholder = () => (
-    <main className="min-h-dvh bg-surface-white text-ink-gray-9 flex flex-col items-center justify-center gap-2">
-        <h1 className="text-2xl font-semibold">Raven</h1>
-        <p className="text-ink-gray-6">{_("Native shell")} · {nativePlatform()}</p>
-    </main>
-)
-
-export const bootNative = () => {
-    document.documentElement.classList.add("native")
+const render = (node: ReactNode) => {
     createRoot(document.getElementById("root")!).render(
         <StrictMode>
-            <ThemeProvider>
-                <Placeholder />
-            </ThemeProvider>
+            <ThemeProvider>{node}</ThemeProvider>
         </StrictMode>,
     )
     hideNativeSplash()
+}
+
+/** The default site with live tokens opens directly; anything else shows the picker. */
+export const bootNative = async () => {
+    document.documentElement.classList.add("native")
+    // A dead session sends the user back to the picker, where the site row re-logs in.
+    setSessionLostHandler(() => { setDefaultSite(null).finally(() => window.location.replace("/")) })
+    const url = await getDefaultSite()
+    const site = url ? (await loadSites()).find((s) => s.url === url) : undefined
+    const session = site ? await startSession(site) : null
+    render(session ? <SessionScreen session={session} /> : <SitePicker />)
 }

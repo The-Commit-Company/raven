@@ -1,6 +1,9 @@
 import frappe
 from frappe.utils.change_log import get_versions
 
+# The app's OAuth redirect URI; the RN app used the bare "raven.thecommit.company:".
+NATIVE_REDIRECT_URI = "raven.thecommit.company://oauth"
+
 
 @frappe.whitelist(allow_guest=True)
 def get_client_id():
@@ -48,7 +51,9 @@ def create_oauth_client():
 
 	oauth_client.app_name = "Raven Mobile"
 	oauth_client.scopes = "all openid"
-	oauth_client.redirect_uris = "raven.thecommit.company:"
+	# Second URI is the Capacitor app's: Foundation drops the query of a bare
+	# "scheme:?code=…" URL, so iOS needs a host in the redirect.
+	oauth_client.redirect_uris = f"raven.thecommit.company: {NATIVE_REDIRECT_URI}"
 	oauth_client.default_redirect_uri = "raven.thecommit.company:"
 	oauth_client.grant_type = "Authorization Code"
 	oauth_client.response_type = "Code"

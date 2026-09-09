@@ -7,12 +7,12 @@ import proxyOptions from "./proxyOptions";
 import babel from '@rolldown/plugin-babel';
 import { VitePWA } from "vite-plugin-pwa"
 
-// VITE_NATIVE=1: the Capacitor bundle. Plain HTML entry, no service worker,
-// served from the app's own origin at /, output consumed by apps/native.
-const native = process.env.VITE_NATIVE === "1"
-
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+// --mode native (.env.native): the Capacitor bundle. Plain HTML entry, no service
+// worker, served from the app's own origin at /, output consumed by apps/native.
+const native = mode === "native"
+return {
   plugins: [
     react(),
     babel({
@@ -98,4 +98,4 @@ export default defineConfig({
       }
     }
   }
-})
+}})
