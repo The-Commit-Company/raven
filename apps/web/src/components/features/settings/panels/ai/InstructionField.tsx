@@ -1,7 +1,7 @@
-import { useState, type ReactNode } from "react"
+import { useEffect, useRef, useState, type ReactNode } from "react"
 import { useFormContext, useFormState, useWatch } from "react-hook-form"
 import { useFrappeGetCall, useFrappeGetDocList } from "frappe-react-sdk"
-import { Sparkles } from "lucide-react"
+import { CheckIcon, CopyIcon, Sparkles } from "lucide-react"
 import { toast } from "sonner"
 
 import _ from "@lib/translate"
@@ -106,33 +106,57 @@ export const VariableRow = ({ variable, description, withoutJinja = false }: { v
     )
 }
 
-/** A clickable variable chip that copies `{{ variable }}` and flips its tooltip to "Copied!". */
+/**
+ * A clickable variable chip that copies `{{ variable }}`. The tooltip is a
+ * plain hover tooltip, so only the hovered chip ever shows one.
+ *
+ * Feedback lives in a trailing icon slot: a copy icon that appears on hover
+ * or focus, and a check for a second after a copy. The slot is always laid
+ * out, so the chip's width never changes and nothing in the table moves.
+ */
 export const VariableTooltip = ({ text, withoutJinja = false }: { text: string, withoutJinja?: boolean }) => {
 
-    const [tooltip, setTooltip] = useState("")
+    const [copied, setCopied] = useState(false)
+    const resetTimer = useRef<number | undefined>(undefined)
+
+    useEffect(() => () => window.clearTimeout(resetTimer.current), [])
 
     const copyText = () => {
         navigator.clipboard.writeText(withoutJinja ? text : "{{ " + text + " }}")
             .then(() => {
-                setTooltip(_("Copied!"))
-                setTimeout(() => setTooltip(""), 1000)
+                setCopied(true)
+                window.clearTimeout(resetTimer.current)
+                resetTimer.current = window.setTimeout(() => setCopied(false), 1000)
             })
             .catch(() => toast.error(_("Failed to copy to clipboard")))
     }
 
     return (
-        <Tooltip open={tooltip !== ""} onOpenChange={(open) => {
-            if (open) {
-                setTooltip(_("Copy to clipboard"))
-                setTimeout(() => setTooltip(""), 1000)
-            }
-        }}>
+        <Tooltip>
             <TooltipTrigger asChild>
-                <code role="button" tabIndex={0} onClick={copyText} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); copyText() } }} aria-label={_("Copy to clipboard")} className="cursor-pointer rounded bg-surface-gray-2 px-1.5 py-0.5 text-xs">
-                    {text}
-                </code>
+                {/* The button is the chip plus the icon slot beside it. Only the
+                    <code> carries the gray background, so the icon sits outside it. */}
+                <span
+                    role="button"
+                    tabIndex={0}
+                    onClick={copyText}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); copyText() } }}
+                    aria-label={copied ? _("Copied!") : _("Copy to clipboard")}
+                    aria-live="polite"
+                    className="group inline-flex cursor-pointer items-center gap-1.5 rounded outline-none"
+                >
+                    <code className="rounded bg-surface-gray-2 px-1.5 py-0.5 text-xs whitespace-nowrap">{text}</code>
+                    {copied ? (
+                        <CheckIcon className="size-3.5 text-ink-green-8" aria-hidden="true" />
+                    ) : (
+                        <CopyIcon
+                            className="size-3.5 text-ink-gray-5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+                            aria-hidden="true"
+                        />
+                    )}
+                </span>
             </TooltipTrigger>
-            <TooltipContent>{tooltip}</TooltipContent>
+            <TooltipContent>{_("Copy to clipboard")}</TooltipContent>
         </Tooltip>
     )
 }

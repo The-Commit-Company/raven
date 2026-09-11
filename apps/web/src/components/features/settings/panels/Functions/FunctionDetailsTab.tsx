@@ -109,8 +109,14 @@ const FunctionTypeField = () => {
     const onFunctionChange = (event: { target: { value: string } }) => {
         const functionDef = FUNCTION_TYPES.find((f) => f.value === event.target.value)
 
-        if (event.target.value === "Attach File to Document") {
+        // Types that don't operate on a document hide the reference doctype
+        // field. Clear the value too, or a doctype picked under an earlier
+        // type would still be submitted.
+        if (!DOCUMENT_REF_FUNCTIONS.includes(event.target.value)) {
             setValue("reference_doctype", "")
+        }
+
+        if (event.target.value === "Attach File to Document") {
             setValue("function_name", "attach_file_to_document")
             setValue("description", "This function attaches a file to a document in the system. Call this function after you have created or updated the document.")
         }
@@ -189,8 +195,10 @@ const ReferenceDoctypeField = () => {
         }
     }
 
-    // Disabled (not hidden) for types that don't operate on a document — keeps the grid stable.
-    const isDocRef = DOCUMENT_REF_FUNCTIONS.includes(type)
+    // Hidden for types that don't operate on a document. Unmounting the field
+    // also drops its required rule: react-hook-form skips unmounted fields
+    // when it validates, so only document types have to fill this in.
+    if (!DOCUMENT_REF_FUNCTIONS.includes(type)) return null
 
     return (
         <LinkFormField
@@ -198,7 +206,6 @@ const ReferenceDoctypeField = () => {
             label={_("Reference Doctype")}
             clearable
             isRequired
-            disabled={!isDocRef}
             doctype="DocType"
             filters={[["istable", "=", 0], ["issingle", "=", 0]]}
             rules={{ required: _("Reference Doctype is required"), onChange: onReferenceDoctypeChange }}
@@ -237,16 +244,22 @@ const CustomFunction = () => {
     )
 }
 
-/** Write-permissions switch, only editable for custom functions. */
+/**
+ * Write-permissions switch, shown only for custom functions. Every other type
+ * sets the flag itself when picked (see onFunctionChange). The field is hidden
+ * rather than disabled: react-hook-form drops disabled fields from the submit
+ * payload, which would lose that preset value.
+ */
 const RequiresWritePermissions = () => {
     const type = useWatch<RavenAIFunction>({ name: "type" })
+
+    if (type !== "Custom Function") return null
 
     return (
         <SwitchFormField
             name="requires_write_permissions"
             label={_("Requires Write Permissions")}
             formDescription={_("Check this if the function you have selected requires write permissions.")}
-            disabled={type !== "Custom Function"}
         />
     )
 }
