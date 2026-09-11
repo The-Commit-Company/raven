@@ -109,8 +109,9 @@ export const MessageActionMenu = ({
     const lastTapRef = useRef({ messageID: "", time: 0 })
     const menuOpenedAtRef = useRef(0)
     const wrapperRef = useRef<HTMLDivElement>(null)
-    /** Hovered message + its toolbar position; null hides the toolbar. */
-    const [hovered, setHovered] = useState<{ message: Message; top: number } | null>(null)
+    /** Hovered message + its toolbar position (top; one of left/right anchors
+     *  it); null hides the toolbar. */
+    const [hovered, setHovered] = useState<{ message: Message; top: number; left?: number; right?: number } | null>(null)
     /** While the toolbar's ellipsis menu is open, hover-clearing is suspended. */
     const toolbarMenuOpenRef = useRef(false)
 
@@ -157,8 +158,38 @@ export const MessageActionMenu = ({
 
     const showToolbarFor = (message: Message, element: HTMLElement) => {
         if (!wrapperRef.current) return
-        const top = element.getBoundingClientRect().top - wrapperRef.current.getBoundingClientRect().top - 14
-        setHovered({ message, top: Math.max(top, 2) })
+        const wrapperRect = wrapperRef.current.getBoundingClientRect()
+        // Resolve the ROW SHELL — `element` can be an inner node (image tile)
+        // or an outer wrapper (batch root).
+        const row =
+            (element.closest("[data-message-row]") as HTMLElement | null) ??
+            (element.querySelector("[data-message-row]") as HTMLElement | null) ??
+            element
+        // The row says how it's aligned (data-message-row, set by MessageRow) —
+        // no class sniffing. Rows are full width in every mode, and the toolbar
+        // sits 24px above the row in the corner OPPOSITE the message's side, so
+        // its overlap always lands on empty row space:
+        //  - "own" content hugs the right → toolbar top-LEFT.
+        //  - everyone else's hugs the left → toolbar top-RIGHT, which is the
+        //    same corner Simple mode has always used.
+        // The lower half overlaps the row, so the pointer reaches the toolbar
+        // without leaving the row — it can't flicker away en route.
+        const rect = row.getBoundingClientRect()
+        const top = Math.max(rect.top - wrapperRect.top - 24, 2)
+        const mode = row.getAttribute("data-message-row")
+        if (mode === "own") {
+            setHovered({
+                message,
+                top,
+                left: Math.max(rect.left - wrapperRect.left + 16, 16),
+            })
+            return
+        }
+        setHovered({
+            message,
+            top,
+            right: Math.max(wrapperRect.right - rect.right + 16, 16),
+        })
     }
 
     /** Desktop: tracks which message the pointer is over and positions the floating toolbar. */
@@ -578,6 +609,8 @@ export const MessageActionMenu = ({
                         <MessageHoverToolbar
                             message={hovered.message}
                             top={hovered.top}
+                            left={hovered.left}
+                            right={hovered.right}
                             canInteract={canInteract}
                             onMenuOpenChange={onToolbarMenuOpenChange}
                         />

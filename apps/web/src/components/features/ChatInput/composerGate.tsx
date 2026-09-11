@@ -52,8 +52,12 @@ export const useComposerGate = (
     const isOpen = channel?.type === "Open"
     const isArchived = channel?.is_archived === 1
 
-    const { members, isLoading: membersLoading } = useChannelMembers(channelID, { autoFetch: !isDM })
-    const isMember = isDM || members.some((m) => m.name === currentUser)
+    const { memberIds, isLoading: membersLoading } = useChannelMembers(channelID, { autoFetch: !isDM })
+    // Membership comes from the raw ids, not the resolved member list. The
+    // resolved list drops members whose user records haven't loaded yet, so on
+    // a refresh it could briefly miss the current user — flashing the
+    // "not a member" banner before the composer.
+    const isMember = isDM || memberIds.includes(currentUser)
 
     // useJoinChannel updates the member store itself (including the roster
     // refresh), so the banner flips as soon as the join succeeds. Nothing

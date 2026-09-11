@@ -739,7 +739,7 @@ def get_timeline_message_content(doctype: str, docname: str | int):
 		.on(message.owner == user.name)
 		.where((channel.type != "Private") | (channel_member.user_id == frappe.session.user))
 		.where(message.link_doctype == doctype)
-		.where(message.link_document == docname)
+		.where(message.link_document == str(docname))
 	)
 	data = query.run(as_dict=True)
 

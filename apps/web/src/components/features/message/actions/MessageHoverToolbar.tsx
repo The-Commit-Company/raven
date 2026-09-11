@@ -34,13 +34,19 @@ import { useIsMobile } from "@hooks/use-mobile"
 export const MessageHoverToolbar = ({
     message,
     top,
+    left,
+    right,
     canInteract = true,
     onMenuOpenChange,
     onOpenFullMenu,
 }: {
     message: Message
-    /** Offset from the stream wrapper's top, computed at hover time. */
+    /** The toolbar's TOP, offset from the stream wrapper's top. */
     top: number
+    /** Horizontal anchor, offset from the wrapper's edge. One of the two is
+     *  set: `left` for own Left-Right rows, `right` for everything else. */
+    left?: number
+    right?: number
     /** From the host's composer gate — see MessageActionMenu. */
     canInteract?: boolean
     /** Lets the hover tracker keep the toolbar mounted while the menu is open. */
@@ -86,8 +92,8 @@ export const MessageHoverToolbar = ({
             data-message-id={message.name}
             data-hover-toolbar
             // z-30: must float above the sticky date separators (z-20)
-            className="absolute right-4 z-40 flex items-center gap-0.5 rounded-md border border-outline-gray-2 bg-surface-base p-0.5 shadow-xs"
-            style={{ top }}
+            className="absolute z-40 flex items-center gap-0.5 rounded-md border border-outline-gray-2 bg-surface-base p-0.5 shadow-xs"
+            style={{ top, left, right }}
         >
             {/* One provider for the whole toolbar: after the first tooltip shows,
                 moving across the icons shows the next ones instantly (skip delay) —

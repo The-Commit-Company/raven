@@ -185,12 +185,15 @@ export const documentPreviewSwrKey = (doctype: string, docname: string) =>
  * image box). The preview DATA waits for visibility, poll-style, so a channel
  * full of linked documents only fetches what the user actually sees.
  */
-export const DocumentLinkRenderer = ({ doctype, docname }: { doctype: string; docname: string }) => {
+export const DocumentLinkRenderer = ({ doctype, docname, className }: { doctype: string; docname: string; className?: string }) => {
     const { meta, workflowDoc } = useDoctypeMeta(doctype)
     const { ref, hasBeenInView } = useHasBeenInView()
 
+    // w-full stretches the card in the classic full-width row. Inside a
+    // fit-content column (Left-Right mode) w-full collapses to the content,
+    // so those callers pass a fixed width via className instead.
     return (
-        <div ref={ref} className="w-full max-w-xl py-1">
+        <div ref={ref} className={cn("w-full max-w-xl py-1", className)}>
             {hasBeenInView ? (
                 <LoadedDocumentLink doctype={doctype} docname={docname} meta={meta} workflowDoc={workflowDoc} />
             ) : (

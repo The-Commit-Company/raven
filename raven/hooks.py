@@ -2,11 +2,11 @@ from . import __version__ as app_version
 
 app_name = "raven"
 app_title = "Raven"
-app_publisher = "The Commit Company (Algocode Technologies Pvt. Ltd.)"
+app_publisher = "Frappe"
 app_description = "Messaging Application"
-app_email = "support@thecommit.company"
+app_email = "support@frappe.io"
 app_license = "AGPLv3"
-source_link = "https://github.com/The-Commit-Company/Raven"
+source_link = "https://github.com/frappe/Raven"
 app_logo = "/assets/raven/raven_logo.svg"
 app_logo_url = "/assets/raven/raven_logo.svg"
 

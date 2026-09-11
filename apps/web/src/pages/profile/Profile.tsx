@@ -77,7 +77,7 @@ const Profile = () => {
                                         <span className="truncate">{myProfile.availability_status}</span>
                                     </span>
                                 )}
-                                <div>
+                                <div className="text-center w-full">
                                     {myProfile?.custom_status && <span className="truncate text-center text-lg md:text-sm text-ink-gray-6">{myProfile.custom_status}</span>}
                                 </div>
                             </div>

@@ -136,18 +136,8 @@ export const ThreadRootMessage = ({ threadID, parentID }: { threadID: string; pa
                                     )}
                                 </div>
                             ) : (
-                                <>
-                                    <MessageContent message={message} />
-                                    {/* MessageContent doesn't know about linked documents —
-                                        MessageItem renders the card in the stream, so this
-                                        surface must too. */}
-                                    {linkedDocMember && (
-                                        <DocumentLinkRenderer
-                                            doctype={linkedDocMember.link_doctype!}
-                                            docname={linkedDocMember.link_document!}
-                                        />
-                                    )}
-                                </>
+                                // MessageContent renders the linked-document card itself.
+                                <MessageContent message={message} />
                             )
                         ) : (
                             // The whole collapsed preview is a click target for

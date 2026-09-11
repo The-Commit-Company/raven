@@ -1,5 +1,5 @@
 # Translations template for Raven.
-# Copyright (C) 2025 The Commit Company (Algocode Technologies Pvt. Ltd.)
+# Copyright (C) 2025 Frappe Technologies Pvt. Ltd.
 # This file is distributed under the same license as the Raven project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
 #

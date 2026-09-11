@@ -1,5 +1,5 @@
-import { atom, getDefaultStore } from "jotai"
-import { atomWithStorage } from "jotai/utils"
+import { getDefaultStore } from "jotai"
+import { atomWithLazy, atomWithStorage } from "jotai/utils"
 
 export type ChatStyle = "Simple" | "Left-Right"
 export type TimeFormat = "12-hour" | "24-hour"
@@ -10,13 +10,18 @@ export type TimeFormat = "12-hour" | "24-hour"
  * client one — so it's seeded from boot (correct on first paint) rather than localStorage, and
  * the Appearance switcher sets it for a live change without reload. Read it with a single
  * useAtomValue in the message rows.
+ *
+ * All boot-seeded atoms here use atomWithLazy. Why: this module can be
+ * imported before `window.frappe.boot` exists (dev loads boot async, and
+ * offline shells recover it in main.tsx). An eager read at import time would
+ * seed the defaults. Lazy init reads boot on first use instead.
  */
-export const chatStyleAtom = atom<ChatStyle>((window.frappe?.boot?.chat_style as ChatStyle | undefined) ?? "Simple")
+export const chatStyleAtom = atomWithLazy<ChatStyle>(() => (window.frappe?.boot?.chat_style as ChatStyle | undefined) ?? "Simple")
 
 /**
  * Time format: "12-hour" displays times like "12:00 PM"; "24-hour" displays times like "12:00" in all messages.
  */
-export const timeFormatAtom = atom<TimeFormat>((window.frappe?.boot?.raven_time_format as TimeFormat | undefined) ?? "12-hour")
+export const timeFormatAtom = atomWithLazy<TimeFormat>(() => (window.frappe?.boot?.raven_time_format as TimeFormat | undefined) ?? "12-hour")
 
 /**
  * Whether the user hides read receipts (two-way: theirs are invisible AND
@@ -25,7 +30,7 @@ export const timeFormatAtom = atom<TimeFormat>((window.frappe?.boot?.raven_time_
  * paths (the message action menu) read a plain atom instead of subscribing
  * to the profile SWR cache. Stored on Raven User as `hide_read_receipts`.
  */
-export const hideReadReceiptsAtom = atom<boolean>(Boolean(window.frappe?.boot?.raven_hide_read_receipts))
+export const hideReadReceiptsAtom = atomWithLazy<boolean>(() => Boolean(window.frappe?.boot?.raven_hide_read_receipts))
 
 export type QuietHoursNudge = "Nudge" | "No Nudge" | "Auto Silent"
 
@@ -37,8 +42,8 @@ export type QuietHoursNudge = "Nudge" | "No Nudge" | "Auto Silent"
  * Raven User as `quiet_hours_nudge`; seeded from boot and written by the
  * Preferences panel, so the send path reads a plain atom.
  */
-export const quietHoursNudgeAtom = atom<QuietHoursNudge>(
-    (window.frappe?.boot?.raven_quiet_hours_nudge as QuietHoursNudge | undefined) ?? "Nudge",
+export const quietHoursNudgeAtom = atomWithLazy<QuietHoursNudge>(
+    () => (window.frappe?.boot?.raven_quiet_hours_nudge as QuietHoursNudge | undefined) ?? "Nudge",
 )
 
 export type QuietHoursConfig = {
@@ -53,8 +58,8 @@ export type QuietHoursConfig = {
  * session applies the change live (banner, send default, preferences row)
  * without a reload. Other members pick it up on their next boot.
  */
-export const quietHoursConfigAtom = atom<QuietHoursConfig | null>(
-    (window.frappe?.boot?.quiet_hours as QuietHoursConfig | undefined) ?? null,
+export const quietHoursConfigAtom = atomWithLazy<QuietHoursConfig | null>(
+    () => (window.frappe?.boot?.quiet_hours as QuietHoursConfig | undefined) ?? null,
 )
 
 /** Non-hook reader for the plain evaluator functions (utils/quietHours.ts).
