@@ -106,9 +106,7 @@ function FormLabel({
 function FormRequiredIndicator({ className, ...props }: React.ComponentProps<"span">) {
     return (
         <>
-            <span className={cn("text-ink-red-6 select-none", className)} aria-hidden="true" {...props}>
-                *
-            </span>
+            <span className={cn("text-ink-red-6 select-none", className)} aria-hidden="true" {...props}>*</span>
             <span className="sr-only">{_("(required)")}</span>
         </>
     )

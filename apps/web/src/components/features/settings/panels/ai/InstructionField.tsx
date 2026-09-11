@@ -17,7 +17,7 @@ import { Separator } from "@components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@components/ui/table"
 import { TabsButton, TabsButtonItem } from "@components/ui/tab-buttons"
 import { Textarea } from "@components/ui/textarea"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@components/ui/tooltip"
 import type { RavenBotInstructionTemplate } from "@raven/types/RavenAI/RavenBotInstructionTemplate"
 
 type Props = {
@@ -128,7 +128,7 @@ export const VariableTooltip = ({ text, withoutJinja = false }: { text: string, 
             }
         }}>
             <TooltipTrigger asChild>
-                <code role="button" tabIndex={0} onClick={copyText} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); copyText() } }} aria-label={_("Copy to clipboard")} className="cursor-pointer rounded bg-surface-gray-2 px-1.5 py-0.5 text-base md:text-sm">
+                <code role="button" tabIndex={0} onClick={copyText} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); copyText() } }} aria-label={_("Copy to clipboard")} className="cursor-pointer rounded bg-surface-gray-2 px-1.5 py-0.5 text-xs">
                     {text}
                 </code>
             </TooltipTrigger>

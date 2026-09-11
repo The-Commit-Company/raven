@@ -52,7 +52,7 @@ export function TablePagination({
                             size a size larger than everything beside it — its own label and
                             the "Showing x-y of n" count are both 13px.
                             min-w fits the widest option (100) so switching sizes doesn't shift the row. */}
-                        <SelectTrigger inputSize="sm" className="text-sm tabular-nums min-w-17.5 justify-end">
+                        <SelectTrigger inputSize="sm" className="text-sm tabular-nums justify-end">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>

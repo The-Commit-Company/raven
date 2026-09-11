@@ -13,11 +13,11 @@ const InstructionTemplateForm = ({ isEdit }: { isEdit?: boolean }) => (
                 label={_("Template Name")}
                 isRequired
                 rules={{ required: _("Name is required") }}
-                inputProps={{ placeholder: _("Create Document Template") }}
+                inputProps={{ placeholder: _("Create Document Template"), autoFocus: !isEdit }}
                 readOnly={isEdit}
             />
         </div>
-        <InstructionField instructionRequired autoFocus={!isEdit} />
+        <InstructionField instructionRequired autoFocus={isEdit} />
     </>
 )
 

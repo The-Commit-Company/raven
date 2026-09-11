@@ -2,7 +2,7 @@ import { Controller, useFormContext, useFormState, useWatch } from "react-hook-f
 import { useFrappeGetCall } from "frappe-react-sdk"
 import { useSetAtom } from "jotai"
 import { CheckIcon, InfoIcon } from "lucide-react"
-import { Alert, AlertDescription } from "@components/ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert"
 import { Badge } from "@components/ui/badge"
 import { FormMessage } from "@components/ui/form"
 import { SwitchFormField } from "@components/ui/form-elements"
@@ -60,11 +60,11 @@ const AgentDocumentProcessorsTab = () => {
 
     if (!isGoogleApisEnabled) {
         return (
-            <Alert theme="red">
+            <Alert theme="blue">
                 <InfoIcon />
-                <AlertDescription>
+                <AlertTitle>
                     {_("Document Processors require Google Cloud APIs to be enabled in your Raven settings.")}
-                </AlertDescription>
+                </AlertTitle>
             </Alert>
         )
     }

@@ -1,8 +1,9 @@
 import { useSetAtom } from "jotai"
 import { useRavenSettings } from "@hooks/fetchers/useRavenSettings"
-import { Alert, AlertDescription } from "@components/ui/alert"
+import { Alert, AlertTitle } from "@components/ui/alert"
 import { settingsDialogOpenTab } from "@components/features/settings/settingsDialogAtom"
 import _ from "@lib/translate"
+import { InfoIcon } from "lucide-react"
 
 /**
  * Info callout shown when AI integration is off or no provider is configured.
@@ -26,19 +27,18 @@ export const AINotEnabledCallout = () => {
 
     return (
         <Alert theme="blue">
-            <AlertDescription>
+            <InfoIcon />
+            <AlertTitle className="text-start">
                 {/* Single child: AlertDescription is a grid, separate children stack as rows. */}
-                <span>
-                    {message}{" "}
-                    <button
-                        type="button"
-                        className="underline underline-offset-2 font-medium"
-                        onClick={() => setOpenTab("ai-settings")}
-                    >
-                        {_("AI Settings")}
-                    </button>
+                {message}{" "}
+                <span
+                    role="button"
+                    className="underline underline-offset-2 font-medium"
+                    onClick={() => setOpenTab("ai-settings")}
+                >
+                    {_("AI Settings")}
                 </span>
-            </AlertDescription>
+            </AlertTitle>
         </Alert>
     )
 }

@@ -1,6 +1,7 @@
 import { useRavenSettings } from "@hooks/fetchers/useRavenSettings"
-import { Alert, AlertDescription } from "@components/ui/alert"
+import { Alert, AlertTitle } from "@components/ui/alert"
 import _ from "@lib/translate"
+import { InfoIcon } from "lucide-react"
 
 /**
  * Info callout shown when Google APIs are off or no Project ID is set.
@@ -12,6 +13,14 @@ export const GoogleAPINotEnabledCallout = () => {
     const hasGoogleApis = ravenSettings?.enable_google_apis === 1
     const hasGoogleProjectId = Boolean(ravenSettings?.google_project_id)
 
+    const isAIEnabled = ravenSettings?.enable_ai_integration === 1
+    const hasOpenAI = ravenSettings?.enable_openai_services === 1
+    const hasLocalLLM = ravenSettings?.enable_local_llm === 1
+
+    if (!isAIEnabled || !hasOpenAI || !hasLocalLLM) {
+        return null
+    }
+
     if (hasGoogleApis && hasGoogleProjectId) {
         return null
     }
@@ -22,7 +31,8 @@ export const GoogleAPINotEnabledCallout = () => {
 
     return (
         <Alert theme="blue">
-            <AlertDescription>{message}</AlertDescription>
+            <InfoIcon />
+            <AlertTitle className="text-start">{message}</AlertTitle>
         </Alert>
     )
 }
