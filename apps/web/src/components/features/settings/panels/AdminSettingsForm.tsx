@@ -1,4 +1,5 @@
 import { useEffect } from "react"
+import { SAVE_TOAST_ID } from "@lib/toast"
 import { useForm } from "react-hook-form"
 import { useFrappeUpdateDoc } from "frappe-react-sdk"
 import { toast } from "sonner"
@@ -18,7 +19,7 @@ import type { RavenSettings } from "@raven/types/Raven/RavenSettings"
 import _ from "@lib/translate"
 
 /** Only Raven Admins / System Managers may edit Raven Settings. */
-const isRavenSettingsAdmin = () => hasRole("Raven Admin") || hasRole("System Manager")
+export const isRavenSettingsAdmin = () => hasRole("Raven Admin") || hasRole("System Manager")
 
 /**
  * Shared scaffold for the admin-facing Raven Settings panels (AI, HR, Notifications).
@@ -71,7 +72,7 @@ export function AdminSettingsForm({
             updateDoc("Raven Settings", ravenSettings.name, { ...ravenSettings, ...data }).then((res) =>
                 mutate(res, { revalidate: false }),
             ),
-            { loading: _("Saving…"), success: _("Settings updated"), error: _("Could not update settings") },
+            { id: SAVE_TOAST_ID, loading: _("Saving…"), success: _("Settings updated"), error: _("Could not update settings") },
         )
     }
 

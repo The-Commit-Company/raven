@@ -162,7 +162,7 @@ function WorkspaceTypeCell({ type }: { type: WorkspaceFields["type"] }) {
  */
 function MembershipCell({ workspace }: { workspace: WorkspaceFields }) {
     if (workspace.is_admin) {
-        return <Badge variant="solid">{_("Admin")}</Badge>
+        return <Badge theme="blue">{_("Admin")}</Badge>
     }
     if (workspace.workspace_member_name) {
         return <Badge variant="subtle">{_("Member")}</Badge>
