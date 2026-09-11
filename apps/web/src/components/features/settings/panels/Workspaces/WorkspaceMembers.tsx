@@ -239,8 +239,7 @@ const AddWorkspaceMembersDialog = ({
                     <DialogClose asChild>
                         <Button size="md" type="button" variant="outline" disabled={loading}>{_("Cancel")}</Button>
                     </DialogClose>
-                    <Button size="md" type="button" onClick={onSubmit} disabled={selectedUsers.length === 0 || loading}>
-                        {loading && <Spinner />}
+                    <Button size="md" type="button" onClick={onSubmit} disabled={selectedUsers.length === 0} loading={loading} loadingText={_("Adding members...")}>
                         {_("Add {0} members", [String(selectedUsers.length)])}
                     </Button>
                 </DialogFooter>

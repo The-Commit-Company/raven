@@ -38,6 +38,9 @@ export interface OutboxMessage {
     replied_message_details?: string
     /** Send without notifying recipients — persisted so a retried send stays silent. */
     send_silently?: boolean
+    /** A system document attached to the send (rendered as a card on the message). */
+    link_doctype?: string
+    link_document?: string
 }
 
 /**

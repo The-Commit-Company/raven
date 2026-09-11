@@ -10,7 +10,7 @@ import { Separator } from "@components/ui/separator"
 import _ from "@lib/translate"
 
 const LINKS = [
-    { label: _("GitHub"), href: "https://github.com/The-Commit-Company/raven" },
+    { label: _("GitHub"), href: "https://github.com/frappe/raven" },
     { label: _("Community"), href: "https://community.ravenapp.cloud" },
     { label: _("Website"), href: "https://ravenchat.ai" },
     { label: _("Documentation"), href: "https://docs.ravenapp.cloud" },

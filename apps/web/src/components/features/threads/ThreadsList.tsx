@@ -1,6 +1,7 @@
-import { memo, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react"
+import { memo, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react"
 import { FrappeConfig, FrappeContext } from "frappe-react-sdk"
-import { Virtuoso } from "react-virtuoso"
+import { useHotkeys } from "react-hotkeys-hook"
+import { Virtuoso, type VirtuosoHandle } from "react-virtuoso"
 import { UserData } from "@db"
 import { ThreadPreviewBox } from "./ThreadPreviewBox"
 import { ThreadMessage } from "src/types/ThreadMessage"
@@ -166,6 +167,31 @@ export default function ThreadsList({
     })
 
     const [scroller, setScroller] = useState<HTMLElement | null>(null)
+    const virtuosoRef = useRef<VirtuosoHandle>(null)
+
+    /** Option+Down/Up = next/previous thread; with Shift, the nearest UNREAD
+     *  thread in that direction. Same convention as the channel sidebars
+     *  (see ChannelSidebar) — walks display order, no candidate = no-op. */
+    const goToAdjacentThread = (direction: 1 | -1, unreadOnly = false) => {
+        if (rows.length === 0) return
+        const currentIndex = rows.findIndex((row) => row.name === activeThreadID)
+        let index = currentIndex === -1 ? (direction === 1 ? 0 : rows.length - 1) : currentIndex + direction
+        while (index >= 0 && index < rows.length) {
+            const row = rows[index]
+            if (!unreadOnly || row._isUnread) {
+                // The same path as a row click: clears the unread dot + navigates.
+                onThreadClick?.(row)
+                virtuosoRef.current?.scrollIntoView({ index })
+                return
+            }
+            index += direction
+        }
+    }
+    const hotkeyOptions = { enableOnFormTags: true, enableOnContentEditable: true, preventDefault: true }
+    useHotkeys("alt+down", () => goToAdjacentThread(1), hotkeyOptions, [rows, activeThreadID, onThreadClick])
+    useHotkeys("alt+up", () => goToAdjacentThread(-1), hotkeyOptions, [rows, activeThreadID, onThreadClick])
+    useHotkeys("alt+shift+down", () => goToAdjacentThread(1, true), hotkeyOptions, [rows, activeThreadID, onThreadClick])
+    useHotkeys("alt+shift+up", () => goToAdjacentThread(-1, true), hotkeyOptions, [rows, activeThreadID, onThreadClick])
 
     const { usersById, channelById, dmById } = useMessageRowLookups()
     const lookups = useMemo<RowLookups>(
@@ -242,6 +268,7 @@ export default function ThreadsList({
     } else {
         body = (
             <Virtuoso
+                ref={virtuosoRef}
                 data={rows}
                 style={{ height: "100%" }}
                 scrollerRef={(ref) => setScroller(ref as HTMLElement | null)}

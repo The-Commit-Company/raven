@@ -64,9 +64,8 @@ const MessageActionDetailContent = ({
                                 deleteSuccessMessage={_("Message action deleted")}
                                 onDeleted={() => { globalMutate(MESSAGE_ACTIONS_LIST_KEY); onBack() }}
                             />
-                            <Button type="submit" size="sm" disabled={loading}>
-                                {loading && <Spinner />}
-                                {loading ? _("Saving") : _("Save")}
+                            <Button type="submit" size="sm" loading={loading} loadingText={_("Saving")}>
+                                {_("Save")}
                             </Button>
                         </div>
                     }

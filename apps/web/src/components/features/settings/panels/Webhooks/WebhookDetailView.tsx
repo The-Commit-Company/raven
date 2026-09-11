@@ -80,9 +80,8 @@ const WebhookDetailContent = ({
                                     {data.enabled ? _("Disable") : _("Enable")}
                                 </DropdownMenuItem>
                             </RecordActionsMenu>
-                            <Button type="submit" size="sm" disabled={loading}>
-                                {loading && <Spinner />}
-                                {loading ? _("Saving") : _("Save")}
+                            <Button type="submit" size="sm" loading={loading} loadingText={_("Saving")}>
+                                {_("Save")}
                             </Button>
                         </div>
                     }

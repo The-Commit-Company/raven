@@ -1,4 +1,6 @@
 import { useFrappeGetDoc, useFrappeUpdateDoc, useSWRConfig } from "frappe-react-sdk"
+import { SAVE_TOAST_ID } from "@lib/toast"
+import useSaveHotkey from "@hooks/useSaveHotkey"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { ArrowLeftIcon, LayoutPanelTopIcon, UsersIcon } from "lucide-react"
@@ -72,13 +74,18 @@ const WorkspaceDetailContent = ({
 
     const onSubmit = (formData: WorkspaceFormData) => {
         updateDoc("Raven Workspace", formData.name, formData).then((doc) => {
-            toast.success(_("Saved"))
+            toast.success(_("Saved"), { id: SAVE_TOAST_ID })
             methods.reset(doc ? toFormDefaults(doc) : undefined)
             globalMutate("workspaces_list")
             globalMutate("channel_list")
             mutate()
         })
     }
+
+    // Same gate as the Save button, which only admins get.
+    useSaveHotkey(() => {
+        if (canEdit && isDirty && !loading) methods.handleSubmit(onSubmit)()
+    })
 
     return (
         <FormProvider {...methods}>
@@ -93,9 +100,8 @@ const WorkspaceDetailContent = ({
                                     onDeleted={onBack}
                                     onRenamed={() => onBack()}
                                 />
-                                <Button type="submit" size="sm" disabled={loading}>
-                                    {loading && <Spinner />}
-                                    {loading ? _("Saving") : _("Save")}
+                                <Button type="submit" size="sm" disabled={!isDirty} loading={loading} loadingText={_("Saving")}>
+                                    {_("Save")}
                                 </Button>
                             </div>
                         ) : null
@@ -109,7 +115,7 @@ const WorkspaceDetailContent = ({
                             <ArrowLeftIcon />
                         </Button>
                         {data.workspace_name}
-                        {isDirty && <Badge variant="outline">{_("Not Saved")}</Badge>}
+                        {isDirty && <Badge variant="subtle">{_("Not Saved")}</Badge>}
                     </SettingsPanelTitle>
                 </SettingsPanelHeader>
                 <SettingsPanelContent className="min-h-0 gap-4">

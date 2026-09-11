@@ -15,6 +15,26 @@ export const isThreadParent = (message: Message): boolean => {
 
 /** "1 attachment" / "N attachments" — shared by the thread header and the
  *  message link card for batch summaries. */
+/**
+ * The reply snapshot arrives in TWO shapes: fetches (get_messages) return the
+ * DB value, a JSON string — but realtime events and the send ack serialize the
+ * server's in-memory doc, where the field is still a dict, so they deliver an
+ * OBJECT. A bare JSON.parse threw on the object form and the reply quote
+ * silently vanished for live receivers until the next refetch. Accept both.
+ */
+export const parseRepliedMessageDetails = <T,>(value: unknown): T | null => {
+    if (!value) return null
+    if (typeof value === "object") return value as T
+    if (typeof value === "string") {
+        try {
+            return JSON.parse(value)
+        } catch {
+            return null
+        }
+    }
+    return null
+}
+
 export const attachmentCountLabel = (count: number): string =>
     count === 1 ? _("1 attachment") : _("{0} attachments", [String(count)])
 

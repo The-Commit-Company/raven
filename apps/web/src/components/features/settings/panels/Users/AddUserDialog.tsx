@@ -173,8 +173,7 @@ const UserForm = ({ onClose }: { onClose: VoidFunction }) => {
                             {_("Cancel")}
                         </Button>
                     </DialogClose>
-                    <Button size="md" type="submit" disabled={ravenUserExists || loading || fetching}>
-                        {loading && <Spinner />}
+                    <Button size="md" type="submit" disabled={ravenUserExists || fetching} loading={loading} loadingText={_("Sending Invite...")}>
                         {userExists ? _("Add") : _("Send Invite")}
                     </Button>
                 </DialogFooter>

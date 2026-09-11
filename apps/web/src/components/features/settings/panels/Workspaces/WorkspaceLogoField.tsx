@@ -135,8 +135,7 @@ const UploadLogoDialog = ({
                     accept={{ "image/*": [".jpeg", ".jpg", ".png", ".svg", ".webp"] }}
                 />
                 <DialogFooter>
-                    <Button size="md" type="button" onClick={onUpload} disabled={files.length === 0 || loading}>
-                        {loading && <Spinner />}
+                    <Button size="md" type="button" onClick={onUpload} disabled={files.length === 0} loading={loading} loadingText={_("Uploading")}>
                         {_("Upload")}
                     </Button>
                 </DialogFooter>

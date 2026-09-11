@@ -97,7 +97,7 @@ const MessageResultBlockInner = ({ message, user, channel, dmChannel, peer, work
                             search list would fire get_poll per row and drop the highlight. */}
                         {message.message_type === "Poll"
                             ? <MessageBody content={message.text} />
-                            : <MessageContent message={message} showLinkPreview={false} />}
+                            : <MessageContent message={message} showLinkPreview={false} showLinkedDocument={false} />}
                     </div>
                 </div>
             </div>

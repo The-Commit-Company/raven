@@ -1,4 +1,5 @@
 import { MessageContent } from "@components/features/message/renderers/MessageContent"
+import { DocumentLinkInline } from "@components/features/message/renderers/DocumentLinkRenderer"
 import { UserAvatar } from "@components/features/message/UserAvatar"
 import { ThreadChannelDetails } from "@components/features/threads/ThreadsList"
 import { Badge } from "@components/ui/badge"
@@ -47,8 +48,18 @@ export const BaseThreadMessage = ({
                         went inert). Desktop keeps hover cards: hover never conflicts
                         with click navigation. Same rule as MessageResultBlock. */}
                     <div className="[&_p]:my-0 max-md:[&_.mention]:pointer-events-none">
-                        <MessageContent message={thread as unknown as Message} showLinkPreview={false} />
+                        <MessageContent message={thread as unknown as Message} showLinkPreview={false} showLinkedDocument={false} />
                     </div>
+                    {/* List rows stay compact: the doctype + id line, not the full card.
+                        Darker ink than the default — this line is part of the row's
+                        CONTENT here, not a footnote under a full card. */}
+                    {thread.link_doctype && thread.link_document && (
+                        <DocumentLinkInline
+                            doctype={thread.link_doctype}
+                            docname={thread.link_document}
+                            className="mt-1 text-ink-gray-7"
+                        />
+                    )}
                 </div>
             </div>
 

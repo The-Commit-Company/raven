@@ -3,6 +3,7 @@ import { Element, Text, domToReact, htmlToDOM, type DOMNode, type HTMLReactParse
 import { UserMention, ChannelMention } from "./MessageMention"
 import { CodeBlock } from "./MessageCodeBlock"
 import { MessageLink } from "./LinkPreviewCard"
+import { MAYBE_PHONE_RE, splitPhoneRuns } from "@utils/phoneDetection"
 import { cn } from "@lib/utils"
 import _ from "@lib/translate"
 
@@ -62,8 +63,48 @@ const textContent = (node: DOMNode): string => {
     return ""
 }
 
+/* --------------------------- Phone detection --------------------------- */
+
+/** Detection logic lives in @utils/phoneDetection (pure + unit-tested); this
+ *  renderer only maps the runs onto anchors. */
+const linkifyPhoneNumbers = (text: string): React.ReactNode[] | null => {
+    const runs = splitPhoneRuns(text)
+    if (!runs) return null
+    return runs.map((run, i) =>
+        run.href ? (
+            <a key={i} href={run.href}>
+                {run.text}
+            </a>
+        ) : (
+            run.text
+        ),
+    )
+}
+
+/** True when the text sits inside a link or code — no tel: links there. */
+const insidePhoneExemptAncestor = (node: Text): boolean => {
+    let parent = node.parent as Element | null
+    while (parent) {
+        const name = (parent as Element).name
+        if (name === "a" || name === "code" || name === "pre") return true
+        parent = (parent as { parent?: Element | null }).parent ?? null
+    }
+    return false
+}
+
 const options: HTMLReactParserOptions = {
     replace: (node) => {
+        // Phone numbers in plain text become tel: links, detected at RENDER
+        // time — old messages and other clients' sends get them too, and
+        // nothing changes in stored content. Never inside an existing link or
+        // code. Jumbomoji is unaffected (digits already disqualify it).
+        if (node instanceof Text) {
+            if (!node.data || !MAYBE_PHONE_RE.test(node.data)) return
+            if (insidePhoneExemptAncestor(node)) return
+            const parts = linkifyPhoneNumbers(node.data)
+            return parts ? <>{parts}</> : undefined
+        }
+
         if (!(node instanceof Element)) return
 
         // Strip author classes. v2 Raven baked presentational utilities (e.g.
@@ -230,6 +271,77 @@ const isJumbomoji = (html: string, dom: DOMNode[]): boolean => {
 export const isJumbomojiHtml = (html: string): boolean =>
     html.length <= JUMBOMOJI_HTML_MAX_LENGTH &&
     isJumbomoji(html, htmlToDOM(html, { lowerCaseAttributeNames: false }))
+
+/* ---------------------------- Body segments ---------------------------- */
+
+/**
+ * One piece of a message body, for the Left-Right layout.
+ * Text pieces go inside a bubble. Standalone pieces (code blocks, a GIF on
+ * its own line, emoji-only messages) render bare, iMessage style.
+ */
+export type BodySegment = {
+    standalone: boolean
+    /** Emoji-only message — rendered big and bare. */
+    jumbo: boolean
+    node: React.ReactNode
+}
+
+/**
+ * A block that should NOT live inside a text bubble:
+ * - a code block (<pre>)
+ * - a paragraph that holds only one image (a GIF). Custom emojis don't
+ *   count — they are inline text.
+ */
+const isStandaloneBlock = (node: DOMNode): boolean => {
+    if (!(node instanceof Element)) return false
+    if (node.name === "pre") return true
+    if (node.name === "p") {
+        const children = (node.children as DOMNode[]).filter(
+            (child) => !(child instanceof Text && !child.data.trim()),
+        )
+        const only = children.length === 1 ? children[0] : null
+        return (
+            only instanceof Element &&
+            only.name === "img" &&
+            only.attribs?.["data-type"] !== "customEmoji"
+        )
+    }
+    return false
+}
+
+/**
+ * Split a message body into segments for the Left-Right layout.
+ * Consecutive text blocks group into one segment (one bubble). Standalone
+ * blocks break the run and come back as their own bare segment. An
+ * emoji-only message is one bare jumbo segment.
+ */
+export const parseBodySegments = (html: string): BodySegment[] => {
+    const dom = htmlToDOM(html, { lowerCaseAttributeNames: false })
+    if (isJumbomoji(html, dom)) {
+        return [{ standalone: true, jumbo: true, node: domToReact(dom, options) }]
+    }
+
+    const segments: BodySegment[] = []
+    let run: DOMNode[] = []
+    const flushRun = () => {
+        if (run.length === 0) return
+        segments.push({ standalone: false, jumbo: false, node: domToReact(run, options) })
+        run = []
+    }
+
+    for (const node of dom) {
+        // Whitespace between blocks belongs to no segment.
+        if (node instanceof Text && !node.data.trim()) continue
+        if (isStandaloneBlock(node)) {
+            flushRun()
+            segments.push({ standalone: true, jumbo: false, node: domToReact([node], options) })
+        } else {
+            run.push(node)
+        }
+    }
+    flushRun()
+    return segments
+}
 
 export const RichTextRenderer = ({ html, jumbomoji = false }: { html: string; jumbomoji?: boolean }) => {
     const { tree, jumbo } = useMemo(() => {

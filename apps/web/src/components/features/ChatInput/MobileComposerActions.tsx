@@ -106,7 +106,7 @@ export const MobileComposerActions = ({
 
             {/* Controlled dialogs opened from the sheet rows (triggers hidden). */}
             <CreatePollDialog channelID={channelID} open={pollOpen} onOpenChange={setPollOpen} hideTrigger />
-            <AttachFrappeDocumentDialog open={docOpen} onOpenChange={setDocOpen} hideTrigger />
+            <AttachFrappeDocumentDialog channelID={channelID} open={docOpen} onOpenChange={setDocOpen} hideTrigger />
         </>
     )
 }

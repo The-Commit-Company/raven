@@ -38,9 +38,8 @@ const DocumentNotificationCreateView = ({ onBack, onCreated }: Props) => {
             <form onSubmit={methods.handleSubmit(onSubmit)} className="contents">
                 <SettingsPanelHeader
                     actions={
-                        <Button type="submit" size="sm" disabled={loading}>
-                            {loading && <Spinner />}
-                            {loading ? _("Creating") : _("Create")}
+                        <Button type="submit" size="sm" loading={loading} loadingText={_("Creating")}>
+                            {_("Create")}
                         </Button>
                     }
                 >
