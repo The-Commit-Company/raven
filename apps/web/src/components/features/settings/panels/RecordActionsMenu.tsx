@@ -11,7 +11,6 @@ import {
     DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@components/ui/dropdown-menu"
 import ErrorBanner from "@components/ui/error-banner"
-import { Spinner } from "@components/ui/spinner"
 import _ from "@lib/translate"
 
 type Props = {
@@ -71,9 +70,8 @@ export const RecordActionsMenu = ({
                     {error && <ErrorBanner error={error} />}
                     <AlertDialogFooter>
                         <AlertDialogCancel disabled={loading}>{_("Cancel")}</AlertDialogCancel>
-                        <Button variant="solid" theme="red" disabled={loading} onClick={onDelete}>
-                            {loading && <Spinner />}
-                            {loading ? _("Deleting") : _("Delete")}
+                        <Button variant="solid" theme="red" onClick={onDelete} loading={loading} loadingText={_("Deleting")}>
+                            {_("Delete")}
                         </Button>
                     </AlertDialogFooter>
                 </AlertDialogContent>
