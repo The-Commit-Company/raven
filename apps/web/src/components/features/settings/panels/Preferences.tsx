@@ -1,4 +1,5 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@components/ui/select"
+import { SAVE_TOAST_ID } from "@lib/toast"
 import { Separator } from "@components/ui/separator"
 import { SettingsPanelDescription, SettingsPanelHeader, SettingsPanelTitle, SettingsPanelContent, SettingsFormLabel, SettingsFormDescription, SettingsFormRow, SettingsSectionHeader } from "@components/ui/settings-dialog"
 import { Switch } from "@components/ui/switch"
@@ -50,9 +51,7 @@ const Preferences = () => {
                 setQuietHoursNudge(value as QuietHoursNudge)
             }
             mutate()
-            toast.success(_("Settings updated"), {
-                id: "preferences-updated"
-            })
+            toast.success(_("Settings updated"), { id: SAVE_TOAST_ID })
         }).catch((e) => {
             errorResponseToast(_("Could not update preference"), e)
         })

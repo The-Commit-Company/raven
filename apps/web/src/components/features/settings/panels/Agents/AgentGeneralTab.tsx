@@ -1,9 +1,8 @@
-import { useFormContext } from "react-hook-form"
+import { useFormContext, useWatch } from "react-hook-form"
 import { DataField, SwitchFormField } from "@components/ui/form-elements"
 import { Label } from "@components/ui/label"
 import { Textarea } from "@components/ui/textarea"
 import { useIsMobile } from "@hooks/use-mobile"
-import { useRavenSettings } from "@hooks/fetchers/useRavenSettings"
 import type { RavenBot } from "@raven/types/RavenBot/RavenBot"
 import AINotEnabledCallout from "../ai/AINotEnabledCallout"
 import _ from "@lib/translate"
@@ -11,7 +10,7 @@ import _ from "@lib/translate"
 /** General fields for a Raven Bot — name, description, and the AI agent toggle. */
 const AgentGeneralTab = () => {
     const { register } = useFormContext<RavenBot>()
-    const { ravenSettings } = useRavenSettings()
+    const isAiBot = useWatch<RavenBot>({ name: "is_ai_bot" })
     const isMobile = useIsMobile()
 
     return (
@@ -34,13 +33,15 @@ const AgentGeneralTab = () => {
                     placeholder={_("A bot to handle accounts")}
                 />
             </div>
-            <AINotEnabledCallout />
             <SwitchFormField
                 name="is_ai_bot"
                 label={_("Is AI Agent")}
                 formDescription={_("Check to enable AI features for this bot")}
-                disabled={!ravenSettings?.enable_ai_integration}
             />
+            {/* The switch stays usable when AI is off. Turning it on is what
+                surfaces the setup callout, which renders nothing once AI is
+                enabled with a provider. */}
+            {isAiBot ? <AINotEnabledCallout /> : null}
         </div>
     )
 }

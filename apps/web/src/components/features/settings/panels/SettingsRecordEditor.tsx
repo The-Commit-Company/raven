@@ -1,4 +1,6 @@
 import type { ReactNode } from "react"
+import { SAVE_TOAST_ID } from "@lib/toast"
+import { hasDirtyFields } from "@lib/formState"
 import { useFrappeCreateDoc, useFrappeGetDoc, useFrappeUpdateDoc, useSWRConfig, type FrappeDoc, type SWRResponse } from "frappe-react-sdk"
 import { useForm, type DefaultValues, type FieldValues } from "react-hook-form"
 import { toast } from "sonner"
@@ -113,11 +115,12 @@ const DetailContent = <T extends FieldValues>({
     const { mutate: globalMutate } = useSWRConfig()
     // Seed missing (unset) fields from createDefaults so a toggle round-trip is not reported dirty.
     const methods = useForm<T>({ defaultValues: { ...createDefaults, ...data } as DefaultValues<T> })
-    const { handleSubmit, formState: { isDirty } } = methods
+    const { handleSubmit, formState: { dirtyFields } } = methods
+    const hasChanges = hasDirtyFields(dirtyFields)
 
     const onSubmit = async (formData: T) => {
         const doc = await updateDoc(doctype, id, formData)
-        toast.success(_("Saved"))
+        toast.success(_("Saved"), { id: SAVE_TOAST_ID })
         methods.reset({ ...createDefaults, ...doc } as T)
         mutate(doc, { revalidate: false })
         await globalMutate((key) => typeof key === "string" && key.startsWith(listKey))
@@ -151,7 +154,7 @@ const DetailContent = <T extends FieldValues>({
                     <SettingsPanelTitle className="items-center h-auto -ml-2">
                         <BackButton onBack={onBack} label={backLabel} />
                         {title(data)}
-                        {isDirty && <Badge variant="outline">{_("Not Saved")}</Badge>}
+                        {hasChanges && <Badge variant="subtle">{_("Not Saved")}</Badge>}
                     </SettingsPanelTitle>
                 </SettingsPanelHeader>
                 <SettingsPanelContent className="min-h-0 gap-4">
