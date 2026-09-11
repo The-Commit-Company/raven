@@ -1,14 +1,25 @@
 import { useFormContext } from "react-hook-form"
 import type { RavenBot } from "@raven/types/RavenBot/RavenBot"
+import CodeBlock from "@components/features/message/renderers/MessageCodeBlock"
 import _ from "@lib/translate"
+
+/**
+ * Turns a bot ID into a Python variable name: lowercase, with every run of
+ * other characters collapsed to one underscore. Python names can't start with
+ * a digit, so those get a prefix.
+ */
+export const toPythonIdentifier = (id: string): string => {
+    const slug = id.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "")
+    if (!slug) return "bot"
+    return /^\d/.test(slug) ? `bot_${slug}` : slug
+}
 
 /** API Docs tab of the Raven Bot editor. */
 const AgentApiDocsTab = () => {
     const { getValues } = useFormContext<RavenBot>()
 
     const botID = getValues("name")
-
-    const botVarName = botID.replace(/[^a-zA-Z0-9_]/g, "_")
+    const botVarName = toPythonIdentifier(botID)
 
     const codeSamples = {
         sendMessage: `${botVarName} = frappe.get_doc("Raven Bot", "${botID}")
@@ -17,22 +28,22 @@ const AgentApiDocsTab = () => {
 ${botVarName}.send_message(channel_id="channel-name", text="This is a test message.")`,
 
         sendMessageInMarkdown: `${botVarName}.send_message(
-        channel_id="channel-name", 
-        text="This is a test message.", 
-        markdown=True
-    )`,
+    channel_id="channel-name",
+    text="This is a test message.",
+    markdown=True
+)`,
 
         sendMessageWithDocumentLink: `${botVarName}.send_message(
-            channel_id="channel-name", 
-            text="This is a test message.", 
-            link_doctype="DocType",
-            link_document="Document Name"
-        )`,
+    channel_id="channel-name",
+    text="This is a test message.",
+    link_doctype="DocType",
+    link_document="Document Name"
+)`,
 
         sendDirectMessage: `${botVarName}.send_direct_message(
-            user_id="john.doe@example.com", 
-            text="This is a test message."
-        )`,
+    user_id="john.doe@example.com",
+    text="This is a test message."
+)`,
     }
 
     return (
@@ -46,7 +57,7 @@ ${botVarName}.send_message(channel_id="channel-name", text="This is a test messa
                 <p className="text-p-sm text-ink-gray-6">
                     {_("Bots can be used to send messages to channels with HTML formatted content.")}
                 </p>
-                <CodeBlock sample={codeSamples.sendMessage} />
+                <CodeBlock code={codeSamples.sendMessage} language="python" />
             </div>
 
             <div className="flex flex-col gap-1">
@@ -56,7 +67,7 @@ ${botVarName}.send_message(channel_id="channel-name", text="This is a test messa
                     <code className="rounded bg-surface-gray-2 px-1 py-0.5 font-mono text-p-xs">markdown</code>{" "}
                     {_("parameter to True.")}
                 </p>
-                <CodeBlock sample={codeSamples.sendMessageInMarkdown} />
+                <CodeBlock code={codeSamples.sendMessageInMarkdown} language="python" />
             </div>
 
             <div className="flex flex-col gap-1">
@@ -68,7 +79,7 @@ ${botVarName}.send_message(channel_id="channel-name", text="This is a test messa
                     <code className="rounded bg-surface-gray-2 px-1 py-0.5 font-mono text-p-xs">link_document</code>{" "}
                     {_("parameters.")}
                 </p>
-                <CodeBlock sample={codeSamples.sendMessageWithDocumentLink} />
+                <CodeBlock code={codeSamples.sendMessageWithDocumentLink} language="python" />
             </div>
 
             <div className="flex flex-col gap-1">
@@ -78,17 +89,10 @@ ${botVarName}.send_message(channel_id="channel-name", text="This is a test messa
                     <code className="rounded bg-surface-gray-2 px-1 py-0.5 font-mono text-p-xs">send_direct_message</code>{" "}
                     {_("method and setting the user_id parameter. This method also accepts markdown and document link parameters.")}
                 </p>
-                <CodeBlock sample={codeSamples.sendDirectMessage} />
+                <CodeBlock code={codeSamples.sendDirectMessage} language="python" />
             </div>
         </div>
     )
 }
-
-/** Monospace block for the un-translated Python samples. */
-const CodeBlock = ({ sample }: { sample: string }) => (
-    <pre className="overflow-x-auto rounded-md border border-outline-gray-2 bg-surface-gray-1 p-3 font-mono text-sm">
-        <code>{sample}</code>
-    </pre>
-)
 
 export default AgentApiDocsTab
