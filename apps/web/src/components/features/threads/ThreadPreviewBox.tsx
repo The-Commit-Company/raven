@@ -28,18 +28,18 @@ export const ThreadPreviewBox = ({
 }: ThreadPreviewBoxProps) => {
 
     return (
-        <div className="px-2 py-0.5">
+        <div className="md:px-2 py-0.5">
             <div
                 onClick={onClick}
                 className={cn(
-                    "group block rounded p-4 transition-colors relative cursor-pointer select-none",
+                    "group block md:rounded p-4 transition-colors relative cursor-pointer select-none",
                     "hover:bg-surface-gray-3 active:bg-surface-gray-3 focus:outline-none focus-visible:bg-surface-gray-3",
                     isActive && RESULT_ROW_ACTIVE_CLASS,
                     isUnread && !isActive && "bg-surface-gray-1"
                 )}
             >
                 {/* Connecting line from avatar down to the participants / reply-count row. */}
-                <div className="absolute top-20 left-10 w-7 h-[calc(100%-6.75rem)] border-l border-b border-outline-gray-2 rounded-bl-lg z-0" />
+                <div className="absolute top-20 left-8 w-7 h-[calc(100%-6.75rem)] border-l border-b border-outline-gray-2 rounded-bl-lg z-0" />
 
                 {/* Header: Channel name and date */}
                 {channelDetails.channelName && (
