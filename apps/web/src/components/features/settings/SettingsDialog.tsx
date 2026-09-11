@@ -6,7 +6,7 @@ import { SettingsDialog, SettingsPanel, SettingsPanelContent, SettingsPanelDescr
 import { Spinner } from '@components/ui/spinner';
 import _ from '@lib/translate'
 import { atom, useAtom } from 'jotai'
-import { BellDotIcon, BellRingIcon, BotIcon, BrainCogIcon, Building2Icon, CalendarSyncIcon, CommandIcon, CpuIcon, FileTextIcon, FolderIcon, FunctionSquareIcon, IdCardIcon, InfoIcon, KeyboardIcon, PaletteIcon, PanelLeftIcon, SlidersHorizontalIcon, SmilePlusIcon, UserIcon, UsersIcon, WebhookIcon, ZapIcon } from 'lucide-react'
+import { BellDotIcon, BellRingIcon, BotIcon, BrainCogIcon, Building2Icon, CalendarSyncIcon, CpuIcon, FileTextIcon, FolderIcon, FunctionSquareIcon, IdCardIcon, InfoIcon, KeyboardIcon, PaletteIcon, PanelLeftIcon, SlidersHorizontalIcon, SmilePlusIcon, UserIcon, UsersIcon, WebhookIcon, ZapIcon } from 'lucide-react'
 import { useHotkeys } from 'react-hotkeys-hook';
 import useCurrentRavenUser from '@raven/lib/hooks/useCurrentRavenUser';
 import { UserAvatar } from '../message/UserAvatar';
@@ -43,7 +43,6 @@ const FunctionsPanel = lazy(() => import('./panels/Functions/Functions').then((m
 const FileSourcesPanel = lazy(() => import('./panels/FileSources/FileSources').then((m) => ({ default: m.FileSources })));
 const InstructionsPanel = lazy(() => import('./panels/Instructions/Instructions').then((m) => ({ default: m.Instructions })));
 const DocumentProcessorsPanel = lazy(() => import('./panels/DocumentProcessors/DocumentProcessors').then((m) => ({ default: m.DocumentProcessors })));
-const CommandsPanel = lazy(() => import('./panels/Commands/Commands').then((m) => ({ default: m.Commands })));
 const KeyboardShortcutsPanel = lazy(() => import('./panels/KeyboardShortcuts').then((m) => ({ default: m.KeyboardShortcuts })));
 
 const SETTINGS_TAB_GROUPS: { id: string, label: string }[] = [
@@ -233,14 +232,6 @@ const SETTINGS_TABS: {
         icon: CpuIcon,
         component: DocumentProcessorsPanel,
         description: _("Create and manage document processors for your bots."),
-    },
-    {
-        id: "commands",
-        group: "ai",
-        label: _("Commands"),
-        icon: CommandIcon,
-        component: CommandsPanel,
-        description: _("Save commonly used commands and prompts for your AI bots and access them via \"/\" in chat."),
     },
     {
         id: "ai-settings",
