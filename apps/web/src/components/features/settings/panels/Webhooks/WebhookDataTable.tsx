@@ -14,7 +14,7 @@ import {
     Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@components/ui/table"
 import { Label } from "@components/ui/label"
-import useDoctypeMeta from "@hooks/useDoctypeMeta"
+import useDoctypeMetaDocs from "@hooks/useDoctypeMetaDocs"
 import type { RavenWebhook } from "@raven/types/RavenIntegrations/RavenWebhook"
 import _ from "@lib/translate"
 import { DoctypeFieldList, SampleData, TriggerEvents } from "./utils"
@@ -39,7 +39,7 @@ export const WebhookData = () => {
         () => TriggerEvents.find((e) => e.label === webhookTrigger)?.doctype ?? "",
         [webhookTrigger],
     )
-    const { doc: meta } = useDoctypeMeta(triggerDoctype)
+    const { doc: meta } = useDoctypeMetaDocs(triggerDoctype)
     const availableFields = useMemo<PayloadField[]>(() => {
         const curated = DoctypeFieldList.find((d) => d.events.includes(webhookTrigger))?.fields ?? []
         return (meta?.fields ?? [])

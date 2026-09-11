@@ -1,4 +1,5 @@
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form"
+import type { RavenMessageAction } from "@raven/types/RavenIntegrations/RavenMessageAction"
 import { PencilIcon, PlusIcon, Trash2Icon } from "lucide-react"
 import { Button } from "@components/ui/button"
 import { Badge } from "@components/ui/badge"
@@ -6,8 +7,7 @@ import {
     Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@components/ui/table"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip"
-import useDoctypeMeta from "@hooks/useDoctypeMeta"
-import type { MessageActionFormData } from "./types"
+import useDoctypeMetaDocs from "@hooks/useDoctypeMetaDocs"
 import type { RavenMessageActionFields } from "@raven/types/RavenIntegrations/RavenMessageActionFields"
 import _ from "@lib/translate"
 import { type FieldData, dataValidationFor, toActionType } from "./messageActionFieldUtils"
@@ -15,7 +15,7 @@ import { FieldDialog } from "./MessageActionFieldDialog"
 
 /** Fields tab — build the dialog fields the action collects, manually or imported from the target DocType. */
 export const MessageActionFieldsBuilder = () => {
-    const { control } = useFormContext<MessageActionFormData>()
+    const { control } = useFormContext<RavenMessageAction>()
     const { fields, append, remove, update } = useFieldArray({ control, name: "fields" })
     const action = useWatch({ control, name: "action" })
     const doctype = useWatch({ control, name: "document_type" })
@@ -102,8 +102,8 @@ export const MessageActionFieldsBuilder = () => {
 
 /** Bulk-add the target DocType's required fields as action fields. */
 const ImportFromDoctype = ({ doctype, append }: { doctype: string; append: (d: FieldData) => void }) => {
-    const { getValues } = useFormContext<MessageActionFormData>()
-    const { doc: meta } = useDoctypeMeta(doctype)
+    const { getValues } = useFormContext<RavenMessageAction>()
+    const { doc: meta } = useDoctypeMetaDocs(doctype)
 
     const importFields = () => {
         const existing = (getValues("fields") || []).map((f) => f.fieldname)

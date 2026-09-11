@@ -12,7 +12,6 @@ import {
 } from "@components/ui/dropdown-menu"
 import { FileDropzone } from "@components/ui/file-dropzone"
 import ErrorBanner from "@components/ui/error-banner"
-import { Spinner } from "@components/ui/spinner"
 import _ from "@lib/translate"
 import type { WorkspaceFormData } from "./WorkspaceDetailView"
 

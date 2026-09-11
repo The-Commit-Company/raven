@@ -1,41 +1,41 @@
 import { useMemo } from "react"
 import { useFrappeDocTypeEventListener, useFrappeGetDocList } from "frappe-react-sdk"
 import type { ColumnDef } from "@tanstack/react-table"
-import { PlusIcon, WebhookIcon } from "lucide-react"
-import { Button } from "@components/ui/button"
+import { WebhookIcon } from "lucide-react"
 import { Badge } from "@components/ui/badge"
-import { ListView, type ListViewColumnMeta } from "@components/ui/list-view"
+import { Button } from "@components/ui/button"
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@components/ui/empty"
 import ErrorBanner from "@components/ui/error-banner"
+import { ListView, type ListViewColumnMeta } from "@components/ui/list-view"
+import { SettingsPanelContent, SettingsPanelDescription, SettingsPanelHeader, SettingsPanelTitle } from "@components/ui/settings-dialog"
 import { Spinner } from "@components/ui/spinner"
-import {
-    Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle,
-} from "@components/ui/empty"
-import {
-    SettingsPanelContent, SettingsPanelDescription, SettingsPanelHeader, SettingsPanelTitle,
-} from "@components/ui/settings-dialog"
+import { TablePagination } from "@components/ui/table-pagination"
+import usePaginatedList from "@hooks/usePaginatedList"
 import type { RavenWebhook } from "@raven/types/RavenIntegrations/RavenWebhook"
 import { getDateObject } from "@lib/date"
-import { hasRole } from "@lib/permissions"
+import { isRavenSettingsAdmin } from "../AdminSettingsForm"
 import _ from "@lib/translate"
 
-/** Shared SWR key for the webhooks list — mutated by the create/detail sub-views. */
-export const WEBHOOKS_LIST_KEY = "webhooks_list_settings"
+export const WEBHOOKS_LIST_KEY = "raven-webhooks"
 
-type Props = { onCreate: () => void; onOpen: (webhookID: string) => void }
+/** Integrations → Webhooks: list of webhooks. Non-admins only see the empty state. */
+const WebhookListView = ({ onOpen, onCreate }: { onOpen: (id: string) => void; onCreate: () => void }) => {
+    const isAdmin = isRavenSettingsAdmin()
+    const pagination = usePaginatedList(WEBHOOKS_LIST_KEY, "Raven Webhook", isAdmin)
 
-/** Webhooks list — a table with edit/delete row actions, plus a create action. */
-export default function WebhookListView({ onCreate, onOpen }: Props) {
-    const isRavenAdmin = hasRole("System Manager")
-
-    const { data, error, isLoading, mutate } = useFrappeGetDocList<RavenWebhook>(
+    const { data, error, mutate } = useFrappeGetDocList<RavenWebhook>(
         "Raven Webhook",
-        { fields: ["name", "request_url", "enabled", "owner", "creation"] },
-        isRavenAdmin ? WEBHOOKS_LIST_KEY : null,
-        // Remounts on return from create/detail — refetch then (see cross-panel note).
-        { errorRetryCount: 2, revalidateOnMount: true },
+        {
+            fields: ["name", "request_url", "enabled", "owner", "creation"],
+            orderBy: { field: "modified", order: "desc" },
+            ...pagination.listArgs,
+        },
+        pagination.swrKey,
+        { errorRetryCount: 2, keepPreviousData: true },
     )
 
-    useFrappeDocTypeEventListener("Raven Webhook", () => { mutate() })
+    // Another admin's change shows up without a reload.
+    useFrappeDocTypeEventListener("Raven Webhook", () => { mutate(); pagination.mutateCount() })
 
     const columns = useMemo<ColumnDef<RavenWebhook>[]>(() => [
         {
@@ -72,57 +72,64 @@ export default function WebhookListView({ onCreate, onOpen }: Props) {
         },
     ], [])
 
-    const showEmpty = !isLoading && (data?.length === 0 || !isRavenAdmin)
+    const showEmptyState = !isAdmin || ((data?.length ?? 0) === 0 && pagination.totalCount === 0)
 
     return (
         <>
-            <SettingsPanelHeader
-                actions={
-                    <Button size="sm" disabled={!isRavenAdmin} onClick={onCreate}>
-                        <PlusIcon />
-                        {_("Create")}
-                    </Button>
-                }
-            >
+            <SettingsPanelHeader actions={isAdmin ? <Button size="sm" onClick={onCreate}>{_("Create")}</Button> : null}>
                 <SettingsPanelTitle>{_("Webhooks")}</SettingsPanelTitle>
                 <SettingsPanelDescription>
                     {_("Fire webhooks on specific events like when a message is sent or channel is created.")}
                 </SettingsPanelDescription>
             </SettingsPanelHeader>
-            <SettingsPanelContent className="min-h-0">
+            <SettingsPanelContent className="min-h-0 gap-4">
                 {error && <ErrorBanner error={error} />}
-                {isLoading && <div className="flex flex-1 items-center justify-center"><Spinner /></div>}
-                {!isLoading && !showEmpty && (
-                    <ListView
-                        className="flex-1 min-h-0"
-                        scrollAreaClassName="flex-1"
-                        maxHeight="100%"
-                        rowHeight={44}
-                        data={data ?? []}
-                        columns={columns}
-                        getRowId={(row) => row.name}
-                        onRowClick={(row) => onOpen(row.name)}
-                        emptyState={<span className="text-ink-gray-4">{_("No webhooks found.")}</span>}
-                    />
+                {!data && !error && (
+                    <div className="flex flex-1 items-center justify-center">
+                        <Spinner />
+                    </div>
                 )}
-                {showEmpty && (
-                    <Empty className="h-full">
-                        <EmptyHeader>
-                            <EmptyMedia><WebhookIcon /></EmptyMedia>
-                            <EmptyTitle>{_("Webhooks")}</EmptyTitle>
-                            <EmptyDescription>
-                                {_("Webhooks allow you to receive HTTP requests whenever a specific event occurs - like when a message is sent or a channel is created.")}
-                            </EmptyDescription>
-                        </EmptyHeader>
-                        {isRavenAdmin && (
-                            <EmptyContent>
-                                <Button variant="outline" size="sm" onClick={onCreate}>{_("Create your first webhook")}</Button>
-                            </EmptyContent>
-                        )}
-                    </Empty>
+                {!!data && !error && (
+                    showEmptyState ? (
+                        <Empty className="h-full">
+                            <EmptyHeader>
+                                <EmptyMedia><WebhookIcon /></EmptyMedia>
+                                <EmptyTitle>{_("Webhooks")}</EmptyTitle>
+                                <EmptyDescription>
+                                    {_("Webhooks allow you to receive HTTP requests whenever a specific event occurs - like when a message is sent or a channel is created.")}
+                                </EmptyDescription>
+                            </EmptyHeader>
+                            {isAdmin && (
+                                <EmptyContent>
+                                    <Button variant="outline" onClick={onCreate}>{_("Create your first webhook")}</Button>
+                                </EmptyContent>
+                            )}
+                        </Empty>
+                    ) : (
+                        <>
+                            <ListView
+                                className="flex-1 min-h-0"
+                                scrollAreaClassName="flex-1"
+                                maxHeight="100%"
+                                rowHeight={44}
+                                data={data}
+                                columns={columns}
+                                getRowId={(row) => row.name}
+                                onRowClick={(row) => onOpen(row.name)}
+                            />
+                            <TablePagination
+                                pageIndex={pagination.pageIndex}
+                                pageSize={pagination.pageSize}
+                                totalCount={pagination.totalCount}
+                                onPageChange={pagination.onPageChange}
+                                onPageSizeChange={pagination.onPageSizeChange}
+                            />
+                        </>
+                    )
                 )}
             </SettingsPanelContent>
         </>
     )
 }
 
+export default WebhookListView

@@ -11,7 +11,7 @@ import {
 import {
     DataField, LinkFormField, SelectFormField, SmallTextField, SwitchFormField,
 } from "@components/ui/form-elements"
-import useDoctypeMeta from "@hooks/useDoctypeMeta"
+import useDoctypeMetaDocs from "@hooks/useDoctypeMetaDocs"
 import type { DocField } from "@raven/types/Core/DocField"
 import _ from "@lib/translate"
 import {
@@ -77,7 +77,13 @@ const FieldForm = ({
         setValue("fieldname", df.fieldname ?? "")
         if (df.label) setValue("label", df.label)
         if (df.description) setValue("helper_text", df.description)
-        if (df.fieldtype) setValue("type", toActionType(df.fieldtype))
+        if (df.fieldtype) {
+            // Mark the type change as seen first, or the clear-on-Link effect
+            // above would wipe the options we set right after.
+            const nextType = toActionType(df.fieldtype)
+            prevType.current = nextType
+            setValue("type", nextType)
+        }
         if (df.options) setValue("options", df.fieldtype === "Data" ? dataValidationFor(df.options) : df.options)
     }
 
@@ -210,7 +216,7 @@ const FieldForm = ({
 const DoctypeFieldSelect = ({
     doctype, value, onFieldSelect,
 }: { doctype: string; value: string; onFieldSelect: (field: DocField) => void }) => {
-    const { doc: meta } = useDoctypeMeta(doctype)
+    const { doc: meta } = useDoctypeMetaDocs(doctype)
     const fields = useMemo(
         () => meta?.fields?.filter((f) => f.fieldtype && VALID_FIELD_TYPES.includes(f.fieldtype)) ?? [],
         [meta],

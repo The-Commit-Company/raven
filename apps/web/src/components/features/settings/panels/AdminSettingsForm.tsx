@@ -66,7 +66,8 @@ export function AdminSettingsForm({
         if (ravenSettings) form.reset(ravenSettings)
     }, [ravenSettings]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    useSaveHotkey(() => form.handleSubmit(onSubmit)())
+    // Same gate as the Save button: admins only, one save at a time.
+    useSaveHotkey(() => { if (isAdmin && !saving && !isLoading) form.handleSubmit(onSubmit)() })
 
     const onSubmit = (data: RavenSettings) => {
         if (!ravenSettings) return

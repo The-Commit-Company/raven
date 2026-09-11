@@ -10,7 +10,7 @@ import {
     Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@components/ui/table"
 import LinkFieldCombobox from "@components/common/LinkFieldComboBox/LinkFieldCombobox"
-import useDoctypeMeta from "@hooks/useDoctypeMeta"
+import useDoctypeMetaDocs from "@hooks/useDoctypeMetaDocs"
 import type { RavenDocumentNotification } from "@raven/types/RavenIntegrations/RavenDocumentNotification"
 import type { RavenDocumentNotificationRecipients } from "@raven/types/RavenIntegrations/RavenDocumentNotificationRecipients"
 import type { DocField } from "@raven/types/Core/DocField"
@@ -171,7 +171,7 @@ const RecipientValueField = ({
 const DoctypeFieldSelect = ({
     documentType, channelType, value, onChange,
 }: { documentType: string; channelType: "Channel" | "User"; value: string; onChange: (v: string) => void }) => {
-    const { doc } = useDoctypeMeta(documentType)
+    const { doc } = useDoctypeMetaDocs(documentType)
 
     const { suggested, all } = useMemo(() => {
         const suggested: DocField[] = []

@@ -25,7 +25,6 @@ import {
 import { Input } from "@components/ui/input"
 import { DataField } from "@components/ui/form-elements"
 import ErrorBanner from "@components/ui/error-banner"
-import { Spinner } from "@components/ui/spinner"
 import { usersStore } from "@stores/usersStore"
 import _ from "@lib/translate"
 

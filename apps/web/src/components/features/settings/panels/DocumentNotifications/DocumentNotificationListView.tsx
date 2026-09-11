@@ -1,40 +1,40 @@
 import { useMemo } from "react"
 import { useFrappeDocTypeEventListener, useFrappeGetDocList } from "frappe-react-sdk"
 import type { ColumnDef } from "@tanstack/react-table"
-import { BellDotIcon, PlusIcon } from "lucide-react"
-import { Button } from "@components/ui/button"
+import { BellDotIcon } from "lucide-react"
 import { Badge } from "@components/ui/badge"
-import { ListView, type ListViewColumnMeta } from "@components/ui/list-view"
+import { Button } from "@components/ui/button"
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@components/ui/empty"
 import ErrorBanner from "@components/ui/error-banner"
+import { ListView, type ListViewColumnMeta } from "@components/ui/list-view"
+import { SettingsPanelContent, SettingsPanelDescription, SettingsPanelHeader, SettingsPanelTitle } from "@components/ui/settings-dialog"
 import { Spinner } from "@components/ui/spinner"
-import {
-    Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle,
-} from "@components/ui/empty"
-import {
-    SettingsPanelContent, SettingsPanelDescription, SettingsPanelHeader, SettingsPanelTitle,
-} from "@components/ui/settings-dialog"
+import { TablePagination } from "@components/ui/table-pagination"
+import usePaginatedList from "@hooks/usePaginatedList"
 import type { RavenDocumentNotification } from "@raven/types/RavenIntegrations/RavenDocumentNotification"
 import { isRavenSettingsAdmin } from "../AdminSettingsForm"
 import _ from "@lib/translate"
 
-/** Shared SWR key for the list — mutated by the create/detail sub-views. */
-export const DOC_NOTIFICATIONS_LIST_KEY = "document_notifications_list_settings"
+export const DOC_NOTIFICATIONS_LIST_KEY = "raven-document-notifications"
 
-type Props = { onCreate: () => void; onOpen: (id: string) => void }
+/** Integrations → Document Notifications: list. Non-admins only see the empty state. */
+const DocumentNotificationListView = ({ onOpen, onCreate }: { onOpen: (id: string) => void; onCreate: () => void }) => {
+    const isAdmin = isRavenSettingsAdmin()
+    const pagination = usePaginatedList(DOC_NOTIFICATIONS_LIST_KEY, "Raven Document Notification", isAdmin)
 
-/** Document Notifications list — a table with edit/delete row actions + a create action. */
-export default function DocumentNotificationListView({ onCreate, onOpen }: Props) {
-    const isRavenAdmin = isRavenSettingsAdmin()
-
-    const { data, error, isLoading, mutate } = useFrappeGetDocList<RavenDocumentNotification>(
+    const { data, error, mutate } = useFrappeGetDocList<RavenDocumentNotification>(
         "Raven Document Notification",
-        { fields: ["name", "document_type", "send_alert_on", "enabled"], orderBy: { field: "modified", order: "desc" } },
-        isRavenAdmin ? DOC_NOTIFICATIONS_LIST_KEY : null,
-        // Remounts on return from create/detail — refetch then (see cross-panel note).
-        { errorRetryCount: 2, revalidateOnMount: true },
+        {
+            fields: ["name", "document_type", "send_alert_on", "enabled"],
+            orderBy: { field: "modified", order: "desc" },
+            ...pagination.listArgs,
+        },
+        pagination.swrKey,
+        { errorRetryCount: 2, keepPreviousData: true },
     )
 
-    useFrappeDocTypeEventListener("Raven Document Notification", () => { mutate() })
+    // Another admin's change shows up without a reload.
+    useFrappeDocTypeEventListener("Raven Document Notification", () => { mutate(); pagination.mutateCount() })
 
     const columns = useMemo<ColumnDef<RavenDocumentNotification>[]>(() => [
         {
@@ -71,52 +71,64 @@ export default function DocumentNotificationListView({ onCreate, onOpen }: Props
         },
     ], [])
 
-    const showEmpty = !isLoading && (data?.length === 0 || !isRavenAdmin)
+    const showEmptyState = !isAdmin || ((data?.length ?? 0) === 0 && pagination.totalCount === 0)
 
     return (
         <>
-            <SettingsPanelHeader
-                actions={<Button size="sm" disabled={!isRavenAdmin} onClick={onCreate}><PlusIcon />{_("Create")}</Button>}
-            >
+            <SettingsPanelHeader actions={isAdmin ? <Button size="sm" onClick={onCreate}>{_("Create")}</Button> : null}>
                 <SettingsPanelTitle>{_("Document Notifications")}</SettingsPanelTitle>
                 <SettingsPanelDescription>
                     {_("Configure alerts to be sent to users or channels when documents are updated in the system.")}
                 </SettingsPanelDescription>
             </SettingsPanelHeader>
-            <SettingsPanelContent className="min-h-0">
+            <SettingsPanelContent className="min-h-0 gap-4">
                 {error && <ErrorBanner error={error} />}
-                {isLoading && <div className="flex flex-1 items-center justify-center"><Spinner /></div>}
-                {!isLoading && !showEmpty && (
-                    <ListView
-                        className="flex-1 min-h-0"
-                        scrollAreaClassName="flex-1"
-                        maxHeight="100%"
-                        rowHeight={44}
-                        data={data ?? []}
-                        columns={columns}
-                        getRowId={(row) => row.name}
-                        onRowClick={(row) => onOpen(row.name)}
-                        emptyState={<span className="text-ink-gray-4">{_("No notifications found.")}</span>}
-                    />
+                {!data && !error && (
+                    <div className="flex flex-1 items-center justify-center">
+                        <Spinner />
+                    </div>
                 )}
-                {showEmpty && (
-                    <Empty className="h-full">
-                        <EmptyHeader>
-                            <EmptyMedia><BellDotIcon /></EmptyMedia>
-                            <EmptyTitle>{_("Stay in the Loop")}</EmptyTitle>
-                            <EmptyDescription>
-                                {_("Send messages to channels or users based on document activity in your ERP system. Keep your team informed about important changes in real-time with rich document previews.")}
-                            </EmptyDescription>
-                        </EmptyHeader>
-                        {isRavenAdmin && (
-                            <EmptyContent>
-                                <Button variant="outline" size="sm" onClick={onCreate}>{_("Create your first notification")}</Button>
-                            </EmptyContent>
-                        )}
-                    </Empty>
+                {!!data && !error && (
+                    showEmptyState ? (
+                        <Empty className="h-full">
+                            <EmptyHeader>
+                                <EmptyMedia><BellDotIcon /></EmptyMedia>
+                                <EmptyTitle>{_("Stay in the Loop")}</EmptyTitle>
+                                <EmptyDescription>
+                                    {_("Send messages to channels or users based on document activity in your ERP system. Keep your team informed about important changes in real-time with rich document previews.")}
+                                </EmptyDescription>
+                            </EmptyHeader>
+                            {isAdmin && (
+                                <EmptyContent>
+                                    <Button variant="outline" onClick={onCreate}>{_("Create your first notification")}</Button>
+                                </EmptyContent>
+                            )}
+                        </Empty>
+                    ) : (
+                        <>
+                            <ListView
+                                className="flex-1 min-h-0"
+                                scrollAreaClassName="flex-1"
+                                maxHeight="100%"
+                                rowHeight={44}
+                                data={data}
+                                columns={columns}
+                                getRowId={(row) => row.name}
+                                onRowClick={(row) => onOpen(row.name)}
+                            />
+                            <TablePagination
+                                pageIndex={pagination.pageIndex}
+                                pageSize={pagination.pageSize}
+                                totalCount={pagination.totalCount}
+                                onPageChange={pagination.onPageChange}
+                                onPageSizeChange={pagination.onPageSizeChange}
+                            />
+                        </>
+                    )
                 )}
             </SettingsPanelContent>
         </>
     )
 }
 
+export default DocumentNotificationListView

@@ -1,33 +1,20 @@
 import { useState } from "react"
 import DocumentNotificationListView from "./DocumentNotificationListView"
-import DocumentNotificationCreateView from "./DocumentNotificationCreateView"
-import DocumentNotificationDetailView from "./DocumentNotificationDetailView"
+import DocumentNotificationEditorView from "./DocumentNotificationEditorView"
 
-type View = { type: "list" } | { type: "create" } | { type: "notification"; id: string }
+type View = { type: "list" } | { type: "create" } | { type: "detail"; id: string }
 
-/** Integrations → Document Notifications. List with in-panel create/detail sub-views. */
+/** Integrations → Document Notifications: list of notifications with in-panel create/detail sub-views. */
 export const DocumentNotifications = () => {
     const [view, setView] = useState<View>({ type: "list" })
 
     if (view.type === "create") {
-        return (
-            <DocumentNotificationCreateView
-                onBack={() => setView({ type: "list" })}
-                onCreated={(id) => setView({ type: "notification", id })}
-            />
-        )
+        return <DocumentNotificationEditorView onBack={() => setView({ type: "list" })} onSaved={(id) => setView({ type: "detail", id })} />
     }
-
-    if (view.type === "notification") {
-        return <DocumentNotificationDetailView notificationID={view.id} onBack={() => setView({ type: "list" })} />
+    if (view.type === "detail") {
+        return <DocumentNotificationEditorView id={view.id} onBack={() => setView({ type: "list" })} onDeleted={() => setView({ type: "list" })} />
     }
-
-    return (
-        <DocumentNotificationListView
-            onCreate={() => setView({ type: "create" })}
-            onOpen={(id) => setView({ type: "notification", id })}
-        />
-    )
+    return <DocumentNotificationListView onOpen={(id) => setView({ type: "detail", id })} onCreate={() => setView({ type: "create" })} />
 }
 
 export default DocumentNotifications

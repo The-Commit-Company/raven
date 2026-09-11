@@ -7,7 +7,7 @@ import { Button } from "@components/ui/button"
 import {
     Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@components/ui/table"
-import useDoctypeMeta from "@hooks/useDoctypeMeta"
+import useDoctypeMetaDocs from "@hooks/useDoctypeMetaDocs"
 import _ from "@lib/translate"
 
 /** DocType fieldtypes that can be referenced as a Jinja variable in a notification. */
@@ -26,7 +26,7 @@ type Variable = { variable: string; label: string; fieldtype: string }
  * than a `{{ doc.x }}` tag (for the message body).
  */
 export const DoctypeVariables = ({ doctype, withoutJinja }: { doctype: string; withoutJinja?: boolean }) => {
-    const { doc } = useDoctypeMeta(doctype)
+    const { doc } = useDoctypeMetaDocs(doctype)
     const [search, setSearch] = useState("")
 
     const variables = useMemo<Variable[]>(() => {

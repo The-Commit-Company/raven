@@ -6,7 +6,7 @@ import {
     Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue,
 } from "@components/ui/select"
 import { LinkFormField, SelectFormField, SmallTextField } from "@components/ui/form-elements"
-import { usersStore } from "@stores/usersStore"
+import { useUsers } from "@hooks/useUsers"
 import { UserAvatar } from "@components/features/message/UserAvatar"
 import type { RavenWebhook } from "@raven/types/RavenIntegrations/RavenWebhook"
 import _ from "@lib/translate"
@@ -16,8 +16,8 @@ import { FieldHelp } from "./webhookFormBits"
 /** Conditions tab — optionally gate the webhook on channel / user / channel-type / custom expression. */
 export const WebhookConditionForm = () => {
     const { control, setValue } = useFormContext<RavenWebhook>()
-    const usersMap = usersStore.getSnapshot()
-    const users = useMemo(() => Array.from(usersMap.values()).filter((u) => u.type === "User"), [usersMap])
+    const allUsers = useUsers()
+    const users = useMemo(() => allUsers.filter((u) => u.type === "User"), [allUsers])
 
     const needCondition = useWatch({ control, name: "trigger_webhook_on_condition" })
     const conditionOn = useWatch({ control, name: "conditions_on" })

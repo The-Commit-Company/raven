@@ -1,4 +1,5 @@
 import { Controller, useFormContext, useWatch } from "react-hook-form"
+import type { RavenMessageAction } from "@raven/types/RavenIntegrations/RavenMessageAction"
 import { ZapIcon, VariableIcon, CodeIcon, ExternalLinkIcon } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs"
 import { Button } from "@components/ui/button"
@@ -12,7 +13,6 @@ import {
 } from "@components/ui/select"
 import { DataField, LinkFormField, SmallTextField, SwitchFormField } from "@components/ui/form-elements"
 import _ from "@lib/translate"
-import type { MessageActionFormData } from "./types"
 import { MessageActionFieldsBuilder } from "./MessageActionFieldsBuilder"
 
 const FieldError = ({ message }: { message?: string }) =>
@@ -35,7 +35,7 @@ export const MessageActionForm = () => (
 )
 
 const GeneralTab = () => {
-    const { register, control, setValue, formState: { errors } } = useFormContext<MessageActionFormData>()
+    const { register, control, setValue, formState: { errors } } = useFormContext<RavenMessageAction>()
     const action = useWatch({ control, name: "action" })
     const serverScript = useWatch({ control, name: "server_script" })
 
@@ -195,7 +195,7 @@ def create_ticket(field1, field2):
 }
 
 const ViewDocsButton = () => {
-    const { control } = useFormContext<MessageActionFormData>()
+    const { control } = useFormContext<RavenMessageAction>()
     const action = useWatch({ control, name: "action" })
     if (!action || !EXAMPLES[action]) return null
 

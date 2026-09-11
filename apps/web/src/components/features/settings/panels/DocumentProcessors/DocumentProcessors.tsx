@@ -13,7 +13,6 @@ import {
     SettingsPanelContent, SettingsPanelDescription, SettingsPanelHeader, SettingsPanelTitle,
 } from "@components/ui/settings-dialog"
 import { Skeleton } from "@components/ui/skeleton"
-import { Spinner } from "@components/ui/spinner"
 import { isRavenSettingsAdmin } from "../AdminSettingsForm"
 import { useRavenSettings } from "@hooks/fetchers/useRavenSettings"
 import AINotEnabledCallout from "../ai/AINotEnabledCallout"
