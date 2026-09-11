@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { activeSession, endSession, onRequestError, setSessionLostHandler, startSession, type SessionDeps } from "./session"
+import { activeSession, endSession, onRequestError, setSessionLostHandler, setTokenRefreshedHandler, startSession, type SessionDeps } from "./session"
 import type { Site } from "./sites"
 import type { StoredTokens } from "./auth"
 
@@ -40,6 +40,13 @@ describe("startSession", () => {
         const session = await startSession(site, deps)
         expect(deps.refresh).toHaveBeenCalledTimes(1)
         expect(session?.getToken()).toBe("AT2")
+    })
+    it("reports every refreshed access token", async () => {
+        const refreshed = vi.fn()
+        setTokenRefreshedHandler(refreshed)
+        const deps = makeDeps({ accessToken: "AT", refreshToken: "RT", expiresAt: 1_000_000 + 60_000 }, { accessToken: "AT2", refreshToken: "RT", expiresAt: 1_000_000 + HOUR })
+        await startSession(site, deps)
+        expect(refreshed).toHaveBeenCalledWith("AT2")
     })
     it("returns null without tokens", async () => {
         expect(await startSession(site, makeDeps(null))).toBeNull()

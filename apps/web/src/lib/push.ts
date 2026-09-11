@@ -1,3 +1,4 @@
+import { siteFetch, siteKey } from "@lib/site"
 /**
  * Web push via Raven Cloud (v3+).
  *
@@ -68,7 +69,7 @@ export const isPushSupportedByBrowser = (): boolean =>
     "serviceWorker" in navigator && "Notification" in window && "PushManager" in window
 
 /** Whether THIS device has push enabled (source of truth: the stored token). */
-export const isPushEnabled = (): boolean => localStorage.getItem(TOKEN_STORAGE_KEY) !== null
+export const isPushEnabled = (): boolean => localStorage.getItem(siteKey(TOKEN_STORAGE_KEY)) !== null
 
 /**
  * Running as an INSTALLED app (home screen / desktop PWA) rather than a browser
@@ -97,7 +98,7 @@ const getMessagingInstance = async () => {
 
 /** POST to a whitelisted raven.api.notification method (plain fetch — no hook context here). */
 const callNotificationAPI = async (method: "subscribe" | "unsubscribe", body: Record<string, string | undefined>) => {
-    const response = await fetch(`/api/method/raven.api.notification.${method}`, {
+    const response = await siteFetch(`/api/method/raven.api.notification.${method}`, {
         method: "POST",
         body: JSON.stringify(body),
         headers: {
@@ -159,7 +160,7 @@ const mintAndSyncToken = async (): Promise<void> => {
     const { getToken } = await import("firebase/messaging")
     const token = await getToken(messaging, { vapidKey, serviceWorkerRegistration: registration })
 
-    const oldToken = localStorage.getItem(TOKEN_STORAGE_KEY)
+    const oldToken = localStorage.getItem(siteKey(TOKEN_STORAGE_KEY))
     if (oldToken === token) return
 
     // Token rotated (or first enable): drop the stale server record, register the new one.
@@ -169,7 +170,7 @@ const mintAndSyncToken = async (): Promise<void> => {
         environment: "Web",
         device_information: navigator.userAgent,
     })
-    localStorage.setItem(TOKEN_STORAGE_KEY, token)
+    localStorage.setItem(siteKey(TOKEN_STORAGE_KEY), token)
 }
 
 /**
@@ -188,11 +189,11 @@ export const enablePush = async (): Promise<boolean> => {
 
 /** Disable push for this device: delete the FCM token + the server record. Best-effort. */
 export const disablePush = async (): Promise<void> => {
-    const token = localStorage.getItem(TOKEN_STORAGE_KEY)
+    const token = localStorage.getItem(siteKey(TOKEN_STORAGE_KEY))
     if (!token) return
     // Clear local state first — the device should read "disabled" even if the
     // network calls below fail (the server token then dies as an FCM zombie).
-    localStorage.removeItem(TOKEN_STORAGE_KEY)
+    localStorage.removeItem(siteKey(TOKEN_STORAGE_KEY))
     try {
         const { messaging } = await getMessagingInstance()
         const { deleteToken } = await import("firebase/messaging")
@@ -267,7 +268,7 @@ export const initPushNotifications = () => {
     if (Notification.permission === "denied") {
         // The user explicitly blocked notifications — our token is dead, and
         // the toggle should read disabled.
-        localStorage.removeItem(TOKEN_STORAGE_KEY)
+        localStorage.removeItem(siteKey(TOKEN_STORAGE_KEY))
         return
     }
     if (Notification.permission !== "granted") {

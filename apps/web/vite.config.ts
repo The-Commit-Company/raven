@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => {
 // worker, served from the app's own origin at /, output consumed by apps/native.
 const native = mode === "native"
 return {
+  publicDir: native ? false : "public",
   plugins: [
     react(),
     babel({

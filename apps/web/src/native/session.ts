@@ -26,8 +26,11 @@ let current: { site: Site; tokens: Access; deps: SessionDeps } | null = null
 let timer: ReturnType<typeof setTimeout> | undefined
 let refreshing: Promise<boolean> | null = null
 let sessionLost: () => void = () => { }
+let tokenRefreshed: (token: string) => void = () => { }
 
 export const setSessionLostHandler = (fn: () => void) => { sessionLost = fn }
+/** Called with the new access token after every successful refresh (the socket re-arms with it). */
+export const setTokenRefreshedHandler = (fn: (token: string) => void) => { tokenRefreshed = fn }
 
 export const activeSession = (): ActiveSession | null =>
     current ? { site: current.site, getToken: () => current!.tokens.accessToken } : null
@@ -47,6 +50,7 @@ const refreshNow = (): Promise<boolean> => {
     refreshing = deps.refresh(site.url, site.clientId)
         .then((tokens) => {
             if (current?.site.url === site.url) { current.tokens = access(tokens); schedule() }
+            tokenRefreshed(tokens.accessToken)
             return true
         })
         .catch(() => false)

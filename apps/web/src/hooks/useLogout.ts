@@ -3,6 +3,8 @@ import { useFrappeAuth, type FrappeError } from "frappe-react-sdk"
 import { errorResponseToast } from "@components/ui/error-banner"
 import { disablePush } from "@lib/push"
 import { db } from "@db"
+import { siteKey, siteOrigin } from "@lib/site"
+import { clearSessionUser } from "@lib/sessionUser"
 import _ from "@lib/translate"
 
 /**
@@ -30,7 +32,7 @@ const clearLocalStorage = () => {
     for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i)
         if (!key || LOCAL_STORAGE_KEEP.includes(key)) continue
-        if (LOCAL_STORAGE_PREFIXES.some((prefix) => key.startsWith(prefix))) doomed.push(key)
+        if (LOCAL_STORAGE_PREFIXES.some((prefix) => key.startsWith(siteKey(prefix)))) doomed.push(key)
     }
     doomed.forEach((key) => localStorage.removeItem(key))
 }
@@ -87,6 +89,20 @@ export function useLogout(): { logout: () => Promise<void>; isLoggingOut: boolea
             await disablePush()
         } catch (e) {
             console.error("Failed to disable push notifications on logout", e)
+        }
+
+        if (import.meta.env.VITE_NATIVE) {
+            // Native: revoke the tokens, forget the site, wipe its local data, back to the picker.
+            const [{ signOut }, { forgetSite, loadSites }] = await Promise.all([import("../native/auth"), import("../native/sites")])
+            await signOut(siteOrigin())
+            await forgetSite(siteOrigin())
+            // Logged out as far as the beforeunload cache writer is concerned; it wipes instead of persisting.
+            clearSessionUser()
+            clearLocalStorage()
+            // RavenDB is shared by every site on the device; only the last site's logout may drop it.
+            if ((await loadSites()).length === 0) await clearIndexedDB()
+            window.location.replace("/")
+            return
         }
 
         try {

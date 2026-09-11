@@ -1,3 +1,4 @@
+import { siteUrl } from "@lib/site"
 import { useMemo } from "react"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@components/ui/dialog"
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle } from "@components/ui/drawer"
@@ -25,7 +26,7 @@ const PANEL_SCROLLER =
 /** Renders one reaction's glyph — a custom emoji image, or the Apple-set native emoji. */
 const EmojiGlyph = ({ reaction }: { reaction: ReactionObject }) =>
     reaction.is_custom ? (
-        <img src={reaction.reaction} alt={reaction.emoji_name} loading="lazy" className="h-4 w-4 object-contain" />
+        <img src={siteUrl(reaction.reaction)} alt={reaction.emoji_name} loading="lazy" className="h-4 w-4 object-contain" />
     ) : (
         <em-emoji native={reaction.reaction} set="native" size="1.1em" fallback={reaction.reaction} />
     )
@@ -110,7 +111,7 @@ const ReactionsBody = ({ reactions }: { reactions: ReactionObject[] }) => {
                         with the name. Native emojis need no caption. */}
                     {reaction.is_custom ? (
                         <Badge variant="subtle" size='lg'>
-                            <img src={reaction.reaction} alt={reaction.emoji_name} loading="lazy" className="size-4 object-contain" />
+                            <img src={siteUrl(reaction.reaction)} alt={reaction.emoji_name} loading="lazy" className="size-4 object-contain" />
                             {customEmojiLabel(reaction)}
                         </Badge>
                     ) : null}

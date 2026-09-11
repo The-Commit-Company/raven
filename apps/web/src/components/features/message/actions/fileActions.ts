@@ -7,6 +7,7 @@ import type { MessageDialog } from "@utils/channelAtoms"
 import { channelMessagesStore } from "@stores/messages/store"
 import { hasFile } from "./fileMessage"
 import { downloadBlob, downloadFile, getAbsoluteFileURL } from "@lib/file"
+import { siteFetch } from "@lib/site"
 import { getFileName } from "@raven/lib/utils/operations"
 
 export type MessageAction = {
@@ -115,7 +116,7 @@ export const buildFileActions = (
                 const endpoint = `/api/method/raven.api.raven_message.download_batch_files?message_ids=${encodeURIComponent(
                     JSON.stringify(ids),
                 )}`
-                fetch(endpoint, { credentials: "include" })
+                siteFetch(endpoint)
                     .then(async (response) => {
                         if (!response.ok) throw new Error(String(response.status))
                         // The server names the zip after the channel; fall back only if

@@ -14,6 +14,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(RavenShellPlugin.class);
+        registerPlugin(RavenSocketPlugin.class);
         // A share or notification tap only ever arrives as a fresh launch or onNewIntent.
         // A recreated activity (process death, Recents) gets the task's root intent
         // again; drop it, or the share or tap the user already acted on replays.

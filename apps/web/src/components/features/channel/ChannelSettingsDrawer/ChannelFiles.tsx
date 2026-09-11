@@ -1,3 +1,5 @@
+import { FileImage } from '@components/common/FileImage'
+import { siteOrigin } from '@lib/site'
 import { UserAvatar } from '@components/features/message/UserAvatar'
 import { ArrowDownToLine, LayoutGridIcon, ListIcon, SearchIcon } from 'lucide-react'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -27,7 +29,7 @@ type FilesView = 'list' | 'grid'
 const toAttachment = (file: ChannelFile): Attachment => ({
     id: file.id,
     fileName: file.title,
-    fileUrl: new URL(file.internal_link!, window.location.origin).href,
+    fileUrl: new URL(file.internal_link!, siteOrigin()).href,
     kind: getAttachmentKind(file.internal_link!),
     // The filmstrip renders this; without it, it downloads the originals.
     thumbnail: file.file_thumbnail,
@@ -297,7 +299,7 @@ const FileListRow = memo(({ file, member, index, onOpen }: {
                 // Stored thumbnail, not the original — this is a 56px box.
                 // alt is empty on purpose: the row already announces the file
                 // name, so a non-empty alt would read it twice.
-                <img
+                <FileImage
                     src={file.file_thumbnail || file.internal_link}
                     alt=""
                     loading="lazy"
@@ -367,7 +369,7 @@ const FileGridTile = memo(({ file, member, index, onOpen }: {
                     // Stored thumbnail, not the original — tiles are ~110px.
                     // alt is empty on purpose: the button already announces the
                     // file name, so a non-empty alt would read it twice.
-                    <img
+                    <FileImage
                         src={file.file_thumbnail || file.internal_link}
                         alt=""
                         loading="lazy"

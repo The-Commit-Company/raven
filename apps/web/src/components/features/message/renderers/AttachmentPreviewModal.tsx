@@ -4,6 +4,7 @@ import { useAtomValue, useSetAtom } from "jotai"
 import { useHotkeys } from "react-hotkeys-hook"
 import { useHistoryBackClose } from "@hooks/useHistoryBackClose"
 import { toast } from "sonner"
+import { useFileSrc } from "@hooks/useFileSrc"
 import { ChevronLeft, ChevronRight, FileText, Film, Music, MusicIcon } from "lucide-react"
 import { Badge } from "@components/ui/badge"
 import { Button } from "@components/ui/button"
@@ -63,6 +64,7 @@ const AttachmentPreviewContent = ({
     const isPreview = display.mode === "preview"
     const current = attachments[index] ?? attachments[0]
     const user = useUser(current.owner)
+    const resolvedUrl = useFileSrc(current.fileUrl)
 
     // PDFs render inline via <embed> on desktop only — mobile browsers won't,
     // so they fall back to the download card alongside non-previewable files.
@@ -346,7 +348,7 @@ const AttachmentPreviewContent = ({
                     // other media kinds which share the SwipeDownToClose wrapper below.
                     <ZoomableImage
                         key={current.fileUrl}
-                        src={current.fileUrl}
+                        src={resolvedUrl ?? ""}
                         alt={current.fileName}
                         onDismiss={close}
                         onDismissProgress={onDismissProgress}
@@ -360,7 +362,7 @@ const AttachmentPreviewContent = ({
                     <SwipeDownToClose onDismiss={close} onProgress={onDismissProgress}>
                         {current.kind === "video" ? (
                             <video
-                                src={current.fileUrl}
+                                src={resolvedUrl}
                                 controls
                                 className="max-h-full md:max-w-[90%]"
                                 onClick={(event) => event.stopPropagation()}
@@ -376,7 +378,7 @@ const AttachmentPreviewContent = ({
                                     onClick={(event) => event.stopPropagation()}
                                     onTouchStart={(event) => event.stopPropagation()}
                                 >
-                                    <AudioPlayer src={current.fileUrl} />
+                                    <AudioPlayer src={resolvedUrl} />
                                 </div>
                             </div>
                         ) : canEmbedPdf ? (
@@ -385,7 +387,7 @@ const AttachmentPreviewContent = ({
                             // (Touches INSIDE the embed never reach us — the dismiss drag
                             // only works from the frame around it; desktop-only anyway.)
                             <embed
-                                src={current.fileUrl}
+                                src={resolvedUrl}
                                 type="application/pdf"
                                 className="h-full w-full max-w-5xl rounded-md"
                                 onClick={(event) => event.stopPropagation()}

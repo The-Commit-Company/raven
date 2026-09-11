@@ -1,6 +1,7 @@
 import { useAtomValue, useSetAtom } from 'jotai'
 import { uploadingFilesAtom, uploadedFilesAtom, useAttachFile, useRemoveFile, FileItemType } from './useFileInput'
 import { Button } from '@components/ui/button'
+import { FileImage } from '@components/common/FileImage'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@components/ui/tooltip'
 import { AlertCircleIcon, Paperclip, Trash2Icon } from 'lucide-react'
 import { useCallback, useMemo, useRef } from 'react'
@@ -86,7 +87,7 @@ const FileItem = ({ file, onRemove, onPreview }: { file: FileItemType, onRemove:
         <div className="flex items-center gap-2 p-2">
             <div className="shrink-0">
                 {showImageThumb ? (
-                    <img src={file.fileURL} alt={file.fileName} className="size-7 rounded-3 object-contain bg-surface-gray-1 object-center" />
+                    <FileImage src={file.fileURL} alt={file.fileName} className="size-7 rounded-3 object-contain bg-surface-gray-1 object-center" />
                 ) : (
                     <FileTypeIcon fileType={extension} size={isMobile ? "xl" : "lg"} />
                 )}

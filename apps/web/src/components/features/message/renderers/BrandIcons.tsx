@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react"
 import { cn } from "@lib/utils"
+import { siteUrl } from "@lib/site"
 
 /**
  * Brand glyphs served by the backend (raven/public/brand_icons). Most are
@@ -70,11 +71,11 @@ export const PROVIDER_BRAND: Record<string, BrandSpec> = {
  *  silhouette, and the background paints it in the brand colour. */
 const maskStyle = (brand: BrandSpec): CSSProperties => ({
     backgroundColor: brand.color ?? undefined,
-    maskImage: `url(${BRAND_ICON_BASE}${brand.file})`,
+    maskImage: `url(${siteUrl(BRAND_ICON_BASE + brand.file)})`,
     maskRepeat: "no-repeat",
     maskPosition: "center",
     maskSize: "contain",
-    WebkitMaskImage: `url(${BRAND_ICON_BASE}${brand.file})`,
+    WebkitMaskImage: `url(${siteUrl(BRAND_ICON_BASE + brand.file)})`,
     WebkitMaskRepeat: "no-repeat",
     WebkitMaskPosition: "center",
     WebkitMaskSize: "contain",

@@ -48,3 +48,27 @@ Layer 1 of the bundled design: the app boots to a placeholder from `apps/web`.
 - Local bench: add `http://10.0.2.2:8004` on the emulator, `http://127.0.0.1:8004` on the
   simulator (ATS exception in `Info.plist`); the site's `developer_mode` allows the
   `http://localhost` origin.
+
+## The app on a remote site
+
+- `src/lib/site.ts` holds the active site: `siteUrl` for site-relative paths, `siteKey` and
+  `siteStorage` for per-site localStorage, `siteFetch` for fetches with the bearer token.
+  In the browser all of them are the identity.
+- Boot comes from `raven.api.native.boot` (`src/native/appBoot.ts`) and the last good copy
+  is kept per site for offline starts. The current user comes from boot through
+  `src/lib/sessionUser.ts`, which replaces the Frappe cookies.
+- Private files (`/private/files/`) cannot carry the token on an `<img>`; `useFileSrc` and
+  `FileImage` fetch them with the token into object URLs. Public paths only get the site
+  prefix.
+- The emoji data file is bundled (`dist-native/emojis.json`); the site's `/assets` are
+  served without CORS headers.
+- Switch site and log out live on the Profile page.
+- Realtime runs through a native socket.io client (`RavenSocketPlugin`, Java and Swift)
+  bridged into the sdk's context (`src/native/nativeSocket.ts`). Frappe's realtime server
+  only accepts a socket whose `Origin` is the site and calls the site back on that origin,
+  which a WebView cannot send; the native client sets `Origin`, `Authorization`, and
+  `X-Frappe-Site-Name` itself.
+- Local bench on the emulator: `adb reverse tcp:8004 tcp:8004` and `tcp:9004`, then add the
+  site as `http://127.0.0.1:8004`. The socket server calls the site back on the origin the
+  client sends: `10.0.2.2` is not routable from the host, and the bench's Node resolves
+  `localhost` to `::1`, where nothing listens.

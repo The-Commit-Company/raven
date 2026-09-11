@@ -12,11 +12,7 @@ scan({
 
 import { initPushNotifications, isStandalone } from "@lib/push";
 
-if (import.meta.env.VITE_NATIVE) {
-  // Native build: no Jinja boot, no service worker. Reached only by dynamic import
-  // so the browser bundle stays free of Capacitor code.
-  import("./native/boot").then(({ bootNative }) => bootNative())
-} else if (import.meta.env.DEV) {
+if (import.meta.env.DEV) {
   fetch('/api/method/raven.www.raven.get_context_for_dev', {
     method: 'POST',
   })

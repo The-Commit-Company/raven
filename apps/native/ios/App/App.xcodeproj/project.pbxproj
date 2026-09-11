@@ -11,6 +11,8 @@
 		3F21A58F21E0A7AB9403958A /* RavenBridgeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F597C2697DD20BCEBBA0C09F /* RavenBridgeViewController.swift */; };
 		41A7BF02267E121FA732FDC5 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0E09846CF9A66B6DD740E698 /* GoogleService-Info.plist */; };
 		4D22ABE92AF431CB00220026 /* CapApp-SPM in Frameworks */ = {isa = PBXBuildFile; productRef = 4D22ABE82AF431CB00220026 /* CapApp-SPM */; };
+		C3D4E5F60718293A4B5C6D7E /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = B2C3D4E5F60718293A4B5C6D /* SocketIO */; };
+		E5F60718293A4B5C6D7E8F90 /* RavenSocketPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E5F60718293A4B5C6D7E8F /* RavenSocketPlugin.swift */; };
 		50379B232058CBB4000EE86E /* capacitor.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 50379B222058CBB4000EE86E /* capacitor.config.json */; };
 		504EC3081FED79650016851F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504EC3071FED79650016851F /* AppDelegate.swift */; };
 		504EC30D1FED79650016851F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30B1FED79650016851F /* Main.storyboard */; };
@@ -34,6 +36,7 @@
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
 		8B5D2F0C3E4A5B6C7D8E9FA0 /* RavenShellPlugin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RavenShellPlugin.swift; sourceTree = "<group>"; };
+		D4E5F60718293A4B5C6D7E8F /* RavenSocketPlugin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RavenSocketPlugin.swift; sourceTree = "<group>"; };
 		9582B6822FE993A50072D4E8 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
 		F597C2697DD20BCEBBA0C09F /* RavenBridgeViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RavenBridgeViewController.swift; sourceTree = "<group>"; };
@@ -45,6 +48,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4D22ABE92AF431CB00220026 /* CapApp-SPM in Frameworks */,
+				C3D4E5F60718293A4B5C6D7E /* SocketIO in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,6 +88,7 @@
 				47C8E96799CB4CDC5E9CB281 /* App.entitlements */,
 				F597C2697DD20BCEBBA0C09F /* RavenBridgeViewController.swift */,
 				8B5D2F0C3E4A5B6C7D8E9FA0 /* RavenShellPlugin.swift */,
+				D4E5F60718293A4B5C6D7E8F /* RavenSocketPlugin.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -106,6 +111,7 @@
 			name = App;
 			packageProductDependencies = (
 				4D22ABE82AF431CB00220026 /* CapApp-SPM */,
+				B2C3D4E5F60718293A4B5C6D /* SocketIO */,
 			);
 			productName = App;
 			productReference = 504EC3041FED79650016851F /* App.app */;
@@ -138,6 +144,7 @@
 			mainGroup = 504EC2FB1FED79650016851F;
 			packageReferences = (
 				D4C12C0A2AAA248700AAC8A2 /* XCLocalSwiftPackageReference "CapApp-SPM" */,
+				A1B2C3D4E5F60718293A4B5C /* XCRemoteSwiftPackageReference "socket.io-client-swift" */,
 			);
 			productRefGroup = 504EC3051FED79650016851F /* Products */;
 			projectDirPath = "";
@@ -174,6 +181,7 @@
 				9582B6832FE993A70072D4E8 /* SceneDelegate.swift in Sources */,
 				3F21A58F21E0A7AB9403958A /* RavenBridgeViewController.swift in Sources */,
 				7A4C1E9B2D3F4A5B6C7D8E9F /* RavenShellPlugin.swift in Sources */,
+				E5F60718293A4B5C6D7E8F90 /* RavenSocketPlugin.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -386,11 +394,27 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		A1B2C3D4E5F60718293A4B5C /* XCRemoteSwiftPackageReference "socket.io-client-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/socketio/socket.io-client-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 16.1.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		4D22ABE82AF431CB00220026 /* CapApp-SPM */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = D4C12C0A2AAA248700AAC8A2 /* XCLocalSwiftPackageReference "CapApp-SPM" */;
 			productName = "CapApp-SPM";
+		};
+		B2C3D4E5F60718293A4B5C6D /* SocketIO */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1B2C3D4E5F60718293A4B5C /* XCRemoteSwiftPackageReference "socket.io-client-swift" */;
+			productName = SocketIO;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

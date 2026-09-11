@@ -13,14 +13,15 @@ import DirectMessages, { DirectMessagesIndex } from "@pages/dm-channel/DirectMes
 import DirectMessage from "@pages/dm-channel/DirectMessage"
 import ThreadDrawerRoute from "@components/features/message/ThreadDrawerRoute"
 import { WorkspaceRedirect } from "@components/workspace-switcher/WorkspaceRedirect"
-import { FrappeProvider } from 'frappe-react-sdk'
+import { FrappeContext, FrappeProvider, type FrappeConfig } from 'frappe-react-sdk'
 import { redirectToLoginIfSessionDied } from '@lib/authRecovery'
 import { initEmojiMart } from '@lib/emojiMart'
-import Cookies from 'js-cookie'
+import { isLoggedIn } from "@lib/sessionUser"
+import { siteKey } from "@lib/site"
 import { Toaster } from "@components/ui/sonner"
 import { TooltipProvider } from "@radix-ui/react-tooltip"
 import { LucideProvider } from "lucide-react"
-import { lazy, Suspense, useEffect } from "react"
+import { lazy, Suspense, useContext, useEffect } from "react"
 import AppShell from "@components/layout/AppShell"
 import { useAtomValue } from "jotai"
 import { lastChannelAtom, lastWorkspaceAtom } from "@utils/lastVisitedAtoms"
@@ -153,7 +154,22 @@ const router = createBrowserRouter(
   { basename: import.meta.env.VITE_BASE_NAME },
 )
 
-function App() {
+/** Provider settings the native entry passes; absent in the browser. */
+export type NativeProvider = {
+  url: string
+  siteName: string
+  getToken: () => string
+  onRequestError: (e: { httpStatus?: number }) => void
+  /** The native socket bridge; the sdk's own socket cannot pass Frappe's origin check from a WebView. */
+  socket: FrappeConfig["socket"]
+}
+
+const NativeSocketProvider = ({ socket, children }: { socket: FrappeConfig["socket"]; children: React.ReactNode }) => {
+  const config = useContext(FrappeContext) as FrappeConfig
+  return <FrappeContext.Provider value={{ ...config, socket }}>{children}</FrappeContext.Provider>
+}
+
+function App({ native }: { native?: NativeProvider }) {
 
   // Login check, SYNCHRONOUS and before the router renders. It used to live in
   // a post-paint effect, so a logged-out visitor rendered the whole app for a
@@ -161,9 +177,7 @@ function App() {
   // redirect kicked in. Checked during render, we paint nothing instead while
   // the browser navigates to login. (Frappe marks anonymous visitors with
   // user_id=Guest; dev builds skip the redirect — there's no local login page.)
-  const userId = Cookies.get('user_id')
-  const isLoggedIn = !!userId && userId !== 'Guest'
-  const shouldRedirectToLogin = !isLoggedIn && !import.meta.env.DEV
+  const shouldRedirectToLogin = !isLoggedIn() && !import.meta.env.DEV && !native
 
   useEffect(() => {
     if (shouldRedirectToLogin) {
@@ -175,13 +189,21 @@ function App() {
     return null
   }
 
+  const content = (
+    <>
+      <RouterProvider router={router} />
+      <Toaster />
+    </>
+  )
+
   return (
     <LucideProvider
       strokeWidth={1.5}
     >
       <TooltipProvider>
         <FrappeProvider
-          url={import.meta.env.VITE_FRAPPE_PATH ?? ''}
+          url={native?.url ?? (import.meta.env.VITE_FRAPPE_PATH ?? '')}
+          tokenParams={native ? { useToken: true, type: "Bearer", token: native.getToken } : undefined}
           socketPort={import.meta.env.VITE_SOCKET_PORT ? import.meta.env.VITE_SOCKET_PORT : undefined}
           swrConfig={{
             // NO global errorRetryCount: SWR's default retry is UNLIMITED
@@ -193,14 +215,14 @@ function App() {
             // Dead-session recovery: Frappe rewrites the user_id cookie to
             // "Guest" on the failing response itself, so any fetch error while
             // the cookie says Guest means the session is gone — go to login.
-            onError: redirectToLoginIfSessionDied,
+            onError: native ? native.onRequestError : redirectToLoginIfSessionDied,
             // @ts-ignore - SWR config
             provider: localStorageProvider
           }}
-          siteName={getSiteName()}
+          siteName={native?.siteName ?? getSiteName()}
+          enableSocket={!native}
         >
-          <RouterProvider router={router} />
-          <Toaster />
+          {native ? <NativeSocketProvider socket={native.socket}>{content}</NativeSocketProvider> : content}
         </FrappeProvider>
       </TooltipProvider>
     </LucideProvider>
@@ -219,10 +241,10 @@ const CACHE_KEYS = [
 function localStorageProvider() {
   // When initializing, we restore the data from `localStorage` into a map.
   // Check if local storage is recent (less than a week). Else start with a fresh cache.
-  const timestamp = localStorage.getItem('app-cache-timestamp')
+  const timestamp = localStorage.getItem(siteKey('app-cache-timestamp'))
   let cache = '[]'
   if (timestamp && Date.now() - parseInt(timestamp) < 7 * 24 * 60 * 60 * 1000) {
-    const localCache = localStorage.getItem('app-cache')
+    const localCache = localStorage.getItem(siteKey('app-cache'))
     if (localCache) {
       cache = localCache
     }
@@ -232,11 +254,9 @@ function localStorageProvider() {
   // Before unloading the app, we write back all the data into `localStorage`.
   window.addEventListener('beforeunload', () => {
 
-    // Check if the user is logged in
-    const user_id = Cookies.get('user_id')
-    if (!user_id || user_id === 'Guest') {
-      localStorage.removeItem('app-cache')
-      localStorage.removeItem('app-cache-timestamp')
+    if (!isLoggedIn()) {
+      localStorage.removeItem(siteKey('app-cache'))
+      localStorage.removeItem(siteKey('app-cache-timestamp'))
     } else {
       const entries = map.entries()
 
@@ -258,8 +278,8 @@ function localStorageProvider() {
         }
       }
       const appCache = JSON.stringify(cacheEntries)
-      localStorage.setItem('app-cache', appCache)
-      localStorage.setItem('app-cache-timestamp', Date.now().toString())
+      localStorage.setItem(siteKey('app-cache'), appCache)
+      localStorage.setItem(siteKey('app-cache-timestamp'), Date.now().toString())
     }
   })
 

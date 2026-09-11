@@ -6,6 +6,7 @@ class RavenBridgeViewController: CAPBridgeViewController {
     // App-local plugins are not in the generated plugin list; register by instance.
     override func capacitorDidLoad() {
         bridge?.registerPluginInstance(RavenShellPlugin())
+        bridge?.registerPluginInstance(RavenSocketPlugin())
     }
 
     override func viewDidLoad() {
